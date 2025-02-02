@@ -1,4 +1,4 @@
-import { Box, Icon, Text } from "@chakra-ui/react";
+import { Box, Icon, NativeSelectRoot, Text } from "@chakra-ui/react";
 import React, { FC, use, useEffect, useRef, useState } from "react";
 import {
   Control,
@@ -14,6 +14,7 @@ import type { SuggestedActivity } from "@/util/form-schema";
 import MultiSelectInput from "@/components/MultiSelectInput";
 import { SelectRoot, SelectTrigger, SelectValueText } from "./ui/select";
 import { MdWarning } from "react-icons/md";
+import { NativeSelectField } from "./ui/native-select";
 
 interface BuildingTypeSelectInputProps {
   title: string;
@@ -72,7 +73,7 @@ const BuildingTypeSelectInput: FC<BuildingTypeSelectInputProps> = ({
 
   const error = activity.split(".").reduce((acc, key) => acc?.[key], errors);
   return (
-    <Box display="flex" flexDirection="column" gap="8px">
+    <Box display="flex" flexDirection="column" gap="8px" w="full">
       <Text
         variant="label"
         fontSize="label.lg"
@@ -90,17 +91,17 @@ const BuildingTypeSelectInput: FC<BuildingTypeSelectInputProps> = ({
         rules={{ required: required === false ? false : t("option-required") }}
         render={({ field }) => {
           return (
-            <SelectRoot
+            <NativeSelectRoot
               {...field}
               shadow="1dp"
               borderRadius="4px"
               borderWidth={error ? "1px" : 0}
-              border="inputBox"
+              border="inpu/tBox"
               borderColor={error ? "sentiment.negativeDefault" : ""}
               background={error ? "sentiment.negativeOverlay" : ""}
               fontSize="body.lg"
-              h="48px"
-              placeholder={placeholder}
+              h="full"
+              w="full"
               _focus={{
                 borderWidth: "1px",
                 borderColor: "content.link",
@@ -112,15 +113,14 @@ const BuildingTypeSelectInput: FC<BuildingTypeSelectInputProps> = ({
               }}
               value={field.value}
             >
-              <SelectTrigger>
-                <SelectValueText placeholder={placeholder} />
-              </SelectTrigger>
-              {options?.map((item: string) => (
-                <option key={item} value={item}>
-                  {t(item)}
-                </option>
-              ))}
-            </SelectRoot>
+              <NativeSelectField placeholder={placeholder}>
+                {options?.map((item: string) => (
+                  <option key={item} value={item}>
+                    {t(item)}
+                  </option>
+                ))}
+              </NativeSelectField>
+            </NativeSelectRoot>
           );
         }}
       />

@@ -42,6 +42,7 @@ interface AddActivityModalProps {
   targetActivityValue?: ActivityValue;
   inventoryValue?: InventoryValue | null;
   resetSelectedActivityValue: () => void;
+  setAddActivityDialogOpen: Function;
 }
 
 const AddActivityModal: FC<AddActivityModalProps> = ({
@@ -58,6 +59,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
   referenceNumber,
   targetActivityValue,
   resetSelectedActivityValue,
+  setAddActivityDialogOpen,
 }) => {
   const {
     fields,
@@ -280,8 +282,8 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
     <>
       <DialogRoot
         blockScrollOnMount={false}
-        isOpen={isOpen}
-        onClose={closeModalFunc}
+        open={isOpen}
+        onOpenChange={(e: any) => setAddActivityDialogOpen(e.open)}
       >
         <DialogBackdrop />
         <DialogContent

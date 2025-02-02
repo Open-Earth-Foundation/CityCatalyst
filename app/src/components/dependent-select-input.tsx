@@ -1,9 +1,10 @@
 import { ExtraField } from "@/util/form-schema";
-import { Box, Icon, Text } from "@chakra-ui/react";
+import { Box, Icon, NativeSelectField, Text } from "@chakra-ui/react";
 import { useWatch } from "react-hook-form";
 import React from "react";
 import { SelectRoot, SelectTrigger, SelectValueText } from "./ui/select";
 import { MdWarning } from "react-icons/md";
+import { NativeSelectRoot } from "./ui/native-select";
 
 const DependentSelectInput = ({
   field,
@@ -31,11 +32,13 @@ const DependentSelectInput = ({
   const fieldId = field.id;
   return (
     <Box display="flex" flexDirection="column" gap="8px">
-      <SelectRoot
+      <NativeSelectRoot
         borderRadius="4px"
         borderWidth={errors?.activity?.[fieldId] ? "1px" : 0}
         border="inputBox"
-        h="48px"
+        h="full"
+        p={0}
+        w="full"
         disabled={!dependentValue}
         shadow="1dp"
         borderColor={
@@ -53,31 +56,23 @@ const DependentSelectInput = ({
           required: t("value-required"),
         })}
         bgColor="base.light"
-        placeholder={
-          !dependentValue
-            ? t("dependent-extra-field-placeholder", {
-                dependency: t(dependentFieldKey),
-              })
-            : t("option-required")
-        }
       >
-        <SelectTrigger>
-          <SelectValueText
-            placeholder={
-              !dependentValue
-                ? t("dependent-extra-field-placeholder", {
-                    dependency: t(dependentFieldKey),
-                  })
-                : t("option-required")
-            }
-          />
-        </SelectTrigger>
-        {field.dependentOptions?.[dependentValue]?.map((option) => (
-          <option key={option} value={option}>
-            {t(option)}
-          </option>
-        ))}
-      </SelectRoot>
+        <NativeSelectField
+          placeholder={
+            !dependentValue
+              ? t("dependent-extra-field-placeholder", {
+                  dependency: t(dependentFieldKey),
+                })
+              : t("option-required")
+          }
+        >
+          {field.dependentOptions?.[dependentValue]?.map((option) => (
+            <option key={option} value={option}>
+              {t(option)}
+            </option>
+          ))}
+        </NativeSelectField>
+      </NativeSelectRoot>
       {errors?.activity?.[fieldId] ? (
         <Box display="flex" gap="6px" alignItems="center">
           <Icon as={MdWarning} color="sentiment.negativeDefault" />

@@ -1,7 +1,7 @@
 "use client";
 
 import { Box, Button, DialogHeader, Icon, Text } from "@chakra-ui/react";
-import React, { FC } from "react";
+import React, { FC, useState } from "react";
 import { TFunction } from "i18next";
 import { useDeleteAllActivityValuesMutation } from "@/services/api";
 import { ChangeMethodologyIcon } from "../icons";
@@ -25,6 +25,7 @@ interface ChangeMethodologyProps {
   t: TFunction;
   gpcReferenceNumber: string;
   inventoryId: string;
+  setChangeMethodology: Function;
 }
 
 const ChangeMethodology: FC<ChangeMethodologyProps> = ({
@@ -34,6 +35,7 @@ const ChangeMethodology: FC<ChangeMethodologyProps> = ({
   t,
   gpcReferenceNumber,
   inventoryId,
+  setChangeMethodology,
 }) => {
   const [deleteAllActivityValues, { isLoading: isDeleteAllLoading }] =
     useDeleteAllActivityValuesMutation();
@@ -80,7 +82,11 @@ const ChangeMethodology: FC<ChangeMethodologyProps> = ({
 
   return (
     <>
-      <DialogRoot blockScrollOnMount={false} isOpen={isOpen} onClose={onClose}>
+      <DialogRoot
+        blockScrollOnMount={false}
+        open={isOpen}
+        onOpenChange={(e: any) => setChangeMethodology(e.open)}
+      >
         <DialogBackdrop />
         <DialogContent minH="350px" minW="568px" marginTop="2%">
           <DialogHeader

@@ -37,7 +37,11 @@ import {
   AccordionItemContent,
   AccordionItemTrigger,
 } from "@/components/ui/accordion";
-import { PopoverRoot } from "@/components/ui/popover";
+import {
+  PopoverContent,
+  PopoverRoot,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 interface EmissionDataSectionProps {
   t: TFunction;
@@ -93,6 +97,19 @@ const EmissionDataSection = ({
     onOpen: onDeleteActivityModalOpen,
     onClose: onDeleteActivityModalClose,
   } = useDisclosure();
+
+  // Change Methodology Dialog
+  const [openChangeMethodology, setOpenChangeMethodology] = useState(false);
+  const handleChangeMethodology = () => {
+    setOpenChangeMethodology(true);
+  };
+
+  // Add Activity Dialog
+  const [openActivityDataDialog, setAddActivityDataDialogOpen] =
+    useState(false);
+  const handleActivityAddDataDialog = () => {
+    setAddActivityDataDialogOpen(true);
+  };
 
   const changeMethodologyFunc = () => {
     changeMethodology();
@@ -230,7 +247,7 @@ const EmissionDataSection = ({
               getInputMethodology(methodology?.id!)) !== "direct-measure" && (
               <Button
                 data-testid="add-emission-data-button"
-                onClick={onAddActivityModalOpen}
+                onClick={handleActivityAddDataDialog}
                 title="Add Activity"
                 h="48px"
                 aria-label="activity-button"
@@ -242,83 +259,76 @@ const EmissionDataSection = ({
               </Button>
             )}
             <PopoverRoot>
-              <AccordionRoot>
-                <AccordionItem>
-                  <AccordionItemTrigger>
-                    <IconButton
-                      aria-label="more-icon"
-                      variant="ghost"
-                      color="content.tertiary"
-                    >
-                      <MdMoreVert size="24px" />
-                    </IconButton>
-                  </AccordionItemTrigger>
-                  <AccordionItemContent
-                    w="auto"
-                    borderRadius="8px"
-                    shadow="2dp"
-                    px="0"
+              <PopoverTrigger>
+                <IconButton
+                  aria-label="more-icon"
+                  variant="ghostLight"
+                  color="content.tertiary"
+                >
+                  <MdMoreVert size="lg" />
+                </IconButton>
+              </PopoverTrigger>
+              <PopoverArrow />
+              <PopoverContent>
+                {" "}
+                <PopoverBody p="0px" w="auto">
+                  <Box
+                    p="16px"
+                    display="flex"
+                    alignItems="center"
+                    gap="16px"
+                    _hover={{
+                      bg: "content.link",
+                      cursor: "pointer",
+                    }}
+                    className="group"
+                    onClick={handleChangeMethodology}
                   >
-                    <PopoverArrow />
-                    <PopoverBody p="0px">
-                      <Box
-                        p="16px"
-                        display="flex"
-                        alignItems="center"
-                        gap="16px"
-                        _hover={{
-                          bg: "content.link",
-                          cursor: "pointer",
-                        }}
-                        className="group"
-                        onClick={onChangeMethodologyOpen}
+                    <Icon
+                      className="group-hover:text-white"
+                      color="interactive.control"
+                      as={FaNetworkWired}
+                      h="24px"
+                      w="24px"
+                    />
+                    <Text
+                      className="group-hover:text-white"
+                      color="content.primary"
+                      fontSize="body.lg"
+                    >
+                      {t("change-methodology")}
+                    </Text>
+                  </Box>
+                  {activityValues.length > 0 && (
+                    <Box
+                      p="16px"
+                      display="flex"
+                      alignItems="center"
+                      gap="16px"
+                      _hover={{
+                        bg: "content.link",
+                        cursor: "pointer",
+                      }}
+                      className="group"
+                      onClick={onDeleteActivitiesModalOpen}
+                    >
+                      <Icon
+                        className="group-hover:text-white"
+                        color="sentiment.negativeDefault"
+                        as={FiTrash2}
+                        h="24px"
+                        w="24px"
+                      />
+                      <Text
+                        className="group-hover:text-white"
+                        color="content.primary"
                       >
-                        <Icon
-                          className="group-hover:text-white"
-                          color="interactive.control"
-                          as={FaNetworkWired}
-                          h="24px"
-                          w="24px"
-                        />
-                        <Text
-                          className="group-hover:text-white"
-                          color="content.primary"
-                        >
-                          {t("change-methodology")}
-                        </Text>
-                      </Box>
-                      {activityValues.length > 0 && (
-                        <Box
-                          p="16px"
-                          display="flex"
-                          alignItems="center"
-                          gap="16px"
-                          _hover={{
-                            bg: "content.link",
-                            cursor: "pointer",
-                          }}
-                          className="group"
-                          onClick={onDeleteActivitiesModalOpen}
-                        >
-                          <Icon
-                            className="group-hover:text-white"
-                            color="sentiment.negativeDefault"
-                            as={FiTrash2}
-                            h="24px"
-                            w="24px"
-                          />
-                          <Text
-                            className="group-hover:text-white"
-                            color="content.primary"
-                          >
-                            {t("delete-all-activities")}
-                          </Text>
-                        </Box>
-                      )}
-                    </PopoverBody>
-                  </AccordionItemContent>
-                </AccordionItem>
-              </AccordionRoot>
+                        {t("delete-all-activities")}
+                      </Text>
+                    </Box>
+                  )}
+                </PopoverBody>
+              </PopoverContent>
             </PopoverRoot>
           </Box>
         </Box>
@@ -381,7 +391,7 @@ const EmissionDataSection = ({
 
         <ActivityFormModal
           t={t}
-          isOpen={isAddActivityModalOpen}
+          isOpen={openActivityDataDialog}
           onClose={onAddActivityModalClose}
           hasActivityData={hasActivityData}
           setHasActivityData={setHasActivityData}
@@ -393,14 +403,16 @@ const EmissionDataSection = ({
           edit={!!selectedActivityValue}
           targetActivityValue={selectedActivityValue as ActivityValue}
           resetSelectedActivityValue={() => setSelectedActivityValue(undefined)}
+          setAddActivityDialogOpen={setAddActivityDataDialogOpen}
         />
         <ChangeMethodology
           t={t}
           onClose={onChangeMethodologyClose}
-          isOpen={isChangeMethodologyModalOpen}
+          isOpen={openChangeMethodology}
           onChangeClicked={changeMethodologyFunc}
           gpcReferenceNumber={refNumberWithScope}
           inventoryId={inventoryId}
+          setChangeMethodology={setOpenChangeMethodology}
         />
         <DeleteAllActivitiesModal
           t={t}

@@ -1,6 +1,7 @@
 import {
   Box,
   Grid,
+  Group,
   Heading,
   HStack,
   Icon,
@@ -44,6 +45,10 @@ import {
   SelectTrigger,
 } from "@/components/ui/select";
 import { MdInfoOutline, MdWarning } from "react-icons/md";
+import {
+  NativeSelectField,
+  NativeSelectRoot,
+} from "@/components/ui/native-select";
 
 interface AddActivityModalBodyProps {
   t: TFunction;
@@ -197,6 +202,7 @@ const ActivityModalBody = ({
             display="flex"
             flexDirection="column"
             className="items-start"
+            w="full"
           >
             <Field
               className="w-full"
@@ -206,6 +212,7 @@ const ActivityModalBody = ({
                 display="flex"
                 flexDirection="row"
                 className="items-start"
+                w="full"
               >
                 {methodology.activitySelectionField.options?.map((option) => (
                   <RadioButton
@@ -321,20 +328,19 @@ const ActivityModalBody = ({
                     <Field className="w-full" label={t(f.id)}>
                       <FormattedNumberInput
                         placeholder={t("activity-data-amount-placeholder")}
-                        max={f.max}
+                        max={f.max!}
                         id={f.id}
                         setError={setError}
                         clearErrors={clearErrors}
-                        min={f.min}
+                        min={f.min!}
                         control={control}
                         name={`activity.${f.id}`}
                         t={t}
                         w="full"
                       >
                         {f.units && (
-                          <SelectRoot
+                          <NativeSelectRoot
                             variant="subtle"
-                            placeholder={t("select-unit")}
                             {...register(`activity.${f.id}-unit` as any, {
                               required:
                                 f.required === false
@@ -342,17 +348,14 @@ const ActivityModalBody = ({
                                   : t("value-required"),
                             })}
                           >
-                            <SelectTrigger>
-                              <SelectValueText placeholder={t("select-unit")} />
-                            </SelectTrigger>
-                            <SelectContent>
+                            <NativeSelectField placeholder={t("select-unit")}>
                               {f.units?.map((item: string) => (
-                                <SelectItem key={item} value={item}>
+                                <option key={item} value={item}>
                                   {t(item)}
-                                </SelectItem>
+                                </option>
                               ))}
-                            </SelectContent>
-                          </SelectRoot>
+                            </NativeSelectField>
+                          </NativeSelectRoot>
                         )}
                       </FormattedNumberInput>
                       {(errors?.activity?.[f.id] as any) ? (
@@ -420,10 +423,10 @@ const ActivityModalBody = ({
               w="full"
             >
               <Field
-                isInvalid={!!resolve(prefix + "activityDataAmount", errors)}
+                invalid={!!resolve(prefix + "activityDataAmount", errors)}
+                label={<Text className="truncate">{t(title)}</Text>}
               >
-                <FormLabel className="truncate">{t(title)}</FormLabel>
-                <InputGroup>
+                <Group>
                   <FormattedNumberInput
                     control={control}
                     name={`activity.${title}`}
@@ -438,28 +441,30 @@ const ActivityModalBody = ({
                         control={control}
                         name={`activity.${title}-unit` as any}
                         render={({ field }) => (
-                          <Select
-                            placeholder={t("select-unit")}
-                            variant="unstyled"
+                          <NativeSelectRoot
+                            variant="subtle"
                             {...field}
-                            required
-                            onChange={(e) => field.onChange(e.target.value)}
+                            onChange={(e: any) =>
+                              field.onChange(e.target.value)
+                            }
                           >
-                            {units?.map((item: string) => (
-                              <option key={item} value={item}>
-                                {t(item)}
-                              </option>
-                            ))}
-                          </Select>
+                            <NativeSelectField placeholder={t("select-unit")}>
+                              {units?.map((item: string) => (
+                                <option key={item} value={item}>
+                                  {t(item)}
+                                </option>
+                              ))}
+                            </NativeSelectField>
+                          </NativeSelectRoot>
                         )}
                       />
                     )}
                   </FormattedNumberInput>
-                </InputGroup>
+                </Group>
 
                 {(errors?.activity?.[title] as any) ? (
                   <Box display="flex" gap="6px" alignItems="center" mt="6px">
-                    <WarningIcon color="sentiment.negativeDefault" />
+                    <Icon as={MdWarning} color="sentiment.negativeDefault" />
                     <Text fontSize="body.md">
                       {t("emission-amount-form-error")}
                     </Text>
@@ -470,7 +475,7 @@ const ActivityModalBody = ({
                 {(errors?.activity?.[`${title}-unit`] as any) &&
                 !errors?.activity?.[title] ? (
                   <Box display="flex" gap="6px" alignItems="center" mt="6px">
-                    <WarningIcon color="sentiment.negativeDefault" />
+                    <Icon as={MdWarning} color="sentiment.negativeDefault" />
                     <Text fontSize="body.md">
                       {errors?.activity?.[`${title}-unit`]?.message}{" "}
                     </Text>
@@ -481,51 +486,57 @@ const ActivityModalBody = ({
               </Field>
               {!hideEmissionFactors && (
                 <Field label={t("emission-factor-type")}>
-                  <SelectRoot
-                    borderRadius="4px"
-                    borderWidth={
-                      errors?.activity?.emissionFactorType ? "1px" : 0
-                    }
-                    border="inputBox"
-                    h="48px"
-                    shadow="1dp"
-                    borderColor={
-                      errors?.activity?.emissionFactorType
-                        ? "sentiment.negativeDefault"
-                        : ""
-                    }
-                    background={
-                      errors?.activity?.emissionFactorType
-                        ? "sentiment.negativeOverlay"
-                        : ""
-                    }
-                    _focus={{
-                      borderWidth: "1px",
-                      shadow: "none",
-                      borderColor: "content.link",
-                    }}
-                    {...register("activity.emissionFactorType", {
-                      required: t("value-required"),
-                    })}
-                    bgColor="base.light"
-                    placeholder={t("emissions-factor-type-placeholder")}
-                  >
-                    <SelectTrigger>
-                      <SelectValueText
-                        placeholder={t("emissions-factor-type")}
-                      />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {emissionsFactorTypes.map(({ id, name }) => (
-                        <SelectItem key={id} value={id}>
-                          {t(name)}
-                        </SelectItem>
-                      ))}
-                      <SelectItem key="custom" value="custom">
-                        {t("add-custom")}
-                      </SelectItem>
-                    </SelectContent>
-                  </SelectRoot>
+                  <Controller
+                    name="activity.emissionFactorType"
+                    control={control}
+                    render={({ field }) => (
+                      <NativeSelectRoot
+                        borderRadius="4px"
+                        borderWidth={
+                          errors?.activity?.emissionFactorType ? "1px" : 0
+                        }
+                        border="inputBox"
+                        h="full"
+                        shadow="1dp"
+                        borderColor={
+                          errors?.activity?.emissionFactorType
+                            ? "sentiment.negativeDefault"
+                            : ""
+                        }
+                        background={
+                          errors?.activity?.emissionFactorType
+                            ? "sentiment.negativeOverlay"
+                            : ""
+                        }
+                        _focus={{
+                          borderWidth: "1px",
+                          shadow: "none",
+                          borderColor: "content.link",
+                        }}
+                        onChange={(e: any) => {
+                          field.onChange(e.target.value);
+                          setValue(
+                            "activity.emissionFactorType",
+                            e.target.value,
+                          );
+                        }}
+                        bgColor="base.light"
+                      >
+                        <NativeSelectField
+                          placeholder={t("emissions-factor-type-placeholder")}
+                        >
+                          {emissionsFactorTypes.map(({ id, name }) => (
+                            <option key={id} value={id}>
+                              {t(name)}
+                            </option>
+                          ))}
+                          <option key="custom" value="custom">
+                            {t("add-custom")}
+                          </option>
+                        </NativeSelectField>
+                      </NativeSelectRoot>
+                    )}
+                  />
 
                   {errors.activity?.emissionFactorType ? (
                     <Box display="flex" gap="6px" alignItems="center" mt="6px">
@@ -659,7 +670,7 @@ const ActivityModalBody = ({
                   {t("emissions-factor-values")}
                 </Text>
               </Heading>
-              <HStack className="items-start" spacing={4} mb={5}>
+              <HStack className="items-start" gap={4} mb={5}>
                 <Box>
                   <Field label={t("co2-emission-factor")}>
                     <FormattedNumberInput
@@ -668,6 +679,8 @@ const ActivityModalBody = ({
                       control={control}
                       name={`activity.CO2EmissionFactor`}
                       defaultValue={0}
+                      w="110px"
+                      h="full"
                       isDisabled={isEmissionFactorInputDisabled}
                     >
                       {areEmissionFactorsLoading ? (
@@ -795,49 +808,59 @@ const ActivityModalBody = ({
             </>
           )}
 
-        <HStack display="flex" flexDirection="column" spacing={4} mb={5}>
+        <HStack display="flex" flexDirection="column" gap={4} mb={5}>
           <Field
             invalid={!!resolve(prefix + "dataQuality", errors)}
             label={t("data-quality")}
           >
-            <SelectRoot
-              borderWidth={errors?.activity?.dataQuality ? "1px" : 0}
-              border="inputBox"
-              borderRadius="4px"
-              borderColor={
-                errors?.activity?.dataQuality ? "sentiment.negativeDefault" : ""
-              }
-              background={
-                errors?.activity?.dataQuality ? "sentiment.negativeOverlay" : ""
-              }
-              _focus={{
-                borderWidth: "1px",
-                shadow: "none",
-                borderColor: "content.link",
-              }}
-              bgColor="base.light"
-              placeholder={t("data-quality-placeholder")}
-              {...register("activity.dataQuality", {
-                required: t("option-required"),
-              })}
-              h="48px"
-              shadow="1dp"
-            >
-              <SelectTrigger>
-                <SelectValueText placeholder={t("data-quality-placeholder")} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="high">
-                  {t("detailed-activity-data")}
-                </SelectItem>
-                <SelectItem value="medium">
-                  {t("modeled-activity-data")}
-                </SelectItem>
-                <SelectItem value="low">
-                  {t("highly-modeled-uncertain-activity-data")}
-                </SelectItem>
-              </SelectContent>
-            </SelectRoot>
+            <Controller
+              name="activity.dataQuality"
+              control={control}
+              render={({ field }) => (
+                <NativeSelectRoot
+                  borderWidth={errors?.activity?.dataQuality ? "1px" : 0}
+                  border="inputBox"
+                  borderRadius="4px"
+                  borderColor={
+                    errors?.activity?.dataQuality
+                      ? "sentiment.negativeDefault"
+                      : ""
+                  }
+                  background={
+                    errors?.activity?.dataQuality
+                      ? "sentiment.negativeOverlay"
+                      : ""
+                  }
+                  _focus={{
+                    borderWidth: "1px",
+                    shadow: "none",
+                    borderColor: "content.link",
+                  }}
+                  bgColor="base.light"
+                  {...register("activity.dataQuality", {
+                    required: t("option-required"),
+                  })}
+                  h="full"
+                  shadow="1dp"
+                  value={field.value}
+                  onChange={(e: any) => {
+                    console.log(e.target.value);
+                    field.onChange(e.target.value);
+                    setValue("activity.dataQuality", e.target.value);
+                  }}
+                >
+                  <NativeSelectField
+                    placeholder={t("data-quality-placeholder")}
+                  >
+                    <option value="high">{t("detailed-activity-data")}</option>
+                    <option value="medium">{t("modeled-activity-data")}</option>
+                    <option value="low">
+                      {t("highly-modeled-uncertain-activity-data")}
+                    </option>
+                  </NativeSelectField>
+                </NativeSelectRoot>
+              )}
+            />
             {errors.activity?.dataQuality ? (
               <Box display="flex" gap="6px" alignItems="center" mt="6px">
                 <Icon as={MdWarning} color="sentiment.negativeDefault" />

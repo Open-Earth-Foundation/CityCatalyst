@@ -207,18 +207,57 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
                 maxWidth="200px"
                 truncate
                 fontWeight="bold"
+                fontFamily="heading"
                 textTransform="uppercase"
+                fontSize="body.sm"
+                color="content.secondary"
               >
                 {t(filteredFields[0].id)}
               </Table.ColumnHeader>
             )}
-            <Table.ColumnHeader fontWeight="bold" fontFamily="heading">
+            <Table.ColumnHeader
+              fontWeight="bold"
+              fontFamily="heading"
+              textTransform="uppercase"
+              fontSize="body.sm"
+              color="content.secondary"
+            >
               {t("data-quality")}
             </Table.ColumnHeader>
-            <Table.ColumnHeader>{t(sourceField as string)}</Table.ColumnHeader>
-            <Table.ColumnHeader>{t(title)}</Table.ColumnHeader>
-            <Table.ColumnHeader>{t("emissions")}</Table.ColumnHeader>
-            <Table.ColumnHeader></Table.ColumnHeader>
+            <Table.ColumnHeader
+              fontWeight="bold"
+              fontFamily="heading"
+              textTransform="uppercase"
+              fontSize="body.sm"
+              color="content.secondary"
+            >
+              {t(sourceField as string)}
+            </Table.ColumnHeader>
+            <Table.ColumnHeader
+              fontWeight="bold"
+              fontFamily="heading"
+              textTransform="uppercase"
+              fontSize="body.sm"
+              color="content.secondary"
+            >
+              {t(title)}
+            </Table.ColumnHeader>
+            <Table.ColumnHeader
+              fontWeight="bold"
+              fontFamily="heading"
+              textTransform="uppercase"
+              fontSize="body.sm"
+              color="content.secondary"
+            >
+              {t("emissions")}
+            </Table.ColumnHeader>
+            <Table.ColumnHeader
+              fontWeight="bold"
+              fontFamily="heading"
+              textTransform="uppercase"
+              fontSize="body.sm"
+              color="content.secondary"
+            ></Table.ColumnHeader>
           </Table.Row>
         </Table.Header>
         <Table.Body>
@@ -238,9 +277,16 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
                 <Table.Cell>
                   <Tag
                     size="lg"
-                    variant={activity?.metadata?.dataQuality}
+                    variant="surface"
+                    colorPalette={
+                      activity?.metadata?.dataQuality === "high"
+                        ? "green"
+                        : activity?.metadata?.dataQuality === "medium"
+                          ? "yellow"
+                          : "red"
+                    }
                     colorScheme="blue"
-                    borderRadius="full"
+                    borderRadius="lg"
                   >
                     <TagLabel>{t(activity?.metadata?.dataQuality)}</TagLabel>
                   </Tag>
@@ -258,7 +304,7 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
                     <PopoverTrigger asChild>
                       <IconButton
                         aria-label="more-icon"
-                        variant="ghost"
+                        variant="ghostLight"
                         color="content.tertiary"
                       >
                         <Icon as={MdMoreVert} size="lg" />
@@ -270,7 +316,6 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
                       shadow="2dp"
                       px="0"
                     >
-                      <PopoverArrow />
                       <PopoverBody p="0px">
                         <Box
                           p="16px"
@@ -426,7 +471,7 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
                           <Icon
                             as={MdAdd}
                             color="interactive.control"
-                            fontSize="24px"
+                            size="2xl"
                           />
                         </IconButton>
                       </Box>

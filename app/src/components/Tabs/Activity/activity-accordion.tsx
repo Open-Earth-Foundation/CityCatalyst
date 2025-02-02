@@ -189,25 +189,32 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
     return (
       <Table.Root
         px={0}
-        variant="simple"
+        variant="line"
         borderLeft="0px"
         borderBottom="0px"
         borderRight="0px"
         borderWidth="1px"
         borderRadius="20px"
       >
-        <Table.Header backgroundColor="background.backgroundLight">
+        <Table.Header
+          backgroundColor="background.backgroundLight"
+          fontWeight="bold"
+        >
           <Table.Row>
             {filteredFields?.length! > 0 && (
               <Table.ColumnHeader
                 title={t(filteredFields[0].id)}
                 maxWidth="200px"
                 truncate
+                fontWeight="bold"
+                textTransform="uppercase"
               >
                 {t(filteredFields[0].id)}
               </Table.ColumnHeader>
             )}
-            <Table.ColumnHeader>{t("data-quality")}</Table.ColumnHeader>
+            <Table.ColumnHeader fontWeight="bold" fontFamily="heading">
+              {t("data-quality")}
+            </Table.ColumnHeader>
             <Table.ColumnHeader>{t(sourceField as string)}</Table.ColumnHeader>
             <Table.ColumnHeader>{t(title)}</Table.ColumnHeader>
             <Table.ColumnHeader>{t("emissions")}</Table.ColumnHeader>
@@ -335,7 +342,12 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
         Object.keys(activityGroups)
           .sort()
           .map((key) => (
-            <AccordionRoot key={key} defaultIndex={[0]} allowMultiple>
+            <AccordionRoot
+              key={key}
+              defaultIndex={[0]}
+              allowMultiple
+              collapsible
+            >
               <AccordionItem
                 backgroundColor="white"
                 borderWidth="1px"

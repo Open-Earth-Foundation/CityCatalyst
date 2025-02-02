@@ -79,9 +79,13 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
     return (
       <Table.Root variant="outline" overflowX="scroll" borderWidth="1px">
         <Table.Header bg="background.backgroundLight">
-          <Table.Row fontSize="button.sm" fontWeight="bold">
+          <Table.Row>
             {filteredFields.length > 0 && (
-              <Table.ColumnHeader truncate>
+              <Table.ColumnHeader
+                truncate
+                fontSize="button.sm"
+                fontWeight="bold"
+              >
                 {t(filteredFields[0].id)}
               </Table.ColumnHeader>
             )}
@@ -240,7 +244,12 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
         Object.keys(activityGroups)
           .sort()
           .map((key) => (
-            <AccordionRoot key={key} defaultIndex={[0]} allowMultiple>
+            <AccordionRoot
+              key={key}
+              defaultIndex={[0]}
+              allowMultiple
+              collapsible
+            >
               <AccordionItem
                 backgroundColor="white"
                 borderWidth="1px"

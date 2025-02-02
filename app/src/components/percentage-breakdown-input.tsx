@@ -1,6 +1,14 @@
 "use client";
 
-import { Box, Group, HStack, Icon, Input, Text } from "@chakra-ui/react";
+import {
+  Box,
+  Group,
+  HStack,
+  Icon,
+  Input,
+  InputAddon,
+  Text,
+} from "@chakra-ui/react";
 import React, { FC, useMemo } from "react";
 import { Control, FieldError, useWatch } from "react-hook-form";
 import {
@@ -189,6 +197,7 @@ const PercentageBreakdownInput: FC<FormInputProps> = ({
                   {t(category)}
                 </Text>
                 <Group w="116px">
+                  <InputAddon>%</InputAddon>
                   <Input
                     type="text"
                     value={getValues(`activity.${id}.${category}`)}
@@ -219,7 +228,6 @@ const PercentageBreakdownInput: FC<FormInputProps> = ({
                       borderColor: "content.link",
                     }}
                   />
-                  <InputRightAddon>%</InputRightAddon>
                 </Group>
               </HStack>
             ))}

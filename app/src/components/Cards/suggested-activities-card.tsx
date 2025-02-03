@@ -1,7 +1,8 @@
-import { AddIcon } from "@chakra-ui/icons";
-import { Box, Button, Card, Checkbox, Text, useTheme } from "@chakra-ui/react";
+import { Box, Button, Card, Icon, Text } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import React, { FC } from "react";
+import { Checkbox } from "../ui/checkbox";
+import { MdAdd } from "react-icons/md";
 
 interface SuggestedActivityCardProps {
   t: TFunction;
@@ -18,11 +19,11 @@ const SuggestedActivityCard: FC<SuggestedActivityCardProps> = ({
   id,
   onActivityAdded,
   prefillValue,
-  prefillKey
+  prefillKey,
 }) => {
-  const themeColors = useTheme().colors;
+  // const themeColors = useTheme().colors;
   return (
-    <Card
+    <Card.Root
       display="flex"
       flexDirection="row"
       w="full"
@@ -42,7 +43,7 @@ const SuggestedActivityCard: FC<SuggestedActivityCardProps> = ({
           __css={{
             "& .chakra-checkbox__control": {
               bg: "white",
-              color: themeColors.brand,
+              color: "black",
               borderRadius: "full",
               borderColor: "#D7D8FA",
               h: "24px",
@@ -90,19 +91,19 @@ const SuggestedActivityCard: FC<SuggestedActivityCardProps> = ({
       <Box display="flex" alignItems="center" w="full" justifyContent="end">
         <Button
           title="Add Activity"
-          leftIcon={<AddIcon h="16px" w="16px" />}
           h="48px"
-          variant="ghost"
+          variant="ghostLight"
           aria-label="activity-button"
           fontSize="button.md"
           color="content.link"
           gap="8px"
           onClick={onActivityAdded}
         >
+          <Icon as={MdAdd} h="16px" w="16px" />
           {t("add-activity")}
         </Button>
       </Box>
-    </Card>
+    </Card.Root>
   );
 };
 

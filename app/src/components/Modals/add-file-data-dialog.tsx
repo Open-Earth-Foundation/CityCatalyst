@@ -1,23 +1,7 @@
 import React, { FC, useEffect, useState } from "react";
-import {
-  Box,
-  Button,
-  Checkbox,
-  Divider,
-  FormControl,
-  FormLabel,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
-  Text,
-  useToast,
-} from "@chakra-ui/react";
+import { Box, Icon, Separator, Text } from "@chakra-ui/react";
 import DropdownSelectInput from "../dropdown-select-input";
-import { InfoIcon, InfoOutlineIcon } from "@chakra-ui/icons";
+
 import {
   DataStep,
   SubSectorWithRelations,
@@ -32,12 +16,29 @@ import {
   UserFileResponse,
   UserInfoResponse,
 } from "@/util/types";
-import { MdOutlineInsertDriveFile } from "react-icons/md";
+import { MdInfoOutline, MdOutlineInsertDriveFile } from "react-icons/md";
 import { appendFileToFormData } from "@/util/helpers";
 import { api, useAddUserFileMutation } from "@/services/api";
 
-interface AddFileDataModalProps {
+import {
+  DialogBackdrop,
+  DialogBody,
+  DialogCloseTrigger,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogRoot,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { toaster } from "../ui/toaster";
+import { Button } from "../ui/button";
+import { Field } from "../ui/field";
+import { Checkbox } from "../ui/checkbox";
+
+interface AddFileDataDialogProps {
   isOpen: boolean;
+  onOpenChange: (isOpen: boolean) => void;
   onClose: () => void;
   subsectors: SubSectorWithRelations[] | null;
   t: TFunction;
@@ -64,7 +65,8 @@ const scopes = [
   },
 ];
 
-const AddFileDataModal: FC<AddFileDataModalProps> = ({
+const AddFileDataDialog: FC<AddFileDataDialogProps> = ({
+  onOpenChange,
   isOpen,
   onClose,
   subsectors,
@@ -113,8 +115,6 @@ const AddFileDataModal: FC<AddFileDataModalProps> = ({
 
   const cityId = inventoryData?.city.cityId!;
 
-  const toast = useToast();
-
   const onSubmit: SubmitHandler<FileData> = async (data) => {
     const base64FileString = await fileToBase64(uploadedFile);
     const filename = uploadedFile.name;
@@ -138,14 +138,14 @@ const AddFileDataModal: FC<AddFileDataModalProps> = ({
     await addUserFile({ formData, cityId }).then((res: any) => {
       // show toast
       if (res.error) {
-        toast({
+        toaster.create({
           title: t("file-upload-error"),
           description: t("file-upload-error-description"),
           status: "error",
           duration: 2000,
         });
       } else {
-        toast({
+        toaster.create({
           title: t("file-upload-success"),
           description: t("file-upload-success"),
           status: "success",
@@ -180,10 +180,14 @@ const AddFileDataModal: FC<AddFileDataModalProps> = ({
   };
 
   return (
-    <Modal blockScrollOnMount={false} isOpen={isOpen} onClose={onClose}>
-      <ModalOverlay />
-      <ModalContent minH="300px" minW="739px" marginTop="10%">
-        <ModalHeader
+    <DialogRoot
+      blockScrollOnMount={false}
+      open={isOpen}
+      onOpenChange={(e) => onOpenChange(e.open)}
+    >
+      <DialogBackdrop />
+      <DialogContent minH="300px" minW="739px" marginTop="10%">
+        <DialogHeader
           display="flex"
           justifyContent="center"
           fontWeight="semibold"
@@ -196,9 +200,9 @@ const AddFileDataModal: FC<AddFileDataModalProps> = ({
           borderColor="border.neutral"
         >
           {t("file-context")}
-        </ModalHeader>
-        <ModalCloseButton marginTop="10px" />
-        <ModalBody p={6} px={12}>
+        </DialogHeader>
+        <DialogCloseTrigger />
+        <DialogBody p={6} px={12}>
           <Box
             display="flex"
             flexDirection="column"
@@ -237,14 +241,20 @@ const AddFileDataModal: FC<AddFileDataModalProps> = ({
             >
               {t("file-data-description")}
             </Text>
-            <Divider borderColor="divider.neutral" borderWidth="2px" />
+            <Separator borderColor="divider.neutral" borderWidth="2px" />
             <Box w="100%">
               <form className="w-full flex flex-col gap-[36px]">
-                <FormControl>
-                  <FormLabel display="flex" alignItems="center" gap="8px">
-                    <Text>{t("select-subsector-label")}</Text>
-                    <InfoOutlineIcon color="interactive.control" />
-                  </FormLabel>
+                <Field
+                  label={
+                    <>
+                      {" "}
+                      <Text fontWeight="500" fontFamily="heading">
+                        {t("select-subsector-label")}
+                      </Text>
+                      <Icon as={MdInfoOutline} color="interactive.control" />
+                    </>
+                  }
+                >
                   <DropdownSelectInput
                     subsectors={subsectors}
                     setValue={setValue}
@@ -259,11 +269,8 @@ const AddFileDataModal: FC<AddFileDataModalProps> = ({
                       </Text>
                     )}
                   </Box>
-                </FormControl>
-                <FormControl>
-                  <FormLabel>
-                    <Text>{t("scopes")}</Text>
-                  </FormLabel>
+                </Field>
+                <Field label={<Text>{t("scopes")}</Text>}>
                   <Box display="flex" gap="16px">
                     {scopes.map((scope) => (
                       <Box
@@ -276,7 +283,7 @@ const AddFileDataModal: FC<AddFileDataModalProps> = ({
                           value={scope.value}
                           borderColor="interactive.secondary"
                           {...register("scopes", { required: true })}
-                          onChange={(e) =>
+                          onChange={(e: any) =>
                             handleSelectedScopes(scope.value, e.target.checked)
                           }
                           checked={selectedScopes.includes(scope.value)}
@@ -294,12 +301,12 @@ const AddFileDataModal: FC<AddFileDataModalProps> = ({
                       </Text>
                     )}
                   </Box>
-                </FormControl>
+                </Field>
               </form>
             </Box>
           </Box>
-        </ModalBody>
-        <ModalFooter
+        </DialogBody>
+        <DialogFooter
           borderTopWidth="2px"
           color="divider.neutral"
           gap="10px"
@@ -307,7 +314,7 @@ const AddFileDataModal: FC<AddFileDataModalProps> = ({
           justifyContent="space-around"
         >
           <Button
-            variant="ghost"
+            variant="outline"
             borderWidth="2px"
             borderColor="interactive.secondary"
             h="64px"
@@ -322,15 +329,15 @@ const AddFileDataModal: FC<AddFileDataModalProps> = ({
             bg="interactive.secondary"
             h="64px"
             w="316px"
-            isLoading={isLoading}
+            loading={isLoading}
             onClick={handleSubmit(onSubmit)}
           >
             {t("upload")}
           </Button>
-        </ModalFooter>
-      </ModalContent>
-    </Modal>
+        </DialogFooter>
+      </DialogContent>
+    </DialogRoot>
   );
 };
 
-export default AddFileDataModal;
+export default AddFileDataDialog;

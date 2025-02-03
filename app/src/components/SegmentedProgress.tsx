@@ -103,7 +103,8 @@ export function SegmentedProgress({
         backgroundColor="background.neutral"
         w="full"
         className="flex flex-row"
-        borderRadius="full"
+        borderRightRadius="10px"
+        borderLeftRadius="10px"
       >
         {normalizedValues.map((value, i) => (
           <Box
@@ -114,11 +115,11 @@ export function SegmentedProgress({
             borderStartRadius={
               i === 0 ||
               (i === 1 && (normalizedValues[0].percentage ?? 0) === 0)
-                ? "full"
+                ? "10px"
                 : undefined
             }
             borderEndRadius={
-              i === normalizedValues.length - 1 ? "full" : undefined
+              i === normalizedValues.length - 1 ? "10px" : undefined
             }
           />
         ))}
@@ -142,7 +143,7 @@ export function SegmentedProgress({
             py={1}
             px={2}
             marginRight={2}
-            borderRadius="full"
+            borderRadius="10px"
             bg="base.light"
           >
             <Flex>
@@ -150,7 +151,7 @@ export function SegmentedProgress({
                 width={3}
                 height={3}
                 bg={colors[i]}
-                borderRadius="full"
+                borderRadius="10px"
                 mx={2}
                 my={1}
               />

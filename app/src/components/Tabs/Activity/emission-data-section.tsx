@@ -1,20 +1,17 @@
 import React, { useState } from "react";
 import {
+  AccordionRoot,
   Box,
   Button,
   Card,
   Icon,
   IconButton,
-  Popover,
   PopoverArrow,
   PopoverBody,
-  PopoverContent,
-  PopoverTrigger,
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
 import { convertKgToTonnes, getInputMethodology } from "@/util/helpers";
-import { AddIcon } from "@chakra-ui/icons";
 import SuggestedActivityCard from "@/components/Cards/suggested-activities-card";
 import { DataConnectIcon } from "@/components/icons";
 import DirectMeasureTable from "@/components/Tabs/Activity/direct-measure-table";
@@ -32,9 +29,19 @@ import {
 import { ActivityValue } from "@/models/ActivityValue";
 import { InventoryValue } from "@/models/InventoryValue";
 import HeadingText from "@/components/heading-text";
-import { MdMoreVert } from "react-icons/md";
+import { MdAdd, MdMoreVert } from "react-icons/md";
 import { FaNetworkWired } from "react-icons/fa";
 import { FiTrash2 } from "react-icons/fi";
+import {
+  AccordionItem,
+  AccordionItemContent,
+  AccordionItemTrigger,
+} from "@/components/ui/accordion";
+import {
+  PopoverContent,
+  PopoverRoot,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 interface EmissionDataSectionProps {
   t: TFunction;
@@ -71,25 +78,38 @@ const EmissionDataSection = ({
   );
 
   const {
-    isOpen: isAddActivityModalOpen,
+    open: isAddActivityModalOpen,
     onOpen: onAddActivityModalOpen,
     onClose: onAddActivityModalClose,
   } = useDisclosure();
   const {
-    isOpen: isChangeMethodologyModalOpen,
+    open: isChangeMethodologyModalOpen,
     onOpen: onChangeMethodologyOpen,
     onClose: onChangeMethodologyClose,
   } = useDisclosure();
   const {
-    isOpen: isDeleteActivitiesModalOpen,
+    open: isDeleteActivitiesModalOpen,
     onOpen: onDeleteActivitiesModalOpen,
     onClose: onDeleteActivitiesModalClose,
   } = useDisclosure();
   const {
-    isOpen: isDeleteActivityModalOpen,
+    open: isDeleteActivityModalOpen,
     onOpen: onDeleteActivityModalOpen,
     onClose: onDeleteActivityModalClose,
   } = useDisclosure();
+
+  // Change Methodology Dialog
+  const [openChangeMethodology, setOpenChangeMethodology] = useState(false);
+  const handleChangeMethodology = () => {
+    setOpenChangeMethodology(true);
+  };
+
+  // Add Activity Dialog
+  const [openActivityDataDialog, setAddActivityDataDialogOpen] =
+    useState(false);
+  const handleActivityAddDataDialog = () => {
+    setAddActivityDataDialogOpen(true);
+  };
 
   const changeMethodologyFunc = () => {
     changeMethodology();
@@ -103,9 +123,9 @@ const EmissionDataSection = ({
     onDeleteActivityModalClose();
   };
 
-  const handleActivityAdded = (suggestedActivity: SuggestedActivity) => {
+  const handleActivityAdded = (suggestedActivity?: SuggestedActivity) => {
     setSelectedActivity(suggestedActivity);
-    onAddActivityModalOpen();
+    setAddActivityDataDialogOpen(true);
   };
 
   const onDeleteActivity = (activity: ActivityValue) => {
@@ -115,7 +135,7 @@ const EmissionDataSection = ({
 
   const onEditActivity = (activity: ActivityValue) => {
     setSelectedActivityValue(activity);
-    onAddActivityModalOpen();
+    setAddActivityDataDialogOpen(true);
   };
 
   const renderSuggestedActivities = () => (
@@ -148,7 +168,7 @@ const EmissionDataSection = ({
           </Box>
         </>
       ) : (
-        <Card
+        <Card.Root
           w="full"
           bg="background.backgroundLight"
           shadow="none"
@@ -181,18 +201,18 @@ const EmissionDataSection = ({
             </Box>
           </Box>
           <Button
-            onClick={onAddActivityModalOpen}
+            onClick={() => handleActivityAdded}
             data-testid="add-emission-data-button"
             title={t("add-emission-data")}
-            leftIcon={<AddIcon h="16px" w="16px" />}
             h="48px"
             aria-label="activity-button"
             fontSize="button.md"
             gap="8px"
           >
+            <Icon as={MdAdd} h="16px" w="16px" />
             {t("add-emission-data-btn")}
           </Button>
-        </Card>
+        </Card.Root>
       )}
     </>
   );
@@ -227,29 +247,31 @@ const EmissionDataSection = ({
               getInputMethodology(methodology?.id!)) !== "direct-measure" && (
               <Button
                 data-testid="add-emission-data-button"
-                onClick={onAddActivityModalOpen}
+                onClick={handleActivityAddDataDialog}
                 title="Add Activity"
-                leftIcon={<AddIcon h="16px" w="16px" />}
                 h="48px"
                 aria-label="activity-button"
                 fontSize="button.md"
                 gap="8px"
               >
+                <Icon as={MdAdd} h="16px" w="16px" />
                 {t("add-emission-data")}
               </Button>
             )}
-            <Popover>
+            <PopoverRoot>
               <PopoverTrigger>
                 <IconButton
-                  icon={<MdMoreVert size="24px" />}
                   aria-label="more-icon"
-                  variant="ghost"
+                  variant="ghostLight"
                   color="content.tertiary"
-                />
+                >
+                  <MdMoreVert size="lg" />
+                </IconButton>
               </PopoverTrigger>
-              <PopoverContent w="auto" borderRadius="8px" shadow="2dp" px="0">
-                <PopoverArrow />
-                <PopoverBody p="0px">
+              <PopoverArrow />
+              <PopoverContent>
+                {" "}
+                <PopoverBody p="0px" w="auto">
                   <Box
                     p="16px"
                     display="flex"
@@ -260,7 +282,7 @@ const EmissionDataSection = ({
                       cursor: "pointer",
                     }}
                     className="group"
-                    onClick={onChangeMethodologyOpen}
+                    onClick={handleChangeMethodology}
                   >
                     <Icon
                       className="group-hover:text-white"
@@ -272,6 +294,7 @@ const EmissionDataSection = ({
                     <Text
                       className="group-hover:text-white"
                       color="content.primary"
+                      fontSize="body.lg"
                     >
                       {t("change-methodology")}
                     </Text>
@@ -306,7 +329,7 @@ const EmissionDataSection = ({
                   )}
                 </PopoverBody>
               </PopoverContent>
-            </Popover>
+            </PopoverRoot>
           </Box>
         </Box>
         <Box>
@@ -330,7 +353,7 @@ const EmissionDataSection = ({
                     t={t}
                     referenceNumber={refNumberWithScope}
                     activityData={activityValues}
-                    showActivityModal={onAddActivityModalOpen}
+                    showActivityModal={handleActivityAdded}
                     methodologyId={methodology?.id}
                     onDeleteActivity={onDeleteActivity}
                     onEditActivity={onEditActivity}
@@ -368,7 +391,7 @@ const EmissionDataSection = ({
 
         <ActivityFormModal
           t={t}
-          isOpen={isAddActivityModalOpen}
+          isOpen={openActivityDataDialog}
           onClose={onAddActivityModalClose}
           hasActivityData={hasActivityData}
           setHasActivityData={setHasActivityData}
@@ -380,14 +403,16 @@ const EmissionDataSection = ({
           edit={!!selectedActivityValue}
           targetActivityValue={selectedActivityValue as ActivityValue}
           resetSelectedActivityValue={() => setSelectedActivityValue(undefined)}
+          setAddActivityDialogOpen={setAddActivityDataDialogOpen}
         />
         <ChangeMethodology
           t={t}
           onClose={onChangeMethodologyClose}
-          isOpen={isChangeMethodologyModalOpen}
+          isOpen={openChangeMethodology}
           onChangeClicked={changeMethodologyFunc}
           gpcReferenceNumber={refNumberWithScope}
           inventoryId={inventoryId}
+          setChangeMethodology={setOpenChangeMethodology}
         />
         <DeleteAllActivitiesModal
           t={t}

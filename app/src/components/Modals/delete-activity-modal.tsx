@@ -2,26 +2,24 @@
 
 import { ActivityValue } from "@/models/ActivityValue";
 import { useDeleteActivityValueMutation } from "@/services/api";
-import {
-  Modal,
-  Button,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalHeader,
-  ModalOverlay,
-  Text,
-  Box,
-  Badge,
-  ModalFooter,
-  useToast,
-} from "@chakra-ui/react";
+import { Text, Box, Badge, DialogTitle, Icon } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import React, { FC } from "react";
 import { Trans } from "react-i18next";
-import { CheckCircleIcon } from "@chakra-ui/icons";
 
 import { FiTrash2 } from "react-icons/fi";
+import {
+  DialogBackdrop,
+  DialogBody,
+  DialogCloseTrigger,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogRoot,
+} from "../ui/dialog";
+import { Button } from "../ui/button";
+import { MdCheckCircle } from "react-icons/md";
+import { toaster } from "../ui/toaster";
 
 interface DeleteAllActivitiesModalProps {
   isOpen: boolean;
@@ -40,7 +38,6 @@ const DeleteActivityModal: FC<DeleteAllActivitiesModalProps> = ({
   resetSelectedActivityValue,
   inventoryId,
 }) => {
-  const toast = useToast();
   const [deleteActivityValue, { isLoading }] = useDeleteActivityValueMutation();
 
   // define the function to delete all activities
@@ -52,7 +49,7 @@ const DeleteActivityModal: FC<DeleteAllActivitiesModalProps> = ({
     });
     if (response.data?.success) {
       // TODO create toast wrapper for success state
-      toast({
+      toaster.create({
         status: "success",
         title: t("delete-activity-success"),
         render: ({ title }) => (
@@ -67,7 +64,7 @@ const DeleteActivityModal: FC<DeleteAllActivitiesModalProps> = ({
             gap="8px"
             px="16px"
           >
-            <CheckCircleIcon />
+            <Icon as={MdCheckCircle} />
             <Text>{title}</Text>
           </Box>
         ),
@@ -75,7 +72,7 @@ const DeleteActivityModal: FC<DeleteAllActivitiesModalProps> = ({
       onClose();
       resetSelectedActivityValue();
     } else {
-      toast({
+      toaster.create({
         status: "error",
         title: t("delete-activity-failed"),
       });
@@ -83,7 +80,7 @@ const DeleteActivityModal: FC<DeleteAllActivitiesModalProps> = ({
   };
   return (
     <>
-      <Modal
+      <DialogRoot
         blockScrollOnMount={false}
         isOpen={isOpen}
         onClose={() => {
@@ -91,9 +88,9 @@ const DeleteActivityModal: FC<DeleteAllActivitiesModalProps> = ({
           resetSelectedActivityValue();
         }}
       >
-        <ModalOverlay />
-        <ModalContent minH="388px" minW="568px" marginTop="10%">
-          <ModalHeader
+        <DialogBackdrop />
+        <DialogContent minH="388px" minW="568px" marginTop="10%">
+          <DialogHeader
             display="flex"
             data-testid="delete-activity-modal-header"
             justifyContent="center"
@@ -106,10 +103,10 @@ const DeleteActivityModal: FC<DeleteAllActivitiesModalProps> = ({
             borderStyle="solid"
             borderColor="border.neutral"
           >
-            {t("delete-activity")}
-          </ModalHeader>
-          <ModalCloseButton marginTop="10px" />
-          <ModalBody paddingTop="24px">
+            <DialogTitle>{t("delete-activity")}</DialogTitle>
+          </DialogHeader>
+          <DialogCloseTrigger />
+          <DialogBody paddingTop="24px">
             <Box
               display="flex"
               flexDirection="column"
@@ -153,8 +150,8 @@ const DeleteActivityModal: FC<DeleteAllActivitiesModalProps> = ({
                 </Text>
               </Box>
             </Box>
-          </ModalBody>
-          <ModalFooter
+          </DialogBody>
+          <DialogFooter
             borderTopWidth="1px"
             borderStyle="solid"
             borderColor="border.neutral"
@@ -170,7 +167,7 @@ const DeleteActivityModal: FC<DeleteAllActivitiesModalProps> = ({
               background="sentiment.negativeDefault"
               paddingTop="16px"
               data-testid="delete-activity-modal-confirm"
-              isLoading={isLoading}
+              loading={isLoading}
               onClick={handleDeleteActivity}
               paddingBottom="16px"
               px="24px"
@@ -184,9 +181,9 @@ const DeleteActivityModal: FC<DeleteAllActivitiesModalProps> = ({
             >
               {t("delete-activity")}
             </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+          </DialogFooter>
+        </DialogContent>
+      </DialogRoot>
     </>
   );
 };

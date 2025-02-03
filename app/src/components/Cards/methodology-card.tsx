@@ -1,8 +1,10 @@
-import { Badge, Box, Card, Radio, Text, useToast } from "@chakra-ui/react";
+import { Badge, Box, Card, Icon, Text } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import React, { FC, useState } from "react";
 import type { Methodology } from "@/util/form-schema";
-import { InfoIcon } from "@chakra-ui/icons";
+import { toaster } from "../ui/toaster";
+import { MdInfo } from "react-icons/md";
+import { Radio, RadioGroup } from "../ui/radio";
 
 interface MethodologyCardProps {
   id: string;
@@ -30,11 +32,9 @@ const MethodologyCard: FC<MethodologyCardProps> = ({
     });
   };
 
-  const toast = useToast();
-
   const handleCardClick = () => {
     if (disabled) {
-      toast({
+      toaster.create({
         status: "error",
         title: t("selected-methodology-disabled"),
         render: ({ title }) => (
@@ -49,7 +49,7 @@ const MethodologyCard: FC<MethodologyCardProps> = ({
             gap="8px"
             px="16px"
           >
-            <InfoIcon />
+            <Icon as={MdInfo} />
             <Text>{title}</Text>
           </Box>
         ),
@@ -67,7 +67,7 @@ const MethodologyCard: FC<MethodologyCardProps> = ({
   };
   const isMethodologyDisabled = disabled;
   return (
-    <Card
+    <Card.Root
       data-testid="methodology-card"
       borderWidth="1px"
       borderRadius="8px"
@@ -87,11 +87,14 @@ const MethodologyCard: FC<MethodologyCardProps> = ({
       backgroundColor={isSelected ? "gray.200" : "white"}
     >
       <Box w="full" display="flex" justifyContent="space-between">
-        <Radio
-          disabled={isMethodologyDisabled}
-          isChecked={isSelected}
-          onChange={handleRadioChange}
-        />{" "}
+        <RadioGroup>
+          {" "}
+          <Radio
+            disabled={isMethodologyDisabled}
+            isChecked={isSelected}
+            onChange={handleRadioChange}
+          />{" "}
+        </RadioGroup>
         {isMethodologyDisabled ? (
           <Badge
             borderWidth="1px"
@@ -99,7 +102,7 @@ const MethodologyCard: FC<MethodologyCardProps> = ({
             py="4px"
             px="8px"
             borderRadius="full"
-            textColor={"content.secondary"}
+            color={"content.secondary"}
             fontSize="body.sm"
             bg="base.light"
           >
@@ -155,7 +158,7 @@ const MethodologyCard: FC<MethodologyCardProps> = ({
           </li>
         ))}
       </Box>
-    </Card>
+    </Card.Root>
   );
 };
 

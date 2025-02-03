@@ -7,6 +7,8 @@ import {
   DataAlertIcon,
   DataCheckIcon,
   ExcelFileIcon,
+  MissingDataIcon,
+  NoDatasourcesIcon,
   WorldSearchIcon,
 } from "@/components/icons";
 import {
@@ -24,21 +26,11 @@ import {
   nameToI18NKey,
 } from "@/util/helpers";
 import type { DataSourceResponse, SectorProgress } from "@/util/types";
-import {
-  ArrowBackIcon,
-  ChevronRightIcon,
-  SearchIcon,
-  WarningIcon,
-} from "@chakra-ui/icons";
+
 import {
   Box,
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  Button,
   Card,
   Center,
-  CircularProgress,
   Flex,
   Heading,
   HStack,
@@ -48,13 +40,10 @@ import {
   SimpleGrid,
   Spinner,
   Stack,
-  Tag,
   TagLabel,
-  TagLeftIcon,
   Text,
   useDisclosure,
   useSteps,
-  useToast,
 } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import { useRouter } from "next/navigation";
@@ -63,13 +52,17 @@ import { Trans } from "react-i18next/TransWithoutContext";
 import { FiTarget, FiTrash2 } from "react-icons/fi";
 import {
   MdAdd,
+  MdArrowBack,
   MdArrowDropDown,
   MdArrowDropUp,
   MdCheckCircle,
+  MdChevronRight,
   MdHomeWork,
   MdOutlineCheckCircle,
   MdOutlineEdit,
   MdRefresh,
+  MdSearch,
+  MdWarning,
 } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
 import { SourceDrawer } from "./SourceDrawer";
@@ -79,11 +72,24 @@ import type {
   SubSectorWithRelations,
 } from "./types";
 
-import AddFileDataModal from "@/components/Modals/add-file-data-modal";
 import { InventoryValueAttributes } from "@/models/InventoryValue";
 import { motion } from "framer-motion";
 import { getTranslationFromDict } from "@/i18n";
 import { getScopesForInventoryAndSector, SECTORS } from "@/util/constants";
+import { Button } from "@/components/ui/button";
+import { toaster } from "@/components/ui/toaster";
+import {
+  BreadcrumbCurrentLink,
+  BreadcrumbLink,
+  BreadcrumbRoot,
+} from "@/components/ui/breadcrumb";
+import { Tag } from "@/components/ui/tag";
+import {
+  ProgressCircleRing,
+  ProgressCircleRoot,
+} from "@/components/ui/progress-circle";
+import { TbWorldSearch } from "react-icons/tb";
+import AddFileDataDialog from "@/components/Modals/add-file-data-dialog";
 
 function getMailURI(locode?: string, sector?: string, year?: number): string {
   const emails =
@@ -112,19 +118,18 @@ function SearchDataSourcesPrompt({
   return (
     <Flex align="center" direction="column">
       <Icon
-        as={WorldSearchIcon}
+        as={TbWorldSearch}
         boxSize={20}
         color="interactive.secondary"
         borderRadius="full"
-        p={4}
+        p={3}
         bgColor="background.neutral"
         mb={6}
       />
       <Button
         variant="solid"
-        leftIcon={<SearchIcon boxSize={6} />}
-        isLoading={isSearching}
-        isDisabled={isDisabled}
+        loading={isSearching}
+        disabled={isDisabled}
         loadingText={t("searching")}
         onClick={onSearchClicked}
         mb={2}
@@ -132,9 +137,10 @@ function SearchDataSourcesPrompt({
         h={16}
         py={4}
       >
+        <Icon as={MdSearch} boxSize={6} />
         {t("search-available-datasets")}
       </Button>
-      <Text color="content.tertiary" align="center" size="sm" variant="spaced">
+      <Text color="content.tertiary" textAlign="center" fontSize="sm">
         {t("wait-for-search")}
       </Text>
     </Flex>
@@ -154,15 +160,13 @@ function NoDataSourcesMessage({
 }) {
   return (
     <Flex align="center" direction="column">
-      <Icon
-        as={WorldSearchIcon}
-        boxSize={20}
-        color="interactive.secondary"
-        borderRadius="full"
-        p={4}
-        bgColor="background.neutral"
-        mb={6}
-      />
+      <Box borderRadius="full" p={4} bgColor="background.neutral" mb={6}>
+        <Icon
+          as={NoDatasourcesIcon}
+          boxSize={20}
+          color="interactive.secondary"
+        />
+      </Box>
       <Heading
         size="lg"
         color="interactive.secondary"
@@ -171,10 +175,15 @@ function NoDataSourcesMessage({
       >
         {t("no-data-sources")}
       </Heading>
-      <Text color="content.tertiary" align="center" size="sm">
+      <Text color="content.tertiary" textAlign="center" fontSize="sm">
         <Trans t={t} i18nKey="no-data-sources-description">
           I<br />I
-          <Link href={getMailURI(locode, sector, year)} className="underline">
+          <Link
+            href={getMailURI(locode, sector, year)}
+            className="underline"
+            color="content.link"
+            fontWeight="bold"
+          >
             please report this
           </Link>
           I
@@ -191,7 +200,7 @@ export default function AddDataSteps({
 }) {
   const { t } = useTranslation(lng, "data");
   const router = useRouter();
-  const toast = useToast();
+  // const toast = useToast();
 
   const { data: userInfo, isLoading: isUserInfoLoading } =
     api.useGetUserInfoQuery();
@@ -266,11 +275,13 @@ export default function AddDataSteps({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inventoryProgress]);
 
-  const { activeStep, goToNext, setActiveStep } = useSteps({
-    index: Number(step) - 1,
+  const { value: activeStep, goToNextStep: goToNext } = useSteps({
+    defaultStep: Number(step) - 1,
     count: steps.length,
   });
+
   const currentStep = steps[activeStep];
+
   useEffect(() => {
     // change step param in URL without reloading
     const newPath = location.pathname.replace(
@@ -305,7 +316,7 @@ export default function AddDataSteps({
     useState<DataSourceWithRelations>();
   const [selectedSourceData, setSelectedSourceData] = useState<any>();
   const {
-    isOpen: isSourceDrawerOpen,
+    open: isSourceDrawerOpen,
     onClose: onSourceDrawerClose,
     onOpen: onSourceDrawerOpen,
   } = useDisclosure();
@@ -316,10 +327,10 @@ export default function AddDataSteps({
   };
 
   const showError = (title: string, description: string) => {
-    toast({
+    toaster.create({
       title,
       description,
-      status: "error",
+      type: "error",
       isClosable: true,
     });
   };
@@ -366,7 +377,7 @@ export default function AddDataSteps({
       }
     } catch (error: any) {
       console.error("Failed to connect data source", source, error);
-      toast({
+      toaster.create({
         title: t("data-source-connect-failed"),
         description: error.data?.error?.message,
         status: "error",
@@ -405,7 +416,7 @@ export default function AddDataSteps({
   const [selectedSubsector, setSelectedSubsector] =
     useState<SubSectorWithRelations>();
   const {
-    isOpen: isSubsectorDrawerOpen,
+    open: isSubsectorDrawerOpen,
     onClose: onSubsectorDrawerClose,
     onOpen: onSubsectorDrawerOpen,
   } = useDisclosure();
@@ -450,15 +461,17 @@ export default function AddDataSteps({
 
   // Add file data to rudux state object
   const {
-    isOpen: isfileDataModalOpen,
+    open: isfileDataModalOpen,
     onOpen: onFileDataModalOpen,
     onClose: onfileDataModalClose,
   } = useDisclosure();
 
   const [uploadedFile, setUploadedFile] = useState<File>();
 
+  const [openFileUploadDialog, setOpenFileUploadDialog] = useState(false);
+
   const handleFileSelect = async (file: File) => {
-    onFileDataModalOpen();
+    setOpenFileUploadDialog((v) => !v);
   };
 
   const sectorData = getInventoryData.sectors.filter(
@@ -474,14 +487,14 @@ export default function AddDataSteps({
   ) {
     deleteUserFile({ fileId, cityId }).then((res: any) => {
       if (res.error) {
-        toast({
+        toaster.create({
           title: t("file-deletion-error"),
           description: t("file-deletion-error-description"),
           status: "error",
           duration: 2000,
         });
       } else {
-        toast({
+        toaster.create({
           title: t("file-deletion-success"),
           description: t("file-deletion-success"),
           status: "success",
@@ -619,49 +632,53 @@ export default function AddDataSteps({
             className={` ${isExpanded ? "hidden" : "flex"} transition-all duration-50 ease-linear`}
           >
             <Button
-              variant="ghost"
+              variant="ghostLight"
               fontSize="14px"
-              leftIcon={<ArrowBackIcon boxSize={6} />}
+              color="content.link"
+              fontWeight="bold"
               onClick={() => router.push(`/${inventory}/data`)}
             >
+              <Icon as={MdArrowBack} boxSize={6} />
               {t("go-back")}
             </Button>
             <Box borderRightWidth="1px" borderColor="border.neutral" h="24px" />
             <Box>
-              <Breadcrumb
-                spacing="8px"
+              <BreadcrumbRoot
+                gap="8px"
                 fontFamily="heading"
                 fontWeight="bold"
                 letterSpacing="widest"
                 fontSize="14px"
                 textTransform="uppercase"
-                separator={<ChevronRightIcon color="gray.500" h="24px" />}
+                separator={
+                  <Icon as={MdChevronRight} color="gray.500" h="24px" />
+                }
               >
-                <BreadcrumbItem>
-                  <BreadcrumbLink
-                    href={`/${inventory}/data`}
-                    color="content.tertiary"
-                  >
-                    {t("all-sectors")}
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
+                <BreadcrumbLink
+                  href={`/${inventory}/data`}
+                  color="content.tertiary"
+                >
+                  {t("all-sectors")}
+                </BreadcrumbLink>
 
-                <BreadcrumbItem>
-                  <BreadcrumbLink href="#" color="content.link">
-                    {t(kebab(currentStep.name))}
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-              </Breadcrumb>
+                <BreadcrumbCurrentLink
+                  color="content.link"
+                  textDecoration="underline"
+                >
+                  {t(kebab(currentStep.name || ""))}
+                </BreadcrumbCurrentLink>
+              </BreadcrumbRoot>
             </Box>
           </Box>
           {/*** Sector summary section ***/}
-          <Card
+          <Card.Root
             mb={12}
             shadow="none"
             bg="none"
             gap="16px"
             flexDir="row"
             w="full"
+            border="none"
             px={0}
           >
             {scrollPosition <= 0 ? (
@@ -670,7 +687,7 @@ export default function AddDataSteps({
               <Box>
                 <Link href="#">
                   <Icon
-                    as={ArrowBackIcon}
+                    as={MdArrowBack}
                     h="24px"
                     w="24px"
                     mt="24px"
@@ -729,31 +746,34 @@ export default function AddDataSteps({
                 </Flex>
                 {scrollPosition <= 0 ? (
                   <>
-                    <Tag mr={4}>
-                      <TagLeftIcon
-                        as={CircleIcon}
-                        boxSize={6}
-                        color="interactive.quaternary"
-                      />
-                      <TagLabel>
-                        {t("data-connected-percent", {
-                          progress: formatPercentage(
-                            currentStep.connectedProgress,
-                          ),
-                        })}
-                      </TagLabel>
+                    <Tag
+                      mr={4}
+                      startElement={
+                        <Icon
+                          as={CircleIcon}
+                          boxSize={6}
+                          color="interactive.quaternary"
+                        />
+                      }
+                    >
+                      {t("data-connected-percent", {
+                        progress: formatPercentage(
+                          currentStep.connectedProgress,
+                        ),
+                      })}
                     </Tag>
-                    <Tag>
-                      <TagLeftIcon
-                        as={CircleIcon}
-                        boxSize={6}
-                        color="interactive.tertiary"
-                      />
-                      <TagLabel>
-                        {t("data-added-percent", {
-                          progress: formatPercentage(currentStep.addedProgress),
-                        })}
-                      </TagLabel>
+                    <Tag
+                      startElement={
+                        <Icon
+                          as={CircleIcon}
+                          boxSize={6}
+                          color="interactive.tertiary"
+                        />
+                      }
+                    >
+                      {t("data-added-percent", {
+                        progress: formatPercentage(currentStep.addedProgress),
+                      })}
                     </Tag>
                   </>
                 ) : (
@@ -761,13 +781,13 @@ export default function AddDataSteps({
                 )}
               </div>
             </Flex>
-          </Card>
+          </Card.Root>
         </div>
       </Box>
-      <div className="pt-16 pb-16 w-[1090px] max-w-full mx-auto px-4">
+      <div className="pt-[48px] pb-16 w-[1090px] max-w-full mx-auto px-4">
         {/*** Manual data entry section for subsectors ***/}
-        <Card mb={12} mt="350px" shadow="none">
-          <Heading size="lg" mb={2}>
+        <Card.Root mb={24} mt="350px" shadow="none" border="none">
+          <Heading fontSize="title.lg" mb={2}>
             {t("add-data-heading")}
           </Heading>
           <Text color="content.tertiary" mb={12}>
@@ -776,23 +796,24 @@ export default function AddDataSteps({
           <Heading size="sm" mb={4}>
             {t("select-subsector")}
           </Heading>
-          <SimpleGrid minChildWidth="250px" spacing={4}>
+          <SimpleGrid minChildWidth="337px" gap={4}>
             {isInventoryLoading || !currentStep.subSectors ? (
               <Center>
                 <Spinner size="lg" />
               </Center>
             ) : inventoryProgressError ? (
               <Center>
-                <WarningIcon boxSize={8} color="semantic.danger" />
+                <Icon as={MdWarning} boxSize={8} color="semantic.danger" />
               </Center>
             ) : (
               currentStep.subSectors.map(
                 (subSector: SubSectorWithRelations) => (
-                  <Card
+                  <Card.Root
                     data-testid="subsector-card"
                     maxHeight="120px"
-                    height="120px"
                     w="full"
+                    height="100px"
+                    px={4}
                     className="shadow-none border border-overlay hover:drop-shadow-xl !duration-300 transition-shadow"
                     onClick={() => {
                       router.push(
@@ -808,8 +829,7 @@ export default function AddDataSteps({
                     >
                       {subSector.completedCount > 0 &&
                       subSector.completedCount < subSector.totalCount ? (
-                        <CircularProgress
-                          size="36px"
+                        <ProgressCircleRoot
                           thickness="12px"
                           mr="4"
                           color="interactive.secondary"
@@ -818,15 +838,17 @@ export default function AddDataSteps({
                             (subSector.completedCount / subSector.totalCount) *
                             100
                           }
-                        />
+                        >
+                          <ProgressCircleRing />
+                        </ProgressCircleRoot>
                       ) : (
                         <Icon
                           as={
                             subSector.completed
                               ? MdOutlineCheckCircle
-                              : DataAlertIcon
+                              : MissingDataIcon
                           }
-                          boxSize={9}
+                          boxSize={10}
                           color={
                             subSector.completed
                               ? "interactive.tertiary"
@@ -836,9 +858,10 @@ export default function AddDataSteps({
                       )}
                       <Stack w="full">
                         <Heading
-                          size="xs"
-                          noOfLines={2}
+                          fontSize="label.lg"
                           maxWidth="200px"
+                          lineClamp="2"
+                          lineHeight="20px"
                           title={t(nameToI18NKey(subSector.subsectorName!))}
                         >
                           {t(nameToI18NKey(subSector.subsectorName!))}
@@ -850,24 +873,35 @@ export default function AddDataSteps({
                         )}
                       </Stack>
                       <IconButton
-                        aria-label={t("edit-subsector")}
-                        variant="solidIcon"
-                        icon={
-                          <Icon
-                            as={subSector.completed ? MdOutlineEdit : MdAdd}
-                            boxSize={6}
-                          />
+                        color={
+                          subSector.completed
+                            ? "interactive.tertiary"
+                            : "content.link"
                         }
-                      />
+                        aria-label={
+                          subSector.completed
+                            ? t("edit-subsector")
+                            : t("add-subsector-data")
+                        }
+                        _hover={{
+                          color: "base.light",
+                        }}
+                        variant="solidIcon"
+                      >
+                        <Icon
+                          as={subSector.completed ? MdOutlineEdit : MdAdd}
+                          boxSize={6}
+                        />
+                      </IconButton>
                     </HStack>
-                  </Card>
+                  </Card.Root>
                 ),
               )
             )}
           </SimpleGrid>
-        </Card>
+        </Card.Root>
         {/*** Third party data source section ***/}
-        <Card mb={12} shadow="none">
+        <Card.Root mb={24} shadow="none" border="none">
           <Flex
             align="center"
             verticalAlign="center"
@@ -875,24 +909,23 @@ export default function AddDataSteps({
             mb={12}
           >
             <Stack>
-              <Heading size="lg" mb={2}>
+              <Heading fontSize="title.lg" mb={2}>
                 {t("check-data-heading")}
               </Heading>
-              <Text color="content.tertiary" variant="spaced">
-                {t("check-data-details")}
-              </Text>
+              <Text color="content.tertiary">{t("check-data-details")}</Text>
             </Stack>
             {dataSources && (
               <IconButton
                 variant="solidIcon"
-                icon={<Icon as={MdRefresh} boxSize={9} />}
                 aria-label="Refresh"
                 size="lg"
                 h={16}
                 w={16}
                 isLoading={areDataSourcesFetching}
                 onClick={onSearchDataSourcesClicked}
-              />
+              >
+                <Icon as={MdRefresh} boxSize={9} />
+              </IconButton>
             )}
           </Flex>
           {!dataSources ? (
@@ -903,7 +936,7 @@ export default function AddDataSteps({
             />
           ) : dataSourcesError ? (
             <Center>
-              <WarningIcon boxSize={8} color="semantic.danger" />
+              <Icon as={MdWarning} boxSize={8} color="semantic.danger" />
             </Center>
           ) : dataSources && dataSources?.length === 0 ? (
             <NoDataSourcesMessage
@@ -913,7 +946,7 @@ export default function AddDataSteps({
               year={year}
             />
           ) : (
-            <SimpleGrid columns={3} spacing={4}>
+            <SimpleGrid columns={3} gap={4}>
               {dataSources
                 .slice(0, isDataSectionExpanded ? dataSources.length : 6)
                 .map(({ source, data }) => {
@@ -924,7 +957,7 @@ export default function AddDataSteps({
                   );
 
                   return (
-                    <Card
+                    <Card.Root
                       key={source.datasourceId}
                       variant="outline"
                       borderColor={
@@ -938,28 +971,34 @@ export default function AddDataSteps({
                     >
                       {/* TODO add icon to DataSource */}
                       <Icon as={MdHomeWork} boxSize={9} mb={6} />
-                      <Heading size="sm" noOfLines={2} minHeight={10}>
+                      <Heading size="sm" lineClamp={2} minHeight={10}>
                         {getTranslationFromDict(source.datasetName)}
                       </Heading>
                       <Flex direction="row" my={4} wrap="wrap" gap={2}>
-                        <Tag>
-                          <TagLeftIcon
-                            as={DataCheckIcon}
-                            boxSize={5}
-                            color="content.tertiary"
-                          />
+                        <Tag
+                          startElement={
+                            <Icon
+                              as={DataCheckIcon}
+                              boxSize={5}
+                              color="content.tertiary"
+                            />
+                          }
+                        >
                           <TagLabel fontSize={11}>
                             {t("data-quality")}:{" "}
                             {t("quality-" + source.dataQuality)}
                           </TagLabel>
                         </Tag>
                         {source.subCategory?.scope && (
-                          <Tag>
-                            <TagLeftIcon
-                              as={FiTarget}
-                              boxSize={4}
-                              color="content.tertiary"
-                            />
+                          <Tag
+                            startElement={
+                              <Icon
+                                as={FiTarget}
+                                boxSize={4}
+                                color="content.tertiary"
+                              />
+                            }
+                          >
                             <TagLabel fontSize={11}>
                               {t("scope")}: {source.subCategory.scope.scopeName}
                             </TagLabel>
@@ -968,7 +1007,7 @@ export default function AddDataSteps({
                       </Flex>
                       <Text
                         color="content.tertiary"
-                        noOfLines={5}
+                        lineClamp={5}
                         minHeight={120}
                       >
                         {getTranslationFromDict(source.datasetDescription) ||
@@ -1004,7 +1043,7 @@ export default function AddDataSteps({
                           variant="outline"
                           bgColor="background.neutral"
                           onClick={() => onConnectClick(source)}
-                          isLoading={
+                          loading={
                             isConnectDataSourceLoading &&
                             source.datasourceId === connectingDataSourceId
                           }
@@ -1012,7 +1051,7 @@ export default function AddDataSteps({
                           {t("connect-data")}
                         </Button>
                       )}
-                    </Card>
+                    </Card.Root>
                   );
                 })}
             </SimpleGrid>
@@ -1024,20 +1063,18 @@ export default function AddDataSteps({
               onClick={() => setDataSectionExpanded(!isDataSectionExpanded)}
               mt={8}
               fontWeight="normal"
-              rightIcon={
-                <Icon
-                  boxSize={6}
-                  as={isDataSectionExpanded ? MdArrowDropUp : MdArrowDropDown}
-                />
-              }
             >
               {t(isDataSectionExpanded ? "less-datasets" : "more-datasets")}
+              <Icon
+                boxSize={6}
+                as={isDataSectionExpanded ? MdArrowDropUp : MdArrowDropDown}
+              />
             </Button>
           )}
-        </Card>
+        </Card.Root>
         {/* Upload own data section */}
-        <Card mb={48} shadow="none">
-          <Heading size="lg" mb={2}>
+        <Card.Root mb={24} shadow="none" border="none">
+          <Heading fontSize="title.lg" mb={2}>
             {t("upload-your-data-heading")}
           </Heading>
           <Text color="content.tertiary" mb={12}>
@@ -1065,7 +1102,7 @@ export default function AddDataSteps({
                     sectorData[0]?.files.map(
                       (file: InventoryUserFileAttributes, i: number) => {
                         return (
-                          <Card
+                          <Card.Root
                             shadow="none"
                             minH="120px"
                             w="full"
@@ -1090,7 +1127,7 @@ export default function AddDataSteps({
                                   fontSize="lable.lg"
                                   fontWeight="normal"
                                   letterSpacing="wide"
-                                  isTruncated
+                                  truncate
                                 >
                                   {file.fileName}
                                 </Heading>
@@ -1110,7 +1147,7 @@ export default function AddDataSteps({
                                 w="full"
                               >
                                 <Button
-                                  variant="ghost"
+                                  variant="ghostLight"
                                   color="sentiment.negativeDefault"
                                   onClick={() =>
                                     removeSectorFile(
@@ -1131,7 +1168,6 @@ export default function AddDataSteps({
                                   mt={2}
                                   mr={2}
                                   size="md"
-                                  borderRadius="full"
                                   variant="solid"
                                   color="content.alternative"
                                   bg="background.neutral"
@@ -1141,7 +1177,7 @@ export default function AddDataSteps({
                                 </Tag>
                               ))}
                             </Box>
-                          </Card>
+                          </Card.Root>
                         );
                       },
                     )}
@@ -1149,12 +1185,13 @@ export default function AddDataSteps({
               </Box>
             </Box>
           </Box>
-        </Card>
+        </Card.Root>
         {/* Add fole data modal */}
-        <AddFileDataModal
-          isOpen={isfileDataModalOpen}
+        <AddFileDataDialog
+          isOpen={openFileUploadDialog}
           onClose={onfileDataModalClose}
           subsectors={currentStep.subSectors}
+          onOpenChange={setOpenFileUploadDialog}
           t={t}
           uploadedFile={uploadedFile!}
           currentStep={currentStep}

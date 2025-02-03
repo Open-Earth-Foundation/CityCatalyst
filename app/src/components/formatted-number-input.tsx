@@ -1,13 +1,12 @@
 import React from "react";
 import { Control, Controller, useWatch } from "react-hook-form";
+import { Group, InputAddon, NumberInput } from "@chakra-ui/react";
+import { useParams } from "next/navigation";
 import {
-  InputGroup,
-  InputRightAddon,
-  NumberInput,
   NumberInputField,
   NumberInputProps,
-} from "@chakra-ui/react";
-import { useParams } from "next/navigation";
+  NumberInputRoot,
+} from "./ui/number-input";
 
 interface FormattedNumberInputProps extends NumberInputProps {
   control: Control<any, any>;
@@ -22,6 +21,8 @@ interface FormattedNumberInputProps extends NumberInputProps {
   miniAddon?: boolean;
   testId?: string;
   t: Function;
+  max?: number;
+  min?: number;
 }
 
 function FormattedNumberInput({
@@ -94,15 +95,26 @@ function FormattedNumberInput({
         },
       }}
       render={({ field }) => (
-        <InputGroup>
-          <NumberInput
+        <Group>
+          <NumberInputRoot
             isDisabled={isDisabled}
             value={format(field.value)}
-            onChange={(valueAsString) => {
-              const parsedValue = parse(valueAsString);
+            placeholder={placeholder}
+            shadow="1dp"
+            w="full"
+            borderRightRadius={children ? 0 : "md"} // Adjust border radius
+            bgColor={isDisabled ? "background.neutral" : "base.light"}
+            pos="relative"
+            zIndex={3}
+            type="text"
+            min={min}
+            max={max}
+            onValueChange={(valueAsString: any) => {
+              console.log("valueAsString", valueAsString);
+              const parsedValue = parse(valueAsString.value);
               field.onChange(parsedValue);
             }}
-            onBlur={(e) => {
+            onBlur={(e: any) => {
               e.preventDefault();
               const parsedValue = parse(e.target.value);
               field.onChange(parseFloat(parsedValue));
@@ -110,25 +122,15 @@ function FormattedNumberInput({
             {...rest}
           >
             <NumberInputField
-              min={min}
-              max={max}
               data-testId={testId}
-              placeholder={placeholder}
-              h="48px"
-              type="text" // Use text type to allow formatted input
-              shadow="1dp"
-              pr="12px"
-              borderRightRadius={children ? 0 : "md"} // Adjust border radius
-              bgColor={isDisabled ? "background.neutral" : "base.light"}
-              pos="relative"
-              zIndex={3}
+              // Use text type to allow formatted input
             />
-          </NumberInput>
+          </NumberInputRoot>
           {children && (
-            <InputRightAddon
+            <InputAddon
               bgColor={isDisabled ? "background.neutral" : "base.light"}
               color="content.tertiary"
-              h="48px"
+              h="full"
               fontSize="14px"
               shadow="1dp"
               pos="relative"
@@ -139,9 +141,9 @@ function FormattedNumberInput({
               overflowX={miniAddon ? "hidden" : "visible"}
             >
               {children}
-            </InputRightAddon>
+            </InputAddon>
           )}
-        </InputGroup>
+        </Group>
       )}
     />
   );

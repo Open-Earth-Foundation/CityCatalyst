@@ -1,22 +1,10 @@
 "use client";
 
 import { api, useUpdateActivityValueMutation } from "@/services/api";
-import {
-  Box,
-  Button,
-  Modal,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
-  Text,
-  useToast,
-} from "@chakra-ui/react";
+import { Box, Button, Text } from "@chakra-ui/react";
 import { FC } from "react";
 import { SubmitHandler } from "react-hook-form";
 import { TFunction } from "i18next";
-import { CheckCircleIcon } from "@chakra-ui/icons";
 import { getInputMethodology } from "@/util/helpers";
 import type { SuggestedActivity } from "@/util/form-schema";
 import ActivityModalBody, { Inputs } from "./activity-modal-body";
@@ -28,6 +16,16 @@ import useActivityForm, {
 } from "@/hooks/activity-value-form/use-activity-form";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import useEmissionFactors from "@/hooks/activity-value-form/use-emission-factors";
+import { toaster } from "@/components/ui/toaster";
+import {
+  DialogBackdrop,
+  DialogCloseTrigger,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogRoot,
+} from "@/components/ui/dialog";
+import { MdCheckCircle } from "react-icons/md";
 
 interface AddActivityModalProps {
   isOpen: boolean;
@@ -44,6 +42,7 @@ interface AddActivityModalProps {
   targetActivityValue?: ActivityValue;
   inventoryValue?: InventoryValue | null;
   resetSelectedActivityValue: () => void;
+  setAddActivityDialogOpen: Function;
 }
 
 const AddActivityModal: FC<AddActivityModalProps> = ({
@@ -60,6 +59,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
   referenceNumber,
   targetActivityValue,
   resetSelectedActivityValue,
+  setAddActivityDialogOpen,
 }) => {
   const {
     fields,
@@ -105,8 +105,6 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
   const submit = () => {
     handleSubmit(onSubmit)();
   };
-
-  const toast = useToast();
 
   const [createActivityValue, { isLoading }] =
     api.useCreateActivityValueMutation();
@@ -229,7 +227,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
 
     if (response.data) {
       setHasActivityData(!hasActivityData);
-      toast({
+      toaster.create({
         status: "success",
         duration: 1200,
         title: t("activity-value-success"),
@@ -245,7 +243,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
             gap="8px"
             px="16px"
           >
-            <CheckCircleIcon />
+            <Icon as={MdCheckCircle} />
             <Text>{title}</Text>
           </Box>
         ),
@@ -260,7 +258,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
         handleManalInputValidationError(errorData.error.issues);
       } else {
         const error = response.error as FetchBaseQueryError;
-        toast({
+        toaster.create({
           status: "error",
           title: errorData.error?.message || t("activity-value-error"),
         });
@@ -282,19 +280,19 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
 
   return (
     <>
-      <Modal
+      <DialogRoot
         blockScrollOnMount={false}
-        isOpen={isOpen}
-        onClose={closeModalFunc}
+        open={isOpen}
+        onOpenChange={(e: any) => setAddActivityDialogOpen(e.open)}
       >
-        <ModalOverlay />
-        <ModalContent
+        <DialogBackdrop />
+        <DialogContent
           data-testid="add-emission-modal"
           minH="300px"
           minW="768px"
           marginTop="2%"
         >
-          <ModalHeader
+          <DialogHeader
             display="flex"
             justifyContent="center"
             fontWeight="semibold"
@@ -307,8 +305,8 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
             borderColor="border.neutral"
           >
             {edit ? t("update-emission-data") : t("add-emission-data")}
-          </ModalHeader>
-          <ModalCloseButton marginTop="10px" />
+          </DialogHeader>
+          <DialogCloseTrigger />
           <ActivityModalBody
             emissionsFactorTypes={emissionsFactorTypes}
             areEmissionFactorsLoading={areEmissionFactorsLoading}
@@ -330,7 +328,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
             clearErrors={clearErrors}
             setValue={setValue}
           />
-          <ModalFooter
+          <DialogFooter
             borderTopWidth="1px"
             borderStyle="solid"
             borderColor="border.neutral"
@@ -352,16 +350,16 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
               fontWeight="semibold"
               fontSize="button.md"
               type="submit"
-              isLoading={isLoading || updateLoading}
+              loading={isLoading || updateLoading}
               onClick={submit}
               p={0}
               m={0}
             >
               {edit ? t("update-emission-data") : t("add-emission-data")}
             </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+          </DialogFooter>
+        </DialogContent>
+      </DialogRoot>
     </>
   );
 };

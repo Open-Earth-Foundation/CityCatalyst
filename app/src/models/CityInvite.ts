@@ -103,6 +103,11 @@ export class CityInvite
           type: DataTypes.STRING(255),
           allowNull: true,
         },
+        lastUpdated: {
+          type: DataTypes.DATE,
+          allowNull: false,
+          field: "last_updated",
+        },
       },
       {
         sequelize,

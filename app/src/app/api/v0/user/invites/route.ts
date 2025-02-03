@@ -12,10 +12,13 @@ import { Op } from "sequelize";
 import { logger } from "@/services/logger";
 import { CityInviteStatus } from "@/util/types";
 
+import { subDays } from "date-fns";
+
 export const GET = apiHandler(async (req, { params, session }) => {
   if (!session) {
     throw new createHttpError.Unauthorized("Not signed in");
   }
+
   const invites = await db.models.CityInvite.findAll({
     where: {
       invitingUserId: session?.user.id,
@@ -35,6 +38,18 @@ export const GET = apiHandler(async (req, { params, session }) => {
       },
     ],
   });
+
+  const now = new Date();
+
+  for (const invite of invites) {
+    if (
+      invite.status === CityInviteStatus.PENDING &&
+      new Date(invite.lastUpdated!) < subDays(now, 30)
+    ) {
+      invite.status = CityInviteStatus.EXPIRED;
+      await invite.save();
+    }
+  }
 
   return NextResponse.json({ data: invites });
 });

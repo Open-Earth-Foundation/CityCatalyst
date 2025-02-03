@@ -135,7 +135,7 @@ const EmissionDataSection = ({
 
   const onEditActivity = (activity: ActivityValue) => {
     setSelectedActivityValue(activity);
-    onAddActivityModalOpen();
+    setAddActivityDataDialogOpen(true);
   };
 
   const renderSuggestedActivities = () => (
@@ -353,7 +353,7 @@ const EmissionDataSection = ({
                     t={t}
                     referenceNumber={refNumberWithScope}
                     activityData={activityValues}
-                    showActivityModal={onAddActivityModalOpen}
+                    showActivityModal={handleActivityAdded}
                     methodologyId={methodology?.id}
                     onDeleteActivity={onDeleteActivity}
                     onEditActivity={onEditActivity}

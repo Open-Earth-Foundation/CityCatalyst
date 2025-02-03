@@ -4470,12 +4470,12 @@
               {
                 "id": "wastewater-inside-domestic-calculator-treatment-status",
                 "options": [
-                  "collection-status-type-wastewater-treated",
-                  "collection-status-type-wastewater-untreated"
+                  "treatment-status-type-wastewater-treated",
+                  "treatment-status-type-wastewater-untreated"
                 ]
               },
               {
-                "id": "wastewater-inside-domestic-calculator-treatment-type",
+                "id": "wastewater-inside-domestic-calculator-treatment-name",
                 "dependsOn": "wastewater-inside-domestic-calculator-treatment-status",
                 "dependentOptions": {
                   "treatment-status-type-wastewater-treated": [
@@ -4490,8 +4490,8 @@
                 }
               },
               {
-                "id": "wastewater-inside-domestic-calculator-treatment-name",
-                "dependsOn": "wastewater-inside-domestic-calculator-treatment-type",
+                "id": "wastewater-inside-domestic-calculator-treatment-type",
+                "dependsOn": "wastewater-inside-domestic-calculator-treatment-name",
                 "dependentOptions": {
                   "treatment-name-septic-system": [
                     "treatment-type-septic-system"
@@ -4504,9 +4504,9 @@
                   ],
                   "treatment-name-other": [
                     "treatment-type-centralized-aerobic-treatment-plan-well-managed",
-                    "treatment-type-anaerobic-digester-for-sludge", 
+                    "treatment-type-anaerobic-digester-for-sludge",
                     "treatment-type-anaerobic-reactor",
-                    "treatment-type-anaerobic-shallow-lagoon", 
+                    "treatment-type-anaerobic-shallow-lagoon",
                     "treatment-type-anaerobic-deep-lagoon"
                   ],
                   "treatment-name-none": [
@@ -4544,6 +4544,7 @@
             "extra-fields": [
               {
                 "id": "wastewater-inside-industrial-calculator-industry-type",
+                "required": true,
                 "options": [
                   "industry-type-alcohol-refining",
                   "industry-type-coffee",
@@ -4603,12 +4604,12 @@
               {
                 "id": "wastewater-inside-industrial-calculator-treatment-status",
                 "options": [
-                  "collection-status-type-wastewater-treated",
-                  "collection-status-type-wastewater-untreated"
+                  "treatment-status-type-wastewater-treated",
+                  "treatment-status-type-wastewater-untreated"
                 ]
               },
               {
-                "id": "wastewater-inside-industrial-calculator-treatment-type",
+                "id": "wastewater-inside-industrial-calculator-treatment-name",
                 "dependsOn": "wastewater-inside-industrial-calculator-treatment-status",
                 "dependentOptions": {
                   "treatment-status-type-wastewater-treated": [
@@ -4623,8 +4624,8 @@
                 }
               },
               {
-                "id": "wastewater-inside-industrial-calculator-treatment-name",
-                "dependsOn": "wastewater-inside-industrial-calculator-treatment-type",
+                "id": "wastewater-inside-industrial-calculator-treatment-type",
+                "dependsOn": "wastewater-inside-industrial-calculator-treatment-name",
                 "dependentOptions": {
                   "treatment-name-septic-system": [
                     "treatment-type-septic-system"
@@ -4637,9 +4638,9 @@
                   ],
                   "treatment-name-other": [
                     "treatment-type-centralized-aerobic-treatment-plan-well-managed",
-                    "treatment-type-anaerobic-digester-for-sludge", 
+                    "treatment-type-anaerobic-digester-for-sludge",
                     "treatment-type-anaerobic-reactor",
-                    "treatment-type-anaerobic-shallow-lagoon", 
+                    "treatment-type-anaerobic-shallow-lagoon",
                     "treatment-type-anaerobic-deep-lagoon"
                   ],
                   "treatment-name-none": [
@@ -4805,9 +4806,9 @@
                   ],
                   "treatment-name-other": [
                     "treatment-type-centralized-aerobic-treatment-plan-well-managed",
-                    "treatment-type-anaerobic-digester-for-sludge", 
+                    "treatment-type-anaerobic-digester-for-sludge",
                     "treatment-type-anaerobic-reactor",
-                    "treatment-type-anaerobic-shallow-lagoon", 
+                    "treatment-type-anaerobic-shallow-lagoon",
                     "treatment-type-anaerobic-deep-lagoon"
                   ],
                   "treatment-name-none": [
@@ -4938,9 +4939,9 @@
                   ],
                   "treatment-name-other": [
                     "treatment-type-centralized-aerobic-treatment-plan-well-managed",
-                    "treatment-type-anaerobic-digester-for-sludge", 
+                    "treatment-type-anaerobic-digester-for-sludge",
                     "treatment-type-anaerobic-reactor",
-                    "treatment-type-anaerobic-shallow-lagoon", 
+                    "treatment-type-anaerobic-shallow-lagoon",
                     "treatment-type-anaerobic-deep-lagoon"
                   ],
                   "treatment-name-none": [

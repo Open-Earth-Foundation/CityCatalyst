@@ -65,7 +65,7 @@ interface MyFilesTabProps {
   userInfo: UserAttributes | any;
   lng: string;
   userFiles: UserFileAttributes[] | any;
-  inventory: InventoryResponse
+  inventory: InventoryResponse;
 }
 
 const MyFilesTab: FC<MyFilesTabProps> = ({
@@ -75,9 +75,8 @@ const MyFilesTab: FC<MyFilesTabProps> = ({
   lng,
   userInfo,
   userFiles,
-  inventory
+  inventory,
 }) => {
-  
   const getYears = userFiles?.map((item: any): number => {
     const date = new Date(item.lastUpdated);
     return date.getFullYear();
@@ -156,43 +155,43 @@ const MyFilesTab: FC<MyFilesTabProps> = ({
               gap="36px"
             >
               <TabList display="flex" flexDirection="column" gap="12px">
-                  <Tab
-                    sx={{
-                      w: "223px",
-                      justifyContent: "left",
-                      h: "52px",
-                      letterSpacing: "wide",
-                      color: "content.secondary",
-                      lineHeight: "20px",
-                      fontStyle: "normal",
-                      fontSize: "label.lg",
-                      fontWeight: "medium",
-                      fontFamily: "heading",
-                    }}
-                    _selected={{
-                      color: "content.link",
-                      fontSize: "label.lg",
-                      fontWeight: "medium",
-                      backgroundColor: "background.neutral",
-                      borderRadius: "8px",
-                      borderWidth: "1px",
-                      borderStyle: "solid",
-                      borderColor: "content.link",
-                    }}
-                  >
-                    {inventory?.city.name}
-                  </Tab>
+                <Tab
+                  sx={{
+                    w: "223px",
+                    justifyContent: "left",
+                    h: "52px",
+                    letterSpacing: "wide",
+                    color: "content.secondary",
+                    lineHeight: "20px",
+                    fontStyle: "normal",
+                    fontSize: "label.lg",
+                    fontWeight: "medium",
+                    fontFamily: "heading",
+                  }}
+                  _selected={{
+                    color: "content.link",
+                    fontSize: "label.lg",
+                    fontWeight: "medium",
+                    backgroundColor: "background.neutral",
+                    borderRadius: "8px",
+                    borderWidth: "1px",
+                    borderStyle: "solid",
+                    borderColor: "content.link",
+                  }}
+                >
+                  {inventory?.city.name}
+                </Tab>
               </TabList>
 
               <TabPanels backgroundColor="background.default">
-                  <TabPanel
-                    display="flex"
-                    flexDirection="column"
-                    gap="24px"
-                    borderRadius="8px"
-                  >
-                    <Box>
-                      <Box display="flex" gap="8px" alignItems="center">
+                <TabPanel
+                  display="flex"
+                  flexDirection="column"
+                  gap="24px"
+                  borderRadius="8px"
+                >
+                  <Box>
+                    <Box display="flex" gap="8px" alignItems="center">
                       <CircleFlag
                         countryCode={
                           inventory?.city.locode
@@ -201,267 +200,234 @@ const MyFilesTab: FC<MyFilesTabProps> = ({
                         }
                         width={32}
                       />
-                        <Text
-                          color="content.secondary"
-                          fontWeight="semibold"
-                          lineHeight="24"
-                          fontSize="title.md"
-                          fontFamily="heading"
-                          fontStyle="normal"
-                        >
-                          {inventory?.city.name}
-                        </Text>
-                      </Box>
-                    </Box>
-                    <Box display="flex">
                       <Text
-                        color="content.tertiary"
-                        fontWeight="bold"
+                        color="content.secondary"
+                        fontWeight="semibold"
                         lineHeight="24"
-                        fontSize="body.lg"
-                        letterSpacing="widest"
-                        marginTop="8px"
-                        textTransform="uppercase"
-                        cursor="pointer"
-                        onClick={() => {
-                          setIsYearSelected(false);
-                          setSelectedYear(null);
-                        }}
+                        fontSize="title.md"
+                        fontFamily="heading"
+                        fontStyle="normal"
                       >
-                        {t("all-inventory-years")}{" "}
-                      </Text>
-                      <Text
-                        color="content.link"
-                        textDecoration="underline"
-                        fontWeight="bold"
-                        lineHeight="24"
-                        fontSize="body.lg"
-                        letterSpacing="widest"
-                        marginTop="8px"
-                        textTransform="uppercase"
-                        cursor="pointer"
-                      >
-                        {isYearSelected && (
-                          <>
-                            <ChevronRightIcon color="content.tertiary" />{" "}
-                            <span>{selectedYear}</span>
-                          </>
-                        )}
+                        {inventory?.city.name}
                       </Text>
                     </Box>
-                    <Box display="flex" flexDirection="column" gap="24px">
-                      {!isYearSelected ? (
-                        <TableContainer
-                          borderWidth="1px"
-                          borderColor="border.overlay"
-                          borderRadius="12px"
-                        >
-                          <Table variant="simple" borderStyle="solid">
-                            <Thead>
-                              <Tr>
-                                <Th>{t("inventory-year")}</Th>
-                                <Th>{t("files")}</Th>
-                                <Th isNumeric>{t("last-updated")}</Th>
+                  </Box>
+                  <Box display="flex">
+                    <Text
+                      color="content.tertiary"
+                      fontWeight="bold"
+                      lineHeight="24"
+                      fontSize="body.lg"
+                      letterSpacing="widest"
+                      marginTop="8px"
+                      textTransform="uppercase"
+                      cursor="pointer"
+                      onClick={() => {
+                        setIsYearSelected(false);
+                        setSelectedYear(null);
+                      }}
+                    >
+                      {t("all-inventory-years")}{" "}
+                    </Text>
+                    <Text
+                      color="content.link"
+                      textDecoration="underline"
+                      fontWeight="bold"
+                      lineHeight="24"
+                      fontSize="body.lg"
+                      letterSpacing="widest"
+                      marginTop="8px"
+                      textTransform="uppercase"
+                      cursor="pointer"
+                    >
+                      {isYearSelected && (
+                        <>
+                          <ChevronRightIcon color="content.tertiary" />{" "}
+                          <span>{selectedYear}</span>
+                        </>
+                      )}
+                    </Text>
+                  </Box>
+                  <Box display="flex" flexDirection="column" gap="24px">
+                    {!isYearSelected ? (
+                      <TableContainer
+                        borderWidth="1px"
+                        borderColor="border.overlay"
+                        borderRadius="12px"
+                      >
+                        <Table variant="simple" borderStyle="solid">
+                          <Thead>
+                            <Tr>
+                              <Th>{t("inventory-year")}</Th>
+                              <Th>{t("files")}</Th>
+                              <Th isNumeric>{t("last-updated")}</Th>
+                            </Tr>
+                          </Thead>
+                          <Tbody
+                            fontFamily="heading"
+                            color="content.primary"
+                            fontSize="body.md"
+                          >
+                            {years.map((year: any) => (
+                              <Tr key={year}>
+                                <Td
+                                  onClick={() => {
+                                    setIsYearSelected(true);
+                                    setSelectedYear(year);
+                                  }}
+                                  display="flex"
+                                  gap="16px"
+                                  alignItems="center"
+                                  _hover={{
+                                    textDecoration: "underline",
+                                    cursor: "pointer",
+                                    color: "content.link",
+                                  }}
+                                >
+                                  <Box color="content.tertiary">
+                                    <MdOutlineFolder size={24} />
+                                  </Box>
+                                  <Text>{year}</Text>
+                                </Td>
+
+                                <Td>
+                                  {filterDataByYear(userFiles, year).length}{" "}
+                                  {filterDataByYear(userFiles, year).length == 0
+                                    ? "files"
+                                    : "file"}
+                                </Td>
+
+                                <Td isNumeric>21 Sept, 2023</Td>
                               </Tr>
-                            </Thead>
-                            <Tbody
-                              fontFamily="heading"
-                              color="content.primary"
-                              fontSize="body.md"
-                            >
-                              {years.map((year: any) => (
-                                <Tr key={year}>
-                                  <Td
-                                    onClick={() => {
-                                      setIsYearSelected(true);
-                                      setSelectedYear(year);
-                                    }}
+                            ))}
+                          </Tbody>
+                        </Table>
+                      </TableContainer>
+                    ) : (
+                      <TableContainer
+                        borderWidth="1px"
+                        borderColor="border.overlay"
+                        borderRadius="12px"
+                      >
+                        <Table variant="simple" borderStyle="solid">
+                          <Thead>
+                            <Tr>
+                              <Th>{t("name")}</Th>
+                              <Th>{t("sector")}</Th>
+                              <Th>{t("status")}</Th>
+                              <Th isNumeric>{t("last-updated")}</Th>
+                            </Tr>
+                          </Thead>
+                          <Tbody
+                            fontFamily="heading"
+                            color="content.primary"
+                            fontSize="body.md"
+                          >
+                            {filteredData.map((file: any) => (
+                              <Tr key={`${file.id}`}>
+                                <Td gap="16px" alignItems="center">
+                                  <Box
                                     display="flex"
-                                    gap="16px"
                                     alignItems="center"
-                                    _hover={{
-                                      textDecoration: "underline",
-                                      cursor: "pointer",
-                                      color: "content.link",
-                                    }}
+                                    gap="8px"
                                   >
-                                    <Box color="content.tertiary">
-                                      <MdOutlineFolder size={24} />
+                                    <Box color="interactive.primary">
+                                      <FaFileCsv size={24} />
                                     </Box>
-                                    <Text>{year}</Text>
-                                  </Td>
-
-                                  <Td>
-                                    {filterDataByYear(userFiles, year).length}{" "}
-                                    {filterDataByYear(userFiles, year).length ==
-                                    0
-                                      ? "files"
-                                      : "file"}
-                                  </Td>
-
-                                  <Td isNumeric>21 Sept, 2023</Td>
-                                </Tr>
-                              ))}
-                            </Tbody>
-                          </Table>
-                        </TableContainer>
-                      ) : (
-                        <TableContainer
-                          borderWidth="1px"
-                          borderColor="border.overlay"
-                          borderRadius="12px"
-                        >
-                          <Table variant="simple" borderStyle="solid">
-                            <Thead>
-                              <Tr>
-                                <Th>{t("name")}</Th>
-                                <Th>{t("sector")}</Th>
-                                <Th>{t("status")}</Th>
-                                <Th isNumeric>{t("last-updated")}</Th>
-                              </Tr>
-                            </Thead>
-                            <Tbody
-                              fontFamily="heading"
-                              color="content.primary"
-                              fontSize="body.md"
-                            >
-                              {filteredData.map((file: any) => (
-                                <Tr key={`${file.id}`}>
-                                  <Td gap="16px" alignItems="center">
-                                    <Box
-                                      display="flex"
-                                      alignItems="center"
-                                      gap="8px"
-                                    >
-                                      <Box color="interactive.primary">
-                                        <FaFileCsv size={24} />
-                                      </Box>
-                                      <Text maxW="200px" isTruncated>
-                                        {file.file.fileName}
-                                      </Text>
-                                    </Box>
-                                  </Td>
-                                  <Td>{file.sector}</Td>
-                                  <Td>
-                                    <Badge
-                                      color="blue"
-                                      borderRadius="full"
-                                      px="16px"
-                                      paddingTop="4px"
-                                      paddingBottom="4px"
+                                    <Text maxW="200px" isTruncated>
+                                      {file.file.fileName}
+                                    </Text>
+                                  </Box>
+                                </Td>
+                                <Td>{file.sector}</Td>
+                                <Td>
+                                  <Badge
+                                    color="blue"
+                                    borderRadius="full"
+                                    px="16px"
+                                    paddingTop="4px"
+                                    paddingBottom="4px"
+                                    borderWidth="1px"
+                                    borderStyle="solid"
+                                    fontWeight="normal"
+                                    textTransform="capitalize"
+                                    letterSpacing="wide"
+                                    fontSize="body.md"
+                                    borderColor={
+                                      file.status === "pending"
+                                        ? "sentiment.warningDefault"
+                                        : "interactive.tertiary"
+                                    }
+                                    textColor={
+                                      file.status === "added to inventory"
+                                        ? "interactive.tertiary"
+                                        : "sentiment.warningDefault"
+                                    }
+                                    backgroundColor={
+                                      file.status === "pending"
+                                        ? "sentiment.warningOverlay"
+                                        : "sentiment.positiveOverlay"
+                                    }
+                                  >
+                                    {t(`${file.status}`)}
+                                  </Badge>
+                                </Td>
+                                <Td
+                                  isNumeric
+                                  display="flex"
+                                  gap="16px"
+                                  alignItems="center"
+                                  justifyContent="end"
+                                >
+                                  <span>{file.lastUpdated as any}</span>
+                                  <Popover isLazy>
+                                    <PopoverTrigger>
+                                      <IconButton
+                                        aria-label="action-button"
+                                        variant="ghost"
+                                        color="interactive.control"
+                                        height="36px"
+                                        width="36px"
+                                        icon={<MdMoreVert size={24} />}
+                                      ></IconButton>
+                                    </PopoverTrigger>
+                                    <PopoverContent
+                                      h="auto"
+                                      w="auto"
+                                      borderRadius="8px"
+                                      shadow="2dp"
                                       borderWidth="1px"
                                       borderStyle="solid"
-                                      fontWeight="normal"
-                                      textTransform="capitalize"
-                                      letterSpacing="wide"
-                                      fontSize="body.md"
-                                      borderColor={
-                                        file.status === "pending"
-                                          ? "sentiment.warningDefault"
-                                          : "interactive.tertiary"
-                                      }
-                                      textColor={
-                                        file.status === "added to inventory"
-                                          ? "interactive.tertiary"
-                                          : "sentiment.warningDefault"
-                                      }
-                                      backgroundColor={
-                                        file.status === "pending"
-                                          ? "sentiment.warningOverlay"
-                                          : "sentiment.positiveOverlay"
-                                      }
+                                      borderColor="border.neutral"
+                                      padding="10px"
+                                      px="0"
                                     >
-                                      {t(`${file.status}`)}
-                                    </Badge>
-                                  </Td>
-                                  <Td
-                                    isNumeric
-                                    display="flex"
-                                    gap="16px"
-                                    alignItems="center"
-                                    justifyContent="end"
-                                  >
-                                    <span>{file.lastUpdated as any}</span>
-                                    <Popover isLazy>
-                                      <PopoverTrigger>
-                                        <IconButton
-                                          aria-label="action-button"
-                                          variant="ghost"
-                                          color="interactive.control"
-                                          height="36px"
-                                          width="36px"
-                                          icon={<MdMoreVert size={24} />}
-                                        ></IconButton>
-                                      </PopoverTrigger>
-                                      <PopoverContent
-                                        h="auto"
-                                        w="auto"
-                                        borderRadius="8px"
-                                        shadow="2dp"
-                                        borderWidth="1px"
-                                        borderStyle="solid"
-                                        borderColor="border.neutral"
-                                        padding="10px"
-                                        px="0"
-                                      >
-                                        <PopoverArrow />
-                                        <PopoverBody padding="0">
-                                          <List padding="0">
-                                            <ListItem
-                                              className="group "
-                                              cursor="pointer"
-                                              gap="16px"
-                                              color="content.tertiary"
-                                              alignItems="center"
-                                              px="16px"
-                                              paddingTop="12px"
-                                              paddingBottom="12px"
-                                              _hover={{
-                                                background: "content.link",
-                                                color: "white",
-                                              }}
+                                      <PopoverArrow />
+                                      <PopoverBody padding="0">
+                                        <List padding="0">
+                                          <ListItem
+                                            className="group "
+                                            cursor="pointer"
+                                            gap="16px"
+                                            color="content.tertiary"
+                                            alignItems="center"
+                                            px="16px"
+                                            paddingTop="12px"
+                                            paddingBottom="12px"
+                                            _hover={{
+                                              background: "content.link",
+                                              color: "white",
+                                            }}
+                                          >
+                                            <Link
+                                              href={`/api/v0/city/${file.cityId}/file/${file.id}/download-file`}
+                                              download
+                                              className="flex gap-4"
                                             >
-                                              <Link
-                                                href={`/api/v0/city/${file.cityId}/file/${file.id}/download-file`}
-                                                download
-                                                className="flex gap-4"
-                                              >
-                                                <MdOutlineFileDownload
-                                                  size={24}
-                                                />
+                                              <MdOutlineFileDownload
+                                                size={24}
+                                              />
 
-                                                <Text
-                                                  color="content.secondary"
-                                                  fontFamily="heading"
-                                                  letterSpacing="wide"
-                                                  fontWeight="normal"
-                                                  fontSize="body.lg"
-                                                  className="group group-hover:text-white"
-                                                >
-                                                  {t("download-file")}
-                                                </Text>
-                                              </Link>
-                                            </ListItem>
-                                            <ListItem
-                                              display="flex"
-                                              cursor="pointer"
-                                              gap="16px"
-                                              className="group "
-                                              color="sentiment.negativeDefault"
-                                              alignItems="center"
-                                              px="16px"
-                                              paddingTop="12px"
-                                              paddingBottom="12px"
-                                              _hover={{
-                                                background: "content.link",
-                                                color: "white",
-                                              }}
-                                              onClick={() => {
-                                                setFileData(file);
-                                                onFileDeleteModalOpen();
-                                              }}
-                                            >
-                                              <FiTrash2 size={24} />
                                               <Text
                                                 color="content.secondary"
                                                 fontFamily="heading"
@@ -470,49 +436,81 @@ const MyFilesTab: FC<MyFilesTabProps> = ({
                                                 fontSize="body.lg"
                                                 className="group group-hover:text-white"
                                               >
-                                                {t("delete-file")}
+                                                {t("download-file")}
                                               </Text>
-                                            </ListItem>
-                                            <ListItem
-                                              display="flex"
-                                              cursor="pointer"
-                                              gap="16px"
-                                              className="group "
-                                              color="interactive.tertiary"
-                                              alignItems="center"
-                                              px="16px"
-                                              paddingTop="12px"
-                                              paddingBottom="12px"
-                                              _hover={{
-                                                background: "content.link",
-                                                color: "white",
-                                              }}
+                                            </Link>
+                                          </ListItem>
+                                          <ListItem
+                                            display="flex"
+                                            cursor="pointer"
+                                            gap="16px"
+                                            className="group "
+                                            color="sentiment.negativeDefault"
+                                            alignItems="center"
+                                            px="16px"
+                                            paddingTop="12px"
+                                            paddingBottom="12px"
+                                            _hover={{
+                                              background: "content.link",
+                                              color: "white",
+                                            }}
+                                            onClick={() => {
+                                              setFileData(file);
+                                              onFileDeleteModalOpen();
+                                            }}
+                                          >
+                                            <FiTrash2 size={24} />
+                                            <Text
+                                              color="content.secondary"
+                                              fontFamily="heading"
+                                              letterSpacing="wide"
+                                              fontWeight="normal"
+                                              fontSize="body.lg"
+                                              className="group group-hover:text-white"
                                             >
-                                              <MdOutlineCheck size={24} />
-                                              <Text
-                                                color="content.secondary"
-                                                fontFamily="heading"
-                                                letterSpacing="wide"
-                                                fontWeight="normal"
-                                                fontSize="body.lg"
-                                                className="group group-hover:text-white"
-                                              >
-                                                {t("mark-as-completed")}
-                                              </Text>
-                                            </ListItem>
-                                          </List>
-                                        </PopoverBody>
-                                      </PopoverContent>
-                                    </Popover>
-                                  </Td>
-                                </Tr>
-                              ))}
-                            </Tbody>
-                          </Table>
-                        </TableContainer>
-                      )}
-                    </Box>
-                  </TabPanel>
+                                              {t("delete-file")}
+                                            </Text>
+                                          </ListItem>
+                                          <ListItem
+                                            display="flex"
+                                            cursor="pointer"
+                                            gap="16px"
+                                            className="group "
+                                            color="interactive.tertiary"
+                                            alignItems="center"
+                                            px="16px"
+                                            paddingTop="12px"
+                                            paddingBottom="12px"
+                                            _hover={{
+                                              background: "content.link",
+                                              color: "white",
+                                            }}
+                                          >
+                                            <MdOutlineCheck size={24} />
+                                            <Text
+                                              color="content.secondary"
+                                              fontFamily="heading"
+                                              letterSpacing="wide"
+                                              fontWeight="normal"
+                                              fontSize="body.lg"
+                                              className="group group-hover:text-white"
+                                            >
+                                              {t("mark-as-completed")}
+                                            </Text>
+                                          </ListItem>
+                                        </List>
+                                      </PopoverBody>
+                                    </PopoverContent>
+                                  </Popover>
+                                </Td>
+                              </Tr>
+                            ))}
+                          </Tbody>
+                        </Table>
+                      </TableContainer>
+                    )}
+                  </Box>
+                </TabPanel>
               </TabPanels>
             </Tabs>
           </Box>

@@ -232,8 +232,9 @@ function SubSectorPage({
                 transition={{ duration: 0.3, ease: "easeInOut" }}
               >
                 <Button
-                  variant="ghost"
+                  variant="ghostLight"
                   fontSize="14px"
+                  color="content.link"
                   onClick={() => router.back()}
                 >
                   <Icon as={MdArrowBack} boxSize={6} />

@@ -81,7 +81,12 @@ export default function SetInventoryDetailsStep({
 
   const inventoryGoalGroup = inventoryGoalRootProps();
   const gwpGroup = GWPRootProps();
-  const yearsCollection = createListCollection({ items: years });
+  const yearsCollection = createListCollection({
+    items: years.map((year) => ({
+      label: year.toString(),
+      value: year,
+    })),
+  });
 
   return (
     <Box w="full">
@@ -184,11 +189,13 @@ export default function SetInventoryDetailsStep({
                     />
                   </SelectTrigger>
                   <SelectContent>
-                    {years.map((year: number, i: number) => (
-                      <SelectItem item={year} key={i}>
-                        {year}
-                      </SelectItem>
-                    ))}
+                    {yearsCollection.items.map(
+                      (year: { label: string; value: number }, i: number) => (
+                        <SelectItem item={year} key={i}>
+                          {year.label}
+                        </SelectItem>
+                      ),
+                    )}
                   </SelectContent>
                 </SelectRoot>
               </InputGroup>

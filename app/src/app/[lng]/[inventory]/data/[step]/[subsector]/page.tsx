@@ -20,7 +20,7 @@ import {
 } from "@chakra-ui/react";
 
 import { useRouter } from "next/navigation";
-import { forwardRef, useState } from "react";
+import { forwardRef, useEffect, useState } from "react";
 import { MdArrowBack, MdChevronRight, MdOutlineHomeWork } from "react-icons/md";
 import {
   AnimatePresence,
@@ -189,8 +189,18 @@ function SubSectorPage({
     isInventoryProgressLoading ||
     isUserInfoLoading;
 
+  const [referenceNumber, setReferenceNumber] = useState<string>(
+    `${getSectorRefNo(step)}.1.1`,
+  );
+
+  useEffect(() => {
+    if (scopes.length > 0 && !loadingState) {
+      setReferenceNumber(scopes[0]?.referenceNumber);
+    }
+  }, [scopes, loadingState]);
+
   return (
-    <Tabs.Root defaultValue={scopes[0]?.referenceNumber}>
+    <Tabs.Root defaultValue={referenceNumber}>
       <MotionBox
         bg="background.backgroundLight"
         className="fixed z-10 top-0 w-full transition-all"
@@ -403,6 +413,7 @@ function SubSectorPage({
                 key={index}
                 className="[&[aria-selected='false']]:border-[transparent]"
                 value={scope.referenceNumber}
+                mt="40px"
               >
                 <Text
                   fontFamily="heading"

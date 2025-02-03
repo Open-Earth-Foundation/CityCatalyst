@@ -14,6 +14,7 @@ export const RadioGroup = ChakraRadioGroup.Root;
 export const CustomRadio = React.forwardRef<HTMLInputElement, RadioProps>(
   function Radio(props, ref) {
     const { children, inputProps, rootRef, ...rest } = props;
+
     return (
       <ChakraRadioGroup.Item ref={rootRef} {...rest}>
         <ChakraRadioGroup.ItemHiddenInput ref={ref} {...inputProps} />
@@ -33,21 +34,21 @@ export const CustomRadio = React.forwardRef<HTMLInputElement, RadioProps>(
           gap="8px"
           letterSpacing="wide"
           className="transition-all duration-150"
-          borderWidth={props.value ? "0" : "1px"}
-          borderColor={props.value ? "green.500" : "border.neutral"}
-          bg={props.value ? "background.neutral" : "base.light"}
-          color={props.value ? "content.link" : "content.secondary"}
+          borderWidth="1px"
+          borderColor="border.neutral"
+          bg="base.light"
+          color="content.secondary"
           _checked={{
             bg: "background.neutral",
             color: "content.link",
-            borderWidth: "1px",
+            borderWidth: "0",
             borderColor: "interactive.secondary",
           }}
           _focus={{
             boxShadow: "outline",
           }}
         >
-          {props.value ? <Icon as={InventoryButtonCheckIcon} /> : ""}
+          {inputProps?.checked && <Icon as={InventoryButtonCheckIcon} />}
           {children && (
             <ChakraRadioGroup.ItemText>{children}</ChakraRadioGroup.ItemText>
           )}

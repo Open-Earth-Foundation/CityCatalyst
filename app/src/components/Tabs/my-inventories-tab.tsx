@@ -77,7 +77,7 @@ const MyInventoriesTab: FC<MyInventoriesTabProps> = ({
     api.useGetInventoriesQuery({ cityId: cityId! }, { skip: !cityId });
 
   const {
-    isOpen: isInventoryDeleteModalOpen,
+    open: isInventoryDeleteModalOpen,
     onOpen: onInventoryDeleteModalOpen,
     onClose: onInventoryDeleteModalClose,
   } = useDisclosure();

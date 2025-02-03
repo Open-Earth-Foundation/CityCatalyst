@@ -103,7 +103,7 @@ const MyFilesTab: FC<MyFilesTabProps> = ({
   const filteredData = filterDataByYear(userFiles, selectedYear);
 
   const {
-    isOpen: isFileDeleteModalOpen,
+    open: isFileDeleteModalOpen,
     onOpen: onFileDeleteModalOpen,
     onClose: onFileDeleteModalClose,
   } = useDisclosure();

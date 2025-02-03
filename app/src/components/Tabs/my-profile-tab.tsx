@@ -201,24 +201,24 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
   }, [filteredUsers, role]);
 
   const {
-    isOpen: isUserModalOpen,
+    open: isUserModalOpen,
     onOpen: onUserModalOpen,
     onClose: onUserModalClose,
   } = useDisclosure();
   const {
-    isOpen: isUserUpdateModalOpen,
+    open: isUserUpdateModalOpen,
     onOpen: onUserUpdateModalOpen,
     onClose: onUserUpdateModalClose,
   } = useDisclosure();
 
   const {
-    isOpen: isUserDeleteModalOpen,
+    open: isUserDeleteModalOpen,
     onOpen: onUserDeleteModalOpen,
     onClose: onUserDeleteModalClose,
   } = useDisclosure();
 
   const {
-    isOpen: isCityDeleteModalOpen,
+    open: isCityDeleteModalOpen,
     onOpen: onCityDeleteModalOpen,
     onClose: onCityDeleteModalClose,
   } = useDisclosure();

@@ -6,6 +6,7 @@ import { useTranslation } from "@/i18n/client";
 import { toKebabCaseModified } from "@/app/[lng]/[inventory]/InventoryResultTab/index";
 import { Box, Text } from "@chakra-ui/react";
 import { useTooltip } from "@nivo/tooltip";
+import { useMemo } from "react";
 
 interface EmissionBySectorChartProps {
   data: {
@@ -89,16 +90,17 @@ function CustomCombinedBarLayer<D>({
 }: CustomCombinedBarLayerProps<D>) {
   const { showTooltipFromEvent, hideTooltip } = useTooltip();
 
-  const barsByYear: Record<string, CustomBar[]> = bars.reduce(
-    (acc: any, bar: any) => {
-      const year = bar.data.indexValue;
-      if (!acc[year]) {
-        acc[year] = [];
-      }
-      acc[year].push(bar);
-      return acc;
-    },
-    {},
+  const barsByYear: Record<string, CustomBar[]> = useMemo(
+    () =>
+      bars.reduce((acc: any, bar: any) => {
+        const year = bar.data.indexValue;
+        if (!acc[year]) {
+          acc[year] = [];
+        }
+        acc[year].push(bar);
+        return acc;
+      }, {}),
+    [bars],
   );
 
   return (

@@ -259,6 +259,7 @@ function SubSectorPage({
                     <BreadcrumbLink
                       href={`/${inventoryId}/data`}
                       color="content.tertiary"
+                      truncate
                     >
                       {t("all-sectors")}
                     </BreadcrumbLink>
@@ -266,6 +267,7 @@ function SubSectorPage({
                       <BreadcrumbLink
                         href={`/${inventoryId}/data/${step}`}
                         color="content.tertiary"
+                        truncate
                       >
                         {t(getSectorName(step))}
                       </BreadcrumbLink>
@@ -274,7 +276,7 @@ function SubSectorPage({
                       color="content.link"
                       textDecoration="underline"
                     >
-                      <Text truncate>
+                      <Text truncate lineClamp={1}>
                         {!subSectorData ? (
                           <Spinner size="xs" />
                         ) : (

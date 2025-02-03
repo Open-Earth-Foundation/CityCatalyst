@@ -10,6 +10,34 @@ import { render } from "@react-email/components";
 import { InviteUserToMultipleCitiesTemplate } from "@/lib/emails/InviteUserToMultipleCitiesTemplate";
 import { Op } from "sequelize";
 import { logger } from "@/services/logger";
+import { CityInviteStatus } from "@/util/types";
+
+export const GET = apiHandler(async (req, { params, session }) => {
+  if (!session) {
+    throw new createHttpError.Unauthorized("Not signed in");
+  }
+  const invites = await db.models.CityInvite.findAll({
+    where: {
+      invitingUserId: session?.user.id,
+      status: { [Op.ne]: CityInviteStatus.CANCELED },
+    },
+    include: [
+      {
+        model: db.models.City,
+        as: "cityInvites",
+        required: true,
+      },
+      {
+        model: db.models.User,
+        as: "user",
+        required: false,
+        attributes: ["userId", "name", "email", "role"],
+      },
+    ],
+  });
+
+  return NextResponse.json({ data: invites });
+});
 
 export const POST = apiHandler(async (req, { params, session }) => {
   if (!session) {
@@ -49,22 +77,35 @@ export const POST = apiHandler(async (req, { params, session }) => {
         );
         const invites = await Promise.all(
           cityIds.map(async (cityId) => {
-            const invite = await db.models.CityInvite.create({
-              id: randomUUID(),
-              cityId,
-              email,
-              invitingUserId: session.user.id,
+            const existingInvite = await db.models.CityInvite.findOne({
+              where: { email, cityId },
             });
 
-            if (!invite) {
-              failedInvites.push({ email, cityIds: [cityId] });
-              logger.error(
-                "error in invites/route POST: ",
-                "error creating invite",
-                { cityId, email },
-              );
+            if (existingInvite) {
+              if (existingInvite.status !== CityInviteStatus.ACCEPTED) {
+                await existingInvite.update({
+                  status: CityInviteStatus.PENDING,
+                });
+              }
+              return existingInvite;
+            } else {
+              const invite = await db.models.CityInvite.create({
+                id: randomUUID(),
+                cityId,
+                email,
+                invitingUserId: session.user.id,
+              });
+
+              if (!invite) {
+                failedInvites.push({ email, cityIds: [cityId] });
+                logger.error(
+                  "error in invites/route POST: ",
+                  "error creating invite",
+                  { cityId, email },
+                );
+              }
+              return invite;
             }
-            return invite;
           }),
         );
         const host = process.env.HOST ?? "http://localhost:3000";

@@ -73,7 +73,7 @@ export function ActionCards({
         </NextLink>
       </Box>
       <Box className="flex-[2_2_0%] flex flex-col gap-[8px]">
-        <AddCollaboratorButton t={t} />
+        <AddCollaboratorButton lng={lng} />
         <DownloadButton
           lng={lng}
           t={t}

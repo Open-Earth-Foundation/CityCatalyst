@@ -12,7 +12,7 @@
   "enter-password-description": "Digite sua senha para confirmar a exclusão das informações das cidades",
   "incorrect-password": "Senha incorreta! Por favor, tente novamente",
   "full-name": "Nome Completo",
-  "manage-users": "gerenciar usuários",
+  "manage-users": "Gerenciar usuários",
   "search-filter-placeholder": "Pesquisar por nome ou endereço de e-mail",
   "all": "Todos",
   "select": "Selecionar",
@@ -62,5 +62,14 @@
   "delete-file-prompt": "Tem certeza de que deseja <2>excluir permanentemente</2> este arquivo do repositório da cidade?",
   "mark-as-completed": "Marcar como concluído",
   "password-required": "A senha é obrigatória",
-  "min-length": "O comprimento mínimo deve ser {{length}}"
+  "min-length": "O comprimento mínimo deve ser {{length}}",
+  "are-you-sure-you-want-to": "Você tem certeza de que deseja",
+  "un-invite": "desconvidar",
+  "this-user-from-your-city": "este usuário da sua cidade?",
+  "user-details-update-fail": "Não foi possível atualizar os detalhes do usuário",
+  "invite-canceled": "Convite cancelado",
+  "invite-cancel-fail": "Não foi possível cancelar o convite",
+  "invite-sent": "Convite enviado com sucesso",
+  "invite-send-fail": "Não foi possível enviar o convite",
+    "number-of-cities": "# de cidades"
 }

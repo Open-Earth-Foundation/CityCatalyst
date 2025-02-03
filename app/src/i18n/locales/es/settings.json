@@ -11,7 +11,7 @@
   "city": "Ciudad",
   "full-name": "Nombre completo",
   "email": "Correo electrónico",
-  "manage-users": "gestionar usuarios",
+  "manage-users": "Gestionar usuarios",
   "enter-password-description": "Ingresa tu contraseña para confirmar que quieres eliminar la información de las ciudades",
   "incorrect-password": "¡Contraseña incorrecta! Por favor, inténtalo de nuevo",
   "role": "Rol",
@@ -62,5 +62,14 @@
   "delete-file-prompt": "¿Está seguro de que desea <2>eliminar permanentemente</2> este archivo del repositorio de la ciudad?",
   "password-required": "Se requiere contraseña",
   "min-length": "La longitud mínima debe ser {{length}}",
-  "mark-as-completed": "Marcar como completado"
+  "mark-as-completed": "Marcar como completado",
+  "are-you-sure-you-want-to": "¿Estás seguro de que quieres",
+  "un-invite": "desinvitar",
+  "this-user-from-your-city": "a este usuario de tu ciudad?",
+  "user-details-update-fail": "No se pudieron actualizar los detalles del usuario",
+  "invite-canceled": "Invitación cancelada",
+  "invite-cancel-fail": "No se pudo cancelar la invitación",
+  "invite-sent": "Invitación enviada con éxito",
+  "invite-send-fail": "No se pudo enviar la invitación",
+  "number-of-cities": "# de ciudades"
 }

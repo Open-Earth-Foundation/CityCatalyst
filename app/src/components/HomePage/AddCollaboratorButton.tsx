@@ -2,20 +2,20 @@ import React from "react";
 import { MdPersonAdd } from "react-icons/md";
 import AddCollaboratorsModal from "./AddCollaboratorModal/AddCollaboratorsModal";
 import { useDisclosure } from "@chakra-ui/react";
-import type { TFunction } from "i18next";
+import { useTranslation } from "@/i18n/client";
 import ActionCardSmall from "./ActionCardSmall";
 
-export function AddCollaboratorButton({ t }: { t: TFunction }) {
+export function AddCollaboratorButton({ lng }: { lng: string }) {
   const {
     isOpen: isModalOpen,
     onOpen: onModalOpen,
     onClose: onModalClose,
   } = useDisclosure();
-
+  const { t } = useTranslation(lng, "dashboard");
   return (
     <>
       <AddCollaboratorsModal
-        t={t}
+        lng={lng}
         isOpen={isModalOpen}
         onClose={onModalClose}
         onOpen={onModalOpen}

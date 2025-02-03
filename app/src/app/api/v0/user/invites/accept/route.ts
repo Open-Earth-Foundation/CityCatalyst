@@ -6,7 +6,7 @@ import createHttpError from "http-errors";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { Op } from "sequelize";
 import { logger } from "@/services/logger";
-import { CityInviteStatus } from "@/models/CityInvite";
+import { CityInviteStatus } from "@/util/types";
 import { NextResponse } from "next/server";
 
 export const PATCH = apiHandler(async (req, { params, session }) => {

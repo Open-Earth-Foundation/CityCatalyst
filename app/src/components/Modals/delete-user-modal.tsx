@@ -1,45 +1,59 @@
 "use client";
 
-import type { UserAttributes } from "@/models/User";
+import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
 import { api } from "@/services/api";
 import {
-  Modal,
+  Badge,
+  Box,
   Button,
+  Modal,
   ModalBody,
   ModalCloseButton,
   ModalContent,
+  ModalFooter,
   ModalHeader,
   ModalOverlay,
   Text,
-  Box,
-  Badge,
-  ModalFooter,
 } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import React, { FC } from "react";
-import { Trans } from "react-i18next";
 
 import { FiTrash2 } from "react-icons/fi";
 
 interface DeleteUserModalProps {
   isOpen: boolean;
   onClose: any;
-  userData: UserAttributes;
-  cityId: string;
+  cityInviteId: string;
   t: TFunction;
 }
 
 const DeleteUserModal: FC<DeleteUserModalProps> = ({
   isOpen,
   onClose,
-  userData,
-  cityId,
+  cityInviteId,
   t,
 }) => {
-  const [removeUser] = api.useRemoveUserMutation();
-  const handleDeleteUser = async (userId: string, cityId: string) => {
-    await removeUser({ userId, cityId }).then(() => {
+  const [cancelUserInvite, { isLoading, error }] =
+    api.useCancelInviteMutation();
+  const { showSuccessToast } = UseSuccessToast({
+    description: t("invite-canceled"),
+    title: t("invite-canceled"),
+    text: t("invite-canceled"),
+  });
+
+  const { showErrorToast } = UseErrorToast({
+    description: t("invite-cancel-fail"),
+    title: t("invite-cancel-fail"),
+    text: t("invite-cancel-fail"),
+  });
+  const handleCancelInvite = async () => {
+    await cancelUserInvite({ cityInviteId }).then(() => {
       onClose();
+      if (error) {
+        showErrorToast();
+      } else {
+        showSuccessToast();
+      }
     });
   };
   return (
@@ -96,13 +110,9 @@ const DeleteUserModal: FC<DeleteUserModalProps> = ({
                   letterSpacing="wide"
                   fontStyle="normal"
                 >
-                  <Trans t={t} i18nKey="remove-user-prompt">
-                    Are you sure you want to{" "}
-                    <span style={{ fontWeight: "bold" }}>
-                      permanently remove this user
-                    </span>{" "}
-                    from your team?
-                  </Trans>
+                  {t("are-you-sure-you-want-to")}{" "}
+                  <span style={{ fontWeight: "bold" }}>{t("un-invite")}</span>{" "}
+                  {t("this-user-from-your-city")}
                 </Text>
               </Box>
             </Box>
@@ -129,7 +139,8 @@ const DeleteUserModal: FC<DeleteUserModalProps> = ({
               fontWeight="semibold"
               fontSize="button.md"
               type="submit"
-              onClick={() => handleDeleteUser(userData.userId, cityId)}
+              onClick={handleCancelInvite}
+              disabled={isLoading}
               p={0}
               m={0}
             >

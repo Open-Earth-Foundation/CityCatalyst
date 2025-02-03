@@ -27,18 +27,21 @@ import {
 import LabelLarge from "@/components/Texts/Label";
 import MultipleEmailInput from "./MultipleEmailInput";
 import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
+import { useTranslation } from "@/i18n/client";
 
 const AddCollaboratorsModal = ({
-  t,
+  lng,
   isOpen,
   onClose,
   onOpen,
 }: {
-  t: TFunction;
+  lng: string;
   isOpen: boolean;
   onClose: () => void;
   onOpen: () => void;
 }) => {
+  const { t } = useTranslation(lng, "dashboard");
+
   const { showSuccessToast } = UseSuccessToast({
     title: t("invite-success-toast-title"),
     description: t("invite-success-toast-description"),

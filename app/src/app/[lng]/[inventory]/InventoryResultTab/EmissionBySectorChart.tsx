@@ -27,20 +27,22 @@ const EmissionBySectorChart: React.FC<EmissionBySectorChartProps> = ({
     };
   }, {});
 
-  const chartData = data.map((item) => {
-    const sectorBreakDown = item.bySector.reduce((acc, sector) => {
+  const chartData = data
+    .map((item) => {
+      const sectorBreakDown = item.bySector.reduce((acc, sector) => {
+        return {
+          ...acc,
+          [toKebabCaseModified(sector.sectorName)]: convertKgToKiloTonnes(
+            sector.co2eq,
+          ),
+        };
+      }, defaultBreakdown);
       return {
-        ...acc,
-        [toKebabCaseModified(sector.sectorName)]: convertKgToKiloTonnes(
-          sector.co2eq,
-        ),
+        year: item.year,
+        ...sectorBreakDown,
       };
-    }, defaultBreakdown);
-    return {
-      year: item.year,
-      ...sectorBreakDown,
-    };
-  });
+    })
+    .reverse();
 
   const chartDataKeys = SECTORS.map((sector) =>
     toKebabCaseModified(sector.name),
@@ -71,7 +73,7 @@ const EmissionBySectorChart: React.FC<EmissionBySectorChartProps> = ({
                 <Text>
                   {tData(id as string)}
                   {" - "}
-                  {convertKgToTonnes(value)}
+                  lala - {convertKgToTonnes(value)}
                 </Text>
               </HStack>
             </Card>

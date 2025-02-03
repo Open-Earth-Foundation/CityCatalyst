@@ -61,15 +61,7 @@ const ScopeUnavailable: FC<ScopeUnavailableProps> = ({
     rules: { required: t("option-required") },
   });
 
-  const {
-    getRootProps,
-    getRadioProps,
-    value: selectedReason,
-    setValue: setSelectedReason,
-  } = useRadioGroup({
-    defaultValue: reason || "",
-    onChange: (value: string) => setValue("reason", value), // Update reason in React Hook Form on selection
-  });
+  const [selectedReason, setSelectedReason] = React.useState<string>();
 
   useEffect(() => {
     if (reason) {
@@ -77,6 +69,11 @@ const ScopeUnavailable: FC<ScopeUnavailableProps> = ({
       setValue("reason", reason);
     }
   }, [reason, setSelectedReason, setValue]);
+
+  const handleSelectedValue = (value: string) => {
+    setSelectedReason(value);
+    setValue("reason", value);
+  };
 
   const formSubmitHandler = async (data: {
     reason: string;
@@ -124,34 +121,35 @@ const ScopeUnavailable: FC<ScopeUnavailableProps> = ({
         <RadioGroupRoot>
           <RadioGroup
             value={selectedReason as string}
-            onChange={setSelectedReason}
+            onValueChange={(e) => handleSelectedValue(e.value)}
+            colorPalette="interactive.secondary"
           >
             <Stack direction="column">
               <Radio
-                {...getRadioProps({ value: "reason-NO" })}
+                value="reason-NO"
                 key={"reason-NO"}
-                color="interactive.secondary"
+                color="content.secondary"
               >
                 {t("reason-NO")}
               </Radio>
               <Radio
-                {...getRadioProps({ value: "reason-NE" })}
+                value="reason-NE"
                 key={"reason-NE"}
-                color="interactive.secondary"
+                color="content.secondary"
               >
                 {t("reason-NE")}
               </Radio>
               <Radio
-                {...getRadioProps({ value: "reason-C" })}
+                value="reason-C"
                 key={"reason-C"}
-                color="interactive.secondary"
+                color="content.secondary"
               >
                 {t("reason-C")}
               </Radio>
               <Radio
-                {...getRadioProps({ value: "reason-IE" })}
+                value="reason-IE"
                 key={"reason-IE"}
-                color="interactive.secondary"
+                color="content.secondary"
               >
                 {t("reason-IE")}
               </Radio>

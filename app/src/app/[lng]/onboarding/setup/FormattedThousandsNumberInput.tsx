@@ -1,12 +1,10 @@
 import React from "react";
 import { Input, InputProps } from "@chakra-ui/react";
 import {
-  UseFormRegister,
   RegisterOptions,
   FieldValues,
   Path,
   useController,
-  UseControllerProps,
   Control,
 } from "react-hook-form";
 import { Field } from "@/components/ui/field";

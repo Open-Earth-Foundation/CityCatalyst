@@ -344,7 +344,10 @@ export default function SetInventoryDetailsStep({
                 required: t("global-warming-potential-required"),
               }}
               render={({ field }) => (
-                <>
+                <RadioGroup
+                  value={field.value}
+                  onValueChange={(e) => (field.value = e.value)}
+                >
                   <HStack {...gwpGroup} gap="16px">
                     {globalWarmingPotential.map((value) => {
                       const radioProps = getGWPRadioProps({ value });
@@ -355,7 +358,7 @@ export default function SetInventoryDetailsStep({
                       );
                     })}
                   </HStack>
-                </>
+                </RadioGroup>
               )}
             />
           </Box>

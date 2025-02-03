@@ -20,22 +20,24 @@ const headers = {
 
 export default function () {
   let res = http.get(
-    "https://citycatalyst.openearth.dev/api/v0/inventory/7d7e301e-4204-472c-a8bd-09d47aa6eed5/download/?format=ecrf&lng=en",
+    __ENV.LOAD_TESTING_URL, // when running the load test use the command k6 run -e LOAD_TESTING_URL="your_url" script.js
     {
       headers,
     },
   );
 
-  console.log(`Response Status: ${res.status}`);
-  console.log(`Content-Type: ${res.headers["Content-Type"]}`);
-  console.log(`Response Size: ${res.body.length} bytes`); // File size
-  console.log(`Time Breakdown:`);
-  console.log(`  ⏳ DNS Lookup: ${res.timings.blocked}ms`);
-  console.log(`  🔗 TCP Connection: ${res.timings.connecting}ms`);
-  console.log(`  🔒 TLS Handshake: ${res.timings.tls_handshaking}ms`);
-  console.log(`  📡 Waiting for First Byte (TTFB): ${res.timings.waiting}ms`);
-  console.log(`  📥 Download Time: ${res.timings.receiving}ms`);
-  console.log(`  🏁 Total Duration: ${res.timings.duration}ms`);
+  console.log(
+    JSON.stringify(
+      {
+        status: res.status,
+        contentType: res.headers["Content-Type"],
+        size: res.body.length,
+        timings: res.timings,
+      },
+      null,
+      2,
+    ),
+  );
 
   check(res, {
     "is status 200": (r) => r.status === 200,

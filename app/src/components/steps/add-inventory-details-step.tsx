@@ -259,7 +259,7 @@ export default function SetInventoryDetailsStep({
                 <>
                   <RadioGroup
                     value={field.value}
-                    onValueChange={(e) => (field.value = e.value)}
+                    onValueChange={(e) => field.onChange(e.value)}
                   >
                     <HStack {...inventoryGoalGroup} gap="16px">
                       {inventoryGoalOptions.map((value) => {
@@ -353,7 +353,7 @@ export default function SetInventoryDetailsStep({
               render={({ field }) => (
                 <RadioGroup
                   value={field.value}
-                  onValueChange={(e) => (field.value = e.value)}
+                  onValueChange={(e) => field.onChange(e.value)}
                 >
                   <HStack {...gwpGroup} gap="16px">
                     {globalWarmingPotential.map((value) => {

@@ -3,7 +3,7 @@ alembic==1.14.1
 black==24.10.0
 fastapi==0.115.7
 flake8==7.1.1
-fsspec==2024.*
+fsspec==2025.*
 geopandas>=0.12,<1.1
 mypy==1.14.1
 osmnx==2.0.1

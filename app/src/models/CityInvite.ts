@@ -105,7 +105,7 @@ export class CityInvite
         },
         lastUpdated: {
           type: DataTypes.DATE,
-          allowNull: false,
+          allowNull: true,
           field: "last_updated",
         },
       },

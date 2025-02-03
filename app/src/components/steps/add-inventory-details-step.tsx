@@ -56,7 +56,7 @@ export default function SetInventoryDetailsStep({
   useEffect(() => {
     setValue("inventoryGoal", "gpc_basic");
     setValue("globalWarmingPotential", "ar6");
-  }, []);
+  }, [setValue]);
   const {
     getRootProps: inventoryGoalRootProps,
     getItemProps: getInventoryGoalRadioProps,

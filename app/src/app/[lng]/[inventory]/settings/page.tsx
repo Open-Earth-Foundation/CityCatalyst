@@ -49,10 +49,7 @@ export default function Settings({
 
   const paramValue = searchParams.get("tabIndex");
   const tabIndex = paramValue ? Number(paramValue) : 0;
-
-  const [selectedTab, setSelectedTab] = useState<string | null>(
-    tabIds[tabIndex],
-  );
+  const defaultTab = tabIds[tabIndex];
 
   const { t } = useTranslation(lng, "settings");
 
@@ -109,10 +106,7 @@ export default function Settings({
             </Text>
           </Box>
           <Box marginTop="48px" borderBottomColor={"border.overlay"}>
-            <Tabs.Root
-              value={selectedTab}
-              onValueChange={(e) => setSelectedTab(e.value)}
-            >
+            <Tabs.Root defaultValue={defaultTab}>
               <Tabs.List>
                 <Tabs.Trigger value="my-profile">
                   <Text

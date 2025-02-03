@@ -50,13 +50,13 @@ const AcceptInvitePage = ({ params: { lng } }: { params: { lng: string } }) => {
             const sanitizedEmail = sanitizeInput(email);
             const sanitizedCityIds = sanitizeInput(cityIds);
 
-            const { data, error } = await acceptInvite({
+            const { error } = await acceptInvite({
               token: sanitizedToken,
               cityIds: sanitizedCityIds.split(","),
               email: sanitizedEmail,
             });
 
-            if (!data?.success || !!error) {
+            if (!!error) {
               setError(true);
             } else {
               router.push(`/`);

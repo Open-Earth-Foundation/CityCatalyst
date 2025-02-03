@@ -256,6 +256,10 @@ export default function SetPopulationDataStep({
                     required: t("inventory-year-required"),
                     valueAsNumber: true,
                   })}
+                  value={[countryPopulationYear]}
+                  onValueChange={(e) =>
+                    setValue("countryPopulationYear", e.value[0])
+                  }
                 >
                   <SelectLabel />
                   <SelectTrigger>
@@ -355,6 +359,10 @@ export default function SetPopulationDataStep({
                     required: t("inventory-year-required"),
                     valueAsNumber: true,
                   })}
+                  value={[regionPopulationYear]}
+                  onValueChange={(e) =>
+                    setValue("regionPopulationYear", e.value[0])
+                  }
                 >
                   <SelectLabel />
                   <SelectTrigger>
@@ -454,6 +462,10 @@ export default function SetPopulationDataStep({
                     required: t("inventory-year-required"),
                     valueAsNumber: true,
                   })}
+                  value={[cityPopulationYear]}
+                  onValueChange={(e) =>
+                    setValue("cityPopulationYear", e.value[0])
+                  }
                 >
                   <SelectLabel />
                   <SelectTrigger>

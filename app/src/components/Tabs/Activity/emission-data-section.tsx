@@ -114,9 +114,15 @@ const EmissionDataSection = ({
   // Delete Activity Dialog
   const [openActivityDeleteDialog, setActivityDeleteDataDialogOpen] =
     useState(false);
-
-  const handleDeleteActivityAddDataDialog = () => {
+  const handleDeleteActivityDataDialog = () => {
     setActivityDeleteDataDialogOpen(true);
+  };
+
+  // Delete all activities dialog
+  const [openActivityDeleteAllDialog, setActivityDeleteAllDataDialogOpen] =
+    useState(false);
+  const handleDeleteAllActivityDataDialog = () => {
+    setActivityDeleteAllDataDialogOpen(true);
   };
 
   const changeMethodologyFunc = () => {
@@ -318,7 +324,7 @@ const EmissionDataSection = ({
                         cursor: "pointer",
                       }}
                       className="group"
-                      onClick={onDeleteActivitiesModalOpen}
+                      onClick={handleDeleteAllActivityDataDialog}
                     >
                       <Icon
                         className="group-hover:text-white"
@@ -330,6 +336,7 @@ const EmissionDataSection = ({
                       <Text
                         className="group-hover:text-white"
                         color="content.primary"
+                        fontSize="body.lg"
                       >
                         {t("delete-all-activities")}
                       </Text>
@@ -352,7 +359,7 @@ const EmissionDataSection = ({
                     t={t}
                     referenceNumber={refNumberWithScope}
                     activityData={activityValues}
-                    onDeleteActivity={handleDeleteActivityAddDataDialog}
+                    onDeleteActivity={handleDeleteActivityDataDialog}
                     onEditActivity={onEditActivity}
                     showActivityModal={handleActivityAdded}
                   />
@@ -363,7 +370,7 @@ const EmissionDataSection = ({
                     activityData={activityValues}
                     showActivityModal={handleActivityAdded}
                     methodologyId={methodology?.id}
-                    onDeleteActivity={handleDeleteActivityAddDataDialog}
+                    onDeleteActivity={handleDeleteActivityDataDialog}
                     onEditActivity={onEditActivity}
                   />
                 )}
@@ -424,10 +431,11 @@ const EmissionDataSection = ({
         />
         <DeleteAllActivitiesModal
           t={t}
-          isOpen={isDeleteActivitiesModalOpen}
+          isOpen={openActivityDeleteAllDialog}
           onClose={onDeleteActivitiesModalClose}
           inventoryId={inventoryId}
           subsectorId={subsectorId}
+          setDeleteActivityAllDialogOpen={setActivityDeleteAllDataDialogOpen}
         />
         <DeleteActivityModal
           t={t}

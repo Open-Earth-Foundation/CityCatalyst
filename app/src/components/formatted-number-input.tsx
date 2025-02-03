@@ -130,7 +130,7 @@ function FormattedNumberInput({
             <InputAddon
               bgColor={isDisabled ? "background.neutral" : "base.light"}
               color="content.tertiary"
-              h="full"
+              h="40px"
               fontSize="14px"
               shadow="1dp"
               pos="relative"

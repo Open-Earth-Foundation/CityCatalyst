@@ -31,6 +31,7 @@ interface DeleteAllActivitiesModalProps {
   t: TFunction;
   inventoryId: string;
   subsectorId: string;
+  setDeleteActivityAllDialogOpen: Function;
 }
 
 const DeleteAllActivitiesModal: FC<DeleteAllActivitiesModalProps> = ({
@@ -39,10 +40,11 @@ const DeleteAllActivitiesModal: FC<DeleteAllActivitiesModalProps> = ({
   t,
   inventoryId,
   subsectorId,
+  setDeleteActivityAllDialogOpen,
 }) => {
   const [deleteAllActivityValues, { isLoading }] =
     useDeleteAllActivityValuesMutation();
-
+  console.log(inventoryId, subsectorId);
   // define the function to delete all activities
   const handleDeleteAllActivities = async () => {
     // call the delete all activities mutation
@@ -83,7 +85,11 @@ const DeleteAllActivitiesModal: FC<DeleteAllActivitiesModalProps> = ({
 
   return (
     <>
-      <DialogRoot blockScrollOnMount={false} isOpen={isOpen} onClose={onClose}>
+      <DialogRoot
+        blockScrollOnMount={false}
+        open={isOpen}
+        onOpenChange={(e) => setDeleteActivityAllDialogOpen(e.open)}
+      >
         <DialogBackdrop />
         <DialogContent minH="388px" minW="568px" marginTop="10%">
           <DialogHeader

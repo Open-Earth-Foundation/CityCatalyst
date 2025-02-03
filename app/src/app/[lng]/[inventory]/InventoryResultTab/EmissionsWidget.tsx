@@ -22,6 +22,7 @@ import {
   ProgressCircleRing,
   ProgressCircleRoot,
 } from "@/components/ui/progress-circle";
+import { FiHeart } from "react-icons/fi";
 
 const EmissionsWidgetCard = ({
   icon,
@@ -54,7 +55,10 @@ const EmissionsWidgetCard = ({
               <ProgressCircleRing cap="round" css={{ "--thickness": "2px" }} />
             </ProgressCircleRoot>
           ) : (
-            <Icon color={"red"} as={icon} boxSize={8} />
+            <>
+              {" "}
+              <Icon color={"red"} as={HeatIcon} boxSize={8} />
+            </>
           )}
           <Heading size="lg" lineClamp={3} maxWidth="200px">
             {finalValue}
@@ -101,7 +105,7 @@ const EmissionsWidget = ({
         </Trans>
       ),
       value: inventory?.totalEmissions,
-      icon: HeatIcon,
+      icon: FiHeart,
       showProgress: false,
     },
     {
@@ -115,7 +119,7 @@ const EmissionsWidget = ({
         ></Trans>
       ),
       value: emissionsPerCapita,
-      icon: HeatIcon,
+      icon: FiHeart,
       showProgress: false,
     },
     {
@@ -128,11 +132,11 @@ const EmissionsWidget = ({
   return (
     <Box>
       <Card.Root padding={0} height="448px" width={"353px"}>
-        <CardHeader>
+        <Card.Header>
           <Heading size="sm">{t("total-emissions")}</Heading>
-        </CardHeader>
+        </Card.Header>
 
-        <CardBody>
+        <Card.Body>
           <Stack separator={<StackSeparator />}>
             {EmissionsData.map(({ id, field, value, icon, showProgress }) => (
               <EmissionsWidgetCard
@@ -144,7 +148,7 @@ const EmissionsWidget = ({
               />
             ))}
           </Stack>
-        </CardBody>
+        </Card.Body>
       </Card.Root>
     </Box>
   );

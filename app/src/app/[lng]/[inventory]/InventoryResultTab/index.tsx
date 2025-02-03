@@ -404,9 +404,9 @@ export function EmissionPerSectors({
     <Box className="flex flex-col gap-[8px] w-full">
       <Card.Root paddingY="16px" paddingX="24px">
         <Box className="flex items-center justify-between">
-          <CardHeader padding={0}>
+          <Card.Header padding={0}>
             <Heading size="sm">{t("ghg-by-sector-heading")}</Heading>
-          </CardHeader>
+          </Card.Header>
           <ButtonGroupToggle options={options} activeOption={selectedView} />
         </Box>
         {loadingState && (

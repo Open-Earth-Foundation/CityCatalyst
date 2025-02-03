@@ -186,7 +186,12 @@ export default function HomePage({
                     lng={lng}
                     t={t}
                   />
-                  <Tabs.Root className="mt-12" variant="line" lazyMount>
+                  <Tabs.Root
+                    className="mt-12"
+                    variant="line"
+                    lazyMount
+                    defaultValue={t("tab-emission-inventory-calculation-title")}
+                  >
                     <Tabs.List>
                       {[
                         t("tab-emission-inventory-calculation-title"),

@@ -4,6 +4,8 @@ import createHttpError from "http-errors";
 import { NextResponse } from "next/server";
 import { CityInviteStatus } from "@/util/types";
 import { CityUser } from "@/models/CityUser";
+import { QueryTypes } from "sequelize";
+import UserService from "@/backend/UserService";
 
 export const DELETE = apiHandler(async (req, { params, session }) => {
   if (!session) {
@@ -29,6 +31,21 @@ export const DELETE = apiHandler(async (req, { params, session }) => {
   const cityUser = await CityUser.findOne({
     where: { cityId: invite.cityId, userId: invite.userId },
   });
+  const [isDefaultCity] = await db.sequelize!.query(
+    `
+        select "User".default_inventory_id
+        from "User"
+                 join "Inventory" i on "User".default_inventory_id = i.inventory_id
+                 join "CityUser" cu on "User".user_id = cu.user_id and cu.city_id = i.city_id
+        where city_user_id = :cityUserId`,
+    {
+      replacements: { cityInviteId },
+      type: QueryTypes.SELECT,
+    },
+  );
+  if (isDefaultCity) {
+    await UserService.updateDefaultInventoryId(session.user.id);
+  }
   if (cityUser) {
     await cityUser.destroy();
   }

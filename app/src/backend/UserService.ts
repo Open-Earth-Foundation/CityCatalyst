@@ -6,8 +6,9 @@ import { type AppSession } from "@/lib/auth";
 import type { City } from "@/models/City";
 import type { Inventory } from "@/models/Inventory";
 import type { User } from "@/models/User";
-import { col, Includeable } from "sequelize";
+import { Includeable } from "sequelize";
 import { UserFile } from "@/models/UserFile";
+import { QueryTypes } from "sequelize";
 
 export default class UserService {
   public static async findUser(
@@ -121,6 +122,33 @@ export default class UserService {
     return inventory;
   }
 
+  public static async updateDefaultInventoryId(userId: string) {
+    const [inventory] = (await db.sequelize!.query(
+      `
+            SELECT i.inventory_id
+            FROM "Inventory" i
+                     JOIN "CityUser" cu ON i.city_id = cu.city_id
+            WHERE cu.user_id = :userId
+            ORDER BY i.last_updated DESC
+            LIMIT 1
+        `,
+      {
+        replacements: { userId },
+        type: QueryTypes.SELECT,
+      },
+    )) as { inventory_id: string }[];
+    if (!inventory) {
+      throw new createHttpError.NotFound("Inventory not found");
+    }
+    await db.models.User.update(
+      {
+        defaultInventoryId: inventory?.inventory_id,
+      },
+      { where: { userId } },
+    );
+    return inventory?.inventory_id;
+  }
+
   /**
    * Load inventory information and perform access control
    */
@@ -128,15 +156,22 @@ export default class UserService {
     session: AppSession | null,
   ): Promise<string> {
     if (!session) throw new createHttpError.Unauthorized("Unauthorized");
-
+    const userId = session.user.id;
     const user = await db.models.User.findOne({
-      attributes: ["defaultInventoryId"],
+      attributes: ["defaultInventoryId", "userId"],
       where: {
-        userId: session.user.id,
+        userId,
       },
     });
+    if (!user) {
+      console.log("UserService:139"); // TODO NINA
+      throw new createHttpError.NotFound("User not found");
+    }
 
-    if (!user || !user.defaultInventoryId) {
+    if (!user.defaultInventoryId) {
+      await UserService.updateDefaultInventoryId(user.userId);
+    }
+    if (!user.defaultInventoryId) {
       throw new createHttpError.NotFound("Inventory not found");
     }
 

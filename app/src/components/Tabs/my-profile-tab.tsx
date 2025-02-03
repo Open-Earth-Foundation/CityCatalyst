@@ -13,12 +13,9 @@ import {
 import {
   Badge,
   Box,
-  Button,
   Checkbox,
   IconButton,
   Input,
-  InputGroup,
-  InputLeftElement,
   List,
   ListItem,
   Popover,
@@ -27,21 +24,10 @@ import {
   PopoverContent,
   PopoverTrigger,
   Select,
-  Tab,
-  TabList,
-  TabPanel,
-  TabPanels,
   Table,
-  TableContainer,
   Tabs,
-  Tbody,
-  Td,
   Text,
-  Th,
-  Thead,
-  Tr,
   useDisclosure,
-  useToast,
 } from "@chakra-ui/react";
 import { Session } from "next-auth";
 import NextLink from "next/link";
@@ -65,6 +51,7 @@ import { UserAttributes } from "@/models/User";
 import { api, useSetCurrentUserDataMutation } from "@/services/api";
 import { TFunction } from "i18next";
 import EmailInput from "../email-input";
+import { Button } from "../ui/button";
 
 interface MyProfileTabProps {
   session: Session | null;
@@ -311,26 +298,25 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
             </Text>
           </Box>
           <Box>
-            <Tabs
+            <Tabs.Root
               display="flex"
               flexDirection="row"
-              variant="soft-rounded"
+              variant="outline"
               gap="36px"
             >
-              <TabList display="flex" flexDirection="column" gap="12px">
-                <Tab
-                  sx={{
-                    w: "223px",
-                    justifyContent: "left",
-                    h: "52px",
-                    letterSpacing: "wide",
-                    color: "content.secondary",
-                    lineHeight: "20px",
-                    fontStyle: "normal",
-                    fontSize: "label.lg",
-                    fontWeight: "medium",
-                    fontFamily: "heading",
-                  }}
+              <Tabs.List display="flex" flexDirection="column" gap="12px">
+                <Tabs.Trigger
+                  value="account-details"
+                    w="223px"
+                    justifyContent="left"
+                    h="52px"
+                    letterSpacing="wide"
+                    color="content.secondary"
+                    lineHeight="20px"
+                    fontStyle="normal"
+                    fontSize="label.lg"
+                    fontWeight="medium"
+                    fontFamily="heading"
                   _selected={{
                     color: "content.link",
                     fontSize: "label.lg",
@@ -343,20 +329,19 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
                   }}
                 >
                   {t("account-details")}
-                </Tab>
-                <Tab
-                  sx={{
-                    w: "223px",
-                    justifyContent: "left",
-                    h: "52px",
-                    letterSpacing: "wide",
-                    color: "content.secondary",
-                    lineHeight: "20px",
-                    fontStyle: "normal",
-                    fontSize: "label.lg",
-                    fontWeight: "medium",
-                    fontFamily: "heading",
-                  }}
+                </Tabs.Trigger>
+                <Tabs.Trigger
+                  value="users"
+                    w="223px"
+                    justifyContent="left"
+                    h="52px"
+                    letterSpacing="wide"
+                    color="content.secondary"
+                    lineHeight="20px"
+                    fontStyle="normal"
+                    fontSize="label.lg"
+                    fontWeight="medium"
+                    fontFamily="heading"
                   _selected={{
                     color: "content.link",
                     fontSize: "label.lg",
@@ -369,20 +354,19 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
                   }}
                 >
                   {t("users")}
-                </Tab>
-                <Tab
-                  sx={{
-                    w: "223px",
-                    justifyContent: "left",
-                    h: "52px",
-                    letterSpacing: "wide",
-                    color: "content.secondary",
-                    lineHeight: "20px",
-                    fontStyle: "normal",
-                    fontSize: "label.lg",
-                    fontWeight: "medium",
-                    fontFamily: "heading",
-                  }}
+                </Tabs.Trigger>
+                <Tabs.Trigger
+                  value="city"
+                    w="223px"
+                    justifyContent="left"
+                    h="52px"
+                    letterSpacing="wide"
+                    color="content.secondary"
+                    lineHeight="20px"
+                    fontStyle="normal"
+                    fontSize="label.lg"
+                    fontWeight="medium"
+                    fontFamily="heading"
                   _selected={{
                     color: "content.link",
                     fontSize: "label.lg",
@@ -395,11 +379,11 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
                   }}
                 >
                   {t("city")}
-                </Tab>
-              </TabList>
+                </Tabs.Trigger>
+              </Tabs.List>
 
-              <TabPanels backgroundColor="background.default">
-                <TabPanel
+                <Tabs.Content
+                value="account-details"
                   display="flex"
                   flexDirection="column"
                   gap="36px"
@@ -462,7 +446,7 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
                       >
                         <Button
                           type="submit"
-                          isLoading={isSubmitting}
+                          loading={isSubmitting}
                           h="48px"
                           w="auto"
                           paddingTop="16px"
@@ -478,8 +462,9 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
                       </Box>
                     </form>
                   </Box>
-                </TabPanel>
-                <TabPanel
+                </Tabs.Content>
+                <Tabs.Content
+                  value="users"
                   width="full"
                   padding="24px"
                   display="flex"
@@ -503,7 +488,7 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
                     </Text>
                     <Button
                       aria-label="Add User"
-                      leftIcon={<AddIcon />}
+                      startIcon={<AddIcon />}
                       type="submit"
                       h="48px"
                       w="auto"
@@ -658,7 +643,7 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
                         <Tbody fontFamily="heading">
                           {filteredUsersByRole.map((user) => (
                             <Tr key={user.userId}>
-                              <Td>
+                              <td>
                                 <Checkbox
                                   onChange={(e) =>
                                     handleCheckboxChange(
@@ -670,10 +655,10 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
                                     user.userId,
                                   )}
                                 />
-                              </Td>
-                              <Td>{user.name}</Td>
-                              <Td>{user.email}</Td>
-                              <Td
+                              </td>
+                              <td>{user.name}</td>
+                              <td>{user.email}</td>
+                              <td
                                 display="flex"
                                 alignItems="center"
                                 justifyContent="space-between"
@@ -804,15 +789,15 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
                                     </PopoverBody>
                                   </PopoverContent>
                                 </Popover>
-                              </Td>
-                            </Tr>
+                              </td>
+                            </tr>
                           ))}
-                        </Tbody>
+                        </tbody>
                       </Table>
                     </TableContainer>
                   </Box>
-                </TabPanel>
-                <TabPanel
+                </Tabs.Content>
+                <Tabs.Content
                   padding="24px"
                   display="flex"
                   flexDirection="column"
@@ -858,19 +843,19 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
                       borderColor="border.overlay"
                       borderRadius="12px"
                     >
-                      <Table variant="simple" borderStyle="solid">
-                        <Thead>
-                          <Tr>
-                            <Th>{t("city-name")}</Th>
-                            <Th>{t("state-province")}</Th>
-                            <Th>{t("country")}</Th>
-                            <Th align="right">{t("last-updated")}</Th>
-                          </Tr>
-                        </Thead>
-                        <Tbody fontFamily="heading">
+                      <Table.Root variant="simple" borderStyle="solid">
+                        <Table.Head>
+                          <tr>
+                            <th>{t("city-name")}</th>
+                            <th>{t("state-province")}</th>
+                            <th>{t("country")}</th>
+                            <th align="right">{t("last-updated")}</th>
+                          </tr>
+                        </Table.Head>
+                        <Table.Body fontFamily="heading">
                           {cities?.map((city: any) => (
-                            <Tr key={city.cityId}>
-                              <Td>
+                            <tr key={city.cityId}>
+                              <td>
                                 <Box
                                   color="interactive.secondary"
                                   display="flex"
@@ -880,11 +865,11 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
                                   <MdDomain size={24} />
                                   <Text color="base.dark">{city.name}</Text>
                                 </Box>
-                              </Td>
+                              </td>
 
-                              <Td>{city.region}</Td>
-                              <Td>{city.country}</Td>
-                              <Td
+                              <td>{city.region}</td>
+                              <td>{city.country}</td>
+                              <td
                                 display="flex"
                                 alignItems="center"
                                 gap="8px"
@@ -985,16 +970,16 @@ const MyProfileTab: FC<MyProfileTabProps> = ({
                                     </PopoverBody>
                                   </PopoverContent>
                                 </Popover>
-                              </Td>
-                            </Tr>
+                              </td>
+                            </tr>
                           ))}
-                        </Tbody>
-                      </Table>
+                        </Table.Body>
+                      </Table.Root>
                     </TableContainer>
                   </Box>
-                </TabPanel>
+                </Tabs.Content>
               </TabPanels>
-            </Tabs>
+            </Tabs.Root>
           </Box>
         </Box>
       </TabPanel>

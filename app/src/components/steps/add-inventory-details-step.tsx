@@ -15,8 +15,6 @@ import {
   Icon,
   Link,
   Text,
-  useRadioGroup,
-  UseRadioGroupProps,
 } from "@chakra-ui/react";
 import { MdCheck, MdWarning } from "react-icons/md";
 import { Trans } from "react-i18next";
@@ -57,30 +55,7 @@ export default function SetInventoryDetailsStep({
     setValue("inventoryGoal", "gpc_basic");
     setValue("globalWarmingPotential", "ar6");
   }, [setValue]);
-  const {
-    getRootProps: inventoryGoalRootProps,
-    getItemProps: getInventoryGoalRadioProps,
-  } = useRadioGroup({
-    name: "inventoryGoal",
-    defaultValue: "gpc_basic",
-    onChange: (value: string) => {
-      setValue("inventoryGoal", value!);
-    },
-  } as UseRadioGroupProps);
 
-  // Handle global warming potential Radio Input
-  // Set default global warming potential form value
-  const { getRootProps: GWPRootProps, getItemProps: getGWPRadioProps } =
-    useRadioGroup({
-      name: "globalWarmingPotential",
-      defaultValue: "ar6",
-      onChange: (value: string) => {
-        setValue("globalWarmingPotential", value!);
-      },
-    } as UseRadioGroupProps);
-
-  const inventoryGoalGroup = inventoryGoalRootProps();
-  const gwpGroup = GWPRootProps();
   const yearsCollection = createListCollection({
     items: years.map((year) => ({
       label: year.toString(),
@@ -142,13 +117,13 @@ export default function SetInventoryDetailsStep({
               invalid={!!errors.year}
               errorText={
                 <Box gap="6px" m={0}>
-                  <MdWarning height="16px" width="16px" />
+                  <Icon as={MdWarning} boxSize={4} display="inline" />
                   <Text
                     fontSize="body.md"
                     color="content.tertiary"
                     fontStyle="normal"
                   >
-                    {errors.year && errors.year.message}
+                    {errors.year?.message}
                   </Text>
                 </Box>
               }
@@ -261,17 +236,10 @@ export default function SetInventoryDetailsStep({
                     value={field.value}
                     onValueChange={(e) => field.onChange(e.value)}
                   >
-                    <HStack {...inventoryGoalGroup} gap="16px">
+                    <HStack gap="16px">
                       {inventoryGoalOptions.map((value) => {
-                        const radioProps = getInventoryGoalRadioProps({
-                          value,
-                        });
                         return (
-                          <CustomRadio
-                            value={value}
-                            key={value}
-                            {...radioProps}
-                          >
+                          <CustomRadio value={value} key={value}>
                             {t(value)}
                           </CustomRadio>
                         );
@@ -355,11 +323,10 @@ export default function SetInventoryDetailsStep({
                   value={field.value}
                   onValueChange={(e) => field.onChange(e.value)}
                 >
-                  <HStack {...gwpGroup} gap="16px">
+                  <HStack gap="16px">
                     {globalWarmingPotential.map((value) => {
-                      const radioProps = getGWPRadioProps({ value });
                       return (
-                        <CustomRadio value={value} key={value} {...radioProps}>
+                        <CustomRadio value={value} key={value}>
                           {t(value)}
                         </CustomRadio>
                       );

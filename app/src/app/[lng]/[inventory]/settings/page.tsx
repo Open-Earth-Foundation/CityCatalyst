@@ -2,12 +2,11 @@
 
 import React, { useState } from "react";
 import { useTranslation } from "@/i18n/client";
-import { NavigationBar } from "@/components/navigation-bar";
 import { Box, Tab, TabList, TabPanels, Tabs, Text } from "@chakra-ui/react";
 
 import { useSession } from "next-auth/react";
 
-import MyProfileTab from "@/components/Tabs/my-profile-tab";
+import { MyProfileTab } from "@/components/Tabs/MyProfileTab";
 import MyFilesTab from "@/components/Tabs/my-files-tab";
 import MyInventoriesTab from "@/components/Tabs/my-inventories-tab";
 import { api } from "@/services/api";
@@ -66,11 +65,6 @@ export default function Settings({
   });
 
   const cityId = inventory?.city.cityId;
-
-  const { data: cityUsers } = api.useGetCityUsersQuery(
-    { cityId: cityId! },
-    { skip: !cityId },
-  );
 
   const { data: userFiles } = api.useGetUserFilesQuery(cityId!, {
     skip: !cityId,
@@ -135,16 +129,7 @@ export default function Settings({
               </TabList>
 
               <TabPanels className="-ml-4">
-                <MyProfileTab
-                  lng={lng}
-                  session={session}
-                  status={status}
-                  t={t}
-                  userInfo={userInfo}
-                  cities={cities}
-                  cityUsers={cityUsers}
-                  defaultCityId={cityId}
-                />
+                <MyProfileTab t={t} userInfo={userInfo} lng={lng} />
                 <MyFilesTab
                   lng={lng}
                   session={session}
@@ -156,8 +141,6 @@ export default function Settings({
                 />
                 <MyInventoriesTab
                   lng={lng}
-                  session={session}
-                  status={status}
                   cities={cities}
                   t={t}
                   defaultCityId={cityId}

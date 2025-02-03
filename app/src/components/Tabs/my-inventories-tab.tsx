@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  Avatar,
   Box,
   IconButton,
   List,
@@ -13,11 +12,11 @@ import {
   PopoverTrigger,
   Progress,
   Tab,
+  Table,
+  TableContainer,
   TabList,
   TabPanel,
   TabPanels,
-  Table,
-  TableContainer,
   Tabs,
   Tbody,
   Td,
@@ -36,8 +35,6 @@ import {
 } from "react-icons/md";
 import { FiTrash2 } from "react-icons/fi";
 
-import type { Session } from "next-auth";
-
 import type { TFunction } from "i18next";
 import DeleteInventoryModal from "../Modals/delete-inventory-modal";
 import type { UserAttributes } from "@/models/User";
@@ -45,10 +42,9 @@ import type { CityAttributes } from "@/models/City";
 import { api } from "@/services/api";
 import type { InventoryAttributes } from "@/models/Inventory";
 import { CircleFlag } from "react-circle-flags";
+import { Roles } from "@/util/types";
 
 interface MyInventoriesTabProps {
-  session: Session | null;
-  status: "loading" | "authenticated" | "unauthenticated";
   t: TFunction;
   lng: string;
   cities: CityAttributes[] | any;
@@ -56,8 +52,6 @@ interface MyInventoriesTabProps {
 }
 
 const MyInventoriesTab: FC<MyInventoriesTabProps> = ({
-  session,
-  status,
   t,
   lng,
   cities,
@@ -86,7 +80,7 @@ const MyInventoriesTab: FC<MyInventoriesTabProps> = ({
     email: "",
     userId: "",
     name: "",
-    role: "",
+    role: Roles.User,
   });
 
   return (
@@ -244,7 +238,6 @@ const MyInventoriesTab: FC<MyInventoriesTabProps> = ({
                                   <Td>
                                     <Text>{inventory.year}</Text>
                                   </Td>
-
                                   <Td>
                                     {/* TODO */}
                                     {/* generate status from progress API */}
@@ -256,7 +249,7 @@ const MyInventoriesTab: FC<MyInventoriesTabProps> = ({
                                       width="137px"
                                     />
                                   </Td>
-
+                                  {/* TODO remove hardcoded date https://openearth.atlassian.net/browse/ON-3350 */}
                                   <Td isNumeric>21 Sept, 2023</Td>
                                   <Td isNumeric>
                                     <Popover isLazy>

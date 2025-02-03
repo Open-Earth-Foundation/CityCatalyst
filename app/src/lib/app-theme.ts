@@ -69,6 +69,7 @@ export const appTheme = extendTheme({
       backgroundLight: "#FAFAFA",
       backgroundGreyFlat: "#FAFBFE",
       backgroundLoading: "#E8EAFB",
+      alternativeLight: "#F9FAFE",
     },
 
     interactive: {

@@ -16,3 +16,16 @@ export const TitleLarge = ({ text, ...props }: TitleProps) => (
     {text}
   </Heading>
 );
+
+export const TitleMedium = ({ ...props }: HeadingProps) => (
+  <Heading
+    fontFamily="heading"
+    fontSize="title.md"
+    fontWeight="semibold"
+    lineHeight="24"
+    textColor={"content.secondary"}
+    {...props}
+  >
+    {props.children}
+  </Heading>
+);

@@ -19,7 +19,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { forwardRef, useEffect, useState } from "react";
 import { MdArrowBack, MdChevronRight, MdOutlineHomeWork } from "react-icons/md";
 import {
@@ -60,6 +60,7 @@ function SubSectorPage({
   params: { lng: string; step: string; inventory: string; subsector: string };
 }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { t } = useTranslation(lng, "data");
   const { scrollY } = useScroll();
 
@@ -188,10 +189,12 @@ function SubSectorPage({
     isInventoryValueLoading ||
     isInventoryProgressLoading ||
     isUserInfoLoading;
-
+  console.log(router);
   const [referenceNumber, setReferenceNumber] = useState<string>(
-    `${getSectorRefNo(step)}.1.1`,
+    `${searchParams.get("refNo")}.1`,
   );
+
+  console.log(getSectorRefNo(step));
 
   useEffect(() => {
     if (scopes.length > 0 && !loadingState) {

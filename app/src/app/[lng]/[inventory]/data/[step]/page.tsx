@@ -817,7 +817,7 @@ export default function AddDataSteps({
                     className="shadow-none border border-overlay hover:drop-shadow-xl !duration-300 transition-shadow"
                     onClick={() => {
                       router.push(
-                        `/${inventory}/data/${convertSectorReferenceNumberToNumber(currentStep.referenceNumber)}/${subSector.subsectorId}`,
+                        `/${inventory}/data/${convertSectorReferenceNumberToNumber(currentStep.referenceNumber)}/${subSector.subsectorId}?refNo=${subSector.referenceNumber}`,
                       );
                     }}
                     key={subSector.subsectorId}

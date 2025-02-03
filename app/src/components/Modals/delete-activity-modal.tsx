@@ -28,6 +28,7 @@ interface DeleteAllActivitiesModalProps {
   selectedActivityValue: ActivityValue;
   resetSelectedActivityValue: () => void;
   inventoryId: string;
+  setDeleteActivityDialogOpen: Function;
 }
 
 const DeleteActivityModal: FC<DeleteAllActivitiesModalProps> = ({
@@ -37,6 +38,7 @@ const DeleteActivityModal: FC<DeleteAllActivitiesModalProps> = ({
   selectedActivityValue,
   resetSelectedActivityValue,
   inventoryId,
+  setDeleteActivityDialogOpen,
 }) => {
   const [deleteActivityValue, { isLoading }] = useDeleteActivityValueMutation();
 
@@ -82,11 +84,8 @@ const DeleteActivityModal: FC<DeleteAllActivitiesModalProps> = ({
     <>
       <DialogRoot
         blockScrollOnMount={false}
-        isOpen={isOpen}
-        onClose={() => {
-          onClose();
-          resetSelectedActivityValue();
-        }}
+        open={isOpen}
+        onOpenChange={(e: any) => setDeleteActivityDialogOpen(e.open)}
       >
         <DialogBackdrop />
         <DialogContent minH="388px" minW="568px" marginTop="10%">

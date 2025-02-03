@@ -83,26 +83,67 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
             {filteredFields.length > 0 && (
               <Table.ColumnHeader
                 truncate
-                fontSize="button.sm"
                 fontWeight="bold"
+                fontFamily="heading"
+                textTransform="uppercase"
+                fontSize="body.sm"
+                color="content.secondary"
               >
                 {t(filteredFields[0].id)}
               </Table.ColumnHeader>
             )}
 
-            <Table.ColumnHeader truncate>
+            <Table.ColumnHeader
+              truncate
+              fontWeight="bold"
+              fontFamily="heading"
+              textTransform="uppercase"
+              fontSize="body.sm"
+              color="content.secondary"
+            >
               {t("data-quality")}
             </Table.ColumnHeader>
-            <Table.ColumnHeader truncate>
+            <Table.ColumnHeader
+              truncate
+              fontWeight="bold"
+              fontFamily="heading"
+              textTransform="uppercase"
+              fontSize="body.sm"
+              color="content.secondary"
+            >
               {t(sourceField as string)}
             </Table.ColumnHeader>
-            <Table.ColumnHeader textAlign="end" truncate>
+            <Table.ColumnHeader
+              textAlign="end"
+              truncate
+              fontWeight="bold"
+              fontFamily="heading"
+              textTransform="uppercase"
+              fontSize="body.sm"
+              color="content.secondary"
+            >
               {t("co2-emissions")}
             </Table.ColumnHeader>
-            <Table.ColumnHeader textAlign="end" truncate>
+            <Table.ColumnHeader
+              textAlign="end"
+              truncate
+              fontWeight="bold"
+              fontFamily="heading"
+              textTransform="uppercase"
+              fontSize="body.sm"
+              color="content.secondary"
+            >
               {t("n2o-emissions")}
             </Table.ColumnHeader>
-            <Table.ColumnHeader textAlign="end" truncate>
+            <Table.ColumnHeader
+              textAlign="end"
+              truncate
+              fontWeight="bold"
+              fontFamily="heading"
+              textTransform="uppercase"
+              fontSize="body.sm"
+              color="content.secondary"
+            >
               {t("ch4-emissions")}
             </Table.ColumnHeader>
             <Table.ColumnHeader></Table.ColumnHeader>
@@ -112,7 +153,7 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
           {list?.map((activity: ActivityValue, i: number) => {
             const dataQuality = activity?.metadata?.dataQuality;
             return (
-              <Table.Row key={i}>
+              <Table.Row key={i} fontSize="body.md">
                 {filteredFields.length > 0 && (
                   <Table.Cell
                     title={t(activity?.activityData?.[filteredFields[0].id])}
@@ -123,7 +164,18 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
                   </Table.Cell>
                 )}
                 <Table.Cell>
-                  <Tag p="8px" minW="50px" variant={dataQuality}>
+                  <Tag
+                    p="8px"
+                    minW="50px"
+                    variant="surface"
+                    colorPalette={
+                      activity?.metadata?.dataQuality === "high"
+                        ? "green"
+                        : activity?.metadata?.dataQuality === "medium"
+                          ? "yellow"
+                          : "blue"
+                    }
+                  >
                     <TagLabel textTransform="capitalize">
                       {t(dataQuality!)}
                     </TagLabel>
@@ -159,7 +211,7 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
                       <IconButton
                         data-testid="activity-more-icon"
                         aria-label="more-icon"
-                        variant="ghost"
+                        variant="ghostLight"
                         color="content.tertiary"
                       >
                         <Icon as={MdMoreVert} size="lg" />
@@ -316,7 +368,7 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
                           <Icon
                             as={MdAdd}
                             color="interactive.control"
-                            fontSize="24px"
+                            size="2xl"
                           />
                         </IconButton>
                       </Box>

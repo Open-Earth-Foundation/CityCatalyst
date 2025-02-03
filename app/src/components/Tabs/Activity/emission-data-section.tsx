@@ -111,6 +111,14 @@ const EmissionDataSection = ({
     setAddActivityDataDialogOpen(true);
   };
 
+  // Delete Activity Dialog
+  const [openActivityDeleteDialog, setActivityDeleteDataDialogOpen] =
+    useState(false);
+
+  const handleDeleteActivityAddDataDialog = () => {
+    setActivityDeleteDataDialogOpen(true);
+  };
+
   const changeMethodologyFunc = () => {
     changeMethodology();
     onChangeMethodologyClose();
@@ -201,7 +209,7 @@ const EmissionDataSection = ({
             </Box>
           </Box>
           <Button
-            onClick={() => handleActivityAdded}
+            onClick={() => handleActivityAdded()}
             data-testid="add-emission-data-button"
             title={t("add-emission-data")}
             h="48px"
@@ -344,9 +352,9 @@ const EmissionDataSection = ({
                     t={t}
                     referenceNumber={refNumberWithScope}
                     activityData={activityValues}
-                    onDeleteActivity={onDeleteActivity}
+                    onDeleteActivity={handleDeleteActivityAddDataDialog}
                     onEditActivity={onEditActivity}
-                    showActivityModal={onAddActivityModalOpen}
+                    showActivityModal={handleActivityAdded}
                   />
                 ) : (
                   <ActivityAccordion
@@ -355,7 +363,7 @@ const EmissionDataSection = ({
                     activityData={activityValues}
                     showActivityModal={handleActivityAdded}
                     methodologyId={methodology?.id}
-                    onDeleteActivity={onDeleteActivity}
+                    onDeleteActivity={handleDeleteActivityAddDataDialog}
                     onEditActivity={onEditActivity}
                   />
                 )}
@@ -423,11 +431,12 @@ const EmissionDataSection = ({
         />
         <DeleteActivityModal
           t={t}
-          isOpen={isDeleteActivityModalOpen}
+          isOpen={openActivityDeleteDialog}
           onClose={onDeleteActivityModalClose}
           selectedActivityValue={selectedActivityValue as ActivityValue}
           inventoryId={inventoryId}
           resetSelectedActivityValue={() => setSelectedActivityValue(undefined)}
+          setDeleteActivityDialogOpen={setActivityDeleteDataDialogOpen}
         />
       </Box>
     </>

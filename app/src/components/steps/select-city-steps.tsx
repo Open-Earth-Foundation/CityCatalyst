@@ -295,6 +295,7 @@ export default function SelectCityStep({
                   bg={errors.city ? "sentiment.negativeOverlay" : "base.light"}
                   borderRadius="8px"
                   ref={cityInputRef}
+                  w="full"
                 >
                   <InputAddon pointerEvents="none" borderRadius="none">
                     <Icon
@@ -332,7 +333,7 @@ export default function SelectCityStep({
                 {onInputClicked && (
                   <Box
                     shadow="2dp"
-                    className="h-auto max-h-[272px] transition-all duration-150 overflow-scroll flex flex-col py-3 gap-3 rounded-lg w-full absolute bg-white z-50 mt-2 border border-[1px solid #E6E7FF]"
+                    className="h-auto max-h-[272px] transition-all duration-150 overflow-scroll flex flex-col py-3 gap-3 rounded-lg w-full absolute bg-white z-50 mt-2 border border-[1px solid #E6E7FF] mt-20"
                   >
                     {!isLoading && !cityInputQuery && <RecentSearches />}
                     {isLoading && <p className="px-4">Fetching Cities...</p>}

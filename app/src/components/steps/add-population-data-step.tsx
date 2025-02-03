@@ -146,7 +146,9 @@ export default function SetPopulationDataStep({
   const countryPopulation = watch("countryPopulation");
   const countryPopulationYear = watch("countryPopulationYear");
 
-  const yearsCollection = createListCollection({ items: years });
+  const yearsCollection = createListCollection({
+    items: years.map((year) => ({ label: year.toString(), value: year })),
+  });
 
   return (
     <Box w="full">
@@ -262,11 +264,13 @@ export default function SetPopulationDataStep({
                     />
                   </SelectTrigger>
                   <SelectContent>
-                    {years.map((year: number, i: number) => (
-                      <SelectItem item={year} key={i}>
-                        {year}
-                      </SelectItem>
-                    ))}
+                    {yearsCollection.items.map(
+                      (year: { label: string; value: number }, i: number) => (
+                        <SelectItem item={year} key={i}>
+                          {year.label}
+                        </SelectItem>
+                      ),
+                    )}
                   </SelectContent>
                 </SelectRoot>
                 <InputAddon display="flex" alignItems="center" mt={5} mr={6}>
@@ -359,11 +363,13 @@ export default function SetPopulationDataStep({
                     />
                   </SelectTrigger>
                   <SelectContent>
-                    {years.map((year: number, i: number) => (
-                      <SelectItem item={year} key={i}>
-                        {year}
-                      </SelectItem>
-                    ))}
+                    {yearsCollection.items.map(
+                      (year: { label: string; value: number }, i: number) => (
+                        <SelectItem item={year} key={i}>
+                          {year.label}
+                        </SelectItem>
+                      ),
+                    )}
                   </SelectContent>
                 </SelectRoot>
                 <InputAddon display="flex" alignItems="center" mt={5} mr={6}>
@@ -456,11 +462,13 @@ export default function SetPopulationDataStep({
                     />
                   </SelectTrigger>
                   <SelectContent>
-                    {years.map((year: number, i: number) => (
-                      <SelectItem item={year} key={i}>
-                        {year}
-                      </SelectItem>
-                    ))}
+                    {yearsCollection.items.map(
+                      (year: { label: string; value: number }, i: number) => (
+                        <SelectItem item={year} key={i}>
+                          {year.label}
+                        </SelectItem>
+                      ),
+                    )}
                   </SelectContent>
                 </SelectRoot>
                 <InputAddon display="flex" alignItems="center" mt={5} mr={6}>

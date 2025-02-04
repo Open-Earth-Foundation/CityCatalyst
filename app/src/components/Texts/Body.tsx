@@ -14,6 +14,7 @@ export const BodyXLarge = ({ text, ...props }: BodyProps) => (
     {...props}
   >
     {text}
+    {props.children}
   </Text>
 );
 

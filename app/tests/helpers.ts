@@ -15,6 +15,7 @@ import { DataSourceI18nAttributes } from "@/models/DataSourceI18n";
 // TODO re-enable when migration to Jest is finished
 // import { expect } from "@jest/globals";
 import assert from "node:assert";
+import { Roles } from "@/util/types";
 
 function expect(received: any) {
   return {
@@ -96,7 +97,7 @@ export const testUserData = {
   name: "Test User",
   email: "test@example.com",
   image: null,
-  role: "user",
+  role: Roles.User,
 };
 
 export function setupTests() {

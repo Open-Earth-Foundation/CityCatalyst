@@ -10,14 +10,15 @@ import {
   jest,
 } from "@jest/globals";
 import { mockRequest, setupTests, testUserData, testUserID } from "../helpers";
-import { AppSession, Auth, Roles } from "@/lib/auth";
+import { AppSession, Auth } from "@/lib/auth";
+import { Roles } from "@/util/types";
 
 const mockSession: AppSession = {
-  user: { id: testUserID, role: "user" },
+  user: { id: testUserID, role: Roles.User },
   expires: "1h",
 };
 const mockAdminSession: AppSession = {
-  user: { id: testUserID, role: "admin" },
+  user: { id: testUserID, role: Roles.Admin },
   expires: "1h",
 };
 
@@ -45,7 +46,10 @@ describe("Admin API", () => {
   });
 
   it("should change the user role when logged in as admin", async () => {
-    const req = mockRequest({ email: testUserData.email, role: Roles.Admin });
+    const req = mockRequest({
+      email: testUserData.email,
+      role: Roles.Admin,
+    });
     Auth.getServerSession = jest.fn(() => Promise.resolve(mockAdminSession));
     const res = await changeRole(req, { params: {} });
     expect(res.status).toBe(200);
@@ -59,7 +63,10 @@ describe("Admin API", () => {
   });
 
   it("should not change the user role when logged in as normal user", async () => {
-    const req = mockRequest({ email: testUserData.email, role: Roles.Admin });
+    const req = mockRequest({
+      email: testUserData.email,
+      role: Roles.Admin,
+    });
     const res = await changeRole(req, { params: {} });
     expect(res.status).toBe(403);
 

@@ -3,7 +3,7 @@ import { apiHandler } from "@/util/api";
 import createHttpError from "http-errors";
 import { NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
-import { CityInviteStatus } from "@/models/CityInvite";
+import { CityInviteStatus } from "@/util/types";
 
 export const GET = apiHandler(async (req, { params, session }) => {
   const invite = await db.models.CityInvite.findOne({
@@ -40,8 +40,10 @@ export const GET = apiHandler(async (req, { params, session }) => {
   const city = await db.models.City.findOne({
     where: { cityId: invite.cityId },
   });
-
-  await user?.addCity(city?.cityId);
-
+  if (city && user) {
+    await user.addCity(city.cityId);
+  } else {
+    throw new createHttpError.NotFound("City or User not found");
+  }
   return NextResponse.redirect(`${host}/${inventory}`);
 });

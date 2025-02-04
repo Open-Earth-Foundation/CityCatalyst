@@ -1,13 +1,8 @@
 import * as Sequelize from "sequelize";
 import { DataTypes, Model, Optional } from "sequelize";
 import { City, CityId } from "./City";
-
-export enum CityInviteStatus {
-  PENDING = "pending",
-  ACCEPTED = "accepted",
-  CANCELED = "canceled",
-  EXPIRED = "expired",
-}
+import { User, UserId } from "./User";
+import { CityInviteStatus } from "@/util/types";
 
 export interface CityInviteAttributes {
   id: string;
@@ -54,6 +49,16 @@ export class CityInvite
   setCity!: Sequelize.BelongsToSetAssociationMixin<City, CityId>;
   createCity!: Sequelize.BelongsToCreateAssociationMixin<City>;
 
+  //   CityInvite belongs to User via userId
+  user!: User;
+  getUser!: Sequelize.BelongsToGetAssociationMixin<User>;
+  setUser!: Sequelize.BelongsToSetAssociationMixin<User, UserId>;
+
+  //   CityInvite belongs to User via invitingUserId
+  invitingUser!: User;
+  getInvitingUser!: Sequelize.BelongsToGetAssociationMixin<User>;
+  setInvitingUser!: Sequelize.BelongsToSetAssociationMixin<User, UserId>;
+
   static initModel(sequelize: Sequelize.Sequelize): typeof CityInvite {
     return CityInvite.init(
       {
@@ -73,8 +78,13 @@ export class CityInvite
           field: "city_id",
         },
         userId: {
-          type: DataTypes.STRING(255),
+          type: DataTypes.UUID,
           allowNull: true,
+          references: {
+            model: "User",
+            key: "id",
+          },
+          field: "user_id",
         },
         email: {
           type: DataTypes.STRING(255),
@@ -92,6 +102,11 @@ export class CityInvite
         status: {
           type: DataTypes.STRING(255),
           allowNull: true,
+        },
+        lastUpdated: {
+          type: DataTypes.DATE,
+          allowNull: true,
+          field: "last_updated",
         },
       },
       {

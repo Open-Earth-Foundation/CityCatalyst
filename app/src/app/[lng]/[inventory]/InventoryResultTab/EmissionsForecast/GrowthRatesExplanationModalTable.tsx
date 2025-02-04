@@ -51,7 +51,7 @@ export const GrowthRatesExplanationModalTable = ({
                   .slice(0, 4)
                   .map((year) => (
                     <Td key={year}>
-                      {growthRates[year][sector.referenceNumber]}
+                      {growthRates[year][sector.referenceNumber].toFixed(4)}
                     </Td>
                   ))}
                 <Td>{growthRates["2030"][sector.referenceNumber]}</Td>

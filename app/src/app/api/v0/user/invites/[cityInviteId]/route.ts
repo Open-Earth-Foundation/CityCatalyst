@@ -37,9 +37,9 @@ export const DELETE = apiHandler(async (req, { params, session }) => {
         from "User"
                  join "Inventory" i on "User".default_inventory_id = i.inventory_id
                  join "CityUser" cu on "User".user_id = cu.user_id and cu.city_id = i.city_id
-        where city_user_id = :cityUserId`,
+        where cu.city_id = :cityId and cu.user_id = :userId`,
     {
-      replacements: { cityInviteId },
+      replacements: { cityId: invite.cityId, userId: invite.userId },
       type: QueryTypes.SELECT,
     },
   );

@@ -2,7 +2,6 @@ import React, { FC, useEffect, useState } from "react";
 
 import {
   Box,
-  Button,
   Center,
   CircularProgress,
   HStack,
@@ -10,17 +9,11 @@ import {
   InputGroup,
   InputLeftElement,
   Select,
-  Text,
 } from "@chakra-ui/react";
 import { api } from "@/services/api";
-import { TFunction } from "i18next";
 import { GetUserCityInvitesResponse } from "@/util/types";
 import ManageUsersTable from "./ManageUsersTable";
-import {
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  SearchIcon,
-} from "@chakra-ui/icons";
+import { SearchIcon } from "@chakra-ui/icons";
 import { TitleMedium } from "@/components/Texts/Title";
 import { AddCollaboratorButtonSmall } from "./AddCollaboratorButtonSmall";
 import { useTranslation } from "@/i18n/client";
@@ -94,7 +87,7 @@ const ManageUsersTabPanel: FC<ManageUsersProps> = ({ lng }) => {
                   <SearchIcon color="content.tertiary" />
                 </InputLeftElement>
                 <Input
-                  type="tel"
+                  type="search"
                   fontSize="body.md"
                   fontFamily="heading"
                   letterSpacing="wide"
@@ -117,33 +110,6 @@ const ManageUsersTabPanel: FC<ManageUsersProps> = ({ lng }) => {
                 <option value="admin">{t("admin")}</option>
                 <option value="contributor">{t("contributor")}</option>
               </Select>
-            </Box>
-            <Box display="flex" alignItems="center" gap="8px">
-              <Text
-                color="content.tertiary"
-                fontSize="body.md"
-                fontFamily="heading"
-                fontWeight="normal"
-                letterSpacing="wide"
-              >
-                1-{filteredInvites.length} of {filteredInvites.length}
-              </Text>
-              <Box display="flex" gap="8px">
-                <Button variant="ghost" h="24px" w="24px">
-                  <ChevronLeftIcon
-                    h="24px"
-                    w="24px"
-                    color="background.overlay"
-                  />
-                </Button>
-                <Button variant="ghost" h="24px" w="24px">
-                  <ChevronRightIcon
-                    h="24px"
-                    w="24px"
-                    color="content.secondary"
-                  />
-                </Button>
-              </Box>
             </Box>
           </Box>
           <ManageUsersTable cityInvites={filteredInvites} t={t} />

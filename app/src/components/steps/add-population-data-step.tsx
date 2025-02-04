@@ -11,19 +11,25 @@ import { useEffect, useState } from "react";
 import { findClosestYear } from "@/util/helpers";
 import {
   Box,
-  FormControl,
-  FormErrorIcon,
-  FormErrorMessage,
+  createListCollection,
+  Group,
   Heading,
   HStack,
-  InputGroup,
-  InputRightElement,
-  Select,
+  Icon,
+  InputAddon,
   Text,
 } from "@chakra-ui/react";
 import FormattedThousandsNumberInput from "@/app/[lng]/onboarding/setup/FormattedThousandsNumberInput";
-import { InfoOutlineIcon } from "@chakra-ui/icons";
-import Checkmark from "./chekmark";
+import { MdCheck, MdErrorOutline, MdInfoOutline } from "react-icons/md";
+import { Field } from "@/components/ui/field";
+import {
+  SelectContent,
+  SelectItem,
+  SelectLabel,
+  SelectRoot,
+  SelectTrigger,
+  SelectValueText,
+} from "@/components/ui/select";
 
 export default function SetPopulationDataStep({
   t,
@@ -81,7 +87,7 @@ export default function SetPopulationDataStep({
       setValue("cityPopulationYear", population.year);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cityData, year, setValue]);
+  }, [cityData, year, numberOfYearsDisplayed, setValue]);
 
   useEffect(() => {
     if (regionData && year) {
@@ -97,7 +103,7 @@ export default function SetPopulationDataStep({
       setValue("regionPopulation", population.population);
       setValue("regionPopulationYear", population.year);
     }
-  }, [regionData, year, setValue]);
+  }, [regionData, year, numberOfYearsDisplayed, setValue]);
 
   useEffect(() => {
     if (countryData && year) {
@@ -129,7 +135,7 @@ export default function SetPopulationDataStep({
         setValue("totalCountryEmissions", emissions);
       }
     }
-  }, [countryData, year, setValue]);
+  }, [countryData, year, numberOfYearsDisplayed, setValue]);
 
   const cityPopulation = watch("cityPopulation");
   const cityPopulationYear = watch("cityPopulationYear");
@@ -139,6 +145,10 @@ export default function SetPopulationDataStep({
 
   const countryPopulation = watch("countryPopulation");
   const countryPopulationYear = watch("countryPopulationYear");
+
+  const yearsCollection = createListCollection({
+    items: years.map((year) => ({ label: year.toString(), value: year })),
+  });
 
   return (
     <Box w="full">
@@ -187,8 +197,16 @@ export default function SetPopulationDataStep({
             </Text>
           </Box>
           <Box display="flex" gap="16px" alignItems="baseline">
-            <HStack spacing={6} align="start">
-              <FormControl isInvalid={!!errors.countryPopulation}>
+            <HStack spaceX={6} spaceY={6} align="start">
+              <Field
+                invalid={!!errors.countryPopulation}
+                errorText={
+                  <Text color="content.tertiary" letterSpacing="0.5px">
+                    <MdErrorOutline />
+                    {errors.countryPopulation?.message}
+                  </Text>
+                }
+              >
                 <FormattedThousandsNumberInput<Inputs>
                   name="countryPopulation"
                   control={control}
@@ -209,7 +227,7 @@ export default function SetPopulationDataStep({
                   letterSpacing="wide"
                 />
                 <Box display="flex" gap="6px" alignItems="center" py="8px">
-                  <InfoOutlineIcon color="interactive.control" />
+                  <Icon as={MdInfoOutline} color="interactive.control" />
                   <Text
                     color="content.tertiary"
                     fontSize="body.md"
@@ -219,21 +237,12 @@ export default function SetPopulationDataStep({
                     {t("source")}: {countryPopulationSourceName}
                   </Text>
                 </Box>
-                {errors.countryPopulation && (
-                  <FormErrorMessage
-                    color="content.tertiary"
-                    letterSpacing="0.5px"
-                  >
-                    <FormErrorIcon />
-                    {errors.countryPopulation.message}
-                  </FormErrorMessage>
-                )}
-              </FormControl>
+              </Field>
             </HStack>
-            <FormControl isInvalid={!!errors.countryPopulationYear}>
-              <InputGroup>
-                <Select
-                  placeholder={t("inventory-year-placeholder")}
+            <Field invalid={!!errors.countryPopulationYear}>
+              <Group attached>
+                <SelectRoot
+                  collection={yearsCollection}
                   size="lg"
                   w="217px"
                   shadow="1dp"
@@ -247,25 +256,34 @@ export default function SetPopulationDataStep({
                     required: t("inventory-year-required"),
                     valueAsNumber: true,
                   })}
+                  value={[countryPopulationYear]}
+                  onValueChange={(e) =>
+                    setValue("countryPopulationYear", e.value[0])
+                  }
                 >
-                  {years.map((year: number, i: number) => (
-                    <option value={year} key={i}>
-                      {year}
-                    </option>
-                  ))}
-                </Select>
-                <InputRightElement
-                  display="flex"
-                  alignItems="center"
-                  mt={5}
-                  mr={6}
-                >
-                  <Checkmark
-                    condition={!!countryPopulationYear && !!countryPopulation}
-                  />
-                </InputRightElement>
-              </InputGroup>
-            </FormControl>
+                  <SelectLabel />
+                  <SelectTrigger>
+                    <SelectValueText
+                      placeholder={t("inventory-year-placeholder")}
+                    />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {yearsCollection.items.map(
+                      (year: { label: string; value: number }, i: number) => (
+                        <SelectItem item={year} key={i}>
+                          {year.label}
+                        </SelectItem>
+                      ),
+                    )}
+                  </SelectContent>
+                </SelectRoot>
+                <InputAddon display="flex" alignItems="center" mt={5} mr={6}>
+                  {!!countryPopulationYear && !!countryPopulation && (
+                    <Icon as={MdCheck} color="semantic.success" boxSize={4} />
+                  )}
+                </InputAddon>
+              </Group>
+            </Field>
           </Box>
         </Box>
       </Box>
@@ -293,8 +311,16 @@ export default function SetPopulationDataStep({
             </Text>
           </Box>
           <Box display="flex" gap="16px" alignItems="baseline">
-            <HStack spacing={6} align="start">
-              <FormControl isInvalid={!!errors.regionPopulation}>
+            <HStack spaceX={6} spaceY={6} align="start">
+              <Field
+                invalid={!!errors.regionPopulation}
+                errorText={
+                  <Text color="content.tertiary" letterSpacing="0.5px">
+                    <MdErrorOutline />
+                    {errors.regionPopulation?.message}
+                  </Text>
+                }
+              >
                 <FormattedThousandsNumberInput<Inputs>
                   name="regionPopulation"
                   control={control}
@@ -314,21 +340,12 @@ export default function SetPopulationDataStep({
                   fontSize="body.lg"
                   letterSpacing="wide"
                 />
-                {errors.regionPopulation && (
-                  <FormErrorMessage
-                    color="content.tertiary"
-                    letterSpacing="0.5px"
-                  >
-                    <FormErrorIcon />
-                    {errors.regionPopulation.message}
-                  </FormErrorMessage>
-                )}
-              </FormControl>
+              </Field>
             </HStack>
-            <FormControl isInvalid={!!errors.regionPopulationYear}>
-              <InputGroup>
-                <Select
-                  placeholder={t("inventory-year-placeholder")}
+            <Field invalid={!!errors.regionPopulationYear}>
+              <Group attached>
+                <SelectRoot
+                  collection={yearsCollection}
                   size="lg"
                   w="217px"
                   shadow="1dp"
@@ -342,20 +359,34 @@ export default function SetPopulationDataStep({
                     required: t("inventory-year-required"),
                     valueAsNumber: true,
                   })}
+                  value={[regionPopulationYear]}
+                  onValueChange={(e) =>
+                    setValue("regionPopulationYear", e.value[0])
+                  }
                 >
-                  {years.map((year: number, i: number) => (
-                    <option value={year} key={i}>
-                      {year}
-                    </option>
-                  ))}
-                </Select>
-                <InputRightElement mt={5} mr={6}>
-                  <Checkmark
-                    condition={!!regionPopulationYear && !!regionPopulation}
-                  />
-                </InputRightElement>
-              </InputGroup>
-            </FormControl>
+                  <SelectLabel />
+                  <SelectTrigger>
+                    <SelectValueText
+                      placeholder={t("inventory-year-placeholder")}
+                    />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {yearsCollection.items.map(
+                      (year: { label: string; value: number }, i: number) => (
+                        <SelectItem item={year} key={i}>
+                          {year.label}
+                        </SelectItem>
+                      ),
+                    )}
+                  </SelectContent>
+                </SelectRoot>
+                <InputAddon display="flex" alignItems="center" mt={5} mr={6}>
+                  {!!regionPopulationYear && !!regionPopulation && (
+                    <Icon as={MdCheck} color="semantic.success" boxSize={4} />
+                  )}
+                </InputAddon>
+              </Group>
+            </Field>
           </Box>
         </Box>
       </Box>
@@ -383,8 +414,16 @@ export default function SetPopulationDataStep({
             </Text>
           </Box>
           <Box display="flex" gap="16px" alignItems="baseline">
-            <HStack spacing={6} align="start">
-              <FormControl isInvalid={!!errors.cityPopulation}>
+            <HStack spaceX={6} spaceY={6} align="start">
+              <Field
+                invalid={!!errors.cityPopulation}
+                errorText={
+                  <Text color="content.tertiary" letterSpacing="0.5px">
+                    <MdErrorOutline />
+                    {errors.cityPopulation?.message}
+                  </Text>
+                }
+              >
                 <FormattedThousandsNumberInput<Inputs>
                   name="cityPopulation"
                   control={control}
@@ -404,21 +443,12 @@ export default function SetPopulationDataStep({
                   fontSize="body.lg"
                   letterSpacing="wide"
                 />
-                {errors.cityPopulation && (
-                  <FormErrorMessage
-                    color="content.tertiary"
-                    letterSpacing="0.5px"
-                  >
-                    <FormErrorIcon />
-                    {errors.cityPopulation.message}
-                  </FormErrorMessage>
-                )}
-              </FormControl>
+              </Field>
             </HStack>
-            <FormControl isInvalid={!!errors.cityPopulationYear}>
-              <InputGroup>
-                <Select
-                  placeholder={t("inventory-year-placeholder")}
+            <Field invalid={!!errors.cityPopulationYear}>
+              <Group attached>
+                <SelectRoot
+                  collection={yearsCollection}
                   size="lg"
                   w="217px"
                   shadow="1dp"
@@ -432,20 +462,34 @@ export default function SetPopulationDataStep({
                     required: t("inventory-year-required"),
                     valueAsNumber: true,
                   })}
+                  value={[cityPopulationYear]}
+                  onValueChange={(e) =>
+                    setValue("cityPopulationYear", e.value[0])
+                  }
                 >
-                  {years.map((year: number, i: number) => (
-                    <option value={year} key={i}>
-                      {year}
-                    </option>
-                  ))}
-                </Select>
-                <InputRightElement mt={5} mr={6}>
-                  <Checkmark
-                    condition={!!cityPopulationYear && !!cityPopulation}
-                  />
-                </InputRightElement>
-              </InputGroup>
-            </FormControl>
+                  <SelectLabel />
+                  <SelectTrigger>
+                    <SelectValueText
+                      placeholder={t("inventory-year-placeholder")}
+                    />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {yearsCollection.items.map(
+                      (year: { label: string; value: number }, i: number) => (
+                        <SelectItem item={year} key={i}>
+                          {year.label}
+                        </SelectItem>
+                      ),
+                    )}
+                  </SelectContent>
+                </SelectRoot>
+                <InputAddon display="flex" alignItems="center" mt={5} mr={6}>
+                  {!!cityPopulationYear && !!cityPopulation && (
+                    <Icon as={MdCheck} color="semantic.success" boxSize={4} />
+                  )}
+                </InputAddon>
+              </Group>
+            </Field>
           </Box>
         </Box>
       </Box>

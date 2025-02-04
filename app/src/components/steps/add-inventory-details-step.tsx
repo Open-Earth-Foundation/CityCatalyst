@@ -9,21 +9,26 @@ import { Inputs } from "../../app/[lng]/onboarding/setup/page";
 import { useEffect } from "react";
 import {
   Box,
-  FormControl,
-  FormErrorMessage,
+  createListCollection,
   Heading,
   HStack,
-  InputGroup,
-  InputRightElement,
+  Icon,
   Link,
-  Select,
   Text,
-  useRadioGroup,
-  UseRadioGroupProps,
 } from "@chakra-ui/react";
-import { CheckIcon, WarningIcon } from "@chakra-ui/icons";
+import { MdCheck, MdWarning } from "react-icons/md";
 import { Trans } from "react-i18next";
-import { CustomRadioButtons } from "@/components/custom-radio-buttons";
+import { CustomRadio, RadioGroup } from "@/components/ui/custom-radio";
+import { InputGroup } from "@/components/ui/input-group";
+import {
+  SelectContent,
+  SelectItem,
+  SelectLabel,
+  SelectRoot,
+  SelectTrigger,
+  SelectValueText,
+} from "@/components/ui/select";
+import { Field } from "@/components/ui/field";
 
 export default function SetInventoryDetailsStep({
   t,
@@ -49,31 +54,14 @@ export default function SetInventoryDetailsStep({
   useEffect(() => {
     setValue("inventoryGoal", "gpc_basic");
     setValue("globalWarmingPotential", "ar6");
-  }, []);
-  const {
-    getRootProps: inventoryGoalRootProps,
-    getRadioProps: getInventoryGoalRadioProps,
-  } = useRadioGroup({
-    name: "inventoryGoal",
-    defaultValue: "gpc_basic",
-    onChange: (value: string) => {
-      setValue("inventoryGoal", value!);
-    },
-  } as UseRadioGroupProps);
+  }, [setValue]);
 
-  // Handle global warming potential Radio Input
-  // Set default global warming potential form value
-  const { getRootProps: GWPRootProps, getRadioProps: getGWPRadioProps } =
-    useRadioGroup({
-      name: "globalWarmingPotential",
-      defaultValue: "ar6",
-      onChange: (value: string) => {
-        setValue("globalWarmingPotential", value!);
-      },
-    } as UseRadioGroupProps);
-
-  const inventoryGoalGroup = inventoryGoalRootProps();
-  const gwpGroup = GWPRootProps();
+  const yearsCollection = createListCollection({
+    items: years.map((year) => ({
+      label: year.toString(),
+      value: year,
+    })),
+  });
 
   return (
     <Box w="full">
@@ -125,10 +113,36 @@ export default function SetInventoryDetailsStep({
             </Text>
           </Box>
           <Box>
-            <FormControl isInvalid={!!errors.year}>
-              <InputGroup>
-                <Select
-                  placeholder={t("inventory-year-placeholder")}
+            <Field
+              invalid={!!errors.year}
+              errorText={
+                <Box gap="6px" m={0}>
+                  <Icon as={MdWarning} boxSize={4} display="inline" />
+                  <Text
+                    fontSize="body.md"
+                    color="content.tertiary"
+                    fontStyle="normal"
+                  >
+                    {errors.year?.message}
+                  </Text>
+                </Box>
+              }
+            >
+              <InputGroup
+                endElement={
+                  !!year && (
+                    <Icon
+                      as={MdCheck}
+                      color="semantic.success"
+                      boxSize={4}
+                      mt={2}
+                      mr={10}
+                    />
+                  )
+                }
+              >
+                <SelectRoot
+                  collection={yearsCollection}
                   size="lg"
                   w="400px"
                   shadow="1dp"
@@ -143,34 +157,24 @@ export default function SetInventoryDetailsStep({
                     required: t("inventory-year-required"),
                   })}
                 >
-                  {years.map((year: number, i: number) => (
-                    <option value={year} key={i}>
-                      {year}
-                    </option>
-                  ))}
-                </Select>
-                <InputRightElement>
-                  {!!year && (
-                    <CheckIcon
-                      color="semantic.success"
-                      boxSize={4}
-                      mt={2}
-                      mr={10}
+                  <SelectLabel />
+                  <SelectTrigger>
+                    <SelectValueText
+                      placeholder={t("inventory-year-placeholder")}
                     />
-                  )}
-                </InputRightElement>
+                  </SelectTrigger>
+                  <SelectContent>
+                    {yearsCollection.items.map(
+                      (year: { label: string; value: number }, i: number) => (
+                        <SelectItem item={year} key={i}>
+                          {year.label}
+                        </SelectItem>
+                      ),
+                    )}
+                  </SelectContent>
+                </SelectRoot>
               </InputGroup>
-              <FormErrorMessage gap="6px" m={0}>
-                <WarningIcon h="16px" w="16px" />
-                <Text
-                  fontSize="body.md"
-                  color="content.tertiary"
-                  fontStyle="normal"
-                >
-                  {errors.year && errors.year.message}
-                </Text>
-              </FormErrorMessage>
-            </FormControl>
+            </Field>
           </Box>
         </Box>
       </Box>
@@ -228,34 +232,28 @@ export default function SetInventoryDetailsStep({
               }}
               render={({ field }) => (
                 <>
-                  <HStack {...inventoryGoalGroup} gap="16px">
-                    {inventoryGoalOptions.map((value) => {
-                      const radioProps = getInventoryGoalRadioProps({ value });
-                      return (
-                        <CustomRadioButtons
-                          value={value}
-                          isChecked={field.value === value}
-                          key={value}
-                          {...radioProps}
-                        >
-                          {t(value)}
-                        </CustomRadioButtons>
-                      );
-                    })}
-                  </HStack>
+                  <RadioGroup
+                    value={field.value}
+                    onValueChange={(e) => field.onChange(e.value)}
+                  >
+                    <HStack gap="16px">
+                      {inventoryGoalOptions.map((value) => {
+                        return (
+                          <CustomRadio value={value} key={value}>
+                            {t(value)}
+                          </CustomRadio>
+                        );
+                      })}
+                    </HStack>
+                  </RadioGroup>
                 </>
               )}
             />
-            <FormErrorMessage
-              display="flex"
-              gap="6px"
-              alignItems="center"
-              py="16px"
-            >
-              <WarningIcon
+            <Box display="flex" gap="6px" alignItems="center" py="16px">
+              <MdWarning
                 color="sentiment.negativeDefault"
-                h="16px"
-                w="16px"
+                height="16px"
+                width="16px"
               />
               <Text
                 fontSize="body.md"
@@ -264,7 +262,7 @@ export default function SetInventoryDetailsStep({
               >
                 {errors.inventoryGoal && errors.inventoryGoal.message}
               </Text>
-            </FormErrorMessage>
+            </Box>
           </Box>
         </Box>
       </Box>
@@ -314,9 +312,6 @@ export default function SetInventoryDetailsStep({
             </Text>
           </Box>
           <Box>
-            {/* TODO:
-              only enable ar6 and disable ar5 until we have the feature
-              */}
             <Controller
               name="globalWarmingPotential"
               control={control}
@@ -324,23 +319,20 @@ export default function SetInventoryDetailsStep({
                 required: t("global-warming-potential-required"),
               }}
               render={({ field }) => (
-                <>
-                  <HStack {...gwpGroup} gap="16px">
+                <RadioGroup
+                  value={field.value}
+                  onValueChange={(e) => field.onChange(e.value)}
+                >
+                  <HStack gap="16px">
                     {globalWarmingPotential.map((value) => {
-                      const radioProps = getGWPRadioProps({ value });
                       return (
-                        <CustomRadioButtons
-                          value={value}
-                          isChecked={field.value === value}
-                          key={value}
-                          {...radioProps}
-                        >
+                        <CustomRadio value={value} key={value}>
                           {t(value)}
-                        </CustomRadioButtons>
+                        </CustomRadio>
                       );
                     })}
                   </HStack>
-                </>
+                </RadioGroup>
               )}
             />
           </Box>

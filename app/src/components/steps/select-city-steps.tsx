@@ -7,7 +7,7 @@ import {
 import { TFunction } from "i18next";
 import { OCCityAttributes } from "@/util/types";
 import { useAppDispatch } from "@/lib/hooks";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { set } from "@/features/city/openclimateCitySlice";
 import {
   useGetCityQuery,
@@ -18,31 +18,24 @@ import { findClosestYear } from "@/util/helpers";
 import {
   Box,
   Card,
-  FormControl,
-  FormErrorMessage,
-  FormLabel,
+  Group,
   Heading,
   Icon,
   Input,
-  InputGroup,
-  InputLeftElement,
-  InputRightElement,
+  InputAddon,
   Link,
   Text,
-  useOutsideClick,
 } from "@chakra-ui/react";
-import {
-  CheckIcon,
-  InfoOutlineIcon,
-  SearchIcon,
-  WarningIcon,
-} from "@chakra-ui/icons";
-import RecentSearches from "@/components/recent-searches";
+import { MdCheck, MdInfoOutline, MdSearch, MdWarning } from "react-icons/md";
 import Image from "next/image";
 import dynamic from "next/dynamic";
 import { NoResultsIcon } from "../icons";
 import { useSearchParams } from "next/navigation";
 import { Trans } from "react-i18next";
+
+import RecentSearches from "@/components/recent-searches";
+import { useOutsideClick } from "@/lib/use-outside-click";
+import { Field } from "@/components/ui/field";
 
 const CityMap = dynamic(() => import("@/components/CityMap"), { ssr: false });
 
@@ -152,7 +145,7 @@ export default function SelectCityStep({
         area: 0,
       });
     }
-  }, [CCCityData]);
+  }, [CCCityData, setValue, setOcCityData]);
 
   // react to API data changes and different year selections
   useEffect(() => {
@@ -246,11 +239,10 @@ export default function SelectCityStep({
 
   // using useOutsideClick instead of onBlur input attribute
   // to fix clicking city dropdown entries not working
-  const cityInputRef = useRef<HTMLDivElement>(null);
-  useOutsideClick({
-    ref: cityInputRef,
-    handler: () => setTimeout(() => setOnInputClicked(false), 0),
-  });
+  // const cityInputRef = useRef<HTMLDivElement>(null);
+  const cityInputRef = useOutsideClick(() =>
+    setTimeout(() => setOnInputClicked(false), 0),
+  );
 
   return (
     <Box w="full">
@@ -277,215 +269,229 @@ export default function SelectCityStep({
         </Text>
       </Box>
       <Box w="full">
-        <Card p={6} shadow="none" px="24px" py="32px">
-          <form className="space-y-8">
-            <FormControl isInvalid={!!errors.city}>
-              <FormLabel data-testId="setup-city-input-label">
-                {t("city")}
-              </FormLabel>
-              <InputGroup
-                ref={cityInputRef}
-                shadow="1dp"
-                bg={errors.city ? "sentiment.negativeOverlay" : "base.light"}
-                borderRadius="8px"
+        <Card.Root p={6} shadow="none" px="24px" py="32px">
+          <Card.Body>
+            <form className="space-y-8">
+              <Field
+                invalid={!!errors.city}
+                errorText={
+                  <Box gap="6px">
+                    <MdWarning />
+                    <Text
+                      fontSize="body.md"
+                      color="content.tertiary"
+                      fontStyle="normal"
+                    >
+                      {errors.city && errors.city.message}
+                    </Text>
+                  </Box>
+                }
+                label={t("city")}
+                data-testId="setup-city-input-label"
               >
-                <InputLeftElement pointerEvents="none" borderRadius="none">
-                  <SearchIcon color="tertiary" boxSize={4} mt={2} ml={4} />
-                </InputLeftElement>
-                <Input
-                  type="text"
-                  data-testId="setup-city-input"
-                  placeholder={t("select-city-placeholder")}
-                  size="lg"
-                  {...register("city", {
-                    required: t("select-city-required"),
-                  })}
-                  autoComplete="off"
-                  onKeyUp={() => setOnInputClicked(true)}
-                  onFocus={() => setOnInputClicked(true)}
-                />
-                <InputRightElement>
-                  {isCityNew && (
-                    <CheckIcon
-                      color="semantic.success"
-                      boxSize={4}
-                      mr={4}
-                      mt={2}
-                    />
-                  )}
-                </InputRightElement>
-              </InputGroup>
-              {onInputClicked && (
-                <Box
-                  shadow="2dp"
-                  className="h-auto max-h-[272px] transition-all duration-150 overflow-scroll flex flex-col py-3 gap-3 rounded-lg w-full absolute bg-white z-50 mt-2 border border-[1px solid #E6E7FF]"
+                <Group
+                  attached
+                  shadow="1dp"
+                  bg={errors.city ? "sentiment.negativeOverlay" : "base.light"}
+                  borderRadius="8px"
+                  ref={cityInputRef}
+                  w="full"
                 >
-                  {!isLoading && !cityInputQuery && <RecentSearches />}
-                  {isLoading && <p className="px-4">Fetching Cities...</p>}
-                  {isSuccess &&
-                    cities &&
-                    cities.map((city: OCCityAttributes) => {
-                      return (
-                        <Box
-                          onClick={() => handleSetCity(city)}
-                          key={city.actor_id}
-                          className="h-[72px] py-3 w-full flex flex-col justify-center group px-4 hover:bg-[#2351DC] transition-all duration-150 cursor-pointer"
-                        >
-                          <Text
-                            className="group-hover:text-white"
+                  <InputAddon pointerEvents="none" borderRadius="none">
+                    <Icon
+                      as={MdSearch}
+                      color="tertiary"
+                      boxSize={4}
+                      mt={2}
+                      ml={4}
+                    />
+                  </InputAddon>
+                  <Input
+                    type="text"
+                    data-testId="setup-city-input"
+                    placeholder={t("select-city-placeholder")}
+                    size="lg"
+                    {...register("city", {
+                      required: t("select-city-required"),
+                    })}
+                    autoComplete="off"
+                    onKeyUp={() => setOnInputClicked(true)}
+                    onFocus={() => setOnInputClicked(true)}
+                  />
+                  <InputAddon>
+                    {isCityNew && (
+                      <Icon
+                        as={MdCheck}
+                        color="semantic.success"
+                        boxSize={4}
+                        mr={4}
+                        mt={2}
+                      />
+                    )}
+                  </InputAddon>
+                </Group>
+                {onInputClicked && (
+                  <Box
+                    shadow="2dp"
+                    className="h-auto max-h-[272px] transition-all duration-150 overflow-scroll flex flex-col py-3 gap-3 rounded-lg w-full absolute bg-white z-50 mt-2 border border-[1px solid #E6E7FF] mt-20"
+                  >
+                    {!isLoading && !cityInputQuery && <RecentSearches />}
+                    {isLoading && <p className="px-4">Fetching Cities...</p>}
+                    {isSuccess &&
+                      cities &&
+                      cities.map((city: OCCityAttributes) => {
+                        return (
+                          <Box
+                            onClick={() => handleSetCity(city)}
+                            key={city.actor_id}
+                            className="h-[72px] py-3 w-full flex flex-col justify-center group px-4 hover:bg-[#2351DC] transition-all duration-150 cursor-pointer"
+                          >
+                            <Text
+                              className="group-hover:text-white"
+                              color="content.secondary"
+                              fontSize="body.lg"
+                              fontFamily="body"
+                              fontWeight="normal"
+                              lineHeight="24"
+                              letterSpacing="wide"
+                            >
+                              {city.name}
+                            </Text>
+                            <Text
+                              className="group-hover:text-[#E8EAFB]"
+                              color="content.tertiary"
+                              fontSize="body.lg"
+                              fontFamily="body.md"
+                              fontWeight="normal"
+                              lineHeight="20"
+                              letterSpacing="wide"
+                            >
+                              {renderParentPath(city.root_path_geo)}
+                            </Text>
+                          </Box>
+                        );
+                      })}
+                    {isSuccess && cities.length == 0 && (
+                      <Box className="py-2 w-full items-center flex gap-4 px-4">
+                        <Box h="full" display="flex" alignItems="center">
+                          <Icon
+                            as={NoResultsIcon}
                             color="content.secondary"
-                            fontSize="body.lg"
+                            boxSize="24px"
+                          />
+                        </Box>
+                        <Box display="flex" flexDir="column" gap="8px">
+                          <Text
+                            color="content.secondary"
+                            fontSize="body.md"
                             fontFamily="body"
                             fontWeight="normal"
                             lineHeight="24"
                             letterSpacing="wide"
                           >
-                            {city.name}
+                            {t("no-results")}
                           </Text>
                           <Text
-                            className="group-hover:text-[#E8EAFB]"
                             color="content.tertiary"
-                            fontSize="body.lg"
-                            fontFamily="body.md"
+                            fontSize="body.sm"
+                            fontFamily="body"
                             fontWeight="normal"
-                            lineHeight="20"
+                            lineHeight="24"
                             letterSpacing="wide"
                           >
-                            {renderParentPath(city.root_path_geo)}
+                            {t("no-results-details")}
                           </Text>
                         </Box>
-                      );
-                    })}
-                  {isSuccess && cities.length == 0 && (
-                    <Box className="py-2 w-full items-center flex gap-4 px-4">
-                      <Box h="full" display="flex" alignItems="center">
-                        <Icon
-                          as={NoResultsIcon}
-                          color="content.secondary"
-                          boxSize="24px"
-                        />
                       </Box>
-                      <Box display="flex" flexDir="column" gap="8px">
-                        <Text
-                          color="content.secondary"
-                          fontSize="body.md"
-                          fontFamily="body"
-                          fontWeight="normal"
-                          lineHeight="24"
+                    )}
+                  </Box>
+                )}
+              </Field>
+              {ocCityData ? (
+                <Box
+                  display="flex"
+                  flexDir="column"
+                  borderRadius="8px"
+                  w="full"
+                  h="full"
+                  gap="24px"
+                  overflow="hidden"
+                >
+                  <CityMap
+                    locode={ocCityData.actor_id}
+                    height={500}
+                    width={1100}
+                  />
+                  <Box display="flex" alignItems="center" gap="6px">
+                    <MdInfoOutline />
+                    <Text
+                      color="content.secondary"
+                      fontWeight="normal"
+                      letterSpacing="wide"
+                    >
+                      <Trans i18nKey="city-boundary-info" t={t}>
+                        <Link
+                          color="content.link"
+                          fontWeight="bold"
+                          textDecoration="underline"
                           letterSpacing="wide"
+                          href="mailto:greta@openearth.org"
                         >
-                          {t("no-results")}
-                        </Text>
-                        <Text
-                          color="content.tertiary"
-                          fontSize="body.sm"
-                          fontFamily="body"
-                          fontWeight="normal"
-                          lineHeight="24"
-                          letterSpacing="wide"
-                        >
-                          {t("no-results-details")}
-                        </Text>
-                      </Box>
-                    </Box>
-                  )}
+                          Contact Us
+                        </Link>
+                      </Trans>
+                    </Text>
+                  </Box>
+                </Box>
+              ) : (
+                <Box
+                  bg="base.light"
+                  h="317px"
+                  w="full"
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="center"
+                  flexDir="column"
+                  gap="24px"
+                  borderWidth={1}
+                  borderColor="border.neutral"
+                  borderStyle="dashed"
+                  borderRadius="8px"
+                >
+                  <Image
+                    src="/assets/city-image.svg"
+                    alt="city-image"
+                    height={400}
+                    width={200}
+                  />
+                  <Box display="flex" flexDir="column" gap="8px">
+                    <Text
+                      color="content.tertiary"
+                      fontSize="title.md"
+                      fontWeight="bold"
+                      lineHeight="24"
+                      fontFamily="heading"
+                      textAlign="center"
+                    >
+                      {t("unselected-city-boundary-heading")}
+                    </Text>
+                    <Text
+                      color="interactive.control"
+                      fontSize="body.md"
+                      fontWeight="400"
+                      fontStyle="normal"
+                      lineHeight="24"
+                      textAlign="center"
+                      letterSpacing="wide"
+                    >
+                      {t("unselected-city-boundary-description")}
+                    </Text>
+                  </Box>
                 </Box>
               )}
-              <FormErrorMessage gap="6px">
-                <WarningIcon />
-                <Text
-                  fontSize="body.md"
-                  color="content.tertiary"
-                  fontStyle="normal"
-                >
-                  {errors.city && errors.city.message}
-                </Text>
-              </FormErrorMessage>
-            </FormControl>
-            {ocCityData ? (
-              <Box
-                display="flex"
-                flexDir="column"
-                borderRadius="8px"
-                w="full"
-                h="full"
-                gap="24px"
-                overflow="hidden"
-              >
-                <CityMap
-                  locode={ocCityData.actor_id}
-                  height={500}
-                  width={1100}
-                />
-                <Box display="flex" alignItems="center" gap="6px">
-                  <InfoOutlineIcon />
-                  <Text
-                    color="content.secondary"
-                    fontWeight="normal"
-                    letterSpacing="wide"
-                  >
-                    <Trans i18nKey="city-boundary-info" t={t}>
-                      <Link
-                        color="content.link"
-                        fontWeight="bold"
-                        textDecoration="underline"
-                        letterSpacing="wide"
-                        href="mailto:greta@openearth.org"
-                      >
-                        Contact Us
-                      </Link>
-                    </Trans>
-                  </Text>
-                </Box>
-              </Box>
-            ) : (
-              <Box
-                bg="base.light"
-                h="317px"
-                w="full"
-                display="flex"
-                alignItems="center"
-                justifyContent="center"
-                flexDir="column"
-                gap="24px"
-                borderWidth={1}
-                borderColor="border.neutral"
-                borderStyle="dashed"
-                borderRadius="8px"
-              >
-                <Image
-                  src="/assets/city-image.svg"
-                  alt="city-image"
-                  height={400}
-                  width={200}
-                />
-                <Box display="flex" flexDir="column" gap="8px">
-                  <Text
-                    color="content.tertiary"
-                    fontSize="title.md"
-                    fontWeight="bold"
-                    lineHeight="24"
-                    fontFamily="heading"
-                    textAlign="center"
-                  >
-                    {t("unselected-city-boundary-heading")}
-                  </Text>
-                  <Text
-                    color="interactive.control"
-                    fontSize="body.md"
-                    fontWeight="400"
-                    fontStyle="normal"
-                    lineHeight="24"
-                    textAlign="center"
-                    letterSpacing="wide"
-                  >
-                    {t("unselected-city-boundary-description")}
-                  </Text>
-                </Box>
-              </Box>
-            )}
-          </form>
-        </Card>
+            </form>
+          </Card.Body>
+        </Card.Root>
       </Box>
     </Box>
   );

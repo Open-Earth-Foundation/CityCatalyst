@@ -164,7 +164,6 @@ export default class UserService {
       },
     });
     if (!user) {
-      console.log("UserService:139"); // TODO NINA
       throw new createHttpError.NotFound("User not found");
     }
 

@@ -13,8 +13,12 @@ import {
   GetUserCityInvitesResponseUserData,
 } from "@/util/types";
 import { MdOutlineMode } from "react-icons/md";
-import { ChevronDownIcon, ChevronRightIcon } from "@chakra-ui/icons";
-import { IconButton, useTheme } from "@chakra-ui/react";
+import {
+  ChevronDownIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+} from "@chakra-ui/icons";
+import { Button, IconButton, useTheme } from "@chakra-ui/react";
 import ManageUsersSubTable from "./ManageUsersSubTable";
 import type { TFunction } from "i18next";
 import UpdateUserModal from "@/components/Modals/update-user-modal";
@@ -41,6 +45,9 @@ const ManageUsersTable = ({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] =
     useState<GetUserCityInvitesResponseUserData | null>(null);
+  const [currentPage, setCurrentPage] = useState(0);
+  const itemsPerPage = 10;
+
   const handleEditClick = (
     cell: Row<{
       name: string;
@@ -82,6 +89,12 @@ const ManageUsersTable = ({
 
     return Object.values(grouped);
   }, [cityInvites]);
+
+  const paginatedData = useMemo(() => {
+    const startIndex = currentPage * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return data.slice(startIndex, endIndex);
+  }, [data, currentPage, itemsPerPage]);
 
   const columns: Column<{
     name: string;
@@ -163,18 +176,21 @@ const ManageUsersTable = ({
         ),
       },
     ],
-    [theme],
+    [theme, t],
   );
 
   const renderRowSubComponent = React.useCallback(
     ({ row }: { row: ExtendedRow<GroupedInvites> }) => (
       <ManageUsersSubTable invites={row.original.invites} theme={theme} t={t} />
     ),
-    [theme],
+    [theme, t],
   );
 
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
-    useTable({ columns, data }, useExpanded) as TableInstance<GroupedInvites>;
+    useTable(
+      { columns, data: paginatedData },
+      useExpanded,
+    ) as TableInstance<GroupedInvites>;
 
   return (
     <>
@@ -234,6 +250,39 @@ const ManageUsersTable = ({
           })}
         </tbody>
       </table>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          marginTop: "16px",
+        }}
+      >
+        <Button
+          variant="ghost"
+          h="24px"
+          w="24px"
+          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 0))}
+          disabled={currentPage === 0}
+        >
+          <ChevronLeftIcon h="24px" w="24px" color="background.overlay" />
+        </Button>
+        <span>
+          {currentPage + 1}/{Math.ceil(data.length / itemsPerPage)}
+        </span>
+        <Button
+          variant="ghost"
+          h="24px"
+          w="24px"
+          onClick={() =>
+            setCurrentPage((prev) =>
+              (prev + 1) * itemsPerPage < data.length ? prev + 1 : prev,
+            )
+          }
+          disabled={(currentPage + 1) * itemsPerPage >= data.length}
+        >
+          <ChevronRightIcon h="24px" w="24px" color="background.overlay" />
+        </Button>
+      </div>
       {selectedUser && (
         <UpdateUserModal
           isOpen={isModalOpen}

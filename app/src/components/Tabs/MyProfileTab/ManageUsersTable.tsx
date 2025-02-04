@@ -49,13 +49,13 @@ const ManageUsersTable = ({
   const itemsPerPage = 10;
 
   const handleEditClick = (
-    cell: Row<{
+    row: Row<{
       name: string;
       email: string;
       invites: GetUserCityInvitesResponse[];
     }>,
   ) => {
-    const user = cell.original.invites[0].user;
+    const user = row.original.invites[0].user;
     if (user) {
       setSelectedUser(user);
       setIsModalOpen(true);

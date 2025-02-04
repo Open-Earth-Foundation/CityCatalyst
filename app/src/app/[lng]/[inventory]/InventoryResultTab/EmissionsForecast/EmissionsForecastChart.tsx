@@ -202,7 +202,7 @@ export const EmissionsForecastChart = ({
           justify: false,
           translateX: 0,
           translateY: 60,
-          itemWidth: 140,
+          itemWidth: 120,
           itemHeight: 20,
           itemsSpacing: 4,
           symbolSize: 20,
@@ -221,7 +221,7 @@ export const EmissionsForecastChart = ({
           data: data.map((series) => ({
             id: series.id,
             color: getColorForSeries(series.id),
-            label: t(series.id),
+            label: series.id === "ippu" ? t("ippu-short") : t(series.id),
           })),
         },
       ]}

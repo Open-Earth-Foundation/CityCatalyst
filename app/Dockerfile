@@ -1,5 +1,5 @@
 # Stage 1: Build
-FROM node:20-alpine AS builder
+FROM node:22-alpine AS builder
 
 # Define build arguments for the environment variables needed at build time.
 ARG NEXT_PUBLIC_API_URL
@@ -21,7 +21,7 @@ COPY . .
 RUN npm run build
 
 # Stage 2: Production
-FROM node:20-alpine
+FROM node:22-alpine
 # Set the working directory
 WORKDIR /app
 # Copy only the built files from the builder stage

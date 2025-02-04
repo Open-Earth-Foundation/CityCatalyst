@@ -6,7 +6,7 @@ import { useTranslation } from "@/i18n/client";
 import { toKebabCaseModified } from "@/app/[lng]/[inventory]/InventoryResultTab/index";
 import { Box, Text } from "@chakra-ui/react";
 import { useTooltip } from "@nivo/tooltip";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 
 interface EmissionBySectorChartProps {
   data: {
@@ -89,6 +89,7 @@ function CustomCombinedBarLayer<D>({
   customTooltip,
 }: CustomCombinedBarLayerProps<D>) {
   const { showTooltipFromEvent, hideTooltip } = useTooltip();
+  const [focusedBar, setFocusedBar] = useState<string>();
 
   const barsByYear: Record<string, CustomBar[]> = useMemo(
     () =>
@@ -136,20 +137,23 @@ function CustomCombinedBarLayer<D>({
 
         // Mouse event handlers (using the provided functions)
         const handleMouseEnter = (e: React.MouseEvent) => {
+          setFocusedBar(combinedPoint.data.year);
           showTooltipFromEvent(
             customTooltip(combinedPoint) as React.ReactElement,
             e,
-            "top",
+            "right",
           );
         };
         const handleMouseMove = (e: React.MouseEvent) => {
+          setFocusedBar(combinedPoint.data.year);
           showTooltipFromEvent(
             customTooltip(combinedPoint) as React.ReactElement,
             e,
-            "top",
+            "right",
           );
         };
         const handleMouseLeave = () => {
+          setFocusedBar(undefined);
           hideTooltip();
         };
 
@@ -184,12 +188,19 @@ function CustomCombinedBarLayer<D>({
               stroke={topSegment.color}
             />
             <rect
-              x={topSegment.x}
-              y={topSegment.y}
-              width={topSegment.width}
-              height={height}
-              fill="transparent"
-              style={{ pointerEvents: "all" }}
+              x={topSegment.x - 1}
+              y={topSegment.y - 1}
+              width={topSegment.width + 2}
+              height={height + 2}
+              fill={
+                focusedBar && focusedBar !== year
+                  ? "rgba(255, 255, 255, 0.7)"
+                  : "transparent"
+              }
+              style={{
+                pointerEvents: "all",
+                transition: "transform 0.3s ease, fill 0.3s ease",
+              }}
               onMouseEnter={handleMouseEnter}
               onMouseMove={handleMouseMove}
               onMouseLeave={handleMouseLeave}
@@ -216,14 +227,13 @@ const EmissionBySectorChart: React.FC<EmissionBySectorChartProps> = ({
 
   const customTooltip = (point: CombinedPoint) => {
     return (
-      <Box
-        className=""
-        backgroundColor="white"
-        borderRadius="8px"
-        boxShadow="2dp"
-      >
+      <Box backgroundColor="white" borderRadius="8px" boxShadow="2dp">
         <Box>
-          <Box className="py-3 px-4" borderBottom="1px solid #E2E8F0">
+          <Box
+            className="py-3 px-4"
+            borderBottom="1px solid"
+            borderColor="border.overlay"
+          >
             <Text
               fontSize="title.sm"
               fontWeight="600"
@@ -279,7 +289,8 @@ const EmissionBySectorChart: React.FC<EmissionBySectorChartProps> = ({
             justifyContent="space-between"
             py="3"
             px="4"
-            borderTop="1px solid #E2E8F0"
+            borderTop="1px solid"
+            borderColor="border.overlay"
             alignItems="center"
           >
             <Text

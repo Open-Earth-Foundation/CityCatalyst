@@ -4,10 +4,12 @@ FROM node:20-alpine AS builder
 # Define build arguments for the environment variables needed at build time.
 ARG NEXT_PUBLIC_API_URL
 ARG NEXT_PUBLIC_OPENCLIMATE_API_URL
+ARG NODE_ENV
 
 # Set those build arguments as environment variables so that the Next.js build process can see them.
 ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
 ENV NEXT_PUBLIC_OPENCLIMATE_API_URL=${NEXT_PUBLIC_OPENCLIMATE_API_URL}
+ENV NODE_ENV ${NODE_ENV}
 
 # Set the working directory
 WORKDIR /app

@@ -159,7 +159,9 @@ const TopEmissionsWidget = ({
                 </Heading>
               </Box>
               <EmissionsTable
-                topEmissions={results!?.topEmissions.bySubSector}
+                topEmissions={
+                  results?.topEmissions?.bySubSector?.slice(0, 3) ?? []
+                }
                 t={t}
               />
             </>

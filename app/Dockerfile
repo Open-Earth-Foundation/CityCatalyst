@@ -29,8 +29,8 @@ COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
 
 COPY package*.json ./
-# Install only production dependencies
-RUN npm ci --only=production
+# Install only production dependencies (no devDependencies in the final image to keep it smaller)
+RUN npm ci --omit=dev
 # Set environment variables for production
 ENV NODE_ENV=production
 # Expose the application port

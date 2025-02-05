@@ -11,7 +11,7 @@ import {
 } from "@chakra-ui/react";
 import { ActivityDataByScope } from "@/util/types";
 import type { TFunction } from "i18next";
-import { convertKgToTonnes } from "@/util/helpers";
+import { convertKgToTonnes, toKebabCase } from "@/util/helpers";
 import { InventoryTypeEnum, SECTORS } from "@/util/constants";
 
 interface ByScopeViewProps {
@@ -51,7 +51,7 @@ const ByScopeView: React.FC<ByScopeViewProps> = ({
           <Tbody>
             {data.map((item, index) => (
               <Tr key={index}>
-                <Td>{tData(item.activityTitle)}</Td>
+                <Td>{tData(toKebabCase(item.activityTitle))}</Td>
                 <Td>{convertKgToTonnes(item.totalEmissions)}</Td>
                 <Td>{item.percentage}%</Td>
                 {scopes.map((s) => (

@@ -1,7 +1,7 @@
 import { SectorEmission } from "@/util/types";
 import { BarCustomLayerProps, ResponsiveBar } from "@nivo/bar";
 import { allSectorColors, SECTORS } from "@/util/constants";
-import { convertKgToKiloTonnes, convertKgToTonnes } from "@/util/helpers";
+import { convertKgToTonnes } from "@/util/helpers";
 import { useTranslation } from "@/i18n/client";
 import { toKebabCaseModified } from "@/app/[lng]/[inventory]/InventoryResultTab/index";
 import { Box, Text } from "@chakra-ui/react";
@@ -321,9 +321,7 @@ const EmissionBySectorChart: React.FC<EmissionBySectorChartProps> = ({
       const sectorBreakDown = item.bySector.reduce((acc, sector) => {
         return {
           ...acc,
-          [toKebabCaseModified(sector.sectorName)]: convertKgToKiloTonnes(
-            sector.co2eq,
-          ),
+          [toKebabCaseModified(sector.sectorName)]: sector.co2eq,
         };
       }, defaultBreakdown);
       return {

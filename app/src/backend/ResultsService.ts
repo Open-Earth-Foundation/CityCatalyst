@@ -153,6 +153,14 @@ const SectorMappingsFromDBToFE = {
   "Agriculture, Forestry, and Other Land Use (AFOLU)": "afolu",
 };
 
+interface TotalEmissionsBySectorAndSubsector {
+  co2eq: bigint;
+  inventory_id: string;
+  reference_number: string;
+  subsector_name: string;
+  ss_reference_number: string;
+}
+
 export async function getTotalEmissionsBySector(inventoryIds: string[]) {
   const rawQuery = `
       SELECT iv.inventory_id, SUM(iv.co2eq) AS co2eq, s.sector_name, s.reference_number
@@ -172,6 +180,25 @@ export async function getTotalEmissionsBySector(inventoryIds: string[]) {
     sector_name: SectorNamesInDB;
     reference_number: string;
   }[];
+}
+
+export async function getTotalEmissionsBySectorAndSubsector(
+  inventoryId: string,
+) {
+  const rawQuery = `
+      SELECT iv.inventory_id, SUM(iv.co2eq) AS co2eq, s.reference_number, ss.reference_number as ss_reference_number
+      FROM "InventoryValue" iv
+               JOIN "Sector" s ON iv.sector_id = s.sector_id
+               LEFT JOIN "SubSector" ss on iv.sub_sector_id = ss.subsector_id
+      WHERE iv.inventory_id = :inventoryId
+      GROUP BY iv.inventory_id, s.reference_number, ss.reference_number
+      ORDER BY iv.inventory_id, SUM(iv.co2eq) DESC;
+  `;
+
+  return (await db.sequelize!.query(rawQuery, {
+    replacements: { inventoryId },
+    type: QueryTypes.SELECT,
+  })) as TotalEmissionsBySectorAndSubsector[];
 }
 
 async function fetchTotalEmissionsBulk(
@@ -238,16 +265,16 @@ async function fetchTopEmissionsBulk(
   const topEmissions: { [inventoryId: string]: TopEmission[] } = {};
 
   for (const [inventoryId, records] of Object.entries(grouped)) {
-    topEmissions[inventoryId] = records
-      .slice(0, 3)
-      .map(({ co2eq, sector_name, subsector_name, scope_name }) => ({
+    topEmissions[inventoryId] = records.map(
+      ({ co2eq, sector_name, subsector_name, scope_name }) => ({
         inventoryId,
         co2eq: bigIntToDecimal(co2eq || 0n),
         sectorName: sector_name,
         subsectorName: subsector_name,
         scopeName: scope_name,
         percentage: 0, // To be calculated later
-      }));
+      }),
+    );
   }
 
   return topEmissions;
@@ -743,39 +770,66 @@ export async function getEmissionResults(inventory: string): Promise<{
   const EmissionResults = await getEmissionResultsBatch([inventory]);
   const inventoryEmissionResults = EmissionResults[inventory];
   return {
-    totalEmissions: inventoryEmissionResults.totalEmissions.sumOfEmissions,
+    totalEmissions: inventoryEmissionResults?.totalEmissions?.sumOfEmissions,
     totalEmissionsBySector:
-      inventoryEmissionResults.totalEmissions.totalEmissionsBySector,
-    topEmissionsBySubSector: inventoryEmissionResults.topEmissionsBySubSector,
+      inventoryEmissionResults?.totalEmissions?.totalEmissionsBySector,
+    topEmissionsBySubSector: inventoryEmissionResults?.topEmissionsBySubSector,
   };
 }
 
+const prepareEmissionsData = async (inventoryId: string) => {
+  const totalEmissionsBySector =
+    await getTotalEmissionsBySectorAndSubsector(inventoryId);
+  const out = totalEmissionsBySector.map((record) => ({
+    ...record,
+    reference_number:
+      record.reference_number === "V"
+        ? record.ss_reference_number
+        : record.reference_number,
+  }));
+  const groupedEmissions = groupBy(out, "reference_number");
+
+  return Object.entries(groupedEmissions).map(([referenceNumber, records]) => {
+    const co2eqSum = records.reduce(
+      (sum, record) => sum + BigInt(record.co2eq),
+      0n,
+    );
+    return {
+      reference_number: referenceNumber,
+      co2eq: co2eqSum,
+      inventory_id: records[0].inventory_id,
+      subsector_name: records[0].subsector_name,
+      ss_reference_number: records[0].ss_reference_number,
+    };
+  });
+};
+
 export const getEmissionsForecasts = async (inventoryData: Inventory) => {
-  const OCResponse = await GlobalAPIService.fetchGrowthRates(
+  const globalAPIResponse = await GlobalAPIService.fetchGrowthRates(
     inventoryData.city.locode!,
     inventoryData.year!,
   );
-  if (!OCResponse) {
+  if (!globalAPIResponse) {
     return {
       forecast: null,
       cluster: null,
       growthRates: null,
     };
   }
-  const { growthRates, cluster } = OCResponse;
-  const totalEmissionsBySector = await getTotalEmissionsBySector([
+  const { growthRates, cluster } = globalAPIResponse;
+  const totalEmissionsBySector = await prepareEmissionsData(
     inventoryData.inventoryId,
-  ]);
+  );
+
   const projectedEmissions: { [year: string]: { [sector: string]: string } } =
     {};
   // Initialize projected emissions with the base year emissions
-  const baseYear = inventoryData.created!.getFullYear().toString();
+  const baseYear = inventoryData.year!.toString();
   projectedEmissions[baseYear] = {};
   totalEmissionsBySector.forEach((sector) => {
     projectedEmissions[baseYear][sector.reference_number] =
       sector.co2eq.toString();
   });
-
   // Calculate projected emissions year over year
   for (let year = parseInt(baseYear) + 1; year <= 2050; year++) {
     projectedEmissions[year] = {};
@@ -788,7 +842,6 @@ export const getEmissionsForecasts = async (inventoryData: Inventory) => {
           `Failed to find growth rate for sector ${referenceNumber} in year ${year} in city ${inventoryData.city.locode!}`,
         );
       }
-
       projectedEmissions[year][referenceNumber] = multiplyBigIntByFraction(
         projectedEmissions[previousYear][referenceNumber],
         1 + growthRate,

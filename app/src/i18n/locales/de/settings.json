@@ -23,7 +23,7 @@
   "all": "Hinzufügen",
   "role": "Rolle",
   "admin": "Administrator",
-  "contributor": "Mitwirkender",
+  "user": "Mitwirkender",
   "save-changes": "Änderungen speichern",
   "my-files-sub-title": "Hier finden Sie alle Ihre hochgeladenen Dateien, ausstehende Anfragen zur Harmonisierung und im Treibhausgasinventar enthaltene Dateien",
   "all-inventory-years": "alle Inventarjahre",
@@ -62,5 +62,14 @@
   "delete-file-prompt": "Sind Sie sicher, dass Sie diese Datei <2>dauerhaft löschen</2> möchten aus dem Repository der Stadt?",
   "mark-as-completed": "Als abgeschlossen markieren",
   "password-required": "Password ist ein Pflichtfeld",
-  "min-length": "Minimallänge sollte {{length}} sein"
+  "min-length": "Minimallänge sollte {{length}} sein",
+  "are-you-sure-you-want-to": "Sind Sie sicher, dass Sie",
+  "un-invite": "die Einladung zurückziehen",
+  "this-user-from-your-city": "diesen Benutzer aus Ihrer Stadt entfernen möchten?",
+  "user-details-update-fail": "Benutzerdetails konnten nicht aktualisiert werden",
+  "invite-canceled": "Einladung storniert",
+  "invite-cancel-fail": "Einladung konnte nicht storniert werden",
+  "invite-sent": "Einladung erfolgreich gesendet",
+  "invite-send-fail": "Einladung konnte nicht gesendet werden",
+  "number-of-cities": "# der Städte"
 }

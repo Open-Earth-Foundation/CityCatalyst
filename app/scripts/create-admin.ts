@@ -3,7 +3,7 @@ import env from "@next/env";
 import { randomUUID } from "node:crypto";
 import { logger } from "@/services/logger";
 import bcrypt from "bcrypt";
-import { Roles } from "@/lib/auth";
+import { Roles } from "@/util/types";
 
 async function createAdmin() {
   const projectDir = process.cwd();

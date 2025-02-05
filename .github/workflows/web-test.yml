@@ -9,7 +9,7 @@ on:
       - k8s/test/cc-test-web-deploy.yml
       - k8s/test/cc-test/web.yml
       - .github/workflows/web-test.yml
-    branches: ["main"]
+    branches: [ "main" ]
 
 jobs:
   runTests:
@@ -44,6 +44,11 @@ jobs:
           cp env.example .env
           npm run db:migrate
           npm run db:seed
+
+      - name: Setup Environment Variables
+        run: |
+          echo "NEXT_PUBLIC_API_URL=https://citycatalyst-test.openearth.dev" >> .env.local
+          echo "NEXT_PUBLIC_OPENCLIMATE_API_URL=https://openclimate.openearth.dev" >> .env.local
 
       - name: Run NextJS build
         run: npm run build
@@ -93,7 +98,10 @@ jobs:
           VERSION: ${{ github.sha }}
           IMAGE: ghcr.io/open-earth-foundation/citycatalyst
         run: |
-          docker build -t $IMAGE:$VERSION app
+          docker build \
+          --build-arg NEXT_PUBLIC_API_URL=https://citycatalyst-test.openearth.dev \
+          --build-arg NEXT_PUBLIC_OPENCLIMATE_API_URL=https://openclimate.openearth.dev \
+          -t $IMAGE:$VERSION app
           docker tag $IMAGE:$VERSION $IMAGE:main
           docker push $IMAGE:$VERSION
           docker push $IMAGE:main

@@ -145,20 +145,14 @@ export default function SetInventoryDetailsStep({
                   collection={yearsCollection}
                   size="lg"
                   w="400px"
-                  shadow="1dp"
-                  fontSize="body.lg"
-                  fontStyle="normal"
-                  letterSpacing="wide"
                   _placeholder={{ color: "content.tertiary" }}
-                  py="16px"
                   data-testId="inventory-detils-year"
-                  px={0}
                   {...register("year", {
                     required: t("inventory-year-required"),
                   })}
                 >
                   <SelectLabel />
-                  <SelectTrigger>
+                  <SelectTrigger shadow="1dp">
                     <SelectValueText
                       placeholder={t("inventory-year-placeholder")}
                     />

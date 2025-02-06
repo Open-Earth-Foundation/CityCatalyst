@@ -60,7 +60,7 @@ def build_custom_agent_6(model, tools):
     """Wrap create_react_agent to store final output in AgentState."""
 
     # The chain returned by create_react_agent
-    react_chain = create_react_agent(model, tools, state_modifier=system_prompt_agent_6)
+    react_chain = create_react_agent(model, tools, prompt=system_prompt_agent_6)
 
     def custom_agent_6(state: AgentState) -> AgentState:
 

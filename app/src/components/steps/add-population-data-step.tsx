@@ -197,7 +197,7 @@ export default function SetPopulationDataStep({
               {t("Country")}
             </Text>
           </Box>
-          <Box display="flex" gap="16px" alignItems="baseline">
+          <Box display="flex" gap="16px" alignItems="start">
             <HStack spaceX={6} spaceY={6} align="start">
               <Field
                 invalid={!!errors.countryPopulation}
@@ -242,7 +242,7 @@ export default function SetPopulationDataStep({
                 </Box>
               </Field>
             </HStack>
-            <Field invalid={!!errors.countryPopulationYear}>
+            <Field mt={-2} invalid={!!errors.countryPopulationYear}>
               <InputGroup
                 endElement={
                   !!countryPopulationYear &&
@@ -315,7 +315,7 @@ export default function SetPopulationDataStep({
               {t("region-or-province")}
             </Text>
           </Box>
-          <Box display="flex" gap="16px" alignItems="baseline">
+          <Box display="flex" gap="16px" alignItems="start">
             <HStack spaceX={6} spaceY={6} align="start">
               <Field
                 invalid={!!errors.regionPopulation}
@@ -347,7 +347,7 @@ export default function SetPopulationDataStep({
                 />
               </Field>
             </HStack>
-            <Field invalid={!!errors.regionPopulationYear}>
+            <Field mt={-2} invalid={!!errors.regionPopulationYear}>
               <InputGroup
                 endElement={
                   !!regionPopulationYear &&
@@ -403,11 +403,11 @@ export default function SetPopulationDataStep({
         borderBottomWidth="2px"
         borderColor="border.overlay"
       >
-        <Box
-          display="flex"
+        <HStack
           w="full"
-          alignItems="center"
+          alignItems="flex-start"
           justifyContent="space-between"
+          align="start"
         >
           <Box>
             <Text
@@ -420,7 +420,7 @@ export default function SetPopulationDataStep({
               {t("city")}
             </Text>
           </Box>
-          <Box display="flex" gap="16px" alignItems="baseline">
+          <Box display="flex" gap="16px" alignItems="start">
             <HStack spaceX={6} spaceY={6} align="start">
               <Field
                 invalid={!!errors.cityPopulation}
@@ -455,6 +455,7 @@ export default function SetPopulationDataStep({
               </Field>
             </HStack>
             <InputGroup
+              mt={-2}
               endElement={
                 !!cityPopulationYear &&
                 !!cityPopulation && (
@@ -500,7 +501,7 @@ export default function SetPopulationDataStep({
               </SelectRoot>
             </InputGroup>
           </Box>
-        </Box>
+        </HStack>
       </Box>
     </Box>
   );

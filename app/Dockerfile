@@ -27,10 +27,14 @@ WORKDIR /app
 # Copy only the built files from the builder stage
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
-COPY --from=builder /app/migrations ./migrations
-COPY --from=builder /app/config ./config
 
+# copy files for migrations and seeder scripts executed as k8s jobs
 COPY package*.json ./
+COPY tsconfig.json ./
+COPY migrations ./migrations
+COPY config ./config
+COPY seeders ./seeders
+
 # Install only production dependencies (no devDependencies in the final image to keep it smaller)
 RUN npm ci --omit=dev
 # Set environment variables for production

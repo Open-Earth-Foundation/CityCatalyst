@@ -201,10 +201,12 @@ export default function SetPopulationDataStep({
               <Field
                 invalid={!!errors.countryPopulation}
                 errorText={
-                  <Text color="content.tertiary" letterSpacing="0.5px">
-                    <MdErrorOutline />
-                    {errors.countryPopulation?.message}
-                  </Text>
+                  errors.countryPopulation?.message && (
+                    <Text color="content.tertiary" letterSpacing="0.5px">
+                      <MdErrorOutline />
+                      {errors.countryPopulation?.message}
+                    </Text>
+                  )
                 }
               >
                 <FormattedThousandsNumberInput<Inputs>

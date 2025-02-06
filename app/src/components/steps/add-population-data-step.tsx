@@ -30,6 +30,7 @@ import {
   SelectTrigger,
   SelectValueText,
 } from "@/components/ui/select";
+import { InputGroup } from "../ui/input-group";
 
 export default function SetPopulationDataStep({
   t,
@@ -242,18 +243,25 @@ export default function SetPopulationDataStep({
               </Field>
             </HStack>
             <Field invalid={!!errors.countryPopulationYear}>
-              <Group attached>
+              <InputGroup
+                endElement={
+                  !!countryPopulationYear &&
+                  !!countryPopulation && (
+                    <Icon
+                      as={MdCheck}
+                      color="semantic.success"
+                      boxSize={4}
+                      mt={2}
+                      mr={8}
+                    />
+                  )
+                }
+              >
                 <SelectRoot
                   collection={yearsCollection}
                   size="lg"
                   w="217px"
-                  shadow="1dp"
-                  fontSize="body.lg"
-                  fontStyle="normal"
-                  letterSpacing="wide"
                   _placeholder={{ color: "content.tertiary" }}
-                  py="16px"
-                  px={0}
                   {...register("countryPopulationYear", {
                     required: t("inventory-year-required"),
                     valueAsNumber: true,
@@ -264,7 +272,7 @@ export default function SetPopulationDataStep({
                   }
                 >
                   <SelectLabel />
-                  <SelectTrigger>
+                  <SelectTrigger shadow="1dp">
                     <SelectValueText
                       placeholder={t("inventory-year-placeholder")}
                     />
@@ -279,12 +287,7 @@ export default function SetPopulationDataStep({
                     )}
                   </SelectContent>
                 </SelectRoot>
-                <InputAddon display="flex" alignItems="center" mt={5} mr={6}>
-                  {!!countryPopulationYear && !!countryPopulation && (
-                    <Icon as={MdCheck} color="semantic.success" boxSize={4} />
-                  )}
-                </InputAddon>
-              </Group>
+              </InputGroup>
             </Field>
           </Box>
         </Box>
@@ -345,18 +348,25 @@ export default function SetPopulationDataStep({
               </Field>
             </HStack>
             <Field invalid={!!errors.regionPopulationYear}>
-              <Group attached>
+              <InputGroup
+                endElement={
+                  !!regionPopulationYear &&
+                  !!regionPopulation && (
+                    <Icon
+                      as={MdCheck}
+                      color="semantic.success"
+                      boxSize={4}
+                      mt={2}
+                      mr={8}
+                    />
+                  )
+                }
+              >
                 <SelectRoot
                   collection={yearsCollection}
                   size="lg"
                   w="217px"
-                  shadow="1dp"
-                  fontSize="body.lg"
-                  fontStyle="normal"
-                  letterSpacing="wide"
                   _placeholder={{ color: "content.tertiary" }}
-                  py="16px"
-                  px={0}
                   {...register("regionPopulationYear", {
                     required: t("inventory-year-required"),
                     valueAsNumber: true,
@@ -367,7 +377,7 @@ export default function SetPopulationDataStep({
                   }
                 >
                   <SelectLabel />
-                  <SelectTrigger>
+                  <SelectTrigger shadow="1dp">
                     <SelectValueText
                       placeholder={t("inventory-year-placeholder")}
                     />
@@ -382,12 +392,7 @@ export default function SetPopulationDataStep({
                     )}
                   </SelectContent>
                 </SelectRoot>
-                <InputAddon display="flex" alignItems="center" mt={5} mr={6}>
-                  {!!regionPopulationYear && !!regionPopulation && (
-                    <Icon as={MdCheck} color="semantic.success" boxSize={4} />
-                  )}
-                </InputAddon>
-              </Group>
+              </InputGroup>
             </Field>
           </Box>
         </Box>
@@ -420,10 +425,12 @@ export default function SetPopulationDataStep({
               <Field
                 invalid={!!errors.cityPopulation}
                 errorText={
-                  <Text color="content.tertiary" letterSpacing="0.5px">
-                    <MdErrorOutline />
-                    {errors.cityPopulation?.message}
-                  </Text>
+                  errors.cityPopulation?.message && (
+                    <Text color="content.tertiary" letterSpacing="0.5px">
+                      <MdErrorOutline />
+                      {errors.cityPopulation.message}
+                    </Text>
+                  )
                 }
               >
                 <FormattedThousandsNumberInput<Inputs>
@@ -447,51 +454,51 @@ export default function SetPopulationDataStep({
                 />
               </Field>
             </HStack>
-            <Field invalid={!!errors.cityPopulationYear}>
-              <Group attached>
-                <SelectRoot
-                  collection={yearsCollection}
-                  size="lg"
-                  w="217px"
-                  shadow="1dp"
-                  fontSize="body.lg"
-                  fontStyle="normal"
-                  letterSpacing="wide"
-                  _placeholder={{ color: "content.tertiary" }}
-                  py="16px"
-                  px={0}
-                  {...register("cityPopulationYear", {
-                    required: t("inventory-year-required"),
-                    valueAsNumber: true,
-                  })}
-                  value={[cityPopulationYear]}
-                  onValueChange={(e) =>
-                    setValue("cityPopulationYear", e.value[0])
-                  }
-                >
-                  <SelectLabel />
-                  <SelectTrigger>
-                    <SelectValueText
-                      placeholder={t("inventory-year-placeholder")}
-                    />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {yearsCollection.items.map(
-                      (year: { label: string; value: number }, i: number) => (
-                        <SelectItem item={year} key={i}>
-                          {year.label}
-                        </SelectItem>
-                      ),
-                    )}
-                  </SelectContent>
-                </SelectRoot>
-                <InputAddon display="flex" alignItems="center" mt={5} mr={6}>
-                  {!!cityPopulationYear && !!cityPopulation && (
-                    <Icon as={MdCheck} color="semantic.success" boxSize={4} />
+            <InputGroup
+              endElement={
+                !!cityPopulationYear &&
+                !!cityPopulation && (
+                  <Icon
+                    as={MdCheck}
+                    color="semantic.success"
+                    boxSize={4}
+                    mt={2}
+                    mr={8}
+                  />
+                )
+              }
+            >
+              <SelectRoot
+                collection={yearsCollection}
+                size="lg"
+                w="217px"
+                _placeholder={{ color: "content.tertiary" }}
+                {...register("cityPopulationYear", {
+                  required: t("inventory-year-required"),
+                  valueAsNumber: true,
+                })}
+                value={[cityPopulationYear]}
+                onValueChange={(e) =>
+                  setValue("cityPopulationYear", e.value[0])
+                }
+              >
+                <SelectLabel />
+                <SelectTrigger shadow="1dp">
+                  <SelectValueText
+                    placeholder={t("inventory-year-placeholder")}
+                  />
+                </SelectTrigger>
+                <SelectContent>
+                  {yearsCollection.items.map(
+                    (year: { label: string; value: number }, i: number) => (
+                      <SelectItem item={year} key={i}>
+                        {year.label}
+                      </SelectItem>
+                    ),
                   )}
-                </InputAddon>
-              </Group>
-            </Field>
+                </SelectContent>
+              </SelectRoot>
+            </InputGroup>
           </Box>
         </Box>
       </Box>

@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Center, CircularProgress } from "@chakra-ui/react";
+import { Center, ProgressCircle } from "@chakra-ui/react";
 import { useAcceptInviteMutation } from "@/services/api";
 import { logger } from "@/services/logger";
 import InviteErrorView from "./InviteErrorView";
@@ -72,12 +72,17 @@ const AcceptInvitePage = ({ params: { lng } }: { params: { lng: string } }) => {
     };
 
     accept();
-  }, [queryParams, acceptInvite]);
+  }, [queryParams, acceptInvite, router]);
 
   if (isLoading)
     return (
       <Center>
-        <CircularProgress isIndeterminate />
+        <ProgressCircle.Root value={null} size="sm">
+          <ProgressCircle.Circle>
+            <ProgressCircle.Track />
+            <ProgressCircle.Range />
+          </ProgressCircle.Circle>
+        </ProgressCircle.Root>
       </Center>
     );
 

@@ -392,11 +392,12 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
           .map((key) => (
             <AccordionRoot
               key={key}
-              defaultIndex={[0]}
-              allowMultiple
+              defaultValue={["main"]}
+              multiple={true}
               collapsible
             >
               <AccordionItem
+                value="main"
                 backgroundColor="white"
                 borderWidth="1px"
                 padding="0px"
@@ -452,15 +453,14 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
                         <Text fontWeight="medium">{t("emissions")}:&nbsp;</Text>
                         <Text fontWeight="normal">
                           {" "}
-                            {convertKgToTonnes(
-                              activityGroups[key].activityData?.reduce(
-                                (acc, curr) =>
-                                  acc + BigInt(curr.co2eq as bigint),
-                                0n,
-                              ),
-                              null,
-                              REGIONALLOCALES[lng as string],
-                            )}{" "}
+                          {convertKgToTonnes(
+                            activityGroups[key].activityData?.reduce(
+                              (acc, curr) => acc + BigInt(curr.co2eq as bigint),
+                              0n,
+                            ),
+                            null,
+                            REGIONALLOCALES[lng as string],
+                          )}{" "}
                         </Text>
                       </Box>
                       <Box pr="56px">
@@ -473,38 +473,31 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
                           }}
                           _hover={{ bg: "none" }}
                           aria-label="add-activity"
-                        icon={
-
+                        >
                           <Icon
                             as={MdAdd}
                             color="interactive.control"
                             size="2xl"
-                            />
-                        }
-                        />
-                          <Text fontWeight="medium">
-                            {t("emissions")}:&nbsp;
-                          </Text>
-                          <Text fontWeight="normal">
-                            {" "}
-                          </Text>
-                        </Box>
-                        <Box pr="56px">
-                          <IconButton
-                            bg="none"
-                            pos="relative"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              showActivityModal();
-                            }}
-                            _hover={{ bg: "none" }}
-                            aria-label="add-activity"
-                            icon={
-                              <AddIcon
-                                color="interactive.control"
-                                fontSize="24px"
-                              />
-                            }
+                          />
+                        </IconButton>
+                        <Text fontWeight="medium">{t("emissions")}:&nbsp;</Text>
+                        <Text fontWeight="normal"> </Text>
+                      </Box>
+                      <Box pr="56px">
+                        <IconButton
+                          bg="none"
+                          pos="relative"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            showActivityModal();
+                          }}
+                          _hover={{ bg: "none" }}
+                          aria-label="add-activity"
+                        >
+                          <Icon
+                            as={MdAdd}
+                            color="interactive.control"
+                            fontSize="24px"
                           />
                         </IconButton>
                       </Box>

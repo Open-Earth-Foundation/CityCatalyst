@@ -82,28 +82,14 @@ const useActivityValueValidation = ({
       default:
         break;
     }
-    toaster.create({
-      status: "error",
+    toaster.error({
       duration: 6000,
-      render: () => (
-        <Box
-          w="600px"
-          borderRadius="8px"
-          display="flex"
-          alignItems="center"
-          color="white"
-          backgroundColor="sentiment.negativeDefault"
-          gap="8px"
-          p="16px"
-        >
-          <Text>
-            <Trans t={t} values={desciptionValues ?? {}}>
-              {key}
-            </Trans>
-          </Text>
-        </Box>
+      meta: { closable: true },
+      title: (
+        <Trans t={t} values={desciptionValues ?? {}}>
+          {key}
+        </Trans>
       ),
-      isClosable: true,
     });
   };
 

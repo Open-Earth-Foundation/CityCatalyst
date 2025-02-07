@@ -1,5 +1,5 @@
 import React from "react";
-import { useDisclosure } from "@chakra-ui/react";
+import { Card, useDisclosure } from "@chakra-ui/react";
 import { FiDownload } from "react-icons/fi";
 import type { TFunction } from "i18next";
 import ModalDownloadReport from "./DownloadAndShareModals/ModalDownloadReport";
@@ -66,7 +66,7 @@ const DownloadButton: React.FC<DownloadButtonProps> = ({
         icon={<FiDownload className="text-white" size={24} />}
         title={t("download-and-report")}
       />
-    </>
+    </Card.Root>
   );
 };
 

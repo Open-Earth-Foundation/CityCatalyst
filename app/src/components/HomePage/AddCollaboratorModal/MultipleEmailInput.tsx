@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Input, Tag, Wrap, HStack, Divider, Icon } from "@chakra-ui/react";
+import { Box, Input, Tag, HStack, Separator, Icon } from "@chakra-ui/react";
 import { MdInfoOutline } from "react-icons/md";
 import type { TFunction } from "i18next";
 import { BodyLarge, BodyMedium } from "@/components/Texts/Body";
@@ -76,7 +76,7 @@ const MultipleEmailInput: React.FC<MultipleEmailInputProps> = ({
           <BodyMedium text={t("press-enter-to-add")} />
         </HStack>
       )}
-      <Divider my="24px" />
+      <Separator my="24px" />
       <Wrap mt={2}>
         {emails.map((email, index) => (
           <Tag.Root

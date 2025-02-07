@@ -10,7 +10,7 @@ export const HeadlineSmall = ({ text, ...props }: HeadlineProps) => (
     fontSize="headline.sm"
     fontWeight="semibold"
     lineHeight="32px"
-    textColor={"base.dark"}
+    color="base.dark"
     {...props}
   >
     {text}

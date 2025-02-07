@@ -10,7 +10,7 @@ export const TitleLarge = ({ text, ...props }: TitleProps) => (
     fontSize="title.lg"
     fontWeight="semibold"
     lineHeight="28"
-    textColor={"content.secondary"}
+    color="content.secondary"
     {...props}
   >
     {text}
@@ -23,7 +23,7 @@ export const TitleMedium = ({ ...props }: HeadingProps) => (
     fontSize="title.md"
     fontWeight="semibold"
     lineHeight="24"
-    textColor={"content.secondary"}
+    color="content.secondary"
     {...props}
   >
     {props.children}

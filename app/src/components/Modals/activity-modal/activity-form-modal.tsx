@@ -248,7 +248,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
     }
   };
 
-  const closeModalFunc = () => {
+  const onCloseDialog = () => {
     onClose();
     resetSelectedActivityValue();
     reset({
@@ -266,6 +266,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
         preventScroll
         open={isOpen}
         onOpenChange={(e: any) => setAddActivityDialogOpen(e.open)}
+        onExitComplete={onCloseDialog}
       >
         <DialogBackdrop />
         <DialogContent

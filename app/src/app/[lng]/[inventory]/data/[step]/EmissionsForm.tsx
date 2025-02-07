@@ -1,16 +1,11 @@
 import { RadioButton } from "@/components/radio-button";
 import {
   Box,
-  Flex,
-  FormControl,
-  FormErrorMessage,
-  FormLabel,
   Heading,
   HStack,
+  Icon,
   Select,
-  Switch,
   Textarea,
-  Tooltip,
   useRadioGroup,
 } from "@chakra-ui/react";
 import { ActivityDataTab } from "./ActivityDataTab";
@@ -20,6 +15,9 @@ import { Control, useController } from "react-hook-form";
 import { resolve } from "@/util/helpers";
 import type { EmissionsFactorWithDataSources } from "@/util/types";
 import { MdInfoOutline } from "react-icons/md";
+import { Field } from "@/components/ui/field";
+import { Switch } from "@/components/ui/switch";
+import { Tooltip } from "@/components/ui/tooltip";
 
 export function EmissionsForm({
   t,
@@ -49,7 +47,7 @@ export function EmissionsForm({
   });
   const {
     getRootProps,
-    getRadioProps,
+    getItemProps,
     value: methodology,
   } = useRadioGroup(field);
 
@@ -57,23 +55,19 @@ export function EmissionsForm({
 
   return (
     <Box className="space-y-6">
-      <FormControl>
-        <Flex alignItems="center" className="space-x-4">
-          <Switch size="lg" {...register(prefix + "isUnavailable")} />
-          <FormLabel sx={{ mb: "0 !important" }} mt={-1}>
-            {t("unavailable-not-applicable")}
-          </FormLabel>
-        </Flex>
-      </FormControl>
+      <Field label={t("unavailable-not-applicable")}>
+        <Switch size="lg" {...register(prefix + "isUnavailable")} />
+      </Field>
       {isUnavailable ? (
         <>
-          <FormControl
-            isInvalid={!!resolve(prefix + "unavailableReason", errors)}
+          <Field
             mb={12}
             mt={2}
+            label={t("unavailable-reason")}
+            invalid={!!resolve(prefix + "unavailableReason", errors)}
+            errorText={resolve(prefix + "unavailableReason", errors)?.message}
           >
-            <FormLabel>{t("unavailable-reason")}</FormLabel>
-            <Select
+            <Select.Root
               bgColor="base.light"
               placeholder={t("unavailable-reason-placeholder")}
               {...register(prefix + "unavailableReason", {
@@ -88,16 +82,16 @@ export function EmissionsForm({
               <option value="presented-elsewhere">
                 {t("presented-elsewhere")}
               </option>
-            </Select>
-            <FormErrorMessage>
-              {resolve(prefix + "unavailableReason", errors)?.message}
-            </FormErrorMessage>
-          </FormControl>
+            </Select.Root>
+          </Field>
 
-          <FormControl
-            isInvalid={!!resolve(prefix + "unavailableExplanation", errors)}
+          <Field
+            label={t("unavailable-explanation")}
+            invalid={!!resolve(prefix + "unavailableExplanation", errors)}
+            errorText={
+              resolve(prefix + "unavailableExplanation", errors)?.message
+            }
           >
-            <FormLabel>{t("unavailable-explanation")}</FormLabel>
             <Textarea
               placeholder={t("unavailable-explanation-placeholder")}
               bgColor="base.light"
@@ -105,30 +99,31 @@ export function EmissionsForm({
                 required: t("unavailable-explanation-required"),
               })}
             />
-            <FormErrorMessage>
-              {resolve(prefix + "unavailableExplanation", errors)?.message}
-            </FormErrorMessage>
-          </FormControl>
+          </Field>
         </>
       ) : (
         <>
           <Heading size="sm" className="font-normal">
             {t("select-methodology")}{" "}
             <Tooltip
-              hasArrow
-              label={t("methodology-tooltip")}
-              bg="content.secondary"
-              color="base.light"
-              placement="bottom-start"
+              showArrow
+              content={t("methodology-tooltip")}
+              contentProps={{
+                css: {
+                  "--tooltip-bg": "content.secondary",
+                  "--tooltip-text": "base.light",
+                },
+              }}
+              positioning={{ placement: "bottom-start" }}
             >
-              <MdInfoOutline mt={-0.5} color="content.tertiary" />
+              <Icon as={MdInfoOutline} mt={-0.5} color="content.tertiary" />
             </Tooltip>
           </Heading>
-          <HStack spacing={4} {...getRootProps()}>
-            <RadioButton {...getRadioProps({ value: "activity-data" })}>
+          <HStack spaceX={4} spaceY={4} {...getRootProps()}>
+            <RadioButton {...getItemProps({ value: "activity-data" })}>
               {t("activity-data")}
             </RadioButton>
-            <RadioButton {...getRadioProps({ value: "direct-measure" })}>
+            <RadioButton {...getItemProps({ value: "direct-measure" })}>
               {t("direct-measure")}
             </RadioButton>
           </HStack>

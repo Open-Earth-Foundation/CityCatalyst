@@ -191,13 +191,10 @@ export default function HomePage({
                     className="mt-12"
                     variant="line"
                     lazyMount
-                    defaultValue={t("tab-emission-inventory-calculation-title")}
+                    defaultValue="calculation"
                   >
                     <Tabs.List>
-                      {[
-                        t("tab-emission-inventory-calculation-title"),
-                        t("tab-emission-inventory-results-title"),
-                      ]?.map((tab, index) => (
+                      {["calculation", "report"].map((tab, index) => (
                         <Tabs.Trigger key={index} value={t(tab)}>
                           <Text
                             fontFamily="heading"
@@ -209,9 +206,7 @@ export default function HomePage({
                         </Tabs.Trigger>
                       ))}
                     </Tabs.List>
-                    <Tabs.Content
-                      value={t("tab-emission-inventory-calculation-title")}
-                    >
+                    <Tabs.Content value="calculation">
                       <InventoryCalculationTab
                         lng={language}
                         inventory={inventory}
@@ -219,9 +214,7 @@ export default function HomePage({
                         isInventoryProgressLoading={isInventoryProgressLoading}
                       />
                     </Tabs.Content>
-                    <Tabs.Content
-                      value={t("tab-emission-inventory-results-title")}
-                    >
+                    <Tabs.Content value="report">
                       <InventoryReportTab
                         isPublic={isPublic}
                         lng={language}

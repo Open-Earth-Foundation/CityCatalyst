@@ -7,6 +7,7 @@ import {
   CardBody,
   CardHeader,
   HStack,
+  Icon,
   IconButton,
   Text,
 } from "@chakra-ui/react";
@@ -34,7 +35,7 @@ export const EmissionsForecastCard = ({
         lng={lng}
       />
 
-      <Card paddingY="0px" paddingX="0px" height="100%" width="100%">
+      <Card.Root paddingY="0px" paddingX="0px" height="100%" width="100%">
         <CardHeader>
           <HStack justifyContent="space-between">
             <Text fontFamily="heading" fontSize="title.md" fontWeight="medium">
@@ -43,12 +44,13 @@ export const EmissionsForecastCard = ({
             <IconButton
               width={"20px"}
               height={"20px"}
-              variant={"unstyled"}
-              isRound
+              variant="plain"
+              rounded="full"
               onClick={() => setIsExplanationModalOpen(true)}
-              icon={<MdInfoOutline marginRight={3} fontSize={"20px"} />}
               aria-label={"growth-rates-explanation"}
-            />
+            >
+              <Icon as={MdInfoOutline} mr={3} boxSize={5} />
+            </IconButton>
           </HStack>
         </CardHeader>
         <CardBody
@@ -60,7 +62,7 @@ export const EmissionsForecastCard = ({
         >
           <EmissionsForecastChart forecast={forecast} t={t} />
         </CardBody>
-      </Card>
+      </Card.Root>
     </>
   );
 };

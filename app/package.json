@@ -31,7 +31,8 @@
     "ci:test": "tsx --test --experimental-test-coverage --test-reporter=lcov --test-reporter-destination=lcov.info tests/**/*.test.ts & npm run jest",
     "prettier": "npx prettier . --write",
     "email": "email dev --dir src/lib/emails",
-    "create-admin": "tsx scripts/create-admin.ts"
+    "create-admin": "tsx scripts/create-admin.ts",
+    "upgrade:ui": "npm uninstall @emotion/styled framer-motion && npm install @chakra-ui/react@latest @emotion/react@latest"
   },
   "dependencies": {
     "@ai-sdk/openai": "^1.0.8",

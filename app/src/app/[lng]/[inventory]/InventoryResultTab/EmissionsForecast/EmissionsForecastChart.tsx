@@ -130,8 +130,8 @@ export const EmissionsForecastChart = ({
                       : 0;
                     const sectorRefNo =
                       getReferenceNumberByName(
-                        toKebabCase(id as string) as keyof ISector,
-                      ) || getSubSectorByName(id)?.referenceNumber;
+                        toKebabCase(series.id as string) as keyof ISector,
+                      ) || getSubSectorByName(series.id)?.referenceNumber;
 
                     const yearGrowthRates =
                       yearData && forecast.growthRates[yearData.x as string];
@@ -144,7 +144,7 @@ export const EmissionsForecastChart = ({
                         <Table.Cell>
                           <Badge
                             boxSize="10px"
-                            bg={getColorForSeries(id)}
+                            bg={getColorForSeries(series.id)}
                             marginRight="8px"
                           />
                           {series.id}

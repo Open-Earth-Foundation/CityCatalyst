@@ -132,7 +132,7 @@ export function NavigationBar({
               <Button
                 color="base.light"
                 minW="120px"
-                variant="lightGhost"
+                variant="ghost"
                 textTransform="none"
                 whiteSpace="nowrap"
               >
@@ -187,7 +187,7 @@ export function NavigationBar({
                 // rightIcon={isOpen ? <TriangleUpIcon /> : <TriangleDownIcon />}
                 className="whitespace-nowrap normal-case"
               >
-                <Button variant="lightGhost">
+                <Button variant="ghost">
                   <Avatar
                     size="sm"
                     bg="interactive.connected"

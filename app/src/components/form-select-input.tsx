@@ -1,6 +1,7 @@
 import { Box, Select, Text } from "@chakra-ui/react";
 import React, { FC } from "react";
 import { FieldError } from "react-hook-form";
+import { NativeSelectField, NativeSelectRoot } from "./ui/native-select";
 
 interface FormInputProps {
   label: string;
@@ -24,7 +25,6 @@ const FormSelectInput: FC<FormInputProps> = ({
   return (
     <Box display="flex" flexDirection="column" gap="8px">
       <Text
-        variant="label"
         fontSize="label.lg"
         fontStyle="normal"
         fontWeight="medium"
@@ -33,21 +33,25 @@ const FormSelectInput: FC<FormInputProps> = ({
       >
         {label}
       </Text>
-      <Select
+      <NativeSelectRoot
         shadow="1dp"
         borderRadius="4px"
         border="inputBox"
         background={isDisabled ? "background.neutral" : "background.default"}
         color={isDisabled ? "content.tertiary" : "content.secondary"}
-        value={value || ""}
-        {...register(id, {
-          required: `${id} is required`,
-        })}
-        onChange={(e) => onInputChange(e)}
       >
-        <option value="admin">Admin</option>
-        <option value="contributor">Contributor</option>
-      </Select>
+        <NativeSelectField
+          value={value || ""}
+          {...register(id, {
+            required: `${id} is required`,
+          })}
+          onChange={(e) => onInputChange(e)}
+          disabled={isDisabled}
+        >
+          <option value="admin">Admin</option>
+          <option value="contributor">Contributor</option>
+        </NativeSelectField>
+      </NativeSelectRoot>
     </Box>
   );
 };

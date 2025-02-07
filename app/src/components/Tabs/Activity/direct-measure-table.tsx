@@ -29,6 +29,8 @@ import {
   AccordionItemTrigger,
   AccordionRoot,
 } from "@/components/ui/accordion";
+import { useParams } from "next/navigation";
+import { REGIONALLOCALES } from "@/util/constants";
 
 interface DirectMeasureTableProps {
   t: TFunction;
@@ -47,6 +49,7 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
   t,
   showActivityModal,
 }) => {
+  const { lng } = useParams();
   const directMeasure = MANUAL_INPUT_HIERARCHY[referenceNumber as string]
     .directMeasure as DirectMeasure;
   const extraFields = directMeasure["extra-fields"] as ExtraField[];
@@ -191,18 +194,21 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
                   {convertKgToTonnes(
                     activity?.activityData?.co2_amount * 1000,
                     "CO2e",
+                    REGIONALLOCALES[lng as string],
                   )}
                 </Table.Cell>
                 <Table.Cell textAlign="end" truncate>
                   {convertKgToTonnes(
                     activity?.activityData?.n2o_amount * 1000,
                     "N2O",
+                    REGIONALLOCALES[lng as string],
                   )}
                 </Table.Cell>
                 <Table.Cell textAlign="end" truncate>
                   {convertKgToTonnes(
                     activity?.activityData?.ch4_amount * 1000,
                     "CH4",
+                    REGIONALLOCALES[lng as string],
                   )}
                 </Table.Cell>
                 <Table.Cell>
@@ -298,11 +304,12 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
           .map((key) => (
             <AccordionRoot
               key={key}
-              defaultIndex={[0]}
-              allowMultiple
+              defaultValue={["main"]}
+              multiple
               collapsible
             >
               <AccordionItem
+                value="main"
                 backgroundColor="white"
                 borderWidth="1px"
                 padding="0px"
@@ -351,6 +358,36 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
                               (acc, curr) => acc + BigInt(curr.co2eq as bigint),
                               0n,
                             ),
+                          )}{" "}
+                        </Text>
+                      </Box>
+                      <Box pr="56px">
+                        <IconButton
+                          bg="none"
+                          pos="relative"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            showActivityModal();
+                          }}
+                          _hover={{ bg: "none" }}
+                          aria-label="add-activity"
+                        >
+                          <Icon
+                            as={MdAdd}
+                            color="interactive.control"
+                            size="2xl"
+                          />
+                        </IconButton>
+                        <Text fontWeight="medium">{t("emissions")}:&nbsp;</Text>
+                        <Text fontWeight="normal">
+                          {" "}
+                          {convertKgToTonnes(
+                            activityGroups[key]?.reduce(
+                              (acc, curr) => acc + BigInt(curr.co2eq as bigint),
+                              0n,
+                            ),
+                            null,
+                            REGIONALLOCALES[lng as string],
                           )}{" "}
                         </Text>
                       </Box>

@@ -11,7 +11,7 @@ export default function PasswordInput({
   error,
   register,
   t,
-  name,
+  name = "Password",
   id = "password",
   w,
   shouldValidate = false,

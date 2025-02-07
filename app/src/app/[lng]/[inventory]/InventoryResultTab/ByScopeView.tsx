@@ -2,7 +2,7 @@ import React from "react";
 import { Box, Table } from "@chakra-ui/react";
 import { ActivityDataByScope } from "@/util/types";
 import type { TFunction } from "i18next";
-import { convertKgToTonnes } from "@/util/helpers";
+import { convertKgToTonnes, toKebabCase } from "@/util/helpers";
 import { InventoryTypeEnum, SECTORS } from "@/util/constants";
 
 interface ByScopeViewProps {
@@ -25,7 +25,7 @@ const ByScopeView: React.FC<ByScopeViewProps> = ({
   ].scopes;
   return (
     <Box p={4}>
-      <Table.Root unstyled>
+      <Table.Root unstyled variant="line">
         <Table.Header>
           <Table.Row>
             <Table.ColumnHeader>{tData("subsector")}</Table.ColumnHeader>
@@ -45,7 +45,7 @@ const ByScopeView: React.FC<ByScopeViewProps> = ({
         <Table.Body>
           {data.map((item, index) => (
             <Table.Row key={index}>
-              <Table.Cell>{tData(item.activityTitle)}</Table.Cell>
+              <Table.Cell>{tData(toKebabCase(item.activityTitle))}</Table.Cell>
               <Table.Cell>{convertKgToTonnes(item.totalEmissions)}</Table.Cell>
               <Table.Cell>{item.percentage}%</Table.Cell>
               {scopes.map((s) => (

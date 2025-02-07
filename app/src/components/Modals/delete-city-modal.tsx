@@ -29,18 +29,14 @@ import { MdCheckCircleOutline } from "react-icons/md";
 interface DeleteCityModalProps {
   isOpen: boolean;
   onClose: any;
-  userData: UserAttributes;
   cityData: CityAttributes;
   t: TFunction;
-  lng: string;
 }
 
 const DeleteCityModal: FC<DeleteCityModalProps> = ({
   isOpen,
   onClose,
-  userData,
   cityData,
-  lng,
   t,
 }) => {
   const {
@@ -51,9 +47,7 @@ const DeleteCityModal: FC<DeleteCityModalProps> = ({
   } = useForm<{ password: string }>();
 
   const [requestPasswordConfirm] = api.useRequestVerificationMutation();
-  const { data: token } = api.useGetVerifcationTokenQuery({
-    skip: !userData,
-  });
+  const { data: token } = api.useGetVerifcationTokenQuery({});
   const [removeCity] = api.useRemoveCityMutation();
   const [isPasswordCorrect, setIsPasswordCorrect] = useState<boolean>(true);
   const toast = useToast();

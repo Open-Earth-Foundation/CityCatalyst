@@ -42,6 +42,8 @@ import {
   PopoverRoot,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { REGIONALLOCALES } from "@/util/constants";
+import { useParams } from "next/navigation";
 
 interface EmissionDataSectionProps {
   t: TFunction;
@@ -151,6 +153,8 @@ const EmissionDataSection = ({
     setSelectedActivityValue(activity);
     setAddActivityDataDialogOpen(true);
   };
+
+  const { lng } = useParams();
 
   const renderSuggestedActivities = () => (
     <>
@@ -395,7 +399,11 @@ const EmissionDataSection = ({
                       fontWeight="semibold"
                       fontSize="headline.md"
                     >
-                      {convertKgToTonnes(inventoryValue?.co2eq as bigint)}
+                      {convertKgToTonnes(
+                        inventoryValue?.co2eq as bigint,
+                        null,
+                        REGIONALLOCALES[lng as string],
+                      )}
                     </Text>
                   </Box>
                 </Box>

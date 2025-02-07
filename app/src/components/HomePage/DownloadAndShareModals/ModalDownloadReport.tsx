@@ -16,7 +16,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
-const ModalDownloadShare = ({
+const ModalDownloadReport = ({
   t,
   lng,
   isDownloadShareOpen,
@@ -67,4 +67,4 @@ const ModalDownloadShare = ({
   );
 };
 
-export default ModalDownloadShare;
+export default ModalDownloadReport;

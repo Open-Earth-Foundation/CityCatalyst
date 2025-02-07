@@ -1,4 +1,8 @@
 {
   "not-found-description": "Seems like we've wandered into the emission mist. Please go back to the dashboard",
-  "goto-dashboard": "Go to dashboard"
+  "goto-dashboard": "Go to dashboard",
+  "invite-not-valid": "This invitation is not valid anymore",
+  "invite-not-valid-description": "The link you are using is either expired or was already claimed.\n Please ask the inviter to resend it to you.\n If you think this is a mistake, please",
+  "contact-us": "contact us.",
+  "go-back": "Go back"
 }

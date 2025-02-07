@@ -278,9 +278,9 @@ export function convertKgToKiloTonnes(
 
 export function convertKgToTonnes(
   valueInKg: number | Decimal | bigint,
-  gas?: string,
+  gas?: string | null,
+  locale = "en-US",
 ): string {
-  const locale = "en-US";
   const gasSuffix = gas ? ` ${gas}` : " CO2e";
 
   const kg = toDecimal(valueInKg);
@@ -320,6 +320,7 @@ export const toKebabCase = (input: string | undefined): string => {
     .replace(/([a-z0-9])([A-Z])/g, "$1-$2")
     .replace(/[\s_]+/g, "-")
     .replace(/^-+|-+$/g, "")
+    .replace(/[^\w-]+/g, "")
     .toLowerCase();
 };
 

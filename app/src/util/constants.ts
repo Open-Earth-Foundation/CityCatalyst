@@ -3,6 +3,7 @@ import { PiPlant, PiTrashLight } from "react-icons/pi";
 import { TbBuildingCommunity } from "react-icons/tb";
 import { IconBaseProps } from "react-icons";
 import { LiaIndustrySolid } from "react-icons/lia";
+import { SectorColors, SubSectorColors } from "@/lib/app-theme"; // Import the appTheme
 
 export const maxPopulationYearDifference = 5;
 
@@ -26,6 +27,14 @@ export interface ISector {
     };
     [InventoryTypeEnum.GPC_BASIC_PLUS]: {
       scopes: number[];
+    };
+  };
+  color: string;
+  subSectors?: {
+    [referenceNumber: string]: {
+      name: string;
+      color: string;
+      referenceNumber: string;
     };
   };
 }
@@ -65,6 +74,7 @@ export const SECTORS: ISector[] = [
     name: "stationary-energy",
     description: "stationary-energy-description",
     icon: TbBuildingCommunity,
+    color: SectorColors.I,
     inventoryTypes: {
       [InventoryTypeEnum.GPC_BASIC]: { scopes: [1, 2] },
       [InventoryTypeEnum.GPC_BASIC_PLUS]: { scopes: [1, 2, 3] },
@@ -77,6 +87,7 @@ export const SECTORS: ISector[] = [
     name: "transportation",
     description: "transportation-description",
     icon: BsTruck,
+    color: SectorColors.II,
     inventoryTypes: {
       [InventoryTypeEnum.GPC_BASIC]: { scopes: [1, 2] },
       [InventoryTypeEnum.GPC_BASIC_PLUS]: { scopes: [1, 2, 3] },
@@ -89,6 +100,7 @@ export const SECTORS: ISector[] = [
     name: "waste",
     description: "waste-description",
     icon: PiTrashLight,
+    color: SectorColors.III,
     inventoryTypes: {
       [InventoryTypeEnum.GPC_BASIC]: { scopes: [1, 3] },
       [InventoryTypeEnum.GPC_BASIC_PLUS]: { scopes: [1, 3] },
@@ -101,6 +113,7 @@ export const SECTORS: ISector[] = [
     name: "ippu",
     description: "ippu-description",
     icon: LiaIndustrySolid,
+    color: SectorColors.IV,
     testId: "ippu-sector-card",
     inventoryTypes: {
       [InventoryTypeEnum.GPC_BASIC]: { scopes: [] },
@@ -113,13 +126,66 @@ export const SECTORS: ISector[] = [
     name: "afolu",
     description: "afolu-description",
     icon: PiPlant,
+    color: SectorColors.V,
     testId: "afolu-sector-card",
     inventoryTypes: {
       [InventoryTypeEnum.GPC_BASIC]: { scopes: [] },
       [InventoryTypeEnum.GPC_BASIC_PLUS]: { scopes: [1] },
     },
+    subSectors: {
+      "V.1": {
+        referenceNumber: "V.1",
+        name: "afolu-livestock",
+        color: SubSectorColors["V.1"],
+      },
+      "V.2": {
+        referenceNumber: "V.2",
+        name: "afolu-land",
+        color: SubSectorColors["V.2"],
+      },
+      "V.3": {
+        referenceNumber: "V.3",
+        name: "afolu-other-agriculture",
+        color: SubSectorColors["V.3"],
+      },
+    },
   },
 ];
 
+export const allSectorColors = SECTORS.map((sector) => {
+  return sector.color;
+});
+export const getSectorByName = (name: string) =>
+  SECTORS.find((s) => s.name === name);
+
+export const getSubSectorByName = (name: string) => {
+  for (const sector of SECTORS) {
+    if (sector.subSectors) {
+      for (const subSector of Object.values(sector.subSectors)) {
+        if (subSector.name === name) {
+          return subSector;
+        }
+      }
+    }
+  }
+  return undefined;
+};
+
 export const getReferenceNumberByName = (name: keyof ISector) =>
   findBy("name", name)?.referenceNumber;
+
+export const getSectorByReferenceNumber = (referenceNumber: string) =>
+  findBy("referenceNumber", referenceNumber);
+
+export const getSubSectorByReferenceNumber = (referenceNumber: string) => {
+  const [sectorRefNum] = referenceNumber.split(".");
+  const sector = getSectorByReferenceNumber(sectorRefNum);
+  return sector?.subSectors?.[referenceNumber];
+};
+
+export const REGIONALLOCALES: Record<string, string> = {
+  es: "es-ES", // Spanish (Spain)
+  en: "en-US", // English (United States)
+  pt: "pt-PT", // Portuguese (Portugal)
+  de: "de-DE", // German (Germany)
+};

@@ -29,6 +29,11 @@ import {
   UserInfoResponse,
   UserInviteResponse,
   YearOverYearResultsResponse,
+  UsersInvitesRequest,
+  AcceptInviteResponse,
+  AcceptInviteRequest,
+  UsersInvitesResponse,
+  GetUserCityInvitesResponse,
 } from "@/util/types";
 import type { GeoJSON } from "geojson";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
@@ -51,6 +56,7 @@ export const api = createApi({
     "Inventory",
     "CitiesAndInventories",
     "Inventories",
+    "Invites",
   ],
   baseQuery: fetchBaseQuery({ baseUrl: "/api/v0/", credentials: "include" }),
   endpoints: (builder) => {
@@ -398,11 +404,10 @@ export const api = createApi({
           email: string;
           role: string;
           userId: string;
-          cityId: string;
         }
       >({
         query: (data) => ({
-          url: `/city/${data.cityId}/user/${data.userId}`,
+          url: `/user/${data.userId}`,
           method: "PATCH",
           body: data,
         }),
@@ -432,28 +437,37 @@ export const api = createApi({
         transformResponse: (response: { data: any }) => response.data,
         providesTags: ["UserData"],
       }),
+      getCityInvites: builder.query<GetUserCityInvitesResponse[], void>({
+        query: () => `/user/invites`,
+        transformResponse: (response: { data: any }) => response.data,
+        providesTags: ["Invites"],
+      }),
       setUserData: builder.mutation<
         UserAttributes,
-        Partial<UserAttributes> &
-          Pick<UserAttributes, "userId"> & { cityId: string }
+        Partial<UserAttributes> & Pick<UserAttributes, "userId">
       >({
-        query: ({ userId, cityId, email, ...rest }) => ({
-          url: `/city/${cityId}/user/${userId}`,
+        query: ({ userId, ...rest }) => ({
+          url: `/user/${userId}`,
           method: "PATCH",
           body: rest,
         }),
         invalidatesTags: ["UserData"],
       }),
-      removeUser: builder.mutation<
-        UserAttributes,
-        { userId: string; cityId: string }
-      >({
-        query: ({ cityId, userId }) => ({
-          url: `/city/${cityId}/user/${userId}`,
+      cancelInvite: builder.mutation<void, { cityInviteId: string }>({
+        query: ({ cityInviteId }) => ({
+          url: `/user/invites/${cityInviteId}`,
           method: "DELETE",
         }),
         transformResponse: (response: { data: any }) => response.data,
-        invalidatesTags: ["UserData"],
+        invalidatesTags: ["Invites"],
+      }),
+      resetInvite: builder.mutation<void, { cityInviteId: string }>({
+        query: ({ cityInviteId }) => ({
+          url: `/user/invites/${cityInviteId}`,
+          method: "PATCH",
+        }),
+        transformResponse: (response: { data: any }) => response.data,
+        invalidatesTags: ["Invites"],
       }),
       getVerifcationToken: builder.query({
         query: () => ({
@@ -580,10 +594,37 @@ export const api = createApi({
             body: data,
           };
         },
-
+        invalidatesTags: ["Invites"],
         transformResponse: (response: { data: UserInviteResponse }) =>
           response.data,
       }),
+      inviteUsers: builder.mutation<UsersInvitesResponse, UsersInvitesRequest>({
+        query: (data) => {
+          return {
+            method: "POST",
+            url: `/user/invites`,
+            body: data,
+          };
+        },
+        transformResponse: (response: UsersInvitesResponse) => {
+          return response;
+        },
+      }),
+      acceptInvite: builder.mutation<AcceptInviteResponse, AcceptInviteRequest>(
+        {
+          query: (data) => {
+            return {
+              method: "PATCH",
+              url: `/user/invites/accept`,
+              body: data,
+            };
+          },
+
+          transformResponse: (response: { data: AcceptInviteResponse }) =>
+            response.data,
+        },
+      ),
+
       mockData: builder.query({
         query: () => {
           return {
@@ -782,7 +823,8 @@ export const {
   useSetCurrentUserDataMutation,
   useGetCityUsersQuery,
   useSetUserDataMutation,
-  useRemoveUserMutation,
+  useCancelInviteMutation,
+  useResetInviteMutation,
   useRequestVerificationMutation,
   useGetVerifcationTokenQuery,
   useGetCitiesQuery,
@@ -792,6 +834,8 @@ export const {
   useDeleteUserFileMutation,
   useDisconnectThirdPartyDataMutation,
   useInviteUserMutation,
+  useInviteUsersMutation,
+  useAcceptInviteMutation,
   useCheckUserMutation,
   useMockDataQuery,
   useConnectToCDPMutation,
@@ -805,5 +849,6 @@ export const {
   useGetEmissionsForecastQuery,
   useUpdateInventoryMutation,
   useUpdateOrCreateInventoryValueMutation,
+  useGetCityInvitesQuery,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

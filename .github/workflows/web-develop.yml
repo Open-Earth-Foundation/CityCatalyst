@@ -3,7 +3,7 @@ name: Push Web app to GHCR and deploy to EKS
 on:
   workflow_dispatch:
   push:
-    branches: ["develop"]
+    branches: [ "develop" ]
     paths:
       - app/**
       - k8s/cc-migrate.yml
@@ -64,6 +64,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
 
+      - name: Setup Environment Variables
+        run: |
+          echo "NEXT_PUBLIC_API_URL=https://citycatalyst.openearth.dev" >> .env.local
+          echo "NEXT_PUBLIC_OPENCLIMATE_API_URL=https://openclimate.openearth.dev" >> .env.local
+
       - name: Run NextJS build
         run: npm run build
 
@@ -116,7 +121,10 @@ jobs:
           VERSION: ${{ github.sha }}
           IMAGE: ghcr.io/open-earth-foundation/citycatalyst
         run: |
-          docker build -t $IMAGE:$VERSION app
+          docker build \
+          --build-arg NEXT_PUBLIC_API_URL=https://citycatalyst.openearth.dev \
+          --build-arg NEXT_PUBLIC_OPENCLIMATE_API_URL=https://openclimate.openearth.dev \
+          -t $IMAGE:$VERSION app
           docker tag $IMAGE:$VERSION $IMAGE:latest
           docker push $IMAGE:$VERSION
           docker push $IMAGE:latest

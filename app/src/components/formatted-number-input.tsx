@@ -7,19 +7,22 @@ import {
   NumberInputProps,
   NumberInputRoot,
 } from "./ui/number-input";
+import { REGIONALLOCALES } from "@/util/constants";
+import { InputGroup } from "./ui/input-group";
 
 interface FormattedNumberInputProps extends NumberInputProps {
   control: Control<any, any>;
   name: string;
   setError?: Function;
   clearErrors?: Function;
-  defaultValue?: number;
+  defaultValue?: string | undefined;
   isDisabled?: boolean;
   placeholder?: string;
   children?: React.ReactNode;
   id?: string;
   miniAddon?: boolean;
   testId?: string;
+  localization?: string;
   t: Function;
   max?: number;
   min?: number;
@@ -31,7 +34,7 @@ function FormattedNumberInput({
   id,
   testId,
   name,
-  defaultValue = 0,
+  defaultValue = "0",
   isDisabled = false,
   children,
   placeholder,
@@ -49,22 +52,41 @@ function FormattedNumberInput({
     name,
   });
 
-  // Format the number according to the locale
   const format = (nval: number | string) => {
-    let val = parseFloat(nval as string);
+    nval = nval.toString();
+    const locale = REGIONALLOCALES[lng as string] || "en-US"; // Get the user's locale
+    const decimalSeparator = (1.1).toLocaleString(locale).substring(1, 2); // Detect the decimal separator
 
-    const lastItemDot = nval.toString().slice(-1) === ".";
-    if (isNaN(val)) return "";
-    return (
-      new Intl.NumberFormat(lng, {
-        maximumFractionDigits: 20,
-      }).format(val) + (lastItemDot ? "." : "")
-    );
+    // Check if the input ends with a decimal separator
+
+    const endsWithSeparator = nval.toString().slice(-1) === decimalSeparator;
+
+    // Replace the locale-specific separator with a dot for parsing
+    const normalizedValue = nval.replace(decimalSeparator, ".");
+
+    // Parse the number
+    const numericValue = parseFloat(normalizedValue);
+
+    // If the input is not a valid number, return it as is
+    if (isNaN(numericValue)) return nval;
+
+    // Format the number part
+    const formattedNumber = new Intl.NumberFormat(locale, {
+      maximumFractionDigits: 20,
+    }).format(numericValue);
+
+    // If the input ends with a separator, add it back to the formatted string
+    return endsWithSeparator
+      ? `${formattedNumber}${decimalSeparator}`
+      : formattedNumber;
   };
 
   // Parse the formatted string into a raw number
   const parse = (val: string) => {
-    const localeDecimalSeparator = (1.1).toLocaleString(lng).substring(1, 2); // Get the decimal separator for the current locale
+    const localeDecimalSeparator = (1.1)
+      .toLocaleString(REGIONALLOCALES[lng as string])
+      .substring(1, 2); // Get the decimal separator for the current locale
+
     const normalizedVal = val.replace(
       new RegExp(`[^0-9${localeDecimalSeparator}-]`, "g"),
       "",
@@ -73,6 +95,19 @@ function FormattedNumberInput({
     return isNaN(parseFloat(normalizedNumber))
       ? ""
       : normalizedNumber.toString();
+  };
+
+  const isCharacterValid = (char: string) => {
+    const normalizedLocale = REGIONALLOCALES[lng as string] || "en-US"; // Default to en-US
+    const decimalSeparator = (1.1)
+      .toLocaleString(normalizedLocale)
+      .substring(1, 2);
+
+    // Build the regex dynamically to include the decimal separator
+    const validRegex = new RegExp(`^[0-9${decimalSeparator}]$`);
+
+    // Check if the character matches the valid regex
+    return validRegex.test(char);
   };
 
   return (
@@ -89,7 +124,7 @@ function FormattedNumberInput({
           if (min && value < min) {
             return t("value-too-low", { min });
           }
-          if (max && value >= max) {
+          if (max && value > max) {
             return t("value-too-high", { max });
           }
         },
@@ -97,20 +132,17 @@ function FormattedNumberInput({
       render={({ field }) => (
         <Group>
           <NumberInputRoot
-            isDisabled={isDisabled}
+            disabled={isDisabled}
             value={format(field.value)}
-            placeholder={placeholder}
             shadow="1dp"
             w="full"
             borderRightRadius={children ? 0 : "md"} // Adjust border radius
             bgColor={isDisabled ? "background.neutral" : "base.light"}
             pos="relative"
             zIndex={3}
-            type="text"
             min={min}
             max={max}
             onValueChange={(valueAsString: any) => {
-              console.log("valueAsString", valueAsString);
               const parsedValue = parse(valueAsString.value);
               field.onChange(parsedValue);
             }}
@@ -123,6 +155,7 @@ function FormattedNumberInput({
           >
             <NumberInputField
               data-testId={testId}
+              placeholder={placeholder}
               // Use text type to allow formatted input
             />
           </NumberInputRoot>

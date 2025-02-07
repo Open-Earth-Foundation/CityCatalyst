@@ -14,15 +14,17 @@ import {
 import { TabHeader } from "@/components/HomePage/TabHeader";
 import EmissionsWidget from "@/app/[lng]/[inventory]/InventoryResultTab/EmissionsWidget";
 import TopEmissionsWidget from "@/app/[lng]/[inventory]/InventoryResultTab/TopEmissionsWidget";
-import { BlueSubtitle } from "@/components/blue-subtitle";
+import { BlueSubtitle } from "@/components/Texts/BlueSubtitle";
 import { PopulationAttributes } from "@/models/Population";
 import type { TFunction } from "i18next";
-import {
-  capitalizeFirstLetter,
-  isEmptyObject,
-  toKebabCase,
-} from "@/util/helpers";
-import React, { ChangeEvent, useMemo, useState, useEffect } from "react";
+import { isEmptyObject, toKebabCase } from "@/util/helpers";
+import React, {
+  ChangeEvent,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   api,
   useGetCityYearsQuery,
@@ -44,6 +46,7 @@ import {
   ProgressCircleRing,
   ProgressCircleRoot,
 } from "@/components/ui/progress-circle";
+import { TooltipProvider } from "@nivo/tooltip";
 
 enum TableView {
   BY_ACTIVITY = "by-activity",
@@ -170,7 +173,7 @@ function SectorTabs({
           !isLoadingNewData; // &&
         // selectedTableView === TableView.BY_SCOPE; ON-3126 restore view by activity
         return (
-          <Tabs.Content value={name}>
+          <Tabs.Content value={name} key={name}>
             {isTopEmissionsResponseLoading ? (
               <ProgressCircleRoot>
                 <ProgressCircleRing cap="round" />
@@ -400,6 +403,8 @@ export function EmissionPerSectors({
     },
   ];
 
+  let containerRef = useRef<HTMLDivElement>(document.createElement("div"));
+
   return (
     <Box className="flex flex-col gap-[8px] w-full">
       <Card.Root paddingY="16px" paddingX="24px">
@@ -435,10 +440,14 @@ export function EmissionPerSectors({
                   data={transformedYearOverYearData}
                 />
               ) : (
-                <EmissionBySectorChart
-                  data={transformedYearOverYearData}
-                  lng={lng}
-                />
+                <TooltipProvider container={containerRef}>
+                  <div className="min-h-[600px]" ref={containerRef}>
+                    <EmissionBySectorChart
+                      data={transformedYearOverYearData}
+                      lng={lng}
+                    />
+                  </div>
+                </TooltipProvider>
               )}
             </Box>
           )

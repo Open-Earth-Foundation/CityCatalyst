@@ -69,5 +69,7 @@
   "start-inventory": "Inicio de Inventario",
   "city-boundary-info": "En caso de que el límite geográfico no sea el correcto <0><1>Contáctenos</1></0>",
   "unselected-city-boundary-heading": "Busque y seleccione la ciudad que se mostrará en el mapa",
-  "unselected-city-boundary-description": "Podrá verificar el límite geográfico de su inventario"
+  "unselected-city-boundary-description": "Podrá verificar el límite geográfico de su inventario",
+  "recent-searches-title": "Búsquedas recientes",
+  "recent-searches-no-results": "No tienes búsquedas recientes"
 }

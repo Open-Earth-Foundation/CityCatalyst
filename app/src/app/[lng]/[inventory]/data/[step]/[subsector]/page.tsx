@@ -189,12 +189,11 @@ function SubSectorPage({
     isInventoryValueLoading ||
     isInventoryProgressLoading ||
     isUserInfoLoading;
-  console.log(router);
   const [referenceNumber, setReferenceNumber] = useState<string>(
     `${searchParams.get("refNo")}.1`,
   );
 
-  console.log(getSectorRefNo(step));
+  // console.log(getSectorRefNo(step));
 
   useEffect(() => {
     if (scopes.length > 0 && !loadingState) {
@@ -257,13 +256,15 @@ function SubSectorPage({
                       <Icon as={MdChevronRight} color="gray.500" h="24px" />
                     }
                   >
-                    <BreadcrumbLink
-                      href={`/${inventoryId}/data`}
-                      color="content.tertiary"
-                      truncate
-                    >
-                      {t("all-sectors")}
-                    </BreadcrumbLink>
+                    <BreadcrumbItem>
+                      <BreadcrumbLink
+                        href={`/${inventoryId}/data`}
+                        color="content.tertiary"
+                        truncate
+                      >
+                        {t("all-sectors")}
+                      </BreadcrumbLink>
+                    </BreadcrumbItem>
                     <BreadcrumbItem>
                       <BreadcrumbLink
                         href={`/${inventoryId}/data/${step}`}

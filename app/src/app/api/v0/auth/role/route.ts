@@ -1,4 +1,4 @@
-import { Roles } from "@/lib/auth";
+import { Roles } from "@/util/types";
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";
 import createHttpError from "http-errors";

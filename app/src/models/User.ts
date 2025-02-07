@@ -6,13 +6,15 @@ import type { Inventory, InventoryId } from "./Inventory";
 import type { UserFile, UserFileId } from "./UserFile";
 import { City, CityId } from "./City";
 
+import { Roles } from "@/util/types";
+
 export interface UserAttributes {
   userId: string;
   name?: string;
   pictureUrl?: string;
   email?: string;
   passwordHash?: string;
-  role?: string;
+  role?: Roles;
   created?: Date;
   lastUpdated?: Date;
   defaultInventoryId?: string;
@@ -43,7 +45,7 @@ export class User
   pictureUrl?: string;
   email?: string;
   passwordHash?: string;
-  role?: string;
+  role?: Roles;
   created?: Date;
   lastUpdated?: Date;
   defaultInventoryId?: string;

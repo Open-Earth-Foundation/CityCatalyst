@@ -186,6 +186,54 @@ export interface UserInviteResponse {
   lastUpdated: string;
 }
 
+export enum Roles {
+  User = "user",
+  Admin = "admin",
+}
+
+export interface GetUserCityInvitesResponseUserData {
+  userId: string;
+  role: Roles;
+  email: string;
+  name: string;
+}
+
+export enum CityInviteStatus {
+  PENDING = "pending",
+  ACCEPTED = "accepted",
+  CANCELED = "canceled",
+  EXPIRED = "expired",
+}
+
+export interface GetUserCityInvitesResponse {
+  id: string;
+  email: string;
+  user?: GetUserCityInvitesResponseUserData;
+  cityId: string;
+  userId: string;
+  status: CityInviteStatus;
+  cityInvites: Required<CityAttributes>;
+}
+
+export interface AcceptInviteResponse {
+  success: boolean;
+  error?: string;
+}
+export interface AcceptInviteRequest {
+  email: string;
+  cityIds: string[];
+  token: string;
+}
+
+export interface UsersInvitesRequest {
+  cityIds: string[];
+  emails: string[];
+}
+
+export interface UsersInvitesResponse {
+  success: boolean;
+}
+
 export interface RequiredScopesResponse {
   requiredScopes: string[];
 }

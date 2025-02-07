@@ -1,7 +1,8 @@
 import { apiHandler } from "@/util/api";
 import { setupOpenAI } from "@/util/openai";
 import { NextResponse } from "next/server";
-import { Roles } from "@/lib/auth";
+
+import { Roles } from "@/util/types";
 
 // Create a new assistant
 export const POST = apiHandler(async (_req, { session }) => {

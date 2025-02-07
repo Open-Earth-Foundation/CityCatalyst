@@ -44,6 +44,7 @@ export default function Login({
 }) {
   const { t } = useTranslation(lng, "auth");
   const router = useRouter();
+  const [error, setError] = useState("");
   const {
     handleSubmit,
     register,
@@ -51,17 +52,12 @@ export default function Login({
   } = useForm<LoginInputs>();
 
   const searchParams = useSearchParams();
+  const queryParams = Object.fromEntries(searchParams.entries());
+  const callbackUrl = decodeURIComponent(queryParams.callbackUrl || "");
+  const finalCallbackUrl =
+    callbackUrl ||
+    `/${lng}/user/invite?${new URLSearchParams(queryParams).toString()}`;
 
-  const [error, setError] = useState("");
-  const callbackParam = searchParams.get("callbackUrl");
-  let callbackUrl = `/${lng}`;
-  if (
-    callbackParam &&
-    callbackParam !== "null" &&
-    callbackParam !== "undefined"
-  ) {
-    callbackUrl = callbackParam;
-  }
   const { showLoginSuccessToast } = useAuthToast(t);
   const onSubmit: SubmitHandler<LoginInputs> = async (data) => {
     try {
@@ -69,21 +65,16 @@ export default function Login({
         redirect: false,
         email: data.email,
         password: data.password,
-        callbackUrl,
+        callbackUrl: finalCallbackUrl,
       });
 
-      if (res?.ok) {
+      if (res?.ok && !res?.error) {
         showLoginSuccessToast();
-        router.push(callbackUrl);
+        router.push(finalCallbackUrl);
         setError("");
         return;
-      }
-
-      if (!res?.error) {
-        router.push(callbackUrl);
-        setError("");
       } else {
-        console.error("Sign in failure:", res.error);
+        console.error("Sign in failure:", res?.error);
         setError(t("invalid-email-password"));
       }
     } catch (error: any) {
@@ -124,7 +115,7 @@ export default function Login({
       >
         {t("no-account")}{" "}
         <Link
-          href={`/auth/signup?callbackUrl=${callbackUrl}`}
+          href={`/auth/signup?callbackUrl=${encodeURIComponent(finalCallbackUrl)}`}
           className="underline"
         >
           {t("sign-up")}

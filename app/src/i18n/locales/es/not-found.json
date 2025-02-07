@@ -1,4 +1,8 @@
 {
   "not-found-description": "Parece que nos hemos adentrado en la niebla de emisiones. Por favor, regresa al panel de control",
-  "goto-dashboard": "Ir al tablero"
+  "goto-dashboard": "Ir al tablero",
+  "invite-not-valid": "Esta invitación ya no es válida",
+  "invite-not-valid-description": "El enlace que estás usando ha expirado o ya fue reclamado.\n Por favor, pide al invitador que te lo reenvíe.\n Si crees que esto es un error, por favor",
+  "contact-us": "contáctanos.",
+  "go-back": "Regresar"
 }

@@ -153,7 +153,7 @@ export default class ManualInputValidationService {
     let missingFields: string[] = [];
 
     for (const field of requiredFields) {
-      if (!activityData[field]) {
+      if (!activityData[field] && typeof activityData[field] !== "number") {
         missingFields.push(field);
       }
     }

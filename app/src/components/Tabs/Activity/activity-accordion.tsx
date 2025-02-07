@@ -28,6 +28,8 @@ import {
   AccordionItemTrigger,
   AccordionRoot,
 } from "@/components/ui/accordion";
+import { useParams } from "next/navigation";
+import { REGIONALLOCALES } from "@/util/constants";
 
 interface IActivityGroup {
   activityData: ActivityValue[];
@@ -58,6 +60,7 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
   onEditActivity,
   referenceNumber,
 }) => {
+  const { lng } = useParams();
   // perform the group by logic when there's more than one activity.
   // split the data into groups
   // for each table group by the group by field
@@ -449,12 +452,15 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
                         <Text fontWeight="medium">{t("emissions")}:&nbsp;</Text>
                         <Text fontWeight="normal">
                           {" "}
-                          {convertKgToTonnes(
-                            activityGroups[key].activityData?.reduce(
-                              (acc, curr) => acc + BigInt(curr.co2eq as bigint),
-                              0n,
-                            ),
-                          )}{" "}
+                            {convertKgToTonnes(
+                              activityGroups[key].activityData?.reduce(
+                                (acc, curr) =>
+                                  acc + BigInt(curr.co2eq as bigint),
+                                0n,
+                              ),
+                              null,
+                              REGIONALLOCALES[lng as string],
+                            )}{" "}
                         </Text>
                       </Box>
                       <Box pr="56px">
@@ -467,11 +473,38 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
                           }}
                           _hover={{ bg: "none" }}
                           aria-label="add-activity"
-                        >
+                        icon={
+
                           <Icon
                             as={MdAdd}
                             color="interactive.control"
                             size="2xl"
+                            />
+                        }
+                        />
+                          <Text fontWeight="medium">
+                            {t("emissions")}:&nbsp;
+                          </Text>
+                          <Text fontWeight="normal">
+                            {" "}
+                          </Text>
+                        </Box>
+                        <Box pr="56px">
+                          <IconButton
+                            bg="none"
+                            pos="relative"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              showActivityModal();
+                            }}
+                            _hover={{ bg: "none" }}
+                            aria-label="add-activity"
+                            icon={
+                              <AddIcon
+                                color="interactive.control"
+                                fontSize="24px"
+                              />
+                            }
                           />
                         </IconButton>
                       </Box>

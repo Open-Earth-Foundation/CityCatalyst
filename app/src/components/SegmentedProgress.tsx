@@ -22,13 +22,7 @@ export type SegmentedProgressValues =
 
 export function SegmentedProgress({
   values,
-  colors = [
-    "interactive.connected",
-    "interactive.tertiary",
-    "interactive.secondary",
-    "sentiment.negativeDefault",
-    "interactive.control",
-  ],
+  colors = ["interactive.connected", "interactive.tertiary"],
   max = 1,
   height = 4,
   showLabels = false,

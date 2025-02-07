@@ -340,7 +340,7 @@ const ActivityModalBody = ({
                               required:
                                 f.required === false
                                   ? false
-                                  : t("value-required"),
+                                  : t("option-required"),
                             })}
                           >
                             <NativeSelectField placeholder={t("select-unit")}>
@@ -372,7 +372,7 @@ const ActivityModalBody = ({
                         ""
                       )}
                       {(errors?.activity?.[`${f.id}-unit`] as any) &&
-                      !errors?.activity?.[`${f.id}-unit`] ? (
+                      !errors?.activity?.[`${f.id}`] ? (
                         <Box
                           display="flex"
                           gap="6px"
@@ -384,6 +384,7 @@ const ActivityModalBody = ({
                             color="sentiment.negativeDefault"
                           />
                           <Text fontSize="body.md">
+                            {" "}
                             {errors?.activity?.[`${f.id}-unit`]?.message}{" "}
                           </Text>
                         </Box>

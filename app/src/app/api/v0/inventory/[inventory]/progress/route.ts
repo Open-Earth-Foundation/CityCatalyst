@@ -4,12 +4,16 @@ import { apiHandler } from "@/util/api";
 import { NextResponse } from "next/server";
 
 import InventoryProgressService from "@/backend/InventoryProgressService";
+import createHttpError from "http-errors";
 
 export const GET = apiHandler(async (_req, { session, params }) => {
+  if (!session?.user.id) {
+    throw new createHttpError.Unauthorized("Unauthorized");
+  }
   let inventoryId = params.inventory;
 
   if (inventoryId === "default") {
-    inventoryId = await UserService.findUserDefaultInventory(session);
+    inventoryId = await UserService.updateDefaultInventoryId(session.user.id);
   }
   const inventory = await UserService.findUserInventory(
     inventoryId,

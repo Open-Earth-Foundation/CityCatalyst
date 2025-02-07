@@ -3811,7 +3811,7 @@
               "methane-commitment-solid-waste-inboundary-landfill-id"
             ],
             "activity-title": "total-municipal-solid-waste-disposed",
-            "default-units": "units-tonnes",
+            "default-units": "units-kilograms",
             "extra-fields": [
               {
                 "id": "methane-commitment-solid-waste-inboundary-landfill-id",
@@ -4423,6 +4423,8 @@
               "wastewater-inside-domestic-calculator-income-group",
               "wastewater-inside-domestic-calculator-collection-status",
               "wastewater-inside-domestic-calculator-treatment-status",
+              "wastewater-inside-domestic-calculator-treatment-type",
+              "wastewater-inside-domestic-calculator-treatment-name",
               "data-source"
             ],
             "activity-title": "total-population",
@@ -4430,7 +4432,6 @@
               {
                 "id": "wastewater-inside-domestic-calculator-income-group",
                 "options": [
-                  "income-group-type-all",
                   "income-group-type-rural",
                   "income-group-type-urban-high-income",
                   "income-group-type-urban-low-income"
@@ -4440,9 +4441,9 @@
                 "id": "total-organic-sludge-removed",
                 "type": "number",
                 "units": [
-                  "units-kilograms-BOD"
+                  "units-kilograms-N-yr"
                 ],
-                "default-units": "units-kilograms-BOD"
+                "default-units": "units-kilograms-N-yr"
               },
               {
                 "id": "wastewater-inside-domestic-calculator-methane-recovered",
@@ -4451,6 +4452,13 @@
                   "units-kilograms"
                 ],
                 "default-units": "units-kilograms"
+              },
+              {
+                "id": "wastewater-inside-domestic-calculator-garbage-disposal",
+                "options": [
+                  "garbage-disposal-type-non-garbage-disposals",
+                  "garbage-disposal-type-garbage-disposals"
+                ]
               },
               {
                 "id": "wastewater-inside-domestic-calculator-collection-status",
@@ -4467,33 +4475,51 @@
                 ]
               },
               {
-                "id": "wastewater-inside-domestic-calculator-treatment-type-collected-treated",
-                "options": [
-                  "treatment-type-centralized-aerobic-treatment-plan-well-managed",
-                  "treatment-type-centralized-aerobic-treatment-not-plan-well-managed",
-                  "treatment-type-anaerobic-digester-for-sludge",
-                  "treatment-type-anaerobic-reactor",
-                  "treatment-type-anaerobic-shallow-lagoon",
-                  "treatment-type-anaerobic-deep-lagoon",
-                  "treatment-type-septic-system",
-                  "treatment-type-latrine-dry-climate-small-family",
-                  "treatment-type-latrine-dry-climate-communal",
-                  "treatment-type-latrine-wet-climate",
-                  "treatment-type-latrine-regular-sediment"
-                ]
+                "id": "wastewater-inside-domestic-calculator-treatment-name",
+                "dependsOn": "wastewater-inside-domestic-calculator-treatment-status",
+                "dependentOptions": {
+                  "treatment-status-type-wastewater-treated": [
+                    "treatment-name-septic-system",
+                    "treatment-name-latrine",
+                    "treatment-name-other"
+                  ],
+                  "treatment-status-type-wastewater-untreated": [
+                    "treatment-name-none",
+                    "treatment-name-sewer"
+                  ]
+                }
+              },
+              {
+                "id": "wastewater-inside-domestic-calculator-treatment-type",
+                "dependsOn": "wastewater-inside-domestic-calculator-treatment-name",
+                "dependentOptions": {
+                  "treatment-name-septic-system": [
+                    "treatment-type-septic-system"
+                  ],
+                  "treatment-name-latrine": [
+                    "treatment-type-latrine",
+                    "treatment-type-latrine-dry-climate",
+                    "treatment-type-latrine-wet-climate",
+                    "treatment-type-latrine-sediment-removal"
+                  ],
+                  "treatment-name-other": [
+                    "treatment-type-centralized-aerobic-treatment-plan-well-managed",
+                    "treatment-type-anaerobic-digester-for-sludge",
+                    "treatment-type-anaerobic-reactor",
+                    "treatment-type-anaerobic-shallow-lagoon",
+                    "treatment-type-anaerobic-deep-lagoon"
+                  ],
+                  "treatment-name-none": [
+                    "treatment-type-sea-river-lake-discharge"
+                  ],
+                  "treatment-name-sewer": [
+                    "treatment-type-stagnant-sewer"
+                  ]
+                }
               },
               {
                 "id": "data-source",
                 "type": "text"
-              },
-              {
-                "id": "wastewater-inside-domestic-calculator-discharge-pathway-untreated",
-                "options": [
-                  "discharge-pathway-sea-river-lake",
-                  "discharge-pathway-stagnant-sewer",
-                  "discharge-pathway-flowing-sewer",
-                  "discharge-pathway-to-ground"
-                ]
               }
             ]
           },
@@ -4505,6 +4531,8 @@
               "wastewater-inside-industrial-calculator-industry-type",
               "wastewater-inside-industrial-calculator-collection-status",
               "wastewater-inside-industrial-calculator-treatment-status",
+              "wastewater-inside-industrial-calculator-treatment-type",
+              "wastewater-inside-industrial-calculator-treatment-name",
               "data-source"
             ],
             "activity-title": "total-industry-production",
@@ -4516,6 +4544,7 @@
             "extra-fields": [
               {
                 "id": "wastewater-inside-industrial-calculator-industry-type",
+                "required": true,
                 "options": [
                   "industry-type-alcohol-refining",
                   "industry-type-coffee",
@@ -4558,6 +4587,11 @@
               {
                 "id": "wastewater-inside-industrial-calculator-wastewater-generated",
                 "type": "number",
+                "units": [
+                  "units-cubic-meters-per-kilogram",
+                  "units-cubic-meters-per-tonne"
+                ],
+                "default-units": "units-cubic-meters-per-tonne",
                 "required": false
               },
               {
@@ -4575,22 +4609,47 @@
                 ]
               },
               {
-                "id": "wastewater-inside-industrial-calculator-treatment-type-collected-treated",
-                "options": [
-                  "treatment-type-centralized-aerobic-treatment-plan-well-managed",
-                  "treatment-type-centralized-aerobic-treatment-not-plan-well-managed",
-                  "treatment-type-anaerobic-digester-for-sludge",
-                  "treatment-type-anaerobic-reactor",
-                  "treatment-type-anaerobic-shallow-lagoon",
-                  "treatment-type-anaerobic-deep-lagoon"
-                ]
+                "id": "wastewater-inside-industrial-calculator-treatment-name",
+                "dependsOn": "wastewater-inside-industrial-calculator-treatment-status",
+                "dependentOptions": {
+                  "treatment-status-type-wastewater-treated": [
+                    "treatment-name-septic-system",
+                    "treatment-name-latrine",
+                    "treatment-name-other"
+                  ],
+                  "treatment-status-type-wastewater-untreated": [
+                    "treatment-name-none",
+                    "treatment-name-sewer"
+                  ]
+                }
               },
               {
-                "id": "wastewater-inside-industrial-calculator-discharge-pathway-untreated",
-                "options": [
-                  "discharge-pathway-sea-rivers-lakes-estuaries",
-                  "discharge-pathway-stagnant-sewer"
-                ]
+                "id": "wastewater-inside-industrial-calculator-treatment-type",
+                "dependsOn": "wastewater-inside-industrial-calculator-treatment-name",
+                "dependentOptions": {
+                  "treatment-name-septic-system": [
+                    "treatment-type-septic-system"
+                  ],
+                  "treatment-name-latrine": [
+                    "treatment-type-latrine",
+                    "treatment-type-latrine-dry-climate",
+                    "treatment-type-latrine-wet-climate",
+                    "treatment-type-latrine-sediment-removal"
+                  ],
+                  "treatment-name-other": [
+                    "treatment-type-centralized-aerobic-treatment-plan-well-managed",
+                    "treatment-type-anaerobic-digester-for-sludge",
+                    "treatment-type-anaerobic-reactor",
+                    "treatment-type-anaerobic-shallow-lagoon",
+                    "treatment-type-anaerobic-deep-lagoon"
+                  ],
+                  "treatment-name-none": [
+                    "treatment-type-sea-river-lake-discharge"
+                  ],
+                  "treatment-name-sewer": [
+                    "treatment-type-stagnant-sewer"
+                  ]
+                }
               }
             ]
           }
@@ -4629,8 +4688,7 @@
             "source-type-all-wastewater"
           ],
           "exclusive": "source-type-all-wastewater"
-        }
-        ,
+        },
         {
           "id": "data-source",
           "type": "text"
@@ -4638,8 +4696,8 @@
       ]
     }
   },
-  "III.4.3": {
-    "scope": 3,
+  "III.4.2": {
+    "scope": 1,
     "methodologies": [
       {
         "id": "wastewater-outside-methodology",
@@ -4647,7 +4705,7 @@
         "inputRequired": [
           "wastewater-outside-generated",
           "total-organic-sludge-removed",
-          "total-of-ch4-recovered",
+          "methane-recovered",
           "population-or-industrial-production"
         ],
         "formula": "wastewater-calculator",
@@ -4661,20 +4719,21 @@
         "activities": [
           {
             "id": "wastewater-outside-domestic-calculator-activity",
-            "activitySelectedOption": "source-type-domestic-wastewater",
             "hideEmissionFactorsInput": true,
+            "activitySelectedOption": "source-type-domestic-wastewater",
             "unique-by": [
               "wastewater-outside-domestic-calculator-income-group",
               "wastewater-outside-domestic-calculator-collection-status",
               "wastewater-outside-domestic-calculator-treatment-status",
-              "wastewater-outside-domestic-calculator-source"
+              "wastewater-outside-domestic-calculator-treatment-type",
+              "wastewater-outside-domestic-calculator-treatment-name",
+              "data-source"
             ],
             "activity-title": "total-population",
             "extra-fields": [
               {
                 "id": "wastewater-outside-domestic-calculator-income-group",
                 "options": [
-                  "income-group-type-all",
                   "income-group-type-rural",
                   "income-group-type-urban-high-income",
                   "income-group-type-urban-low-income"
@@ -4697,6 +4756,13 @@
                 "default-units": "units-kilograms"
               },
               {
+                "id": "wastewater-outside-domestic-calculator-garbage-disposal",
+                "options": [
+                  "garbage-disposal-type-non-garbage-disposals",
+                  "garbage-disposal-type-garbage-disposals"
+                ]
+              },
+              {
                 "id": "wastewater-outside-domestic-calculator-collection-status",
                 "options": [
                   "collection-status-type-wastewater-collected",
@@ -4706,34 +4772,56 @@
               {
                 "id": "wastewater-outside-domestic-calculator-treatment-status",
                 "options": [
-                  "treatment-status-type-wastewater-treated",
-                  "treatment-status-type-wastewater-untreated"
+                  "collection-status-type-wastewater-treated",
+                  "collection-status-type-wastewater-untreated"
                 ]
               },
               {
-                "id": "wastewater-outside-domestic-calculator-treatment-type-collected-treated",
-                "options": [
-                  "treatment-type-centralized-aerobic-treatment-plan-well-managed",
-                  "treatment-type-centralized-aerobic-treatment-not-plan-well-managed",
-                  "treatment-type-anaerobic-digester-for-sludge",
-                  "treatment-type-anaerobic-reactor",
-                  "treatment-type-anaerobic-shallow-lagoon",
-                  "treatment-type-anaerobic-deep-lagoon",
-                  "treatment-type-septic-system",
-                  "treatment-type-latrine-dry-climate-small-family",
-                  "treatment-type-latrine-dry-climate-communal",
-                  "treatment-type-latrine-wet-climate",
-                  "treatment-type-latrine-regular-sediment"
-                ]
+                "id": "wastewater-outside-domestic-calculator-treatment-type",
+                "dependsOn": "wastewater-outside-domestic-calculator-treatment-status",
+                "dependentOptions": {
+                  "treatment-status-type-wastewater-treated": [
+                    "treatment-name-septic-system",
+                    "treatment-name-latrine",
+                    "treatment-name-other"
+                  ],
+                  "treatment-status-type-wastewater-untreated": [
+                    "treatment-name-none",
+                    "treatment-name-sewer"
+                  ]
+                }
               },
               {
-                "id": "wastewater-outside-domestic-calculator-discharge-pathway-untreated",
-                "options": [
-                  "discharge-pathway-sea-river-lake",
-                  "discharge-pathway-stagnant-sewer",
-                  "discharge-pathway-flowing-sewer",
-                  "discharge-pathway-to-ground"
-                ]
+                "id": "wastewater-outside-domestic-calculator-treatment-name",
+                "dependsOn": "wastewater-outside-domestic-calculator-treatment-type",
+                "dependentOptions": {
+                  "treatment-name-septic-system": [
+                    "treatment-type-septic-system"
+                  ],
+                  "treatment-name-latrine": [
+                    "treatment-type-latrine",
+                    "treatment-type-latrine-dry-climate",
+                    "treatment-type-latrine-wet-climate",
+                    "treatment-type-latrine-sediment-removal"
+                  ],
+                  "treatment-name-other": [
+                    "treatment-type-centralized-aerobic-treatment-plan-well-managed",
+                    "treatment-type-anaerobic-digester-for-sludge",
+                    "treatment-type-anaerobic-reactor",
+                    "treatment-type-anaerobic-shallow-lagoon",
+                    "treatment-type-anaerobic-deep-lagoon"
+                  ],
+                  "treatment-name-none": [
+                    "treatment-type-sea-river-lake-discharge"
+                  ],
+                  "treatment-name-sewer": [
+                    "treatment-type-stagnant-sewer"
+                  ]
+                }
+              },
+              {
+                "id": "data-source",
+                "type": "text"
               }
             ]
           },
@@ -4745,6 +4833,8 @@
               "wastewater-outside-industrial-calculator-industry-type",
               "wastewater-outside-industrial-calculator-collection-status",
               "wastewater-outside-industrial-calculator-treatment-status",
+              "wastewater-outside-industrial-calculator-treatment-type",
+              "wastewater-outside-industrial-calculator-treatment-name",
               "data-source"
             ],
             "activity-title": "total-industry-production",
@@ -4783,10 +4873,6 @@
                 "default-units": "units-kilograms-COD"
               },
               {
-                "id": "data-source",
-                "type": "text"
-              },
-              {
                 "id": "wastewater-outside-industrial-calculator-methane-recovered",
                 "type": "number",
                 "units": [
@@ -4796,8 +4882,17 @@
                 "default-units": "units-kilograms"
               },
               {
+                "id": "data-source",
+                "type": "text"
+              },
+              {
                 "id": "wastewater-outside-industrial-calculator-wastewater-generated",
                 "type": "number",
+                "units": [
+                  "units-cubic-meters-per-kilogram",
+                  "units-cubic-meters-per-tonne"
+                ],
+                "default-units": "units-cubic-meters-per-tonne",
                 "required": false
               },
               {
@@ -4810,27 +4905,52 @@
               {
                 "id": "wastewater-outside-industrial-calculator-treatment-status",
                 "options": [
-                  "treatment-status-type-wastewater-treated",
-                  "treatment-status-type-wastewater-untreated"
+                  "collection-status-type-wastewater-treated",
+                  "collection-status-type-wastewater-untreated"
                 ]
               },
               {
-                "id": "wastewater-outside-industrial-calculator-treatment-type-collected-treated",
-                "options": [
-                  "treatment-type-centralized-aerobic-treatment-plan-well-managed",
-                  "treatment-type-centralized-aerobic-treatment-not-plan-well-managed",
-                  "treatment-type-anaerobic-digester-for-sludge",
-                  "treatment-type-anaerobic-reactor",
-                  "treatment-type-anaerobic-shallow-lagoon",
-                  "treatment-type-anaerobic-deep-lagoon"
-                ]
+                "id": "wastewater-outside-industrial-calculator-treatment-type",
+                "dependsOn": "wastewater-outside-industrial-calculator-treatment-status",
+                "dependentOptions": {
+                  "treatment-status-type-wastewater-treated": [
+                    "treatment-name-septic-system",
+                    "treatment-name-latrine",
+                    "treatment-name-other"
+                  ],
+                  "treatment-status-type-wastewater-untreated": [
+                    "treatment-name-none",
+                    "treatment-name-sewer"
+                  ]
+                }
               },
               {
-                "id": "wastewater-outside-industrial-calculator-discharge-pathway-untreated",
-                "options": [
-                  "discharge-pathway-sea-rivers-lakes-estuaries",
-                  "discharge-pathway-stagnant-sewer"
-                ]
+                "id": "wastewater-outside-industrial-calculator-treatment-name",
+                "dependsOn": "wastewater-outside-industrial-calculator-treatment-type",
+                "dependentOptions": {
+                  "treatment-name-septic-system": [
+                    "treatment-type-septic-system"
+                  ],
+                  "treatment-name-latrine": [
+                    "treatment-type-latrine",
+                    "treatment-type-latrine-dry-climate",
+                    "treatment-type-latrine-wet-climate",
+                    "treatment-type-latrine-sediment-removal"
+                  ],
+                  "treatment-name-other": [
+                    "treatment-type-centralized-aerobic-treatment-plan-well-managed",
+                    "treatment-type-anaerobic-digester-for-sludge",
+                    "treatment-type-anaerobic-reactor",
+                    "treatment-type-anaerobic-shallow-lagoon",
+                    "treatment-type-anaerobic-deep-lagoon"
+                  ],
+                  "treatment-name-none": [
+                    "treatment-type-sea-river-lake-discharge"
+                  ],
+                  "treatment-name-sewer": [
+                    "treatment-type-stagnant-sewer"
+                  ]
+                }
               }
             ]
           }
@@ -4865,8 +4985,10 @@
           "id": "direct-measure-wastewater-outside-source-type",
           "options": [
             "source-type-domestic-wastewater",
-            "source-type-industrial-wastewater"
-          ]
+            "source-type-industrial-wastewater",
+            "source-type-all-wastewater"
+          ],
+          "exclusive": "source-type-all-wastewater"
         },
         {
           "id": "data-source",
@@ -4899,7 +5021,8 @@
             "industry-type-mineral-industry": [
               "industry-names-cement",
               "industry-names-lime",
-              "industry-names-glass"
+              "industry-names-glass",
+              "industry-name-other-industries"
             ],
             "industry-type-chemical-industry": [
               "industry-names-ammonia-production",
@@ -4910,7 +5033,8 @@
               "industry-name-titanium-dioxide-production",
               "industry-name-soda-ash-production",
               "industry-name-hydrogen-production",
-              "industry-name-petrochemicals-production"
+              "industry-name-petrochemicals-production",
+              "industry-name-other-industries"
             ],
             "industry-type-metal-industry": [
               "industry-name-metallurgical-coke-production",
@@ -4920,11 +5044,13 @@
               "industry-name-zinc-production",
               "industry-name-magnesium-production",
               "industry-name-ferroalloy-production",
-              "industry-name-rare-earths-production"
+              "industry-name-rare-earths-production",
+              "industry-name-other-industries"
             ],
             "industry-type-electronics-industry": [
               "industry-name-etching-of-semiconductors",
-              "industry-name-heat-transfer-fluids-production"
+              "industry-name-heat-transfer-fluids-production",
+              "industry-name-other-industries"
             ],
             "industry-type-substitutes-for-ozone-depleting-substances": [
               "industry-name-refrigeration-and-air-conditioning",
@@ -4932,7 +5058,8 @@
               "industry-name-aerosol",
               "industry-name-solvent-cleaning",
               "industry-name-waterproof-films-for-electronic-circuits",
-              "industry-name-foam-blowing-agents"
+              "industry-name-foam-blowing-agents",
+              "industry-name-other-industries"
             ],
             "industry-type-other-industries": [
               "industry-name-pulp-and-paper",

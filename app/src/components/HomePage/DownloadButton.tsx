@@ -1,16 +1,10 @@
-import {
-  Box,
-  Card,
-  CardBody,
-  CardHeader,
-  Text,
-  useDisclosure,
-} from "@chakra-ui/react";
+import React from "react";
+import { useDisclosure } from "@chakra-ui/react";
 import { FiDownload } from "react-icons/fi";
-import { Trans } from "react-i18next/TransWithoutContext";
 import type { TFunction } from "i18next";
-import ModalDownloadShare from "./DownloadAndShareModals/ModalDownloadShare";
+import ModalDownloadReport from "./DownloadAndShareModals/ModalDownloadReport";
 import ModalPublish from "./DownloadAndShareModals/ModalPublish";
+import ActionCardSmall from "./ActionCardSmall";
 
 interface DownloadButtonProps {
   inventoryId: string;
@@ -48,7 +42,7 @@ const DownloadButton: React.FC<DownloadButtonProps> = ({
       py={0}
       px={6}
     >
-      <ModalDownloadShare
+      <ModalDownloadReport
         t={t}
         lng={lng}
         isDownloadShareOpen={isDownloadShareOpen}
@@ -67,36 +61,12 @@ const DownloadButton: React.FC<DownloadButtonProps> = ({
         inventoryId={inventoryId}
         inventory={inventory}
       />
-      <Box className="flex items-center w-fill">
-        <Box>
-          <Box className="flex items-center justify-center h-[48px] w-[48px] rounded-full bg-[#2351DC]">
-            <FiDownload className="text-white" size={24} />
-          </Box>
-        </Box>
-        <Box>
-          <CardHeader className="flex h-[20px] gap-2">
-            <Text
-              fontFamily="heading"
-              fontSize="title.lg"
-              color="interactive.secondary"
-              fontWeight="semibold"
-            >
-              {t("download-and-share")}
-            </Text>
-          </CardHeader>
-          <CardBody className="h-[75px]">
-            <Text
-              fontSize="body.lg"
-              color="body"
-              lineHeight="24"
-              letterSpacing="wide"
-            >
-              <Trans t={t}>download-description</Trans>
-            </Text>
-          </CardBody>
-        </Box>
-      </Box>
-    </Card.Root>
+      <ActionCardSmall
+        onClick={onDownloadShareOpen}
+        icon={<FiDownload className="text-white" size={24} />}
+        title={t("download-and-report")}
+      />
+    </>
   );
 };
 

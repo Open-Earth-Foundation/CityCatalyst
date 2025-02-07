@@ -4,6 +4,7 @@ import { apiHandler } from "@/util/api";
 import createHttpError from "http-errors";
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { Roles } from "@/util/types";
 
 export const GET = apiHandler(async (_req, { params, session }) => {
   const user = await UserService.findUser(params.user, session, {
@@ -15,7 +16,7 @@ export const GET = apiHandler(async (_req, { params, session }) => {
 
 const updateUserRequest = z.object({
   name: z.string(),
-  role: z.string(),
+  role: z.nativeEnum(Roles),
 });
 
 export const PATCH = apiHandler(async (_req, { params, session }) => {

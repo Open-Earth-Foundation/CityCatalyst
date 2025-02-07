@@ -1,4 +1,8 @@
 {
   "not-found-description": "Scheint, als wären wir in den Emissionsnebel geraten. Bitte kehren Sie zum Dashboard zurück",
-  "goto-dashboard": "Gehe zum Dashboard"
+  "goto-dashboard": "Gehe zum Dashboard",
+  "invite-not-valid": "Diese Einladung ist nicht mehr gültig",
+  "invite-not-valid-description": "Der Link, den Sie verwenden, ist entweder abgelaufen oder wurde bereits eingelöst.\n Bitte bitten Sie den Einladenden, ihn Ihnen erneut zu senden.\n Wenn Sie denken, dass dies ein Fehler ist, bitte",
+  "contact-us": "kontaktieren Sie uns.",
+  "go-back": "Zurück"
 }

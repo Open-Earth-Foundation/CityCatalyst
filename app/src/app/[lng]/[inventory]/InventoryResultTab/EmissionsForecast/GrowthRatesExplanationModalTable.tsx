@@ -1,5 +1,5 @@
 import { Table } from "@chakra-ui/react";
-import { SECTORS } from "@/util/constants";
+import { ISector, SECTORS } from "@/util/constants";
 import { TFunction } from "i18next";
 import { ProjectionData } from "@/util/types";
 
@@ -10,6 +10,12 @@ export const GrowthRatesExplanationModalTable = ({
   growthRates: ProjectionData;
   t: TFunction;
 }) => {
+  function getNameTranslationString(
+    sector: ISector | { name: string; color: string; referenceNumber: string },
+  ) {
+    return sector.name === "ippu" ? sector.name + "-short" : sector.name;
+  }
+
   return (
     <Table.Root unstyled>
       <Table.Header>
@@ -27,7 +33,7 @@ export const GrowthRatesExplanationModalTable = ({
       <Table.Body>
         {SECTORS.map((sector) => (
           <Table.Row key={sector.name}>
-            <Table.Cell>{t(sector.name + "-short")}</Table.Cell>
+            <Table.Cell>{t(getNameTranslationString(sector))}</Table.Cell>
             {Object.keys(growthRates)
               .slice(0, 4)
               .map((year) => (

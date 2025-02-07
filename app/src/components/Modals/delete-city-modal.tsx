@@ -9,7 +9,7 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { TFunction } from "i18next";
 import { MdInfoOutline } from "react-icons/md";
 import { api } from "@/services/api";
-import { CityAttributes } from "@/models/City";
+import type { CityAttributes } from "@/models/City";
 
 import {
   DialogRoot,
@@ -20,7 +20,7 @@ import {
   DialogHeader,
 } from "@/components/ui/dialog";
 
-import { Toaster, toaster } from "@/components/ui/toaster";
+import { toaster } from "@/components/ui/toaster";
 
 interface DeleteCityDialogProps {
   isOpen: boolean;

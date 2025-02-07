@@ -1,13 +1,12 @@
 "use client";
 
 import { Box, Button, DialogHeader, Icon, Text } from "@chakra-ui/react";
-import React, { FC, useState } from "react";
+import React, { FC } from "react";
 import { TFunction } from "i18next";
 import { useDeleteAllActivityValuesMutation } from "@/services/api";
 import { ChangeMethodologyIcon } from "../icons";
 import { Trans } from "react-i18next";
 import { toaster } from "../ui/toaster";
-import { MdCheckCircle } from "react-icons/md";
 import {
   DialogBackdrop,
   DialogBody,
@@ -48,31 +47,13 @@ const ChangeMethodology: FC<ChangeMethodologyProps> = ({
     });
     if (response.data) {
       // TODO create toast wrapper for success state
-      toaster.create({
-        status: "success",
+      toaster.success({
         title: t("change-methodology-success"),
-        render: ({ title }) => (
-          <Box
-            h="48px"
-            w="600px"
-            borderRadius="8px"
-            display="flex"
-            alignItems="center"
-            color="white"
-            backgroundColor="interactive.primary"
-            gap="8px"
-            px="16px"
-          >
-            <Icon as={MdCheckCircle} />
-            <Text>{title}</Text>
-          </Box>
-        ),
       });
       onChangeClicked();
       onClose();
     } else {
-      toast({
-        status: "error",
+      toaster.error({
         title: t("change-methodology-error"),
       });
     }
@@ -83,9 +64,9 @@ const ChangeMethodology: FC<ChangeMethodologyProps> = ({
   return (
     <>
       <DialogRoot
-        blockScrollOnMount={false}
         open={isOpen}
         onOpenChange={(e: any) => setChangeMethodology(e.open)}
+        onExitComplete={onClose}
       >
         <DialogBackdrop />
         <DialogContent minH="350px" minW="568px" marginTop="2%">

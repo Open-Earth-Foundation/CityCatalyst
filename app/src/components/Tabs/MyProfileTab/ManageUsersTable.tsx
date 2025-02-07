@@ -12,7 +12,7 @@ import {
   GetUserCityInvitesResponse,
   GetUserCityInvitesResponseUserData,
 } from "@/util/types";
-import { MdOutlineMode } from "react-icons/md";
+import { MdChevronLeft, MdChevronRight, MdOutlineMode } from "react-icons/md";
 import {
   HiMiniChevronDown,
   HiMiniChevronRight,
@@ -260,7 +260,12 @@ const ManageUsersTable = ({
           onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 0))}
           disabled={currentPage === 0}
         >
-          <ChevronLeftIcon h="24px" w="24px" color="background.overlay" />
+          <Icon
+            as={MdChevronLeft}
+            h="24px"
+            w="24px"
+            color="background.overlay"
+          />
         </Button>
         <span>
           {currentPage + 1}/{Math.ceil(data.length / itemsPerPage)}
@@ -276,7 +281,12 @@ const ManageUsersTable = ({
           }
           disabled={(currentPage + 1) * itemsPerPage >= data.length}
         >
-          <ChevronRightIcon h="24px" w="24px" color="background.overlay" />
+          <Icon
+            as={MdChevronRight}
+            h="24px"
+            w="24px"
+            color="background.overlay"
+          />
         </Button>
       </div>
       {selectedUser && (

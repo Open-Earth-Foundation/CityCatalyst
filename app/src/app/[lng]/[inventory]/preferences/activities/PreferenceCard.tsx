@@ -26,7 +26,7 @@ export function PreferenceCard({
       flexDirection="column"
       alignItems="start"
     >
-      <VStack spacing={2} align={"start"}>
+      <VStack gap={2} align={"start"}>
         <Image
           src={src}
           alt={"imageAlt"}
@@ -34,7 +34,7 @@ export function PreferenceCard({
           height={32}
           objectFit="cover"
         />
-        <Text variant="card">{t(title)}</Text>c{" "}
+        <Text>{t(title)}</Text>
       </VStack>
     </Button>
   );

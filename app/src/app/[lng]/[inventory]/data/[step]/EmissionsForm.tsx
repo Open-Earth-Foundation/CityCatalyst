@@ -1,4 +1,3 @@
-import { RadioButton } from "@/components/radio-button";
 import {
   Box,
   Heading,
@@ -18,6 +17,7 @@ import { MdInfoOutline } from "react-icons/md";
 import { Field } from "@/components/ui/field";
 import { Switch } from "@/components/ui/switch";
 import { Tooltip } from "@/components/ui/tooltip";
+import { Radio, RadioGroup } from "@/components/ui/radio";
 
 export function EmissionsForm({
   t,
@@ -119,14 +119,10 @@ export function EmissionsForm({
               <Icon as={MdInfoOutline} mt={-0.5} color="content.tertiary" />
             </Tooltip>
           </Heading>
-          <HStack spaceX={4} spaceY={4} {...getRootProps()}>
-            <RadioButton {...getItemProps({ value: "activity-data" })}>
-              {t("activity-data")}
-            </RadioButton>
-            <RadioButton {...getItemProps({ value: "direct-measure" })}>
-              {t("direct-measure")}
-            </RadioButton>
-          </HStack>
+          <RadioGroup spaceX={4} spaceY={4}>
+            <Radio value="activity-data">{t("activity-data")}</Radio>
+            <Radio value="direct-measure">{t("direct-measure")}</Radio>
+          </RadioGroup>
           {/*** Activity data ***/}
           {methodology === "activity-data" && (
             <ActivityDataTab

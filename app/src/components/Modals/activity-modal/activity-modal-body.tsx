@@ -33,7 +33,7 @@ import { ExtraField, Methodology, SuggestedActivity } from "@/util/form-schema";
 import { ActivityValue } from "@/models/ActivityValue";
 import FormattedNumberInput from "@/components/formatted-number-input";
 import PercentageBreakdownInput from "@/components/percentage-breakdown-input";
-import { RadioButton } from "@/components/radio-button";
+import { RadioButton } from "@/components/ui/radio-button";
 import { EmissionFactorTypes } from "@/hooks/activity-value-form/use-emission-factors";
 import DependentSelectInput from "@/components/dependent-select-input";
 import { DialogBody } from "@/components/ui/dialog";
@@ -126,7 +126,7 @@ const ActivityModalBody = ({
     control,
     defaultValue: selectedActivity?.prefills?.[0].value,
   });
-  const { getRootProps, getRadioProps, value } = useRadioGroup(field);
+  const { getRootProps, getItemProps, value } = useRadioGroup(field);
 
   let prefix = "";
   const [isEmissionFactorInputDisabled, setIsEmissionFactorInputDisabled] =
@@ -426,7 +426,7 @@ const ActivityModalBody = ({
                   <FormattedNumberInput
                     control={control}
                     name={`activity.${title}`}
-                    defaultValue={0}
+                    defaultValue="0"
                     t={t}
                     miniAddon
                   >
@@ -562,8 +562,8 @@ const ActivityModalBody = ({
                 t={t}
                 control={control}
                 miniAddon
-                name={`activity.CO2EmissionFactor`}
-                defaultValue={0}
+                name="activity.CO2EmissionFactor"
+                defaultValue="0"
               >
                 <Text
                   truncate // Truncate the text with an ellipsis
@@ -592,7 +592,7 @@ const ActivityModalBody = ({
                 control={control}
                 miniAddon
                 name={`activity.N2OEmissionFactor`}
-                defaultValue={0}
+                defaultValue="0"
               >
                 <Text
                   truncate // Truncate the text with an ellipsis
@@ -621,7 +621,7 @@ const ActivityModalBody = ({
                 control={control}
                 miniAddon
                 name={`activity.CH4EmissionFactor`}
-                defaultValue={0}
+                defaultValue="0"
               >
                 <Text
                   truncate // Truncate the text with an ellipsis
@@ -656,7 +656,6 @@ const ActivityModalBody = ({
                 alignItems="center"
               >
                 <Text
-                  variant="label"
                   fontSize="label.lg"
                   fontStyle="normal"
                   fontWeight="medium"
@@ -674,10 +673,10 @@ const ActivityModalBody = ({
                       t={t}
                       control={control}
                       name={`activity.CO2EmissionFactor`}
-                      defaultValue={0}
+                      defaultValue="0"
                       w="110px"
                       h="full"
-                      isDisabled={isEmissionFactorInputDisabled}
+                      disabled={isEmissionFactorInputDisabled}
                     >
                       {areEmissionFactorsLoading ? (
                         <Spinner size="sm" color="border.neutral" />

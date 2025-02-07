@@ -1,8 +1,9 @@
 "use client";
 
-import { Box, FormControl, FormLabel, Input, Text } from "@chakra-ui/react";
-import React, { FC, LegacyRef, useEffect, useRef, useState } from "react";
+import { Input, Text } from "@chakra-ui/react";
+import React, { FC, useEffect, useState } from "react";
 import { FieldError } from "react-hook-form";
+import { Field } from "@/components/ui/field";
 
 interface FormInputProps {
   label: string;
@@ -34,16 +35,21 @@ const FormInput: FC<FormInputProps> = ({
   };
 
   return (
-    <FormControl display="flex" flexDirection="column" isInvalid={!!error}>
-      <FormLabel
-        variant="label"
-        fontSize="label.lg"
-        fontStyle="normal"
-        fontWeight="medium"
-        letterSpacing="wide"
-      >
-        {label}
-      </FormLabel>
+    <Field
+      display="flex"
+      flexDirection="column"
+      invalid={!!error}
+      label={
+        <Text
+          fontSize="label.lg"
+          fontStyle="normal"
+          fontWeight="medium"
+          letterSpacing="wide"
+        >
+          {label}
+        </Text>
+      }
+    >
       <Input
         shadow="1dp"
         name={id}
@@ -69,7 +75,7 @@ const FormInput: FC<FormInputProps> = ({
           {error.message}
         </Text>
       )}
-    </FormControl>
+    </Field>
   );
 };
 

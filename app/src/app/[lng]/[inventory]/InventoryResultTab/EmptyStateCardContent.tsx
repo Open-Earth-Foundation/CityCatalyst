@@ -17,7 +17,7 @@ export const EmptyStateCardContent = ({
   isPublic: boolean;
 }) => (
   <Center width={width} height={height}>
-    <VStack width="400px" spacing={4}>
+    <VStack width="400px" spaceX={4} spaceY={4}>
       <Image
         src="/assets/report_results_empty_state.svg"
         width={100}

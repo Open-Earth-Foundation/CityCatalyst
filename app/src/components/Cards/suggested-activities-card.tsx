@@ -92,7 +92,7 @@ const SuggestedActivityCard: FC<SuggestedActivityCardProps> = ({
         <Button
           title="Add Activity"
           h="48px"
-          variant="ghostLight"
+          variant="ghost"
           aria-label="activity-button"
           fontSize="button.md"
           color="content.link"

@@ -230,7 +230,7 @@ function SubSectorPage({
                 transition={{ duration: 0.3, ease: "easeInOut" }}
               >
                 <Button
-                  variant="ghostLight"
+                  variant="ghost"
                   fontSize="14px"
                   color="content.link"
                   onClick={() => router.back()}

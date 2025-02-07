@@ -121,7 +121,7 @@ export default function ReviewPage({
           justifyContent="center"
           gap="48px"
         >
-          <Button variant="ghostLight" w="152px" gap="8px" onClick={onBack}>
+          <Button variant="ghost" w="152px" gap="8px" onClick={onBack}>
             <Icon as={MdArrowBack} color="content.link" w="24px" h="24px" />
             <Heading
               color="content.link"

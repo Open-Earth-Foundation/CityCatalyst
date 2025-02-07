@@ -632,7 +632,7 @@ export default function AddDataSteps({
             className={` ${isExpanded ? "hidden" : "flex"} transition-all duration-50 ease-linear`}
           >
             <Button
-              variant="ghostLight"
+              variant="ghost"
               fontSize="14px"
               color="content.link"
               fontWeight="bold"
@@ -1147,7 +1147,7 @@ export default function AddDataSteps({
                                 w="full"
                               >
                                 <Button
-                                  variant="ghostLight"
+                                  variant="ghost"
                                   color="sentiment.negativeDefault"
                                   onClick={() =>
                                     removeSectorFile(

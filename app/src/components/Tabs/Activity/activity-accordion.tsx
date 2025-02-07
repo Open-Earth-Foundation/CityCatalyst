@@ -307,7 +307,7 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
                     <PopoverTrigger asChild>
                       <IconButton
                         aria-label="more-icon"
-                        variant="ghostLight"
+                        variant="ghost"
                         color="content.tertiary"
                       >
                         <Icon as={MdMoreVert} size="lg" />

@@ -247,7 +247,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
             )}
             <Switch
               disabled={!!externalInventoryValue}
-              isChecked={
+              checked={
                 showUnavailableForm || !!inventoryValue?.unavailableExplanation
               }
               onChange={handleSwitch}

@@ -14,14 +14,15 @@ import {
 } from "@/util/types";
 import { MdOutlineMode } from "react-icons/md";
 import {
-  ChevronDownIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-} from "@chakra-ui/icons";
-import { Button, IconButton, useTheme } from "@chakra-ui/react";
+  HiMiniChevronDown,
+  HiMiniChevronRight,
+  HiMiniChevronLeft,
+} from "react-icons/hi2";
+import { Button, IconButton, Icon } from "@chakra-ui/react";
 import ManageUsersSubTable from "./ManageUsersSubTable";
 import type { TFunction } from "i18next";
 import UpdateUserModal from "@/components/Modals/update-user-modal";
+import { Toaster } from "@chakra-ui/react";
 
 interface GroupedInvites {
   name: string;
@@ -41,7 +42,6 @@ const ManageUsersTable = ({
   cityInvites: GetUserCityInvitesResponse[];
   t: TFunction;
 }) => {
-  const theme = useTheme();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] =
     useState<GetUserCityInvitesResponseUserData | null>(null);
@@ -119,9 +119,9 @@ const ManageUsersTable = ({
             ).getToggleRowExpandedProps()}
           >
             {(row as ExtendedRow<GroupedInvites>).isExpanded ? (
-              <ChevronDownIcon color={theme.colors.interactive.control} />
+              <Icon as={HiMiniChevronDown} color="interactive.control" />
             ) : (
-              <ChevronRightIcon color={theme.colors.interactive.control} />
+              <Icon as={HiMiniChevronRight} color="interactive.control" />
             )}
           </span>
         ),
@@ -163,27 +163,23 @@ const ManageUsersTable = ({
         Cell: ({ row }) => (
           <IconButton
             onClick={() => handleEditClick(row)}
-            icon={
-              <MdOutlineMode
-                color={theme.colors.interactive.control}
-                size={"18px"}
-              />
-            }
             aria-label="edit"
             variant="ghost"
             color="content.tertiary"
-          />
+          >
+            <Icon as={MdOutlineMode} color="interactive.control" size="lg" />
+          </IconButton>
         ),
       },
     ],
-    [theme, t],
+    [t],
   );
 
   const renderRowSubComponent = React.useCallback(
     ({ row }: { row: ExtendedRow<GroupedInvites> }) => (
-      <ManageUsersSubTable invites={row.original.invites} theme={theme} t={t} />
+      <ManageUsersSubTable invites={row.original.invites} t={t} />
     ),
-    [theme, t],
+    [t],
   );
 
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =

@@ -32,6 +32,7 @@ import { useEffect } from "react";
 import React, { useMemo } from "react";
 import { YearSelectorCard } from "@/components/Cards/years-selection-card";
 import { AddIcon } from "@chakra-ui/icons";
+import Cookies from "js-cookie";
 
 export default function HomePage({
   lng,
@@ -43,11 +44,11 @@ export default function HomePage({
   inventoryId?: string;
 }) {
   const { t } = useTranslation(lng, "dashboard");
+  const cookieLanguage = Cookies.get("i18next");
   const router = useRouter();
-
   // Check if user is authenticated otherwise route to login page
   isPublic || CheckUserSession();
-
+  const language = cookieLanguage ?? lng;
   const { inventory: inventoryParam } = useParams();
   const inventoryIdFromParam = inventoryId || inventoryParam;
   const { data: inventory, isLoading: isInventoryLoading } =
@@ -60,7 +61,7 @@ export default function HomePage({
     if (!inventoryIdFromParam && !isInventoryLoading && inventory) {
       if (inventory.inventoryId) {
         // fix inventoryId in URL without reloading page
-        const newPath = "/" + lng + "/" + inventory.inventoryId;
+        const newPath = "/" + language + "/" + inventory.inventoryId;
         history.replaceState(null, "", newPath);
         if (typeof window !== "undefined") {
           const currentPath = window.location.pathname;
@@ -118,11 +119,11 @@ export default function HomePage({
       {!inventory && !isInventoryLoading && (
         <>
           {isPublic ? (
-            <NotAvailable lng={lng} />
+            <NotAvailable lng={language} />
           ) : (
-            <MissingInventory lng={lng} />
+            <MissingInventory lng={language} />
           )}
-          <Footer lng={lng} />
+          <Footer lng={language} />
         </>
       )}
       {inventory && (
@@ -144,7 +145,7 @@ export default function HomePage({
                 <ActionCards
                   inventoryId={inventory?.inventoryId}
                   t={t}
-                  lng={lng}
+                  lng={language}
                   city={city}
                   inventory={inventory}
                 />
@@ -192,7 +193,7 @@ export default function HomePage({
                     cityId={inventory.cityId as string}
                     inventories={inventoriesForCurrentCity}
                     currentInventoryId={inventory.inventoryId}
-                    lng={lng}
+                    lng={language}
                     t={t}
                   />
                   <Tabs align="start" className="mt-12" variant="line" isLazy>
@@ -215,7 +216,7 @@ export default function HomePage({
                     <TabPanels>
                       <TabPanel>
                         <InventoryCalculationTab
-                          lng={lng}
+                          lng={language}
                           inventory={inventory}
                           inventoryProgress={inventoryProgress}
                           isInventoryProgressLoading={
@@ -226,7 +227,7 @@ export default function HomePage({
                       <TabPanel>
                         <InventoryReportTab
                           isPublic={isPublic}
-                          lng={lng}
+                          lng={language}
                           population={population}
                           inventory={inventory}
                         />
@@ -236,7 +237,7 @@ export default function HomePage({
                 </>
               ) : (
                 <InventoryReportTab
-                  lng={lng}
+                  lng={language}
                   population={population}
                   inventory={inventory}
                   isPublic={isPublic}
@@ -244,7 +245,7 @@ export default function HomePage({
               )}
             </Box>
           </Box>
-          <Footer lng={lng} />
+          <Footer lng={language} />
         </>
       )}
     </>

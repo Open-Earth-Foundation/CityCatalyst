@@ -3,8 +3,7 @@ import { TFunction } from "i18next";
 import React, { FC, useState } from "react";
 import type { Methodology } from "@/util/form-schema";
 import { toaster } from "../ui/toaster";
-import { MdInfo } from "react-icons/md";
-import { Radio, RadioGroup } from "../ui/radio";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface MethodologyCardProps {
   id: string;
@@ -35,24 +34,7 @@ const MethodologyCard: FC<MethodologyCardProps> = ({
   const handleCardClick = () => {
     if (disabled) {
       toaster.create({
-        status: "error",
         title: t("selected-methodology-disabled"),
-        render: ({ title }) => (
-          <Box
-            h="48px"
-            w="600px"
-            borderRadius="8px"
-            display="flex"
-            alignItems="center"
-            color="white"
-            backgroundColor="content.alternative"
-            gap="8px"
-            px="16px"
-          >
-            <Icon as={MdInfo} />
-            <Text>{title}</Text>
-          </Box>
-        ),
       });
       return;
     }
@@ -87,14 +69,11 @@ const MethodologyCard: FC<MethodologyCardProps> = ({
       backgroundColor={isSelected ? "gray.200" : "white"}
     >
       <Box w="full" display="flex" justifyContent="space-between">
-        <RadioGroup>
-          {" "}
-          <Radio
-            disabled={isMethodologyDisabled}
-            isChecked={isSelected}
-            onChange={handleRadioChange}
-          />{" "}
-        </RadioGroup>
+        <Checkbox
+          disabled={isMethodologyDisabled}
+          checked={isSelected}
+          onChange={handleRadioChange}
+        />
         {isMethodologyDisabled ? (
           <Badge
             borderWidth="1px"

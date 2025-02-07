@@ -3,8 +3,8 @@ import { ButtonSmall } from "@/components/Texts/Button";
 import { Column, Row, useTable } from "react-table";
 import { CityInviteStatus, GetUserCityInvitesResponse } from "@/util/types";
 import { MdOutlineDelete, MdOutlineReplay } from "react-icons/md";
-import { ChevronDownIcon } from "@chakra-ui/icons";
-import { Badge, IconButton } from "@chakra-ui/react";
+import { HiMiniChevronDown } from "react-icons/hi2";
+import { Badge, IconButton, Icon } from "@chakra-ui/react";
 import DeleteUserModal from "@/components/Modals/delete-user-modal";
 import type { TFunction } from "i18next";
 import { api } from "@/services/api";
@@ -12,11 +12,9 @@ import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
 
 const ManageUsersSubTable = React.memo(function SubTable({
   invites,
-  theme,
   t,
 }: {
   invites: GetUserCityInvitesResponse[];
-  theme: any;
   t: TFunction;
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -35,47 +33,47 @@ const ManageUsersSubTable = React.memo(function SubTable({
     text: t("invite-send-fail"),
   });
 
-  const handleDeleteClick = (row: Row<GetUserCityInvitesResponse>) => {
-    setSelectedRowId(row.original.id);
-    setIsModalOpen(true);
-  };
-
-  const handleResetClick = (row: Row<GetUserCityInvitesResponse>) => {
-    setSelectedRowId(row.original.id);
-    resetUserInvite({ cityInviteId: row.original.id });
-    if (error) {
-      showErrorToast();
-    } else {
-      showSuccessToast();
-    }
-  };
-
   const subTableColumns: Column<GetUserCityInvitesResponse>[] = useMemo(() => {
+    const handleDeleteClick = (row: Row<GetUserCityInvitesResponse>) => {
+      setSelectedRowId(row.original.id);
+      setIsModalOpen(true);
+    };
+
+    const handleResetClick = (row: Row<GetUserCityInvitesResponse>) => {
+      setSelectedRowId(row.original.id);
+      resetUserInvite({ cityInviteId: row.original.id });
+      if (error) {
+        showErrorToast();
+      } else {
+        showSuccessToast();
+      }
+    };
+
     const getTextAndBorderColor = (value: CityInviteStatus) => {
       switch (value) {
         case CityInviteStatus.ACCEPTED:
-          return theme.colors.sentiment.positiveDefault;
+          return "sentiment.positiveDefault";
         case CityInviteStatus.PENDING:
-          return theme.colors.sentiment.warningDefault;
+          return "sentiment.warningDefault";
         default:
-          return theme.colors.interactive.control;
+          return "interactive.control";
       }
     };
 
     const getBackgroundColor = (value: CityInviteStatus) => {
       switch (value) {
         case CityInviteStatus.ACCEPTED:
-          return theme.colors.sentiment.positiveOverlay;
+          return "sentiment.positiveOverlay";
         case CityInviteStatus.PENDING:
-          return theme.colors.sentiment.warningOverlay;
+          return "sentiment.warningOverlay";
         default:
-          return theme.colors.background.neutral;
+          return "background.neutral";
       }
     };
     return [
       {
         Header: () => (
-          <ChevronDownIcon color={theme.colors.background.alternativeLight} />
+          <Icon as={HiMiniChevronDown} color="background.alternativeLight" />
         ),
         id: "spacer",
         accessor: () => {},
@@ -101,7 +99,6 @@ const ManageUsersSubTable = React.memo(function SubTable({
         id: "status",
         Cell: ({ value }) => (
           <Badge
-            color="blue"
             borderRadius="full"
             px="16px"
             paddingTop="4px"
@@ -113,7 +110,7 @@ const ManageUsersSubTable = React.memo(function SubTable({
             letterSpacing="wide"
             fontSize="body.md"
             borderColor={getTextAndBorderColor(value)}
-            textColor={getTextAndBorderColor(value)}
+            color={getTextAndBorderColor(value)}
             backgroundColor={getBackgroundColor(value)}
           >
             {value}
@@ -133,33 +130,33 @@ const ManageUsersSubTable = React.memo(function SubTable({
           row.original.status === CityInviteStatus.EXPIRED ? (
             <IconButton
               onClick={() => handleResetClick(row)}
-              icon={
-                <MdOutlineReplay
-                  color={theme.colors.interactive.control}
-                  size={"18px"}
-                />
-              }
               aria-label="edit"
               variant="ghost"
               color="content.tertiary"
-            />
+            >
+              <Icon
+                as={MdOutlineReplay}
+                color="interactive.control"
+                size="lg"
+              />
+            </IconButton>
           ) : (
             <IconButton
               onClick={() => handleDeleteClick(row)}
-              icon={
-                <MdOutlineDelete
-                  color={theme.colors.sentiment.negativeDefault}
-                  size={"18px"}
-                />
-              }
               aria-label="edit"
               variant="ghost"
               color="content.tertiary"
-            />
+            >
+              <Icon
+                as={MdOutlineDelete}
+                color="sentiment.negativeDefault"
+                size="lg"
+              />
+            </IconButton>
           ),
       },
     ];
-  }, [theme]);
+  }, [error, resetUserInvite, showErrorToast, showSuccessToast]);
 
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
     useTable({
@@ -173,7 +170,7 @@ const ManageUsersSubTable = React.memo(function SubTable({
         {...getTableProps()}
         style={{
           width: "100%",
-          backgroundColor: theme.colors.background.alternativeLight,
+          backgroundColor: "background.alternativeLight",
         }}
       >
         <thead>
@@ -184,7 +181,7 @@ const ManageUsersSubTable = React.memo(function SubTable({
                   {...column.getHeaderProps()}
                   key={column.id}
                   style={{
-                    backgroundColor: theme.colors.background.alternativeLight,
+                    backgroundColor: "background.alternativeLight",
                     borderTop: "1px solid border.overlay",
                     borderBottom: "1px solid border.overlay",
                     padding: "8px",

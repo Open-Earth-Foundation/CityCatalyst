@@ -151,7 +151,7 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
     return {
       activityGroups,
     };
-  }, [activityData, methodology]);
+  }, [activityData, methodology, referenceNumber]);
 
   // let extraFields = (methodology as Methodology)?.activities?.[0]?.[
   //   "extra-fields"

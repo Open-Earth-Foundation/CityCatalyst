@@ -1,17 +1,9 @@
 import React, { useState } from "react";
-import {
-  Box,
-  Input,
-  Tag,
-  TagCloseButton,
-  TagLabel,
-  Wrap,
-  HStack,
-  Divider,
-} from "@chakra-ui/react";
-import { InfoOutlineIcon } from "@chakra-ui/icons";
+import { Box, Input, Tag, Wrap, HStack, Divider, Icon } from "@chakra-ui/react";
+import { MdInfoOutline } from "react-icons/md";
 import type { TFunction } from "i18next";
 import { BodyLarge, BodyMedium } from "@/components/Texts/Body";
+import { Field } from "@/components/ui/field";
 
 interface MultipleEmailInputProps {
   t: TFunction;
@@ -61,44 +53,46 @@ const MultipleEmailInput: React.FC<MultipleEmailInputProps> = ({
 
   return (
     <Box mt={4}>
-      <Input
-        value={inputValue}
-        onChange={handleInputChange}
-        onKeyDown={handleInputKeyDown}
-        isInvalid={!!error}
-        errorBorderColor="sentiment.negativeDefault"
-        borderColor={"border.neutral"}
-        variant="outline"
-        backgroundColor={
-          error ? "sentiment.negativeOverlay" : "background.default"
-        }
-      />
+      <Field invalid={!!error}>
+        <Input
+          value={inputValue}
+          onChange={handleInputChange}
+          onKeyDown={handleInputKeyDown}
+          borderColor={"border.neutral"}
+          variant="outline"
+          backgroundColor={
+            error ? "sentiment.negativeOverlay" : "background.default"
+          }
+        />
+      </Field>
       {error ? (
         <HStack my={"5px"}>
-          <InfoOutlineIcon color="sentiment.negativeDefault" />
+          <Icon as={MdInfoOutline} color="sentiment.negativeDefault" />
           <BodyMedium text={t(error)} />
         </HStack>
       ) : (
         <HStack my={"5px"}>
-          <InfoOutlineIcon color="interactive.secondary" />
+          <Icon as={MdInfoOutline} color="interactive.secondary" />
           <BodyMedium text={t("press-enter-to-add")} />
         </HStack>
       )}
       <Divider my="24px" />
       <Wrap mt={2}>
         {emails.map((email, index) => (
-          <Tag
+          <Tag.Root
             key={index}
             borderRadius="full"
             variant="solid"
             backgroundColor="background.neutral"
           >
             <BodyLarge text={email} color="content.alternative" />
-            <TagCloseButton
-              color="interactive.control"
-              onClick={() => handleRemoveEmail(email)}
-            />
-          </Tag>
+            <Tag.EndElement>
+              <Tag.CloseTrigger
+                color="interactive.control"
+                onClick={() => handleRemoveEmail(email)}
+              />
+            </Tag.EndElement>
+          </Tag.Root>
         ))}
       </Wrap>
     </Box>

@@ -17,7 +17,7 @@ export const Field = React.forwardRef<HTMLDivElement, FieldProps>(
       helperText,
       errorText,
       optionalText,
-      labelColor,
+      labelColor = "content.tertiary",
       ...rest
     } = props;
     return (

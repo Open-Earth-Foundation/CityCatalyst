@@ -1,5 +1,13 @@
 import React, { useState } from "react";
-import { Box, Input, Tag, HStack, Separator, Icon } from "@chakra-ui/react";
+import {
+  Box,
+  Input,
+  Tag,
+  HStack,
+  Separator,
+  Icon,
+  Flex,
+} from "@chakra-ui/react";
 import { MdInfoOutline } from "react-icons/md";
 import type { TFunction } from "i18next";
 import { BodyLarge, BodyMedium } from "@/components/Texts/Body";
@@ -77,7 +85,7 @@ const MultipleEmailInput: React.FC<MultipleEmailInputProps> = ({
         </HStack>
       )}
       <Separator my="24px" />
-      <Wrap mt={2}>
+      <Flex flexWrap="wrap" gap={2} mt={2}>
         {emails.map((email, index) => (
           <Tag.Root
             key={index}
@@ -94,7 +102,7 @@ const MultipleEmailInput: React.FC<MultipleEmailInputProps> = ({
             </Tag.EndElement>
           </Tag.Root>
         ))}
-      </Wrap>
+      </Flex>
     </Box>
   );
 };

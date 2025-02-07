@@ -67,7 +67,7 @@ export default function HomePage({
         setTimeout(() => router.push(`/onboarding`), 0);
       }
     }
-  }, [isInventoryLoading, inventory, inventoryIdFromParam, lng, router]);
+  }, [isInventoryLoading, inventory, inventoryIdFromParam, language, router]);
 
   // query API data
   // TODO maybe rework this logic into one RTK query:

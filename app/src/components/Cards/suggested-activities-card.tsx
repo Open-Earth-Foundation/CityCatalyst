@@ -40,7 +40,7 @@ const SuggestedActivityCard: FC<SuggestedActivityCardProps> = ({
       <Box display="flex" alignItems="center">
         <Checkbox
           borderRadius="full"
-          __css={{
+          css={{
             "& .chakra-checkbox__control": {
               bg: "white",
               color: "black",

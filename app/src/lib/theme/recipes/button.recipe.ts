@@ -117,10 +117,10 @@ export const buttonRecipe = defineRecipe({
           bg: "background.neutral",
         },
       },
-      size: {
-        sm: { padding: "4", fontSize: "12px" },
-        lg: { padding: "8", fontSize: "24px" },
-      },
+    },
+    size: {
+      sm: { padding: "4", fontSize: "12px" },
+      lg: { padding: "8", fontSize: "24px" },
     },
   },
 });

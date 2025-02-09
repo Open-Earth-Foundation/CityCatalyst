@@ -10,7 +10,7 @@ import localFont from "next/font/local";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 
-import { appTheme } from "@/lib/theme/app-theme";
+import system from "@/lib/app-theme";
 
 const openSans = localFont({
   src: [
@@ -58,7 +58,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
         `}
       </style>
       {/* <CacheProvider> */}
-      <ChakraProvider value={appTheme}>
+      <ChakraProvider value={system}>
         <SessionProvider>
           <Provider store={store}>
             <PersistGate loading={null} persistor={persistor}>

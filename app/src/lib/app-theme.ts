@@ -4,6 +4,23 @@ import {
   createSystem,
 } from "@chakra-ui/react";
 
+import { buttonRecipe } from "./theme/recipes/button.recipe";
+import { separatorRecipe } from "./theme/recipes/separator.recipe";
+import {
+  accordionRecipe,
+  cardRecipe,
+  formRecipe,
+  headingRecipe,
+  linkRecipe,
+  progressRecipe,
+  switchRecipe,
+  tabsRecipe,
+  tagRecipe,
+  textareaRecipe,
+  textRecipe,
+  tooltipRecipe,
+} from "./theme/recipes";
+
 export enum SectorColors {
   I = "#5785F4",
   II = "#DF2222",
@@ -244,342 +261,20 @@ const customConfig = defineConfig({
     },
 
     recipes: {
-      button: {
-        baseStyle: {
-          textTransform: "uppercase",
-          borderRadius: 50,
-          fontFamily: "var(--font-poppins)",
-          letterSpacing: "1.25px",
-          lineHeight: "16px",
-        },
-        variants: {
-          outline: {
-            borderWidth: "2px",
-            borderColor: "interactive.secondary",
-            color: "interactive.secondary",
-            _hover: {
-              borderColor: "#5a7be0",
-              color: "#5a7be0",
-            },
-            _active: {
-              borderColor: "#899ee0",
-              color: "#899ee0",
-            },
-            _loading: {
-              opacity: 0.8,
-            },
-          },
-          solid: {
-            bg: "interactive.secondary",
-            color: "white",
-            _hover: {
-              bg: "#5a7be0",
-            },
-            _active: {
-              bg: "#899ee0",
-            },
-            _loading: {
-              bg: "background.overlay",
-              color: "content.link",
-              _hover: {
-                bg: "#5a7be0",
-                color: "base.light",
-              },
-            },
-          },
-          danger: {
-            bg: "sentiment.negativeDefault", // #F23D33
-            color: "white",
-            _hover: {
-              bg: "#FF5F5F",
-            },
-            _active: {
-              bg: "#E3241A",
-            },
-            _loading: {
-              bg: "semantic.dangerOverlay",
-              color: "base.dark",
-              _hover: {
-                bg: "#E3241A",
-                color: "base.light",
-              },
-            },
-          },
-          solidPrimary: {
-            // ...theme.components.Button.variants?.solid,
-            bg: "sentiment.positiveOverlay",
-            color: "interactive.primary",
-            _hover: {
-              bg: "sentiment.positiveLight",
-              color: "interactive.primaryLight",
-            },
-            _active: {
-              bg: "sentiment.positiveDark",
-              color: "sentiment.positiveOverlay",
-            },
-            _loading: {
-              opacity: 0.8,
-              bg: "sentiment.positiveLight",
-            },
-          },
-          ghost: {
-            color: "content.link",
-          },
-          lightGhost: {
-            color: "base.light",
-            _hover: {
-              bg: "background.transparentGrey",
-              color: "base.light",
-            },
-          },
-          solidIcon: {
-            bgColor: "background.neutral",
-            color: "interactive.secondary",
-            _hover: {
-              color: "white",
-              bg: "#5a7be0",
-            },
-            _active: {
-              bg: "#899ee0",
-            },
-            _loading: {
-              opacity: 0.8,
-              bg: "background.neutral",
-            },
-          },
-        },
-      },
-      link: {
-        base: {
-          color: "brand.secondary",
-        },
-      },
-      card: {
-        base: {
-          container: {
-            borderRadius: "8",
-            px: 6,
-            py: 8,
-          },
-        },
-      },
-      tag: {
-        variants: {
-          brand: {
-            container: {
-              px: 3,
-              py: 1,
-              borderRadius: "full",
-              borderColor: "background.neutral",
-              borderWidth: 1,
-              color: "background.neutral",
-            },
-            label: {
-              color: "content.secondary",
-              fontFamily: "heading",
-              fontSize: "14px",
-              lineHeight: "20px",
-              letterSpacing: "0.5px",
-              borderWidth: 0,
-              mt: -0.5,
-            },
-          },
-          filled: {
-            container: {
-              px: 4,
-              py: 1,
-              borderRadius: "full",
-              bgColor: "background.neutral",
-            },
-            label: {
-              color: "content.alternative",
-            },
-          },
-          success: {
-            container: {
-              px: 4,
-              py: 1,
-              borderRadius: "full",
-              borderWidth: 1,
-              borderColor: "sentiment.positiveDefault",
-              bgColor: "sentiment.positiveOverlay",
-              color: "sentiment.positiveDefault",
-              fontWeight: 500,
-            },
-            label: {
-              color: "sentiment.positiveDefault",
-            },
-          },
-          warning: {
-            container: {
-              px: 4,
-              py: 1,
-              borderRadius: "full",
-              borderWidth: 1,
-              borderColor: "sentiment.warningDefault",
-              bgColor: "sentiment.warningOverlay",
-              color: "sentiment.warningDefault",
-            },
-            label: {
-              color: "sentiment.warningDefault",
-            },
-          },
-          low: {
-            container: {
-              bgColor: "sentiment.warningOverlay",
-              borderColor: "sentiment.warningDefault",
-              borderWidth: 1,
-              borderRadius: "full",
-            },
-            label: {
-              color: "sentiment.warningDefault",
-              fontWeight: "medium",
-            },
-          },
-          medium: {
-            container: {
-              bgColor: "background.neutral",
-              borderColor: "content.link",
-              borderWidth: 1,
-              borderRadius: "full",
-            },
-            label: {
-              color: "content.link",
-              fontWeight: "medium",
-            },
-          },
-          high: {
-            container: {
-              bgColor: "sentiment.positiveOverlay",
-              borderColor: "interactive.tertiary",
-              borderWidth: 1,
-              borderRadius: "full",
-            },
-            label: {
-              color: "interactive.tertiary",
-              fontWeight: "medium",
-            },
-          },
-        },
-        defaultVariants: {
-          variant: "brand",
-        },
-      },
-      tooltip: {
-        base: {
-          bg: "content.secondary",
-          color: "base.light",
-          px: 4,
-          py: 2,
-          borderRadius: "lg",
-        },
-      },
-      tabs: {
-        variants: {
-          line: {
-            tab: {
-              borderColor: "#E6E7FF",
-              _selected: {
-                color: "interactive.secondary",
-                borderColor: "interactive.secondary",
-                fontWeight: "bold",
-              },
-            },
-          },
-        },
-      },
-      Accordion: {
-        base: {
-          container: {
-            borderRadius: "8px",
-            bgColor: "background.transparentGrey",
-            borderWidth: 0,
-            px: 4,
-            py: 4,
-            mb: 6,
-          },
-          button: {
-            borderRadius: "8px",
-          },
-        },
-      },
-      progress: {
-        base: {
-          fill: "#24BE00",
-        },
-      },
-      form: {
-        variants: {
-          brand: {
-            container: {
-              fontFamily: "heading",
-              fontWeight: "500",
-              lineHeight: "20px",
-              letterSpacing: "0.5px",
-              fontSize: "14px",
-              mb: 4,
-            },
-          },
-        },
-      },
-      text: {
-        variants: {
-          spaced: {
-            fontWeight: 500,
-            lineHeight: "20",
-            letterSpacing: "wide",
-          },
-          card: {
-            fontSize: "label.lg",
-            fontWeight: 500,
-            color: "content.secondary",
-            textTransform: "none",
-            whiteSpace: "normal",
-            textAlign: "left",
-          },
-        },
-      },
-      heading: {
-        sizes: {
-          lg: {
-            fontSize: "24px",
-            lineHeight: "32px",
-            fontWeight: 600,
-          },
-        },
-      },
-      switch: {
-        variants: {
-          brand: {
-            track: {
-              bg: "background.overlay",
-              _checked: {
-                bg: "content.link",
-              },
-            },
-            container: {
-              mb: "0 !important",
-            },
-          },
-        },
-      },
-      textarea: {
-        variants: {
-          brand: {
-            resize: "none",
-            borderColor: "border.neutral",
-            _invalid: {
-              background: "sentiment.negativeOverlay",
-              borderWidth: "2px",
-              borderColor: "sentiment.negativeDefault",
-            },
-            _focus: {
-              borderWidth: "2px",
-              borderColor: "#3182ce",
-            },
-          },
-        },
-      },
+      button: buttonRecipe,
+      link: linkRecipe,
+      tag: tagRecipe,
+      card: cardRecipe,
+      tooltip: tooltipRecipe,
+      tab: tabsRecipe,
+      accordion: accordionRecipe,
+      progress: progressRecipe,
+      form: formRecipe,
+      text: textRecipe,
+      heading: headingRecipe,
+      switch: switchRecipe,
+      textarea: textareaRecipe,
+      seperator: separatorRecipe,
     },
   },
 });

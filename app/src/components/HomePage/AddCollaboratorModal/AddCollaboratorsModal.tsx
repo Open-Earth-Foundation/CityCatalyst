@@ -2,17 +2,9 @@ import React, { useState } from "react";
 import {
   Box,
   Button,
-  Checkbox,
   CheckboxGroup,
-  Divider,
+  Separator,
   HStack,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
   Text,
 } from "@chakra-ui/react";
 import type { TFunction } from "i18next";
@@ -28,8 +20,17 @@ import LabelLarge from "@/components/Texts/Label";
 import MultipleEmailInput from "./MultipleEmailInput";
 import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
 import { useTranslation } from "@/i18n/client";
+import {
+  DialogRoot,
+  DialogBody,
+  DialogCloseTrigger,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+} from "@/components/ui/dialog";
+import { Checkbox } from "@/components/ui/checkbox";
 
-const AddCollaboratorsModal = ({
+const AddCollaboratorsDialog = ({
   lng,
   isOpen,
   onClose,
@@ -84,18 +85,17 @@ const AddCollaboratorsModal = ({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
-      <ModalOverlay />
-      <ModalContent maxW="container.md">
-        <ModalHeader>
+    <DialogRoot open={isOpen} onExitComplete={onClose}>
+      <DialogContent maxW="container.md">
+        <DialogHeader>
           <HStack>
             <MdPersonAdd fontSize={"32px"} />
             <HeadlineSmall text={t("invite-your-colleagues")} />
           </HStack>
-        </ModalHeader>
-        <ModalCloseButton />
-        <Divider my="24px" />
-        <ModalBody>
+        </DialogHeader>
+        <DialogCloseTrigger />
+        <Separator my="24px" />
+        <DialogBody>
           <TitleLarge text={t("select-cities-to-share")} />
           <BodyLarge text={t("select-cities-to-share-description")} />
           <CheckboxGroup>
@@ -104,7 +104,7 @@ const AddCollaboratorsModal = ({
                 key={city.cityId}
                 my={"24px"}
                 mx={"32px"}
-                isChecked={selectedCities.includes(city.cityId)}
+                checked={selectedCities.includes(city.cityId)}
                 onChange={() => handleCityChange(city.cityId)}
               >
                 {city.name}
@@ -121,11 +121,11 @@ const AddCollaboratorsModal = ({
           </Text>
           <LabelLarge text={t("email")} mt={"24px"} />
           <MultipleEmailInput t={t} emails={emails} setEmails={setEmails} />
-          <Divider my="24px" />
-          <ModalFooter>
+          <Separator my="24px" />
+          <DialogFooter>
             <Box>
               <Button
-                isDisabled={
+                disabled={
                   emails.length === 0 ||
                   selectedCities.length === 0 ||
                   isInviteUsersLoading
@@ -136,11 +136,11 @@ const AddCollaboratorsModal = ({
                 {t("send-invites")}
               </Button>
             </Box>
-          </ModalFooter>
-        </ModalBody>
-      </ModalContent>
-    </Modal>
+          </DialogFooter>
+        </DialogBody>
+      </DialogContent>
+    </DialogRoot>
   );
 };
 
-export default AddCollaboratorsModal;
+export default AddCollaboratorsDialog;

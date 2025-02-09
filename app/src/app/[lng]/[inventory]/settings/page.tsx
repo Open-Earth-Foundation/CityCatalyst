@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { useTranslation } from "@/i18n/client";
-import { Box, Tab, TabList, TabPanels, Tabs, Text } from "@chakra-ui/react";
+import { Box, Tabs, Text } from "@chakra-ui/react";
 
 import { useSession } from "next-auth/react";
 
@@ -36,6 +36,8 @@ export type CityData = {
   lastUpdated: string;
 };
 
+const tabValues = ["my-profile", "my-files", "my-inventories"];
+
 export default function Settings({
   params: { lng },
 }: {
@@ -46,6 +48,7 @@ export default function Settings({
 
   const paramValue = searchParams.get("tabIndex");
   const tabIndex = paramValue ? Number(paramValue) : 0;
+  const defaultTab = tabValues[tabIndex] ?? tabValues[0];
 
   const { t } = useTranslation(lng, "settings");
 
@@ -97,9 +100,9 @@ export default function Settings({
             </Text>
           </Box>
           <Box marginTop="48px" borderBottomColor={"border.overlay"}>
-            <Tabs defaultIndex={tabIndex}>
-              <TabList>
-                <Tab>
+            <Tabs.Root defaultValue={defaultTab}>
+              <Tabs.List>
+                <Tabs.Trigger value="my-profile">
                   <Text
                     fontSize="title.md"
                     fontStyle="normal"
@@ -107,8 +110,8 @@ export default function Settings({
                   >
                     {t("my-profile")}
                   </Text>
-                </Tab>
-                <Tab>
+                </Tabs.Trigger>
+                <Tabs.Trigger value="my-files">
                   <Text
                     fontSize="title.md"
                     fontStyle="normal"
@@ -116,8 +119,8 @@ export default function Settings({
                   >
                     {t("my-files")}
                   </Text>
-                </Tab>
-                <Tab>
+                </Tabs.Trigger>
+                <Tabs.Trigger value="my-inventories">
                   <Text
                     fontSize="title.md"
                     fontStyle="normal"
@@ -125,28 +128,26 @@ export default function Settings({
                   >
                     {t("my-inventories")}
                   </Text>
-                </Tab>
-              </TabList>
+                </Tabs.Trigger>
+              </Tabs.List>
 
-              <TabPanels className="-ml-4">
-                <MyProfileTab t={t} userInfo={userInfo} lng={lng} />
-                <MyFilesTab
-                  lng={lng}
-                  session={session}
-                  status={status}
-                  t={t}
-                  userInfo={userInfo!}
-                  userFiles={userFiles!}
-                  inventory={inventory!}
-                />
-                <MyInventoriesTab
-                  lng={lng}
-                  cities={cities}
-                  t={t}
-                  defaultCityId={cityId}
-                />
-              </TabPanels>
-            </Tabs>
+              <MyProfileTab t={t} userInfo={userInfo} lng={lng} />
+              <MyFilesTab
+                lng={lng}
+                session={session}
+                status={status}
+                t={t}
+                userInfo={userInfo!}
+                userFiles={userFiles!}
+                inventory={inventory!}
+              />
+              <MyInventoriesTab
+                lng={lng}
+                cities={cities}
+                t={t}
+                defaultCityId={cityId}
+              />
+            </Tabs.Root>
           </Box>
         </Box>
       </Box>

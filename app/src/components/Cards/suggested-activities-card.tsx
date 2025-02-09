@@ -40,7 +40,7 @@ const SuggestedActivityCard: FC<SuggestedActivityCardProps> = ({
       <Box display="flex" alignItems="center">
         <Checkbox
           borderRadius="full"
-          __css={{
+          css={{
             "& .chakra-checkbox__control": {
               bg: "white",
               color: "black",
@@ -92,7 +92,7 @@ const SuggestedActivityCard: FC<SuggestedActivityCardProps> = ({
         <Button
           title="Add Activity"
           h="48px"
-          variant="ghostLight"
+          variant="ghost"
           aria-label="activity-button"
           fontSize="button.md"
           color="content.link"

@@ -327,11 +327,9 @@ export default function AddDataSteps({
   };
 
   const showError = (title: string, description: string) => {
-    toaster.create({
+    toaster.error({
       title,
       description,
-      type: "error",
-      isClosable: true,
     });
   };
 
@@ -377,11 +375,9 @@ export default function AddDataSteps({
       }
     } catch (error: any) {
       console.error("Failed to connect data source", source, error);
-      toaster.create({
+      toaster.error({
         title: t("data-source-connect-failed"),
         description: error.data?.error?.message,
-        status: "error",
-        isClosable: true,
       });
     } finally {
       setConnectingDataSourceId(null);
@@ -487,17 +483,15 @@ export default function AddDataSteps({
   ) {
     deleteUserFile({ fileId, cityId }).then((res: any) => {
       if (res.error) {
-        toaster.create({
+        toaster.error({
           title: t("file-deletion-error"),
           description: t("file-deletion-error-description"),
-          status: "error",
           duration: 2000,
         });
       } else {
-        toaster.create({
+        toaster.success({
           title: t("file-deletion-success"),
           description: t("file-deletion-success"),
-          status: "success",
           duration: 2000,
         });
 
@@ -632,7 +626,7 @@ export default function AddDataSteps({
             className={` ${isExpanded ? "hidden" : "flex"} transition-all duration-50 ease-linear`}
           >
             <Button
-              variant="ghostLight"
+              variant="ghost"
               fontSize="14px"
               color="content.link"
               fontWeight="bold"
@@ -830,10 +824,10 @@ export default function AddDataSteps({
                       {subSector.completedCount > 0 &&
                       subSector.completedCount < subSector.totalCount ? (
                         <ProgressCircleRoot
-                          thickness="12px"
+                          css={{ "--thickness": "12px" }}
                           mr="4"
                           color="interactive.secondary"
-                          trackColor="background.neutral"
+                          bgColor="background.neutral"
                           value={
                             (subSector.completedCount / subSector.totalCount) *
                             100
@@ -886,7 +880,7 @@ export default function AddDataSteps({
                         _hover={{
                           color: "base.light",
                         }}
-                        variant="solidIcon"
+                        variant="solid"
                       >
                         <Icon
                           as={subSector.completed ? MdOutlineEdit : MdAdd}
@@ -916,12 +910,12 @@ export default function AddDataSteps({
             </Stack>
             {dataSources && (
               <IconButton
-                variant="solidIcon"
+                variant="solid"
                 aria-label="Refresh"
                 size="lg"
                 h={16}
                 w={16}
-                isLoading={areDataSourcesFetching}
+                loading={areDataSourcesFetching}
                 onClick={onSearchDataSourcesClicked}
               >
                 <Icon as={MdRefresh} boxSize={9} />
@@ -1024,18 +1018,18 @@ export default function AddDataSteps({
                       {isSourceConnected(source) &&
                       source.inventoryValues?.length ? (
                         <Button
-                          variant={variant}
+                          variant="solid"
                           px={6}
                           py={4}
                           onClick={() => onDisconnectThirdPartyData(source)}
-                          isLoading={
+                          loading={
                             isDisconnectLoading &&
                             source.datasourceId === disconnectingDataSourceId
                           }
                           onMouseEnter={() => onButtonHover(source)}
                           onMouseLeave={() => onMouseLeave(source)}
-                          leftIcon={<Icon as={MdCheckCircle} />}
                         >
+                          <Icon as={MdCheckCircle} />
                           {text}
                         </Button>
                       ) : (
@@ -1147,7 +1141,7 @@ export default function AddDataSteps({
                                 w="full"
                               >
                                 <Button
-                                  variant="ghostLight"
+                                  variant="ghost"
                                   color="sentiment.negativeDefault"
                                   onClick={() =>
                                     removeSectorFile(

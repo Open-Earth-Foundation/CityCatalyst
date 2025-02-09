@@ -3,8 +3,6 @@ import React, { FC, use, useEffect, useRef, useState } from "react";
 import {
   Control,
   Controller,
-  FieldError,
-  FieldErrors,
   UseFormRegister,
   UseFormSetValue,
 } from "react-hook-form";
@@ -12,7 +10,6 @@ import { Inputs } from "./Modals/activity-modal/activity-modal-body";
 import { TFunction } from "i18next";
 import type { SuggestedActivity } from "@/util/form-schema";
 import MultiSelectInput from "@/components/MultiSelectInput";
-import { SelectRoot, SelectTrigger, SelectValueText } from "./ui/select";
 import { MdWarning } from "react-icons/md";
 import { NativeSelectField } from "./ui/native-select";
 
@@ -54,7 +51,7 @@ const BuildingTypeSelectInput: FC<BuildingTypeSelectInputProps> = ({
       setSelectedActivityValue(prefilledValue);
       setValue(activity as any, prefilledValue);
     }
-  }, [prefilledValue]);
+  }, [activity, prefilledValue, setValue]);
 
   if (multiselect) {
     return (
@@ -75,7 +72,6 @@ const BuildingTypeSelectInput: FC<BuildingTypeSelectInputProps> = ({
   return (
     <Box display="flex" flexDirection="column" gap="8px" w="full">
       <Text
-        variant="label"
         fontSize="label.lg"
         fontStyle="normal"
         fontWeight="medium"
@@ -107,13 +103,15 @@ const BuildingTypeSelectInput: FC<BuildingTypeSelectInputProps> = ({
                 borderColor: "content.link",
                 shadow: "none",
               }}
-              onChange={(e) => {
-                field.onChange(e.target.value);
-                setValue(activity as any, e.target.value);
-              }}
-              value={field.value}
             >
-              <NativeSelectField placeholder={placeholder}>
+              <NativeSelectField
+                placeholder={placeholder}
+                onChange={(e) => {
+                  field.onChange(e.currentTarget.value);
+                  setValue(activity as any, e.currentTarget.value);
+                }}
+                value={field.value}
+              >
                 {options?.map((item: string) => (
                   <option key={item} value={item}>
                     {t(item)}

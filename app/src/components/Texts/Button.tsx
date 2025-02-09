@@ -6,7 +6,7 @@ export const ButtonSmall = (props: TextProps) => (
     fontSize="button.sm"
     fontWeight="semibold"
     lineHeight="16px"
-    textColor={"content.secondary"}
+    color="content.secondary"
     {...props}
   >
     {props.children}
@@ -19,7 +19,7 @@ export const ButtonMedium = (props: TextProps) => (
     fontSize="button.md"
     fontWeight="semibold"
     lineHeight="16px"
-    textColor={"content.secondary"}
+    color="content.secondary"
     {...props}
   >
     {props.children}

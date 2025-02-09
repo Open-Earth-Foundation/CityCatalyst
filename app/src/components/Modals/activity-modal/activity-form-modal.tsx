@@ -227,26 +227,9 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
 
     if (response.data) {
       setHasActivityData(!hasActivityData);
-      toaster.create({
-        status: "success",
+      toaster.success({
         duration: 1200,
         title: t("activity-value-success"),
-        render: ({ title }) => (
-          <Box
-            h="48px"
-            w="600px"
-            borderRadius="8px"
-            display="flex"
-            alignItems="center"
-            color="white"
-            backgroundColor="interactive.primary"
-            gap="8px"
-            px="16px"
-          >
-            <Icon as={MdCheckCircle} />
-            <Text>{title}</Text>
-          </Box>
-        ),
       });
       reset();
       onClose();
@@ -258,15 +241,14 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
         handleManalInputValidationError(errorData.error.issues);
       } else {
         const error = response.error as FetchBaseQueryError;
-        toaster.create({
-          status: "error",
+        toaster.error({
           title: errorData.error?.message || t("activity-value-error"),
         });
       }
     }
   };
 
-  const closeModalFunc = () => {
+  const onCloseDialog = () => {
     onClose();
     resetSelectedActivityValue();
     reset({
@@ -281,9 +263,10 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
   return (
     <>
       <DialogRoot
-        blockScrollOnMount={false}
+        preventScroll
         open={isOpen}
         onOpenChange={(e: any) => setAddActivityDialogOpen(e.open)}
+        onExitComplete={onCloseDialog}
       >
         <DialogBackdrop />
         <DialogContent

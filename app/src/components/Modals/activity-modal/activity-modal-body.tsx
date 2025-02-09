@@ -33,11 +33,11 @@ import { ExtraField, Methodology, SuggestedActivity } from "@/util/form-schema";
 import { ActivityValue } from "@/models/ActivityValue";
 import FormattedNumberInput from "@/components/formatted-number-input";
 import PercentageBreakdownInput from "@/components/percentage-breakdown-input";
-import { RadioButton } from "@/components/radio-button";
 import { EmissionFactorTypes } from "@/hooks/activity-value-form/use-emission-factors";
 import DependentSelectInput from "@/components/dependent-select-input";
 import { DialogBody } from "@/components/ui/dialog";
 import { Field } from "@/components/ui/field";
+import { Radio, RadioGroup } from "@/components/ui/radio";
 
 import { MdInfoOutline, MdWarning } from "react-icons/md";
 import {
@@ -126,7 +126,7 @@ const ActivityModalBody = ({
     control,
     defaultValue: selectedActivity?.prefills?.[0].value,
   });
-  const { getRootProps, getRadioProps, value } = useRadioGroup(field);
+  const { getRootProps, getItemProps, value } = useRadioGroup(field);
 
   let prefix = "";
   const [isEmissionFactorInputDisabled, setIsEmissionFactorInputDisabled] =
@@ -177,7 +177,7 @@ const ActivityModalBody = ({
         setIsEmissionFactorInputDisabled(true);
       }
     }
-  }, [emissionsFactorTypes, emissionFactorTypeValue]);
+  }, [emissionsFactorTypes, emissionFactorTypeValue, setValue, t]);
 
   const filteredFields = fields.filter((f) => {
     return !(f.id.includes("-source") && f.type === "text");
@@ -203,21 +203,20 @@ const ActivityModalBody = ({
               className="w-full"
               label={t(methodology.activitySelectionField.id)}
             >
-              <HStack
-                display="flex"
-                flexDirection="row"
-                className="items-start"
-                w="full"
-              >
-                {methodology.activitySelectionField.options?.map((option) => (
-                  <RadioButton
-                    key={option}
-                    {...getRadioProps({ value: option })}
-                  >
-                    {t(option)}
-                  </RadioButton>
-                ))}
-              </HStack>
+              <RadioGroup>
+                <HStack
+                  display="flex"
+                  flexDirection="row"
+                  className="items-start"
+                  w="full"
+                >
+                  {methodology.activitySelectionField.options?.map((option) => (
+                    <Radio key={option} value={option}>
+                      {t(option)}
+                    </Radio>
+                  ))}
+                </HStack>
+              </RadioGroup>
             </Field>
           </HStack>
         )}
@@ -426,7 +425,7 @@ const ActivityModalBody = ({
                   <FormattedNumberInput
                     control={control}
                     name={`activity.${title}`}
-                    defaultValue={0}
+                    defaultValue="0"
                     t={t}
                     miniAddon
                   >
@@ -562,8 +561,8 @@ const ActivityModalBody = ({
                 t={t}
                 control={control}
                 miniAddon
-                name={`activity.CO2EmissionFactor`}
-                defaultValue={0}
+                name="activity.CO2EmissionFactor"
+                defaultValue="0"
               >
                 <Text
                   truncate // Truncate the text with an ellipsis
@@ -592,7 +591,7 @@ const ActivityModalBody = ({
                 control={control}
                 miniAddon
                 name={`activity.N2OEmissionFactor`}
-                defaultValue={0}
+                defaultValue="0"
               >
                 <Text
                   truncate // Truncate the text with an ellipsis
@@ -621,7 +620,7 @@ const ActivityModalBody = ({
                 control={control}
                 miniAddon
                 name={`activity.CH4EmissionFactor`}
-                defaultValue={0}
+                defaultValue="0"
               >
                 <Text
                   truncate // Truncate the text with an ellipsis
@@ -656,7 +655,6 @@ const ActivityModalBody = ({
                 alignItems="center"
               >
                 <Text
-                  variant="label"
                   fontSize="label.lg"
                   fontStyle="normal"
                   fontWeight="medium"
@@ -674,10 +672,10 @@ const ActivityModalBody = ({
                       t={t}
                       control={control}
                       name={`activity.CO2EmissionFactor`}
-                      defaultValue={0}
+                      defaultValue="0"
                       w="110px"
                       h="full"
-                      isDisabled={isEmissionFactorInputDisabled}
+                      disabled={isEmissionFactorInputDisabled}
                     >
                       {areEmissionFactorsLoading ? (
                         <Spinner size="sm" color="border.neutral" />
@@ -720,18 +718,13 @@ const ActivityModalBody = ({
                     t={t}
                     control={control}
                     name={`activity.N2OEmissionFactor`}
-                    defaultValue={0}
+                    defaultValue="0"
                     isDisabled={isEmissionFactorInputDisabled}
                   >
                     {areEmissionFactorsLoading ? (
                       <Spinner size="sm" color="border.neutral" />
                     ) : (
-                      <Text
-                        truncate // Truncate the text with an ellipsis
-                        lineClamp={1}
-                        w="full"
-                        textAlign="center"
-                      >
+                      <Text truncate lineClamp={1} w="full" textAlign="center">
                         kg/
                         {methodology.id.includes("energy-consumption") ||
                         methodology.id.includes("electricity-consumption")
@@ -763,7 +756,7 @@ const ActivityModalBody = ({
                     miniAddon
                     t={t}
                     name={`activity.CH4EmissionFactor`}
-                    defaultValue={0}
+                    defaultValue="0"
                     isDisabled={isEmissionFactorInputDisabled}
                   >
                     {areEmissionFactorsLoading ? (
@@ -800,7 +793,7 @@ const ActivityModalBody = ({
                     ></Box>
                   )}
                 </Field>
-              </HStack>{" "}
+              </HStack>
             </>
           )}
 
@@ -838,15 +831,14 @@ const ActivityModalBody = ({
                   })}
                   h="full"
                   shadow="1dp"
-                  value={field.value}
-                  onChange={(e: any) => {
-                    console.log(e.target.value);
-                    field.onChange(e.target.value);
-                    setValue("activity.dataQuality", e.target.value);
-                  }}
                 >
                   <NativeSelectField
                     placeholder={t("data-quality-placeholder")}
+                    value={field.value}
+                    onChange={(e: any) => {
+                      field.onChange(e.target.value);
+                      setValue("activity.dataQuality", e.target.value);
+                    }}
                   >
                     <option value="high">{t("detailed-activity-data")}</option>
                     <option value="medium">{t("modeled-activity-data")}</option>

@@ -13,7 +13,6 @@ import {
 import type { TFunction } from "i18next";
 import { RefObject } from "react";
 import {
-  MdArrowBack,
   MdHomeWork,
   MdInfoOutline,
   MdOpenInNew,
@@ -33,7 +32,6 @@ import {
   DrawerHeader,
   DrawerRoot,
   DrawerTitle,
-  DrawerTrigger,
 } from "@/components/ui/drawer";
 import { Tooltip } from "@/components/ui/tooltip";
 import { Tag } from "@/components/ui/tag";
@@ -90,11 +88,10 @@ export function SourceDrawer({
   };
   return (
     <DrawerRoot
-      isOpen={isOpen}
+      open={isOpen}
       placement="end"
-      onClose={onClose}
+      onExitComplete={onClose}
       size="lg"
-      finalFocusRef={finalFocusRef}
     >
       <DrawerBackdrop />
       {/* <DrawerTrigger asChild>
@@ -178,13 +175,13 @@ export function SourceDrawer({
                 <Heading fontSize="title.sm">
                   {t("total-emissions-included")}{" "}
                   <Tooltip
-                    hasArrow
-                    label={
+                    showArrow
+                    content={
                       t("total-emissions-tooltip") +
                       ".\nScale factor: " +
                       sourceData?.scaleFactor.toFixed(4)
                     }
-                    placement="bottom-end"
+                    positioning={{ placement: "bottom-end" }}
                   >
                     <Icon
                       as={MdInfoOutline}

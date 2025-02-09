@@ -18,7 +18,6 @@ import { findClosestYear } from "@/util/helpers";
 import {
   Box,
   Card,
-  Group,
   Heading,
   Icon,
   Input,
@@ -36,6 +35,7 @@ import { Trans } from "react-i18next";
 import RecentSearches from "@/components/recent-searches";
 import { useOutsideClick } from "@/lib/use-outside-click";
 import { Field } from "@/components/ui/field";
+import { InputGroup } from "../ui/input-group";
 
 const CityMap = dynamic(() => import("@/components/CityMap"), { ssr: false });
 
@@ -276,7 +276,7 @@ export default function SelectCityStep({
                 invalid={!!errors.city}
                 errorText={
                   <Box gap="6px">
-                    <MdWarning />
+                    <Icon as={MdWarning} boxSize={6} />
                     <Text
                       fontSize="body.md"
                       color="content.tertiary"
@@ -289,23 +289,21 @@ export default function SelectCityStep({
                 label={t("city")}
                 data-testId="setup-city-input-label"
               >
-                <Group
-                  attached
+                <InputGroup
                   shadow="1dp"
                   bg={errors.city ? "sentiment.negativeOverlay" : "base.light"}
                   borderRadius="8px"
                   ref={cityInputRef}
                   w="full"
+                  startElement={
+                    <Icon as={MdSearch} color="tertiary" boxSize={4} />
+                  }
+                  endElement={
+                    isCityNew && (
+                      <Icon as={MdCheck} color="semantic.success" boxSize={4} />
+                    )
+                  }
                 >
-                  <InputAddon pointerEvents="none" borderRadius="none">
-                    <Icon
-                      as={MdSearch}
-                      color="tertiary"
-                      boxSize={4}
-                      mt={2}
-                      ml={4}
-                    />
-                  </InputAddon>
                   <Input
                     type="text"
                     data-testId="setup-city-input"
@@ -318,18 +316,7 @@ export default function SelectCityStep({
                     onKeyUp={() => setOnInputClicked(true)}
                     onFocus={() => setOnInputClicked(true)}
                   />
-                  <InputAddon>
-                    {isCityNew && (
-                      <Icon
-                        as={MdCheck}
-                        color="semantic.success"
-                        boxSize={4}
-                        mr={4}
-                        mt={2}
-                      />
-                    )}
-                  </InputAddon>
-                </Group>
+                </InputGroup>
                 {onInputClicked && (
                   <Box
                     shadow="2dp"

@@ -138,17 +138,15 @@ const AddFileDataDialog: FC<AddFileDataDialogProps> = ({
     await addUserFile({ formData, cityId }).then((res: any) => {
       // show toast
       if (res.error) {
-        toaster.create({
+        toaster.error({
           title: t("file-upload-error"),
           description: t("file-upload-error-description"),
-          status: "error",
           duration: 2000,
         });
       } else {
-        toaster.create({
+        toaster.success({
           title: t("file-upload-success"),
           description: t("file-upload-success"),
-          status: "success",
           duration: 2000,
         });
 
@@ -181,9 +179,9 @@ const AddFileDataDialog: FC<AddFileDataDialogProps> = ({
 
   return (
     <DialogRoot
-      blockScrollOnMount={false}
       open={isOpen}
       onOpenChange={(e) => onOpenChange(e.open)}
+      onExitComplete={onClose}
     >
       <DialogBackdrop />
       <DialogContent minH="300px" minW="739px" marginTop="10%">
@@ -280,7 +278,7 @@ const AddFileDataDialog: FC<AddFileDataDialogProps> = ({
                         gap="8px"
                       >
                         <Checkbox
-                          value={scope.value}
+                          value={scope.value.toString()}
                           borderColor="interactive.secondary"
                           {...register("scopes", { required: true })}
                           onChange={(e: any) =>

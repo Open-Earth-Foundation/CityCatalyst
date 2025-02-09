@@ -54,30 +54,12 @@ const DeleteAllActivitiesModal: FC<DeleteAllActivitiesModalProps> = ({
     });
     if (response.data) {
       // TODO create toast wrapper for success state
-      toaster.create({
-        status: "success",
+      toaster.success({
         title: t("all-activities-deleted"),
-        render: ({ title }) => (
-          <Box
-            h="48px"
-            w="600px"
-            borderRadius="8px"
-            display="flex"
-            alignItems="center"
-            color="white"
-            backgroundColor="interactive.primary"
-            gap="8px"
-            px="16px"
-          >
-            <Icon as={MdCheckCircle} />
-            <Text>{title}</Text>
-          </Box>
-        ),
       });
       onClose();
     } else {
-      toaster.create({
-        status: "error",
+      toaster.error({
         title: t("delete-all-activities-failed"),
       });
     }
@@ -86,9 +68,9 @@ const DeleteAllActivitiesModal: FC<DeleteAllActivitiesModalProps> = ({
   return (
     <>
       <DialogRoot
-        blockScrollOnMount={false}
         open={isOpen}
         onOpenChange={(e) => setDeleteActivityAllDialogOpen(e.open)}
+        onExitComplete={onClose}
       >
         <DialogBackdrop />
         <DialogContent minH="388px" minW="568px" marginTop="10%">

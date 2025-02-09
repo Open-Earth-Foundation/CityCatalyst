@@ -3,8 +3,8 @@ import Image from "next/image";
 import { Button, Heading } from "@chakra-ui/react";
 import React from "react";
 import { useTranslation } from "@/i18n/client";
-import "dotenv/config";
 import { MdArrowForward } from "react-icons/md";
+import NextLink from "next/link";
 
 const NotAvailable = ({ lng }: { lng: string }) => {
   const { t } = useTranslation(lng, "inventory-not-found");
@@ -47,17 +47,14 @@ const NotAvailable = ({ lng }: { lng: string }) => {
         >
           {t("emission-mist")}
         </Text>
-        <Button
-          as="a"
+        <NextLink
           href={`${window.location.protocol}//${window.location.host}/${lng}/`}
-          gap="8px"
-          h="48px"
-          px="24px"
-          fontSize="body.md"
-          rightIcon={<MdArrowForward />}
         >
-          {t("go-to-citycatalyst")}
-        </Button>
+          <Button gap="8px" h="48px" px="24px" fontSize="body.md">
+            {t("go-to-citycatalyst")}
+            <MdArrowForward />
+          </Button>
+        </NextLink>
       </Box>
     </Box>
   );

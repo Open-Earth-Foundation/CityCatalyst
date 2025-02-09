@@ -151,7 +151,7 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
     return {
       activityGroups,
     };
-  }, [activityData, methodology]);
+  }, [activityData, methodology, referenceNumber]);
 
   // let extraFields = (methodology as Methodology)?.activities?.[0]?.[
   //   "extra-fields"
@@ -307,7 +307,7 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
                     <PopoverTrigger asChild>
                       <IconButton
                         aria-label="more-icon"
-                        variant="ghostLight"
+                        variant="ghost"
                         color="content.tertiary"
                       >
                         <Icon as={MdMoreVert} size="lg" />

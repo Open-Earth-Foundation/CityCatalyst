@@ -34,6 +34,7 @@ import {
   PopoverTrigger,
 } from "./ui/popover";
 import { GoChevronDown, GoChevronUp } from "react-icons/go";
+import { InputGroup } from "./ui/input-group";
 
 const categoryIconMapping: Record<string, any> = {
   "waste-type-municipal-solid-waste": MunicipalSolidWasteIcon,
@@ -128,8 +129,7 @@ const PercentageBreakdownInput: FC<FormInputProps> = ({
         return `${t(category ?? "")} ${value}%`;
       })
       .join(", ");
-    // breakdownCategories
-  }, [breakDownValues, t]);
+  }, [breakDownValues, breakdownCategories, t]);
 
   // Todo: get the popover state and implement the popover logic
   const [isOpen, setIsOpen] = React.useState(false);
@@ -141,43 +141,44 @@ const PercentageBreakdownInput: FC<FormInputProps> = ({
       invalid={!!error}
       label={label}
     >
-      <PopoverRoot matchWidth>
+      <PopoverRoot positioning={{ sameWidth: true }}>
         <PopoverTrigger>
           <Group>
-            <Field
-              invalid={!isValid}
-              startEleme={
-                <Box
-                  pointerEvents="none"
-                  color="content.tertiary"
-                  pr="16px"
-                  mt={1}
-                >
-                  {isOpen ? (
-                    <Icon as={GoChevronUp} boxSize="6" />
-                  ) : (
-                    <Icon as={GoChevronDown} boxSize="6" />
-                  )}
-                </Box>
-              }
-            >
-              <Input
-                type="text"
-                value={breakdownSummary}
-                shadow="1dp"
-                name={id}
-                borderRadius="4px"
-                border="inputBox"
-                background={background}
-                color={isDisabled ? "content.tertiary" : "content.secondary"}
-                h="48px"
-                bgColor="base.light"
-                _focus={{
-                  borderWidth: "1px",
-                  shadow: "none",
-                  borderColor: "content.link",
-                }}
-              />
+            <Field invalid={!isValid}>
+              <InputGroup
+                startElement={
+                  <Box
+                    pointerEvents="none"
+                    color="content.tertiary"
+                    pr="16px"
+                    mt={1}
+                  >
+                    {isOpen ? (
+                      <Icon as={GoChevronUp} boxSize="6" />
+                    ) : (
+                      <Icon as={GoChevronDown} boxSize="6" />
+                    )}
+                  </Box>
+                }
+              >
+                <Input
+                  type="text"
+                  value={breakdownSummary}
+                  shadow="1dp"
+                  name={id}
+                  borderRadius="4px"
+                  border="inputBox"
+                  background={background}
+                  color={isDisabled ? "content.tertiary" : "content.secondary"}
+                  h="48px"
+                  bgColor="base.light"
+                  _focus={{
+                    borderWidth: "1px",
+                    shadow: "none",
+                    borderColor: "content.link",
+                  }}
+                />
+              </InputGroup>
             </Field>
           </Group>
         </PopoverTrigger>

@@ -217,7 +217,7 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
                       <IconButton
                         data-testid="activity-more-icon"
                         aria-label="more-icon"
-                        variant="ghostLight"
+                        variant="ghost"
                         color="content.tertiary"
                       >
                         <Icon as={MdMoreVert} size="lg" />

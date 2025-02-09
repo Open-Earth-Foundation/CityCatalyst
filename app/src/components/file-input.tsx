@@ -1,19 +1,11 @@
 import { Box, Heading, Input, Text, VStack } from "@chakra-ui/react";
 import { TFunction } from "i18next";
-import React, {
-  useState,
-  DragEvent,
-  ChangeEvent,
-  Dispatch,
-  SetStateAction,
-} from "react";
+import React, { useState, DragEvent, Dispatch, SetStateAction } from "react";
 import { FiUpload } from "react-icons/fi";
 import { Field } from "./ui/field";
 import {
   FileUploadDropzone,
-  FileUploadList,
   FileUploadRoot,
-  FileUploadTrigger,
 } from "@/components/ui/file-upload";
 
 interface FileUploadProps {
@@ -75,7 +67,7 @@ const FileInput: React.FC<FileUploadProps> = ({
       onDrop={handleDrop}
     >
       <FileUploadRoot
-        max="206px"
+        maxW="206px"
         w="full"
         alignItems="stretch"
         onFileChange={(e: any) => handleChange(e)}

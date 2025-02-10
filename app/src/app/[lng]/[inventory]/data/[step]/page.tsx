@@ -867,6 +867,7 @@ export default function AddDataSteps({
                         )}
                       </Stack>
                       <IconButton
+                        bg="background.neutral"
                         color={
                           subSector.completed
                             ? "interactive.tertiary"
@@ -1067,7 +1068,7 @@ export default function AddDataSteps({
           )}
         </Card.Root>
         {/* Upload own data section */}
-        <Card.Root mb={24} shadow="none" border="none">
+        <Card.Root mb={24} shadow="none" border="none" w="full">
           <Heading fontSize="title.lg" mb={2}>
             {t("upload-your-data-heading")}
           </Heading>

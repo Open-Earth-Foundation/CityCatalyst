@@ -97,7 +97,7 @@ const FileInput: React.FC<FileUploadProps> = ({
               >
                 <FiUpload size="20px" />
               </Box>
-              <Box display="flex">
+              <Box display="flex" w="full" truncate>
                 <Text
                   fontSize="title.md"
                   fontFamily="heading"

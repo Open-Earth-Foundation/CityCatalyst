@@ -378,36 +378,6 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
                             size="2xl"
                           />
                         </IconButton>
-                        <Text fontWeight="medium">{t("emissions")}:&nbsp;</Text>
-                        <Text fontWeight="normal">
-                          {" "}
-                          {convertKgToTonnes(
-                            activityGroups[key]?.reduce(
-                              (acc, curr) => acc + BigInt(curr.co2eq as bigint),
-                              0n,
-                            ),
-                            null,
-                            REGIONALLOCALES[lng as string],
-                          )}{" "}
-                        </Text>
-                      </Box>
-                      <Box pr="56px">
-                        <IconButton
-                          bg="none"
-                          pos="relative"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            showActivityModal();
-                          }}
-                          _hover={{ bg: "none" }}
-                          aria-label="add-activity"
-                        >
-                          <Icon
-                            as={MdAdd}
-                            color="interactive.control"
-                            size="2xl"
-                          />
-                        </IconButton>
                       </Box>
                     </Box>
                   </Box>

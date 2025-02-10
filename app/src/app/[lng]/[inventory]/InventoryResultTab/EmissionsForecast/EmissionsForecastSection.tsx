@@ -39,7 +39,7 @@ export const EmissionsForecastSection = ({
       >
         {t("sector-emissions-forecast-description")}
       </Text>
-      <Box height="400px" width="100%">
+      <Box height="auto" width="100%">
         <EmissionsForecastCard t={t} forecast={forecast} lng={lng} />
       </Box>
     </Box>

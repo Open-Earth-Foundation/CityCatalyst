@@ -480,26 +480,8 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
                             size="2xl"
                           />
                         </IconButton>
-                        <Text fontWeight="medium">{t("emissions")}:&nbsp;</Text>
+
                         <Text fontWeight="normal"> </Text>
-                      </Box>
-                      <Box pr="56px">
-                        <IconButton
-                          bg="none"
-                          pos="relative"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            showActivityModal();
-                          }}
-                          _hover={{ bg: "none" }}
-                          aria-label="add-activity"
-                        >
-                          <Icon
-                            as={MdAdd}
-                            color="interactive.control"
-                            fontSize="24px"
-                          />
-                        </IconButton>
                       </Box>
                     </Box>
                   </Box>

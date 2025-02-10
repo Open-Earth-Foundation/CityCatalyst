@@ -34,14 +34,7 @@ const DownloadButton: React.FC<DownloadButtonProps> = ({
   } = useDisclosure();
 
   return (
-    <Card.Root
-      onClick={onDownloadShareOpen}
-      shadow="2dp"
-      backgroundColor="base.light"
-      className="h-[132px] hover:shadow-xl"
-      py={0}
-      px={6}
-    >
+    <>
       <ModalDownloadReport
         t={t}
         lng={lng}
@@ -66,7 +59,7 @@ const DownloadButton: React.FC<DownloadButtonProps> = ({
         icon={<FiDownload className="text-white" size={24} />}
         title={t("download-and-report")}
       />
-    </Card.Root>
+    </>
   );
 };
 

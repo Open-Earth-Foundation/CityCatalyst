@@ -45,7 +45,7 @@ export function ActionCards({
                 <MdOutlineAddchart className="text-white" size={24} />
               </Box>
             </Box>
-            <Box>
+            <Box display="flex" flexDir="column" gap="12px">
               <CardHeader className="flex h-[20px] gap-2">
                 <Text
                   fontFamily="heading"
@@ -67,28 +67,6 @@ export function ActionCards({
                 </Text>
               </CardBody>
             </Box>
-          </Box>
-          <Box>
-            <CardHeader className="flex h-[20px] gap-2">
-              <Text
-                fontFamily="heading"
-                fontSize="title.lg"
-                color="interactive.primary"
-                fontWeight="semibold"
-              >
-                <Trans t={t}>add-data-to-inventory</Trans>
-              </Text>
-            </CardHeader>
-            <CardBody className="h-[75px]">
-              <Text
-                fontSize="body.lg"
-                color="body"
-                lineHeight="24"
-                letterSpacing="wide"
-              >
-                <Trans t={t}>add-data-to-inventory-description</Trans>
-              </Text>
-            </CardBody>
           </Box>
         </Card.Root>
       </NextLink>

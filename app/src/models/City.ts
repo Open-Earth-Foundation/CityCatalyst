@@ -41,17 +41,17 @@ export class City
   extends Model<CityAttributes, CityCreationAttributes>
   implements CityAttributes
 {
-  cityId!: string;
-  locode?: string;
-  name?: string;
-  shape?: object;
-  country?: string;
-  region?: string;
-  countryLocode?: string;
-  regionLocode?: string;
-  area?: number;
-  created?: Date;
-  lastUpdated?: Date;
+  declare cityId: string;
+  declare locode?: string;
+  declare name?: string;
+  declare shape?: object;
+  declare country?: string;
+  declare region?: string;
+  declare countryLocode?: string;
+  declare regionLocode?: string;
+  declare area?: number;
+  declare created?: Date;
+  declare lastUpdated?: Date;
 
   // City belongsToMany User via CityUser.cityId
   users!: User[];

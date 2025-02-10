@@ -40,15 +40,15 @@ export class User
   extends Model<UserAttributes, UserCreationAttributes>
   implements UserAttributes
 {
-  userId!: string;
-  name?: string;
-  pictureUrl?: string;
-  email?: string;
-  passwordHash?: string;
-  role?: Roles;
-  created?: Date;
-  lastUpdated?: Date;
-  defaultInventoryId?: string;
+  declare userId: string;
+  declare name?: string;
+  declare pictureUrl?: string;
+  declare email?: string;
+  declare passwordHash?: string;
+  declare role?: Roles;
+  declare created?: Date;
+  declare lastUpdated?: Date;
+  declare defaultInventoryId?: string;
 
   // User belongsTo Inventory via defaultInventoryId
   defaultInventory!: Inventory;

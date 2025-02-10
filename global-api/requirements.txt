@@ -1,9 +1,9 @@
 aiohttp==3.11.*
 alembic==1.14.1
-black==24.10.0
+black==25.1.0
 fastapi==0.115.7
 flake8==7.1.1
-fsspec==2024.*
+fsspec==2025.*
 geopandas>=0.12,<1.1
 mypy==1.14.1
 osmnx==2.0.1
@@ -14,7 +14,7 @@ pytest==8.3.4
 rioxarray==0.18.*
 scipy==1.15.*
 shapely==2.0.6
-SQLAlchemy==2.0.37
+SQLAlchemy==2.0.38
 tqdm==4.67.*
 uvicorn==0.34.0
 xarray==2025.*

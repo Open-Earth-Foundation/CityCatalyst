@@ -129,14 +129,16 @@ def quantitative_score(city, action):
     dependencies = action.get("Dependencies", [])
     dependencies_weights = weights.get("Dependencies", 1)
     if isinstance(dependencies, list):
-        score -= len(dependencies) * dependencies_weights
+        score -= round(len(dependencies) * dependencies_weights, 3)
     print("Score after dependencies:", score)
     # ActionName - pass
     # AdaptationCategory - pass this time
     # Subsector - skip for now maybe more data needed as now we are covering per sector
     # PrimaryPurpose - use only for LLM
 
+    # BUUUUGGG
     # Sector - if it matches the most emmissions intensive sectors gets bonus points
+    weights_emissions = weights.get("GHGReductionPotential", 1)
     total_emission_reduction_all_sectors = calculate_emissions_reduction(city, action)
     print(
         "Total emissions reduction for all sectors:",
@@ -148,7 +150,7 @@ def quantitative_score(city, action):
             total_emission_reduction_all_sectors / total_emissions
         ) * 100
         print("Reduction percentage:", reduction_percentage)
-        score += round((reduction_percentage / 100), 3)
+        score += round(reduction_percentage/100  * weights_emissions, 3)
     print("Score after emissions reduction:", score)
 
     # Calculate for every sector

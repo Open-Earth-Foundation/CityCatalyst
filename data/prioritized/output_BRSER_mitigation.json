@@ -4,110 +4,20 @@
         "cityName": "Serra",
         "region": "BR-ES",
         "regionName": "Esp\u00edrito Santo",
-        "actionId": "ipcc_0033",
-        "actionName": "Electrification of Processes",
-        "actionPriority": 1,
-        "explanation": "This action has the highest quantitative score (0.949) and directly targets the industrial processes which contribute the largest share of Serra's emissions. Electrification drastically reduces carbon emissions in high-intensity sectors, making it the top priority in line with emissions reduction guidelines."
-    },
-    {
-        "locode": "BRSER",
-        "cityName": "Serra",
-        "region": "BR-ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "ipcc_0026",
-        "actionName": "Heat Recovery and Reuse through Heat Exchanger Networks or Heat Pumps",
-        "actionPriority": 2,
-        "explanation": "With a high quantitative score (0.805) and strong cost-effectiveness, this action captures waste heat from industrial processes\u2014a key sector for Serra. It improves energy efficiency while reducing GHG emissions in a cost-effective manner."
-    },
-    {
-        "locode": "BRSER",
-        "cityName": "Serra",
-        "region": "BR-ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "ipcc_0027",
-        "actionName": "Process Coupling and Improvements",
-        "actionPriority": 3,
-        "explanation": "Achieving a score of 0.805, this action streamlines industrial processes by linking previously separate process steps. Its significant potential to reduce emissions and improve efficiency in high-impact industrial sectors justifies its high ranking."
-    },
-    {
-        "locode": "BRSER",
-        "cityName": "Serra",
-        "region": "BR-ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "ipcc_0032",
-        "actionName": "Fuel Switching to Renewable Fuels",
-        "actionPriority": 4,
-        "explanation": "Also scoring 0.805, switching fuels in high emission sectors (such as industrial processes) significantly reduces greenhouse gases. This action aligns with the need to tackle the city\u2019s major emission sources, making it a top pick."
-    },
-    {
-        "locode": "BRSER",
-        "cityName": "Serra",
-        "region": "BR-ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "ipcc_0034",
-        "actionName": "Energy Recycling in Furnaces and Kilns",
-        "actionPriority": 5,
-        "explanation": "With an equal score (0.805), this action targets energy-intensive industrial units like furnaces and kilns. Recycling energy within these operations can achieve notable reductions in emissions at the industrial scale."
-    },
-    {
-        "locode": "BRSER",
-        "cityName": "Serra",
-        "region": "BR-ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "ipcc_0042",
-        "actionName": "Design for Recovery, Reuse, or Repurposing",
-        "actionPriority": 6,
-        "explanation": "Also scoring 0.805, this strategy drives a circular economy by designing processes and products for recovery and reuse. It has environmental compatibility and reduces waste, aligning well with Serra\u2019s industrial focus and overall mitigation needs."
-    },
-    {
-        "locode": "BRSER",
-        "cityName": "Serra",
-        "region": "BR-ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "ipcc_0044",
-        "actionName": "Alternative feedstocks (e.g. in cement)",
-        "actionPriority": 7,
-        "explanation": "Scoring 0.805, this action is particularly important for sectors like cement production, a major contributor in industrial emissions. The switch to alternative feedstocks directly reduces carbon footprint while being adaptable to the city\u2019s industrial context."
-    },
-    {
-        "locode": "BRSER",
-        "cityName": "Serra",
-        "region": "BR-ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "ipcc_0045",
-        "actionName": "Behavioral Changes for Reduced Waste (e.g., Food)",
-        "actionPriority": 8,
-        "explanation": "With a slightly lower score of 0.746, this action focuses on driving behavioral change to reduce waste. While it may not target the highest emission sectors directly, its cost-effectiveness and broad societal benefits add important value."
-    },
-    {
-        "locode": "BRSER",
-        "cityName": "Serra",
-        "region": "BR-ES",
-        "regionName": "Esp\u00edrito Santo",
         "actionId": "ipcc_0039",
         "actionName": "Carbon Capture and Storage (CCS)",
-        "actionPriority": 9,
-        "explanation": "Achieving a 0.743 score, CCS offers significant emissions reductions by capturing carbon directly from industrial processes. Despite potential higher costs and technological complexities, its benefits for reducing heavy industrial emissions justify its ranking."
+        "actionPriority": 1,
+        "explanation": "Ranked 1 because CCS has the highest quantitative score and is highly effective in reducing GHG emissions, particularly from large industrial sectors\u2014the largest emission contributor in Serra. Its direct impact on capturing industrial CO2 makes it critical for emissions reduction."
     },
     {
         "locode": "BRSER",
         "cityName": "Serra",
         "region": "BR-ES",
         "regionName": "Esp\u00edrito Santo",
-        "actionId": "ipcc_0035",
-        "actionName": "Technology Improvements of Processes",
-        "actionPriority": 10,
-        "explanation": "At a score of 0.705, this action advances incremental technological improvements in industrial processes. Its direct impact on emissions reduction through process efficiency makes it a critical mid-tier priority."
-    },
-    {
-        "locode": "BRSER",
-        "cityName": "Serra",
-        "region": "BR-ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "ipcc_0043",
-        "actionName": "Circular Economy Policies",
-        "actionPriority": 11,
-        "explanation": "Also scoring 0.705, this policy-driven action promotes systemic changes to reduce waste and optimize resource use. Although it may require broader coordination, its environmental benefits and alignment with industrial waste reduction are key factors."
+        "actionId": "ipcc_0033",
+        "actionName": "Electrification of Processes",
+        "actionPriority": 2,
+        "explanation": "Ranked 2 due to its strong emissions reduction potential by shifting energy-intensive industrial processes to cleaner electricity, which is particularly valuable given Serra\u2019s high industrial process emissions."
     },
     {
         "locode": "BRSER",
@@ -116,58 +26,98 @@
         "regionName": "Esp\u00edrito Santo",
         "actionId": "ipcc_0037",
         "actionName": "Feedstock Decarbonisation",
+        "actionPriority": 3,
+        "explanation": "This action is placed at rank 3 because it targets decarbonisation at the source of raw materials, reducing emissions from primary industrial processes which are central to Serra\u2019s emission profile."
+    },
+    {
+        "locode": "BRSER",
+        "cityName": "Serra",
+        "region": "BR-ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "ipcc_0076",
+        "actionName": "Switching to Net-zero-emissions Materials and Supply Chains",
+        "actionPriority": 4,
+        "explanation": "Ranked 4 as it addresses supply chain emissions, aligning with both emissions reduction and sector relevance. It supports the transition to net-zero materials which can greatly impact the industrial process sector."
+    },
+    {
+        "locode": "BRSER",
+        "cityName": "Serra",
+        "region": "BR-ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "ipcc_0026",
+        "actionName": "Heat Recovery and Reuse through Heat Exchanger Networks or Heat Pumps",
+        "actionPriority": 5,
+        "explanation": "Ranked 5 because it offers significant energy savings and emissions reduction through efficient heat recovery, a cost-effective measure with fast implementation potential in energy-intensive sectors."
+    },
+    {
+        "locode": "BRSER",
+        "cityName": "Serra",
+        "region": "BR-ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "ipcc_0027",
+        "actionName": "Process Coupling and Improvements",
+        "actionPriority": 6,
+        "explanation": "Placed at rank 6 due to its contribution to optimizing industrial processes and reducing waste heat and emissions. Its relevance stems from improving existing processes in high-emission industrial sectors."
+    },
+    {
+        "locode": "BRSER",
+        "cityName": "Serra",
+        "region": "BR-ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "ipcc_0032",
+        "actionName": "Fuel Switching to Renewable Fuels",
+        "actionPriority": 7,
+        "explanation": "Ranked 7 as switching fuels can drastically reduce industrial and transportation emissions. Its focus on replacing fossil fuels with renewables aligns well with the city\u2019s significant industrial energy use."
+    },
+    {
+        "locode": "BRSER",
+        "cityName": "Serra",
+        "region": "BR-ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "ipcc_0034",
+        "actionName": "Energy Recycling in Furnaces and Kilns",
+        "actionPriority": 8,
+        "explanation": "Ranked 8 because it recycles energy in high consumption industrial processes, offering tangible GHG reductions. Its sector relevance is high given the nature of industrial operations in Serra."
+    },
+    {
+        "locode": "BRSER",
+        "cityName": "Serra",
+        "region": "BR-ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "ipcc_0042",
+        "actionName": "Design for Recovery, Reuse, or Repurposing",
+        "actionPriority": 9,
+        "explanation": "This action ranks 9 as it promotes circular economy principles directly reducing material and energy waste. It is environmentally compatible and supports industrial practices in Serra."
+    },
+    {
+        "locode": "BRSER",
+        "cityName": "Serra",
+        "region": "BR-ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "ipcc_0044",
+        "actionName": "Alternative feedstocks (e.g. in cement)",
+        "actionPriority": 10,
+        "explanation": "Ranked 10 because it reduces reliance on high carbon feedstocks, a key opportunity in emissions-heavy sectors such as cement production. Its cost-effectiveness and emission reductions make it a vital action."
+    },
+    {
+        "locode": "BRSER",
+        "cityName": "Serra",
+        "region": "BR-ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "ipcc_0035",
+        "actionName": "Technology Improvements of Processes",
+        "actionPriority": 11,
+        "explanation": "Placed at rank 11 given its focus on enhancing process efficiency through technology. Although similar to earlier actions, its slightly lower quantitative score positions it here while still contributing significantly to emissions reduction."
+    },
+    {
+        "locode": "BRSER",
+        "cityName": "Serra",
+        "region": "BR-ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "ipcc_0043",
+        "actionName": "Circular Economy Policies",
         "actionPriority": 12,
-        "explanation": "With a score of 0.699, feedstock decarbonisation directly targets emissions from raw material inputs in industry. Its focused impact on reducing industrial process emissions is especially relevant for Serra\u2019s largest emission sector."
-    },
-    {
-        "locode": "BRSER",
-        "cityName": "Serra",
-        "region": "BR-ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "ipcc_0028",
-        "actionName": "Introduction of Energy Efficiency Technologies in Processing",
-        "actionPriority": 13,
-        "explanation": "Scoring approximately 0.661, this action promotes energy efficiency in processing industries. Its clear cost-effectiveness, short implementation timeline, and potential for significant GHG reductions in industrial settings support its prioritization."
-    },
-    {
-        "locode": "BRSER",
-        "cityName": "Serra",
-        "region": "BR-ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "ipcc_0031",
-        "actionName": "Smart Energy Management",
-        "actionPriority": 14,
-        "explanation": "Also at 0.661, smart energy management systems optimize energy use in real time. They are especially useful in complex industrial environments and offer relatively fast impact with manageable dependency, aligning well with city priorities."
-    },
-    {
-        "locode": "BRSER",
-        "cityName": "Serra",
-        "region": "BR-ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "ipcc_0036",
-        "actionName": "On-site Combined Heat and Power (CHP)",
-        "actionPriority": 15,
-        "explanation": "With a 0.661 score, on-site CHP improves energy resilience and efficiency in industrial facilities. Despite dependency factors, its dual production of heat and power means significant emissions reduction in high-energy sectors."
-    },
-    {
-        "locode": "BRSER",
-        "cityName": "Serra",
-        "region": "BR-ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "ipcc_0038",
-        "actionName": "Carbon Capture and Utilization (CCU)",
-        "actionPriority": 16,
-        "explanation": "Also scoring 0.661, CCU transforms captured carbon into useful products. While it may be less established than CCS, its innovative approach offers potential benefits for industrial emission controls with medium implementation complexity."
-    },
-    {
-        "locode": "BRSER",
-        "cityName": "Serra",
-        "region": "BR-ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "c40_0038",
-        "actionName": "Sanitary Landfills",
-        "actionPriority": 17,
-        "explanation": "With a score of 0.642, this action targets the waste sector\u2014a significant emission source in Serra. Sanitary landfills can reduce methane emissions from waste, though their impact is typically lower compared to direct industrial process improvements."
+        "explanation": "Ranked 12 as it embeds systemic changes encouraging sustainability. While indirect in emissions reduction compared to technological measures, it is pivotal in shaping industry practices and reducing waste."
     },
     {
         "locode": "BRSER",
@@ -176,8 +126,8 @@
         "regionName": "Esp\u00edrito Santo",
         "actionId": "ipcc_0030",
         "actionName": "Material Recycling",
-        "actionPriority": 18,
-        "explanation": "Scoring 0.64, improving material recycling directly lowers waste-related emissions. Its proven effectiveness and relatively low dependency profile make it a valuable strategy, though its overall impact is slightly less when compared with high-intensity industrial actions."
+        "actionPriority": 13,
+        "explanation": "Placed at rank 13 due to its moderate quantitative score and potential in reducing resource extraction pressures. It contributes to emissions reduction by lowering manufacturing demands."
     },
     {
         "locode": "BRSER",
@@ -186,8 +136,8 @@
         "regionName": "Esp\u00edrito Santo",
         "actionId": "ipcc_0047",
         "actionName": "Enhanced product service levels per product (e.g. product sharing)",
-        "actionPriority": 19,
-        "explanation": "Also with a score of 0.64, enhancing product service levels encourages reduced production and consumption, indirectly supporting emissions reduction. Its socio-demographic suitability and cost-effectiveness contribute to its ranking lower than direct process improvements."
+        "actionPriority": 14,
+        "explanation": "Ranked 14 because it can extend the use phase of products, thus reducing overall emissions through increased efficiency in resource usage. This helps in lowering demand burdens on industrial supply chains."
     },
     {
         "locode": "BRSER",
@@ -196,7 +146,57 @@
         "regionName": "Esp\u00edrito Santo",
         "actionId": "ipcc_0048",
         "actionName": "Design for extended product life-time",
+        "actionPriority": 15,
+        "explanation": "Placed at rank 15 for its role in reducing waste and the energy demand associated with manufacturing. Extending product lifetimes contributes indirectly to GHG reduction by lessening production frequency."
+    },
+    {
+        "locode": "BRSER",
+        "cityName": "Serra",
+        "region": "BR-ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "ipcc_0049",
+        "actionName": "Improved product stock maintenance to extend life-time",
+        "actionPriority": 16,
+        "explanation": "Ranked 16 because maintaining existing product stock effectively supports waste reduction and energy savings, aligning with principles of cost-effectiveness and low dependency."
+    },
+    {
+        "locode": "BRSER",
+        "cityName": "Serra",
+        "region": "BR-ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "ipcc_0051",
+        "actionName": "Reducing overall demand for product services",
+        "actionPriority": 17,
+        "explanation": "Placed at rank 17 as it focuses on demand-side management to lower emissions indirectly. By reducing demand, it minimizes the industrial output required, thereby contributing to a reduction in overall emissions."
+    },
+    {
+        "locode": "BRSER",
+        "cityName": "Serra",
+        "region": "BR-ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "ipcc_0041",
+        "actionName": "Improved Material Utilization (Near-Net Shape Casting)",
+        "actionPriority": 18,
+        "explanation": "Ranked 18 given its critical function in improving material efficiency during manufacturing. Although its quantitative score is lower, its contribution to minimizing waste in high-emission sectors supports its inclusion."
+    },
+    {
+        "locode": "BRSER",
+        "cityName": "Serra",
+        "region": "BR-ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "ipcc_0040",
+        "actionName": "Design with Less / Lightweighting of Products",
+        "actionPriority": 19,
+        "explanation": "Ranked 19 because lightweighting reduces material demand and transport energy, offering moderate benefits in emissions reduction. Its shorter implementation timeline adds to its value in a complementary role."
+    },
+    {
+        "locode": "BRSER",
+        "cityName": "Serra",
+        "region": "BR-ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "ipcc_0045",
+        "actionName": "Behavioral Changes for Reduced Waste (e.g., Food)",
         "actionPriority": 20,
-        "explanation": "Tied with a score of 0.64, this action focuses on increasing the longevity of products to reduce the need for new production. While beneficial from a sustainability standpoint, its indirect impact on immediate industrial emissions reduction places it last in the priority list."
+        "explanation": "Ranked 20 as it has the lowest quantitative score among the actions. While it is important for promoting sustainable practices, its direct impact on the most critical emission sectors in Serra is relatively less compared to other industrial-focused measures."
     }
 ]

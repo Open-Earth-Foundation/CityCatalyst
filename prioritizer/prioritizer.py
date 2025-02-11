@@ -10,12 +10,16 @@ import pandas as pd
 from pydantic import BaseModel
 from typing import List
 from pathlib import Path
-from utils.reading_writing_data import read_city_inventory, read_actions, write_output
-from utils.additional_scoring_functions import (
+from prioritizer.utils.reading_writing_data import (
+    read_city_inventory,
+    read_actions,
+    write_output,
+)
+from prioritizer.utils.additional_scoring_functions import (
     count_matching_hazards,
     find_highest_emission,
 )
-from utils.prompt import return_prompt
+from prioritizer.utils.prompt import return_prompt
 
 load_dotenv()
 

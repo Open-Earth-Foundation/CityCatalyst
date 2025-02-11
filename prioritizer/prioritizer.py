@@ -61,7 +61,7 @@ def calculate_emissions_reduction(city, action):
     # Get the GHGReductionPotential from the action
     ghg_potential = action.get("GHGReductionPotential", {})
     if not ghg_potential:
-        print("There was no GHGReductionPotential")
+        # print("There was no GHGReductionPotential")
         return 0
 
     # Define the sectors and corresponding city emissions keys

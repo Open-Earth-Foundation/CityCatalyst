@@ -1,18 +1,17 @@
+"""
+This script optimizes the weights for the quantitative ranking system using the expert labeled data.
+
+Run this script as a module to make sure sub imports are properly resolved.
+
+>> python -m prioritizer.utils.weights_optimization
+"""
+
 import pandas as pd
 import numpy as np
 from pathlib import Path
-import sys
 import torch
 import torch.optim as optim
 import json
-
-# Get the absolute path to the project root (two levels up from this file)
-project_root = str(Path(__file__).resolve().parent.parent.parent)
-
-# Add the project root to the Python path
-if project_root not in sys.path:
-    sys.path.insert(0, project_root)
-
 from prioritizer.prioritizer import (
     quantitative_score,
     count_matching_hazards,
@@ -21,7 +20,7 @@ from prioritizer.prioritizer import (
     scale_adaptation_effectiveness,
     timeline_mapping,
 )
-from reading_writing_data import read_city_inventory, read_actions
+from prioritizer.utils.reading_writing_data import read_city_inventory, read_actions
 
 
 # Initialize weights as torch tensors

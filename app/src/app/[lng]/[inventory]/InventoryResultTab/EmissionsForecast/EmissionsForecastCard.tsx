@@ -57,7 +57,7 @@ export const EmissionsForecastCard = ({
           paddingY="0px"
           paddingLeft={4}
           paddingRight={0}
-          height="100%"
+          height="auto"
           width="100%"
         >
           <EmissionsForecastChart forecast={forecast} t={t} />

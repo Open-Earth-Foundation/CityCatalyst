@@ -26,7 +26,6 @@ load_dotenv()
 api_key = os.getenv("OPENAI_API_KEY")
 client = OpenAI(api_key=api_key)
 
-# TODO a dynamic adaptation of how many fields we calculate for an action ( if there are nulls )
 scale_scores = {
     "Very High": 1.0,
     "High": 0.75,
@@ -78,7 +77,7 @@ def calculate_emissions_reduction(city, action):
     for sector, city_emission_key in sectors.items():
         reduction_str = ghg_potential.get(sector) if ghg_potential else None
         if reduction_str is None:
-            pass
+            continue
         if reduction_str and reduction_str in reduction_mapping:
             print("Reduction string:", reduction_str)
             print("Reduction mapping:", reduction_mapping[reduction_str])
@@ -140,7 +139,6 @@ def quantitative_score(city, action):
     # Subsector - skip for now maybe more data needed as now we are covering per sector
     # PrimaryPurpose - use only for LLM
 
-    # BUUUUGGG
     # Sector - if it matches the most emmissions intensive sectors gets bonus points
     weights_emissions = weights.get("GHGReductionPotential", 1)
     total_emission_reduction_all_sectors = calculate_emissions_reduction(city, action)
@@ -150,11 +148,12 @@ def quantitative_score(city, action):
     )
     if total_emission_reduction_all_sectors > 0:
         total_emissions = city.get("totalEmissions", 1)  # Avoid division by zero
+        print("Total emissions of a city:", total_emissions)
         reduction_percentage = (
             total_emission_reduction_all_sectors / total_emissions
         ) * 100
         print("Reduction percentage:", reduction_percentage)
-        score += round(reduction_percentage/100  * weights_emissions, 3)
+        score += round(reduction_percentage  * weights_emissions, 3)
     print("Score after emissions reduction:", score)
 
     # Calculate for every sector

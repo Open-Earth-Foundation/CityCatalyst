@@ -7,7 +7,7 @@
         "actionId": "c40_0035",
         "actionName": "Waste Efficiency",
         "actionPriority": 1,
-        "explanation": "This action directly targets waste, which is the city\u2019s largest emission sector (over 3.56 billion emissions). Its high quantitative score (3.873) reinforces its strong cost\u2010effectiveness and potential for rapid emissions reduction."
+        "explanation": "This action has the highest quantitative score and directly targets the waste sector, which is the city's largest source of emissions. By improving waste efficiency, the city can achieve significant GHG reductions, making it the top priority."
     },
     {
         "locode": "BRCXL",
@@ -17,7 +17,7 @@
         "actionId": "c40_0041",
         "actionName": "Waste Collection",
         "actionPriority": 2,
-        "explanation": "Waste Collection is closely tied to reducing waste emissions. With a quantitative score of 3.688, it promises significant emissions reductions in the largest emission sector, making it a top priority."
+        "explanation": "Ranking second, Waste Collection scores nearly as high as Waste Efficiency. Its focus on waste management directly addresses the city\u2019s most emission-intensive sector, offering substantial emissions reduction and high sectoral relevance."
     },
     {
         "locode": "BRCXL",
@@ -27,7 +27,7 @@
         "actionId": "c40_0040",
         "actionName": "Volume-Based Collection",
         "actionPriority": 3,
-        "explanation": "By optimising waste management through volume\u2010based approaches, this action supports significant emission reductions. Its high score (3.458) and focus on waste management place it high on the list."
+        "explanation": "Volume-Based Collection also targets the waste sector with a very high quantitative score. Its methodology ensures that waste is collected based on volume, maximizing efficiency in reducing waste emissions."
     },
     {
         "locode": "BRCXL",
@@ -37,7 +37,7 @@
         "actionId": "c40_0038",
         "actionName": "Sanitary Landfills",
         "actionPriority": 4,
-        "explanation": "Sanitary Landfills improve waste processing and reduce methane and other GHGs. With a score of 3.251, it is critical given the massive waste emissions in the city."
+        "explanation": "Sanitary Landfills are crucial for managing waste safely and minimizing methane and other GHG emissions. With a strong quantitative score, this action is highly relevant in reducing the city\u2019s dominant waste emissions."
     },
     {
         "locode": "BRCXL",
@@ -47,7 +47,7 @@
         "actionId": "c40_0036",
         "actionName": "Landfill Management",
         "actionPriority": 5,
-        "explanation": "Effective management of landfill sites is essential for controlling waste emissions. Its quantitative score (3.086) and direct targeting of waste emissions earn it a high priority."
+        "explanation": "Effective Landfill Management is essential for controlling emissions from waste sites. Its high quantitative score indicates both strong emissions reduction potential and alignment with the city\u2019s sector priorities."
     },
     {
         "locode": "BRCXL",
@@ -57,7 +57,7 @@
         "actionId": "c40_0039",
         "actionName": "Gas Management",
         "actionPriority": 6,
-        "explanation": "Focusing on the capture and management of landfill gas, this action (score: 3.001) is crucial in addressing potent greenhouse gases from waste, reinforcing its priority ranking."
+        "explanation": "Gas Management focuses on capturing and utilizing landfill gases, thereby directly mitigating GHG emissions. Its strong performance makes it a high-priority action in the waste sector."
     },
     {
         "locode": "BRCXL",
@@ -67,7 +67,7 @@
         "actionId": "ipcc_0080",
         "actionName": "Avoiding, Minimising, and Recycling Waste",
         "actionPriority": 7,
-        "explanation": "This action promotes waste reduction and recycling, further cutting down the vast emissions from waste. Its strong quantitative performance (1.948) makes it a clear candidate for early implementation."
+        "explanation": "This action promotes waste reduction and recycling, key strategies for decreasing waste-related emissions. Although its score is lower than the top waste actions, it remains critical due to its direct focus on the highest emitting sector."
     },
     {
         "locode": "BRCXL",
@@ -77,7 +77,7 @@
         "actionId": "c40_0037",
         "actionName": "Source Separation",
         "actionPriority": 8,
-        "explanation": "Improving source separation is a key step in ensuring wastes are properly recycled or disposed of. Even with a moderate score (0.624), its direct contribution to waste management helps in reducing the highest emission sector."
+        "explanation": "Source Separation improves the sorting of waste at the point of generation, enhancing recycling and reducing landfill burden. Despite a lower quantitative score, its targeting of the waste sector supports strong emissions reduction benefits."
     },
     {
         "locode": "BRCXL",
@@ -87,17 +87,7 @@
         "actionId": "c40_0034",
         "actionName": "Material Bans",
         "actionPriority": 9,
-        "explanation": "By banning materials that contribute significantly to waste streams, this action indirectly reduces waste emissions. Its quantitative score (0.559) is lower relative to other waste actions, but the focus on reducing waste generation in a high-emission sector gives it added priority."
-    },
-    {
-        "locode": "BRCXL",
-        "cityName": "Caxias do Sul",
-        "region": "BR-RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0045",
-        "actionName": "Behavioral Changes for Reduced Waste (e.g., Food)",
-        "actionPriority": 10,
-        "explanation": "Encouraging behavioral changes to reduce waste (including food waste) supports the overall waste sector improvements. Despite a lower score (0.53), the action\u2019s targeting of waste\u2014a critical emission source\u2014ensures it remains a priority."
+        "explanation": "Material Bans help curb the use of particularly harmful materials and promote waste reduction. As a waste sector action, it is prioritized for its potential to further lower emissions, even though its score is modest compared to other waste actions."
     },
     {
         "locode": "BRCXL",
@@ -106,8 +96,8 @@
         "regionName": "Rio Grande do Sul",
         "actionId": "ipcc_0012",
         "actionName": "Electric Technologies",
-        "actionPriority": 11,
-        "explanation": "Transitioning to electric technologies in transportation is vital for reducing the city\u2019s second-largest emission source. Its high quantitative score (0.896) indicates strong potential for emissions reduction in this sector."
+        "actionPriority": 10,
+        "explanation": "Moving into the transportation and energy sector, Electric Technologies helps reduce emissions from vehicles by promoting electric power options. While the quantitative score is lower than the top waste actions, it is essential for diversifying the city\u2019s GHG reduction efforts."
     },
     {
         "locode": "BRCXL",
@@ -116,18 +106,8 @@
         "regionName": "Rio Grande do Sul",
         "actionId": "c40_0026",
         "actionName": "Vehicle Emissions",
-        "actionPriority": 12,
-        "explanation": "Addressing vehicle emissions directly tackles one of the significant emission sources for the city. A score of 0.881 coupled with sector relevance ensures it is prioritized after waste-related actions."
-    },
-    {
-        "locode": "BRCXL",
-        "cityName": "Caxias do Sul",
-        "region": "BR-RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0019",
-        "actionName": "Modal Shift from Aircraft to Train",
-        "actionPriority": 13,
-        "explanation": "Shifting from aircraft to train can lead to substantial emission reductions by promoting more energy-efficient transport. Its score (0.751) supports its ranking as a moderate-impact, yet important, transportation intervention."
+        "actionPriority": 11,
+        "explanation": "Targeting vehicle emissions directly, this action is critical in reducing transportation-related GHGs. Its comparable quantitative score to Electric Technologies and relevance to a significant emission source justify its priority."
     },
     {
         "locode": "BRCXL",
@@ -136,38 +116,38 @@
         "regionName": "Rio Grande do Sul",
         "actionId": "ipcc_0011",
         "actionName": "Alternative Fuels for Vehicles",
+        "actionPriority": 12,
+        "explanation": "By promoting the use of alternative fuels in vehicles, this action supports lower emissions in the transportation sector. Its score and contribution to cleaner vehicle technologies make it a mid-priority transportation action."
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "ipcc_0013",
+        "actionName": "Fuel Cell Technologies",
+        "actionPriority": 13,
+        "explanation": "Fuel Cell Technologies offer another pathway to reduce transportation emissions, with a focus on cleaner energy conversion. Although its quantitative potential is slightly lower, it remains important for advancing low-emission transport options."
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "ipcc_0018",
+        "actionName": "Alternative Fuels for Aircraft",
         "actionPriority": 14,
-        "explanation": "This action encourages the use of alternative fuels, reducing reliance on fossil fuels. With a quantitative score of 0.746, it ranks highly within the transportation measures sector."
+        "explanation": "This action targets the aviation segment within transportation, promoting cleaner fuel alternatives. Its score is marginally lower than Fuel Cell Technologies, and while the aircraft sector may contribute less to total emissions than road vehicles, it still adds value to the overall reduction strategy."
     },
     {
         "locode": "BRCXL",
         "cityName": "Caxias do Sul",
         "region": "BR-RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0015",
-        "actionName": "Improved Energy Efficiency for Vehicles",
+        "actionId": "ipcc_0019",
+        "actionName": "Modal Shift from Aircraft to Train",
         "actionPriority": 15,
-        "explanation": "Improving vehicle energy efficiency is a cost-effective measure to lower transportation emissions. Its score (0.629) and clear sector focus on reducing emissions endorse its placement."
-    },
-    {
-        "locode": "BRCXL",
-        "cityName": "Caxias do Sul",
-        "region": "BR-RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0002",
-        "actionName": "Active Transport Modes",
-        "actionPriority": 16,
-        "explanation": "Promoting active transport (e.g., walking and cycling) offers both emissions reduction and social benefits. A score of 0.591 and the direct addressing of transport emissions justify its ranking."
-    },
-    {
-        "locode": "BRCXL",
-        "cityName": "Caxias do Sul",
-        "region": "BR-RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "c40_0028",
-        "actionName": "Zero Emission Buses",
-        "actionPriority": 17,
-        "explanation": "Implementing zero emission buses supports cleaner public transportation. Although its score is moderate (0.579), the action is crucial for progressive decarbonization of the transport sector."
+        "explanation": "Encouraging a modal shift from aircraft to train can reduce transportation emissions by shifting to a more energy-efficient mode. Its lower quantitative score reflects more limited potential compared to vehicle-focused measures, but it remains important for long-term sector transformation."
     },
     {
         "locode": "BRCXL",
@@ -176,18 +156,18 @@
         "regionName": "Rio Grande do Sul",
         "actionId": "c40_0027",
         "actionName": "Rail Improvements",
-        "actionPriority": 18,
-        "explanation": "Enhancing rail infrastructure can shift commuter and freight transport from higher-emission alternatives. Its quantitative score (0.551) places it after other transportation actions but still within the emission reduction focus."
+        "actionPriority": 16,
+        "explanation": "Rail Improvements enhance the efficiency and capacity of train systems, supporting a modal shift in transport emissions reduction. Its score is slightly lower than that of modal shift initiatives, but it is essential for complementary infrastructure upgrades."
     },
     {
         "locode": "BRCXL",
         "cityName": "Caxias do Sul",
         "region": "BR-RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0059",
-        "actionName": "Reduce Conversion of Coastal Wetlands",
-        "actionPriority": 19,
-        "explanation": "This action protects important ecosystems and enhances environmental compatibility. While its direct emissions reduction potential is less than waste or transport actions, its moderate score (0.586) and benefits in risk reduction and environmental protection earn it a place in the ranking."
+        "actionId": "ipcc_0020",
+        "actionName": "Alternative Fuels for Shipping",
+        "actionPriority": 17,
+        "explanation": "This action promotes cleaner fuels in the shipping industry, a crucial but smaller component of transportation emissions in the city. Despite its lower score, it contributes to diversifying the city's overall climate action portfolio."
     },
     {
         "locode": "BRCXL",
@@ -196,7 +176,27 @@
         "regionName": "Rio Grande do Sul",
         "actionId": "ipcc_0053",
         "actionName": "Afforestation, Reforestation and Forest Ecosystem Restoration",
+        "actionPriority": 18,
+        "explanation": "Although its quantitative score is modest compared to waste and transportation actions, this land use action has strong long-term co-benefits for carbon sequestration, biodiversity, and improved ecosystem services."
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "ipcc_0052",
+        "actionName": "Reduce Deforestation and Degradation",
+        "actionPriority": 19,
+        "explanation": "This action directly addresses land use emissions by curbing deforestation and degradation. It offers vital environmental compatibility and risk reduction benefits, even if its immediate quantitative score is lower."
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "ipcc_0061",
+        "actionName": "Soil Carbon Management in Croplands and Grasslands",
         "actionPriority": 20,
-        "explanation": "Forest restoration initiatives improve carbon sequestration and environmental resilience. Despite having the lowest quantitative score (0.542) among these actions, its long-term benefits in ecosystem restoration justify its inclusion at this stage."
+        "explanation": "Focusing on soil carbon management, this action enhances carbon sequestration in agricultural lands and grasslands. While its quantitative score is the lowest, its implementation supports long-term sustainability and complements higher immediate emission cuts achieved by waste and transport actions."
     }
 ]

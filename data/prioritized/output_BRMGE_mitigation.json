@@ -7,7 +7,7 @@
         "actionId": "ipcc_0053",
         "actionName": "Afforestation, Reforestation and Forest Ecosystem Restoration",
         "actionPriority": 1,
-        "explanation": "This action ranks first because it directly targets land use emissions, which are the highest in Maranguape. Afforestation and reforestation are highly effective for sequestering carbon, making it a top priority given its high quantitative score (1.954) and relevance in mitigating deforestation impacts."
+        "explanation": "Ranked highest due to its very high quantitative score and its potential to significantly reduce emissions by sequestering carbon, especially addressing land use emissions \u2013 the largest emission source for Maranguape. Despite the city's desert-like conditions, carefully selected restoration methods can yield high benefits."
     },
     {
         "locode": "BRMGE",
@@ -17,7 +17,7 @@
         "actionId": "ipcc_0052",
         "actionName": "Reduce Deforestation and Degradation",
         "actionPriority": 2,
-        "explanation": "Targeting land use, this action is crucial for reducing the largest emission sector in the city. With a strong quantitative score (1.789), it effectively addresses deforestation and degradation issues, ensuring significant GHG reduction."
+        "explanation": "This action also targets land use emissions, helping to preserve existing carbon sinks. With nearly as high a score as the top action, it directly addresses one of the city\u2019s largest emission sources, making it a key mitigation effort."
     },
     {
         "locode": "BRMGE",
@@ -27,7 +27,7 @@
         "actionId": "ipcc_0061",
         "actionName": "Soil Carbon Management in Croplands and Grasslands",
         "actionPriority": 3,
-        "explanation": "This action is ranked third due to its ability to enhance carbon sequestration in agricultural and grassland soils. Its quantitative score (1.724) and its relevance to land use emissions make it a key strategy for Maranguape\u2019s mitigation efforts."
+        "explanation": "Soil carbon management offers significant GHG reduction by enhancing carbon storage in soils. Given Maranguape\u2019s substantial land use emissions, this action is highly relevant and cost-effective, with a very high quantitative score."
     },
     {
         "locode": "BRMGE",
@@ -37,7 +37,7 @@
         "actionId": "ipcc_0058",
         "actionName": "Peatland Restoration",
         "actionPriority": 4,
-        "explanation": "With a quantitative score of 1.704, peatland restoration is vital for restoring degraded wetlands, a significant part of land use. This action not only reduces emissions but also helps in risk mitigation against drought impacts in a region facing water scarcity."
+        "explanation": "Although peatlands might not be the dominant landscape in a desert-like setting, this action scores high in emissions reduction potential. It helps restore critical ecosystems that can lock away carbon, earning it a top-tier ranking."
     },
     {
         "locode": "BRMGE",
@@ -47,17 +47,7 @@
         "actionId": "ipcc_0068",
         "actionName": "Bioenergy and BECCS(Bioenergy with Carbon Capture and Storage)",
         "actionPriority": 5,
-        "explanation": "This advanced mitigation measure, with a score of 1.704, is effective in producing energy while capturing emissions. It taps into biomass management, aligning well with high land use emissions while also pushing forward cost\u2010effective and innovative technology."
-    },
-    {
-        "locode": "BRMGE",
-        "cityName": "Maranguape",
-        "region": "BR-CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "ipcc_0059",
-        "actionName": "Reduce Conversion of Coastal Wetlands",
-        "actionPriority": 6,
-        "explanation": "By protecting coastal wetlands, this action helps prevent further emissions from land use changes. Its score of 1.594 and its alignment with preventing ecosystem degradation make it a priority for maintaining environmental compatibility and reducing emission pressures."
+        "explanation": "This innovative action uses advanced bioenergy technologies with carbon capture, promising high emissions reductions that include both energy and land use sectors. Its high score and potential dual benefits justify its prioritization."
     },
     {
         "locode": "BRMGE",
@@ -66,8 +56,8 @@
         "regionName": "Cear\u00e1",
         "actionId": "ipcc_0012",
         "actionName": "Electric Technologies",
-        "actionPriority": 7,
-        "explanation": "Electric technologies are crucial for reducing reliance on fossil fuels and can contribute significantly to lowering transportation and energy-related emissions. With a score of 1.554, it is an effective and relatively faster impacting action."
+        "actionPriority": 6,
+        "explanation": "Electric technologies can reduce stationary energy emissions and enhance energy efficiency. With a strong quantitative score, this action is both cost-effective and aligned with reducing heavy city emission sectors such as energy and transportation indirectly."
     },
     {
         "locode": "BRMGE",
@@ -76,18 +66,8 @@
         "regionName": "Cear\u00e1",
         "actionId": "c40_0026",
         "actionName": "Vehicle Emissions",
-        "actionPriority": 8,
-        "explanation": "Directly targeting transportation emissions \u2013 the city\u2019s second largest emission sector \u2013 this action (score: 1.539) is essential for urban sustainability. It directly addresses vehicle-related emissions and supports a shift towards cleaner transport options."
-    },
-    {
-        "locode": "BRMGE",
-        "cityName": "Maranguape",
-        "region": "BR-CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "ipcc_0077",
-        "actionName": "Urban Tree Planting and Management",
-        "actionPriority": 9,
-        "explanation": "Though similar in nature to afforestation, urban tree planting complements other land use actions by improving local microclimates and helping sequester carbon. With a score of 1.494, this action also provides social and environmental benefits suitable for the city."
+        "actionPriority": 7,
+        "explanation": "Addressing vehicle emissions is vital given the significant contribution of transportation emissions in Maranguape. Its high quantitative score indicates strong potential for emissions reduction, which is crucial for a city where transportation is a major sector."
     },
     {
         "locode": "BRMGE",
@@ -96,8 +76,28 @@
         "regionName": "Cear\u00e1",
         "actionId": "ipcc_0011",
         "actionName": "Alternative Fuels for Vehicles",
+        "actionPriority": 8,
+        "explanation": "Complementary to reducing direct vehicle emissions, switching to alternative fuels tackles the transportation sector effectively. Its high score reflects strong emissions reduction potential and sector relevance."
+    },
+    {
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "ipcc_0059",
+        "actionName": "Reduce Conversion of Coastal Wetlands",
+        "actionPriority": 9,
+        "explanation": "This action targets the preservation of coastal wetlands to maintain their carbon sequestration capabilities. Although Maranguape is in a desert biome and may have limited coastal areas, the relatively high score and benefits in biodiversity and risk reduction keep it high in the list."
+    },
+    {
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "ipcc_0077",
+        "actionName": "Urban Tree Planting and Management",
         "actionPriority": 10,
-        "explanation": "This action not only helps reduce vehicle emissions but also diversifies the city's energy sources. With a quantitative score of 1.404 and clear relevance to the transportation sector, it is a robust strategy for mitigating urban emissions."
+        "explanation": "Urban tree planting can mitigate urban heat island effects, provide public health benefits, and contribute to local carbon capture. It is particularly beneficial for improving resilience against drought and heatwave risks, despite potential water limitations in a desert climate."
     },
     {
         "locode": "BRMGE",
@@ -107,7 +107,7 @@
         "actionId": "ipcc_0054",
         "actionName": "Improved Forest Management",
         "actionPriority": 11,
-        "explanation": "Focusing on enhancing forest resource management, this action supports land use related mitigation. Its score of 1.394 complements other forest-based strategies, making it important for sustainable management and emission reduction."
+        "explanation": "Improved forest management helps sustain and enhance carbon sinks in natural landscapes. This action supports emissions reduction by ensuring that managed forests continue to function effectively as carbon reservoirs."
     },
     {
         "locode": "BRMGE",
@@ -117,7 +117,7 @@
         "actionId": "ipcc_0069",
         "actionName": "Shift to sustainable healthy diets",
         "actionPriority": 12,
-        "explanation": "This action has a dual benefit of reducing emissions from agriculture and alleviating pressures on land use. Although its quantitative score is 1.329, its broader socio-demographic benefits and risk reduction in food security make it a valuable addition."
+        "explanation": "This action promotes reduced emissions through dietary changes, which can lower the overall carbon footprint associated with agriculture and food systems. Its score reflects a balance of emission benefits and socio-demographic suitability."
     },
     {
         "locode": "BRMGE",
@@ -127,7 +127,7 @@
         "actionId": "ipcc_0071",
         "actionName": "Improved and enhanced use of wood products",
         "actionPriority": 13,
-        "explanation": "Enhancing the use of wood products promotes sustainable forestry practices and reduces waste. With a score of 1.329, this action is cost\u2010effective and supports continued land use mitigation while bolstering local economies."
+        "explanation": "By promoting the efficient use of wood products, this action indirectly supports forest conservation and emissions reduction. It has a score equivalent to sustainable diets, indicating comparable benefits in risk reduction and cost-effectiveness."
     },
     {
         "locode": "BRMGE",
@@ -137,7 +137,7 @@
         "actionId": "ipcc_0057",
         "actionName": "Reduce Degradation and Conversion of Peatlands Activities, Co-benefits, Risks and Implementation Barriers",
         "actionPriority": 14,
-        "explanation": "This action works to further protect peatlands, crucial for carbon storage, though its quantitative score is lower at 1.194. It is still essential in preventing further degradation, thereby contributing to risk reduction and emissions management."
+        "explanation": "This action further emphasizes peatland conservation, important for maintaining significant carbon stocks. Slightly lower in score, it still supports the mitigation of land use emissions, especially where peatlands are present."
     },
     {
         "locode": "BRMGE",
@@ -147,17 +147,7 @@
         "actionId": "ipcc_0063",
         "actionName": "Agroforesry",
         "actionPriority": 15,
-        "explanation": "Agroforestry integrates trees into agricultural landscapes and has multiple benefits including carbon sequestration and improved biodiversity. Its score of 1.129 indicates moderate mitigation potential, fitting as a complementary land use strategy."
-    },
-    {
-        "locode": "BRMGE",
-        "cityName": "Maranguape",
-        "region": "BR-CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "ipcc_0019",
-        "actionName": "Modal Shift from Aircraft to Train",
-        "actionPriority": 16,
-        "explanation": "While aviation is not the highest emission sector in Maranguape, shifting modes to trains offers clear transportation benefits. With a score of 1.117, this action supports reducing emissions in the transportation sector, though its impact is less critical compared to road transport strategies."
+        "explanation": "Agroforestry can combine agricultural productivity with ecological benefits, thereby reducing net emissions from croplands. It is well-suited to bridge rural and urban dynamics, making it a moderate priority."
     },
     {
         "locode": "BRMGE",
@@ -166,18 +156,18 @@
         "regionName": "Cear\u00e1",
         "actionId": "c40_0042",
         "actionName": "Biodiversity Expansion",
-        "actionPriority": 17,
-        "explanation": "This action emphasizes expanding biodiversity, which indirectly supports carbon sequestration and ecosystem resilience. Its relatively lower score (1.064) places it after primary mitigation measures, but it remains important for long-term environmental compatibility."
+        "actionPriority": 16,
+        "explanation": "Biodiversity expansion enhances ecosystem resilience and can indirectly contribute to emissions reduction through healthier ecosystems. Though its quantitative score is slightly lower, its environmental and socio-economic benefits are valuable."
     },
     {
         "locode": "BRMGE",
         "cityName": "Maranguape",
         "region": "BR-CE",
         "regionName": "Cear\u00e1",
-        "actionId": "c40_0038",
-        "actionName": "Sanitary Landfills",
-        "actionPriority": 18,
-        "explanation": "Targeting waste emissions \u2013 a significant but lower priority compared to land use and transportation \u2013 this action (score: 1.041) improves waste management and reduces methane emissions, fitting into an integrated climate strategy."
+        "actionId": "ipcc_0060",
+        "actionName": "Coastal Wetland Restoration",
+        "actionPriority": 17,
+        "explanation": "Similar to reducing conversion of coastal wetlands, this action focuses on restoring wetland ecosystems. While relevant for carbon sequestration and biodiversity, its alignment with Maranguape\u2019s desert conditions makes it slightly lower in priority compared to others."
     },
     {
         "locode": "BRMGE",
@@ -186,17 +176,27 @@
         "regionName": "Cear\u00e1",
         "actionId": "ipcc_0013",
         "actionName": "Fuel Cell Technologies",
-        "actionPriority": 19,
-        "explanation": "Fuel cell technologies represent an innovative transition towards cleaner energy, particularly in transport and stationary applications. Despite its lower score (1.036), it supports long-term decarbonization strategies and technological advancement."
+        "actionPriority": 18,
+        "explanation": "Fuel cell technologies offer potential benefits in clean energy transitions. However, compared to actions with direct high emissions reduction in major sectors, its lower score and possible higher costs reduce its priority."
     },
     {
         "locode": "BRMGE",
         "cityName": "Maranguape",
         "region": "BR-CE",
         "regionName": "Cear\u00e1",
-        "actionId": "ipcc_0062",
-        "actionName": "Biochar",
+        "actionId": "ipcc_0018",
+        "actionName": "Alternative Fuels for Aircraft",
+        "actionPriority": 19,
+        "explanation": "Targeting aircraft emissions, this action is less critical for a city like Maranguape where transportation emissions are more dominated by road vehicles. Its lower quantitative score and lesser sector impact result in a lower ranking."
+    },
+    {
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "c40_0035",
+        "actionName": "Waste Efficiency",
         "actionPriority": 20,
-        "explanation": "Biochar contributes to carbon sequestration by converting biomass into a stable form. With the lowest quantitative score of 1.035 among the actions, it is ranked last. Nonetheless, it remains a beneficial land use strategy with potential co-benefits in soil fertility improvement."
+        "explanation": "Although improving waste efficiency can reduce emissions from waste, the sector\u2019s overall contribution in Maranguape is smaller relative to land use and transportation. Its significantly lower quantitative score places it as the lowest priority."
     }
 ]

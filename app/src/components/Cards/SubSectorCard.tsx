@@ -1,15 +1,12 @@
-import {
-  Box,
-  Card,
-  CircularProgress,
-  Heading,
-  Icon,
-  Text,
-} from "@chakra-ui/react";
+import { Box, Card, Heading, Icon, Text } from "@chakra-ui/react";
 import React, { FC } from "react";
 import { MdOutlineCheckCircle } from "react-icons/md";
 import { DataAlertIcon } from "../icons";
 import type { TFunction } from "i18next";
+import {
+  ProgressCircleRing,
+  ProgressCircleRoot,
+} from "@/components/ui/progress-circle";
 
 interface SubSectorCardProps {
   title: string;
@@ -27,15 +24,19 @@ const SubSectorCard: FC<SubSectorCardProps> = ({
   t,
 }) => {
   return (
-    <Card className="flex flex-row h-[120px] items-center px-4 gap-4 border border-[#E6E7FF] shadow-none">
+    <Card.Root className="flex flex-row h-[120px] items-center px-4 gap-4 border border-[#E6E7FF] shadow-none">
       {percentageCompletion > 0 && percentageCompletion < 100 ? (
-        <CircularProgress
-          size="32px"
-          thickness="12px"
-          color="interactive.secondary"
-          trackColor="background.neutral"
+        <ProgressCircleRoot
+          size="sm"
           value={percentageCompletion}
-        />
+          color="background.neutral"
+        >
+          <ProgressCircleRing
+            cap="round"
+            color="interactive.secondary"
+            css={{ "--thickness": "12px" }}
+          />
+        </ProgressCircleRoot>
       ) : (
         <Icon
           as={isCompleted ? MdOutlineCheckCircle : DataAlertIcon}
@@ -64,7 +65,7 @@ const SubSectorCard: FC<SubSectorCardProps> = ({
           {t("scope")}: {scopes}
         </Text>
       </Box>
-    </Card>
+    </Card.Root>
   );
 };
 

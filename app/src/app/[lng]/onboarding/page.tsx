@@ -1,11 +1,11 @@
 "use client";
 
 import { useTranslation } from "@/i18n/client";
-import { ArrowForwardIcon, ArrowRightIcon } from "@chakra-ui/icons";
-import { Box, Button, Heading, HStack, Text, VStack } from "@chakra-ui/react";
+import { Box, Button, Heading, HStack, Text } from "@chakra-ui/react";
 import Image from "next/image";
 import NextLink from "next/link";
-import { Trans } from "react-i18next/TransWithoutContext";
+import { MdArrowForward } from "react-icons/md";
+
 export default function Onboarding({
   params: { lng },
 }: {
@@ -86,14 +86,7 @@ export default function Onboarding({
           px="175px"
         >
           <NextLink href="/onboarding/setup">
-            <Button
-              w="auto"
-              gap="8px"
-              py="16px"
-              px="24px"
-              h="64px"
-              rightIcon={<ArrowForwardIcon h="24px" w="24px" />}
-            >
+            <Button w="auto" gap="8px" py="16px" px="24px" h="64px">
               <Text
                 fontFamily="button.md"
                 fontWeight="600"
@@ -101,6 +94,7 @@ export default function Onboarding({
               >
                 {t("start-inventory")}
               </Text>
+              <MdArrowForward height="24px" width="24px" />
             </Button>
           </NextLink>
         </Box>

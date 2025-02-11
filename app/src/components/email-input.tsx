@@ -1,13 +1,8 @@
 import { emailPattern } from "@/util/validation";
-import { WarningIcon } from "@chakra-ui/icons";
-import {
-  FormControl,
-  FormErrorMessage,
-  FormLabel,
-  Input,
-  Text,
-} from "@chakra-ui/react";
+import { Icon, Input, Text } from "@chakra-ui/react";
 import { FieldError } from "react-hook-form";
+import { Fieldset } from "@chakra-ui/react";
+import { Field } from "@/components/ui/field";
 
 export default function EmailInput({
   children,
@@ -27,8 +22,7 @@ export default function EmailInput({
   disabled?: boolean;
 }) {
   return (
-    <FormControl isInvalid={!!error}>
-      <FormLabel>{name}</FormLabel>
+    <Field label={name} invalid={!!error} errorText={error?.message}>
       <Input
         readOnly={disabled}
         type="email"
@@ -51,19 +45,6 @@ export default function EmailInput({
         })}
       />
       {children}
-      {error && (
-        <FormErrorMessage display="flex" gap="6px">
-          <WarningIcon />
-          <Text
-            fontSize="body.md"
-            lineHeight="20px"
-            letterSpacing="wide"
-            color="content.tertiary"
-          >
-            {error.message}
-          </Text>
-        </FormErrorMessage>
-      )}
-    </FormControl>
+    </Field>
   );
 }

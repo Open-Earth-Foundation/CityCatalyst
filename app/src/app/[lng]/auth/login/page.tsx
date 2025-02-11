@@ -4,15 +4,16 @@ import EmailInput from "@/components/email-input";
 import PasswordInput from "@/components/password-input";
 import { useAuthToast } from "@/hooks/useAuthToast";
 import { useTranslation } from "@/i18n/client";
-import { Link } from "@chakra-ui/next-js";
-import { Button, Heading, Text, useToast } from "@chakra-ui/react";
+import { Heading, Text, Link, Box } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
+import { Toaster, toaster } from "@/components/ui/toaster";
+import { Button } from "@/components/ui/button";
 
-type Inputs = {
+export type LoginInputs = {
   email: string;
   password: string;
 };
@@ -20,16 +21,14 @@ type Inputs = {
 function VerifiedNotification({ t }: { t: TFunction }) {
   const searchParams = useSearchParams();
   const isVerified = !!searchParams.get("verification-code");
-  const toast = useToast();
+
   useEffect(() => {
     if (isVerified) {
-      toast({
+      toaster.create({
         title: t("verified-toast-title"),
         description: t("verified-toast-description"),
-        status: "success",
-        duration: null,
-        isClosable: true,
-        position: "bottom-right",
+        type: "success",
+        duration: 0,
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -50,7 +49,7 @@ export default function Login({
     handleSubmit,
     register,
     formState: { errors, isSubmitting },
-  } = useForm<Inputs>();
+  } = useForm<LoginInputs>();
 
   const searchParams = useSearchParams();
   const queryParams = Object.fromEntries(searchParams.entries());
@@ -60,7 +59,7 @@ export default function Login({
     `/${lng}/user/invite?${new URLSearchParams(queryParams).toString()}`;
 
   const { showLoginSuccessToast } = useAuthToast(t);
-  const onSubmit: SubmitHandler<Inputs> = async (data) => {
+  const onSubmit: SubmitHandler<LoginInputs> = async (data) => {
     try {
       const res = await signIn("credentials", {
         redirect: false,
@@ -85,7 +84,7 @@ export default function Login({
   };
 
   return (
-    <>
+    <Box>
       <Heading size="xl">{t("login-heading")}</Heading>
       <Text my={4} color="content.tertiary">
         {t("login-details")}
@@ -102,7 +101,7 @@ export default function Login({
         <Button
           type="submit"
           formNoValidate
-          isLoading={isSubmitting}
+          loading={isSubmitting}
           h={16}
           width="full"
           bgColor="interactive.secondary"
@@ -125,6 +124,7 @@ export default function Login({
       <Suspense>
         <VerifiedNotification t={t} />
       </Suspense>
-    </>
+      <Toaster />
+    </Box>
   );
 }

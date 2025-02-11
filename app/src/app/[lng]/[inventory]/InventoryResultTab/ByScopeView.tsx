@@ -1,14 +1,5 @@
 import React from "react";
-import {
-  Box,
-  ChakraProvider,
-  Table,
-  Tbody,
-  Td,
-  Th,
-  Thead,
-  Tr,
-} from "@chakra-ui/react";
+import { Box, Table } from "@chakra-ui/react";
 import { ActivityDataByScope } from "@/util/types";
 import type { TFunction } from "i18next";
 import { convertKgToTonnes, toKebabCase } from "@/util/helpers";
@@ -33,36 +24,40 @@ const ByScopeView: React.FC<ByScopeViewProps> = ({
     inventoryType
   ].scopes;
   return (
-    <ChakraProvider>
-      <Box p={4}>
-        <Table variant="simple">
-          <Thead>
-            <Tr>
-              <Th>{tData("subsector")}</Th>
-              <Th>{tDashboard("total-emissions")}</Th>
-              <Th>{tDashboard("%-of-sector-emissions")}</Th>
-              {scopes.map((s) => (
-                <Th key={s}>
-                  {tDashboard("emissions-scope")} {s}
-                </Th>
-              ))}
-            </Tr>
-          </Thead>
-          <Tbody>
-            {data.map((item, index) => (
-              <Tr key={index}>
-                <Td>{tData(toKebabCase(item.activityTitle))}</Td>
-                <Td>{convertKgToTonnes(item.totalEmissions)}</Td>
-                <Td>{item.percentage}%</Td>
-                {scopes.map((s) => (
-                  <Td key={s}>{convertKgToTonnes(item.scopes[s] || 0)}</Td>
-                ))}
-              </Tr>
+    <Box p={4}>
+      <Table.Root unstyled variant="line">
+        <Table.Header>
+          <Table.Row>
+            <Table.ColumnHeader>{tData("subsector")}</Table.ColumnHeader>
+            <Table.ColumnHeader>
+              {tDashboard("total-emissions")}
+            </Table.ColumnHeader>
+            <Table.ColumnHeader>
+              {tDashboard("%-of-sector-emissions")}
+            </Table.ColumnHeader>
+            {scopes.map((s) => (
+              <Table.ColumnHeader key={s}>
+                {tDashboard("emissions-scope")} {s}
+              </Table.ColumnHeader>
             ))}
-          </Tbody>
-        </Table>
-      </Box>
-    </ChakraProvider>
+          </Table.Row>
+        </Table.Header>
+        <Table.Body>
+          {data.map((item, index) => (
+            <Table.Row key={index}>
+              <Table.Cell>{tData(toKebabCase(item.activityTitle))}</Table.Cell>
+              <Table.Cell>{convertKgToTonnes(item.totalEmissions)}</Table.Cell>
+              <Table.Cell>{item.percentage}%</Table.Cell>
+              {scopes.map((s) => (
+                <Table.Cell key={s}>
+                  {convertKgToTonnes(item.scopes[s] || 0)}
+                </Table.Cell>
+              ))}
+            </Table.Row>
+          ))}
+        </Table.Body>
+      </Table.Root>
+    </Box>
   );
 };
 

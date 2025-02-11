@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from "react";
 import Select, { components, MultiValueProps, OptionProps } from "react-select";
-import { Checkbox, Box, Text, CloseButton } from "@chakra-ui/react";
+import { Box, Icon, Text } from "@chakra-ui/react";
 import { TFunction } from "i18next";
-import { WarningIcon } from "@chakra-ui/icons";
+
 import { Control, Controller } from "react-hook-form";
 import { Inputs } from "@/components/Modals/activity-modal/activity-modal-body";
+import { CloseButton } from "./ui/close-button";
+import { Checkbox } from "./ui/checkbox";
+import { MdWarning } from "react-icons/md";
 
 interface MultiSelectInputProps {
   title: string;
@@ -59,7 +62,7 @@ const CustomOption = (props: OptionProps<any>) => {
     >
       <Checkbox
         className="pointer-events-none !mb-[0px]"
-        isChecked={isSelected}
+        checked={isSelected}
       />
       <Text fontSize="14px" color="content.secondary">
         {data.label}
@@ -115,7 +118,6 @@ const MultiSelectWithCheckbox = ({
   return (
     <Box display="flex" flexDirection="column" gap="8px">
       <Text
-        variant="label"
         fontSize="label.lg"
         fontStyle="normal"
         fontWeight="medium"
@@ -170,7 +172,7 @@ const MultiSelectWithCheckbox = ({
       />
       {error ? (
         <Box display="flex" gap="6px" alignItems="center">
-          <WarningIcon color="sentiment.negativeDefault" />
+          <Icon as={MdWarning} color="sentiment.negativeDefault" />
           <Text fontSize="body.md">{error?.message}</Text>
         </Box>
       ) : null}

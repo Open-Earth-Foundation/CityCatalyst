@@ -13,7 +13,7 @@ const ActionCardSmall: React.FC<ActionCardSmallProps> = ({
   title,
 }) => {
   return (
-    <Card
+    <Card.Root
       onClick={onClick}
       shadow="2dp"
       backgroundColor="base.light"
@@ -38,7 +38,7 @@ const ActionCardSmall: React.FC<ActionCardSmallProps> = ({
           </CardHeader>
         </Box>
       </Box>
-    </Card>
+    </Card.Root>
   );
 };
 

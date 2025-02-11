@@ -1,9 +1,6 @@
 "use client";
 
-import { CheckCircleIcon } from "@chakra-ui/icons";
-import { Box, Card, Tag, TagLabel, Text } from "@chakra-ui/react";
-import { FcGoogle } from "react-icons/fc";
-import { MdCheckCircleOutline } from "react-icons/md";
+import { Box, Card, Tag, Text } from "@chakra-ui/react";
 import { ExcelFileIcon } from "../icons";
 import { FC } from "react";
 import { bytesToMB } from "@/util/helpers";
@@ -21,7 +18,7 @@ const FileDataCard: FC<FileCardDataProps> = ({
 }) => {
   const tags = subsectors.split(",").map((item: string) => item.trim());
   return (
-    <Card
+    <Card.Root
       minW="200px"
       maxH="150px"
       shadow="none"
@@ -43,7 +40,7 @@ const FileDataCard: FC<FileCardDataProps> = ({
             fontFamily="heading"
             lineHeight="20px"
             letterSpacing="wide"
-            isTruncated
+            truncate
             maxW="200px"
           >
             {fileName}
@@ -62,7 +59,7 @@ const FileDataCard: FC<FileCardDataProps> = ({
       </Box>
       <Box w="full" className="relative pl-[50px]">
         {tags?.map((item: any) => (
-          <Tag
+          <Tag.Root
             key={item}
             mt={2}
             mr={2}
@@ -73,11 +70,11 @@ const FileDataCard: FC<FileCardDataProps> = ({
             bg="background.neutral"
             maxW="150px"
           >
-            <TagLabel>{item}</TagLabel>
-          </Tag>
+            <Tag.Label>{item}</Tag.Label>
+          </Tag.Root>
         ))}
       </Box>
-    </Card>
+    </Card.Root>
   );
 };
 

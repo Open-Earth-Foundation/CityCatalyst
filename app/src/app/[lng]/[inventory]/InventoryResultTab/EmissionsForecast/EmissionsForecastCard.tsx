@@ -1,5 +1,5 @@
 import { EmissionsForecastData } from "@/util/types";
-import { TFunction } from "i18next/typescript/t";
+import { TFunction } from "i18next";
 import { useState } from "react";
 import { GrowthRatesExplanationModal } from "@/app/[lng]/[inventory]/InventoryResultTab/EmissionsForecast/GrowthRatesExplanationModal";
 import {
@@ -7,11 +7,12 @@ import {
   CardBody,
   CardHeader,
   HStack,
+  Icon,
   IconButton,
   Text,
 } from "@chakra-ui/react";
-import { InfoOutlineIcon } from "@chakra-ui/icons";
 import { EmissionsForecastChart } from "@/app/[lng]/[inventory]/InventoryResultTab/EmissionsForecast/EmissionsForecastChart";
+import { MdInfoOutline } from "react-icons/md";
 
 export const EmissionsForecastCard = ({
   forecast,
@@ -34,7 +35,7 @@ export const EmissionsForecastCard = ({
         lng={lng}
       />
 
-      <Card paddingY="0px" paddingX="0px" height="100%" width="100%">
+      <Card.Root paddingY="0px" paddingX="0px" height="100%" width="100%">
         <CardHeader>
           <HStack justifyContent="space-between">
             <Text fontFamily="heading" fontSize="title.md" fontWeight="medium">
@@ -43,12 +44,13 @@ export const EmissionsForecastCard = ({
             <IconButton
               width={"20px"}
               height={"20px"}
-              variant={"unstyled"}
-              isRound
+              variant="plain"
+              rounded="full"
               onClick={() => setIsExplanationModalOpen(true)}
-              icon={<InfoOutlineIcon marginRight={3} fontSize={"20px"} />}
               aria-label={"growth-rates-explanation"}
-            />
+            >
+              <Icon as={MdInfoOutline} mr={3} boxSize={5} />
+            </IconButton>
           </HStack>
         </CardHeader>
         <CardBody
@@ -60,7 +62,7 @@ export const EmissionsForecastCard = ({
         >
           <EmissionsForecastChart forecast={forecast} t={t} />
         </CardBody>
-      </Card>
+      </Card.Root>
     </>
   );
 };

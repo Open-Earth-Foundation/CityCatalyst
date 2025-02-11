@@ -2,32 +2,28 @@
 
 import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
 import { api } from "@/services/api";
-import {
-  Badge,
-  Box,
-  Button,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
-  Text,
-} from "@chakra-ui/react";
+import { Badge, Box, Button, Text } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import React, { FC } from "react";
 
 import { FiTrash2 } from "react-icons/fi";
+import {
+  DialogBody,
+  DialogCloseTrigger,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogRoot,
+} from "@/components/ui/dialog";
 
-interface DeleteUserModalProps {
+interface DeleteUserDialogProps {
   isOpen: boolean;
   onClose: any;
   cityInviteId: string;
   t: TFunction;
 }
 
-const DeleteUserModal: FC<DeleteUserModalProps> = ({
+const DeleteUserDialog: FC<DeleteUserDialogProps> = ({
   isOpen,
   onClose,
   cityInviteId,
@@ -58,10 +54,9 @@ const DeleteUserModal: FC<DeleteUserModalProps> = ({
   };
   return (
     <>
-      <Modal blockScrollOnMount={false} isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay />
-        <ModalContent minH="388px" minW="568px" marginTop="10%">
-          <ModalHeader
+      <DialogRoot preventScroll open={isOpen} onExitComplete={onClose}>
+        <DialogContent minH="388px" minW="568px" marginTop="10%">
+          <DialogHeader
             display="flex"
             justifyContent="center"
             fontWeight="semibold"
@@ -74,9 +69,9 @@ const DeleteUserModal: FC<DeleteUserModalProps> = ({
             fontFamily="heading"
           >
             {t("remove-user")}
-          </ModalHeader>
-          <ModalCloseButton marginTop="10px" />
-          <ModalBody paddingTop="24px">
+          </DialogHeader>
+          <DialogCloseTrigger marginTop="10px" />
+          <DialogBody paddingTop="24px">
             <Box
               display="flex"
               flexDirection="column"
@@ -116,8 +111,8 @@ const DeleteUserModal: FC<DeleteUserModalProps> = ({
                 </Text>
               </Box>
             </Box>
-          </ModalBody>
-          <ModalFooter
+          </DialogBody>
+          <DialogFooter
             borderTopWidth="1px"
             borderStyle="solid"
             borderColor="border.neutral"
@@ -146,11 +141,11 @@ const DeleteUserModal: FC<DeleteUserModalProps> = ({
             >
               {t("remove-user")}
             </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+          </DialogFooter>
+        </DialogContent>
+      </DialogRoot>
     </>
   );
 };
 
-export default DeleteUserModal;
+export default DeleteUserDialog;

@@ -1,17 +1,10 @@
 import type { TFunction } from "i18next";
-import {
-  Badge,
-  Box,
-  Button,
-  CloseButton,
-  Spacer,
-  Text,
-  useToast,
-} from "@chakra-ui/react";
+import { Badge, Box, Button, Icon, Spacer, Text } from "@chakra-ui/react";
 import React, { MouseEventHandler } from "react";
-import { InfoOutlineIcon } from "@chakra-ui/icons";
-import { MdCheckCircleOutline } from "react-icons/md";
+import { MdCheckCircleOutline, MdInfoOutline } from "react-icons/md";
 import { FiDownload } from "react-icons/fi";
+
+import { Toaster, toaster } from "@/components/ui/toaster";
 
 const DownloadButtons = ({
   t,
@@ -39,8 +32,6 @@ const DownloadButtons = ({
     ERROR = "error",
   }
 
-  const toast = useToast();
-
   const showToast = (
     title: string,
     description: string,
@@ -51,62 +42,60 @@ const DownloadButtons = ({
   ) => {
     // Replace previous toast notifications
     if (duration == null) {
-      toast.closeAll();
+      toaster.dismiss();
     }
 
-    const animatedGradientClass = `bg-gradient-to-l from-brand via-brand_light to-brand bg-[length:200%_auto] animate-gradient`;
-    toast({
+    toaster.create({
       description: t(description),
-      status: status,
-      duration: duration,
-      isClosable: true,
-      render: ({
-        onClose,
-      }: {
-        onClose: MouseEventHandler<HTMLButtonElement>;
-      }) => (
-        <Box
-          display="flex"
-          gap="8px"
-          color="white"
-          alignItems="center"
-          p={3}
-          bg={showAnimatedGradient ? undefined : bgColor}
-          className={showAnimatedGradient ? animatedGradientClass : undefined}
-          width="600px"
-          height="60px"
-          borderRadius="8px"
-        >
-          <Box display="flex" gap="8px" alignItems="center">
-            {status === "info" || status === "error" ? (
-              <InfoOutlineIcon fontSize="24px" />
-            ) : (
-              <MdCheckCircleOutline fontSize="24px" />
-            )}
-            <Text
-              color="base.light"
-              fontWeight="bold"
-              lineHeight="52"
-              fontSize="label.lg"
-            >
-              {t(title)}
-            </Text>
-          </Box>
-          <Spacer />
-          {status === "error" && (
-            <Button
-              variant="lightGhost"
-              onClick={() => handleDownload("csv")}
-              fontWeight="600"
-              fontSize="16px"
-              letterSpacing="1.25px"
-            >
-              {t("try-again")}
-            </Button>
-          )}
-          <CloseButton onClick={onClose} />
-        </Box>
-      ),
+      type: status,
+      duration: duration!,
+      // render: ({
+      //   onClose,
+      // }: {
+      //   onClose: MouseEventHandler<HTMLButtonElement>;
+      // }) => (
+      //   <Box
+      //     display="flex"
+      //     gap="8px"
+      //     color="white"
+      //     alignItems="center"
+      //     p={3}
+      //     bg={showAnimatedGradient ? undefined : bgColor}
+      //     className={showAnimatedGradient ? animatedGradientClass : undefined}
+      //     width="600px"
+      //     height="60px"
+      //     borderRadius="8px"
+      //   >
+      //     <Box display="flex" gap="8px" alignItems="center">
+      //       {status === "info" || status === "error" ? (
+      //         <MdInfoOutline fontSize="24px" />
+      //       ) : (
+      //         <MdCheckCircleOutline fontSize="24px" />
+      //       )}
+      //       <Text
+      //         color="base.light"
+      //         fontWeight="bold"
+      //         lineHeight="52"
+      //         fontSize="label.lg"
+      //       >
+      //         {t(title)}
+      //       </Text>
+      //     </Box>
+      //     <Spacer />
+      //     {status === "error" && (
+      //       <Button
+      //         variant="lightGhost"
+      //         onClick={() => handleDownload("csv")}
+      //         fontWeight="600"
+      //         fontSize="16px"
+      //         letterSpacing="1.25px"
+      //       >
+      //         {t("try-again")}
+      //       </Button>
+      //     )}
+      //     <CloseButton onClick={onClose} />
+      //   </Box>
+      // ),
     });
   };
 
@@ -171,8 +160,7 @@ const DownloadButtons = ({
           my="16px"
           mx="24px"
           variant="ghost"
-          leftIcon={<FiDownload fontSize="32px" />}
-          isDisabled={!isAvailable}
+          disabled={!isAvailable}
           style={{
             backgroundColor: "white",
             color: "black",
@@ -181,6 +169,7 @@ const DownloadButtons = ({
           justifyContent="flex-start"
           onClick={() => handleDownload(format)}
         >
+          <Icon as={FiDownload} fontSize="32px" />
           <Text
             fontSize="body.lg"
             color="body"
@@ -197,7 +186,7 @@ const DownloadButtons = ({
               py="4px"
               px="8px"
               borderRadius="full"
-              textColor="content.secondary"
+              color="content.secondary"
               fontSize="body.sm"
               bg="base.light"
             >
@@ -206,6 +195,7 @@ const DownloadButtons = ({
           )}
         </Button>
       ))}
+      <Toaster />
     </Box>
   );
 };

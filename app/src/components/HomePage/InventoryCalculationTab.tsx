@@ -11,10 +11,9 @@ import {
   Center,
   Heading,
   Spinner,
-  Tag,
   TagLabel,
-  TagLeftIcon,
   Text,
+  Icon,
 } from "@chakra-ui/react";
 import { Trans } from "react-i18next/TransWithoutContext";
 import { TabHeader } from "@/components/HomePage/TabHeader";
@@ -24,6 +23,8 @@ import {
   InventoryType,
   SECTORS,
 } from "@/util/constants";
+
+import { Tag } from "@/components/ui/tag";
 
 const getSectorProgresses = (
   inventoryProgress: InventoryProgressResponse,
@@ -82,27 +83,29 @@ export default function InventoryCalculationTab({
             </Heading>
           </Box>
           <Box className="flex gap-4 mt-2">
-            <Tag>
-              <TagLeftIcon
-                as={CircleIcon}
-                boxSize={6}
-                color="interactive.connected"
-              />
-              <TagLabel>
-                {formatPercent(thirdPartyProgress)}%{" "}
-                <Trans t={t}>connect-third-party-data</Trans>
-              </TagLabel>
+            <Tag
+              startElement={
+                <Icon
+                  as={CircleIcon}
+                  boxSize={6}
+                  color="interactive.connected"
+                />
+              }
+            >
+              {formatPercent(thirdPartyProgress)}%{" "}
+              <Trans t={t}>connect-third-party-data</Trans>
             </Tag>
-            <Tag>
-              <TagLeftIcon
-                as={CircleIcon}
-                boxSize={6}
-                color="interactive.tertiary"
-              />
-              <TagLabel>
-                {formatPercent(uploadedProgress)}%{" "}
-                <Trans t={t}>uploaded-data</Trans>
-              </TagLabel>
+            <Tag
+              startElement={
+                <Icon
+                  as={CircleIcon}
+                  boxSize={6}
+                  color="interactive.tertiary"
+                />
+              }
+            >
+              {formatPercent(uploadedProgress)}%{" "}
+              <Trans t={t}>uploaded-data</Trans>
             </Tag>
           </Box>
           <Box className=" flex flex-col gap-[24px] py-[24px]">

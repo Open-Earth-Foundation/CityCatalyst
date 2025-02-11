@@ -2,8 +2,8 @@ import HeadingText from "@/components/heading-text";
 import {
   Box,
   Button,
-  Radio,
-  RadioGroup,
+  Icon,
+  RadioGroupRoot,
   Stack,
   Text,
   Textarea,
@@ -13,7 +13,8 @@ import { TFunction } from "i18next";
 import React, { FC, useEffect } from "react";
 import { useController, useForm } from "react-hook-form";
 import { api } from "@/services/api";
-import { WarningIcon } from "@chakra-ui/icons";
+import { Radio, RadioGroup } from "@/components/ui/radio";
+import { MdWarning } from "react-icons/md";
 
 interface ScopeUnavailableProps {
   t: TFunction;
@@ -37,14 +38,8 @@ const ScopeUnavailable: FC<ScopeUnavailableProps> = ({
   const {
     register,
     handleSubmit,
-    reset,
-    watch,
-    setError,
-    clearErrors,
-    setFocus,
     setValue,
     control,
-    getValues,
     formState: { errors },
   } = useForm<{
     reason: string;
@@ -66,15 +61,7 @@ const ScopeUnavailable: FC<ScopeUnavailableProps> = ({
     rules: { required: t("option-required") },
   });
 
-  const {
-    getRootProps,
-    getRadioProps,
-    value: selectedReason,
-    setValue: setSelectedReason,
-  } = useRadioGroup({
-    defaultValue: reason || "",
-    onChange: (value) => setValue("reason", value), // Update reason in React Hook Form on selection
-  });
+  const [selectedReason, setSelectedReason] = React.useState<string>();
 
   useEffect(() => {
     if (reason) {
@@ -82,6 +69,11 @@ const ScopeUnavailable: FC<ScopeUnavailableProps> = ({
       setValue("reason", reason);
     }
   }, [reason, setSelectedReason, setValue]);
+
+  const handleSelectedValue = (value: string) => {
+    setSelectedReason(value);
+    setValue("reason", value);
+  };
 
   const formSubmitHandler = async (data: {
     reason: string;
@@ -126,48 +118,51 @@ const ScopeUnavailable: FC<ScopeUnavailableProps> = ({
         >
           {t("select-reason")}
         </Text>
-        <RadioGroup
-          value={selectedReason as string}
-          onChange={setSelectedReason}
-        >
-          <Stack direction="column">
-            <Radio
-              {...getRadioProps({ value: "reason-NO" })}
-              key={"reason-NO"}
-              color="interactive.secondary"
-            >
-              {t("reason-NO")}
-            </Radio>
-            <Radio
-              {...getRadioProps({ value: "reason-NE" })}
-              key={"reason-NE"}
-              color="interactive.secondary"
-            >
-              {t("reason-NE")}
-            </Radio>
-            <Radio
-              {...getRadioProps({ value: "reason-C" })}
-              key={"reason-C"}
-              color="interactive.secondary"
-            >
-              {t("reason-C")}
-            </Radio>
-            <Radio
-              {...getRadioProps({ value: "reason-IE" })}
-              key={"reason-IE"}
-              color="interactive.secondary"
-            >
-              {t("reason-IE")}
-            </Radio>
+        <RadioGroupRoot>
+          <RadioGroup
+            value={selectedReason as string}
+            onValueChange={(e) => handleSelectedValue(e.value)}
+            colorPalette="interactive.secondary"
+          >
+            <Stack direction="column">
+              <Radio
+                value="reason-NO"
+                key={"reason-NO"}
+                color="content.secondary"
+              >
+                {t("reason-NO")}
+              </Radio>
+              <Radio
+                value="reason-NE"
+                key={"reason-NE"}
+                color="content.secondary"
+              >
+                {t("reason-NE")}
+              </Radio>
+              <Radio
+                value="reason-C"
+                key={"reason-C"}
+                color="content.secondary"
+              >
+                {t("reason-C")}
+              </Radio>
+              <Radio
+                value="reason-IE"
+                key={"reason-IE"}
+                color="content.secondary"
+              >
+                {t("reason-IE")}
+              </Radio>
 
-            {errors?.reason ? (
-              <Box display="flex" gap="6px" alignItems="center" mt="6px">
-                <WarningIcon color="sentiment.negativeDefault" />
-                <Text fontSize="body.md">{errors?.reason.message} </Text>
-              </Box>
-            ) : null}
-          </Stack>
-        </RadioGroup>
+              {errors?.reason ? (
+                <Box display="flex" gap="6px" alignItems="center" mt="6px">
+                  <Icon as={MdWarning} color="sentiment.negativeDefault" />
+                  <Text fontSize="body.md">{errors?.reason.message} </Text>
+                </Box>
+              ) : null}
+            </Stack>
+          </RadioGroup>
+        </RadioGroupRoot>
         <Text
           fontWeight="medium"
           fontSize="title.md"
@@ -188,7 +183,7 @@ const ScopeUnavailable: FC<ScopeUnavailableProps> = ({
         />
         {errors?.justification ? (
           <Box display="flex" gap="6px" alignItems="center" mt="6px">
-            <WarningIcon color="sentiment.negativeDefault" />
+            <Icon as={MdWarning} color="sentiment.negativeDefault" />
             <Text fontSize="body.md">{errors?.justification.message} </Text>
           </Box>
         ) : null}
@@ -197,7 +192,7 @@ const ScopeUnavailable: FC<ScopeUnavailableProps> = ({
           p="16px"
           mt="24px"
           onClick={submit}
-          isLoading={isLoading}
+          loading={isLoading}
         >
           {t("save-changes")}
         </Button>

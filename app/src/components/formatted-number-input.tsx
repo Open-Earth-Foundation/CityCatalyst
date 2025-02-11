@@ -1,21 +1,21 @@
 import React from "react";
 import { Control, Controller, useWatch } from "react-hook-form";
+import { Group, InputAddon, NumberInput } from "@chakra-ui/react";
+import { useParams } from "next/navigation";
 import {
-  InputGroup,
-  InputRightAddon,
-  NumberInput,
   NumberInputField,
   NumberInputProps,
-} from "@chakra-ui/react";
-import { useParams } from "next/navigation";
+  NumberInputRoot,
+} from "./ui/number-input";
 import { REGIONALLOCALES } from "@/util/constants";
+import { InputGroup } from "./ui/input-group";
 
 interface FormattedNumberInputProps extends NumberInputProps {
   control: Control<any, any>;
   name: string;
   setError?: Function;
   clearErrors?: Function;
-  defaultValue?: number;
+  defaultValue?: string | undefined;
   isDisabled?: boolean;
   placeholder?: string;
   children?: React.ReactNode;
@@ -24,6 +24,8 @@ interface FormattedNumberInputProps extends NumberInputProps {
   testId?: string;
   localization?: string;
   t: Function;
+  max?: number;
+  min?: number;
 }
 
 function FormattedNumberInput({
@@ -32,7 +34,7 @@ function FormattedNumberInput({
   id,
   testId,
   name,
-  defaultValue = 0,
+  defaultValue = "0",
   isDisabled = false,
   children,
   placeholder,
@@ -128,16 +130,23 @@ function FormattedNumberInput({
         },
       }}
       render={({ field }) => (
-        <InputGroup>
-          <NumberInput
-            ste
-            isDisabled={isDisabled}
+        <Group>
+          <NumberInputRoot
+            disabled={isDisabled}
             value={format(field.value)}
-            onChange={(valueAsString) => {
-              field.onChange(valueAsString);
+            shadow="1dp"
+            w="full"
+            borderRightRadius={children ? 0 : "md"} // Adjust border radius
+            bgColor={isDisabled ? "background.neutral" : "base.light"}
+            pos="relative"
+            zIndex={3}
+            min={min}
+            max={max}
+            onValueChange={(valueAsString: any) => {
+              const parsedValue = parse(valueAsString.value);
+              field.onChange(parsedValue);
             }}
-            isValidCharacter={isCharacterValid}
-            onBlur={(e) => {
+            onBlur={(e: any) => {
               e.preventDefault();
               const parsedValue = parse(e.target.value);
               field.onChange(parseFloat(parsedValue));
@@ -145,25 +154,16 @@ function FormattedNumberInput({
             {...rest}
           >
             <NumberInputField
-              min={min}
-              max={max}
               data-testId={testId}
               placeholder={placeholder}
-              h="48px"
-              type="text" // Use text type to allow formatted input
-              shadow="1dp"
-              pr="12px"
-              borderRightRadius={children ? 0 : "md"} // Adjust border radius
-              bgColor={isDisabled ? "background.neutral" : "base.light"}
-              pos="relative"
-              zIndex={3}
+              // Use text type to allow formatted input
             />
-          </NumberInput>
+          </NumberInputRoot>
           {children && (
-            <InputRightAddon
+            <InputAddon
               bgColor={isDisabled ? "background.neutral" : "base.light"}
               color="content.tertiary"
-              h="48px"
+              h="40px"
               fontSize="14px"
               shadow="1dp"
               pos="relative"
@@ -174,9 +174,9 @@ function FormattedNumberInput({
               overflowX={miniAddon ? "hidden" : "visible"}
             >
               {children}
-            </InputRightAddon>
+            </InputAddon>
           )}
-        </InputGroup>
+        </Group>
       )}
     />
   );

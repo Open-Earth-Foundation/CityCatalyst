@@ -1,4 +1,4 @@
-import { Box, CloseButton, Text, useToast } from "@chakra-ui/react";
+import { Box, Text } from "@chakra-ui/react";
 import { Trans } from "react-i18next";
 import {
   ManualInputValidationErrorCodes,
@@ -7,6 +7,7 @@ import {
 import { TFunction } from "i18next";
 import { UseFormSetError, UseFormSetFocus } from "react-hook-form";
 import { Inputs } from "@/components/Modals/activity-modal/activity-modal-body";
+import { toaster } from "@/components/ui/toaster";
 
 const useActivityValueValidation = ({
   t,
@@ -17,8 +18,6 @@ const useActivityValueValidation = ({
   setError: UseFormSetError<Inputs>;
   setFocus: UseFormSetFocus<Inputs>;
 }) => {
-  const toast = useToast();
-
   const handleManalInputValidationError = (
     error: ManualValidationErrorDetails,
   ) => {
@@ -83,28 +82,14 @@ const useActivityValueValidation = ({
       default:
         break;
     }
-    toast({
-      status: "error",
-      render: ({ onClose }) => (
-        <Box
-          w="600px"
-          borderRadius="8px"
-          display="flex"
-          alignItems="center"
-          color="white"
-          backgroundColor="sentiment.negativeDefault"
-          gap="8px"
-          p="16px"
-        >
-          <Text>
-            <Trans t={t} values={desciptionValues ?? {}}>
-              {key}
-            </Trans>
-          </Text>
-          <CloseButton onClick={onClose} />
-        </Box>
+    toaster.error({
+      duration: 6000,
+      meta: { closable: true },
+      title: (
+        <Trans t={t} values={desciptionValues ?? {}}>
+          {key}
+        </Trans>
       ),
-      isClosable: true,
     });
   };
 

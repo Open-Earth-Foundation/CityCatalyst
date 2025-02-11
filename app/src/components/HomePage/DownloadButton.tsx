@@ -1,5 +1,5 @@
 import React from "react";
-import { useDisclosure } from "@chakra-ui/react";
+import { Card, useDisclosure } from "@chakra-ui/react";
 import { FiDownload } from "react-icons/fi";
 import type { TFunction } from "i18next";
 import ModalDownloadReport from "./DownloadAndShareModals/ModalDownloadReport";
@@ -22,13 +22,13 @@ const DownloadButton: React.FC<DownloadButtonProps> = ({
   t,
 }) => {
   const {
-    isOpen: isDownloadShareOpen,
+    open: isDownloadShareOpen,
     onOpen: onDownloadShareOpen,
     onClose: onDownloadShareClose,
   } = useDisclosure();
 
   const {
-    isOpen: isPublishOpen,
+    open: isPublishOpen,
     onOpen: onPublishOpen,
     onClose: onPublishClose,
   } = useDisclosure();
@@ -46,6 +46,8 @@ const DownloadButton: React.FC<DownloadButtonProps> = ({
         cityLocode={city?.locode}
       />
       <ModalPublish
+        // Todo: add close state action
+        setModalOpen={() => {}}
         t={t}
         isPublishOpen={isPublishOpen}
         onPublishClose={onPublishClose}

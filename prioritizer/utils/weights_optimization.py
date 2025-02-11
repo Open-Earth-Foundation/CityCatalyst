@@ -6,8 +6,6 @@ import torch
 import torch.optim as optim
 import json
 
-folder_path = Path(__file__).parent.parent.parent / "data" / "expert_labeled_actions"
-
 # Get the absolute path to the project root (two levels up from this file)
 project_root = str(Path(__file__).resolve().parent.parent.parent)
 
@@ -64,6 +62,19 @@ def load_data_from_folder(folder_path):
 
     df = pd.DataFrame(all_data)
     return df
+
+
+def remove_irrelevant_rows(df, remove_unsure: bool) -> pd.DataFrame:
+    """
+    Removes rows where the 'PreferredAction' is 'Irrelevant'.
+    If remove_unsure is True, also removes rows where the 'PreferredAction' is 'Unsure'.
+    """
+
+    df_cleaned = df[df["PreferredAction"] != "Irrelevant"]
+    if remove_unsure:
+        df_cleaned = df_cleaned[df_cleaned["PreferredAction"] != "Unsure"]
+
+    return df_cleaned
 
 
 def get_action_by_id(actions, target_action_id):
@@ -169,26 +180,6 @@ def quantitative_score_torch(city, action, weights):
     return score
 
 
-# Load all comparison data from the folder
-df_all_comparisons = load_data_from_folder(folder_path)
-
-# print(df_all_comparisons.head())
-# print(len(df_all_comparisons))
-
-# Delete the irrelevant and unsure comparisons
-df_all_comparisons_cleaned = df_all_comparisons[
-    df_all_comparisons["PreferredAction"] != "Irrelevant"
-]
-df_all_comparisons_cleaned = df_all_comparisons_cleaned[
-    df_all_comparisons_cleaned["PreferredAction"] != "Unsure"
-]
-
-# print(df_all_comparisons_cleaned.head())
-# print(len(df_all_comparisons_cleaned))
-
-actions = read_actions()
-
-
 # Define the hinge loss function.
 def hinge_loss(score_diff, y, margin=1.0):
     """
@@ -268,11 +259,6 @@ def compute_loss():
     print("Total hinge loss:", total_loss)
 
 
-# Create an optimizer over the weight parameters.
-# To optimize weights in a dictionary, we pass a list of their values.
-optimizer = optim.Adam(list(weights.values()), lr=0.005)
-
-
 def optimize_weights(num_epochs, optimizer, weights):
 
     num_epochs = num_epochs
@@ -313,8 +299,33 @@ def optimize_weights(num_epochs, optimizer, weights):
 
 
 if __name__ == "__main__":
+
+    # Define the folder path where the expert labeled actions are stored
+    folder_path = (
+        Path(__file__).parent.parent.parent / "data" / "expert_labeled_actions"
+    )
+
+    # Load all comparison data from the folder
+    df_all_comparisons = load_data_from_folder(folder_path)
+
+    # print(df_all_comparisons.head())
+    # print(len(df_all_comparisons))
+
+    df_all_comparisons_cleaned = remove_irrelevant_rows(
+        df_all_comparisons, remove_unsure=True
+    )
+
+    # print(df_all_comparisons_cleaned.head())
+    # print(len(df_all_comparisons_cleaned))
+
+    actions = read_actions()
+
     # Compute the hinge loss piror to optimization
     compute_loss()
 
+    # Create an optimizer over the weight parameters.
+    # To optimize weights in a dictionary, we pass a list of their values.
+    optimizer = optim.Adam(list(weights.values()), lr=0.005)
+
     # Run the optimization process
-    optimize_weights(200, optimizer, weights)
+    optimize_weights(100, optimizer, weights)

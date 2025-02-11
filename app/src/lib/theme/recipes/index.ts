@@ -20,7 +20,7 @@ export const tagRecipe = defineRecipe({
       container: {
         px: 3,
         py: 1,
-        borderRadius: "full",
+        borderRadius: "16px",
         borderColor: "background.neutral",
         borderWidth: 1,
         color: "background.neutral",
@@ -39,7 +39,7 @@ export const tagRecipe = defineRecipe({
       container: {
         px: 4,
         py: 1,
-        borderRadius: "full",
+        borderRadius: "16px",
         bgColor: "background.neutral",
       },
       label: {
@@ -50,7 +50,7 @@ export const tagRecipe = defineRecipe({
       container: {
         px: 4,
         py: 1,
-        borderRadius: "full",
+        borderRadius: "16px",
         borderWidth: 1,
         borderColor: "sentiment.positiveDefault",
         bgColor: "sentiment.positiveOverlay",
@@ -65,7 +65,7 @@ export const tagRecipe = defineRecipe({
       container: {
         px: 4,
         py: 1,
-        borderRadius: "full",
+        borderRadius: "16px",
         borderWidth: 1,
         borderColor: "sentiment.warningDefault",
         bgColor: "sentiment.warningOverlay",
@@ -80,7 +80,7 @@ export const tagRecipe = defineRecipe({
         bgColor: "sentiment.warningOverlay",
         borderColor: "sentiment.warningDefault",
         borderWidth: 1,
-        borderRadius: "full",
+        borderRadius: "16px",
       },
       label: {
         color: "sentiment.warningDefault",
@@ -92,7 +92,7 @@ export const tagRecipe = defineRecipe({
         bgColor: "background.neutral",
         borderColor: "content.link",
         borderWidth: 1,
-        borderRadius: "full",
+        borderRadius: "16px",
       },
       label: {
         color: "content.link",
@@ -104,7 +104,7 @@ export const tagRecipe = defineRecipe({
         bgColor: "sentiment.positiveOverlay",
         borderColor: "interactive.tertiary",
         borderWidth: 1,
-        borderRadius: "full",
+        borderRadius: "16px",
       },
       label: {
         color: "interactive.tertiary",
@@ -244,7 +244,7 @@ export const switchRecipe = defineRecipe({
   variants: {
     brand: {
       track: {
-        borderRadius: "full",
+        borderRadius: "16px",
         bg: "background.neutral",
         _checked: {
           bg: "interactive.secondary",

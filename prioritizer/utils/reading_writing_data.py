@@ -13,7 +13,6 @@ ACTION_DATA_PATH = BASE_DIR / "../data/climate_actions/output/combined_output.js
 CITY_DATA_PATH = BASE_DIR / "../data/cities/city_data.json"
 OUTPUT_PATH = BASE_DIR / "../data/prioritized/"
 
-
 def read_city_inventory(locode: str) -> dict:
     """
     Reads city inventory data from a JSON file.
@@ -24,25 +23,25 @@ def read_city_inventory(locode: str) -> dict:
     city_data_path = CITY_DATA_PATH
     with city_data_path.open("r", encoding="utf-8") as f:
         city_data = json.load(f)
-    # return city_data[0]  # Adjust as needed for multiple cities
 
     if not city_data:
         print("City data is empty.")
         sys.exit(1)
 
-    # Find the city by name
+    # Find the city by its 'locode'
     for city in city_data:
         if city["locode"] == locode:
             return city
 
-    # Return None if city is not found
-    # print(f"City '{city_name}' not found in the data.")
     raise ValueError(f"City with locode '{locode}' not found in the data.")
 
-
 def read_actions():
+    """
+    Reads action data from the defined ACTION_DATA_PATH and returns a list of
+    dictionaries that match the structure of the new action example.
+    """
     actions = []
-    with open(ACTION_DATA_PATH, "r") as f:
+    with open(ACTION_DATA_PATH, "r", encoding="utf-8") as f:
         data = json.load(f)
 
     if not data:
@@ -50,36 +49,36 @@ def read_actions():
         sys.exit(1)
 
     for item in data:
+        # Removed keys that are not in the new example: 
+        #    'AdaptationCategory', 'InterventionType', 'BehaviouralChangeTargeted', 'Impacts'
+        # Added 'PowersAndMandates', which appears in the new example.
         action = {
             "ActionID": item.get("ActionID"),
             "ActionName": item.get("ActionName"),
             "ActionType": item.get("ActionType"),
-            "AdaptationCategory": item.get("AdaptationCategory"),
             "Hazard": item.get("Hazard"),
             "Sector": item.get("Sector"),
             "Subsector": item.get("Subsector"),
             "PrimaryPurpose": item.get("PrimaryPurpose"),
-            "InterventionType": item.get("InterventionType"),
             "Description": item.get("Description"),
-            "BehaviouralChangeTargeted": item.get("BehaviouralChangeTargeted"),
             "CoBenefits": item.get("CoBenefits"),
-            "EquityAndInclusionConsiderations": item.get(
-                "EquityAndInclusionConsiderations"
-            ),
+            "EquityAndInclusionConsiderations": item.get("EquityAndInclusionConsiderations"),
             "GHGReductionPotential": item.get("GHGReductionPotential"),
             "AdaptationEffectiveness": item.get("AdaptationEffectiveness"),
             "CostInvestmentNeeded": item.get("CostInvestmentNeeded"),
             "TimelineForImplementation": item.get("TimelineForImplementation"),
             "Dependencies": item.get("Dependencies"),
             "KeyPerformanceIndicators": item.get("KeyPerformanceIndicators"),
-            "Impacts": item.get("Impacts"),
+            "PowersAndMandates": item.get("PowersAndMandates"),  # Added key
         }
         actions.append(action)
     return actions
 
-
 def write_output(top_actions, filename):
-
+    """
+    Writes the given list of actions (top_actions) to a JSON file in the OUTPUT_PATH.
+    Creates the directory if it does not exist.
+    """
     full_path = OUTPUT_PATH / filename
     try:
         # Create the output directory if it doesn't exist

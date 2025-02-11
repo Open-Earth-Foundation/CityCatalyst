@@ -4,44 +4,20 @@
         "cityName": "Caxias do Sul",
         "region": "BR-RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "c40_0035",
-        "actionName": "Waste Efficiency",
-        "actionPriority": 1,
-        "explanation": "This action targets the waste sector, which is the largest emission source in Caxias do Sul, accounting for 78.7% of total emissions. It offers significant GHG reduction potential and aligns with the city's environmental context."
-
-    },
-    {
-        "locode": "BRCXL",
-        "cityName": "Caxias do Sul",
-        "region": "BR-RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "c40_0041",
-        "actionName": "Waste Collection",
-        "actionPriority": 2,
-        "explanation": "Improving waste collection can significantly reduce emissions in the waste sector, the city's largest emission source. It is cost-effective and has a relatively short implementation timeline."
-
-    },
-    {
-        "locode": "BRCXL",
-        "cityName": "Caxias do Sul",
-        "region": "BR-RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "c40_0040",
-        "actionName": "Volume-Based Collection",
-        "actionPriority": 3,
-        "explanation": "This action incentivizes waste reduction at the source, directly impacting the largest emission sector. It is environmentally compatible and cost-effective."
-
-    },
-    {
-        "locode": "BRCXL",
-        "cityName": "Caxias do Sul",
-        "region": "BR-RS",
-        "regionName": "Rio Grande do Sul",
         "actionId": "c40_0038",
         "actionName": "Sanitary Landfills",
-        "actionPriority": 4,
-        "explanation": "Enhancing landfill management can reduce methane emissions, a potent GHG, from the waste sector. It aligns with the city's environmental goals and is cost-effective."
-
+        "actionPriority": 1,
+        "explanation": "This action has the highest quantitative score (1.046) and directly addresses the waste sector \u2013 the city\u2019s largest emission contributor. It ensures significant greenhouse gas emissions reduction while being highly relevant and suitable for Caxias do Sul."
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "c40_0035",
+        "actionName": "Waste Efficiency",
+        "actionPriority": 2,
+        "explanation": "With a quantitative score of 1.039, this waste-focused action ranks second. It targets the major waste emissions category and offers cost-effective benefits toward substantial GHG reduction."
     },
     {
         "locode": "BRCXL",
@@ -50,9 +26,18 @@
         "regionName": "Rio Grande do Sul",
         "actionId": "c40_0036",
         "actionName": "Landfill Management",
-        "actionPriority": 5,
-        "explanation": "Effective landfill management can significantly reduce emissions from the waste sector, aligning with the city's largest emission source."
-
+        "actionPriority": 3,
+        "explanation": "Ranking third with a score of 0.881, Landfill Management focuses on improving waste operations. Given the waste sector\u2019s dominance in local emissions, this action is highly impactful for emissions reduction and environmental compatibility."
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "c40_0041",
+        "actionName": "Waste Collection",
+        "actionPriority": 4,
+        "explanation": "Waste Collection, with a score of 0.854, is prioritized because it addresses the highest emission category. Its implementation can yield rapid benefits in emissions reduction and risk reduction for waste-related hazards."
     },
     {
         "locode": "BRCXL",
@@ -61,119 +46,18 @@
         "regionName": "Rio Grande do Sul",
         "actionId": "c40_0039",
         "actionName": "Gas Management",
+        "actionPriority": 5,
+        "explanation": "This action (score 0.796) targets the reduction of landfill gas emissions, a critical part of the waste sector emissions. Its focus on emissions reduction and cost-effectiveness places it high in priority."
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "c40_0040",
+        "actionName": "Volume-Based Collection",
         "actionPriority": 6,
-        "explanation": "Managing landfill gas can reduce methane emissions, contributing to significant GHG reductions in the waste sector."
-
-    },
-    {
-        "locode": "BRCXL",
-        "cityName": "Caxias do Sul",
-        "region": "BR-RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0080",
-        "actionName": "Avoiding, Minimising, and Recycling Waste",
-        "actionPriority": 7,
-        "explanation": "This action targets waste reduction at the source, offering significant emissions reduction potential in the city's largest emission sector."
-
-    },
-    {
-        "locode": "BRCXL",
-        "cityName": "Caxias do Sul",
-        "region": "BR-RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0012",
-        "actionName": "Electric Technologies",
-        "actionPriority": 8,
-        "explanation": "Transitioning to electric technologies can reduce emissions in the stationary energy sector, the second-largest emission source in the city."
-
-    },
-    {
-        "locode": "BRCXL",
-        "cityName": "Caxias do Sul",
-        "region": "BR-RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "c40_0026",
-        "actionName": "Vehicle Emissions",
-        "actionPriority": 9,
-        "explanation": "Reducing vehicle emissions targets the transportation sector, the third-largest emission source, offering significant GHG reduction potential."
-
-    },
-    {
-        "locode": "BRCXL",
-        "cityName": "Caxias do Sul",
-        "region": "BR-RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0019",
-        "actionName": "Modal Shift from Aircraft to Train",
-        "actionPriority": 10,
-        "explanation": "Promoting a modal shift can reduce emissions in the transportation sector, aligning with the city's emission reduction goals."
-
-    },
-    {
-        "locode": "BRCXL",
-        "cityName": "Caxias do Sul",
-        "region": "BR-RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0011",
-        "actionName": "Alternative Fuels for Vehicles",
-        "actionPriority": 11,
-        "explanation": "Using alternative fuels can reduce emissions in the transportation sector, contributing to the city's emission reduction targets."
-
-    },
-    {
-        "locode": "BRCXL",
-        "cityName": "Caxias do Sul",
-        "region": "BR-RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0015",
-        "actionName": "Improved Energy Efficiency for Vehicles",
-        "actionPriority": 12,
-        "explanation": "Enhancing vehicle energy efficiency can reduce emissions in the transportation sector, aligning with the city's emission reduction goals."
-
-    },
-    {
-        "locode": "BRCXL",
-        "cityName": "Caxias do Sul",
-        "region": "BR-RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0002",
-        "actionName": "Active Transport Modes",
-        "actionPriority": 13,
-        "explanation": "Promoting active transport modes can reduce emissions in the transportation sector, contributing to the city's emission reduction targets."
-
-    },
-    {
-        "locode": "BRCXL",
-        "cityName": "Caxias do Sul",
-        "region": "BR-RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0059",
-        "actionName": "Reduce Conversion of Coastal Wetlands",
-        "actionPriority": 14,
-        "explanation": "Protecting coastal wetlands can sequester carbon, contributing to emissions reduction and aligning with the city's environmental goals."
-
-    },
-    {
-        "locode": "BRCXL",
-        "cityName": "Caxias do Sul",
-        "region": "BR-RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "c40_0037",
-        "actionName": "Source Separation",
-        "actionPriority": 15,
-        "explanation": "Source separation of waste can enhance recycling and reduce emissions in the waste sector, the city's largest emission source."
-
-    },
-    {
-        "locode": "BRCXL",
-        "cityName": "Caxias do Sul",
-        "region": "BR-RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "c40_0028",
-        "actionName": "Zero Emission Buses",
-        "actionPriority": 16,
-        "explanation": "Introducing zero-emission buses can reduce emissions in the transportation sector, aligning with the city's emission reduction goals."
-
+        "explanation": "With a quantitative score of 0.624, this action is essential for optimizing waste collection processes. It supports emissions reduction in the waste sector, the city\u2019s most critical emission source."
     },
     {
         "locode": "BRCXL",
@@ -182,20 +66,48 @@
         "regionName": "Rio Grande do Sul",
         "actionId": "ipcc_0045",
         "actionName": "Behavioral Changes for Reduced Waste (e.g., Food)",
-        "actionPriority": 17,
-        "explanation": "Encouraging behavioral changes can reduce waste generation, contributing to emissions reduction in the city's largest emission sector."
-
+        "actionPriority": 7,
+        "explanation": "Though its score is modest (0.53), this action directly targets waste behavior. Given that waste emissions dominate Caxias do Sul's emissions profile, promoting behavioral changes is vital and thus prioritized above other sectors."
     },
     {
         "locode": "BRCXL",
         "cityName": "Caxias do Sul",
         "region": "BR-RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0053",
-        "actionName": "Afforestation, Reforestation and Forest Ecosystem Restoration",
-        "actionPriority": 18,
-        "explanation": "These actions can sequester carbon, contributing to emissions reduction and aligning with the city's environmental goals."
-
+        "actionId": "ipcc_0002",
+        "actionName": "Active Transport Modes",
+        "actionPriority": 8,
+        "explanation": "Active Transport Modes (score 0.542) is the highest among non\u2010waste actions and focuses on transportation\u2014a secondary but significant emission sector. It supports reduced vehicular emissions and promotes health and sustainability."
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "ipcc_0019",
+        "actionName": "Modal Shift from Aircraft to Train",
+        "actionPriority": 9,
+        "explanation": "This transportation-focused action (score 0.506) contributes to shifting modes toward lower-emission alternatives. Its relevance to reducing sector-specific emissions justifies its placement after the highest scoring transport action."
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "ipcc_0015",
+        "actionName": "Improved Energy Efficiency for Vehicles",
+        "actionPriority": 10,
+        "explanation": "Improved Energy Efficiency for Vehicles (score 0.482) targets further reductions in transportation emissions. It offers cost-effective benefits and quicker implementation, supporting broader climate mitigation objectives."
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "ipcc_0059",
+        "actionName": "Reduce Conversion of Coastal Wetlands",
+        "actionPriority": 11,
+        "explanation": "Despite a lower quantitative score (0.473), this action protects coastal wetlands and prevents land use emissions. Its focus on environmental compatibility and risk reduction (notably against biodiversity and flooding impacts) merits its inclusion at this stage."
     },
     {
         "locode": "BRCXL",
@@ -204,19 +116,87 @@
         "regionName": "Rio Grande do Sul",
         "actionId": "ipcc_0007",
         "actionName": "Smart Mobility",
-        "actionPriority": 19,
-        "explanation": "Implementing smart mobility solutions can reduce emissions in the transportation sector, contributing to the city's emission reduction targets."
-
+        "actionPriority": 12,
+        "explanation": "Smart Mobility (score 0.457) promotes efficient transport systems and reduced emissions. While not waste-related, its focus on innovation in mobility contributes to overall GHG reduction in the transportation sector."
     },
     {
         "locode": "BRCXL",
         "cityName": "Caxias do Sul",
         "region": "BR-RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0022",
-        "actionName": "Improved Energy Efficiency for Shipping",
+        "actionId": "ipcc_0012",
+        "actionName": "Electric Technologies",
+        "actionPriority": 13,
+        "explanation": "Electric Technologies, with a score of 0.455, facilitates the transition to low-emission energy solutions. Although not directly a waste or transport action, its application across sectors supports long-term emissions abatement."
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "ipcc_0026",
+        "actionName": "Heat Recovery and Reuse through Heat Exchanger Networks or Heat Pumps",
+        "actionPriority": 14,
+        "explanation": "This action (score 0.445) optimizes energy use in industrial processes by recovering waste heat. It may have lower immediate emission reduction compared to waste and transport, but offers cost-effective improvements in efficiency."
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "ipcc_0027",
+        "actionName": "Process Coupling and Improvements",
+        "actionPriority": 15,
+        "explanation": "Process Coupling and Improvements (score 0.445) focuses on industrial process optimization. With similar quantitative impact as other industrial actions, its ranking is slightly lower due to the city's lower industrial emissions relative to waste and transport."
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "ipcc_0028",
+        "actionName": "Introduction of Energy Efficiency Technologies in Processing",
+        "actionPriority": 16,
+        "explanation": "This action (score 0.445) supports energy efficiency in processing industries. Although its quantitative impact is similar to peer actions at 0.445, it is ranked after higher emission reduction sectors and easier-to-implement strategies."
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "ipcc_0031",
+        "actionName": "Smart Energy Management",
+        "actionPriority": 17,
+        "explanation": "Smart Energy Management (score 0.445) offers technological advances for optimizing energy use. Its benefits are more long-term and depend on existing infrastructure, placing it after more directly impactful actions."
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "ipcc_0032",
+        "actionName": "Fuel Switching to Renewable Fuels",
+        "actionPriority": 18,
+        "explanation": "With a score of 0.445, Fuel Switching to Renewable Fuels targets industrial and energy sectors. While valuable, its overall impact is secondary to waste and transportation actions in the city's emissions profile."
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "ipcc_0033",
+        "actionName": "Electrification of Processes",
+        "actionPriority": 19,
+        "explanation": "Electrification of Processes (score 0.445) facilitates modernizing industrial operations with renewable inputs. Its priority is lower due to the relatively small share of industrial process emissions in the city."
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "ipcc_0034",
+        "actionName": "Energy Recycling in Furnaces and Kilns",
         "actionPriority": 20,
-        "explanation": "Enhancing energy efficiency in shipping can reduce emissions in the transportation sector, aligning with the city's emission reduction goals."
-
+        "explanation": "This action (score 0.445) supports energy recycling in high-temperature industrial operations. While important for process efficiencies, its impact is ranked lowest among the top 20 given the city's emission structure and prioritized sectors."
     }
 ]

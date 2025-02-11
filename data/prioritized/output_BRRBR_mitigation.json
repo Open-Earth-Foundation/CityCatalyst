@@ -4,65 +4,20 @@
         "cityName": "Rio Branco",
         "region": "BR-AC",
         "regionName": "Acre",
-        "actionId": "ipcc_0052",
-        "actionName": "Reduce Deforestation and Degradation",
-        "actionPriority": 1,
-        "explanation": "This action directly targets the largest emission sector in Rio Branco, land use, which accounts for over 85% of the city's total emissions. Reducing deforestation is crucial for significant GHG reduction and aligns with the Amazon rainforest biome."
-
-    },
-    {
-        "locode": "BRRBR",
-        "cityName": "Rio Branco",
-        "region": "BR-AC",
-        "regionName": "Acre",
         "actionId": "ipcc_0053",
         "actionName": "Afforestation, Reforestation and Forest Ecosystem Restoration",
+        "actionPriority": 1,
+        "explanation": "This action scores highest and directly addresses the city\u2019s largest emission sector \u2013 land use. In a tropical rainforest context like Rio Branco, restoring and expanding forest cover helps sequester carbon while protecting biodiversity and providing ecosystem services."
+    },
+    {
+        "locode": "BRRBR",
+        "cityName": "Rio Branco",
+        "region": "BR-AC",
+        "regionName": "Acre",
+        "actionId": "ipcc_0052",
+        "actionName": "Reduce Deforestation and Degradation",
         "actionPriority": 2,
-        "explanation": "This action supports the restoration of forest ecosystems, which is vital for carbon sequestration and aligns with the city's biome. It also addresses the high land use emissions."
-
-    },
-    {
-        "locode": "BRRBR",
-        "cityName": "Rio Branco",
-        "region": "BR-AC",
-        "regionName": "Acre",
-        "actionId": "ipcc_0058",
-        "actionName": "Peatland Restoration",
-        "actionPriority": 3,
-        "explanation": "Peatlands are significant carbon sinks. Restoring them can substantially reduce emissions from land use, which is a major sector in Rio Branco."
-    },
-    {
-        "locode": "BRRBR",
-        "cityName": "Rio Branco",
-        "region": "BR-AC",
-        "regionName": "Acre",
-        "actionId": "ipcc_0059",
-        "actionName": "Reduce Conversion of Coastal Wetlands",
-        "actionPriority": 4,
-        "explanation": "Coastal wetlands are crucial for carbon storage. Preventing their conversion helps in maintaining these carbon sinks, contributing to emissions reduction."
-
-    },
-    {
-        "locode": "BRRBR",
-        "cityName": "Rio Branco",
-        "region": "BR-AC",
-        "regionName": "Acre",
-        "actionId": "ipcc_0061",
-        "actionName": "Soil Carbon Management in Croplands and Grasslands",
-        "actionPriority": 5,
-        "explanation": "Improving soil carbon management can enhance carbon sequestration in agricultural lands, addressing emissions from land use."
-
-    },
-    {
-        "locode": "BRRBR",
-        "cityName": "Rio Branco",
-        "region": "BR-AC",
-        "regionName": "Acre",
-        "actionId": "ipcc_0054",
-        "actionName": "Improved Forest Management",
-        "actionPriority": 6,
-        "explanation": "Enhancing forest management practices can reduce emissions from deforestation and degradation, aligning with the city's environmental context."
-
+        "explanation": "Though its quantitative score is slightly lower than some others, this action is critical for reducing emissions from land use \u2013 the dominant emission source in Rio Branco. Preventing deforestation and degradation protects existing carbon stocks and supports long\u2010term climate mitigation."
     },
     {
         "locode": "BRRBR",
@@ -71,9 +26,38 @@
         "regionName": "Acre",
         "actionId": "ipcc_0077",
         "actionName": "Urban Tree Planting and Management",
-        "actionPriority": 7,
-        "explanation": "Urban tree planting contributes to carbon sequestration and provides co-benefits like improved air quality and urban cooling, addressing heatwave risks."
-
+        "actionPriority": 3,
+        "explanation": "Focusing on urban areas, this action contributes to local emissions reduction, improves air quality, and enhances urban resilience. It fits well with the city\u2019s immediate context and provides rapid local environmental benefits."
+    },
+    {
+        "locode": "BRRBR",
+        "cityName": "Rio Branco",
+        "region": "BR-AC",
+        "regionName": "Acre",
+        "actionId": "ipcc_0061",
+        "actionName": "Soil Carbon Management in Croplands and Grasslands",
+        "actionPriority": 4,
+        "explanation": "Managing soil carbon in croplands supports emissions reductions through improved sequestration. Given that land use emissions are key in Rio Branco, enhancing soil carbon storage adds value, especially in the peripheral rural areas."
+    },
+    {
+        "locode": "BRRBR",
+        "cityName": "Rio Branco",
+        "region": "BR-AC",
+        "regionName": "Acre",
+        "actionId": "ipcc_0054",
+        "actionName": "Improved Forest Management",
+        "actionPriority": 5,
+        "explanation": "Improving forest management practices helps maintain and enhance carbon stocks within existing forests. This action strengthens the overall forest resilience and complements afforestation and reforestation efforts, crucial for a land use-dominated emissions profile."
+    },
+    {
+        "locode": "BRRBR",
+        "cityName": "Rio Branco",
+        "region": "BR-AC",
+        "regionName": "Acre",
+        "actionId": "ipcc_0058",
+        "actionName": "Peatland Restoration",
+        "actionPriority": 6,
+        "explanation": "Peatlands are significant carbon reservoirs. Although their overall extent in Rio Branco might be modest relative to tropical forests, restoring peatlands can prevent large emissions and has co-benefits for biodiversity and local hydrology."
     },
     {
         "locode": "BRRBR",
@@ -81,32 +65,19 @@
         "region": "BR-AC",
         "regionName": "Acre",
         "actionId": "ipcc_0068",
-        "actionName": "Bioenergy and BECCS",
+        "actionName": "Bioenergy and BECCS(Bioenergy with Carbon Capture and Storage)",
+        "actionPriority": 7,
+        "explanation": "This technology-based approach offers potential for significant long-term emissions reductions while generating energy. However, its high capital cost and longer implementation timeline place it slightly below direct land use interventions, despite promising carbon capture benefits."
+    },
+    {
+        "locode": "BRRBR",
+        "cityName": "Rio Branco",
+        "region": "BR-AC",
+        "regionName": "Acre",
+        "actionId": "ipcc_0059",
+        "actionName": "Reduce Conversion of Coastal Wetlands",
         "actionPriority": 8,
-        "explanation": "Bioenergy with carbon capture and storage can significantly reduce emissions from energy sectors, though it requires careful implementation to avoid land use conflicts."
-
-    },
-    {
-        "locode": "BRRBR",
-        "cityName": "Rio Branco",
-        "region": "BR-AC",
-        "regionName": "Acre",
-        "actionId": "ipcc_0063",
-        "actionName": "Agroforestry",
-        "actionPriority": 9,
-        "explanation": "Agroforestry integrates trees into agricultural systems, enhancing carbon sequestration and providing socio-economic benefits to local communities."
-
-    },
-    {
-        "locode": "BRRBR",
-        "cityName": "Rio Branco",
-        "region": "BR-AC",
-        "regionName": "Acre",
-        "actionId": "ipcc_0057",
-        "actionName": "Reduce Degradation and Conversion of Peatlands",
-        "actionPriority": 10,
-        "explanation": "Similar to peatland restoration, this action focuses on maintaining peatlands as carbon sinks, crucial for emissions reduction."
-
+        "explanation": "Despite a high quantitative score, coastal wetlands are less relevant for Rio Branco, an inland city. While protecting these systems is important in general for carbon sequestration and ecosystem health, their local impact is less significant compared to land-based actions."
     },
     {
         "locode": "BRRBR",
@@ -114,48 +85,19 @@
         "region": "BR-AC",
         "regionName": "Acre",
         "actionId": "ipcc_0069",
-        "actionName": "Shift to Sustainable Healthy Diets",
-        "actionPriority": 11,
-        "explanation": "Promoting sustainable diets can reduce emissions from agriculture and improve public health, aligning with socio-demographic suitability."
-
-        "actionId": "ipcc_0062",
-        "actionName": "Biochar",
-        "actionPriority": 11,
-        "explanation": "Biochar can sequester carbon and improve soil health, offering a sustainable solution for emissions reduction."
+        "actionName": "Shift to sustainable healthy diets",
+        "actionPriority": 9,
+        "explanation": "This action targets lifestyle and consumption patterns to indirectly reduce emissions from food production. It is important for long-term cultural and behavioral change, even though its direct emission reduction impact is less immediate compared to land use interventions."
     },
-
     {
         "locode": "BRRBR",
         "cityName": "Rio Branco",
         "region": "BR-AC",
         "regionName": "Acre",
         "actionId": "ipcc_0071",
-        "actionName": "Improved and Enhanced Use of Wood Products",
-        "actionPriority": 12,
-        "explanation": "Enhancing wood product use can support sustainable forestry practices and carbon storage, contributing to emissions reduction."
-
-    },
-    {
-        "locode": "BRRBR",
-        "cityName": "Rio Branco",
-        "region": "BR-AC",
-        "regionName": "Acre",
-        "actionId": "c40_0042",
-        "actionName": "Biodiversity Expansion",
-        "actionPriority": 13,
-        "explanation": "Expanding biodiversity supports ecosystem resilience and carbon sequestration, aligning with the Amazon rainforest biome."
-
-    },
-    {
-        "locode": "BRRBR",
-        "cityName": "Rio Branco",
-        "region": "BR-AC",
-        "regionName": "Acre",
-        "actionId": "ipcc_0060",
-        "actionName": "Coastal Wetland Restoration",
-        "actionPriority": 14,
-        "explanation": "Restoring coastal wetlands enhances carbon storage and provides protection against flooding, addressing geo-hydrological risks."
-
+        "actionName": "Improved and enhanced use of wood products",
+        "actionPriority": 10,
+        "explanation": "Optimizing the use of wood products can extend the carbon storage life of biomass and reduce demand for new raw materials. This action supports circular economy principles and contributes to lowering deforestation pressures when combined with sustainable forestry."
     },
     {
         "locode": "BRRBR",
@@ -164,9 +106,8 @@
         "regionName": "Acre",
         "actionId": "ipcc_0062",
         "actionName": "Biochar",
-        "actionPriority": 15,
-        "explanation": "Biochar can improve soil health and carbon sequestration, though its implementation requires careful consideration of local agricultural practices."
-
+        "actionPriority": 11,
+        "explanation": "Applying biochar improves soil fertility and sequesters carbon for long periods. It offers a cost-effective solution for agricultural areas surrounding the city, though its overall scale of impact is less than direct forest-based actions."
     },
     {
         "locode": "BRRBR",
@@ -174,10 +115,19 @@
         "region": "BR-AC",
         "regionName": "Acre",
         "actionId": "ipcc_0067",
-        "actionName": "Manure Management",
-        "actionPriority": 16,
-        "explanation": "Improving manure management can reduce methane emissions from agriculture, contributing to overall emissions reduction."
-
+        "actionName": "Manure management",
+        "actionPriority": 12,
+        "explanation": "Effective manure management reduces methane emissions from agricultural activities. In the socio-economic context of Rio Branco, where agriculture is present, this action supports better waste handling and lower greenhouse gas emissions."
+    },
+    {
+        "locode": "BRRBR",
+        "cityName": "Rio Branco",
+        "region": "BR-AC",
+        "regionName": "Acre",
+        "actionId": "c40_0038",
+        "actionName": "Sanitary Landfills",
+        "actionPriority": 13,
+        "explanation": "Sanitary landfills improve waste management and significantly reduce emissions from waste decomposition. Given the city's moderate waste emissions, this action is a practical and relatively fast intervention."
     },
     {
         "locode": "BRRBR",
@@ -185,10 +135,9 @@
         "region": "BR-AC",
         "regionName": "Acre",
         "actionId": "ipcc_0064",
-        "actionName": "Enteric Fermentation",
-        "actionPriority": 17,
-        "explanation": "Addressing enteric fermentation can reduce methane emissions from livestock, though it may require changes in livestock management practices."
-
+        "actionName": "Enteric fermentation",
+        "actionPriority": 14,
+        "explanation": "Targeting greenhouse gas emissions from livestock digestion, this action is relevant in agricultural contexts. While important, its indirect impact makes it a lower priority for a city where land use emissions dominate."
     },
     {
         "locode": "BRRBR",
@@ -196,20 +145,58 @@
         "region": "BR-AC",
         "regionName": "Acre",
         "actionId": "ipcc_0066",
-        "actionName": "Crop Nutrient Management",
-        "actionPriority": 18,
-        "explanation": "Optimizing nutrient management can reduce emissions from agriculture, though it requires alignment with local farming practices."
-
+        "actionName": "Crop nutrient management",
+        "actionPriority": 15,
+        "explanation": "Optimizing nutrient application in crops can help in reducing nitrous oxide emissions. This action enhances cost-effectiveness and sustainability in agriculture but has a more modest overall climate impact compared to forestry-related actions."
     },
     {
         "locode": "BRRBR",
         "cityName": "Rio Branco",
         "region": "BR-AC",
         "regionName": "Acre",
-        "actionId": "ipcc_0055",
-        "actionName": "Fire Management (Forest and Grassland / Savanna Fires)",
-        "actionPriority": 19,
-        "explanation": "Effective fire management can prevent emissions from uncontrolled fires, though it requires coordination with local land management."
+        "actionId": "ipcc_0002",
+        "actionName": "Active Transport Modes",
+        "actionPriority": 16,
+        "explanation": "Encouraging active transport (walking, cycling) can lower transportation emissions and improve public health. Although transportation is a smaller emission source relative to land use in Rio Branco, improvements in urban mobility offer rapid co-benefits."
     },
-
+    {
+        "locode": "BRRBR",
+        "cityName": "Rio Branco",
+        "region": "BR-AC",
+        "regionName": "Acre",
+        "actionId": "ipcc_0045",
+        "actionName": "Behavioral Changes for Reduced Waste (e.g., Food)",
+        "actionPriority": 17,
+        "explanation": "Fostering behavioral change in waste consumption can indirectly reduce greenhouse gas emissions. Its cost-effectiveness and quick implementation make it attractive, despite its lower direct impact on major emission sectors."
+    },
+    {
+        "locode": "BRRBR",
+        "cityName": "Rio Branco",
+        "region": "BR-AC",
+        "regionName": "Acre",
+        "actionId": "ipcc_0057",
+        "actionName": "Reduce Degradation and Conversion of Peatlands Activities, Co-benefits, Risks and Implementation Barriers",
+        "actionPriority": 18,
+        "explanation": "Similar to peatland restoration, this action addresses the protection and improved management of peatlands. Given a lower quantitative score and potentially higher dependencies, it is prioritized below the more direct peatland restoration effort."
+    },
+    {
+        "locode": "BRRBR",
+        "cityName": "Rio Branco",
+        "region": "BR-AC",
+        "regionName": "Acre",
+        "actionId": "ipcc_0019",
+        "actionName": "Modal Shift from Aircraft to Train",
+        "actionPriority": 19,
+        "explanation": "This action targets transportation emissions by promoting rail over air travel. While beneficial for reducing high-emission transportation modes, the overall contribution is limited for Rio Branco compared to its dominant land use emissions."
+    },
+    {
+        "locode": "BRRBR",
+        "cityName": "Rio Branco",
+        "region": "BR-AC",
+        "regionName": "Acre",
+        "actionId": "ipcc_0015",
+        "actionName": "Improved Energy Efficiency for Vehicles",
+        "actionPriority": 20,
+        "explanation": "Enhancing vehicle energy efficiency further reduces transportation emissions. Given that transportation is a smaller part of Rio Branco\u2019s total emissions profile, and implementation complexities may be higher, this action is ranked as a lower priority."
+    }
 ]

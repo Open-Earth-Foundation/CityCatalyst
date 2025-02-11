@@ -161,15 +161,13 @@ def quantitative_score(city, action):
     # Description - use only for LLM
     # BehavioralChangeTargeted - skip for now
 
-    # Adaptation effectiveness score
-    # TODO I can see that there is No key like that in the current version of long list of actions was this scraped or moved to another one
+    # Adaptation effectiveness score - skip adding score if value is null or zero
     adaptation_effectiveness = action.get("AdaptationEffectiveness")
     if adaptation_effectiveness in scale_adaptation_effectiveness:
-        adaptation_weight = weights.get("AdaptationEffectiveness", 1)
-        score += (
-            scale_adaptation_effectiveness[adaptation_effectiveness]
-            * adaptation_weight
-        )
+        effective_value = scale_adaptation_effectiveness[adaptation_effectiveness]
+        if effective_value:  # Only add score if effective_value is non-zero (non-falsy)
+            adaptation_weight = weights.get("AdaptationEffectiveness", 1)
+            score += effective_value * adaptation_weight
     print("Score after adaptation effectiveness:", score)
 
     # Time in years score
@@ -209,7 +207,7 @@ class PrioritizedActions(BaseModel):
     actions: List[Action]
 
 
-def send_to_llm(prompt):
+def send_to_llm2(prompt):
 
     response = client.beta.chat.completions.parse(
         model="gpt-4o-2024-08-06",
@@ -219,6 +217,19 @@ def send_to_llm(prompt):
         response_format=PrioritizedActions,
         temperature=0.0,
     )
+    return response.choices[0].message.parsed
+
+def send_to_llm(prompt: str) -> PrioritizedActions:
+    # Using the o3-mini reasoning model and no max_tokens parameter.
+    response = client.beta.chat.completions.parse(
+        model="o3-mini",  # Changed from gpt-4o to o3-mini.
+        messages=[
+            {"role": "user", "content": prompt},
+        ],
+        # Specify structured output using the Pydantic class.
+        response_format=PrioritizedActions
+    )
+    # Return the parsed structured output.
     return response.choices[0].message.parsed
 
 
@@ -294,6 +305,26 @@ def qualitative_prioritizer(top_quantitative, actions, city):
         return []
 
 
+##
+## NEW FUNCTION FOR BIOME FILTERING
+##
+def filter_actions_by_biome(actions, city):
+    """
+    Filter actions based on city's biome only if both city and action have biomes defined.
+    Actions without a biome field are included in the output.
+    If city has no biome, return all actions unfiltered.
+    """
+    city_biome = city.get("biome")
+    if not city_biome:
+        return actions
+    
+    # Keep actions that either:
+    # 1. Don't have a biome field, or
+    # 2. Have a biome that matches the city's biome
+    return [action for action in actions if 
+            "biome" not in action or action["biome"] == city_biome]
+
+
 def main(locode: str):
     try:
         cities = read_city_inventory(locode)
@@ -302,18 +333,17 @@ def main(locode: str):
         print("Error reading data:", e)
         sys.exit(1)
 
-    # Quantitative prioritization
-    top_adaptation, top_mitigation = quantitative_prioritizer(cities, actions)
+    # 1) Filter the actions by the city's biome
+    filtered_actions = filter_actions_by_biome(actions, cities)
+    
+    # 2) Quantitative prioritization
+    top_adaptation, top_mitigation = quantitative_prioritizer(cities, filtered_actions)
 
-    # Qualitative prioritization
-    top_qualitative_adaptation = qualitative_prioritizer(
-        top_adaptation, actions, cities
-    )
-    top_qualitative_mitigation = qualitative_prioritizer(
-        top_mitigation, actions, cities
-    )
+    # 3) Qualitative prioritization
+    top_qualitative_adaptation = qualitative_prioritizer(top_adaptation, filtered_actions, cities)
+    top_qualitative_mitigation = qualitative_prioritizer(top_mitigation, filtered_actions, cities)
 
-    # Save outputs to separate files
+    # 4) Save outputs to separate files
     write_output(top_qualitative_adaptation, "output_" + locode + "_adaptation.json")
     write_output(top_qualitative_mitigation, "output_" + locode + "_mitigation.json")
 

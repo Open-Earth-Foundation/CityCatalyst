@@ -1724,64 +1724,6 @@
         "PowersAndMandates":null
     },
     {
-        "ActionID":"c40_0041",
-        "ActionName":"Waste Collection",
-        "ActionType":[
-            "mitigation"
-        ],
-        "Hazard":null,
-        "Sector":[
-            "waste"
-        ],
-        "Subsector":[
-            "all"
-        ],
-        "PrimaryPurpose":[
-            "ghg_reduction"
-        ],
-        "Description":"\"Waste Collection\" initiatives focus on achieving universal waste collection, ensuring that all residents have access to proper waste disposal services. This contributes to a cleaner and healthier urban environment while promoting sustainable waste management practices.",
-        "CoBenefits":{
-            "air_quality":1,
-            "water_quality":1,
-            "habitat":0,
-            "cost_of_living":0,
-            "housing":0,
-            "mobility":0,
-            "stakeholder_engagement":0
-        },
-        "EquityAndInclusionConsiderations":"The \"Waste Collection\" initiatives promote equity and inclusion by ensuring that all residents, particularly those in vulnerable or underserved communities, have access to proper waste disposal services. This universal access helps to address disparities in waste management, which often disproportionately affect low-income neighborhoods. By providing equitable waste collection services, the initiative contributes to a cleaner and healthier urban environment for all, reducing health risks associated with improper waste disposal. Additionally, the focus on sustainable waste management practices encourages community engagement and awareness, fostering a sense of ownership and responsibility among residents, including those from marginalized backgrounds. Overall, the initiative actively works to uplift underserved communities by prioritizing their needs in waste management.",
-        "GHGReductionPotential":{
-            "stationary_energy":null,
-            "transportation":null,
-            "waste":"80-100",
-            "ippu":null,
-            "afolu":null
-        },
-        "AdaptationEffectiveness":null,
-        "CostInvestmentNeeded":"high",
-        "TimelineForImplementation":"5-10 years",
-        "Dependencies":[
-            "Availability of waste collection infrastructure and vehicles",
-            "Training and capacity building for waste management personnel",
-            "Public awareness and education programs on waste disposal",
-            "Collaboration with local governments and communities",
-            "Sufficient funding and resources for waste management initiatives",
-            "Regulatory frameworks supporting waste collection services"
-        ],
-        "KeyPerformanceIndicators":[
-            "Percentage of residents with access to waste collection services",
-            "Volume of waste collected per capita",
-            "Percentage reduction in illegal dumping incidents",
-            "Recycling rate of collected waste",
-            "Customer satisfaction rate with waste collection services",
-            "Frequency of waste collection services",
-            "Cost-effectiveness of waste collection operations",
-            "Reduction in landfill waste",
-            "Number of public awareness campaigns conducted"
-        ],
-        "PowersAndMandates":null
-    },
-    {
         "ActionID":"c40_0042",
         "ActionName":"Biodiversity Expansion",
         "ActionType":[
@@ -2075,54 +2017,6 @@
             "Feedback from shelter users on safety and accessibility",
             "Maintenance and operational status of shelters",
             "Partnerships with local organizations for shelter management"
-        ],
-        "PowersAndMandates":null
-    },
-    {
-        "ActionID":"c40_0050",
-        "ActionName":"White Roofs",
-        "ActionType":[
-            "adaptation"
-        ],
-        "Hazard":[
-            "heatwaves"
-        ],
-        "Sector":null,
-        "Subsector":null,
-        "PrimaryPurpose":[
-            "climate_resilience"
-        ],
-        "Description":"\"White Roofs\" utilize eco-engineering by adopting reflective roofing materials to reduce heat absorption. This adaptation strategy helps mitigate the urban heat island effect, contributing to more sustainable and climate-resilient buildings.",
-        "CoBenefits":{
-            "air_quality":0,
-            "water_quality":0,
-            "habitat":0,
-            "cost_of_living":0,
-            "housing":0,
-            "mobility":0,
-            "stakeholder_engagement":0
-        },
-        "EquityAndInclusionConsiderations":"The \"White Roofs\" climate action promotes equity and inclusion by specifically targeting urban areas, which often house vulnerable and underserved communities that are disproportionately affected by the urban heat island effect. By implementing reflective roofing materials, this action directly benefits low-income neighborhoods that may lack access to adequate cooling resources, thereby reducing energy costs and improving indoor comfort. Additionally, the initiative can create job opportunities in the installation and maintenance of these roofs, providing economic benefits to local residents. Overall, the action addresses environmental justice by focusing on areas that face the greatest climate-related challenges, ensuring that marginalized communities receive the support needed to enhance their resilience to heat and climate change.",
-        "GHGReductionPotential":null,
-        "AdaptationEffectiveness":"high",
-        "CostInvestmentNeeded":"low",
-        "TimelineForImplementation":"<5 years",
-        "Dependencies":[
-            "Availability of reflective roofing materials",
-            "Awareness and acceptance of eco-engineering practices among builders and homeowners",
-            "Regulatory support or incentives for implementing white roofs",
-            "Access to funding or financial resources for installation",
-            "Collaboration between urban planners and environmental organizations"
-        ],
-        "KeyPerformanceIndicators":[
-            "Reduction in surface temperature",
-            "Percentage of buildings with white roofs",
-            "Energy savings in cooling costs",
-            "Reduction in urban heat island effect",
-            "Increase in albedo values",
-            "Improvement in air quality",
-            "Community engagement and participation rate",
-            "Reduction in greenhouse gas emissions"
         ],
         "PowersAndMandates":null
     },
@@ -4832,55 +4726,6 @@
             "lower emissions per ton of material produced",
             "increased adoption rate of advanced technologies",
             "improved process efficiency metrics"
-        ],
-        "PowersAndMandates":null
-    },
-    {
-        "ActionID":"ipcc_0036",
-        "ActionName":"On-site Combined Heat and Power (CHP)",
-        "ActionType":[
-            "mitigation"
-        ],
-        "Hazard":null,
-        "Sector":[
-            "ippu"
-        ],
-        "Subsector":[
-            "industrial_processes"
-        ],
-        "PrimaryPurpose":[
-            "ghg_reduction"
-        ],
-        "Description":"Implementation of on-site combined heat and power (CHP) systems in the pulp and paper industry to improve energy efficiency and reduce GHG emissions. CHP systems efficiently generate electricity and heat simultaneously.",
-        "CoBenefits":{
-            "air_quality":0,
-            "water_quality":0,
-            "habitat":0,
-            "cost_of_living":0,
-            "housing":0,
-            "mobility":0,
-            "stakeholder_engagement":0
-        },
-        "EquityAndInclusionConsiderations":"Promotes equitable access to advanced energy technologies and reduced energy costs, benefiting smaller and less-resourced manufacturers.",
-        "GHGReductionPotential":{
-            "stationary_energy":null,
-            "transportation":null,
-            "waste":null,
-            "ippu":"20-39",
-            "afolu":null
-        },
-        "AdaptationEffectiveness":null,
-        "CostInvestmentNeeded":"high",
-        "TimelineForImplementation":"5-10 years",
-        "Dependencies":[
-            "Access to biomass resources",
-            "skilled workforce for CHP system operation",
-            "supportive policies to incentivize adoption of CHP systems"
-        ],
-        "KeyPerformanceIndicators":[
-            "Reduction in energy intensity per ton of paper",
-            "decrease in direct and indirect CO2 emissions",
-            "increase in on-site electricity production through CHP systems"
         ],
         "PowersAndMandates":null
     },
@@ -13524,56 +13369,6 @@
         ]
     },
     {
-        "ActionID":"icare_0106",
-        "ActionName":"Strengthen Recycling Cooperatives and Support Autonomous Waste Pickers",
-        "ActionType":[
-            "mitigation"
-        ],
-        "Hazard":null,
-        "Sector":[
-            "waste"
-        ],
-        "Subsector":[
-            "disposal_of_solid_waste_generated_in_the_city"
-        ],
-        "PrimaryPurpose":[
-            "ghg_reduction"
-        ],
-        "Description":"Promote social inclusion and efficiency in recycling.",
-        "CoBenefits":{
-            "air_quality":0,
-            "water_quality":1,
-            "habitat":1,
-            "cost_of_living":1,
-            "housing":0,
-            "mobility":0,
-            "stakeholder_engagement":2
-        },
-        "EquityAndInclusionConsiderations":null,
-        "GHGReductionPotential":{
-            "stationary_energy":null,
-            "transportation":null,
-            "waste":"20-39",
-            "ippu":null,
-            "afolu":null
-        },
-        "AdaptationEffectiveness":null,
-        "CostInvestmentNeeded":"medium",
-        "TimelineForImplementation":"5-10 years",
-        "Dependencies":[
-            "Develop policies that support social inclusion and equitable access to recycling programs.",
-            "Implement training and awareness campaigns to educate communities on efficient recycling practices.",
-            "Provide incentives and resources for businesses and individuals to participate in and improve recycling efforts."
-        ],
-        "KeyPerformanceIndicators":[
-            "Percentage of recyclable waste collected and processed (%).",
-            "Increase in the average income of supported self-employed waste pickers (R$\/month)."
-        ],
-        "PowersAndMandates":[
-            "local"
-        ]
-    },
-    {
         "ActionID":"icare_0107",
         "ActionName":"Expand Wastewater Treatment Services",
         "ActionType":[
@@ -13619,57 +13414,6 @@
             "Percentage increase in population served by wastewater treatment systems.",
             "Average monthly volume of waste water treated (m\u00b3).",
             "Reduction of water pollution in monitored water bodies."
-        ],
-        "PowersAndMandates":[
-            "local"
-        ]
-    },
-    {
-        "ActionID":"icare_0108",
-        "ActionName":"Implement Selective Waste Collection Programs",
-        "ActionType":[
-            "mitigation"
-        ],
-        "Hazard":null,
-        "Sector":[
-            "waste"
-        ],
-        "Subsector":[
-            "disposal_of_solid_waste_generated_in_the_city"
-        ],
-        "PrimaryPurpose":[
-            "ghg_reduction"
-        ],
-        "Description":"Promote waste separation into organic, recyclable, and residual fractions.",
-        "CoBenefits":{
-            "air_quality":0,
-            "water_quality":1,
-            "habitat":1,
-            "cost_of_living":1,
-            "housing":0,
-            "mobility":0,
-            "stakeholder_engagement":1
-        },
-        "EquityAndInclusionConsiderations":null,
-        "GHGReductionPotential":{
-            "stationary_energy":null,
-            "transportation":null,
-            "waste":"20-39",
-            "ippu":null,
-            "afolu":null
-        },
-        "AdaptationEffectiveness":null,
-        "CostInvestmentNeeded":"medium",
-        "TimelineForImplementation":"<5 years",
-        "Dependencies":[
-            "Implement policies and infrastructure for waste separation at the source.",
-            "Provide education and training to communities on how to properly separate waste.",
-            "Offer incentives and resources to encourage participation in waste separation programs."
-        ],
-        "KeyPerformanceIndicators":[
-            "Percentage of households and businesses covered by the selective collection program.",
-            "Monthly amount of recyclable waste collected (tons\/month).",
-            "Estimated reduction in CO\u2082 equivalent emissions from the proper disposal of recyclables."
         ],
         "PowersAndMandates":[
             "local"

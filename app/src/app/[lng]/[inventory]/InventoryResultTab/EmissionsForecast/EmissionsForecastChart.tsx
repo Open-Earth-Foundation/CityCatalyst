@@ -1,5 +1,5 @@
 import { EmissionsForecastData } from "@/util/types";
-import { TFunction } from "i18next/typescript/t";
+import type { TFunction } from "i18next";
 import {
   getReferenceNumberByName,
   getSectorByName,
@@ -8,20 +8,7 @@ import {
   getSubSectorByReferenceNumber,
   ISector,
 } from "@/util/constants";
-import {
-  Badge,
-  Box,
-  Card,
-  Heading,
-  Table,
-  Tbody,
-  Td,
-  Text,
-  Tfoot,
-  Th,
-  Thead,
-  Tr,
-} from "@chakra-ui/react";
+import { Badge, Box, Card, Heading, Table, Text } from "@chakra-ui/react";
 import { convertKgToTonnes, toKebabCase } from "@/util/helpers";
 import { ResponsiveLine } from "@nivo/line";
 import CustomLegend from "@/app/[lng]/[inventory]/InventoryResultTab/EmissionsForecast/CustomLegend";
@@ -111,9 +98,9 @@ export const EmissionsForecastChart = ({
             }, 0);
 
             return (
-              <Card py={2} px={2}>
+              <Card.Root py={2} px={2}>
                 <Box padding="4" borderBottom="1px solid">
-                  <Heading size="title.sm">{t("year")}</Heading>
+                  <Heading size="sm">{t("year")}</Heading>
                   <Text
                     fontFamily="heading"
                     fontSize="label.lg"
@@ -125,16 +112,18 @@ export const EmissionsForecastChart = ({
                   </Text>
                 </Box>
                 <Box padding="4">
-                  <Table variant="simple" size={"sm"}>
-                    <Thead>
-                      <Tr>
-                        <Th>{t("sector")}</Th>
-                        <Th>{t("rate")}</Th>
-                        <Th>%</Th>
-                        <Th>{t("total-emissions")}</Th>
-                      </Tr>
-                    </Thead>
-                    <Tbody>
+                  <Table.Root unstyled size={"sm"}>
+                    <Table.Header>
+                      <Table.Row>
+                        <Table.ColumnHeader>{t("sector")}</Table.ColumnHeader>
+                        <Table.ColumnHeader>{t("rate")}</Table.ColumnHeader>
+                        <Table.ColumnHeader>%</Table.ColumnHeader>
+                        <Table.ColumnHeader>
+                          {t("total-emissions")}
+                        </Table.ColumnHeader>
+                      </Table.Row>
+                    </Table.Header>
+                    <Table.Body>
                       {data.map(({ data, id }) => {
                         const yearData = data.find(
                           ({ x }) => x === point.data.x,
@@ -155,37 +144,36 @@ export const EmissionsForecastChart = ({
                           yearGrowthRates?.[point.serieId as string];
 
                         return (
-                          <Tr key={id}>
-                            <Td>
+                          <Table.Row key={id}>
+                            <Table.Cell>
                               <Badge
                                 boxSize="10px"
                                 bg={getColorForSeries(id)}
                                 marginRight="8px"
                               />
                               {t(id)}
-                            </Td>
-                            <Td>{growthRate}</Td>
-                            <Td>{percentage}%</Td>
-                            <Td>
+                            </Table.Cell>
+                            <Table.Cell>{growthRate}</Table.Cell>
+                            <Table.Cell>{percentage}%</Table.Cell>
+                            <Table.Cell>
                               {convertKgToTonnes(
                                 parseInt(yearData?.y as unknown as string),
                               )}
-                            </Td>
-                          </Tr>
+                            </Table.Cell>
+                          </Table.Row>
                         );
                       })}
-                    </Tbody>
-                    <Tfoot>
-                      <Tr>
-                        <Th>{t("total")}</Th>
-                        <Th></Th>
-                        <Th></Th>
-                        <Th>{convertKgToTonnes(sumOfYs)}</Th>
-                      </Tr>
-                    </Tfoot>
-                  </Table>
+                      <Table.Row>
+                        <Table.ColumnHeader>{t("total")}</Table.ColumnHeader>
+                        <Table.ColumnHeader></Table.ColumnHeader>
+                        <Table.ColumnHeader>
+                          {convertKgToTonnes(sumOfYs)}
+                        </Table.ColumnHeader>
+                      </Table.Row>
+                    </Table.Body>
+                  </Table.Root>
                 </Box>
-              </Card>
+              </Card.Root>
             );
           }}
           enableGridX={false}

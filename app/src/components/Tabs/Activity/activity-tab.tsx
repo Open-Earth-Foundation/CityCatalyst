@@ -1,11 +1,4 @@
-import {
-  Box,
-  IconButton,
-  Spinner,
-  Switch,
-  TabPanel,
-  Text,
-} from "@chakra-ui/react";
+import { Box, Icon, IconButton, Spinner, Tabs, Text } from "@chakra-ui/react";
 import React, { FC, useMemo, useState } from "react";
 import HeadingText from "../../heading-text";
 import { TFunction } from "i18next";
@@ -29,6 +22,7 @@ import SelectMethodology from "@/components/Tabs/Activity/select-methodology";
 import ExternalDataSection from "@/components/Tabs/Activity/external-data-section";
 import { api } from "@/services/api";
 import { MdModeEditOutline } from "react-icons/md";
+import { Switch } from "@/components/ui/switch";
 
 interface ActivityTabProps {
   t: TFunction;
@@ -222,9 +216,16 @@ const ActivityTab: FC<ActivityTabProps> = ({
     }
   }, [inventoryValue]);
 
+  console.log(referenceNumber);
+
   return (
     <>
-      <TabPanel key={referenceNumber} p="0" pt="48px">
+      <Tabs.Content
+        key={referenceNumber}
+        value={referenceNumber}
+        p="0"
+        pt="48px"
+      >
         <Box
           display="flex"
           alignItems="center"
@@ -246,7 +247,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
             )}
             <Switch
               disabled={!!externalInventoryValue}
-              isChecked={
+              checked={
                 showUnavailableForm || !!inventoryValue?.unavailableExplanation
               }
               onChange={handleSwitch}
@@ -318,11 +319,12 @@ const ActivityTab: FC<ActivityTabProps> = ({
                 </Text>
                 <IconButton
                   onClick={showUnavailableFormFunc}
-                  icon={<MdModeEditOutline size="24px" />}
                   aria-label="edit"
                   variant="ghost"
                   color="content.tertiary"
-                />
+                >
+                  <Icon as={MdModeEditOutline} size="lg" />
+                </IconButton>
               </Box>
             </Box>
           </Box>
@@ -382,7 +384,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
             )}
           </>
         )}
-      </TabPanel>
+      </Tabs.Content>
     </>
   );
 };

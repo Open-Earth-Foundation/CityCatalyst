@@ -1,11 +1,16 @@
 import { Box, Link, Text } from "@chakra-ui/layout";
 import Image from "next/image";
-import { Button, CircularProgress, Heading } from "@chakra-ui/react";
-import { ArrowForwardIcon } from "@chakra-ui/icons";
+import { Heading } from "@chakra-ui/react";
 import React, { useEffect } from "react";
 import { useTranslation } from "@/i18n/client";
 import { useRouter } from "next/navigation";
 import { api } from "@/services/api";
+import { MdArrowForward } from "react-icons/md";
+import { Button } from "@/components/ui/button";
+import {
+  ProgressCircleRing,
+  ProgressCircleRoot,
+} from "@/components/ui/progress-circle";
 
 const MissingInventory = ({ lng }: { lng: string }) => {
   const { data: userInfo, isLoading: isUserInfoLoading } =
@@ -78,10 +83,9 @@ const MissingInventory = ({ lng }: { lng: string }) => {
             h="48px"
             px="24px"
             fontSize="body.md"
-            isLoading={isUserInfoLoading}
-            rightIcon={<ArrowForwardIcon />}
+            loading={isUserInfoLoading}
           >
-            {t("goto-dashboard")}
+            <MdArrowForward /> {t("goto-dashboard")}
           </Button>
         </Box>
       </Box>
@@ -93,7 +97,9 @@ const MissingInventory = ({ lng }: { lng: string }) => {
       justifyContent="center"
       className="flex w-full relative h-[100vh] z-10"
     >
-      <CircularProgress isIndeterminate />
+      <ProgressCircleRoot value={null} size="sm">
+        <ProgressCircleRing cap="round" />
+      </ProgressCircleRoot>
     </Box>
   );
 };

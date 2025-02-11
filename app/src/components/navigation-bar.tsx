@@ -2,31 +2,26 @@
 
 import { useTranslation } from "@/i18n/client";
 import { languages } from "@/i18n/settings";
-import { TriangleDownIcon, TriangleUpIcon } from "@chakra-ui/icons";
-import {
-  Avatar,
-  Box,
-  Button,
-  Divider,
-  Heading,
-  Icon,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuList,
-  Text,
-} from "@chakra-ui/react";
+import { Box, Heading, Icon, Link, Separator, Text } from "@chakra-ui/react";
 import i18next from "i18next";
 import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
-import NextLink from "next/link";
+
 import { CircleFlag } from "react-circle-flags";
 import { FiSettings } from "react-icons/fi";
 import { MdLogout } from "react-icons/md";
 import Cookies from "js-cookie";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { api } from "@/services/api";
-import { useEffect } from "react";
+import {
+  MenuContent,
+  MenuItem,
+  MenuRoot,
+  MenuTrigger,
+} from "@/components/ui/menu";
+import { Avatar, AvatarGroup } from "@/components/ui/avatar";
+
+import { Button } from "@/components/ui/button";
 
 function countryFromLanguage(language: string) {
   return language == "en" ? "us" : language;
@@ -80,12 +75,13 @@ export function NavigationBar({
   const { data: userInfo, isLoading: isUserInfoLoading } =
     api.useGetUserInfoQuery();
   const currentInventoryId = userInfo?.defaultInventoryId;
+  const router = useRouter();
   return (
     <Box
       className="flex flex-row px-8 py-4 align-middle space-x-12 items-center relative z-50"
       bgColor="content.alternative"
     >
-      <NextLink href={`/${inventory ? inventory : currentInventoryId}`}>
+      <Link href={`/${inventory ? inventory : currentInventoryId}`}>
         <Image
           src="/assets/logo.svg"
           width={36}
@@ -93,101 +89,105 @@ export function NavigationBar({
           alt="CityCatalyst logo"
           className="mr-[56px]"
         />
-      </NextLink>
-      <NextLink href={`/${inventory ? inventory : currentInventoryId}`}>
-        <Heading size="18" color="base.light">
+      </Link>
+      <Link href={`/${inventory ? inventory : currentInventoryId}`}>
+        <Heading size="lg" color="base.light">
           {t("title")}
         </Heading>
-      </NextLink>
+      </Link>
       <div className="w-full" />
       {showNav && !isPublic && (
         <>
           {" "}
-          <NextLink href={`/${inventory ? inventory : currentInventoryId}`}>
-            <Heading color="base.light" size="sm" className="opacity-75" ml={6}>
+          <Link href={`/${inventory ? inventory : currentInventoryId}`}>
+            <Heading color="base.light" size="md" className="opacity-75" ml={6}>
               {t("dashboard")}
             </Heading>
-          </NextLink>
-          <NextLink
+          </Link>
+          <Link
             target="_blank"
             rel="help noopener noreferrer"
             href="https://citycatalyst.openearth.org/learning-hub"
           >
             <Heading
               color="base.light"
-              size="sm"
+              size="md"
               className="opacity-75 !text-nowrap"
               ml={6}
             >
               {t("learning-hub")}
             </Heading>
-          </NextLink>
-          <Divider orientation="vertical" h={6} />
+          </Link>
+          <Separator
+            orientation="vertical"
+            height="6"
+            backgroundColor="black"
+          />
         </>
       )}
-      <Menu>
-        {({ isOpen }) => (
-          <>
-            <MenuButton
-              as={Button}
-              variant="ghost"
-              color="base.light"
-              size="md"
-              minW="120px"
-              leftIcon={
-                <CircleFlag
-                  countryCode={
-                    countryFromLanguage(i18next.language) === "pt"
-                      ? "br"
-                      : countryFromLanguage(i18next.language)
-                  }
-                  width="24"
-                />
-              }
-              rightIcon={isOpen ? <TriangleUpIcon /> : <TriangleDownIcon />}
-              className="whitespace-nowrap normal-case"
-              _hover={{
-                bg: "#FFF2",
-              }}
-              _active={{
-                bg: "#FFF3",
-              }}
-            >
-              {i18next.language.toUpperCase()}
-            </MenuButton>
-            <MenuList minW="140px" zIndex={2000}>
+      <Box display="flex">
+        <Box display="flex">
+          <MenuRoot>
+            <MenuTrigger asChild>
+              <Button
+                color="base.light"
+                minW="120px"
+                variant="ghost"
+                textTransform="none"
+                whiteSpace="nowrap"
+              >
+                <Box display="flex" alignItems="center" gap="3">
+                  <CircleFlag
+                    countryCode={
+                      countryFromLanguage(i18next.language) === "pt"
+                        ? "br"
+                        : countryFromLanguage(i18next.language)
+                    }
+                    width="24"
+                  />
+
+                  <Text fontSize="title.md" fontWeight="bold">
+                    {i18next.language.toUpperCase()}
+                  </Text>
+                </Box>
+              </Button>
+            </MenuTrigger>
+            <MenuContent minW="140px" zIndex={2000}>
               {languages.map((language) => (
                 <MenuItem
+                  value={language}
                   onClick={() => onChangeLanguage(language)}
                   key={language}
                 >
-                  <CircleFlag
-                    countryCode={
-                      countryFromLanguage(language) === "pt"
-                        ? "br"
-                        : countryFromLanguage(language)
-                    }
-                    width="24"
-                    className="mr-4"
-                  />
-                  {language.toUpperCase()}
+                  <Box display="flex" alignItems="center">
+                    <CircleFlag
+                      countryCode={
+                        countryFromLanguage(language) === "pt"
+                          ? "br"
+                          : countryFromLanguage(language)
+                      }
+                      width="24"
+                      className="mr-4"
+                    />
+                    <Text fontSize="title.md">{language.toUpperCase()}</Text>
+                  </Box>
                 </MenuItem>
               ))}
-            </MenuList>
-          </>
-        )}
-      </Menu>
-      {!isPublic && status === "authenticated" && session.user && (
-        <Menu>
-          {({ isOpen }) => (
-            <>
-              <MenuButton
-                as={Button}
-                variant="ghost"
+            </MenuContent>
+          </MenuRoot>
+        </Box>
+        <Box>
+          {!isPublic && status === "authenticated" && session.user && (
+            <MenuRoot>
+              <MenuTrigger
+                asChild
                 color="base.light"
-                size="md"
                 minW="220px"
-                leftIcon={
+                // Todo: add icon switch functionality
+                // rightIcon={isOpen ? <TriangleUpIcon /> : <TriangleDownIcon />}
+                className="whitespace-nowrap normal-case"
+              >
+                <Button variant="ghost">
                   <Avatar
                     size="sm"
                     bg="interactive.connected"
@@ -195,26 +195,20 @@ export function NavigationBar({
                     name={session.user?.name!}
                     src={session.user?.image!}
                   />
-                }
-                rightIcon={isOpen ? <TriangleUpIcon /> : <TriangleDownIcon />}
-                className="whitespace-nowrap normal-case"
-                _hover={{
-                  bg: "#FFF2",
-                }}
-                _active={{
-                  bg: "#FFF3",
-                }}
-              >
-                <Text
-                  w="120px"
-                  overflow="hidden"
-                  textOverflow="ellipsis"
-                  whiteSpace="nowrap"
-                >
-                  {session.user?.name}
-                </Text>
-              </MenuButton>
-              <MenuList
+                  <Text
+                    w="120px"
+                    overflow="hidden"
+                    textOverflow="ellipsis"
+                    whiteSpace="nowrap"
+                    fontSize="title.md"
+                    fontWeight="bold"
+                  >
+                    {session.user?.name}
+                  </Text>
+                </Button>
+              </MenuTrigger>
+
+              <MenuContent
                 paddingTop="8px"
                 paddingBottom="8px"
                 shadow="2dp"
@@ -225,38 +219,50 @@ export function NavigationBar({
                 height="128px"
                 zIndex={2000}
               >
-                <NextLink
-                  href={`/${inventory ? inventory : currentInventoryId}/settings`}
+                <MenuItem
+                  value="settings"
+                  paddingTop="12px"
+                  paddingBottom="12px"
+                  px="16px"
+                  onClick={() =>
+                    router.push(
+                      `/${inventory ? inventory : currentInventoryId}/settings`,
+                    )
+                  }
                 >
-                  <MenuItem paddingTop="12px" paddingBottom="12px" px="16px">
+                  <Box display="flex" alignItems="center">
+                    {" "}
                     <Icon
                       as={FiSettings}
                       boxSize={6}
                       color="content.tertiary"
                       mr={4}
                     />
-                    {t("settings")}
-                  </MenuItem>
-                </NextLink>
+                    <Text fontSize="title.md">{t("settings")}</Text>
+                  </Box>
+                </MenuItem>
                 <MenuItem
                   paddingTop="12px"
                   paddingBottom="12px"
+                  value="log-out"
                   px="16px"
                   onClick={() => logOut()}
                 >
-                  <Icon
-                    as={MdLogout}
-                    boxSize={6}
-                    color="sentiment.negativeDefault"
-                    mr={4}
-                  />
-                  {t("log-out")}
+                  <Box display="flex" alignItems="center">
+                    <Icon
+                      as={MdLogout}
+                      boxSize={6}
+                      color="sentiment.negativeDefault"
+                      mr={4}
+                    />
+                    <Text fontSize="title.md">{t("log-out")}</Text>
+                  </Box>
                 </MenuItem>
-              </MenuList>
-            </>
+              </MenuContent>
+            </MenuRoot>
           )}
-        </Menu>
-      )}
+        </Box>
+      </Box>
     </Box>
   );
 }

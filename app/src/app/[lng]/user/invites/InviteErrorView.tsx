@@ -1,9 +1,9 @@
 "use client";
 import { DisplaySmall } from "@/components/Texts/Display";
 import { useTranslation } from "@/i18n/client";
-import { ArrowForwardIcon } from "@chakra-ui/icons";
+import { MdArrowBack } from "react-icons/md";
 import { Box, Link } from "@chakra-ui/layout";
-import { Button, Center } from "@chakra-ui/react";
+import { Button, Center, Icon } from "@chakra-ui/react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React from "react";
@@ -46,14 +46,14 @@ const InviteErrorView = ({ lng }: InviteErrorViewProps) => {
               textAlign="center"
               fontWeight="regular"
               lineHeight="32"
-              textColor={"content.tertiary"}
+              color="content.tertiary"
             >
               {t("invite-not-valid-description")}{" "}
               <Link
                 className="underline text-nowrap"
                 fontWeight="semibold"
                 color="content.link"
-                href="mailto:greta@openearth.com"
+                href={`mailto:${process.env.NEXT_PUBLIC_SUPPORT_EMAILS}`}
               >
                 {t("contact-us")}
               </Link>{" "}
@@ -66,8 +66,8 @@ const InviteErrorView = ({ lng }: InviteErrorViewProps) => {
             px="24px"
             my="24px"
             fontSize="body.md"
-            rightIcon={<ArrowForwardIcon />}
           >
+            <Icon as={MdArrowBack} />
             {t("go-back")}
           </Button>
           ;

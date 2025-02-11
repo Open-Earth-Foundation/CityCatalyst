@@ -11,8 +11,8 @@ import {
 } from "@/services/api";
 
 import { OCCityAttributes } from "@/util/types";
-import { ArrowBackIcon, ArrowForwardIcon } from "@chakra-ui/icons";
-import { Box, Button, Text, useSteps, useToast } from "@chakra-ui/react";
+import { MdArrowForward, MdArrowBack } from "react-icons/md";
+import { Box, Icon, Text, useSteps } from "@chakra-ui/react";
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -23,6 +23,8 @@ import SetInventoryDetailsStep from "@/components/steps/add-inventory-details-st
 import SetPopulationDataStep from "@/components/steps/add-population-data-step";
 import ConfirmStep from "@/components/steps/confirm-city-data-step";
 import ProgressSteps from "@/components/steps/progress-steps";
+import { Toaster, toaster } from "@/components/ui/toaster";
+import { Button } from "@/components/ui/button";
 
 export type Inputs = {
   city: string;
@@ -58,7 +60,6 @@ export default function OnboardingSetup({
 }) {
   const { t } = useTranslation(lng, "onboarding");
   const router = useRouter();
-  const toast = useToast();
   const {
     handleSubmit,
     register,
@@ -76,8 +77,12 @@ export default function OnboardingSetup({
     { title: t("confirm-step") },
   ];
 
-  const { activeStep, goToNext, goToPrevious } = useSteps({
-    index: 0,
+  const {
+    value: activeStep,
+    goToNextStep,
+    goToPrevStep,
+  } = useSteps({
+    defaultStep: 0,
     count: steps.length,
   });
 
@@ -97,12 +102,11 @@ export default function OnboardingSetup({
   const [isConfirming, setConfirming] = useState(false);
 
   const makeErrorToast = (title: string, description?: string) => {
-    toast({
+    toaster.create({
       title,
       description,
-      position: "top",
-      status: "error",
-      isClosable: true,
+      placement: "top",
+      type: "error",
       duration: 10000,
     });
   };
@@ -209,7 +213,7 @@ export default function OnboardingSetup({
       locode: ocCityData?.actor_id!,
       name: ocCityData?.name!,
     });
-    goToNext();
+    goToNextStep();
   };
 
   return (
@@ -217,12 +221,12 @@ export default function OnboardingSetup({
       <div className="pt-16 pb-16 w-[1090px] max-w-full mx-auto">
         <Button
           variant="ghost"
-          leftIcon={<ArrowBackIcon boxSize={6} />}
           onClick={() => {
-            activeStep === 0 ? router.back() : goToPrevious();
+            activeStep === 0 ? router.back() : goToPrevStep();
           }}
           pl={0}
         >
+          <Icon as={MdArrowBack} boxSize={6} />
           {t("go-back")}
         </Button>
         <div className="flex flex-col md:flex-row md:space-x-12 md:space-y-0 space-y-12 align-top mt-8 md:mt-16 mb-48">
@@ -293,7 +297,6 @@ export default function OnboardingSetup({
                   onClick={handleSubmit(onSubmit)}
                   h="64px"
                   type="submit"
-                  rightIcon={<ArrowForwardIcon h="24px" w="24px" />}
                 >
                   <Text
                     fontFamily="button.md"
@@ -302,6 +305,7 @@ export default function OnboardingSetup({
                   >
                     {t("continue")}
                   </Text>
+                  <MdArrowForward height="24px" width="24px" />
                 </Button>
               )}
               {activeStep == 1 && (
@@ -312,7 +316,6 @@ export default function OnboardingSetup({
                   onClick={handleSubmit(onSubmit)}
                   px="24px"
                   h="64px"
-                  rightIcon={<ArrowForwardIcon h="24px" w="24px" />}
                 >
                   <Text
                     fontFamily="button.md"
@@ -321,6 +324,7 @@ export default function OnboardingSetup({
                   >
                     {t("continue")}
                   </Text>
+                  <MdArrowForward height="24px" width="24px" />
                 </Button>
               )}
               {activeStep == 2 && (
@@ -331,7 +335,6 @@ export default function OnboardingSetup({
                   onClick={handleSubmit(onSubmit)}
                   px="24px"
                   h="64px"
-                  rightIcon={<ArrowForwardIcon h="24px" w="24px" />}
                 >
                   <Text
                     fontFamily="button.md"
@@ -340,23 +343,25 @@ export default function OnboardingSetup({
                   >
                     {t("continue")}
                   </Text>
+                  <MdArrowForward height="24px" width="24px" />
                 </Button>
               )}
               {activeStep == 3 && (
                 <Button
                   h={16}
                   w="auto"
-                  isLoading={isConfirming}
+                  loading={isConfirming}
                   px="24px"
                   onClick={onConfirm}
-                  rightIcon={<ArrowForwardIcon h="24px" w="24px" />}
                 >
                   {t("continue")}
+                  <MdArrowForward height="24px" width="24px" />
                 </Button>
               )}
             </Box>
           </Box>
         </div>
+        <Toaster />
       </div>
     </>
   );

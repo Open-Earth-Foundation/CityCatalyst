@@ -13,7 +13,7 @@ export default function WastePage({ t }: { t: TFunction }) {
     <VStack marginLeft={"5vw"}>
       <Heading my={"6"}>{t("which-waste")}</Heading>
       <Text mb={"6"}>{t("which-waste-description")}</Text>
-      <SimpleGrid my={"6"} columns={3} spacing={4}>
+      <SimpleGrid my={"6"} columns={3} gap={4}>
         {WASTE_ITEMS.map(({ id, icon }) => (
           <PreferenceCard
             key={id}

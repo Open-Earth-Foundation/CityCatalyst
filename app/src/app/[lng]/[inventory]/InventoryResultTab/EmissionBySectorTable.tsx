@@ -1,26 +1,16 @@
 import { SectorEmission } from "@/util/types";
-import {
-  Accordion,
-  AccordionButton,
-  AccordionIcon,
-  AccordionItem,
-  AccordionPanel,
-  Box,
-  Icon,
-  Table,
-  TableContainer,
-  Tbody,
-  Td,
-  Text,
-  Th,
-  Thead,
-  Tr,
-} from "@chakra-ui/react";
+import { Accordion, Box, Icon, Table, Text } from "@chakra-ui/react";
 import { convertKgToTonnes } from "@/util/helpers";
 import React from "react";
 import { useTranslation } from "@/i18n/client";
 import { MdArrowDropDown, MdArrowDropUp } from "react-icons/md";
 import { toKebabCaseModified } from "@/app/[lng]/[inventory]/InventoryResultTab/index";
+import {
+  AccordionItem,
+  AccordionItemContent,
+  AccordionItemTrigger,
+  AccordionRoot,
+} from "@/components/ui/accordion";
 
 interface EmissionBySectorTableProps {
   data: {
@@ -49,82 +39,89 @@ const EmissionBySectorTableSection: React.FC<EmissionBySectorTableProps> = ({
     inventoryId: string;
   }) => {
     return (
-      <TableContainer px={0}>
-        <Table
-          variant="simple"
-          borderLeft="0px"
-          borderBottom="0px"
-          borderRight="0px"
-          borderWidth="1px"
-          borderRadius="20px"
-        >
-          <Thead backgroundColor="background.backgroundLight">
-            <Tr>
-              <Th>{tData("sector")}</Th>
-              <Th>{tData("emissions")}</Th>
-              <Th>{tData("percentage-emissions")}</Th>
-              <Th>{tData("based-on-previous-year")}</Th>
-            </Tr>
-          </Thead>
-          <Tbody>
-            {item.bySector?.map((sectorBreakDown, i) => {
-              const hasNonZero =
-                sectorBreakDown.percentageChange !== 0 &&
-                sectorBreakDown.percentageChange != null;
+      <Table.Root
+        unstyled
+        borderLeft="0px"
+        borderBottom="0px"
+        borderRight="0px"
+        borderWidth="1px"
+        borderRadius="20px"
+      >
+        <Table.Header backgroundColor="background.backgroundLight">
+          <Table.Row>
+            <Table.ColumnHeader>{tData("sector")}</Table.ColumnHeader>
+            <Table.ColumnHeader>{tData("emissions")}</Table.ColumnHeader>
+            <Table.ColumnHeader>
+              {tData("percentage-emissions")}
+            </Table.ColumnHeader>
+            <Table.ColumnHeader>
+              {tData("based-on-previous-year")}
+            </Table.ColumnHeader>
+          </Table.Row>
+        </Table.Header>
+        <Table.Body>
+          {item.bySector?.map((sectorBreakDown, i) => {
+            const hasNonZero =
+              sectorBreakDown.percentageChange !== 0 &&
+              sectorBreakDown.percentageChange != null;
 
-              let previousYearDifference = "N/A";
-              if (sectorBreakDown.percentageChange != null) {
-                previousYearDifference =
-                  sectorBreakDown.percentageChange.toFixed(0) + "%";
-              }
+            let previousYearDifference = "N/A";
+            if (sectorBreakDown.percentageChange != null) {
+              previousYearDifference =
+                sectorBreakDown.percentageChange.toFixed(0) + "%";
+            }
 
-              return (
-                <Tr key={i} isTruncated>
-                  <Td>
-                    {tData(toKebabCaseModified(sectorBreakDown.sectorName))}
-                  </Td>
-                  <Td>{convertKgToTonnes(sectorBreakDown.co2eq)}</Td>
-                  <Td>{sectorBreakDown.totalInventoryPercentage}%</Td>
-                  <Td
-                    className="flex items-center"
-                    color={
-                      (sectorBreakDown.percentageChange ?? 0) < 0
-                        ? "sentiment.positiveDefault"
-                        : hasNonZero
-                          ? "sentiment.negativeDefault"
-                          : "black"
-                    }
-                  >
-                    {sectorBreakDown.percentageChange != null &&
-                      hasNonZero &&
-                      (sectorBreakDown.percentageChange < 0 ? (
-                        <Icon as={MdArrowDropDown} />
-                      ) : (
-                        <Icon as={MdArrowDropUp} />
-                      ))}
-                    <Text>{previousYearDifference}</Text>
-                  </Td>
-                </Tr>
-              );
-            })}
-          </Tbody>
-        </Table>
-      </TableContainer>
+            return (
+              <Table.Row key={i} truncate>
+                <Table.Cell>
+                  {tData(toKebabCaseModified(sectorBreakDown.sectorName))}
+                </Table.Cell>
+                <Table.Cell>
+                  {convertKgToTonnes(sectorBreakDown.co2eq)}
+                </Table.Cell>
+                <Table.Cell>
+                  {sectorBreakDown.totalInventoryPercentage}%
+                </Table.Cell>
+                <Table.Cell
+                  className="flex items-center"
+                  color={
+                    (sectorBreakDown.percentageChange ?? 0) < 0
+                      ? "sentiment.positiveDefault"
+                      : hasNonZero
+                        ? "sentiment.negativeDefault"
+                        : "black"
+                  }
+                >
+                  {sectorBreakDown.percentageChange != null &&
+                    hasNonZero &&
+                    (sectorBreakDown.percentageChange < 0 ? (
+                      <Icon as={MdArrowDropDown} />
+                    ) : (
+                      <Icon as={MdArrowDropUp} />
+                    ))}
+                  <Text>{previousYearDifference}</Text>
+                </Table.Cell>
+              </Table.Row>
+            );
+          })}
+        </Table.Body>
+      </Table.Root>
     );
   };
 
   return (
     <Box>
       {data.map((item) => (
-        <Accordion key={item.inventoryId} defaultIndex={[0]} allowMultiple>
+        <AccordionRoot key={item.inventoryId} tabIndex={0} multiple>
           <AccordionItem
+            value=""
             backgroundColor="white"
             borderWidth="1px"
             padding="0px"
             borderColor="border.overlay"
           >
             <h2>
-              <AccordionButton padding="0px">
+              <AccordionItemTrigger padding="0px">
                 <Box
                   display="flex"
                   justifyContent="space-between"
@@ -162,18 +159,13 @@ const EmissionBySectorTableSection: React.FC<EmissionBySectorTableProps> = ({
                     </Box>
                   </Box>
                 </Box>
-                <AccordionIcon
-                  color="interactive.control"
-                  marginRight="24px"
-                  boxSize="40px"
-                />
-              </AccordionButton>
+              </AccordionItemTrigger>
             </h2>
-            <AccordionPanel padding="0px" pb={4}>
+            <AccordionItemContent padding="0px" pb={4}>
               {renderTable(item)}
-            </AccordionPanel>
+            </AccordionItemContent>
           </AccordionItem>
-        </Accordion>
+        </AccordionRoot>
       ))}
     </Box>
   );

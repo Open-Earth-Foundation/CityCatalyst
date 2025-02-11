@@ -1,7 +1,6 @@
 import React from "react";
 import { MdPersonAdd } from "react-icons/md";
-import { Button, HStack, IconButton, useDisclosure } from "@chakra-ui/react";
-import type { TFunction } from "i18next";
+import { Button, useDisclosure } from "@chakra-ui/react";
 import AddCollaboratorsModal from "@/components/HomePage/AddCollaboratorModal/AddCollaboratorsModal";
 import { ButtonMedium } from "@/components/Texts/Button";
 import { useTranslation } from "@/i18n/client";
@@ -9,7 +8,7 @@ import { useTranslation } from "@/i18n/client";
 export function AddCollaboratorButtonSmall({ lng }: { lng: string }) {
   const { t } = useTranslation(lng, "settings");
   const {
-    isOpen: isModalOpen,
+    open: isModalOpen,
     onOpen: onModalOpen,
     onClose: onModalClose,
   } = useDisclosure();
@@ -29,7 +28,7 @@ export function AddCollaboratorButtonSmall({ lng }: { lng: string }) {
         padding={4}
       >
         <MdPersonAdd className="text-white" size={24} />
-        <ButtonMedium textColor={"background.default"} marginLeft={2}>
+        <ButtonMedium color="background.default" marginLeft={2}>
           {t("invite")}
         </ButtonMedium>
       </Button>

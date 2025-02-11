@@ -1,18 +1,7 @@
 "use client";
 import SubSectorCard from "@/components/Cards/SubSectorCard";
 import { InventoryResponse, SectorProgress } from "@/util/types";
-import {
-  Accordion,
-  AccordionButton,
-  AccordionIcon,
-  AccordionItem,
-  AccordionPanel,
-  Box,
-  Button,
-  Heading,
-  Icon,
-  Text,
-} from "@chakra-ui/react";
+import { Accordion, Box, Button, Heading, Icon, Text } from "@chakra-ui/react";
 import NextLink from "next/link";
 
 import { useState } from "react";
@@ -23,8 +12,16 @@ import {
 } from "@/util/helpers";
 import { TFunction } from "i18next";
 import { Trans } from "react-i18next/TransWithoutContext";
-import { AddIcon } from "@chakra-ui/icons";
+// import { AddIcon } from "@chakra-ui/icons";
 import { InventoryType, InventoryTypeEnum, ISector } from "@/util/constants";
+import { BsPlus } from "react-icons/bs";
+
+import {
+  AccordionItem,
+  AccordionItemContent,
+  AccordionItemTrigger,
+  AccordionRoot,
+} from "@/components/ui/accordion";
 
 export function SectorCard({
   sectorProgress,
@@ -116,7 +113,7 @@ export function SectorCard({
                   color="brand.secondary"
                   ml={2}
                 >
-                  <AddIcon />
+                  <BsPlus />
                   <Text fontFamily="heading" fontSize="button.md">
                     <Trans t={t}>add-data-to-sector</Trans>
                   </Text>
@@ -142,9 +139,9 @@ export function SectorCard({
         </Box>
       </Box>
       <Box className="w-full pt-[24px] items-center justify-center">
-        <Accordion border="none" allowToggle w="full">
-          <AccordionItem border="none">
-            <AccordionPanel padding={0}>
+        <AccordionRoot border="none" w="full" collapsible>
+          <AccordionItem value="" border="none">
+            <AccordionItemContent padding={0}>
               <Text className="font-[600]">
                 <Trans t={t}>sub-sectors-required</Trans>
               </Text>
@@ -166,8 +163,8 @@ export function SectorCard({
                   </NextLink>
                 ))}
               </Box>
-            </AccordionPanel>
-            <AccordionButton
+            </AccordionItemContent>
+            <AccordionItemTrigger
               onClick={toggleAccordion}
               className="flex justify-center"
               background="none"
@@ -184,10 +181,9 @@ export function SectorCard({
               >
                 {isAccordionOpen ? t("view-less") : t("view-more")}
               </Text>
-              <AccordionIcon h={7} w={7} />
-            </AccordionButton>
+            </AccordionItemTrigger>
           </AccordionItem>
-        </Accordion>
+        </AccordionRoot>
       </Box>
     </Box>
   );

@@ -40,7 +40,7 @@ function Page({
   };
   return (
     <Box className="h-[100vh] w-full flex justify-center items-center">
-      <Card minH="300px" minW="300px">
+      <Card.Root minH="300px" minW="300px">
         <CardHeader
           fontFamily="heading"
           fontWeight="bold"
@@ -51,7 +51,7 @@ function Page({
         </CardHeader>
         <CardBody className="flex items-center justify-center">
           <VStack>
-            <Text color={wasSuccessful ? "green" : "red"} align="center">
+            <Text color={wasSuccessful ? "green" : "red"} textAlign="center">
               {statusMessage}
             </Text>
           </VStack>
@@ -59,14 +59,14 @@ function Page({
         <CardFooter px="0">
           <Button
             onClick={handleConnectToCDP}
-            isLoading={isLoading}
+            loading={isLoading}
             w="full"
             size="lg"
           >
             {t("submit-data-to-cdp")}
           </Button>
         </CardFooter>
-      </Card>
+      </Card.Root>
     </Box>
   );
 }

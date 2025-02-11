@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslation } from "@/i18n/client";
-import { Link } from "@chakra-ui/next-js";
+import { Link } from "@chakra-ui/react";
 import { Button, Heading, Text } from "@chakra-ui/react";
 import NextLink from "next/link";
 import { useSearchParams } from "next/navigation";

@@ -1,15 +1,20 @@
 // only render map on the client
 import dynamic from "next/dynamic";
-import { Box, Heading, Icon, Spinner, Text, Tooltip } from "@chakra-ui/react";
+import { Box, Heading, Icon, Spinner, Text } from "@chakra-ui/react";
 import { CircleFlag } from "react-circle-flags";
 import { InventorySelect } from "@/components/InventorySelect";
-import { MdArrowOutward, MdGroup, MdOutlineAspectRatio } from "react-icons/md";
-import { InfoOutlineIcon } from "@chakra-ui/icons";
+import {
+  MdArrowOutward,
+  MdGroup,
+  MdInfoOutline,
+  MdOutlineAspectRatio,
+} from "react-icons/md";
 import { Trans } from "react-i18next/TransWithoutContext";
 import { getShortenNumberUnit, shortenNumber } from "@/util/helpers";
 import type { TFunction } from "i18next";
 import type { PopulationAttributes } from "@/models/Population";
 import type { InventoryResponse } from "@/util/types";
+import { Tooltip } from "@/components/ui/tooltip";
 
 const CityMap = dynamic(() => import("@/components/CityMap"), { ssr: false });
 
@@ -97,13 +102,13 @@ export function Hero({
                         </>
                       </Text>
                       <Tooltip
-                        hasArrow
-                        label={t("total-emissions-tooltip", {
+                        content={t("total-emissions-tooltip", {
                           year: inventory?.year,
                         })}
-                        placement="bottom-start"
+                        positioning={{ placement: "bottom-start" }}
                       >
-                        <InfoOutlineIcon
+                        <Icon
+                          as={MdInfoOutline}
                           w={3}
                           h={3}
                           color="background.overlay"
@@ -155,8 +160,7 @@ export function Hero({
                         </Text>
                       )}
                       <Tooltip
-                        hasArrow
-                        label={
+                        content={
                           <>
                             <Trans i18nKey="source-open-climate" t={t}>
                               {`Source: OpenClimate`}
@@ -167,9 +171,12 @@ export function Hero({
                             })}
                           </>
                         }
-                        placement="bottom-start"
+                        positioning={{
+                          placement: "bottom-start",
+                        }}
                       >
-                        <InfoOutlineIcon
+                        <Icon
+                          as={MdInfoOutline}
                           w={3}
                           h={3}
                           color="background.overlay"
@@ -220,17 +227,19 @@ export function Hero({
                         </Text>
                       )}
                       <Tooltip
-                        hasArrow
-                        label={
+                        content={
                           <>
                             <Trans i18nKey="source-open-climate" t={t}>
                               {`Source: OpenClimate`}
                             </Trans>
                           </>
                         }
-                        placement="bottom-start"
+                        positioning={{
+                          placement: "bottom-start",
+                        }}
                       >
-                        <InfoOutlineIcon
+                        <Icon
+                          as={MdInfoOutline}
                           w={3}
                           h={3}
                           color="background.overlay"

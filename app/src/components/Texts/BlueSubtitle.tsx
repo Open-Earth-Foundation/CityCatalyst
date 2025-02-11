@@ -1,7 +1,5 @@
 import { TFunction } from "i18next";
-import { undefined } from "zod";
 import { Text } from "@chakra-ui/react";
-import { Trans } from "react-i18next/TransWithoutContext";
 
 export const BlueSubtitle = ({
   t,
@@ -16,7 +14,7 @@ export const BlueSubtitle = ({
     fontWeight="semibold"
     lineHeight="24"
     my={4}
-    textColor={"blue"}
+    color="blue"
   >
     {t(text).toUpperCase()}
   </Text>

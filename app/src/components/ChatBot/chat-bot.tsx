@@ -5,14 +5,12 @@ import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
 import {
   Box,
   Button,
-  Divider,
   HStack,
   Icon,
   IconButton,
   Spacer,
   Text,
   Textarea,
-  useToast,
 } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import { BsStars } from "react-icons/bs";
@@ -30,6 +28,7 @@ import { api, useCreateThreadIdMutation } from "@/services/api";
 import { AssistantStream } from "openai/lib/AssistantStream";
 // @ts-expect-error - no types for this yet
 import { AssistantStreamEvent } from "openai/resources/beta/assistants/assistants";
+import { Toaster, toaster } from "@/components/ui/toaster";
 
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -79,7 +78,6 @@ export default function ChatBot({
   const [getAllDataSources] = api.useLazyGetAllDataSourcesQuery();
   const [getUserInventories] = api.useLazyGetUserInventoriesQuery();
   const [getInventory] = api.useLazyGetInventoryQuery();
-  const toast = useToast();
 
   // AbortController reference
   const abortControllerRef = useRef<AbortController | null>(null);
@@ -87,12 +85,11 @@ export default function ChatBot({
 
   const handleError = (error: any, errorMessage: string) => {
     // Display error to user
-    toast({
+    toaster.create({
       title: "An error occurred",
       description: errorMessage,
-      status: "error",
+      type: "error",
       duration: 5000,
-      isClosable: true,
     });
   };
 
@@ -500,40 +497,46 @@ export default function ChatBot({
         {messages.map((m, i) => {
           const isUser = m.role === "user";
           return (
-            <HStack key={i} align="top">
-              <Box
-                w={9}
-                h={9}
-                p={2}
-                borderRadius="full"
-                bg="content.alternative"
-                visibility={isUser ? "hidden" : "visible"}
-              >
-                <Icon as={BsStars} boxSize={5} color="base.light" />
-              </Box>
-              <Spacer />
-              <Box
-                className={`rounded-2xl border-r-t px-6 py-4 ${isUser ? userStyles : botStyles}`}
-                bg={isUser ? "content.link" : "base.light"}
-              >
-                <Text
-                  className="whitespace-pre-wrap"
-                  color={isUser ? "base.light" : "content.tertiary"}
-                  letterSpacing="0.5px"
-                  lineHeight="24px"
-                  fontSize="16px"
+            <HStack key={i} align="top" asChild>
+              <Box>
+                <Box
+                  w={9}
+                  h={9}
+                  p={2}
+                  borderRadius="full"
+                  bg="content.alternative"
+                  visibility={isUser ? "hidden" : "visible"}
                 >
-                  <ReactMarkdown rehypePlugins={[remarkGfm]}>
-                    {m.text}
-                  </ReactMarkdown>
-                </Text>
-                {!isUser &&
-                  i === messages.length - 1 &&
-                  messages.length > 1 && (
-                    <>
-                      <Divider borderColor="border.overlay" my={3} />
-                      <HStack>
-                        {/* <IconButton
+                  <Icon as={BsStars} boxSize={5} color="base.light" />
+                </Box>
+                <Spacer />
+                <Box
+                  className={`rounded-2xl border-r-t px-6 py-4 ${isUser ? userStyles : botStyles}`}
+                  bg={isUser ? "content.link" : "base.light"}
+                >
+                  <>
+                    <Text
+                      className="whitespace-pre-wrap"
+                      color={isUser ? "base.light" : "content.tertiary"}
+                      letterSpacing="0.5px"
+                      lineHeight="24px"
+                      fontSize="16px"
+                    >
+                      <ReactMarkdown rehypePlugins={[remarkGfm]}>
+                        {m.text}
+                      </ReactMarkdown>
+                    </Text>
+                    {!isUser &&
+                      i === messages.length - 1 &&
+                      messages.length > 1 && (
+                        <>
+                          <Box
+                            divideX="2px"
+                            borderColor="border.overlay"
+                            my={3}
+                          />
+                          <HStack asChild>
+                            {/* <IconButton
                           variant="ghost"
                           icon={<Icon as={MdOutlineThumbUp} boxSize={5} />}
                           aria-label="Vote good"
@@ -545,24 +548,23 @@ export default function ChatBot({
                           aria-label="Vote bad"
                           color="content.tertiary"
                         /> */}
-                        <IconButton
-                          onClick={() => copyToClipboard(m.text)}
-                          variant="ghost"
-                          icon={
-                            <Icon
-                              as={isCopied ? MdCheckCircle : MdContentCopy}
-                              boxSize={5}
-                            />
-                          }
-                          aria-label="Copy text"
-                          color={
-                            isCopied
-                              ? "sentiment.positiveDefault"
-                              : "content.tertiary"
-                          }
-                        />
-                        <Spacer />
-                        {/* <Button
+                            <IconButton
+                              onClick={() => copyToClipboard(m.text)}
+                              variant="ghost"
+                              aria-label="Copy text"
+                              color={
+                                isCopied
+                                  ? "sentiment.positiveDefault"
+                                  : "content.tertiary"
+                              }
+                            >
+                              <Icon
+                                as={isCopied ? MdCheckCircle : MdContentCopy}
+                                boxSize={5}
+                              />
+                            </IconButton>
+                            {/* <Spacer /> */}
+                            {/* <Button
                           onClick={() => reload()}
                           leftIcon={<Icon as={MdRefresh} boxSize={5} />}
                           variant="outline"
@@ -576,9 +578,11 @@ export default function ChatBot({
                         >
                           {t("regenerate")}
                         </Button> */}
-                      </HStack>
-                    </>
-                  )}
+                          </HStack>
+                        </>
+                      )}
+                  </>
+                </Box>
               </Box>
             </HStack>
           );
@@ -586,7 +590,7 @@ export default function ChatBot({
         <div ref={messagesEndRef} />
       </div>
 
-      <Divider mt={2} mb={6} borderColor="border.neutral" />
+      <Box divideX="2px" mt={2} mb={6} borderColor="border.neutral" />
 
       <div className="overflow-x-auto space-x-2 whitespace-nowrap pb-3">
         {suggestions.map((suggestion, i) => (
@@ -607,7 +611,7 @@ export default function ChatBot({
             fontWeight="400"
             whiteSpace="nowrap"
             display="inline-block"
-            isDisabled={inputDisabled}
+            disabled={inputDisabled}
           >
             {suggestion.preview}
           </Button>
@@ -634,19 +638,21 @@ export default function ChatBot({
           {inputDisabled ? (
             <IconButton
               onClick={stopGeneration}
-              icon={<MdStop />}
               colorScheme="red"
               aria-label={t("stop-generation")}
-            />
+            >
+              <MdStop />
+            </IconButton>
           ) : (
             <IconButton
               type="submit"
               variant="ghost"
-              icon={<MdOutlineSend size={24} />}
               color="content.tertiary"
               aria-label={t("send-message")}
-              isDisabled={inputDisabled}
-            />
+              disabled={inputDisabled}
+            >
+              <MdOutlineSend size={24} />
+            </IconButton>
           )}
         </HStack>
       </form>

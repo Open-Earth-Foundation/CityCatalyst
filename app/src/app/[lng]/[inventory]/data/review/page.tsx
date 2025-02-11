@@ -7,7 +7,7 @@ import Wrapper from "@/components/wrapper";
 import { useTranslation } from "@/i18n/client";
 import { RootState } from "@/lib/store";
 
-import { ArrowBackIcon } from "@chakra-ui/icons";
+import { MdArrowBack } from "react-icons/md";
 import { Box, Button, Card, Heading, Icon, Text } from "@chakra-ui/react";
 import { useParams, useRouter } from "next/navigation";
 
@@ -122,7 +122,7 @@ export default function ReviewPage({
           gap="48px"
         >
           <Button variant="ghost" w="152px" gap="8px" onClick={onBack}>
-            <ArrowBackIcon color="content.link" w="24px" h="24px" />
+            <Icon as={MdArrowBack} color="content.link" w="24px" h="24px" />
             <Heading
               color="content.link"
               fontSize="body.md"
@@ -150,7 +150,7 @@ export default function ReviewPage({
           </Box>
         </Box>
         <Box display="flex" flexDirection="column" gap="24px">
-          <Card shadow="none" gap="24px">
+          <Card.Root shadow="none" gap="24px">
             <Box display="flex" justifyContent="space-between">
               <Box display="flex" gap="16px">
                 <Box>
@@ -293,8 +293,8 @@ export default function ReviewPage({
                 </Box>
               </Box>
             )}
-          </Card>
-          <Card shadow="none" gap="24px" p="24px">
+          </Card.Root>
+          <Card.Root shadow="none" gap="24px" p="24px">
             <Box display="flex" justifyContent="space-between">
               <Box display="flex" gap="16px">
                 <Box>
@@ -417,8 +417,8 @@ export default function ReviewPage({
                 </Box>
               )}
             </Box>
-          </Card>
-          <Card shadow="none" gap="24px" p="24px">
+          </Card.Root>
+          <Card.Root shadow="none" gap="24px" p="24px">
             <Box display="flex" justifyContent="space-between">
               <Box display="flex" gap="16px">
                 <Box>
@@ -564,7 +564,7 @@ export default function ReviewPage({
                 </Box>
               )}
             </Box>
-          </Card>
+          </Card.Root>
           <div className="bg-white w-full h-[128px] flex items-center fixed bottom-0 left-0 border-t-4 border-brand  drop-shadow-2xl hover:drop-shadow-4xl transition-all">
             <Box className="w-[1090px] max-w-full mx-auto flex flex-row flex-wrap gap-y-2">
               <Box className="grow w-full md:w-0">
@@ -577,7 +577,6 @@ export default function ReviewPage({
                 h={16}
                 variant="ghost"
                 onClick={onDiscard}
-                leftIcon={<Icon as={FiTrash2} boxSize={6} />}
                 size="sm"
                 px={8}
                 mr={4}
@@ -585,11 +584,12 @@ export default function ReviewPage({
                 borderColor="sentiment.negativeDefault"
                 color="sentiment.negativeDefault"
               >
+                <Icon as={FiTrash2} boxSize={6} />
                 {t("discard-all-changes")}
               </Button>
               <Button
                 h={16}
-                isLoading={isConfirming}
+                loading={isConfirming}
                 px={8}
                 onClick={onConfirm}
                 size="sm"

@@ -65,7 +65,7 @@ export function TabHeader({
               borderColor="border.neutral"
               py={1}
               px={2}
-              borderRadius="full"
+              borderRadius="16px"
               bg="base.light"
             >
               <Flex>
@@ -81,7 +81,7 @@ export function TabHeader({
               borderColor="border.neutral"
               py={1}
               px={2}
-              borderRadius="full"
+              borderRadius="16px"
               bg="base.light"
             >
               <Flex>

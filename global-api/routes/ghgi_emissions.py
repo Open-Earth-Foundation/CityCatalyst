@@ -151,9 +151,9 @@ def db_query(datasource_name, spatial_granularity, actor_id, gpc_reference_numbe
 						'emissions_value', e.emissions_value,
 						'emissionfactor_value', ef.emissionfactor_value,
 						'activity_value', e.activity_value::numeric,
-						'gwp', COALESCE(gwp.ar5,0),
-						'emissions_value_100yr', COALESCE(e.emissions_value * gwp.ar5,0),
-						'emissions_value_20yr', COALESCE(e.emissions_value * gwp2.ar5,0)
+						'gwp', COALESCE(gwp.{gwp},0),
+						'emissions_value_100yr', COALESCE(e.emissions_value * gwp.{gwp},0),
+						'emissions_value_20yr', COALESCE(e.emissions_value * gwp2.{gwp},0)
 						)) AS gas_info
                      FROM 		modelled.emissions e
                      LEFT JOIN 	modelled.emissions_factor ef

@@ -1,24 +1,15 @@
 """
 This script benchmarks the quantitative (linear) and qualitative ranking system against the expert labeled data.
+
+Run this script as a module to make sure sub imports are properly resolved.
+>> python -m prioritizer.utils.benchmarks
 """
 
 import pandas as pd
 from pathlib import Path
 import json
-import sys
-
-# Define the folder to read all the expert labeled comparison data
-folder_path = Path(__file__).parent.parent.parent / "data" / "expert_labeled_actions"
-
-# Get the absolute path to the project root (two levels up from this file)
-project_root = str(Path(__file__).resolve().parent.parent.parent)
-
-# Add the project root to the Python path
-if project_root not in sys.path:
-    sys.path.insert(0, project_root)
-
 from prioritizer.prioritizer import quantitative_score, qualitative_score
-from reading_writing_data import read_city_inventory, read_actions
+from prioritizer.utils.reading_writing_data import read_city_inventory, read_actions
 
 
 def load_data_from_folder(folder_path):
@@ -184,6 +175,11 @@ def get_accuracy_expert_vs_quali(df: pd.DataFrame, actions: list) -> float:
 
 
 if __name__ == "__main__":
+
+    # Define the folder to read all the expert labeled comparison data
+    folder_path = (
+        Path(__file__).parent.parent.parent / "data" / "expert_labeled_actions"
+    )
 
     # Load all comparison data from the folder
     df_all_comparisons = load_data_from_folder(folder_path)

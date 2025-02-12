@@ -2,8 +2,7 @@
 This script optimizes the weights for the quantitative ranking system using the expert labeled data.
 
 Run this script as a module to make sure sub imports are properly resolved.
-
->> python -m prioritizer.utils.weights_optimization
+>> python -m prioritizer.utils.weights_optimization (no .py extension)
 """
 
 import pandas as pd

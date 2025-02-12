@@ -4,40 +4,20 @@
         "cityName": "Corumb\u00e1",
         "region": "BR-MS",
         "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0053",
-        "actionName": "Afforestation, Reforestation and Forest Ecosystem Restoration",
-        "actionPriority": 1,
-        "explanation": "This action has the highest quantitative score (0.983) and directly targets the land use sector, which is the city\u2019s most emission\u2010intensive area. It offers significant GHG reductions by restoring and expanding forest cover, making it a top priority."
-    },
-    {
-        "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
         "actionId": "ipcc_0052",
         "actionName": "Reduce Deforestation and Degradation",
+        "actionPriority": 1,
+        "explanation": "This action directly addresses land use emissions\u2014the city\u2019s largest emission sector. Reducing deforestation and degradation has a substantial impact on greenhouse gas reductions and aligns with sector relevance and emissions reduction priorities."
+    },
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0053",
+        "actionName": "Afforestation, Reforestation and Forest Ecosystem Restoration",
         "actionPriority": 2,
-        "explanation": "With a strong score (0.818) and a direct focus on preserving existing forests, this action addresses the largest emission sector by preventing loss of carbon sinks, essential for a city where land use emissions dominate."
-    },
-    {
-        "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0061",
-        "actionName": "Soil Carbon Management in Croplands and Grasslands",
-        "actionPriority": 3,
-        "explanation": "Scoring 0.753, this action is highly relevant given Corumb\u00e1\u2019s grassland-savanna biome and significant agricultural land use. It enhances soil carbon sequestration, aligning with local environmental conditions and offering effective emissions reduction."
-    },
-    {
-        "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0077",
-        "actionName": "Urban Tree Planting and Management",
-        "actionPriority": 4,
-        "explanation": "With a score of 0.8, this action provides tangible urban benefits. It is cost-effective and fast to implement while contributing to local emissions reduction and urban cooling, making it a priority in the city context."
+        "explanation": "With the highest quantitative score and strong emissions reduction potential, this action boosts carbon sinks and restores degraded landscapes. Although Corumb\u00e1 is in a grassland-savanna biome, targeted restoration in appropriate areas can yield significant benefits."
     },
     {
         "locode": "BRCMG",
@@ -46,18 +26,28 @@
         "regionName": "Mato Grosso do Sul",
         "actionId": "ipcc_0054",
         "actionName": "Improved Forest Management",
-        "actionPriority": 5,
-        "explanation": "This action (score 0.7) focuses on sustainable management of forests, ensuring that existing carbon stocks are maintained. It supports long\u2010term emissions reduction in the land use sector, which is key for Corumb\u00e1."
+        "actionPriority": 3,
+        "explanation": "Improving forest management secures existing forest carbon stocks and limits additional emissions. Despite a lower quantitative score, its direct impact on land use emissions and sector relevance make it a high priority."
     },
     {
         "locode": "BRCMG",
         "cityName": "Corumb\u00e1",
         "region": "BR-MS",
         "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0071",
-        "actionName": "Improved and enhanced use of wood products",
-        "actionPriority": 6,
-        "explanation": "Scoring 0.635, this action leverages wood products to extend the carbon storage benefits of forests. It complements improved forest management and provides added value in reducing deforestation impacts."
+        "actionId": "ipcc_0061",
+        "actionName": "Soil Carbon Management in Croplands and Grasslands",
+        "actionPriority": 4,
+        "explanation": "This action effectively targets croplands and grasslands\u2014key components of the city\u2019s land use sector. Its high quantitative score and potential to sequester carbon in soils are vital for reducing overall emissions."
+    },
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0063",
+        "actionName": "Agroforesry",
+        "actionPriority": 5,
+        "explanation": "Agroforestry integrates trees into agricultural systems, providing multiple benefits including carbon sequestration and increased biodiversity. Although its quantitative score is lower, its relevance to sustainable land use in agricultural zones raises its priority."
     },
     {
         "locode": "BRCMG",
@@ -66,98 +56,8 @@
         "regionName": "Mato Grosso do Sul",
         "actionId": "ipcc_0068",
         "actionName": "Bioenergy and BECCS(Bioenergy with Carbon Capture and Storage)",
-        "actionPriority": 7,
-        "explanation": "Although it has the same quantitative score as some other actions (0.733), this option shows promise for significant emissions reduction through advanced technologies. It does carry higher dependencies and costs but remains a strong contender in the mitigation portfolio."
-    },
-    {
-        "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0069",
-        "actionName": "Shift to sustainable healthy diets",
-        "actionPriority": 8,
-        "explanation": "With a score of 0.635, this action targets consumption patterns that contribute indirectly to emissions in agriculture. Its broad societal impact through behavioral change makes it an important, although secondary, mitigation measure."
-    },
-    {
-        "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0062",
-        "actionName": "Biochar",
-        "actionPriority": 9,
-        "explanation": "Scoring 0.618, biochar is effective in sequestering carbon in agricultural soils. It is particularly suited for the local cropland context, enhancing soil fertility while contributing to emissions reduction."
-    },
-    {
-        "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0067",
-        "actionName": "Manure management",
-        "actionPriority": 10,
-        "explanation": "Also scoring 0.618, manure management reduces methane emissions from livestock. This action supports agricultural emissions reductions even though its overall impact is slightly less than actions targeting forest and soil carbon."
-    },
-    {
-        "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0064",
-        "actionName": "Enteric fermentation",
-        "actionPriority": 11,
-        "explanation": "With a score of 0.553, this action specifically addresses methane emissions from livestock digestion. Though its quantitative score is lower, it is essential for targeting emissions in the agricultural sector."
-    },
-    {
-        "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0066",
-        "actionName": "Crop nutrient management",
-        "actionPriority": 12,
-        "explanation": "Also at 0.553, this action improves nutrient use efficiency and reduces nitrous oxide emissions. Its relevance to the agricultural practices in the region grants it a mid\u2010tier priority."
-    },
-    {
-        "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0045",
-        "actionName": "Behavioral Changes for Reduced Waste (e.g., Food)",
-        "actionPriority": 13,
-        "explanation": "Scoring 0.54, this low-cost action encourages reduced waste and food consumption changes. Its lower direct impact on the largest emission sectors places it in the middle of the ranking."
-    },
-    {
-        "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0002",
-        "actionName": "Active Transport Modes",
-        "actionPriority": 14,
-        "explanation": "With a score of 0.531, promoting active transport can help reduce transportation emissions. However, since the transportation sector is less dominant compared to land use emissions in Corumb\u00e1, it is ranked accordingly."
-    },
-    {
-        "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "c40_0038",
-        "actionName": "Sanitary Landfills",
-        "actionPriority": 15,
-        "explanation": "At 0.528, this action targets emissions from waste management. While important, the waste sector contributes less compared to land use, making it a moderate priority."
-    },
-    {
-        "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0059",
-        "actionName": "Reduce Conversion of Coastal Wetlands",
-        "actionPriority": 16,
-        "explanation": "Despite a high quantitative score (0.9), this action is less applicable to Corumb\u00e1 due to its grassland-savanna biome and landlocked nature. Environmental compatibility issues lower its overall priority."
+        "actionPriority": 6,
+        "explanation": "Despite higher implementation complexity and costs, this technology-based action offers strong emissions reduction potential. It addresses large-scale emissions from energy production when appropriately deployed, making it a notable option."
     },
     {
         "locode": "BRCMG",
@@ -166,8 +66,48 @@
         "regionName": "Mato Grosso do Sul",
         "actionId": "ipcc_0058",
         "actionName": "Peatland Restoration",
-        "actionPriority": 17,
-        "explanation": "Although it scores 0.733, peatland restoration is less relevant in a grassland-savanna environment like Corumb\u00e1. This limits its applicability despite its theoretical emissions reduction potential."
+        "actionPriority": 7,
+        "explanation": "Peatland restoration has a high quantitative score and significant emissions reduction potential. However, given Corumb\u00e1\u2019s grassland-savanna biome where peatlands are less common, this action is prioritized after similar high-impact interventions."
+    },
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0077",
+        "actionName": "Urban Tree Planting and Management",
+        "actionPriority": 8,
+        "explanation": "Urban tree planting improves city livability and reduces urban heat island effects while offering moderate carbon benefits. It is highly compatible with urban settings and provides co-benefits that support risk reduction and environmental enhancement."
+    },
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0059",
+        "actionName": "Reduce Conversion of Coastal Wetlands",
+        "actionPriority": 9,
+        "explanation": "Although this action has a decent quantitative score, its terminology suggests coastal settings, which are less applicable to an inland context like Corumb\u00e1. Therefore, it is ranked after actions more intrinsically linked to the city\u2019s emissions profile."
+    },
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0069",
+        "actionName": "Shift to sustainable healthy diets",
+        "actionPriority": 10,
+        "explanation": "Dietary shifts can indirectly reduce emissions from agricultural supply chains. This action is valuable for its socio-demographic relevance and potential co-benefits, even though its direct emissions reduction effect is more moderate."
+    },
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0071",
+        "actionName": "Improved and enhanced use of wood products",
+        "actionPriority": 11,
+        "explanation": "Optimizing wood product use can lead to longer-term carbon storage and reduced deforestation pressures. Its integration into a circular economy model offers additional socio-economic benefits, supporting its mid-level priority placement."
     },
     {
         "locode": "BRCMG",
@@ -176,27 +116,87 @@
         "regionName": "Mato Grosso do Sul",
         "actionId": "ipcc_0057",
         "actionName": "Reduce Degradation and Conversion of Peatlands Activities, Co-benefits, Risks and Implementation Barriers",
+        "actionPriority": 12,
+        "explanation": "Similar to peatland restoration, this action focuses on minimizing degradation. However, due to its narrower scope and potential implementation complexities in a savanna context, it is ranked lower than broader land use strategies."
+    },
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "c40_0042",
+        "actionName": "Biodiversity Expansion",
+        "actionPriority": 13,
+        "explanation": "Expanding biodiversity offers long-term environmental benefits, including ecosystem resilience and potential co-benefits for carbon sequestration. Its moderate quantitative score and broader environmental compatibility justify its placement."
+    },
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0060",
+        "actionName": "Coastal Wetland Restoration",
+        "actionPriority": 14,
+        "explanation": "While wetland restoration can have notable emissions and ecological benefits, the term 'coastal' makes it less directly applicable to Corumb\u00e1\u2019s inland setting. It remains important but is lower in current priority."
+    },
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0062",
+        "actionName": "Biochar",
+        "actionPriority": 15,
+        "explanation": "Biochar offers a cost-effective method to sequester carbon in soils and improve soil health. Its lower quantitative score and implementation scale place it in the mid-to-lower priority tier."
+    },
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0067",
+        "actionName": "Manure management",
+        "actionPriority": 16,
+        "explanation": "Manure management targets agricultural emissions and has manageable implementation requirements. Given its moderate quantitative score and sector relevance, it is prioritized in the lower mid-range."
+    },
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0064",
+        "actionName": "Enteric fermentation",
+        "actionPriority": 17,
+        "explanation": "This action addresses methane emissions from livestock. Though important for reducing emissions in animal agriculture, its overall impact and quantitative score are lower compared to land use interventions."
+    },
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0066",
+        "actionName": "Crop nutrient management",
         "actionPriority": 18,
-        "explanation": "With a score of 0.5, this action similarly targets peatlands. Given the environmental mismatch with Corumb\u00e1\u2019s predominant biome, it is placed lower in priority."
+        "explanation": "Optimizing crop nutrient management can reduce nitrous oxide emissions and improve agricultural efficiency. However, its relatively lower quantitative score and indirect impact on major emission sources justify its later ranking."
     },
     {
         "locode": "BRCMG",
         "cityName": "Corumb\u00e1",
         "region": "BR-MS",
         "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0033",
-        "actionName": "Electrification of Processes",
+        "actionId": "ipcc_0055",
+        "actionName": "Fire Management (Forest and Grassland / Savanna Fires)",
         "actionPriority": 19,
-        "explanation": "Scoring 0.468, electrification of industrial processes addresses emissions in the industrial sector, which is comparatively smaller in Corumb\u00e1. This reduced sector relevance warrants a lower rank."
+        "explanation": "Fire management plays a vital role in risk reduction and preserving carbon stocks, especially in savanna landscapes prone to wildfires. Its lower quantitative score, however, places it near the bottom of overall emission reduction priorities."
     },
     {
         "locode": "BRCMG",
         "cityName": "Corumb\u00e1",
         "region": "BR-MS",
         "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0026",
-        "actionName": "Heat Recovery and Reuse through Heat Exchanger Networks or Heat Pumps",
+        "actionId": "ipcc_0065",
+        "actionName": "Improve rice management",
         "actionPriority": 20,
-        "explanation": "With the lowest quantitative score (0.462) and addressing sectors with lower emission contributions, this action is deprioritized relative to measures targeting land use and agriculture sectors."
+        "explanation": "Rice management primarily targets methane emissions from rice paddies. Given Corumb\u00e1\u2019s context and the lower quantitative score, this action is ranked last, as its relevance and potential impact are comparatively minimal."
     }
 ]

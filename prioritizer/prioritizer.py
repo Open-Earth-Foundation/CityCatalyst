@@ -10,19 +10,22 @@ import pandas as pd
 from pydantic import BaseModel
 from typing import List
 from pathlib import Path
-from utils.reading_writing_data import read_city_inventory, read_actions, write_output
-from utils.additional_scoring_functions import (
+from prioritizer.utils.reading_writing_data import (
+    read_city_inventory,
+    read_actions,
+    write_output,
+)
+from prioritizer.utils.additional_scoring_functions import (
     count_matching_hazards,
     find_highest_emission,
 )
-from utils.prompt import return_prompt
+from prioritizer.utils.prompt import return_prompt
 
 load_dotenv()
 
 api_key = os.getenv("OPENAI_API_KEY")
 client = OpenAI(api_key=api_key)
 
-# TODO a dynamic adaptation of how many fields we calculate for an action ( if there are nulls )
 scale_scores = {
     "Very High": 1.0,
     "High": 0.75,
@@ -74,13 +77,13 @@ def calculate_emissions_reduction(city, action):
     for sector, city_emission_key in sectors.items():
         reduction_str = ghg_potential.get(sector) if ghg_potential else None
         if reduction_str is None:
-            pass
-        if reduction_str and reduction_str in reduction_mapping:
+            continue
+        elif reduction_str and reduction_str in reduction_mapping:
             print("Reduction string:", reduction_str)
             print("Reduction mapping:", reduction_mapping[reduction_str])
             reduction_percentage = reduction_mapping[reduction_str]
             city_emission = city.get(city_emission_key, 0)
-            print("City emission:", city_emission)
+            print("City emission: " + str(city_emission) + " for " + city_emission_key)
             reduction_amount = city_emission * reduction_percentage
             total_reduction += reduction_amount
 
@@ -129,7 +132,7 @@ def quantitative_score(city, action):
     dependencies = action.get("Dependencies", [])
     dependencies_weights = weights.get("Dependencies", 1)
     if isinstance(dependencies, list):
-        score -= len(dependencies) * dependencies_weights
+        score -= round(len(dependencies) * dependencies_weights, 3)
     print("Score after dependencies:", score)
     # ActionName - pass
     # AdaptationCategory - pass this time
@@ -142,13 +145,15 @@ def quantitative_score(city, action):
         "Total emissions reduction for all sectors:",
         total_emission_reduction_all_sectors,
     )
+    weights_emissions = weights.get("GHGReductionPotential", 1)
     if total_emission_reduction_all_sectors > 0:
         total_emissions = city.get("totalEmissions", 1)  # Avoid division by zero
+        print("Total emissions of a city:", total_emissions)
         reduction_percentage = (
             total_emission_reduction_all_sectors / total_emissions
-        ) * 100
+        )
         print("Reduction percentage:", reduction_percentage)
-        score += round((reduction_percentage / 100), 3)
+        score += round(reduction_percentage * weights_emissions, 3)
     print("Score after emissions reduction:", score)
 
     # Calculate for every sector

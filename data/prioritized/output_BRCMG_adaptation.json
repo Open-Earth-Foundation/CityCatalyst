@@ -7,7 +7,7 @@
         "actionId": "ipcc_0087",
         "actionName": "Infrastructure retrofitting",
         "actionPriority": 1,
-        "explanation": "Ranked highest because it directly addresses the high risk to infrastructure (with a normalized risk score of 0.99 under heatwaves and landslides) in Corumb\u00e1. Even though these are adaptation measures, retrofitting infrastructure is crucial to mitigate the impacts of extreme weather events and is cost\u2010effective by protecting existing assets."
+        "explanation": "This action has the highest quantitative score and directly addresses massive infrastructure vulnerabilities in Corumb\u00e1\u2014a city facing high risks from heatwaves and landslides. Improving infrastructure resilience is critical given the severe hazards to physical assets, making this measure top priority."
     },
     {
         "locode": "BRCMG",
@@ -17,7 +17,7 @@
         "actionId": "ipcc_0095",
         "actionName": "Disaster early warning",
         "actionPriority": 2,
-        "explanation": "This action is vital for fast response to disasters in a city with several hazards including landslides, heatwaves, and flooding. Early warning systems can significantly reduce risk and protect lives and assets. Despite being an adaptation strategy, it remains a top priority given its potential to rapidly mitigate cascading damages."
+        "explanation": "Early warning systems are indispensable for reducing risk impacts, especially in a city where infrastructure faces high hazard scores. With a very high score and quick implementation timeline, this action ranks second, providing timely alerts for disasters."
     },
     {
         "locode": "BRCMG",
@@ -27,7 +27,7 @@
         "actionId": "ipcc_0091",
         "actionName": "Diversification of livelihoods ",
         "actionPriority": 3,
-        "explanation": "Diversifying livelihoods directly addresses socio-economic vulnerabilities in Corumb\u00e1, which has very high levels of low income. By reducing dependence on a single economic sector, this action supports food security and overall community resilience, making it highly relevant for adaptation in the city."
+        "explanation": "Diversifying livelihoods addresses socio-demographic vulnerabilities, particularly in a city with very high low\u2010income factors. By strengthening economic resilience and reducing dependence on a single sector, this action is prioritized highly."
     },
     {
         "locode": "BRCMG",
@@ -37,7 +37,7 @@
         "actionId": "c40_0053",
         "actionName": "Water Savings",
         "actionPriority": 4,
-        "explanation": "Water savings is a critical measure in a region likely to be affected by drought and water scarcity. It is both cost\u2010effective and environmentally compatible with the grassland savanna biome of Corumb\u00e1. Additionally, improving water efficiency addresses the risk related to water resource management."
+        "explanation": "Water savings is crucial in the grassland_savanna biome of Corumb\u00e1 where drought risks and water resource challenges exist. This action helps optimize water usage and supports cost-effectiveness in risk reduction."
     },
     {
         "locode": "BRCMG",
@@ -47,7 +47,7 @@
         "actionId": "ipcc_0092",
         "actionName": "Social safety nets",
         "actionPriority": 5,
-        "explanation": "Providing social safety nets addresses the socio-demographic vulnerabilities present in Corumb\u00e1, ensuring that the most vulnerable populations receive support during climate-induced disruptions. This action is highly relevant given the city's high low-income levels."
+        "explanation": "Given the city's socio-economic context with very high low-income demographics, strengthening social safety nets is essential. It not only supports vulnerable populations but also acts as an efficient risk reduction measure."
     },
     {
         "locode": "BRCMG",
@@ -57,7 +57,7 @@
         "actionId": "c40_0054",
         "actionName": "Water Recycling",
         "actionPriority": 6,
-        "explanation": "Water recycling is a complementary water management strategy that enhances water security. In a city where water is a critical resource, this action improves resource efficiency and resilience, making it a priority for adaptation."
+        "explanation": "Water recycling enhances the sustainability of water resources under drought conditions. This action is cost-effective and environmentally compatible with the city\u2019s water-related challenges."
     },
     {
         "locode": "BRCMG",
@@ -67,17 +67,17 @@
         "actionId": "ipcc_0088",
         "actionName": "Building codes",
         "actionPriority": 7,
-        "explanation": "Revising and enforcing building codes is a proven method to enhance infrastructure resilience. It reduces the vulnerability of new and existing constructions to climate hazards, thereby lowering the risk for critical infrastructure in a city with high exposure to natural hazards."
+        "explanation": "Strengthening building codes ensures that new developments are resilient to hazards. With a strong emphasis on risk reduction and lowered dependency on remedial actions, this approach is vital for safe and sustainable infrastructure."
     },
     {
         "locode": "BRCMG",
         "cityName": "Corumb\u00e1",
         "region": "BR-MS",
         "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0094",
-        "actionName": "Access to health care",
+        "actionId": "ipcc_0097",
+        "actionName": "Food storage/distribution improvements",
         "actionPriority": 8,
-        "explanation": "Improving access to health care is essential in safeguarding public health, especially in low-income contexts. Although the risk score for public health impacts in some hazards appears low, ensuring robust healthcare systems is a critical adaptation measure to improve overall community resilience."
+        "explanation": "Improving food storage and distribution directly tackles food security challenges\u2014critical for a region experiencing drought and flooding risks. High on the priority list, it offers immediate benefits to the community."
     },
     {
         "locode": "BRCMG",
@@ -87,17 +87,17 @@
         "actionId": "ipcc_0096",
         "actionName": "Farm/fishery improvements",
         "actionPriority": 9,
-        "explanation": "Upgrading farm and fishery practices directly supports food security and the local economy. In a city where diversification of livelihoods is crucial, this action helps communities adapt to climate variability, supports sustainable practices, and reduces vulnerability in the agriculture sector."
+        "explanation": "Enhancing farm and fishery practices strengthens local food production and economic resilience. This action is especially relevant given the food security hazards associated with drought and flooding in the region."
     },
     {
         "locode": "BRCMG",
         "cityName": "Corumb\u00e1",
         "region": "BR-MS",
         "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0097",
-        "actionName": "Food storage/distribution improvements",
+        "actionId": "ipcc_0100",
+        "actionName": "Efficient water use/demand",
         "actionPriority": 10,
-        "explanation": "Enhancing the food storage and distribution network reduces food loss during climate stress events like droughts or floods. This action bolsters food security and is particularly important in ensuring that communities have reliable access to food during crises."
+        "explanation": "Optimizing water use is critical for a city facing challenges in water availability. This action addresses resource management directly, ensuring that water is employed efficiently during periods of scarcity."
     },
     {
         "locode": "BRCMG",
@@ -107,17 +107,17 @@
         "actionId": "ipcc_0098",
         "actionName": "Behaviour change in diets and food waste",
         "actionPriority": 11,
-        "explanation": "Promoting behavior change can lead to indirect benefits in reducing vulnerability, even though its impact might be more gradual compared to infrastructure changes. It supports long-term adaptation by reducing waste and encouraging sustainable practices within the community."
+        "explanation": "Though its impact is more indirect, promoting behavioural changes in diets and reducing food waste contributes to long\u2010term sustainability and resource conservation. It also supports other food security initiatives."
     },
     {
         "locode": "BRCMG",
         "cityName": "Corumb\u00e1",
         "region": "BR-MS",
         "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0100",
-        "actionName": "Efficient water use/demand",
+        "actionId": "ipcc_0094",
+        "actionName": "Access to health care",
         "actionPriority": 12,
-        "explanation": "Optimizing water use meets the dual goals of environmental compatibility and cost-effectiveness. This action is vital in reducing water-related risks in Corumb\u00e1, particularly in adapting to periods of low water availability, making it a priority alongside other water management initiatives."
+        "explanation": "Enhancing access to health care is fundamental for vulnerable populations. While the current public health risk scores are low, ensuring adequate health services strengthens overall resilience against unexpected hazards."
     },
     {
         "locode": "BRCMG",
@@ -127,7 +127,7 @@
         "actionId": "c40_0050",
         "actionName": "White Roofs",
         "actionPriority": 13,
-        "explanation": "White roofs help mitigate the urban heat island effect by reflecting solar radiation, reducing energy consumption for cooling. This action, although more focused on microclimate improvements, is appropriate for urban areas with intense heat exposure."
+        "explanation": "White roofs mitigate urban heat island effects by reflecting solar radiation, thus reducing building temperatures. This is particularly effective as a preventative measure against heat-related infrastructure damage."
     },
     {
         "locode": "BRCMG",
@@ -137,17 +137,7 @@
         "actionId": "c40_0051",
         "actionName": "Public Shading",
         "actionPriority": 14,
-        "explanation": "Public shading initiatives reduce heat exposure in public spaces, helping to protect vulnerable populations from extreme temperatures. While the direct emissions or hazard reduction might be less pronounced than infrastructure investments, it contributes to overall resilience in heat-prone conditions."
-    },
-    {
-        "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0093",
-        "actionName": "Availability of health infrastructure",
-        "actionPriority": 15,
-        "explanation": "Strengthening health infrastructure ensures that emergency and routine medical services remain available during climate-induced events. This is particularly important in regions with socio-economic challenges, where robust systems can save lives during extreme events."
+        "explanation": "Public shading initiatives reduce heat exposure in urban areas. Although similar in function to white roofs, this action complements other measures to improve overall urban climate resilience."
     },
     {
         "locode": "BRCMG",
@@ -156,8 +146,8 @@
         "regionName": "Mato Grosso do Sul",
         "actionId": "ipcc_0099",
         "actionName": "Water capture/storage",
-        "actionPriority": 16,
-        "explanation": "Water capture and storage systems enhance the city's ability to manage water resources during periods of scarcity. This action supports water security and is cost-effective in mitigating the risks associated with drought conditions."
+        "actionPriority": 15,
+        "explanation": "Enhancing water capture and storage is vital for addressing drought risks. This action bolsters the city\u2019s ability to secure water during times when supply is insufficient, aligning with the need for robust adaptation measures."
     },
     {
         "locode": "BRCMG",
@@ -166,8 +156,18 @@
         "regionName": "Mato Grosso do Sul",
         "actionId": "ipcc_0101",
         "actionName": "Efficient water supply/distribution",
+        "actionPriority": 16,
+        "explanation": "Improving water supply and distribution systems ensures that available water reaches the population effectively, particularly during periods of scarcity. It is a critical enabler for other water-related initiatives."
+    },
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0093",
+        "actionName": "Availability of health infrastructure",
         "actionPriority": 17,
-        "explanation": "Improving water supply and distribution infrastructure not only enhances resource efficiency but also reduces the risk of water shortages during emergencies. It is an important follow-up to measures like water savings and recycling."
+        "explanation": "While the direct risk to public health appears lower, having reliable health infrastructure remains essential for emergency response. This action strengthens the city\u2019s overall capacity to manage crises."
     },
     {
         "locode": "BRCMG",
@@ -177,17 +177,7 @@
         "actionId": "ipcc_0102",
         "actionName": "Seasonal/temporary mobility",
         "actionPriority": 18,
-        "explanation": "Facilitating seasonal or temporary mobility helps communities adapt to variable climate conditions, such as temporary displacements due to extreme weather. Although it has several dependencies, it remains an important measure to ensure community safety and continuity."
-    },
-    {
-        "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "c40_0046",
-        "actionName": "Coastal Protection",
-        "actionPriority": 19,
-        "explanation": "While coastal protection is generally an effective adaptation strategy, Corumb\u00e1 is an inland city. Hence, despite its quantitative score, its relevance is limited in this context, placing it lower in priority."
+        "explanation": "Improving mobility options allows the population to adapt to seasonal hazards or temporary disruptions. Although its impact is slightly more indirect, it enhances overall adaptive capacity."
     },
     {
         "locode": "BRCMG",
@@ -196,7 +186,17 @@
         "regionName": "Mato Grosso do Sul",
         "actionId": "c40_0059",
         "actionName": "Early Warning",
+        "actionPriority": 19,
+        "explanation": "This early warning action, while similar to the higher\u2010ranked disaster early warning system, comes from an alternative approach. Due to overlapping functions and a slightly lower score, it is ranked just below equivalent measures."
+    },
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "c40_0046",
+        "actionName": "Coastal Protection",
         "actionPriority": 20,
-        "explanation": "This is a duplicated concept to the higher ranked disaster early warning action (ipcc_0095). With similar functional goals but a lower score and potentially higher dependencies, it is ranked last. The city\u2019s operational needs are better met by the more robust disaster early warning systems already prioritized."
+        "explanation": "Coastal Protection is the least relevant for Corumb\u00e1, an inland city in a grassland-savanna environment. Although important in coastal areas, its applicability here is low, making it the lowest priority adaptation action."
     }
 ]

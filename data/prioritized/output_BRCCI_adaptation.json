@@ -7,7 +7,7 @@
         "actionId": "ipcc_0087",
         "actionName": "Infrastructure retrofitting",
         "actionPriority": 1,
-        "explanation": "This action has the highest quantitative score (1.535) and directly addresses infrastructure vulnerabilities. Given Cama\u00e7ari\u2019s high risk scores for heatwaves affecting infrastructure and public health, retrofitting can significantly enhance resilience. Although all actions are adaptations, reinforcing infrastructure can indirectly reduce emissions (by improving energy efficiency and reducing reconstruction needs) and mitigate severe hazards."
+        "explanation": "This action ranks highest due to its very high quantitative score (1.535) and its ability to enhance the resilience of critical infrastructure. In a city where heatwaves and landslides pose a severe risk (with risk scores near 0.99), retrofitting can simultaneously improve safety and mitigate potential damages. Although not a direct emissions reduction measure, robust infrastructure is essential to adapt to high-risk hazards, making it highly cost\u2010effective and timely."
     },
     {
         "locode": "BRCCI",
@@ -17,7 +17,7 @@
         "actionId": "ipcc_0091",
         "actionName": "Diversification of livelihoods ",
         "actionPriority": 2,
-        "explanation": "With a high score (1.52), this action targets socio-economic vulnerabilities. In a city with very high low-income populations, diversifying livelihoods builds resilience against climate hazards, ensuring communities are less dependent on a single, high-risk sector."
+        "explanation": "With a strong score of 1.52, this action addresses socio-demographic vulnerabilities by providing varied income sources that help communities adapt to climate impacts. It is highly relevant in a city facing high public health and food security risks due to heatwaves and droughts, thereby reducing social vulnerability and addressing key sector-relevant issues."
     },
     {
         "locode": "BRCCI",
@@ -27,7 +27,7 @@
         "actionId": "ipcc_0095",
         "actionName": "Disaster early warning",
         "actionPriority": 3,
-        "explanation": "Also scoring 1.52, Disaster early warning systems are crucial for risk reduction. Cama\u00e7ari faces high risks from floods, landslides, and heatwaves, and early warning helps mitigate loss of life and damage, even if it is an adaptation rather than a direct emissions reduction measure."
+        "explanation": "Also scoring 1.52, Disaster early warning is essential for risk reduction, particularly in addressing hazards such as heatwaves, landslides, and floods where early notification can mitigate impacts on human life and infrastructure. The rapid lead-time and adaptability of early warning systems make it a high-priority action in adapting to severe climate-related risks."
     },
     {
         "locode": "BRCCI",
@@ -37,7 +37,7 @@
         "actionId": "c40_0053",
         "actionName": "Water Savings",
         "actionPriority": 4,
-        "explanation": "Water Savings (score 1.485) is prioritized because even though water resource risk is low in numerical terms (0.069), optimizing water use can indirectly lower the energy required for water supply operations. This aligns with both adaptation and a modest emissions reduction by reducing energy demand."
+        "explanation": "Water Savings carries a strong score (1.485) and directly addresses challenges related to water resource management. Given the city's tropical rainforest environment and potential drought risks, efficient water use is crucial. This action is cost-effective, has a short implementation timeline, and helps align with the environmental compatibility guidelines."
     },
     {
         "locode": "BRCCI",
@@ -47,7 +47,7 @@
         "actionId": "c40_0054",
         "actionName": "Water Recycling",
         "actionPriority": 5,
-        "explanation": "Water Recycling (score 1.385) offers similar benefits to water savings. It supports the sustainable use of water resources while potentially reducing the energy and costs associated with water sourcing, an appealing combination given the city\u2019s adaptation needs."
+        "explanation": "Ranking fifth with a score of 1.385, Water Recycling is especially relevant in improving water resource management. It is both environmentally compatible and cost-effective, reacting directly to water resource risks in a city where climate variability may aggravate water shortages."
     },
     {
         "locode": "BRCCI",
@@ -57,17 +57,7 @@
         "actionId": "ipcc_0088",
         "actionName": "Building codes",
         "actionPriority": 6,
-        "explanation": "At a score of 1.37, Building codes are essential to ensure new and retrofitted structures are resilient to climate hazards (e.g., heatwaves and flooding). This action reduces risks by setting higher standards in construction, aligning with city priorities on infrastructure resilience."
-    },
-    {
-        "locode": "BRCCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BR-BA",
-        "regionName": "Bahia",
-        "actionId": "ipcc_0093",
-        "actionName": "Availability of health infrastructure",
-        "actionPriority": 7,
-        "explanation": "With a score of 1.37, improving health infrastructure is critical in a context where public health hazards (e.g., heatwaves and disease outbreaks) score very high. Enhancing health infrastructure provides a strong safety net against climate-induced emergencies."
+        "explanation": "With a score of 1.37, updating Building Codes can yield long-term benefits by ensuring all new constructions meet higher resilience standards. This action is directly tied to reducing risks associated with infrastructure failure during extreme weather events such as heatwaves or landslides, aiding broader adaptation measures."
     },
     {
         "locode": "BRCCI",
@@ -76,8 +66,18 @@
         "regionName": "Bahia",
         "actionId": "ipcc_0092",
         "actionName": "Social safety nets",
+        "actionPriority": 7,
+        "explanation": "Also scoring 1.37, Social Safety Nets target socio-economic vulnerabilities. In a city with very high proportions of low-income households, this action can reduce climate-related risks by providing timely support during climate induced shocks, such as heatwaves and drought-related food insecurity."
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "ipcc_0093",
+        "actionName": "Availability of health infrastructure",
         "actionPriority": 8,
-        "explanation": "Also at 1.37, robust social safety nets are vital for a city with significant low-income populations. This action helps mitigate the socio-economic impacts of climate hazards by ensuring that vulnerable groups receive timely support, though it is slightly less direct than enhancing health services."
+        "explanation": "Matching the previous score of 1.37, this action focuses on bolstering health infrastructure. Given the extremely high risk scores for public health in the context of heatwaves (0.99) and diseases, strengthening health services is vital for reducing vulnerability and ensuring rapid response during emergencies."
     },
     {
         "locode": "BRCCI",
@@ -87,17 +87,7 @@
         "actionId": "ipcc_0094",
         "actionName": "Access to health care",
         "actionPriority": 9,
-        "explanation": "Scoring 1.27, improving access to health care is critical in managing high public health risks from heatwaves and disease. While it shares a similar score with several other actions, its importance for immediate life-saving measures places it high in the ranking."
-    },
-    {
-        "locode": "BRCCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BR-BA",
-        "regionName": "Bahia",
-        "actionId": "ipcc_0097",
-        "actionName": "Food storage/distribution improvements",
-        "actionPriority": 10,
-        "explanation": "With a score of 1.27, this action directly supports food security by enhancing distribution systems, a key factor in addressing hazards like flooding (which has a very high normalized risk). Ensuring reliable food distribution is crucial in maintaining community stability during disasters."
+        "explanation": "With a quantitative score of 1.27, enhancing access to health care is critical in addressing the high public health risk from climate hazards. This action supports the city's capacity to handle emergencies and sustains community wellbeing, although it slightly trails the higher-scoring infrastructure and preparedness measures."
     },
     {
         "locode": "BRCCI",
@@ -106,8 +96,18 @@
         "regionName": "Bahia",
         "actionId": "ipcc_0096",
         "actionName": "Farm/fishery improvements",
+        "actionPriority": 10,
+        "explanation": "Scoring 1.27, this action is important for enhancing food security under climate stress, particularly in light of drought risks impacting food availability. The improvements are also well-suited for the socio-economic context of the city, supporting livelihoods in traditional sectors."
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "ipcc_0097",
+        "actionName": "Food storage/distribution improvements",
         "actionPriority": 11,
-        "explanation": "Also at 1.27, improvements in farms and fisheries strengthen food production capacities. This is essential for a resilient food system, addressing climate impacts on agriculture and contributing to overall food security in the region."
+        "explanation": "Also scoring 1.27, this measure is designed to safeguard food security and reduce waste during climate extremes. Given the high risk of flooding and drought which can disrupt supply chains, it addresses a critical vulnerability in the city\u2019s food system."
     },
     {
         "locode": "BRCCI",
@@ -117,7 +117,7 @@
         "actionId": "ipcc_0098",
         "actionName": "Behaviour change in diets and food waste",
         "actionPriority": 12,
-        "explanation": "Scoring 1.27, this action targets behavioural shifts that can lead to more sustainable food consumption patterns. Although its immediate risk reduction effects might be less pronounced than infrastructure or health actions, it offers long\u2010term benefits by reducing both waste and indirect emissions."
+        "explanation": "This action, with a score of 1.27, plays an important role in reducing climate vulnerability by promoting sustainable consumption patterns. While its direct effect might be less immediate compared to infrastructure changes, it supports long-term adaptation and resilience in the food sector."
     },
     {
         "locode": "BRCCI",
@@ -127,7 +127,7 @@
         "actionId": "ipcc_0099",
         "actionName": "Water capture/storage",
         "actionPriority": 13,
-        "explanation": "Also with a score of 1.27, water capture and storage reinforces the management of water resources. While the city's immediate water risk is relatively low, this measure helps build resilience against less frequent but severe droughts or supply disruptions."
+        "explanation": "At a score of 1.27, water capture and storage systems enhance the city\u2019s ability to manage water resources, especially under threat from periodic droughts. This action is environmentally compatible and essential for ensuring a stable water supply during extreme weather events."
     },
     {
         "locode": "BRCCI",
@@ -137,7 +137,7 @@
         "actionId": "ipcc_0100",
         "actionName": "Efficient water use/demand",
         "actionPriority": 14,
-        "explanation": "At a score of 1.27, efficient water use focuses on optimizing consumption patterns. Though the water resource risk is low numerically, the cost-effective nature of this action can reduce the energy footprint of water services, aligning indirectly with emissions reduction goals."
+        "explanation": "Also with a quantitative score of 1.27, this measure complements water capture efforts by optimizing demand. It is cost-effective and can be implemented quickly, offering immediate benefits in the management of water resources and reducing stress on urban water systems."
     },
     {
         "locode": "BRCCI",
@@ -147,7 +147,7 @@
         "actionId": "ipcc_0101",
         "actionName": "Efficient water supply/distribution",
         "actionPriority": 15,
-        "explanation": "Matching the 1.27 score, this measure improves the water supply infrastructure. Even if water-related risks are not the highest, enhancing the efficiency of distribution systems contributes to long-term sustainability and can reduce associated energy use."
+        "explanation": "With the same score of 1.27, improving water supply and distribution is vital for counteracting vulnerabilities in water access. This action helps modernize infrastructure and ensures that efficient systems are in place, particularly important in a tropical environment prone to variable water availability."
     },
     {
         "locode": "BRCCI",
@@ -157,7 +157,7 @@
         "actionId": "ipcc_0102",
         "actionName": "Seasonal/temporary mobility",
         "actionPriority": 16,
-        "explanation": "Also scoring 1.27, improving mobility during extreme weather events adds flexibility to the city\u2019s adaptation strategies. Although its direct impact on emissions is limited, it can reduce overall disruption during climate-induced emergencies."
+        "explanation": "Also at 1.27, this action focuses on adapting urban mobility to seasonal variations and temporary disruptions caused by climate events. Although it may have several dependencies, it is important for maintaining urban functionality during climate-induced disruptions."
     },
     {
         "locode": "BRCCI",
@@ -167,7 +167,7 @@
         "actionId": "c40_0050",
         "actionName": "White Roofs",
         "actionPriority": 17,
-        "explanation": "With a score of 1.255, White Roofs help mitigate urban heat island effects, a crucial adaptation strategy in tropical climates facing severe heatwaves. This relatively low-cost, fast-impact measure supports public health and energy savings."
+        "explanation": "Scoring slightly lower at 1.255, White Roofs enhances urban heat management through reflective roofing. This cost-effective measure directly addresses heatwave risks, thereby reducing energy security concerns and stress on cooling systems during extreme heat events."
     },
     {
         "locode": "BRCCI",
@@ -177,7 +177,7 @@
         "actionId": "c40_0051",
         "actionName": "Public Shading",
         "actionPriority": 18,
-        "explanation": "Also scoring 1.255, Public Shading directly reduces heat stress in urban environments. Its importance in a city with high heatwave risk makes it a valuable, cost-effective action, though it comes just after white roofs due to similar impact potential."
+        "explanation": "Similarly scoring 1.255, Public Shading is effective for mitigating urban heat island effects and enhancing outdoor thermal comfort. By reducing heat exposure in public spaces, it supports public health and is both relatively low cost and quick to implement."
     },
     {
         "locode": "BRCCI",
@@ -187,7 +187,7 @@
         "actionId": "c40_0046",
         "actionName": "Coastal Protection",
         "actionPriority": 19,
-        "explanation": "At 1.235, Coastal Protection addresses potential risks from sea level rise and coastal hazards. In Cama\u00e7ari, while coastal risks are recognized, the lack of an assigned normalized risk score for sea level rise and its longer implementation timeline places it lower in priority."
+        "explanation": "At a score of 1.235, Coastal Protection is important for cities vulnerable to sea level rise and coastal hazards. Although Cama\u00e7ari\u2019s elevation and coastal risk parameters might not be as critical as inland hazards, this action remains vital in a comprehensive adaptation strategy, particularly with the need to protect infrastructure along the coast."
     },
     {
         "locode": "BRCCI",
@@ -197,6 +197,6 @@
         "actionId": "c40_0059",
         "actionName": "Early Warning",
         "actionPriority": 20,
-        "explanation": "Also at 1.235, this general Early Warning measure is ranked last among the actions due to its lower quantitative score and overlap with the more specific Disaster early warning system. While still important for risk reduction, its lower score and potential dependencies reduce its relative priority."
+        "explanation": "Also scoring 1.235, this Early Warning system, distinct from the disaster early warning system ranked third, likely covers additional or complementary aspects of imminent threats. While its impact is significant, the marginally lower quantitative score places it at the end of this prioritized list."
     }
 ]

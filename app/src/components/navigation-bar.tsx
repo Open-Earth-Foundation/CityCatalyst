@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useTranslation } from "@/i18n/client";
 import { languages } from "@/i18n/settings";
 import { Box, Heading, Icon, Link, Separator, Text } from "@chakra-ui/react";
@@ -9,7 +10,7 @@ import Image from "next/image";
 
 import { CircleFlag } from "react-circle-flags";
 import { FiSettings } from "react-icons/fi";
-import { MdLogout } from "react-icons/md";
+import { MdArrowDropUp, MdArrowDropDown, MdLogout } from "react-icons/md";
 import Cookies from "js-cookie";
 import { useParams, useRouter } from "next/navigation";
 import { api } from "@/services/api";
@@ -19,7 +20,7 @@ import {
   MenuRoot,
   MenuTrigger,
 } from "@/components/ui/menu";
-import { Avatar, AvatarGroup } from "@/components/ui/avatar";
+import { Avatar } from "@/components/ui/avatar";
 
 import { Button } from "@/components/ui/button";
 
@@ -76,6 +77,9 @@ export function NavigationBar({
     api.useGetUserInfoQuery();
   const currentInventoryId = userInfo?.defaultInventoryId;
   const router = useRouter();
+
+  const [isUserMenuOpen, setUserMenuOpen] = useState(false);
+
   return (
     <Box
       className="flex flex-row px-8 py-4 align-middle space-x-12 items-center relative z-50"
@@ -178,16 +182,19 @@ export function NavigationBar({
         </Box>
         <Box>
           {!isPublic && status === "authenticated" && session.user && (
-            <MenuRoot>
+            <MenuRoot
+              onOpenChange={(details) => {
+                setUserMenuOpen(details.open);
+              }}
+              open={isUserMenuOpen}
+              variant="subtle"
+            >
               <MenuTrigger
                 asChild
-                color="base.light"
                 minW="220px"
-                // Todo: add icon switch functionality
-                // rightIcon={isOpen ? <TriangleUpIcon /> : <TriangleDownIcon />}
                 className="whitespace-nowrap normal-case"
               >
-                <Button variant="ghost">
+                <Button variant="ghost" ml={8}>
                   <Avatar
                     size="sm"
                     bg="interactive.connected"
@@ -205,6 +212,10 @@ export function NavigationBar({
                   >
                     {session.user?.name}
                   </Text>
+                  <Icon
+                    as={isUserMenuOpen ? MdArrowDropUp : MdArrowDropDown}
+                    boxSize={6}
+                  />
                 </Button>
               </MenuTrigger>
 

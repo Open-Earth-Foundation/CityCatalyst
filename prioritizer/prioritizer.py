@@ -1,12 +1,9 @@
 import argparse
 import sys
 import os
-import csv
 from dotenv import load_dotenv
 from openai import OpenAI
-import re
 import json
-import pandas as pd
 from pydantic import BaseModel
 from typing import List
 from pathlib import Path
@@ -79,11 +76,11 @@ def calculate_emissions_reduction(city, action):
         if reduction_str is None:
             continue
         elif reduction_str and reduction_str in reduction_mapping:
-            print("Reduction string:", reduction_str)
-            print("Reduction mapping:", reduction_mapping[reduction_str])
+            # print("Reduction string:", reduction_str)
+            # print("Reduction mapping:", reduction_mapping[reduction_str])
             reduction_percentage = reduction_mapping[reduction_str]
             city_emission = city.get(city_emission_key, 0)
-            print("City emission: " + str(city_emission) + " for " + city_emission_key)
+            # print("City emission: " + str(city_emission) + " for " + city_emission_key)
             reduction_amount = city_emission * reduction_percentage
             total_reduction += reduction_amount
 
@@ -133,7 +130,7 @@ def quantitative_score(city, action):
     dependencies_weights = weights.get("Dependencies", 1)
     if isinstance(dependencies, list):
         score -= round(len(dependencies) * dependencies_weights, 3)
-    print("Score after dependencies:", score)
+    # print("Score after dependencies:", score)
     # ActionName - pass
     # AdaptationCategory - pass this time
     # Subsector - skip for now maybe more data needed as now we are covering per sector
@@ -141,18 +138,18 @@ def quantitative_score(city, action):
 
     # Sector - if it matches the most emmissions intensive sectors gets bonus points
     total_emission_reduction_all_sectors = calculate_emissions_reduction(city, action)
-    print(
-        "Total emissions reduction for all sectors:",
-        total_emission_reduction_all_sectors,
-    )
+    # print(
+    #     "Total emissions reduction for all sectors:",
+    #     total_emission_reduction_all_sectors,
+    # )
     weights_emissions = weights.get("GHGReductionPotential", 1)
     if total_emission_reduction_all_sectors > 0:
         total_emissions = city.get("totalEmissions", 1)  # Avoid division by zero
-        print("Total emissions of a city:", total_emissions)
+        # print("Total emissions of a city:", total_emissions)
         reduction_percentage = total_emission_reduction_all_sectors / total_emissions
-        print("Reduction percentage:", reduction_percentage)
+        # print("Reduction percentage:", reduction_percentage)
         score += round(reduction_percentage * weights_emissions, 3)
-    print("Score after emissions reduction:", score)
+    # print("Score after emissions reduction:", score)
 
     # Calculate for every sector
     weights_emissions = weights.get("GHGReductionPotential", 1)
@@ -171,7 +168,7 @@ def quantitative_score(city, action):
         if effective_value:  # Only add score if effective_value is non-zero (non-falsy)
             adaptation_weight = weights.get("AdaptationEffectiveness", 1)
             score += effective_value * adaptation_weight
-    print("Score after adaptation effectiveness:", score)
+    # print("Score after adaptation effectiveness:", score)
 
     # Time in years score
     timeline_str = action.get("TimelineForImplementation", "")
@@ -234,7 +231,7 @@ def send_to_llm(prompt: str) -> PrioritizedActions:
         response_format=PrioritizedActions,
     )
     # Return the parsed structured output.
-    return response.choices[0].message.parsed
+    return response.choices[0].message.parsed  # type: ignore
 
 
 def qualitative_score(city, action):

@@ -100,7 +100,7 @@ export default function Settings({
             </Text>
           </Box>
           <Box marginTop="48px" borderBottomColor={"border.overlay"}>
-            <Tabs.Root defaultValue={defaultTab}>
+            <Tabs.Root defaultValue="my-profile">
               <Tabs.List>
                 <Tabs.Trigger value="my-profile">
                   <Text

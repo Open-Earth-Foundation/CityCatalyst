@@ -75,7 +75,7 @@ const DeleteInventoryDialog: FC<DeleteInventoryDialogProps> = ({
 
   return (
     <>
-      <DialogRoot preventScroll open={isOpen} onExitComplete={onClose}>
+      <DialogRoot preventScroll open={isOpen} onOpenChange={onClose}>
         <DialogContent minH="520px" minW="568px" marginTop="10%">
           <form onSubmit={handleSubmit(onSubmit)}>
             <DialogHeader

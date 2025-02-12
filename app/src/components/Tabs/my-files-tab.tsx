@@ -402,6 +402,7 @@ const MyFilesTab: FC<MyFilesTabProps> = ({
                                     borderColor="border.neutral"
                                     padding="10px"
                                     px="0"
+                                    pos="absolute"
                                   >
                                     <PopoverArrow />
                                     <PopoverBody padding="0">

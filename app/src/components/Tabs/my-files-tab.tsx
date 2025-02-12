@@ -139,6 +139,7 @@ const MyFilesTab: FC<MyFilesTabProps> = ({
                 flexDirection="row"
                 gap="36px"
                 defaultValue="city"
+                variant="enclosed"
               >
                 <Tabs.List display="flex" flexDirection="column" gap="12px">
                   <Tabs.Trigger

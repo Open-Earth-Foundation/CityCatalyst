@@ -22,6 +22,7 @@ import { TFunction } from "i18next";
 import { api } from "@/services/api";
 import DeleteCityModal from "@/components/Modals/delete-city-modal";
 import { CityAttributes } from "@/models/City";
+import { PopoverRoot } from "@/components/ui/popover";
 
 interface ManageCitiesProps {
   t: TFunction;
@@ -118,8 +119,10 @@ const ManageCitiesTabPanel: FC<ManageCitiesProps> = ({ t }) => {
                     {city?.lastUpdated &&
                       new Date(city.lastUpdated).toLocaleDateString()}
                   </Text>
-                  <Popover.Root lazyMount>
-                    <PopoverTrigger>
+                </Table.Cell>
+                <Table.Cell>
+                  <PopoverRoot>
+                    <PopoverTrigger asChild>
                       <IconButton
                         aria-label="action-button"
                         variant="ghost"
@@ -127,7 +130,7 @@ const ManageCitiesTabPanel: FC<ManageCitiesProps> = ({ t }) => {
                         height="36px"
                         width="36px"
                       >
-                        <MdMoreVert size={24} />
+                        <MdMoreVert size={30} />
                       </IconButton>
                     </PopoverTrigger>
                     <PopoverContent
@@ -140,6 +143,7 @@ const ManageCitiesTabPanel: FC<ManageCitiesProps> = ({ t }) => {
                       borderColor="border.neutral"
                       padding="10px"
                       px="0"
+                      pos="absolute"
                     >
                       <PopoverArrow />
                       <PopoverBody padding="0">
@@ -205,7 +209,7 @@ const ManageCitiesTabPanel: FC<ManageCitiesProps> = ({ t }) => {
                         </List.Root>
                       </PopoverBody>
                     </PopoverContent>
-                  </Popover.Root>
+                  </PopoverRoot>
                 </Table.Cell>
               </Table.Row>
             ))}

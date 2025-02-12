@@ -42,7 +42,7 @@ const DeleteFileDialog: FC<DeleteFileDialogProps> = ({
     }
   };
   return (
-    <DialogRoot open={isOpen} onExitComplete={onClose}>
+    <DialogRoot open={isOpen} onOpenChange={onClose}>
       <DialogContent minH="388px" minW="568px" marginTop="10%">
         <DialogHeader
           display="flex"

@@ -71,7 +71,7 @@ const DeleteCityDialog: FC<DeleteCityDialogProps> = ({
 
   return (
     <>
-      <DialogRoot preventScroll open={isOpen} onExitComplete={onClose}>
+      <DialogRoot preventScroll open={isOpen} onOpenChange={onClose}>
         <DialogContent minH="520px" minW="568px" marginTop="10%">
           <DialogHeader
             display="flex"

@@ -119,15 +119,15 @@ const ManageUsersTabPanel: FC<ManageUsersProps> = ({ lng }) => {
               <SelectRoot
                 collection={roleCollection}
                 h="48px"
-                w="auto"
+                padding={0}
+                w="150px"
                 borderWidth="1px"
                 borderStyle="solid"
                 borderColor="border.neutral"
                 onValueChange={(e) => setFilterRole(e.value[0])}
               >
-                <SelectLabel />
-                <SelectTrigger>
-                  <SelectValueText />
+                <SelectTrigger display="flex" height="full">
+                  <SelectValueText placeContent="Select User Type" />
                 </SelectTrigger>
                 <SelectContent>
                   {roleCollection.items.map((item) => (
@@ -143,7 +143,7 @@ const ManageUsersTabPanel: FC<ManageUsersProps> = ({ lng }) => {
         </>
       ) : (
         <Center>
-          <ProgressCircle.Root>
+          <ProgressCircle.Root value={null}>
             <ProgressCircle.Circle>
               <ProgressCircle.Track />
               <ProgressCircle.Range />

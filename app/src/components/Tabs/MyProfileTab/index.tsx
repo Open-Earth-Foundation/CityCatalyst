@@ -51,18 +51,15 @@ export const MyProfileTab: FC<MyProfileTabProps> = ({ t, lng, userInfo }) => {
             <Tabs.List display="flex" flexDirection="column" gap="12px">
               <Tabs.Trigger
                 value="account-details"
-                style={{
-                  width: "223px",
-                  justifyContent: "left",
-                  height: "52px",
-                  letterSpacing: "wide",
-                  color: "content.secondary",
-                  lineHeight: "20px",
-                  fontStyle: "normal",
-                  fontSize: "label.lg",
-                  fontWeight: "medium",
-                  fontFamily: "heading",
-                }}
+                fontFamily="heading"
+                justifyContent={"left"}
+                letterSpacing={"wide"}
+                color="content.secondary"
+                lineHeight="20px"
+                fontStyle="normal"
+                fontSize="label.lg"
+                height="52px"
+                w={"223px"}
                 _selected={{
                   color: "content.link",
                   fontSize: "label.lg",
@@ -78,18 +75,15 @@ export const MyProfileTab: FC<MyProfileTabProps> = ({ t, lng, userInfo }) => {
               </Tabs.Trigger>
               <Tabs.Trigger
                 value="manage-users"
-                style={{
-                  width: "223px",
-                  justifyContent: "left",
-                  height: "52px",
-                  letterSpacing: "wide",
-                  color: "content.secondary",
-                  lineHeight: "20px",
-                  fontStyle: "normal",
-                  fontSize: "label.lg",
-                  fontWeight: "medium",
-                  fontFamily: "heading",
-                }}
+                fontFamily="heading"
+                justifyContent={"left"}
+                letterSpacing={"wide"}
+                color="content.secondary"
+                lineHeight="20px"
+                fontStyle="normal"
+                fontSize="label.lg"
+                height="52px"
+                w={"223px"}
                 _selected={{
                   color: "content.link",
                   fontSize: "label.lg",
@@ -105,18 +99,15 @@ export const MyProfileTab: FC<MyProfileTabProps> = ({ t, lng, userInfo }) => {
               </Tabs.Trigger>
               <Tabs.Trigger
                 value="manage-cities"
-                style={{
-                  width: "223px",
-                  justifyContent: "left",
-                  height: "52px",
-                  letterSpacing: "wide",
-                  color: "content.secondary",
-                  lineHeight: "20px",
-                  fontStyle: "normal",
-                  fontSize: "label.lg",
-                  fontWeight: "medium",
-                  fontFamily: "heading",
-                }}
+                fontFamily="heading"
+                justifyContent={"left"}
+                letterSpacing={"wide"}
+                color="content.secondary"
+                lineHeight="20px"
+                fontStyle="normal"
+                fontSize="label.lg"
+                height="52px"
+                w={"223px"}
                 _selected={{
                   color: "content.link",
                   fontSize: "label.lg",

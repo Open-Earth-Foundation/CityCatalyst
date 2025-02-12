@@ -100,9 +100,20 @@ export default function Settings({
             </Text>
           </Box>
           <Box marginTop="48px" borderBottomColor={"border.overlay"}>
-            <Tabs.Root defaultValue="my-profile">
-              <Tabs.List>
-                <Tabs.Trigger value="my-profile">
+            <Tabs.Root defaultValue="my-profile" variant="enclosed">
+              <Tabs.List p={0} w="full">
+                <Tabs.Trigger
+                  value="my-profile"
+                  _selected={{
+                    borderColor: "content.link",
+                    borderBottomWidth: "2px",
+                    boxShadow: "none",
+                    fontWeight: "bold",
+                    borderRadius: "0",
+                    color: "content.link",
+                    backgroundColor: "background.backgroundLight",
+                  }}
+                >
                   <Text
                     fontSize="title.md"
                     fontStyle="normal"
@@ -111,7 +122,18 @@ export default function Settings({
                     {t("my-profile")}
                   </Text>
                 </Tabs.Trigger>
-                <Tabs.Trigger value="my-files">
+                <Tabs.Trigger
+                  _selected={{
+                    borderColor: "content.link",
+                    borderBottomWidth: "2px",
+                    boxShadow: "none",
+                    fontWeight: "bold",
+                    borderRadius: "0",
+                    color: "content.link",
+                    backgroundColor: "background.backgroundLight",
+                  }}
+                  value="my-files"
+                >
                   <Text
                     fontSize="title.md"
                     fontStyle="normal"
@@ -120,7 +142,18 @@ export default function Settings({
                     {t("my-files")}
                   </Text>
                 </Tabs.Trigger>
-                <Tabs.Trigger value="my-inventories">
+                <Tabs.Trigger
+                  _selected={{
+                    borderColor: "content.link",
+                    borderBottomWidth: "2px",
+                    boxShadow: "none",
+                    fontWeight: "bold",
+                    borderRadius: "0",
+                    color: "content.link",
+                    backgroundColor: "background.backgroundLight",
+                  }}
+                  value="my-inventories"
+                >
                   <Text
                     fontSize="title.md"
                     fontStyle="normal"

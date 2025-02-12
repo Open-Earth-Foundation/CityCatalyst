@@ -97,11 +97,10 @@ const ManageUsersTabPanel: FC<ManageUsersProps> = ({ lng }) => {
                   <Icon
                     as={MdSearch}
                     color="content.tertiary"
-                    h="100%"
                     display="flex"
-                    paddingLeft="10px"
                     pointerEvents="none"
                     alignItems="center"
+                    size="md"
                   />
                 }
               >

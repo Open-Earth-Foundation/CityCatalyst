@@ -141,42 +141,53 @@ def db_query(datasource_name, spatial_granularity, actor_id, gpc_reference_numbe
 
         query = text(
             f"""
-            SELECT		e.emissions_value,
-             			e.gas_name,
-             			ef.emissionfactor_value,
-             			a.activity_name,
-             			e.activity_value,
-             			a.activity_units,
-             			a.activity_subcategory_type,
-             			m.methodology_name,
-                        e.geometry as emissions_geometry,
-             			COALESCE(gwp.{gwp},0) as gwp_100yr,
-             			COALESCE(e.emissions_value * gwp.{gwp},0) as emissions_value_100yr,
-                        COALESCE(e.emissions_value * gwp2.{gwp},0) as emissions_value_20yr
-            FROM 		modelled.emissions e
-            LEFT JOIN 	modelled.emissions_factor ef
-            ON 			e.emissionfactor_id = ef.emissionfactor_id
-            LEFT JOIN 	modelled.activity_subcategory a
-            ON 			e.activity_id = a.activity_id
-            LEFT JOIN 	modelled.gpc_methodology m
-            ON 			e.gpcmethod_id = m.gpcmethod_id
-            LEFT JOIN 	modelled.global_warming_potential gwp
-            ON 			(CASE WHEN e.gas_name = 'CH4' THEN
-                                CASE WHEN e.gpc_reference_number LIKE 'I.5%' OR e.gpc_reference_number LIKE 'III.%' OR e.gpc_reference_number LIKE 'V%' THEN 'CH4nonfossil'
-                                ELSE 'CH4fossil' END
-                        ELSE e.gas_name END)  = gwp.gas_name
-            AND 		gwp.time_horizon = '100 year'
-            LEFT JOIN 	modelled.global_warming_potential gwp2
-            ON 			(CASE WHEN e.gas_name = 'CH4' THEN
-                                CASE WHEN e.gpc_reference_number LIKE 'I.5%' OR e.gpc_reference_number LIKE 'III.%' OR e.gpc_reference_number LIKE 'V%' THEN 'CH4nonfossil'
-                                ELSE 'CH4fossil' END
-                        ELSE e.gas_name END)  = gwp2.gas_name
-            AND 		gwp2.time_horizon = '20 year'
-            WHERE 		e.datasource_name = :datasource_name
-            AND         e.spatial_granularity = :spatial_granularity
-            AND 		e.actor_id = :actor_id
-            AND 		e.gpc_reference_number = :gpc_reference_number
-            AND 		e.emissions_year = :emissions_year
+            WITH 		activity_data AS (
+			SELECT		e.activity_id,
+                        m.methodology_name,
+						e.geometry AS emissions_geometry,
+						ARRAY_AGG(
+						json_build_object(
+						'gas_name' , e.gas_name,
+						'emissions_value', e.emissions_value,
+						'emissionfactor_value', ef.emissionfactor_value,
+						'activity_value', e.activity_value::numeric,
+						'gwp', COALESCE(gwp.ar5,0),
+						'emissions_value_100yr', COALESCE(e.emissions_value * gwp.ar5,0),
+						'emissions_value_20yr', COALESCE(e.emissions_value * gwp2.ar5,0)
+						)) AS gas_info
+                     FROM 		modelled.emissions e
+                     LEFT JOIN 	modelled.emissions_factor ef
+                     ON 			e.emissionfactor_id = ef.emissionfactor_id
+                     LEFT JOIN 	modelled.gpc_methodology m
+                     ON 			e.gpcmethod_id = m.gpcmethod_id
+                     LEFT JOIN 	modelled.global_warming_potential gwp
+                     ON 			(CASE WHEN e.gas_name = 'CH4' THEN
+                                         CASE WHEN e.gpc_reference_number LIKE 'I.5%' OR e.gpc_reference_number LIKE 'III.%' OR e.gpc_reference_number LIKE 'V%' THEN 'CH4nonfossil'
+                                         ELSE 'CH4fossil' END
+                                 ELSE e.gas_name END)  = gwp.gas_name
+                     AND 		gwp.time_horizon = '100 year'
+                     LEFT JOIN 	modelled.global_warming_potential gwp2
+                     ON 			(CASE WHEN e.gas_name = 'CH4' THEN
+                                         CASE WHEN e.gpc_reference_number LIKE 'I.5%' OR e.gpc_reference_number LIKE 'III.%' OR e.gpc_reference_number LIKE 'V%' THEN 'CH4nonfossil'
+                                         ELSE 'CH4fossil' END
+                                 ELSE e.gas_name END)  = gwp2.gas_name
+                     AND 		gwp2.time_horizon = '20 year'
+                     WHERE 		e.datasource_name = :datasource_name
+                     AND         e.spatial_granularity = :spatial_granularity
+                     AND 		e.actor_id = :actor_id
+                     AND 		e.gpc_reference_number = :gpc_reference_number
+                     AND 		e.emissions_year = :emissions_year
+			GROUP BY 	m.methodology_name, e.geometry, e.activity_id
+			)
+			SELECT 	a.methodology_name,
+					a.emissions_geometry,
+					b.activity_name,
+					b.activity_units,
+					b.activity_subcategory_type,
+					a.gas_info
+			FROM activity_data a
+			INNER JOIN modelled.activity_subcategory b
+			ON a.activity_id = b.activity_id;
             """
         )
         params = {
@@ -266,17 +277,12 @@ def get_emissions_by_city_and_year(
 
     for detail in record_details:
             detail_dict = {
-                "emissions_value": str(detail[0]),
-                "gas_name": str(detail[1]),
-                "emissionfactor_value": str(detail[2]),
-                "activity_name": str(detail[3]),
-                "activity_value": str(detail[4]),
-                "activity_units": str(detail[5]),
-                "activity_subcategory_type": detail[6],
-                "methodology_name": str(detail[7]),
-                "emissions_geometry": str(detail[8]),
-                "gwp_100yr": str(detail[9]),
-                "emissions_value_100yr": str(detail[10])
+                "methodology_name": str(detail[0]) if detail[0] is not None else None,
+                "emissions_geometry": str(detail[1]) if detail[1] is not None else None,
+                "activity_name": str(detail[2]) if detail[2] is not None else None,
+                "activity_units": str(detail[3]) if detail[3] is not None else None,
+                "activity_subcategory_type": detail[4],
+                "gases": detail[5]
             }
             results["records"].append(detail_dict)
 

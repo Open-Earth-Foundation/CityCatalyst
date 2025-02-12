@@ -145,14 +145,15 @@ def quantitative_score(city, action):
         "Total emissions reduction for all sectors:",
         total_emission_reduction_all_sectors,
     )
+    weights_emissions = weights.get("GHGReductionPotential", 1)
     if total_emission_reduction_all_sectors > 0:
         total_emissions = city.get("totalEmissions", 1)  # Avoid division by zero
         print("Total emissions of a city:", total_emissions)
         reduction_percentage = (
             total_emission_reduction_all_sectors / total_emissions
-        ) * 100
+        )
         print("Reduction percentage:", reduction_percentage)
-        score += round(reduction_percentage, 3)
+        score += round(reduction_percentage * weights_emissions, 3)
     print("Score after emissions reduction:", score)
 
     # Calculate for every sector

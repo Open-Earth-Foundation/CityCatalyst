@@ -7,7 +7,7 @@
         "actionId": "ipcc_0087",
         "actionName": "Infrastructure retrofitting",
         "actionPriority": 1,
-        "explanation": "This action scored the highest quantitative score (1.60167) and directly mitigates risks to critical infrastructure. Given Rio Branco's high exposure to hazards (infrastructure risk scores as high as 0.99), retrofitting ensures resilience and supports long\u2010term safety, making it the top priority despite the focus on adaptation rather than direct emissions reduction."
+        "explanation": "This action has the highest composite quantitative score and directly addresses the city\u2019s vulnerability in infrastructure, which is among the highest risk sectors (infrastructure hazards from heatwaves and landslides are at 0.99). It supports resilience improvements and is cost-effective with relatively straightforward implementation."
     },
     {
         "locode": "BRRBR",
@@ -17,7 +17,7 @@
         "actionId": "ipcc_0095",
         "actionName": "Disaster early warning",
         "actionPriority": 2,
-        "explanation": "With a very high quantitative score (1.58667), this action is essential for early detection of climate hazards. It directly addresses risk reduction and supports timely responses to events such as landslides and flooding, which are significant risks in Rio Branco."
+        "explanation": "Disaster early warning systems are critical for reducing risks associated with multiple hazards (floods, landslides, heatwaves). This system enables timely responses, mitigating potential losses and is prioritized given the city\u2019s high hazard scores."
     },
     {
         "locode": "BRRBR",
@@ -27,7 +27,7 @@
         "actionId": "ipcc_0091",
         "actionName": "Diversification of livelihoods ",
         "actionPriority": 3,
-        "explanation": "Scoring 1.52, diversification of livelihoods boosts socio-economic resilience. It is vital for a city with high low-income populations, ensuring that vulnerable communities have alternative sources of income in the face of climate disruptions."
+        "explanation": "Diversifying livelihoods enhances community resilience, especially in a city with significant socio-economic challenges and high low-income populations. It indirectly supports reducing emissions from land-use pressures by reducing dependency on a single livelihood sector."
     },
     {
         "locode": "BRRBR",
@@ -37,7 +37,7 @@
         "actionId": "c40_0053",
         "actionName": "Water Savings",
         "actionPriority": 4,
-        "explanation": "With a score of 1.485, Water Savings is crucial given Rio Branco\u2019s challenges with water access. It aligns with the environmental characteristics (tropical rainforest) while addressing water resource risks during drought conditions."
+        "explanation": "Water Savings is critical in Rio Branco given the high risk associated with inadequate water access and water resource challenges in tropical rainforests. It provides cost-effective water management measures with relatively short implementation timelines."
     },
     {
         "locode": "BRRBR",
@@ -47,7 +47,7 @@
         "actionId": "ipcc_0092",
         "actionName": "Social safety nets",
         "actionPriority": 5,
-        "explanation": "Scoring 1.43667, Social safety nets are important for addressing socio-demographic vulnerabilities. By providing support during climate-related disruptions, this action helps cushion the impacts on the most at-risk populations."
+        "explanation": "Social safety nets provide crucial support for vulnerable populations and enhance adaptive capacity. In a city with very high low-income rates, this action addresses socio-demographic vulnerabilities and reduces overall risk."
     },
     {
         "locode": "BRRBR",
@@ -57,7 +57,7 @@
         "actionId": "c40_0054",
         "actionName": "Water Recycling",
         "actionPriority": 6,
-        "explanation": "At a quantitative score of 1.385, Water Recycling enhances the sustainability of water resources. This is particularly relevant for addressing water scarcity and improving overall resilience in a tropical environment."
+        "explanation": "Water Recycling addresses water scarcity issues by promoting efficient reuse of water. This action is aligned with the city\u2019s environmental context and improves resilience in the sectors affected by water shortages."
     },
     {
         "locode": "BRRBR",
@@ -67,7 +67,7 @@
         "actionId": "ipcc_0088",
         "actionName": "Building codes",
         "actionPriority": 7,
-        "explanation": "With a score of 1.37, updating building codes is a cost\u2010effective way to improve construction and ensure that new and retrofitted buildings are resilient to climate hazards. It directly supports risk reduction in infrastructure."
+        "explanation": "Improving building codes ensures that new and retrofitted buildings can better withstand climate hazards. This action is particularly relevant given the high risk associated with infrastructure damage from heatwaves and landslides."
     },
     {
         "locode": "BRRBR",
@@ -77,7 +77,7 @@
         "actionId": "ipcc_0094",
         "actionName": "Access to health care",
         "actionPriority": 8,
-        "explanation": "Scoring 1.33667, access to health care is critical for adapting to climate-related public health risks. This action improves community resilience against hazards like heatwaves and disease outbreaks, which are pressing in Rio Branco."
+        "explanation": "Access to health care is vital in mitigating the impacts of climate-related health risks, such as heat stress and disease outbreaks. Enhancing health care accessibility is especially important in socio-economically vulnerable contexts."
     },
     {
         "locode": "BRRBR",
@@ -87,7 +87,7 @@
         "actionId": "ipcc_0096",
         "actionName": "Farm/fishery improvements",
         "actionPriority": 9,
-        "explanation": "Also scoring 1.33667, this action focuses on improving agricultural and fishery practices, thereby enhancing food security. It is particularly relevant given the risks related to drought affecting food production in the region."
+        "explanation": "Farm and fishery improvements support the agriculture sector, which is tightly linked to land-use emissions\u2014the city's largest emission sector. This action not only improves livelihoods but also promotes more sustainable practices in a vulnerable sector."
     },
     {
         "locode": "BRRBR",
@@ -97,7 +97,7 @@
         "actionId": "ipcc_0097",
         "actionName": "Food storage/distribution improvements",
         "actionPriority": 10,
-        "explanation": "With a score of 1.33667, improving food storage and distribution systems helps to secure food supplies during crisis events. This action addresses food security, which is vital under increasing drought risks."
+        "explanation": "Enhancing food storage and distribution systems contributes to food security, particularly important in the face of drought and flooding hazards. Improved food systems reduce vulnerability and support a stable supply chain, addressing both adaptation and indirect emission concerns."
     },
     {
         "locode": "BRRBR",
@@ -107,7 +107,7 @@
         "actionId": "ipcc_0098",
         "actionName": "Behaviour change in diets and food waste",
         "actionPriority": 11,
-        "explanation": "Scoring 1.33667, this action is cost-effective and promotes sustainable food practices. It indirectly supports emissions reduction and resource efficiency, making it a relevant adaptation measure despite offering subtler immediate impacts."
+        "explanation": "Encouraging behavioural changes in diets and reducing food waste can indirectly lead to benefits in emissions reduction from the food system. This action is cost-effective and contributes to sustainable consumption practices."
     },
     {
         "locode": "BRRBR",
@@ -117,7 +117,7 @@
         "actionId": "ipcc_0100",
         "actionName": "Efficient water use/demand",
         "actionPriority": 12,
-        "explanation": "Also at 1.33667, efficient water use reduces strain on limited water resources and addresses vulnerabilities in water access. This action is a practical step to improve resource management in a city with high water access challenges."
+        "explanation": "This action targets improved management of water demand, a critical factor given the city's challenges with water access. It is cost-effective, and its quicker implementation can have immediate benefits in water conservation."
     },
     {
         "locode": "BRRBR",
@@ -127,7 +127,7 @@
         "actionId": "c40_0050",
         "actionName": "White Roofs",
         "actionPriority": 13,
-        "explanation": "With a score of 1.32167, White Roofs help lower urban heat islands and overall energy demand. This adaptation measure supports risk reduction related to heatwaves by enhancing building performance through passive cooling."
+        "explanation": "White Roofs help in reducing the urban heat island effect, thereby contributing to lower temperatures during heatwaves. Although its direct impact on the city\u2019s major emission sector is minimal, it is beneficial in urban adaptation."
     },
     {
         "locode": "BRRBR",
@@ -137,7 +137,7 @@
         "actionId": "c40_0051",
         "actionName": "Public Shading",
         "actionPriority": 14,
-        "explanation": "Matching a score of 1.32167, Public Shading improves outdoor thermal comfort, reducing heat exposure risks. As part of urban adaptation measures, it is effective in mitigating the effects of heatwaves and offers low dependency for rapid implementation."
+        "explanation": "Public Shading can mitigate heat stress in public spaces, enhancing outdoor comfort and reducing heat-related health risks. While its overall emissions impact is indirect, it aligns well with adaptation needs for heatwaves."
     },
     {
         "locode": "BRRBR",
@@ -147,7 +147,7 @@
         "actionId": "ipcc_0093",
         "actionName": "Availability of health infrastructure",
         "actionPriority": 15,
-        "explanation": "Scoring 1.27, enhancing health infrastructure ensures that the city is better prepared for climate-related public health emergencies. Given the vulnerability to heatwaves and disease, this action strengthens the overall adaptive capacity."
+        "explanation": "Improving the availability of health infrastructure strengthens the city\u2019s response capabilities during climate-induced health emergencies. Though similar to access to health care, its slightly lower composite score places it in a modestly lower ranking."
     },
     {
         "locode": "BRRBR",
@@ -157,7 +157,7 @@
         "actionId": "ipcc_0099",
         "actionName": "Water capture/storage",
         "actionPriority": 16,
-        "explanation": "Also at 1.27, improving water capture and storage is essential for managing periods of water scarcity. This action directly improves resilience against drought conditions and enhances local water security."
+        "explanation": "Water capture and storage improves resilience by securing water during periods of scarcity. While critical, it requires more extensive infrastructure investment and longer implementation times compared to other water-related measures."
     },
     {
         "locode": "BRRBR",
@@ -167,7 +167,7 @@
         "actionId": "ipcc_0101",
         "actionName": "Efficient water supply/distribution",
         "actionPriority": 17,
-        "explanation": "At a score of 1.27, ensuring efficient water supply and distribution addresses the critical issue of inadequate water access in Rio Branco. This action is key to improving service delivery and overall urban resilience."
+        "explanation": "Optimizing water supply and distribution is essential for ensuring consistent water access. This action addresses a core challenge in Rio Branco\u2019s environmental context, though its broader impact is similar to other water management actions."
     },
     {
         "locode": "BRRBR",
@@ -177,7 +177,7 @@
         "actionId": "ipcc_0102",
         "actionName": "Seasonal/temporary mobility",
         "actionPriority": 18,
-        "explanation": "Also with a score of 1.27, this action facilitates flexible movement in response to seasonal hazards. While it may have more dependencies compared to infrastructure improvements, it remains important for ensuring adaptive capacity during peak hazard periods."
+        "explanation": "Enhancing seasonal or temporary mobility helps the city adapt to disrupted transportation during climatic events. Although important, its impact is more specialized with longer-term benefits compared to more direct adaptation measures."
     },
     {
         "locode": "BRRBR",
@@ -187,7 +187,7 @@
         "actionId": "c40_0046",
         "actionName": "Coastal Protection",
         "actionPriority": 19,
-        "explanation": "Although Coastal Protection scored 1.235, it is less relevant for Rio Branco, an inland city with no direct coastal risks. Its lower sector relevance places it near the bottom of the priority list despite its general effectiveness in other contexts."
+        "explanation": "Coastal Protection is generally vital in mitigating sea level rise and coastal erosion; however, Rio Branco is an inland city within a tropical rainforest biome. This reduces its relevance, hence its lower priority."
     },
     {
         "locode": "BRRBR",
@@ -197,6 +197,6 @@
         "actionId": "c40_0059",
         "actionName": "Early Warning",
         "actionPriority": 20,
-        "explanation": "With a score of 1.235, this Early Warning action is similar to Disaster Early Warning but ranks lower due to a slightly lower score and potential overlap with ipcc_0095. Its relative ranking reflects the need to focus resources on the highest priority early warning systems already identified."
+        "explanation": "Although early warning systems are critical, this action appears redundant with the higher-priority 'Disaster early warning' (ipcc_0095) and has a lower composite score. Its additional benefits are therefore seen as supplementary."
     }
 ]

@@ -7,7 +7,7 @@
         "actionId": "ipcc_0091",
         "actionName": "Diversification of livelihoods ",
         "actionPriority": 1,
-        "explanation": "This action has the highest quantitative score (1.52) and is crucial for building resilience among vulnerable, low\u2010income populations. Diversifying livelihoods reduces dependency on a single income source, which is particularly important given the city's socio-economic challenges and high risks related to food security and other hazards."
+        "explanation": "Ranked highest due to its top quantitative score and its potential to improve socio-economic resilience across multiple sectors. It supports adaptive capacity by diversifying income sources, which is crucial in managing the large-scale impacts of climate hazards in Caxias do Sul."
     },
     {
         "locode": "BRCXL",
@@ -17,7 +17,7 @@
         "actionId": "c40_0053",
         "actionName": "Water Savings",
         "actionPriority": 2,
-        "explanation": "Ranked second with a strong score (1.485), Water Savings directly addresses water resource management. Although water risks are moderate for Caxias do Sul, ensuring efficient water use is essential in adaptation strategies and supports resilience against drought and other hydrological challenges."
+        "explanation": "Ranked second because it carries a very high quantitative score and addresses water resource sustainability. Even though water-related risks are moderate, conserving water helps prepare the city for droughts and supports cost\u2010effective adaptation."
     },
     {
         "locode": "BRCXL",
@@ -27,7 +27,7 @@
         "actionId": "ipcc_0093",
         "actionName": "Availability of health infrastructure",
         "actionPriority": 3,
-        "explanation": "With a score of 1.4367, this action directly improves public health readiness. Considering the high risk from diseases and heatwaves, improving health infrastructure is critical for safeguarding the community during climate-induced health crises."
+        "explanation": "This action directly supports improved resilience in public health\u2014important given the city\u2019s elevated risks related to diseases and heatwaves. Its high quantitative score underlines its critical role in addressing vulnerabilities in the socio-demographic context."
     },
     {
         "locode": "BRCXL",
@@ -37,7 +37,7 @@
         "actionId": "ipcc_0087",
         "actionName": "Infrastructure retrofitting",
         "actionPriority": 4,
-        "explanation": "Infrastructure retrofitting (score 1.435) is vital for reducing the vulnerability of critical systems to climate hazards like landslides and flooding, which have extremely high risk scores in the city. This action ensures that built infrastructure can better withstand geo-hydrological events."
+        "explanation": "Infrastructure retrofitting is essential for reducing risks from extreme events like floods and landslides (which have very high risk scores in Caxias do Sul). Its strong quantitative score shows it is both cost-effective and timely, making it a high priority."
     },
     {
         "locode": "BRCXL",
@@ -47,7 +47,7 @@
         "actionId": "ipcc_0095",
         "actionName": "Disaster early warning",
         "actionPriority": 5,
-        "explanation": "At a quantitative score of 1.42, Disaster Early Warning systems are essential for timely alerts in the face of severe hazards such as landslides and flooding. Quick warning systems reduce impact and allow for faster mobilization of emergency responses."
+        "explanation": "Directly addresses urgent climate hazards by allowing timely responses to disasters such as flooding and landslides. Though its quantitative score is slightly lower than the top actions, its potential for rapid impact and risk reduction warrants its high ranking."
     },
     {
         "locode": "BRCXL",
@@ -57,7 +57,7 @@
         "actionId": "c40_0054",
         "actionName": "Water Recycling",
         "actionPriority": 6,
-        "explanation": "With a score of 1.385, Water Recycling complements water savings and helps maximize water resource efficiency. This is especially relevant when adapting to potential water shortages, even if water risk is not the highest among hazards."
+        "explanation": "Water Recycling enhances the resilience of water supply systems, complementing the water savings strategy. Its good quantitative score and role in supporting water security make it an important and cost-effective adaptation measure."
     },
     {
         "locode": "BRCXL",
@@ -67,7 +67,7 @@
         "actionId": "ipcc_0088",
         "actionName": "Building codes",
         "actionPriority": 7,
-        "explanation": "Building codes (score 1.37) are fundamental in enforcing standards that enhance structural resilience. They reduce disaster risks by ensuring that new and retrofitted constructions can better withstand harsh events, aligning with high priority hazard mitigation."
+        "explanation": "Improving building codes strengthens the resilience of new and existing constructions against climate hazards. With a solid quantitative score, it minimizes risk through standardization in construction practices and helps reduce potential damages."
     },
     {
         "locode": "BRCXL",
@@ -77,7 +77,7 @@
         "actionId": "ipcc_0092",
         "actionName": "Social safety nets",
         "actionPriority": 8,
-        "explanation": "With a score of 1.27, Social Safety Nets are crucial for safeguarding socio-economically vulnerable populations. Given the city\u2019s high low-income rates, this action supports resilience by providing financial and social support during and after climate-related disruptions."
+        "explanation": "Social safety nets are vital for supporting vulnerable populations in a city with very high low-income rates. Although its quantitative score is in the mid-range, its socio-demographic importance in reducing vulnerabilities is significant."
     },
     {
         "locode": "BRCXL",
@@ -87,7 +87,7 @@
         "actionId": "ipcc_0099",
         "actionName": "Water capture/storage",
         "actionPriority": 9,
-        "explanation": "Also scoring 1.27, this action improves water resource management by capturing and storing water during periods of abundance. While similar in function to water savings and recycling, its role is more about storage rather than reduction of waste, making it slightly less immediate."
+        "explanation": "This action improves water management through improved capture and storage, which is key for climate adaptation. Its quantitative score suggests it is effective and cost-friendly in enhancing the city\u2019s resilience to water-related hazards."
     },
     {
         "locode": "BRCXL",
@@ -97,7 +97,7 @@
         "actionId": "ipcc_0101",
         "actionName": "Efficient water supply/distribution",
         "actionPriority": 10,
-        "explanation": "At the same score of 1.27, Efficient Water Supply/Distribution focuses on ensuring reliable access to water. Its timely implementation can help mitigate disruptions, though it comes after direct water conservation measures."
+        "explanation": "Enhancing water supply and distribution infrastructure further secures water availability and supports adaptation measures. Its role in reducing risks from water supply disruptions justifies its mid-tier ranking."
     },
     {
         "locode": "BRCXL",
@@ -107,7 +107,7 @@
         "actionId": "ipcc_0102",
         "actionName": "Seasonal/temporary mobility",
         "actionPriority": 11,
-        "explanation": "Also with a score of 1.27, Seasonal/Temporary Mobility offers flexibility for populations to move in response to climate hazards. However, its impact is more dependent on complementary infrastructure and planning, making it a lower priority compared to other water and infrastructure actions."
+        "explanation": "This action facilitates adaptive mobility during extreme weather events. Despite sharing the same quantitative score as other water and social actions, its implementation complexity and dependency on other measures place it slightly lower."
     },
     {
         "locode": "BRCXL",
@@ -117,7 +117,7 @@
         "actionId": "c40_0059",
         "actionName": "Early Warning",
         "actionPriority": 12,
-        "explanation": "With a score of 1.235, this Early Warning system further strengthens the city\u2019s capacity to respond to emergencies. While similar in function to the higher-ranked Disaster Early Warning action, it is seen as a supplementary measure."
+        "explanation": "A focused early warning system supports rapid response mechanisms similar to disaster early warning. Its score supports its potential, though it overlaps with other early warning measures and hence ranks slightly below the primary disaster early warning action."
     },
     {
         "locode": "BRCXL",
@@ -127,7 +127,7 @@
         "actionId": "c40_0046",
         "actionName": "Coastal Protection",
         "actionPriority": 13,
-        "explanation": "Scoring 1.235, Coastal Protection is designed to defend against sea-level related hazards. However, given Caxias do Sul\u2019s inland location and high elevation, the environmental compatibility is lower, reducing its priority despite the solid score."
+        "explanation": "While effective in coastal contexts, in an inland city like Caxias do Sul this action is less directly relevant. Despite a decent quantitative score, its sector relevance is lower, pushing it further down the priority list."
     },
     {
         "locode": "BRCXL",
@@ -137,7 +137,7 @@
         "actionId": "ipcc_0090",
         "actionName": "Insurance",
         "actionPriority": 14,
-        "explanation": "With a score of 1.19, Insurance helps manage financial risks following a disaster. It is an important risk transfer tool, though its indirect impact on immediate hazard mitigation places it below direct infrastructure and early warning measures."
+        "explanation": "Insurance mechanisms offer financial protection against climate impacts. Its moderate quantitative score is balanced by the benefit of buffering economic risks following disasters, making it an important, though not top-tier, measure."
     },
     {
         "locode": "BRCXL",
@@ -147,7 +147,7 @@
         "actionId": "ipcc_0082",
         "actionName": "Coastal Infrastructure",
         "actionPriority": 15,
-        "explanation": "This action scores 1.185 and typically supports adaptation along coastlines. For Caxias do Sul, an inland city, the relevance is significantly diminished, leading to a lower priority status despite the moderate quantitative score."
+        "explanation": "Similar to coastal protection, coastal infrastructure is less applicable to an inland city. Despite a reasonable quantitative score, its low sector relevance in Caxias do Sul renders it a lower priority compared to other adaptation measures."
     },
     {
         "locode": "BRCXL",
@@ -157,7 +157,7 @@
         "actionId": "ipcc_0094",
         "actionName": "Access to health care",
         "actionPriority": 16,
-        "explanation": "Also with a score of 1.17, Access to Health Care is essential for ensuring community well-being during climate-induced stresses. Although critical, it ranks just below the foundational health infrastructure improvements that have a higher score and impact."
+        "explanation": "Access to health care is essential to address the high public health risks in Caxias do Sul, particularly regarding disease vulnerability. Although its quantitative score is at the lower end, its direct impact on community well-being raises its priority."
     },
     {
         "locode": "BRCXL",
@@ -167,17 +167,7 @@
         "actionId": "ipcc_0084",
         "actionName": "Restore/create natural areas",
         "actionPriority": 17,
-        "explanation": "At 1.17, restoring and creating natural areas supports ecosystem services and can mitigate some climate effects such as flooding. However, compared to direct risk reduction measures, its impact is more long term, hence a lower ranking."
-    },
-    {
-        "locode": "BRCXL",
-        "cityName": "Caxias do Sul",
-        "region": "BR-RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0096",
-        "actionName": "Farm/fishery improvements",
-        "actionPriority": 18,
-        "explanation": "This action, scoring 1.17, addresses aspects of food security and rural resilience. In an urban setting like Caxias do Sul, it is beneficial but relatively less urgent compared to actions directly mitigating urban climate hazards."
+        "explanation": "Restoring or creating natural areas can enhance ecosystem services and offer a nature-based solution to mitigate various climate hazards. Its benefits in environmental compatibility and long-term resilience justify its position."
     },
     {
         "locode": "BRCXL",
@@ -186,8 +176,18 @@
         "regionName": "Rio Grande do Sul",
         "actionId": "ipcc_0097",
         "actionName": "Food storage/distribution improvements",
+        "actionPriority": 18,
+        "explanation": "Improving food storage and distribution addresses food security, a notable risk for the city. While similar in score to other lower-ranked actions, its direct impact on ensuring food availability during crises ranks it above more specialized, less urban-centric measures."
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "ipcc_0096",
+        "actionName": "Farm/fishery improvements",
         "actionPriority": 19,
-        "explanation": "Also scoring 1.17, improving food storage and distribution systems enhances food security under crisis conditions. Its impact is somewhat indirect and its benefits are realized over a longer timeline, placing it just below direct livelihood or infrastructural measures."
+        "explanation": "Farm and fishery improvements are important for food production but are less central in an urban setting like Caxias do Sul. Although beneficial, this action is slightly less critical compared to actions directly addressing urban vulnerabilities."
     },
     {
         "locode": "BRCXL",
@@ -197,6 +197,6 @@
         "actionId": "ipcc_0098",
         "actionName": "Behaviour change in diets and food waste",
         "actionPriority": 20,
-        "explanation": "With the same score of 1.17, this action targets long-term reductions in food waste and promotes sustainable diets. Although beneficial for both mitigation and adaptation indirectly, its slower impact and reliance on behavioural change make it the lowest priority in this ranking."
+        "explanation": "While promoting behavior change in diets and reducing food waste can have long-term benefits and moderate emissions reductions, its immediate adaptation impact is lower. This makes it the lowest priority among the listed actions."
     }
 ]

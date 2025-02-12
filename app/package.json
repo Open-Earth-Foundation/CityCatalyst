@@ -36,7 +36,7 @@
   },
   "dependencies": {
     "@ai-sdk/openai": "^1.0.8",
-    "@chakra-ui/react": "^3.5.1",
+    "@chakra-ui/react": "^3.8.0",
     "@emotion/react": "^11.14.0",
     "@hookform/resolvers": "^3.10.0",
     "@huggingface/inference": "^2.8.0",

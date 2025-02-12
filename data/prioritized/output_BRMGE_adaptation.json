@@ -7,17 +7,7 @@
         "actionId": "ipcc_0087",
         "actionName": "Infrastructure retrofitting",
         "actionPriority": 1,
-        "explanation": "This action has the highest quantitative score and is critical for enhancing urban resilience by retrofitting infrastructure. In a city facing high risks (e.g., drought, heatwaves) and having vulnerable infrastructure, retrofitting helps reduce damage and improve safety. Although it is an adaptation measure, its potential to safeguard the city\u2019s most affected sectors makes it a top priority."
-    },
-    {
-        "locode": "BRMGE",
-        "cityName": "Maranguape",
-        "region": "BR-CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "ipcc_0095",
-        "actionName": "Disaster early warning",
-        "actionPriority": 2,
-        "explanation": "Disaster early warning, with a high quantitative score, is crucial for minimizing the impacts of extreme events. It allows for timely responses to hazards like drought- and heat-related disasters, which are significant in this city\u2019s risk profile."
+        "explanation": "This action received the highest quantitative score (1.535) and is fundamental for strengthening built infrastructure. In a desert city facing multiple climate hazards, retrofitting critical infrastructure ensures resilience against extreme weather events and hazards, while also potentially reducing secondary emissions through improved energy efficiency. It addresses rapid implementation with a clear impact on reducing vulnerability."
     },
     {
         "locode": "BRMGE",
@@ -26,8 +16,18 @@
         "regionName": "Cear\u00e1",
         "actionId": "ipcc_0091",
         "actionName": "Diversification of livelihoods ",
+        "actionPriority": 2,
+        "explanation": "Ranked second with a score of 1.52, this action is essential given the city\u2019s socio-economic context (high low-income population). Diversifying livelihoods can help communities move away from climate-sensitive sectors, mitigating risks such as food insecurity, which is rated very high in this region. It addresses both social and sector relevance criteria."
+    },
+    {
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "ipcc_0095",
+        "actionName": "Disaster early warning",
         "actionPriority": 3,
-        "explanation": "Diversifying livelihoods enhances community resilience by reducing dependency on a single economic sector. This is especially relevant in a city with high socio-economic vulnerability and exposure to drought, thereby indirectly supporting food and energy security."
+        "explanation": "Also scoring 1.52, Disaster early warning is crucial for timely responses to climate hazards like flooding and heatwaves. Its ability to reduce risk rapidly through early detection aligns directly with the prioritized guidelines, especially when immediate risk reduction can save lives and reduce financial losses."
     },
     {
         "locode": "BRMGE",
@@ -37,7 +37,7 @@
         "actionId": "c40_0053",
         "actionName": "Water Savings",
         "actionPriority": 4,
-        "explanation": "Water Savings directly addresses the city\u2019s water scarcity challenges in a desert biome, helping to conserve limited water resources. Given the high drought risks affecting water availability, this action is critical."
+        "explanation": "With a score of 1.485, Water Savings is particularly important in a desert environment. This action targets water resource management, a key concern given the city's vulnerability to drought and the high risk scores related to water resources. The cost-effectiveness and quick implementation further its priority."
     },
     {
         "locode": "BRMGE",
@@ -47,7 +47,7 @@
         "actionId": "c40_0054",
         "actionName": "Water Recycling",
         "actionPriority": 5,
-        "explanation": "Water Recycling is vital for ensuring a sustainable supply of water in a drought-prone environment. It supports the long-term management of water resources and aids in reducing the risks associated with water scarcity."
+        "explanation": "Scoring 1.385, Water Recycling further enhances water sustainability in an environment with limited water availability. This strategy is pivotal for climate adaptation in desert regions and addresses both environmental compatibility and cost-effectiveness through potential long-term savings."
     },
     {
         "locode": "BRMGE",
@@ -57,7 +57,7 @@
         "actionId": "ipcc_0088",
         "actionName": "Building codes",
         "actionPriority": 6,
-        "explanation": "Implementing rigorous building codes can improve the resilience and energy efficiency of new constructions. This adaptation action is important for mitigating structural vulnerabilities in the face of climate hazards."
+        "explanation": "Achieving a quantitative score of 1.37, Building codes are a foundational measure for long\u2010term adaptation. They help ensure that new constructions and retrofits adhere to resilient standards, which is critical in climates with extreme heat and potential for other hazards. The action also minimizes dependencies and speeds up implementation toward safer structures."
     },
     {
         "locode": "BRMGE",
@@ -67,7 +67,7 @@
         "actionId": "ipcc_0092",
         "actionName": "Social safety nets",
         "actionPriority": 7,
-        "explanation": "Social safety nets are essential for protecting the population, particularly given the city's very high low-income socio-economic factors. This measure helps cushion vulnerable communities during climate-induced disruptions."
+        "explanation": "Also scoring 1.37, Social safety nets are highly relevant given the city\u2019s very high low-income demographic. This measure is crucial for addressing socio-demographic vulnerabilities by providing a cushion during climate-related disruptions, ensuring that the most affected communities are protected."
     },
     {
         "locode": "BRMGE",
@@ -77,7 +77,7 @@
         "actionId": "ipcc_0093",
         "actionName": "Availability of health infrastructure",
         "actionPriority": 8,
-        "explanation": "Improving health infrastructure is key to addressing the public health risks posed by heatwaves and other climate hazards. It ensures that the city can better respond to health emergencies during extreme events."
+        "explanation": "With a quantitative score of 1.37, enhancing health infrastructure is critical in mitigating risks from heatwaves and other climate hazards that affect public health. Robust health services can rapidly address emerging issues, providing a resilient framework for adaptation in a vulnerable city."
     },
     {
         "locode": "BRMGE",
@@ -87,7 +87,7 @@
         "actionId": "ipcc_0094",
         "actionName": "Access to health care",
         "actionPriority": 9,
-        "explanation": "Enhancing access to health care further strengthens the city\u2019s capacity to deal with the adverse effects of climate hazards, protecting public health especially in a vulnerable socio-economic context."
+        "explanation": "Matching the 1.27 score, improving access to health care directly supports community well\u2010being. In a context where public health risks from heatwaves and drought-induced issues are high, this measure is a critical part of the adaptation portfolio, ensuring that necessary services are available during climate emergencies."
     },
     {
         "locode": "BRMGE",
@@ -97,7 +97,7 @@
         "actionId": "ipcc_0096",
         "actionName": "Farm/fishery improvements",
         "actionPriority": 10,
-        "explanation": "Farm and fishery improvements support food security in a region facing high drought risk. By making agricultural practices more resilient, this action contributes to stabilizing food supplies during climate extremes."
+        "explanation": "With a score of 1.27, this action targets the primary economic sectors that can be severely impacted by climate variability, particularly drought. Enhancing the resilience and productivity of farming and fishery activities directly contributes to food security and economic stability."
     },
     {
         "locode": "BRMGE",
@@ -107,7 +107,7 @@
         "actionId": "ipcc_0097",
         "actionName": "Food storage/distribution improvements",
         "actionPriority": 11,
-        "explanation": "Improving food storage and distribution systems is pivotal for maintaining food security levels during periods of climate stress, such as prolonged droughts that affect food production."
+        "explanation": "Equally scoring 1.27, improvements in food storage and distribution reduce food spoilage and ensure steady availability during climate disruptions. This action is directly connected to mitigating food security issues, a key risk for the city under recurring drought conditions."
     },
     {
         "locode": "BRMGE",
@@ -117,7 +117,7 @@
         "actionId": "ipcc_0098",
         "actionName": "Behaviour change in diets and food waste",
         "actionPriority": 12,
-        "explanation": "Encouraging behavioural changes regarding diets and food waste can reduce the overall pressure on food systems. Although its quantitative score is moderate, it contributes to reducing food insecurity and enhancing resource efficiency."
+        "explanation": "Scoring 1.27, this initiative fosters sustainable consumption habits that contribute indirectly to emissions reductions and resource conservation. By encouraging less waste and greater efficiency in food consumption, it supports broader environmental compatibility and long-term resilience."
     },
     {
         "locode": "BRMGE",
@@ -127,7 +127,7 @@
         "actionId": "ipcc_0099",
         "actionName": "Water capture/storage",
         "actionPriority": 13,
-        "explanation": "Water capture and storage methods are critical for increasing local resilience against drought by ensuring that available water is effectively harvested and stored for use during scarcity."
+        "explanation": "Also at 1.27, this action is aligned with the urgent need to manage water scarcity in a desert environment. By capturing and storing water during periods of availability, the city can better manage drought risks and ensure sustainable water supplies for both residential and industrial needs."
     },
     {
         "locode": "BRMGE",
@@ -137,7 +137,7 @@
         "actionId": "ipcc_0100",
         "actionName": "Efficient water use/demand",
         "actionPriority": 14,
-        "explanation": "Optimizing water use to match demand is particularly important for a city in a desert biome. This action supports conservation efforts and increases the overall efficiency of water resource management."
+        "explanation": "With a score of 1.27, promoting efficient water use and demand management is critical in a water-stressed region. This action is cost-effective and can be implemented quickly, reducing unnecessary consumption and easing pressure on limited water resources."
     },
     {
         "locode": "BRMGE",
@@ -147,7 +147,7 @@
         "actionId": "ipcc_0101",
         "actionName": "Efficient water supply/distribution",
         "actionPriority": 15,
-        "explanation": "Improving the efficiency of water supply and distribution systems ensures reliable access even during water shortages. In a drought-prone environment, this adaptation is indispensable."
+        "explanation": "Also carrying a score of 1.27, enhancing the efficiency of water supply networks minimizes losses and improves service delivery. This is particularly important in a desert environment, making it a key component of a robust water management strategy."
     },
     {
         "locode": "BRMGE",
@@ -157,7 +157,7 @@
         "actionId": "ipcc_0102",
         "actionName": "Seasonal/temporary mobility",
         "actionPriority": 16,
-        "explanation": "Enhancing seasonal or temporary mobility helps communities adapt during extreme weather events by allowing flexibility in movement. This action is less directly tied to water or food security but contributes to overall resilience."
+        "explanation": "This action, with a score of 1.27, facilitates adaptive responses to seasonal climate variations. By improving temporary mobility, it helps maintain connectivity and access during extreme weather events, although it may involve moderate dependencies compared to other measures."
     },
     {
         "locode": "BRMGE",
@@ -167,7 +167,7 @@
         "actionId": "c40_0050",
         "actionName": "White Roofs",
         "actionPriority": 17,
-        "explanation": "White Roofs help lower urban temperatures by reflecting sunlight. While its quantitative score is slightly lower, it reduces the urban heat island effect and contributes to mitigating heat stress, which is beneficial in a desert climate."
+        "explanation": "Scoring 1.255, White Roofs contribute to reducing the urban heat island effect\u2014a significant concern in desert climates. This cost-effective solution also helps in reducing building energy loads and is rapidly deployable, aligning well with the guideline of quick implementation."
     },
     {
         "locode": "BRMGE",
@@ -177,7 +177,7 @@
         "actionId": "c40_0051",
         "actionName": "Public Shading",
         "actionPriority": 18,
-        "explanation": "Public Shading enhances outdoor comfort and reduces heat stress, contributing to public health improvements. It is especially relevant in mitigating the impacts of heatwaves, even though its direct impact may be less extensive than water-related actions."
+        "explanation": "Also with a score of 1.255, Public Shading is an effective measure to lower ambient temperatures, combating the effects of heatwaves. This relatively low-cost and fast-to-implement action is important for protecting public health in high-temperature conditions."
     },
     {
         "locode": "BRMGE",
@@ -187,7 +187,7 @@
         "actionId": "c40_0046",
         "actionName": "Coastal Protection",
         "actionPriority": 19,
-        "explanation": "Although Coastal Protection typically addresses sea level rise and coastal erosion, its relevance is lower for Maranguape, which is inland and features a desert biome. Therefore, it is ranked lower despite still offering benefits in risk reduction."
+        "explanation": "Though it scores 1.235, Coastal Protection is less relevant for an inland desert city like Maranguape. Its lower sector relevance and environmental compatibility in this specific context result in a lower ranking despite its general merits in other coastal settings."
     },
     {
         "locode": "BRMGE",
@@ -197,6 +197,6 @@
         "actionId": "c40_0059",
         "actionName": "Early Warning",
         "actionPriority": 20,
-        "explanation": "This early warning measure is similar in function to the higher-ranked Disaster early warning but has a slightly lower quantitative score and overlaps in scope, resulting in a lower priority placement."
+        "explanation": "Also scoring 1.235, this early warning measure is similar in intent to Disaster Early Warning but carries a lower quantitative score here. It remains important for risk reduction; however, compared to the more comprehensive early warning systems ranked higher, it is prioritized last."
     }
 ]

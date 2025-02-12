@@ -78,12 +78,12 @@ def calculate_emissions_reduction(city, action):
         reduction_str = ghg_potential.get(sector) if ghg_potential else None
         if reduction_str is None:
             continue
-        if reduction_str and reduction_str in reduction_mapping:
+        elif reduction_str and reduction_str in reduction_mapping:
             print("Reduction string:", reduction_str)
             print("Reduction mapping:", reduction_mapping[reduction_str])
             reduction_percentage = reduction_mapping[reduction_str]
             city_emission = city.get(city_emission_key, 0)
-            print("City emission:", city_emission)
+            print("City emission: " + str(city_emission) + " for " + city_emission_key)
             reduction_amount = city_emission * reduction_percentage
             total_reduction += reduction_amount
 
@@ -140,7 +140,6 @@ def quantitative_score(city, action):
     # PrimaryPurpose - use only for LLM
 
     # Sector - if it matches the most emmissions intensive sectors gets bonus points
-    weights_emissions = weights.get("GHGReductionPotential", 1)
     total_emission_reduction_all_sectors = calculate_emissions_reduction(city, action)
     print(
         "Total emissions reduction for all sectors:",
@@ -153,7 +152,7 @@ def quantitative_score(city, action):
             total_emission_reduction_all_sectors / total_emissions
         ) * 100
         print("Reduction percentage:", reduction_percentage)
-        score += round(reduction_percentage  * weights_emissions, 3)
+        score += round(reduction_percentage, 3)
     print("Score after emissions reduction:", score)
 
     # Calculate for every sector

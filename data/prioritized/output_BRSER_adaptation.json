@@ -7,7 +7,7 @@
         "actionId": "ipcc_0087",
         "actionName": "Infrastructure retrofitting",
         "actionPriority": 1,
-        "explanation": "This action receives the highest rank because it directly addresses the city\u2019s most critical infrastructural vulnerabilities. Given Serra\u2019s high risk from hazards such as heatwaves, landslides, and floods (as seen with near\u2010max risk scores for infrastructure hazards), retrofitting can significantly reduce damage and indirectly lower related emissions from emergency repairs. Its high quantitative score (1.56) underscores its prioritization."
+        "explanation": "This action received the highest quantitative score (1.56) and is critical for reducing risk to key urban infrastructure. Given the very high exposure of Serra\u2019s built environment to hazards such as heatwaves, flooding, and landslides, retrofitting protects assets while potentially delivering energy and emissions co-benefits. It therefore ranks highest under the guidelines emphasizing risk reduction combined with the need for rapid, cost\u2010effective intervention."
     },
     {
         "locode": "BRSER",
@@ -17,7 +17,7 @@
         "actionId": "ipcc_0095",
         "actionName": "Disaster early warning",
         "actionPriority": 2,
-        "explanation": "Ranked second, disaster early warning is essential to mitigate the high risk associated with natural hazards. Fast response capacities are critical in preventing loss of life and reducing infrastructure damage. Its strong quantitative score (1.545) and capacity to quickly activate risk reduction protocols justify its prioritization."
+        "explanation": "With a quantitative score of 1.545, this action is crucial for mitigating disaster impact across multiple hazards (flooding, landslides, heatwaves). An effective early warning system helps in saving lives and reducing economic losses, aligning with risk reduction priorities while serving vulnerable populations in Serra."
     },
     {
         "locode": "BRSER",
@@ -27,7 +27,7 @@
         "actionId": "ipcc_0091",
         "actionName": "Diversification of livelihoods ",
         "actionPriority": 3,
-        "explanation": "Diversifying livelihoods increases community resilience by reducing dependency on single economic sectors, especially in a context of socio-economic vulnerability. With a quantitative score of 1.52, it helps mitigate socio-demographic and economic risks in Serra, making it a top adaptation priority."
+        "explanation": "Scored at 1.52, this action addresses socio-demographic vulnerabilities in Serra, where low-income levels are very high. Strengthening and diversifying livelihoods provides resilience against climate shocks and supports community adaptive capacity, making it a high priority despite being less directly oriented toward emissions reductions."
     },
     {
         "locode": "BRSER",
@@ -37,7 +37,7 @@
         "actionId": "c40_0053",
         "actionName": "Water Savings",
         "actionPriority": 4,
-        "explanation": "Water Savings delivers multiple benefits. Although Serra enjoys a tropical rainforest setting, pressures on water supply can arise from drought hazards. Its quantitative score of 1.485 and potential to improve water efficiency and reduce overall resource strain justify its high ranking."
+        "explanation": "With a score of 1.485, Water Savings is essential in a city facing water resource risks due to drought and water scarcity. It supports efficient water use and lowers pressure on water supply systems. This aligns with environmental compatibility and cost-effectiveness criteria."
     },
     {
         "locode": "BRSER",
@@ -47,7 +47,7 @@
         "actionId": "ipcc_0092",
         "actionName": "Social safety nets",
         "actionPriority": 5,
-        "explanation": "Social safety nets are crucial for a city with very high low-income demographics. With a score of 1.395, this action directly addresses socio-economic vulnerabilities, ensuring that households have support during climate-induced crises, enhancing overall community resilience."
+        "explanation": "This action, with a score of 1.395, is key for providing immediate assistance to vulnerable populations. Given Serra\u2019s high proportion of low-income residents, strengthening social safety nets improves socio-economic resilience and helps mitigate climate-related shocks."
     },
     {
         "locode": "BRSER",
@@ -57,7 +57,7 @@
         "actionId": "ipcc_0093",
         "actionName": "Availability of health infrastructure",
         "actionPriority": 6,
-        "explanation": "Improving health infrastructure is key given the high public health risks (especially heatwaves and disease risks) observed in Serra. With a quantitative score of 1.395, this action helps in reducing risks to public health and ensures fast response in emergencies."
+        "explanation": "At a score of 1.395, ensuring robust health infrastructure is critical in a city with significant public health risks (i.e., heatwaves and climate-induced diseases). This action improves resilience by enhancing community health preparedness, especially given rapid climate shifts."
     },
     {
         "locode": "BRSER",
@@ -67,7 +67,7 @@
         "actionId": "c40_0054",
         "actionName": "Water Recycling",
         "actionPriority": 7,
-        "explanation": "Water Recycling is ranked highly (score 1.385) because it enhances water resource management\u2014a critical issue given potential drought hazards. It supports cost-effectiveness and reduces resource dependency while improving overall sustainability."
+        "explanation": "Scoring 1.385, water recycling is a cost\u2010effective and environmentally compatible strategy to boost water availability. Its adoption is particularly relevant for managing drought impacts in Serra, reinforcing the city's adaptive capacity."
     },
     {
         "locode": "BRSER",
@@ -77,7 +77,7 @@
         "actionId": "ipcc_0088",
         "actionName": "Building codes",
         "actionPriority": 8,
-        "explanation": "Establishing or updating building codes is a solid long-term adaptation strategy. With a score of 1.37, this action ensures that future constructions are more resilient to climate impacts such as heatwaves and landslides, reducing future repair and emission costs."
+        "explanation": "A score of 1.37 makes strengthening building codes a priority. Updated codes not only enhance safety and resilience against disasters such as floods and landslides, they may also lead to indirect emissions reduction through more energy-efficient constructions. This criterion addresses both risk reduction and sector relevance."
     },
     {
         "locode": "BRSER",
@@ -87,7 +87,7 @@
         "actionId": "ipcc_0094",
         "actionName": "Access to health care",
         "actionPriority": 9,
-        "explanation": "Access to health care becomes critical during climate-induced emergencies, notably when public health risks are high. Its score of 1.295, combined with pressing health hazards like heatwaves, makes it a priority to safeguard vulnerable populations in Serra."
+        "explanation": "At 1.295, expanding health care access is fundamental given the city's elevated public health risks. This action is vital for ensuring that climate-related health emergencies can be managed effectively by the community, particularly in a low-income context."
     },
     {
         "locode": "BRSER",
@@ -97,7 +97,7 @@
         "actionId": "ipcc_0096",
         "actionName": "Farm/fishery improvements",
         "actionPriority": 10,
-        "explanation": "Farm and fishery improvements can bolster the resilience of primary food sources and local economies. With a score of 1.295, this action is important for ensuring food security\u2014a concern underscored by moderate flood and drought risks affecting agricultural activities."
+        "explanation": "With a 1.295 score, improving agricultural and fishery practices enhances local food security under drought and flood conditions. This action supports both sector relevance and socio-demographic suitability by strengthening the resilience of critical rural livelihoods near urban areas."
     },
     {
         "locode": "BRSER",
@@ -107,7 +107,7 @@
         "actionId": "ipcc_0097",
         "actionName": "Food storage/distribution improvements",
         "actionPriority": 11,
-        "explanation": "Improving food storage and distribution is vital to reduce post-disaster food shortages and waste. Scoring 1.295, it also complements other adaptation strategies by reinforcing the food supply chain in face of climate hazards."
+        "explanation": "Also scoring 1.295, enhancing food storage and distribution infrastructure is critical for maintaining food security during climate disruptions. This action addresses risk reduction and ensures that vulnerable populations have timely access to essential supplies."
     },
     {
         "locode": "BRSER",
@@ -117,7 +117,7 @@
         "actionId": "ipcc_0098",
         "actionName": "Behaviour change in diets and food waste",
         "actionPriority": 12,
-        "explanation": "Encouraging behavioural changes regarding diets and food waste supports long-term sustainability and resource efficiency. With a score of 1.295, it contributes to risk reduction and economic resilience while having a relatively low implementation cost."
+        "explanation": "With a score of 1.295, this action focuses on long-term societal changes towards sustainable consumption. While its immediate impact may be slower compared to infrastructure measures, it is cost-effective in the long run and promotes lower emissions indirectly."
     },
     {
         "locode": "BRSER",
@@ -127,7 +127,7 @@
         "actionId": "ipcc_0100",
         "actionName": "Efficient water use/demand",
         "actionPriority": 13,
-        "explanation": "Enhancing efficient water use directly tackles resource challenges by reducing pressure on water supplies during scarcity events. Its score of 1.295 places it as a critical, cost-effective adaptation measure in Serra."
+        "explanation": "This 1.295-scoring action improves water efficiency and helps manage demand in a city vulnerable to drought. It has the benefits of lowering operational costs and minimizing environmental impacts, thus aligning with both cost-effectiveness and environmental compatibility guidelines."
     },
     {
         "locode": "BRSER",
@@ -137,7 +137,7 @@
         "actionId": "c40_0050",
         "actionName": "White Roofs",
         "actionPriority": 14,
-        "explanation": "White Roofs offer a passive cooling strategy that can reduce heat absorption and lower urban temperatures. A score of 1.28 indicates moderate benefits, particularly in the context of heatwave risks, making it a practical and cost-effective intervention."
+        "explanation": "At a score of 1.28, installing white roofs helps reduce urban heat island effects. This action enhances energy efficiency and can indirectly support emissions reduction, while offering a relatively low-cost implementation option suitable for Serra\u2019s urban fabric."
     },
     {
         "locode": "BRSER",
@@ -147,7 +147,7 @@
         "actionId": "c40_0051",
         "actionName": "Public Shading",
         "actionPriority": 15,
-        "explanation": "Public Shading helps mitigate urban heat island effects while offering immediate comfort to residents during extreme heat events. With an equal score of 1.28, it is prioritized slightly after White Roofs based on ease of deployment in public spaces."
+        "explanation": "Also scoring 1.28, public shading initiatives contribute to lowering ambient temperatures and reducing energy consumption. Their simplicity and scalability make them a favorable option for quickly reducing heat-related risks in urban environments."
     },
     {
         "locode": "BRSER",
@@ -157,7 +157,7 @@
         "actionId": "ipcc_0099",
         "actionName": "Water capture/storage",
         "actionPriority": 16,
-        "explanation": "This action focuses on enhancing water reserves during periods of surplus to prepare for droughts. Scoring 1.27, it is key to ensuring a sustainable water supply, addressing both cost-effectiveness and risk management."
+        "explanation": "With a score of 1.27, this action is important for enhancing local water security by capturing and storing water during periods of abundance. It supports resilience against drought conditions and complements other water management strategies."
     },
     {
         "locode": "BRSER",
@@ -167,7 +167,7 @@
         "actionId": "ipcc_0101",
         "actionName": "Efficient water supply/distribution",
         "actionPriority": 17,
-        "explanation": "Efficient water supply and distribution almost mirrors the benefits of water capture/storage but focuses on reducing losses in the system. With a score of 1.27, it is important in safeguarding the city\u2019s water infrastructure against climate variability."
+        "explanation": "Scoring 1.27, improving water supply and distribution systems ensures that resources are delivered reliably during climatic stress. This action is essential for sustaining everyday functions and meeting the needs of a dense urban population."
     },
     {
         "locode": "BRSER",
@@ -177,7 +177,7 @@
         "actionId": "ipcc_0102",
         "actionName": "Seasonal/temporary mobility",
         "actionPriority": 18,
-        "explanation": "This action promotes adaptive mobility strategies that can be critical during weather extremes or disruptions. Its score of 1.27 reflects its role in ensuring that inhabitants can adjust quickly during emergencies, reducing social and economic impacts."
+        "explanation": "Also at 1.27, facilitating seasonal or temporary mobility offers adaptive flexibility to manage climate risks. Although its effects may be more situational, it still provides an important buffer to populations needing to relocate temporarily during extreme events."
     },
     {
         "locode": "BRSER",
@@ -187,7 +187,7 @@
         "actionId": "c40_0046",
         "actionName": "Coastal Protection",
         "actionPriority": 19,
-        "explanation": "Even though Serra is inland, coastal protection is ranked here for cities that may face indirect coastal impacts or for strategic regional planning. With a score of 1.235, it is still an important preparedness measure despite not addressing the most immediate local emission sectors."
+        "explanation": "With a relatively lower score of 1.235, coastal protection is important, particularly if parts of Serra lie in or near vulnerable coastal zones. While the immediate threat may be less pronounced compared to inland hazards, this action ensures long-term resilience against sea-level rise and storm surges."
     },
     {
         "locode": "BRSER",
@@ -197,6 +197,6 @@
         "actionId": "c40_0059",
         "actionName": "Early Warning",
         "actionPriority": 20,
-        "explanation": "A general early warning system supports the wider set of disaster readiness measures. Despite its lower score of 1.235, it remains valuable in providing timely alerts for a range of hazards, though it ranks lower than more direct interventions in Serra\u2019s context."
+        "explanation": "This action scores 1.235 and, while similar in nature to Disaster Early Warning, it is ranked lower due to its lower score and potential overlap in functionality. It still contributes to overall risk reduction by providing timely alerts for various hazards."
     }
 ]

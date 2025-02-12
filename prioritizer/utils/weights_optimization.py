@@ -24,7 +24,7 @@ from prioritizer.utils.reading_writing_data import read_city_inventory, read_act
 
 # Initialize weights as torch tensors
 weights = {
-    "GHGReductionPotential": torch.tensor(4.0, dtype=torch.float, requires_grad=True),
+    "GHGReductionPotential": torch.tensor(5.0, dtype=torch.float, requires_grad=True),
     "AdaptationEffectiveness": torch.tensor(1.0, dtype=torch.float, requires_grad=True),
     "TimelineForImplementation": torch.tensor(
         0.5, dtype=torch.float, requires_grad=True
@@ -90,27 +90,23 @@ def get_action_by_id(actions, target_action_id):
 # It uses torch tensors for calculations and the provided weights as input.
 def quantitative_score_torch(city, action, weights):
     """
-    Calculates a quantitative score for a given action in a city using externally provided weights.
-    The weights argument is expected to be a dictionary with keys:
-      "GHGReductionPotential", "AdaptationEffectiveness",
-      "TimelineForImplementation", "CostInvestmentNeeded",
-      "Hazard", "Dependencies"
-    Each weight is a torch.tensor with requires_grad=True.
+    Calculates a quantitative score for a given action in a city using PyTorch tensors.
+    The weights argument is expected to be a dictionary where each key corresponds to a
+    weight tensor with `requires_grad=True` for optimization.
     """
-    # Start with a torch tensor zero.
-    score = torch.tensor(0.0, dtype=torch.float)
+    # Initialize score as a tensor
+    score = torch.tensor(0.0, dtype=torch.float, requires_grad=True)
 
     # 1. Hazard calculation
-    matching_hazards_count = count_matching_hazards(city, action)  # returns a number
+    matching_hazards_count = count_matching_hazards(city, action)  # returns an integer
     if matching_hazards_count > 0:
         hazards_weight = weights["Hazard"]
-        # Convert matching_hazards_count to a tensor
         score = (
             score
             + torch.tensor(matching_hazards_count, dtype=torch.float) * hazards_weight
         )
 
-    # 2. Dependencies
+    # 2. Dependencies (negative impact)
     dependencies = action.get("Dependencies", [])
     dependencies_weight = weights["Dependencies"]
     if isinstance(dependencies, list):
@@ -121,57 +117,44 @@ def quantitative_score_torch(city, action, weights):
 
     # 3. Emissions reduction score
     total_emission_reduction_all_sectors = calculate_emissions_reduction(city, action)
+    weights_emissions = weights["GHGReductionPotential"]
+
     if total_emission_reduction_all_sectors > 0:
-        total_emissions = city.get("totalEmissions", 1)
-        reduction_percentage = (
-            total_emission_reduction_all_sectors / total_emissions
-        ) * 100
-        # We use a rounded value as in your original function; if rounding is non-critical, you might drop it.
-        score = score + torch.tensor(
-            round((reduction_percentage / 100), 3), dtype=torch.float
+        total_emissions = city.get("totalEmissions", 1)  # Avoid division by zero
+        reduction_percentage = total_emission_reduction_all_sectors / total_emissions
+        score = (
+            score
+            + torch.tensor(reduction_percentage, dtype=torch.float) * weights_emissions
         )
 
-    # 4. Sector bonus (GHGReductionPotential)
-    weights_emissions = weights["GHGReductionPotential"]
+    # 4. Sector bonus for highest emissions sector
     most_emissions, percentage_emissions_value = find_highest_emission(city)
-    # print(most_emissions)
-    # print(percentage_emissions_value)
-    # print(action.get("Sector"))
     if action.get("Sector") == most_emissions:
-        # Compute bonus score; converting percentage_emissions_value to a tensor.
-        bonus = (
-            percentage_emissions_value / 100
-        ) * 1.0  # 1.0 is a scaling constant, as in your code.
-
-        score = score + torch.tensor(bonus, dtype=torch.float) * weights_emissions
-        print(score)
+        bonus = torch.tensor(percentage_emissions_value / 100, dtype=torch.float)
+        score = score + bonus * weights_emissions
 
     # 5. Adaptation effectiveness score
     adaptation_effectiveness = action.get("AdaptationEffectiveness")
     if adaptation_effectiveness in scale_adaptation_effectiveness:
-        adaptation_weight = weights["AdaptationEffectiveness"]
-        adaptation_score = scale_adaptation_effectiveness[adaptation_effectiveness]
-        score = (
-            score
-            + torch.tensor(adaptation_score, dtype=torch.float) * adaptation_weight
-        )
+        effective_value = scale_adaptation_effectiveness[adaptation_effectiveness]
+        if effective_value:  # Skip zero values
+            adaptation_weight = weights["AdaptationEffectiveness"]
+            score = (
+                score
+                + torch.tensor(effective_value, dtype=torch.float) * adaptation_weight
+            )
 
-    # 6. Time in years score (TimelineForImplementation)
+    # 6. Timeline for implementation
     timeline_str = action.get("TimelineForImplementation", "")
-    if timeline_str is not None and timeline_str in timeline_mapping:
+    if timeline_str and timeline_str in timeline_mapping:
         time_score_weight = weights["TimelineForImplementation"]
         time_score = timeline_mapping[timeline_str]
         score = score + torch.tensor(time_score, dtype=torch.float) * time_score_weight
-    else:
-        # Optionally log invalid timeline info:
-        # print("Invalid timeline:", timeline_str)
-        pass
 
-    # 7. Cost score (CostInvestmentNeeded)
+    # 7. Cost score
     if "CostInvestmentNeeded" in action:
         cost_investment_needed = action["CostInvestmentNeeded"]
         cost_score_weight = weights["CostInvestmentNeeded"]
-        # Look up cost score; defaulting to 0 if not found.
         cost_score = scale_adaptation_effectiveness.get(cost_investment_needed, 0)
         score = score + torch.tensor(cost_score, dtype=torch.float) * cost_score_weight
 
@@ -213,6 +196,7 @@ def hinge_loss_torch(score_diff, y, margin=1.0):
 # This is an optional function to compute the hinge loss for each pair of actions.
 def compute_loss():
 
+    skipped = []
     losses = []
     for _, row in df_all_comparisons_cleaned.iterrows():
         """
@@ -232,26 +216,46 @@ def compute_loss():
         actionA_with_context = get_action_by_id(actions, actionA)
         actionB_with_context = get_action_by_id(actions, actionB)
 
-        scoreA = quantitative_score(city_data, actionA_with_context)
-        scoreB = quantitative_score(city_data, actionB_with_context)
+        # Check if both actions were found
+        # Experts may have ranked actions that were removed from our side due to duplicates etc.
+        if actionA_with_context and actionB_with_context:
 
-        score_diff = scoreA - scoreB
-        y_actionID = row["PreferredAction"]
+            scoreA = quantitative_score(city_data, actionA_with_context)
+            scoreB = quantitative_score(city_data, actionB_with_context)
 
-        # Assign +1 if actionA is preferred, -1 if actionB is preferred
-        y = 1 if y_actionID == actionA else -1
+            score_diff = scoreA - scoreB
+            y_actionID = row["PreferredAction"]
 
-        loss = hinge_loss(score_diff, y, margin=1.0)
-        losses.append(loss)
-        # print(f"Pair {index}:")
-        # print(f"  actionA = {actionA}")
-        # print(f"  actionB = {actionB}")
-        # print(f"  scoreA = {scoreA:.2f}")
-        # print(f"  scoreB = {scoreB:.2f}")
-        # print(f"  score_diff = {score_diff:.2f}")
-        # print(f"  preferred action = {y_actionID}")
-        # print(f"  preferred action label = {y}")
-        # print(f"  hinge loss = {loss:.2f}\n")
+            # Assign +1 if actionA is preferred, -1 if actionB is preferred
+            y = 1 if y_actionID == actionA else -1
+
+            loss = hinge_loss(score_diff, y, margin=1.0)
+            losses.append(loss)
+            # print(f"Pair {index}:")
+            # print(f"  actionA = {actionA}")
+            # print(f"  actionB = {actionB}")
+            # print(f"  scoreA = {scoreA:.2f}")
+            # print(f"  scoreB = {scoreB:.2f}")
+            # print(f"  score_diff = {score_diff:.2f}")
+            # print(f"  preferred action = {y_actionID}")
+            # print(f"  preferred action label = {y}")
+            # print(f"  hinge loss = {loss:.2f}\n")
+
+        else:
+            # Add the missing action to the skipped list to keep track of them
+            if actionA_with_context is None:
+                skipped.append(actionA)
+            elif actionB_with_context is None:
+                skipped.append(actionB)
+            else:
+                skipped.append(actionA)
+                skipped.append(actionB)
+
+            print("Action not found. Probably removed from the action data.")
+            print("Skipping this comparison")
+
+    print(f"\nSkipped {len(skipped)} comparisons due to missing actions.")
+    print(f"Skipped actions: {set(skipped)}")
 
     total_loss = np.sum(losses)
     print("Total hinge loss:", total_loss)
@@ -264,6 +268,7 @@ def optimize_weights(num_epochs, optimizer, weights):
         total_loss = torch.tensor(0.0, dtype=torch.float)
         optimizer.zero_grad()  # Reset gradients at the start of each epoch
 
+        skipped = []
         # Iterate over each pair
         for index, row in df_all_comparisons_cleaned.iterrows():
             # Retrieve city data and actions based on your current code.
@@ -274,16 +279,41 @@ def optimize_weights(num_epochs, optimizer, weights):
             actionA_with_context = get_action_by_id(actions, actionA)
             actionB_with_context = get_action_by_id(actions, actionB)
 
-            # Compute scores using the torch-enabled scoring function.
-            score_A = quantitative_score_torch(city_data, actionA_with_context, weights)
-            score_B = quantitative_score_torch(city_data, actionB_with_context, weights)
-            score_diff = score_A - score_B
+            # Check if both actions were found
+            # Experts may have ranked actions that were removed from our side due to duplicates etc.
+            if actionA_with_context and actionB_with_context:
 
-            # Map the PreferredAction label to +1 (if actionA is preferred) or -1 (if actionB is preferred).
-            y = 1.0 if row["PreferredAction"] == actionA else -1.0
+                # Compute scores using the torch-enabled scoring function.
+                score_A = quantitative_score_torch(
+                    city_data, actionA_with_context, weights
+                )
+                score_B = quantitative_score_torch(
+                    city_data, actionB_with_context, weights
+                )
+                score_diff = score_A - score_B
 
-            loss = hinge_loss_torch(score_diff, y, margin=1.0)
-            total_loss = total_loss + loss
+                # Map the PreferredAction label to +1 (if actionA is preferred) or -1 (if actionB is preferred).
+                y = 1.0 if row["PreferredAction"] == actionA else -1.0
+
+                loss = hinge_loss_torch(score_diff, y, margin=1.0)
+                total_loss = total_loss + loss
+            else:
+                # Add the missing action to the skipped list to keep track of them
+                if actionA_with_context is None:
+                    skipped.append(actionA)
+                elif actionB_with_context is None:
+                    skipped.append(actionB)
+                else:
+                    skipped.append(actionA)
+                    skipped.append(actionB)
+
+                print("Action not found. Probably removed from the action data.")
+                print("Skipping this comparison")
+
+        print(
+            f"\nSkipped {len(skipped)} comparisons due to missing actions for this training epoch."
+        )
+        print(f"Skipped actions: {set(skipped)}")
 
         # Backpropagate total loss and update weights.
         total_loss.backward()
@@ -326,4 +356,4 @@ if __name__ == "__main__":
     optimizer = optim.Adam(list(weights.values()), lr=0.005)
 
     # Run the optimization process
-    optimize_weights(100, optimizer, weights)
+    optimize_weights(300, optimizer, weights)

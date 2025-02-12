@@ -65,8 +65,9 @@ def get_action_by_id(actions, target_action_id):
 
 def get_accuracy_expert_vs_quanti(df: pd.DataFrame, actions: list) -> float:
 
+    skipped = []
     score = 0
-    for index, row in df.iterrows():
+    for _, row in df.iterrows():
 
         # print("\n\n\n")
         # print(f"Processing row {index}")
@@ -80,33 +81,52 @@ def get_accuracy_expert_vs_quanti(df: pd.DataFrame, actions: list) -> float:
         actionA = row["ActionA"]
         actionB = row["ActionB"]
 
-        # Get the actual actions object from the actionsID
+        # Get the actual actions object from the actionsID (filling in the context)
         actionA_with_context = get_action_by_id(actions, actionA)
         actionB_with_context = get_action_by_id(actions, actionB)
 
-        # Calculate the scoring based on the linear ranking system
-        score_A = quantitative_score(city_data, actionA_with_context)
-        score_B = quantitative_score(city_data, actionB_with_context)
+        # Check if both actions were found
+        # Experts may have ranked actions that were removed from our side due to duplicates etc.
+        if actionA_with_context and actionB_with_context:
 
-        if score_A > score_B:
-            predicted_label = actionA
+            # Calculate the scoring based on the linear ranking system
+            score_A = quantitative_score(city_data, actionA_with_context)
+            score_B = quantitative_score(city_data, actionB_with_context)
+
+            if score_A > score_B:
+                predicted_label = actionA
+            else:
+                predicted_label = actionB
+
+            # If prediction is correct, add 1 to the score
+            if predicted_label == row["PreferredAction"]:
+                # print("Prediction is correct")
+                score += 1
+            else:
+                pass
+                # print("Prediction is incorrect")
+
+            # print("Prediction:")
+            # print(f"Predicted label is {predicted_label}")
+            # print(f"Actual label is {row["PreferredAction"]}")
+            # print(f"Score is {score}")
+
+            # print(df_all_comparisons["PreferredAction"])
         else:
-            predicted_label = actionB
+            # Add the missing action to the skipped list to keep track of them
+            if actionA_with_context is None:
+                skipped.append(actionA)
+            elif actionB_with_context is None:
+                skipped.append(actionB)
+            else:
+                skipped.append(actionA)
+                skipped.append(actionB)
 
-        # If prediction is correct, add 1 to the score
-        if predicted_label == row["PreferredAction"]:
-            # print("Prediction is correct")
-            score += 1
-        else:
-            pass
-            # print("Prediction is incorrect")
+            print("Action not found. Probably removed from the action data.")
+            print("Skipping this comparison")
 
-        # print("Prediction:")
-        # print(f"Predicted label is {predicted_label}")
-        # print(f"Actual label is {row["PreferredAction"]}")
-        # print(f"Score is {score}")
-
-        # print(df_all_comparisons["PreferredAction"])
+    print(f"\nSkipped {len(skipped)} comparisons due to missing actions.")
+    print(f"Skipped actions: {set(skipped)}")
 
     # Calculate accuracy
     accuracy = score / len(df)
@@ -115,6 +135,7 @@ def get_accuracy_expert_vs_quanti(df: pd.DataFrame, actions: list) -> float:
 
 def get_accuracy_expert_vs_quali(df: pd.DataFrame, actions: list) -> float:
 
+    skipped = []
     score = 0
     for index, row in df.iterrows():
 
@@ -134,32 +155,36 @@ def get_accuracy_expert_vs_quali(df: pd.DataFrame, actions: list) -> float:
         actionA_with_context = get_action_by_id(actions, actionA)
         actionB_with_context = get_action_by_id(actions, actionB)
 
-        # Calculate the scoring based on the qualitative ranking system
-        qual_score = qualitative_score(
-            city_data, [actionA_with_context, actionB_with_context]
-        )
+        # Check if both actions were found
+        # Experts may have ranked actions that were removed from our side due to duplicates etc.
+        if actionA_with_context and actionB_with_context:
 
-        if qual_score:
+            # Calculate the scoring based on the qualitative ranking system
+            qual_score = qualitative_score(
+                city_data, [actionA_with_context, actionB_with_context]
+            )
 
-            winner = qual_score.actions[0].action_id
-            loser = qual_score.actions[1].action_id
+            if qual_score:
 
-            print(f"Winner: {winner}")
-            print(f"Loser: {loser}")
+                winner = qual_score.actions[0].action_id
+                loser = qual_score.actions[1].action_id
 
-            predicted_label = winner
+                print(f"Winner: {winner}")
+                print(f"Loser: {loser}")
 
-            # If prediction is correct, add 1 to the score
-            if predicted_label == row["PreferredAction"]:
-                print("Prediction is correct")
-                score += 1
+                predicted_label = winner
+
+                # If prediction is correct, add 1 to the score
+                if predicted_label == row["PreferredAction"]:
+                    print("Prediction is correct")
+                    score += 1
+                else:
+                    pass
+                    print("Prediction is incorrect")
+
             else:
-                pass
-                print("Prediction is incorrect")
-
-        else:
-            print("Qualitative score is None")
-            print("Skipping this comparison")
+                print("Qualitative score is None")
+                print("Skipping this comparison")
 
         # print("Prediction:")
         # print(f"Predicted label is {predicted_label}")
@@ -167,6 +192,21 @@ def get_accuracy_expert_vs_quali(df: pd.DataFrame, actions: list) -> float:
         # print(f"Score is {score}")
 
         # print(df_all_comparisons["PreferredAction"])
+        else:
+            # Add the missing action to the skipped list to keep track of them
+            if actionA_with_context is None:
+                skipped.append(actionA)
+            elif actionB_with_context is None:
+                skipped.append(actionB)
+            else:
+                skipped.append(actionA)
+                skipped.append(actionB)
+
+            print("Action not found. Probably removed from the action data.")
+            print("Skipping this comparison")
+
+    print(f"\nSkipped {len(skipped)} comparisons due to missing actions.")
+    print(f"Skipped actions: {set(skipped)}")
 
     # Calculate accuracy
     accuracy = score / len(df)
@@ -199,5 +239,10 @@ if __name__ == "__main__":
     accuracy_quanti = get_accuracy_expert_vs_quanti(df_all_comparisons_cleaned, actions)
     print(f"\nAccuracy for quantitative ranking is {accuracy_quanti}\n\n")
 
-    # accuracy_quali = get_accuracy_expert_vs_quali(df_all_comparisons_cleaned, actions)
-    # print(f"\nAccuracy for qualitative ranking is {accuracy_quali}\n\n")
+    accuracy_quali = get_accuracy_expert_vs_quali(df_all_comparisons_cleaned, actions)
+    print(f"\nAccuracy for qualitative ranking is {accuracy_quali}\n\n")
+
+    # Final print out to not get lost in all the intermediate print statements
+    print("Final result:")
+    print(f"\nAccuracy for quantitative ranking is {accuracy_quanti}\n\n")
+    print(f"\nAccuracy for qualitative ranking is {accuracy_quali}\n\n")

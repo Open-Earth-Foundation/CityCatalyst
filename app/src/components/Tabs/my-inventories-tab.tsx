@@ -74,13 +74,13 @@ const MyInventoriesTab: FC<MyInventoriesTabProps> = ({
   });
 
   // Converts the lastUpdated string to a Date object and returns a formatted date
-  function InventoryLastUpdated(inventory: InventoryAttributes) {
-    if (!inventory.lastUpdated) {
+  function InventoryLastUpdated(lastUpdated: Date) {
+    if (!lastUpdated) {
       return <p>No date available</p>;
     }
 
     // Convert the string to a Date object
-    const date = new Date(inventory.lastUpdated);
+    const date = new Date(lastUpdated);
 
     // If date is invalid (e.g., `new Date('Invalid')`), handle that
     if (isNaN(date.getTime())) {
@@ -269,7 +269,7 @@ const MyInventoriesTab: FC<MyInventoriesTabProps> = ({
                                 </Table.Cell>
                                 {/* TODO remove hardcoded date https://openearth.atlassian.net/browse/ON-3350 */}
                                 <Table.Cell align="right">
-                                  {InventoryLastUpdated(inventory)}
+                                  {InventoryLastUpdated(inventory.lastUpdated!)}
                                 </Table.Cell>
                                 <Table.Cell align="right">
                                   <Popover.Root lazyMount>

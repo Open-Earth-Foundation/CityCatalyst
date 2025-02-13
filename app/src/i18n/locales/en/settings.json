@@ -71,5 +71,6 @@
   "invite-cancel-fail": "Invite couldn't be canceled",
   "invite-sent": "Invite sent successfully",
   "invite-send-fail": "Invite couldn't be sent",
-  "number-of-cities": "# of cities"
+  "number-of-cities": "# of cities",
+  "email-placeholder": "Email address"
 }

@@ -35,7 +35,20 @@ export default function PasswordInput({
   const hasNumber = /\d/.test(password);
 
   return (
-    <Field invalid={!!error} label={name} errorText={error?.message} w={w}>
+    <Field
+      invalid={!!error}
+      label={
+        <Text
+          fontWeight="medium"
+          fontFamily="heading"
+          color="content.secondary"
+        >
+          {name}
+        </Text>
+      }
+      errorText={error?.message}
+      w={w}
+    >
       <ChakraPasswordInput
         size="lg"
         w="full"

@@ -72,5 +72,18 @@
   "invite-sent": "Invite sent successfully",
   "invite-send-fail": "Invite couldn't be sent",
   "number-of-cities": "# of cities",
-  "manage-password": "Manage Password"
+  "manage-password": "Manage Password",
+  "update-password-details": "Update your password. This is the one that you will use from now on.",
+  "current-password": "Current Password",
+  "confirm-password": "Confirm Password",
+  "password-hint": "Password hint",
+  "reset-button": "Reset Password",
+  "password-min-length": "Password must be at least 8 characters long.",
+  "password-upper-case": "Password must include at least one uppercase letter.",
+  "password-lower-case": "Password must include at least one lowercase letter.",
+  "password-number": "Password must include at least one number.",
+  "password-min-length-check": "At least {{length}} characters",
+  "password-upper-case-check": "At least one uppercase letter",
+  "password-lower-case-check": "At least one lowercase letter",
+  "password-number-check": "At least one number"
 }

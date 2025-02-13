@@ -9,76 +9,120 @@ import {
   Select,
   Icon,
   createListCollection,
+  Text,
+  VStack,
 } from "@chakra-ui/react";
-import { api } from "@/services/api";
-import { GetUserCityInvitesResponse } from "@/util/types";
-import ManageUsersTable from "./ManageUsersTable";
-import { MdSearch } from "react-icons/md";
+
+import { MdInfoOutline, MdSearch } from "react-icons/md";
 import { TitleMedium } from "@/components/Texts/Title";
-import { AddCollaboratorButtonSmall } from "./AddCollaboratorButtonSmall";
-import { useTranslation } from "@/i18n/client";
-import { InputGroup } from "@/components/ui/input-group";
-import {
-  SelectContent,
-  SelectItem,
-  SelectLabel,
-  SelectRoot,
-  SelectTrigger,
-  SelectValueText,
-} from "@/components/ui/select";
+
 import { TFunction } from "i18next";
+import PasswordInput from "@/components/password-input";
+import { Button } from "@/components/ui/button";
+import { logger } from "@/services/logger";
+import { useRouter, useSearchParams } from "next/navigation";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { Field } from "@/components/ui/field";
 
 interface ManagePasswordProps {
   t: TFunction;
 }
 
+type Inputs = {
+  password: string;
+  confirmPassword: string;
+};
+
 const ManagePasswordTabContent: FC<ManagePasswordProps> = ({ t }) => {
-  const { data: cityInvites, isLoading: isCityInvitesLoading } =
-    api.useGetCityInvitesQuery();
-  const [filterTerm, setFilterTerm] = useState<string>("");
-  const [filterRole, setFilterRole] = useState<string>("all");
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const resetToken = searchParams.get("token");
+  const [error, setError] = useState("");
 
-  const [filteredInvites, setFilteredInvites] = useState<
-    Array<GetUserCityInvitesResponse>
-  >([]);
-
-  const roleCollection = createListCollection({
-    items: [
-      { label: t("all"), value: "all" },
-      { label: t("admin"), value: "admin" },
-      { label: t("contributor"), value: "contributor" },
-    ],
-  });
-
-  useEffect(() => {
-    if (cityInvites) {
-      const result = cityInvites.filter((invite: any) => {
-        const matchesSearchTerm =
-          !filterTerm ||
-          invite.user?.name
-            .toLocaleLowerCase()
-            .includes(filterTerm.toLocaleLowerCase()) ||
-          invite.user?.email
-            .toLocaleLowerCase()
-            .includes(filterTerm.toLocaleLowerCase());
-        const matchesRole =
-          filterRole === "all" ||
-          invite.user?.role.toLocaleLowerCase() ===
-            filterRole.toLocaleLowerCase();
-        return matchesSearchTerm && matchesRole;
+  const {
+    handleSubmit,
+    register,
+    formState: { errors, isSubmitting },
+    setError: setFormError,
+    watch,
+  } = useForm<Inputs>();
+  const watchPassword = watch("password", "");
+  const onSubmit: SubmitHandler<Inputs> = async (data) => {
+    if (data.password !== data.confirmPassword) {
+      setFormError("confirmPassword", {
+        type: "custom",
+        message: "Passwords don't match!",
       });
-      setFilteredInvites(result);
-    } else {
-      setFilteredInvites([]);
+      return;
     }
-  }, [filterRole, filterTerm, cityInvites]);
+    const body = { newPassword: data.password, resetToken };
+    try {
+      const res = await fetch("/api/v0/auth/password", {
+        method: "POST",
+        body: JSON.stringify(body),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        logger.error("Failed to reset password", data);
+        setError(data.error.message);
+        return;
+      }
+
+      setError("");
+      router.push(`/auth/reset-successful`);
+    } catch (err: any) {
+      setError(err);
+    }
+  };
 
   return (
     <>
-      <HStack alignItems={"space-between"} justifyContent={"space-between"}>
+      <VStack alignItems={"space-between"} justifyContent={"space-between"}>
         <TitleMedium>{t("manage-password")}</TitleMedium>
-      </HStack>
-      <Box></Box>
+        <Text className="my-4" color="content.tertiary">
+          {t("update-password-details")}
+        </Text>
+      </VStack>
+      <Box>
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          <Field>
+            <PasswordInput
+              register={register}
+              error={errors.password}
+              name={t("current-password")}
+              t={t}
+              shouldValidate
+              watchPassword={watchPassword}
+            ></PasswordInput>
+          </Field>
+          <PasswordInput
+            register={register}
+            error={errors.confirmPassword}
+            name={t("confirm-password")}
+            id="confirmPassword"
+            t={t}
+          />
+          {error && <Text color="semantic.danger">{error}</Text>}
+          <Button type="submit" loading={isSubmitting} h={16} width="full">
+            {t("reset-button")}
+          </Button>
+          <Button
+            type="reset"
+            disabled={isSubmitting}
+            variant="ghost"
+            h={16}
+            width="full"
+            mt={4}
+            onClick={() => router.back()}
+          >
+            {t("cancel")}
+          </Button>
+        </form>
+      </Box>
     </>
   );
 };

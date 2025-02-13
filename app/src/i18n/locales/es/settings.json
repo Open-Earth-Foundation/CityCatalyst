@@ -72,5 +72,8 @@
   "invite-sent": "Invitación enviada con éxito",
   "invite-send-fail": "No se pudo enviar la invitación",
   "number-of-cities": "# de ciudades",
-  "manage-password": "Gestionar contraseña"
+  "manage-password": "Gestionar contraseña",
+ "update-password-details": "",
+ "current-password": "Contraseña actual",
+ "confirm-password": "Confirmar contraseña"
 }

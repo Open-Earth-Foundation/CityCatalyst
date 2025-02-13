@@ -101,17 +101,15 @@ const ManagePasswordTabContent: FC<ManagePasswordProps> = ({ t }) => {
             id="currentPassword"
             t={t}
           />
-          <Field>
-            <PasswordInput
-              register={register}
-              error={errors.newPassword}
-              name={t("new-password")}
-              t={t}
-              id="newPassword"
-              shouldValidate
-              watchPassword={watchPassword}
-            />
-          </Field>
+          <PasswordInput
+            register={register}
+            error={errors.newPassword}
+            name={t("new-password")}
+            t={t}
+            id="newPassword"
+            shouldValidate
+            watchPassword={watchPassword}
+          />
           <PasswordInput
             register={register}
             error={errors.confirmPassword}

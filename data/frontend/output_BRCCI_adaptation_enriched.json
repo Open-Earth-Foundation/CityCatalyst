@@ -4,10 +4,135 @@
         "cityName": "Cama\u00e7ari",
         "region": "BR-BA",
         "regionName": "Bahia",
+        "actionId": "ipcc_0087",
+        "actionName": "Infrastructure retrofitting",
+        "actionPriority": 1,
+        "explanation": "Ranked #1 because it has the highest quantitative score and targets enhancing the resilience of existing built infrastructure. In a context where reducing risks from hazards (such as heatwaves and flooding) is crucial, retrofitting can indirectly contribute to emissions reduction and cut down on energy losses. This action aligns with multiple priorities: leveraging cost\u2010effectiveness, reducing dependency risks, and supporting long\u2010term sustainable urban capacity in Cama\u00e7ari.",
+        "action": {
+            "ActionID": "ipcc_0087",
+            "ActionName": "Infrastructure retrofitting",
+            "ActionType": [
+                "adaptation"
+            ],
+            "AdaptationCategory": "Infrastructural Adaptation",
+            "Hazard": [
+                "floods",
+                "droughts",
+                "heatwaves"
+            ],
+            "Sector": [
+                "road_infrastructure",
+                "public_health",
+                "energy_security"
+            ],
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "InterventionType": null,
+            "Description": "Strengthening and upgrading existing infrastructure, including roads, housing, and energy systems, to improve resilience against climate risks such as floods, droughts, and heatwaves. Efforts include Air conditioning, using thermosiphons for permafrost degradation, increasing rooftop albedo (for reflectivity) and shading",
+            "BehavioralChangeTargeted": null,
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 1,
+                "habitat": 0,
+                "cost_of_living": -1,
+                "housing": 1,
+                "mobility": 1,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": "Improves resilience for vulnerable communities, especially in low-income regions, by reducing risks from extreme climate events.",
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "high",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Policy alignment",
+                "Funding availability",
+                "Engineering and construction expertise"
+            ],
+            "KeyPerformanceIndicators": [
+                "Reduced infrastructure failure during hazards",
+                "Increased capacity for housing and energy systems"
+            ],
+            "Impacts": [
+                "Enhanced urban resilience",
+                "Safer housing",
+                "Reduced economic losses due to climate impacts"
+            ]
+        }
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "ipcc_0091",
+        "actionName": "Diversification of livelihoods ",
+        "actionPriority": 2,
+        "explanation": "Ranked #2 because it not only has a very high quantitative score but also addresses socio-demographic challenges by improving income diversity in a city with a very high low-income segment. By reducing vulnerability and enhancing community resilience, it aligns with adaptation and risk-reduction priorities, making it effective and cost-conscious.",
+        "action": {
+            "ActionID": "ipcc_0091",
+            "ActionName": "Diversification of livelihoods ",
+            "ActionType": [
+                "adaptation"
+            ],
+            "AdaptationCategory": "Livelihood Adaptation",
+            "Hazard": [
+                "storms",
+                "sea-level-rise"
+            ],
+            "Sector": [
+                "food_security",
+                "biodiversity"
+            ],
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "InterventionType": null,
+            "Description": "Diversifying income-generating activities within fisheries and mariculture sectors to mitigate the economic impacts of climate change. This includes shifting target species, adapting harvest tactics, and transitioning to mariculture and ecotourism. Technology and infrastructure upgrades improve marine harvest efficiency and promote sustainable resource management. These adaptations aim to stabilize fisheries, enhance sustainability, and protect livelihoods under shifting marine species distributions and climate variability.",
+            "BehavioralChangeTargeted": null,
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 1,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": "Promotes equitable opportunities for vulnerable fishing communities by supporting transitions to alternative employment sectors like ecotourism and mariculture.",
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Investment in education",
+                "infrastructure",
+                "technology to support the transition to diversified livelihoods"
+            ],
+            "KeyPerformanceIndicators": [
+                "Increase in income diversity",
+                "employment rates in alternative sectors",
+                "reduction in overexploitation of marine species"
+            ],
+            "Impacts": [
+                "Improved livelihood stability",
+                "economic resilience",
+                "enhanced resource sustainability"
+            ]
+        }
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
         "actionId": "ipcc_0095",
         "actionName": "Disaster early warning",
-        "actionPriority": 1,
-        "explanation": "This action is crucial for risk reduction, addressing multiple hazards such as flooding and landslides, which have high risk scores. It is cost-effective and can be implemented quickly, providing immediate benefits.",
+        "actionPriority": 3,
+        "explanation": "Ranked #3 due to its strong potential to reduce risks associated with climate hazards such as flooding, landslides, and heatwaves, as evidenced by high normalized risk scores for infrastructure and public health in Cama\u00e7ari. Its quick implementation timeline and potential to save lives make it a top adaptation priority.",
         "action": {
             "ActionID": "ipcc_0095",
             "ActionName": "Disaster early warning",
@@ -73,8 +198,8 @@
         "regionName": "Bahia",
         "actionId": "c40_0053",
         "actionName": "Water Savings",
-        "actionPriority": 2,
-        "explanation": "Water savings directly address the city's high risk of drought, improving water resource management. It is cost-effective and aligns with the city's tropical rainforest biome.",
+        "actionPriority": 4,
+        "explanation": "Ranked #4 because water management is critical in a tropical rainforest climate like Cama\u00e7ari and improves resilience against drought hazards. With a high quantitative score, this action is cost-effective, reduces water-related risks, and requires minimal dependencies making it highly attractive.",
         "action": {
             "ActionID": "c40_0053",
             "ActionName": "Water Savings",
@@ -139,8 +264,8 @@
         "regionName": "Bahia",
         "actionId": "c40_0054",
         "actionName": "Water Recycling",
-        "actionPriority": 3,
-        "explanation": "Similar to water savings, water recycling helps mitigate drought risks and is environmentally compatible with the city's needs. It also offers significant long-term benefits.",
+        "actionPriority": 5,
+        "explanation": "Ranked #5 as it supports sustainable water management in an area where water resources need protection and efficient use is paramount. It contributes to adaptation by reducing water demand pressures and is aligned with cost-effectiveness and faster impact, making it important for Cama\u00e7ari.",
         "action": {
             "ActionID": "c40_0054",
             "ActionName": "Water Recycling",
@@ -207,123 +332,59 @@
         "cityName": "Cama\u00e7ari",
         "region": "BR-BA",
         "regionName": "Bahia",
-        "actionId": "ipcc_0087",
-        "actionName": "Infrastructure retrofitting",
-        "actionPriority": 4,
-        "explanation": "Retrofitting infrastructure is essential for reducing risks from heatwaves and landslides, which have high risk scores. It is relevant to the city's infrastructure sector.",
+        "actionId": "ipcc_0088",
+        "actionName": "Building codes",
+        "actionPriority": 6,
+        "explanation": "Ranked #6 because establishing strict building codes improves long-term resilience of new infrastructures. This directly supports risk reduction associated with extreme weather events and heatwaves, and helps in maintaining environmental compatibility with local urban development norms in Cama\u00e7ari.",
         "action": {
-            "ActionID": "ipcc_0087",
-            "ActionName": "Infrastructure retrofitting",
+            "ActionID": "ipcc_0088",
+            "ActionName": "Building codes",
             "ActionType": [
                 "adaptation"
             ],
-            "AdaptationCategory": "Infrastructural Adaptation",
+            "AdaptationCategory": "Climate-Resilient Urban Planning",
             "Hazard": [
                 "floods",
-                "droughts",
-                "heatwaves"
+                "landslides"
             ],
             "Sector": [
                 "road_infrastructure",
-                "public_health",
-                "energy_security"
+                "geo-hydrological_disasters"
             ],
             "Subsector": null,
             "PrimaryPurpose": [
                 "climate_resilience"
             ],
             "InterventionType": null,
-            "Description": "Strengthening and upgrading existing infrastructure, including roads, housing, and energy systems, to improve resilience against climate risks such as floods, droughts, and heatwaves. Efforts include Air conditioning, using thermosiphons for permafrost degradation, increasing rooftop albedo (for reflectivity) and shading",
+            "Description": "The development and implementation of building codes and architectural design regulations aimed at integrating climate adaptation parameters. These codes are focused on reducing risks from climate-induced hazards like floods and landslides. They also support climate-resilient urban development by guiding land use, construction practices, and infrastructure standards. The initiative fosters strategic long-term urban planning to coordinate public and private investments in adaptation, including the creation of safe zones and the transformation of precarious settlements. It ensures that new infrastructure is resilient to climate risks and that urban spaces are safe and sustainable for current and future populations.",
             "BehavioralChangeTargeted": null,
             "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
-                "habitat": 0,
-                "cost_of_living": -1,
-                "housing": 1,
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 2,
                 "mobility": 1,
                 "stakeholder_engagement": 1
             },
-            "EquityAndInclusionConsiderations": "Improves resilience for vulnerable communities, especially in low-income regions, by reducing risks from extreme climate events.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Policy alignment",
-                "Funding availability",
-                "Engineering and construction expertise"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduced infrastructure failure during hazards",
-                "Increased capacity for housing and energy systems"
-            ],
-            "Impacts": [
-                "Enhanced urban resilience",
-                "Safer housing",
-                "Reduced economic losses due to climate impacts"
-            ]
-        }
-    },
-    {
-        "locode": "BRCCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BR-BA",
-        "regionName": "Bahia",
-        "actionId": "ipcc_0091",
-        "actionName": "Diversification of livelihoods",
-        "actionPriority": 5,
-        "explanation": "This action enhances socio-economic resilience, particularly important given the city's vulnerability to climate hazards affecting food and energy security.",
-        "action": {
-            "ActionID": "ipcc_0091",
-            "ActionName": "Diversification of livelihoods ",
-            "ActionType": [
-                "adaptation"
-            ],
-            "AdaptationCategory": "Livelihood Adaptation",
-            "Hazard": [
-                "storms",
-                "sea-level-rise"
-            ],
-            "Sector": [
-                "food_security",
-                "biodiversity"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "InterventionType": null,
-            "Description": "Diversifying income-generating activities within fisheries and mariculture sectors to mitigate the economic impacts of climate change. This includes shifting target species, adapting harvest tactics, and transitioning to mariculture and ecotourism. Technology and infrastructure upgrades improve marine harvest efficiency and promote sustainable resource management. These adaptations aim to stabilize fisheries, enhance sustainability, and protect livelihoods under shifting marine species distributions and climate variability.",
-            "BehavioralChangeTargeted": null,
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 1,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": "Promotes equitable opportunities for vulnerable fishing communities by supporting transitions to alternative employment sectors like ecotourism and mariculture.",
+            "EquityAndInclusionConsiderations": "Promotes inclusive urban planning by addressing risks in informal and precarious settlements and integrating eco-parks and eco-gardens for vulnerable populations.",
             "GHGReductionPotential": null,
             "AdaptationEffectiveness": "high",
             "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
+            "TimelineForImplementation": "5-10 years",
             "Dependencies": [
-                "Investment in education",
-                "infrastructure",
-                "technology to support the transition to diversified livelihoods"
+                "Integration with local climate risk assessments",
+                "Strategic collaboration between urban planners and municipal authorities"
             ],
             "KeyPerformanceIndicators": [
-                "Increase in income diversity",
-                "employment rates in alternative sectors",
-                "reduction in overexploitation of marine species"
+                "Reduction in urban flood incidents",
+                "Increased availability of safe housing in risk areas",
+                "Implementation rate of eco-parks and eco-gardens in vulnerable areas"
             ],
             "Impacts": [
-                "Improved livelihood stability",
-                "economic resilience",
-                "enhanced resource sustainability"
+                "Improved public health",
+                "Increased urban livability",
+                "Reduced disaster-related costs"
             ]
         }
     },
@@ -334,8 +395,8 @@
         "regionName": "Bahia",
         "actionId": "ipcc_0092",
         "actionName": "Social safety nets",
-        "actionPriority": 6,
-        "explanation": "Social safety nets are crucial for supporting vulnerable populations during climate-related disasters, aligning with the city's socio-demographic context.",
+        "actionPriority": 7,
+        "explanation": "Ranked #7 due to its role in safeguarding vulnerable populations in a city with very high low-income rates. Social safety nets are critical for building adaptive capacity and reducing socio-economic risks, making it a vital complement to physical infrastructure investments.",
         "action": {
             "ActionID": "ipcc_0092",
             "ActionName": "Social safety nets",
@@ -398,8 +459,8 @@
         "regionName": "Bahia",
         "actionId": "ipcc_0093",
         "actionName": "Availability of health infrastructure",
-        "actionPriority": 7,
-        "explanation": "Improving health infrastructure is vital for addressing public health risks from heatwaves and diseases, which have high risk scores.",
+        "actionPriority": 8,
+        "explanation": "Ranked #8 as it addresses public health risks\u2014one of the major concerns in Cama\u00e7ari with very high risk scores for heatwaves and diseases. Strengthening health infrastructure helps mitigate long-term societal risks, ensuring rapid response to climate-induced crises.",
         "action": {
             "ActionID": "ipcc_0093",
             "ActionName": "Availability of health infrastructure",
@@ -460,403 +521,10 @@
         "cityName": "Cama\u00e7ari",
         "region": "BR-BA",
         "regionName": "Bahia",
-        "actionId": "c40_0050",
-        "actionName": "White Roofs",
-        "actionPriority": 8,
-        "explanation": "White roofs help mitigate heatwave impacts by reducing urban heat, aligning with the city's environmental conditions and offering cost-effective benefits.",
-        "action": {
-            "ActionID": "c40_0050",
-            "ActionName": "White Roofs",
-            "ActionType": [
-                "adaptation"
-            ],
-            "AdaptationCategory": "Eco-engineering",
-            "Hazard": [
-                "heatwaves"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "InterventionType": null,
-            "Description": "\"White Roofs\" utilize eco-engineering by adopting reflective roofing materials to reduce heat absorption. This adaptation strategy helps mitigate the urban heat island effect, contributing to more sustainable and climate-resilient buildings.",
-            "BehavioralChangeTargeted": null,
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "The \"White Roofs\" climate action promotes equity and inclusion by specifically targeting urban areas, which often house vulnerable and underserved communities that are disproportionately affected by the urban heat island effect. By implementing reflective roofing materials, this action directly benefits low-income neighborhoods that may lack access to adequate cooling resources, thereby reducing energy costs and improving indoor comfort. Additionally, the initiative can create job opportunities in the installation and maintenance of these roofs, providing economic benefits to local residents. Overall, the action addresses environmental justice by focusing on areas that face the greatest climate-related challenges, ensuring that marginalized communities receive the support needed to enhance their resilience to heat and climate change.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Availability of reflective roofing materials",
-                "Awareness and acceptance of eco-engineering practices among builders and homeowners",
-                "Regulatory support or incentives for implementing white roofs",
-                "Access to funding or financial resources for installation",
-                "Collaboration between urban planners and environmental organizations"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in surface temperature",
-                "Percentage of buildings with white roofs",
-                "Energy savings in cooling costs",
-                "Reduction in urban heat island effect",
-                "Increase in albedo values",
-                "Improvement in air quality",
-                "Community engagement and participation rate",
-                "Reduction in greenhouse gas emissions"
-            ],
-            "Impacts": [
-                "Mitigates urban heat island effect",
-                "Enhances climate resilience for vulnerable communities",
-                "Reduces energy costs for low-income households",
-                "Creates job opportunities in installation and maintenance",
-                "Promotes environmental justice"
-            ]
-        }
-    },
-    {
-        "locode": "BRCCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BR-BA",
-        "regionName": "Bahia",
-        "actionId": "c40_0051",
-        "actionName": "Public Shading",
-        "actionPriority": 9,
-        "explanation": "Public shading provides immediate relief from heatwaves, improving public health and comfort in urban areas, with minimal dependencies.",
-        "action": {
-            "ActionID": "c40_0051",
-            "ActionName": "Public Shading",
-            "ActionType": [
-                "adaptation"
-            ],
-            "AdaptationCategory": "Eco-engineering",
-            "Hazard": [
-                "heatwaves"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "InterventionType": null,
-            "Description": "\"Public Shading\" involves the implementation of shade structures in public spaces, contributing to eco-engineering efforts. This adaptation measure enhances outdoor comfort, reduces heat stress, and promotes sustainable urban design.",
-            "BehavioralChangeTargeted": null,
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "The \"Public Shading\" climate action promotes equity and inclusion by:\n\n1. **Accessibility for Vulnerable Populations**: By providing shade in public spaces, the action directly benefits vulnerable communities, including low-income individuals, the elderly, and those with health conditions that make them more susceptible to heat stress.\n\n2. **Enhanced Outdoor Comfort**: The implementation of shade structures improves outdoor comfort for all community members, encouraging greater use of public spaces by underserved populations who may otherwise avoid them due to extreme heat.\n\n3. **Sustainable Urban Design**: The focus on eco-engineering and sustainable design ensures that the benefits of climate action are integrated into the urban environment, fostering inclusive spaces that serve diverse community needs.\n\n4. **Community Engagement**: The development of public shading initiatives often involves community input, ensuring that the voices of underserved populations are heard and considered in the planning process.\n\n5. **Health Benefits**: By reducing heat stress, the action contributes to better health outcomes for marginalized groups who may lack access to air conditioning or other cooling resources, thereby promoting health equity.\n\nOverall, the \"Public Shading\" initiative addresses the needs of vulnerable communities, ensuring that climate adaptation measures are inclusive and equitable.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Availability of funding for the construction and maintenance of shade structures",
-                "Collaboration with urban planners and architects for design integration",
-                "Community engagement to ensure public support and usage",
-                "Assessment of local climate conditions to determine optimal shading solutions",
-                "Compliance with local regulations and zoning laws regarding public space modifications"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in average surface temperature in shaded areas",
-                "Increase in public space usage during peak heat hours",
-                "Number of shade structures installed",
-                "User satisfaction ratings of shaded areas",
-                "Decrease in heat-related health incidents",
-                "Increase in biodiversity in shaded areas",
-                "Energy savings in nearby buildings due to reduced heat",
-                "Community engagement and participation in shading initiatives"
-            ],
-            "Impacts": [
-                "Enhances outdoor comfort for all community members",
-                "Reduces heat stress, particularly benefiting vulnerable populations",
-                "Promotes health equity by improving health outcomes for marginalized groups",
-                "Encourages greater use of public spaces by underserved populations",
-                "Integrates community input in planning, fostering inclusivity"
-            ]
-        }
-    },
-    {
-        "locode": "BRCCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BR-BA",
-        "regionName": "Bahia",
-        "actionId": "ipcc_0090",
-        "actionName": "Insurance",
-        "actionPriority": 10,
-        "explanation": "Insurance schemes provide financial resilience against climate-related damages, crucial for socio-economic stability in the face of high-risk hazards.",
-        "action": {
-            "ActionID": "ipcc_0090",
-            "ActionName": "Insurance",
-            "ActionType": [
-                "adaptation"
-            ],
-            "AdaptationCategory": "Financial adaptation strategy",
-            "Hazard": [
-                "droughts",
-                "floods",
-                "storms"
-            ],
-            "Sector": [
-                "food_security",
-                "water_resources",
-                "energy_security"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "InterventionType": null,
-            "Description": "nsurance provides financial risk management tools tailored to climate-induced challenges. This includes traditional agricultural insurance to protect farmers from weather-related losses and innovative index-based insurance solutions. Index-based insurance leverages measurable weather indices, such as rainfall or temperature, to trigger payouts automatically when thresholds are reached, bypassing the need for loss verification. These tools help stabilize incomes, encourage investment in climate-resilient practices, and reduce the economic vulnerability of stakeholders in agriculture, aquaculture, and energy sectors. Furthermore, bundled insurance products with additional services like fertilizer or seed access enhance overall resilience, particularly in underserved and rural communities. By mitigating risks associated with droughts, floods, and storms, insurance supports sustainable development and adaptation goals",
-            "BehavioralChangeTargeted": null,
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 1,
-                "habitat": 0,
-                "cost_of_living": -1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": "Supports small-scale farmers, marginalized communities, and those in vulnerable areas by improving access to financial resilience tools and mitigating climate-related risks",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "medium",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Availability of climate data",
-                "Regulatory frameworks",
-                "Collaboration among financial institutions and governments"
-            ],
-            "KeyPerformanceIndicators": [
-                "Increase in number of insurance beneficiaries",
-                "Reduction in economic losses from extreme events",
-                "Adoption of index-based insurance products"
-            ],
-            "Impacts": [
-                "Enhanced financial resilience",
-                "Decreased vulnerability to climate-induced hazards",
-                "Strengthened adaptive capacity in food and water systems"
-            ]
-        }
-    },
-    {
-        "locode": "BRCCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BR-BA",
-        "regionName": "Bahia",
-        "actionId": "c40_0046",
-        "actionName": "Coastal Protection",
-        "actionPriority": 11,
-        "explanation": "Coastal protection is essential for mitigating risks from sea level rise and flooding, which are significant threats to the city's infrastructure.",
-        "action": {
-            "ActionID": "c40_0046",
-            "ActionName": "Coastal Protection",
-            "ActionType": [
-                "adaptation"
-            ],
-            "AdaptationCategory": "Eco-engineering",
-            "Hazard": [
-                "floods"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "InterventionType": null,
-            "Description": "\"Coastal Protection\" strategies include the construction of sea walls and protective structures to mitigate the impact of rising sea levels and coastal erosion. This adaptation measure enhances the resilience of coastal areas and protects communities from the impacts of climate change.",
-            "BehavioralChangeTargeted": null,
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 0,
-                "habitat": 1,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "The \"Coastal Protection\" strategies inherently promote equity and inclusion by focusing on the protection of vulnerable coastal communities that are often the most affected by climate change impacts, such as rising sea levels and erosion. These communities frequently include low-income populations, marginalized groups, and those with limited resources to adapt to environmental changes. \n\nBy constructing sea walls and protective structures, the action directly addresses the needs of these underserved populations, ensuring their safety and stability in the face of climate threats. Additionally, the implementation of such strategies often involves community engagement and input, allowing affected residents to have a voice in the decision-making process, which fosters a sense of ownership and inclusion. \n\nFurthermore, the focus on enhancing resilience in these areas helps to safeguard not only the physical infrastructure but also the social and economic well-being of the communities, thereby promoting equitable access to resources and opportunities in the context of climate adaptation.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Availability of funding and resources for construction and maintenance of protective structures",
-                "Access to engineering expertise for designing effective sea walls and coastal defenses",
-                "Collaboration with local communities and stakeholders for planning and implementation",
-                "Regulatory approvals and compliance with environmental laws and policies",
-                "Research and data on coastal erosion patterns and sea level rise projections"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in coastal erosion rate",
-                "Increase in coastal property value",
-                "Number of communities protected",
-                "Extent of area protected by sea walls",
-                "Frequency of flooding events",
-                "Community awareness and preparedness levels",
-                "Cost-effectiveness of protective measures",
-                "Biodiversity health in coastal areas"
-            ],
-            "Impacts": [
-                "Enhances resilience of vulnerable coastal communities",
-                "Protects against flooding and coastal erosion",
-                "Promotes equity and inclusion for marginalized groups",
-                "Fosters community engagement in decision-making",
-                "Safeguards social and economic well-being of communities"
-            ]
-        }
-    },
-    {
-        "locode": "BRCCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BR-BA",
-        "regionName": "Bahia",
-        "actionId": "c40_0059",
-        "actionName": "Early Warning",
-        "actionPriority": 12,
-        "explanation": "Early warning systems are critical for timely responses to climate hazards, reducing risks from events like flooding and landslides.",
-        "action": {
-            "ActionID": "c40_0059",
-            "ActionName": "Early Warning",
-            "ActionType": [
-                "adaptation"
-            ],
-            "AdaptationCategory": "Educational/Informational\u00a0actions",
-            "Hazard": [
-                "storms"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "InterventionType": null,
-            "Description": "\"Early Warning\" systems involve the timely detection and communication of potential climate-related hazards, enabling proactive responses to mitigate risks. This initiative enhances community preparedness and reduces the impact of adverse events.",
-            "BehavioralChangeTargeted": null,
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "The \"Early Warning\" systems initiative promotes equity and inclusion by ensuring that vulnerable or underserved communities receive timely and accessible information about climate-related hazards. By focusing on proactive communication, the action helps to empower these communities, which often lack the resources to prepare for and respond to climate threats. \n\nAdditionally, the initiative can be designed to reach diverse populations, including those with language barriers or disabilities, ensuring that all community members can understand and act on the warnings. This inclusivity helps to reduce disparities in risk and enhances overall community resilience, as everyone is better equipped to respond to potential hazards. \n\nOverall, the action recognizes the unique challenges faced by underserved communities and aims to provide them with the necessary tools and information to protect themselves from climate impacts, thereby fostering a more equitable approach to climate resilience.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Access to reliable climate data and forecasting models",
-                "Effective communication infrastructure for disseminating warnings",
-                "Community engagement and education on climate risks",
-                "Collaboration with local and national emergency response agencies",
-                "Funding and resources for technology and system maintenance"
-            ],
-            "KeyPerformanceIndicators": [
-                "Number of early warnings issued",
-                "Response time to warnings",
-                "Community awareness and preparedness levels",
-                "Reduction in disaster-related damages",
-                "Number of training sessions conducted",
-                "Stakeholder engagement and participation rates",
-                "Feedback from community on warning effectiveness",
-                "Frequency of drills and simulations conducted"
-            ],
-            "Impacts": [
-                "Enhanced community preparedness for storms",
-                "Reduced impact of climate-related hazards",
-                "Empowerment of vulnerable communities",
-                "Improved equity and inclusion in climate resilience efforts",
-                "Increased accessibility of information for diverse populations"
-            ]
-        }
-    },
-    {
-        "locode": "BRCCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BR-BA",
-        "regionName": "Bahia",
-        "actionId": "ipcc_0088",
-        "actionName": "Building codes",
-        "actionPriority": 13,
-        "explanation": "Updating building codes enhances resilience against climate impacts, particularly heatwaves and landslides, aligning with infrastructure needs.",
-        "action": {
-            "ActionID": "ipcc_0088",
-            "ActionName": "Building codes",
-            "ActionType": [
-                "adaptation"
-            ],
-            "AdaptationCategory": "Climate-Resilient Urban Planning",
-            "Hazard": [
-                "floods",
-                "landslides"
-            ],
-            "Sector": [
-                "road_infrastructure",
-                "geo-hydrological_disasters"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "InterventionType": null,
-            "Description": "The development and implementation of building codes and architectural design regulations aimed at integrating climate adaptation parameters. These codes are focused on reducing risks from climate-induced hazards like floods and landslides. They also support climate-resilient urban development by guiding land use, construction practices, and infrastructure standards. The initiative fosters strategic long-term urban planning to coordinate public and private investments in adaptation, including the creation of safe zones and the transformation of precarious settlements. It ensures that new infrastructure is resilient to climate risks and that urban spaces are safe and sustainable for current and future populations.",
-            "BehavioralChangeTargeted": null,
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 2,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": "Promotes inclusive urban planning by addressing risks in informal and precarious settlements and integrating eco-parks and eco-gardens for vulnerable populations.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Integration with local climate risk assessments",
-                "Strategic collaboration between urban planners and municipal authorities"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in urban flood incidents",
-                "Increased availability of safe housing in risk areas",
-                "Implementation rate of eco-parks and eco-gardens in vulnerable areas"
-            ],
-            "Impacts": [
-                "Improved public health",
-                "Increased urban livability",
-                "Reduced disaster-related costs"
-            ]
-        }
-    },
-    {
-        "locode": "BRCCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BR-BA",
-        "regionName": "Bahia",
         "actionId": "ipcc_0094",
         "actionName": "Access to health care",
-        "actionPriority": 14,
-        "explanation": "Improving access to healthcare is vital for managing public health risks from climate-related diseases and heatwaves.",
+        "actionPriority": 9,
+        "explanation": "Ranked #9 because improved access to health care is essential for reducing vulnerability, especially in regions subject to public health hazards. It supports the adaptation strategy by enhancing community resilience and complements improvements in health infrastructure.",
         "action": {
             "ActionID": "ipcc_0094",
             "ActionName": "Access to health care",
@@ -921,8 +589,8 @@
         "regionName": "Bahia",
         "actionId": "ipcc_0096",
         "actionName": "Farm/fishery improvements",
-        "actionPriority": 15,
-        "explanation": "Enhancing agricultural practices supports food security, addressing risks from drought and flooding, which impact food supply.",
+        "actionPriority": 10,
+        "explanation": "Ranked #10 since enhancing farm and fishery practices contributes to both food security and local economic resilience. This action is particularly relevant given the threat of climate hazards such as droughts and floods, and it promotes sectors that can indirectly reduce emissions through sustainable practices.",
         "action": {
             "ActionID": "ipcc_0096",
             "ActionName": "Farm/fishery improvements",
@@ -988,8 +656,8 @@
         "regionName": "Bahia",
         "actionId": "ipcc_0097",
         "actionName": "Food storage/distribution improvements",
-        "actionPriority": 16,
-        "explanation": "Improving food storage and distribution systems enhances food security, crucial for resilience against climate-induced supply disruptions.",
+        "actionPriority": 11,
+        "explanation": "Ranked #11 because strengthening food storage and distribution systems minimizes food security risks during extreme events. This action is vital in maintaining a stable supply chain, especially when facing hazards that can disrupt local markets in Cama\u00e7ari.",
         "action": {
             "ActionID": "ipcc_0097",
             "ActionName": "Food storage/distribution improvements",
@@ -1055,8 +723,8 @@
         "regionName": "Bahia",
         "actionId": "ipcc_0098",
         "actionName": "Behaviour change in diets and food waste",
-        "actionPriority": 17,
-        "explanation": "Promoting sustainable diets and reducing food waste contribute to food security and environmental sustainability, with long-term benefits.",
+        "actionPriority": 12,
+        "explanation": "Ranked #12 as it promotes sustainable consumption practices that can lead to reduced emissions indirectly and improve food security. Encouraging behaviour change is often a cost-effective method to strengthen community resilience and environmental compatibility.",
         "action": {
             "ActionID": "ipcc_0098",
             "ActionName": "Behaviour change in diets and food waste",
@@ -1121,10 +789,77 @@
         "cityName": "Cama\u00e7ari",
         "region": "BR-BA",
         "regionName": "Bahia",
+        "actionId": "ipcc_0099",
+        "actionName": "Water capture/storage",
+        "actionPriority": 13,
+        "explanation": "Ranked #13 due to its focus on enhancing local water resources management, a critical need in tropical environments. This action can mitigate drought impacts, is relatively low-cost, and is a straightforward intervention with minimal dependencies.",
+        "action": {
+            "ActionID": "ipcc_0099",
+            "ActionName": "Water capture/storage",
+            "ActionType": [
+                "adaptation"
+            ],
+            "AdaptationCategory": "Infrastructure-Based Adaptation",
+            "Hazard": [
+                "droughts",
+                "floods",
+                "storms"
+            ],
+            "Sector": [
+                "water_resources",
+                "food_security",
+                "energy_security",
+                "geo-hydrological_disasters"
+            ],
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "InterventionType": null,
+            "Description": "Implementing water capture and storage solutions such as farm ponds, revival of water bodies, rain gardens, bioswales, retention ponds, and water storage tanks. These measures aim to mitigate climate-induced impacts by improving water management, reducing stormwater runoff, enhancing water quality, and supporting agriculture and energy production under changing climate scenarios. Multi-purpose water reservoirs and dams provide additional benefits by addressing water shortages and managing risks associated with natural hazards.",
+            "BehavioralChangeTargeted": null,
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 1,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": "Ensures access to water for underserved communities, supports sustainable livelihoods in water-scarce regions, and promotes equitable resource distribution through inclusive decision-making processes.",
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Investment in green infrastructure",
+                "community engagement",
+                "policy support for water resource management"
+            ],
+            "KeyPerformanceIndicators": [
+                "Reduction in stormwater runoff",
+                "increase in water storage capacity",
+                "improvement in water quality",
+                "stability in agricultural yields"
+            ],
+            "Impacts": [
+                "Improved water availability",
+                "enhanced climate resilience",
+                "sustainable agriculture and energy production",
+                "reduced risk of flooding and drought"
+            ]
+        }
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
         "actionId": "ipcc_0100",
         "actionName": "Efficient water use/demand",
-        "actionPriority": 18,
-        "explanation": "Efficient water use is essential for managing drought risks, aligning with the city's water resource challenges and offering cost-effective solutions.",
+        "actionPriority": 14,
+        "explanation": "Ranked #14 because promoting efficient water use reduces future demand pressures and risks associated with water scarcity. It offers a quick turnaround in benefits and cost-effectiveness which suits Cama\u00e7ari\u2019s resource management needs.",
         "action": {
             "ActionID": "ipcc_0100",
             "ActionName": "Efficient water use/demand",
@@ -1187,19 +922,144 @@
         "cityName": "Cama\u00e7ari",
         "region": "BR-BA",
         "regionName": "Bahia",
-        "actionId": "c40_0060",
-        "actionName": "Managed Retreat",
-        "actionPriority": 19,
-        "explanation": "Managed retreat is a long-term strategy for addressing sea level rise, requiring significant planning and resources, thus ranked lower.",
+        "actionId": "ipcc_0101",
+        "actionName": "Efficient water supply/distribution",
+        "actionPriority": 15,
+        "explanation": "Ranked #15 as ensuring efficient water supply and distribution helps in mitigating service disruptions during climate hazards. It improves the environmental and socio-economic resilience, fitting well with Cama\u00e7ari\u2019s adaptation strategy framework.",
         "action": {
-            "ActionID": "c40_0060",
-            "ActionName": "Managed Retreat",
+            "ActionID": "ipcc_0101",
+            "ActionName": "Efficient water supply/distribution",
             "ActionType": [
                 "adaptation"
             ],
-            "AdaptationCategory": "Behavioural\u00a0actions",
+            "AdaptationCategory": "Sustainable Resource Management",
             "Hazard": [
+                "droughts",
+                "floods",
                 "storms"
+            ],
+            "Sector": [
+                "water_resources"
+            ],
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "InterventionType": null,
+            "Description": "Implementing sustainable water supply systems by constructing irrigation infrastructure, promoting inter-basin water transfers, utilizing nature-based solutions (NBS) such as rain gardens, bioswales, and wetlands, and integrating advanced techniques like water reuse and water upgrading. Water reuse involves treating and recycling wastewater for non-potable or potable purposes, while water upgrading focuses on improving the quality of available water for diverse uses. These approaches enhance stormwater infiltration, improve urban water management, increase drought resilience, and support groundwater recharge. They provide energy-efficient and economical water solutions while maintaining sustainable urban development.",
+            "BehavioralChangeTargeted": null,
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": "Promotes equitable access to water resources, particularly in underserved urban areas, by integrating natural and engineered water management systems to benefit all communities, including low-income groups.",
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Adequate funding for infrastructure development",
+                "Community engagement for NBS implementation",
+                "Integration of urban planning with water management"
+            ],
+            "KeyPerformanceIndicators": [
+                "Reduction in water scarcity incidents",
+                "Increase in groundwater recharge rates",
+                "Enhanced urban water infiltration capacity"
+            ],
+            "Impacts": [
+                "Improved water security",
+                "Enhanced urban livability",
+                "Increased resilience to climate-related water risks"
+            ]
+        }
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "ipcc_0102",
+        "actionName": "Seasonal/temporary mobility",
+        "actionPriority": 16,
+        "explanation": "Ranked #16 because flexible mobility solutions aid in quick adaptation to seasonal climatic variations and immediate disaster responses. This action is beneficial in reducing risk dependencies, especially in vulnerable urban settings.",
+        "action": {
+            "ActionID": "ipcc_0102",
+            "ActionName": "Seasonal/temporary mobility",
+            "ActionType": [
+                "adaptation"
+            ],
+            "AdaptationCategory": "Livelihood Adaptation",
+            "Hazard": [
+                "sea-level-rise",
+                "storms",
+                "droughts"
+            ],
+            "Sector": [
+                "food_security",
+                "biodiversity"
+            ],
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "InterventionType": null,
+            "Description": "Facilitating mobility of fishing fleets and workers to adapt to shifting marine species distributions caused by climate change. This includes enabling seasonal or temporary migration to align with the availability of resources, improving infrastructure and technology to support mobility, and fostering flexible governance to manage transboundary resources sustainably. These actions aim to maintain livelihoods and reduce economic impacts of climate variability.",
+            "BehavioralChangeTargeted": null,
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 1,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 2,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": "Ensures equitable access to resources for vulnerable communities, including small-scale fishers and those dependent on seasonal income, by promoting inclusive governance structures and reducing barriers to mobility.",
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Infrastructure and technology investments",
+                "Transboundary agreements",
+                "Capacity-building initiatives to support mobility"
+            ],
+            "KeyPerformanceIndicators": [
+                "Reduction in resource overexploitation",
+                "Increase in seasonal employment opportunities",
+                "Enhanced management of transboundary fisheries"
+            ],
+            "Impacts": [
+                "Improved economic resilience",
+                "Stabilized food security",
+                "Sustainable management of marine biodiversity"
+            ]
+        }
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "c40_0050",
+        "actionName": "White Roofs",
+        "actionPriority": 17,
+        "explanation": "Ranked #17 as the white roofs intervention is a cost-effective method to reduce urban heat islands. It provides an environmental benefit by lowering energy demands and aligns with the city\u2019s need for fast, implementable adaptations to rising temperatures.",
+        "action": {
+            "ActionID": "c40_0050",
+            "ActionName": "White Roofs",
+            "ActionType": [
+                "adaptation"
+            ],
+            "AdaptationCategory": "Eco-engineering",
+            "Hazard": [
+                "heatwaves"
             ],
             "Sector": null,
             "Subsector": null,
@@ -1207,7 +1067,7 @@
                 "climate_resilience"
             ],
             "InterventionType": null,
-            "Description": "\"Managed Retreat\" strategies involve planned relocation away from high-risk areas vulnerable to climate change impacts. This adaptation measure aims to protect communities from sea-level rise, flooding, and other environmental risks.",
+            "Description": "\"White Roofs\" utilize eco-engineering by adopting reflective roofing materials to reduce heat absorption. This adaptation strategy helps mitigate the urban heat island effect, contributing to more sustainable and climate-resilient buildings.",
             "BehavioralChangeTargeted": null,
             "CoBenefits": {
                 "air_quality": 0,
@@ -1218,35 +1078,34 @@
                 "mobility": 0,
                 "stakeholder_engagement": 0
             },
-            "EquityAndInclusionConsiderations": "The \"Managed Retreat\" strategies inherently promote equity and inclusion by prioritizing the safety and well-being of vulnerable or underserved communities that are most at risk from climate change impacts. By focusing on planned relocation, these strategies aim to protect marginalized populations who often lack the resources to adapt to environmental changes on their own. \n\nAdditionally, the implementation of managed retreat involves engaging affected communities in the decision-making process, ensuring that their voices and needs are considered. This participatory approach helps to address historical inequities and empowers residents to have a say in their future. \n\nFurthermore, managed retreat can provide opportunities for equitable access to safer housing and infrastructure, reducing the disproportionate burden of climate risks faced by low-income and marginalized groups. Overall, this climate action recognizes and addresses the unique challenges faced by underserved communities, fostering a more inclusive approach to climate adaptation.",
+            "EquityAndInclusionConsiderations": "The \"White Roofs\" climate action promotes equity and inclusion by specifically targeting urban areas, which often house vulnerable and underserved communities that are disproportionately affected by the urban heat island effect. By implementing reflective roofing materials, this action directly benefits low-income neighborhoods that may lack access to adequate cooling resources, thereby reducing energy costs and improving indoor comfort. Additionally, the initiative can create job opportunities in the installation and maintenance of these roofs, providing economic benefits to local residents. Overall, the action addresses environmental justice by focusing on areas that face the greatest climate-related challenges, ensuring that marginalized communities receive the support needed to enhance their resilience to heat and climate change.",
             "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "medium",
-            "CostInvestmentNeeded": "high",
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "low",
             "TimelineForImplementation": "<5 years",
             "Dependencies": [
-                "Assessment of high-risk areas to identify communities that need relocation",
-                "Availability of funding and resources to support relocation efforts",
-                "Community engagement and support for relocation plans",
-                "Development of new infrastructure in safer areas",
-                "Policy and regulatory frameworks that facilitate managed retreat",
-                "Coordination among government agencies and stakeholders involved in the relocation process"
+                "Availability of reflective roofing materials",
+                "Awareness and acceptance of eco-engineering practices among builders and homeowners",
+                "Regulatory support or incentives for implementing white roofs",
+                "Access to funding or financial resources for installation",
+                "Collaboration between urban planners and environmental organizations"
             ],
             "KeyPerformanceIndicators": [
-                "Number of communities successfully relocated",
-                "Reduction in population exposure to high-risk areas",
-                "Percentage of affected residents engaged in the planning process",
-                "Cost-effectiveness of relocation strategies",
-                "Improvement in community resilience metrics",
-                "Time taken to implement relocation plans",
-                "Satisfaction levels of relocated residents",
-                "Environmental impact assessments post-relocation"
+                "Reduction in surface temperature",
+                "Percentage of buildings with white roofs",
+                "Energy savings in cooling costs",
+                "Reduction in urban heat island effect",
+                "Increase in albedo values",
+                "Improvement in air quality",
+                "Community engagement and participation rate",
+                "Reduction in greenhouse gas emissions"
             ],
             "Impacts": [
+                "Mitigates urban heat island effect",
                 "Enhances climate resilience for vulnerable communities",
-                "Promotes equity and inclusion through community engagement",
-                "Addresses historical inequities in climate adaptation",
-                "Provides safer housing and infrastructure options",
-                "Reduces risks associated with storms for marginalized populations"
+                "Reduces energy costs for low-income households",
+                "Creates job opportunities in installation and maintenance",
+                "Promotes environmental justice"
             ]
         }
     },
@@ -1255,60 +1114,199 @@
         "cityName": "Cama\u00e7ari",
         "region": "BR-BA",
         "regionName": "Bahia",
-        "actionId": "ipcc_0081",
-        "actionName": "Coastal Accommodation",
-        "actionPriority": 20,
-        "explanation": "Coastal accommodation strategies are important for adapting to sea level rise, but they involve complex planning and higher costs, placing them lower in priority.",
+        "actionId": "c40_0051",
+        "actionName": "Public Shading",
+        "actionPriority": 18,
+        "explanation": "Ranked #18 because enhancing public shading is a low-cost, quick impact intervention that can improve outdoor thermal comfort and reduce heat-related risks. This measure is relatively easy to implement and supports overall community resilience.",
         "action": {
-            "ActionID": "ipcc_0081",
-            "ActionName": "Coastal Accommodation",
+            "ActionID": "c40_0051",
+            "ActionName": "Public Shading",
             "ActionType": [
                 "adaptation"
             ],
-            "AdaptationCategory": "Structural adaptation",
+            "AdaptationCategory": "Eco-engineering",
             "Hazard": [
-                "floods",
-                "sea-level-rise"
+                "heatwaves"
             ],
-            "Sector": [
-                "road_infrastructure",
-                "geo-hydrological_disasters"
-            ],
+            "Sector": null,
             "Subsector": null,
             "PrimaryPurpose": [
                 "climate_resilience"
             ],
             "InterventionType": null,
-            "Description": "Raising dwellings and key infrastructure such as coastal roads above ground level to reduce flooding impacts in small islands, with government subsidies supporting elevated houses in flood-prone areas.",
+            "Description": "\"Public Shading\" involves the implementation of shade structures in public spaces, contributing to eco-engineering efforts. This adaptation measure enhances outdoor comfort, reduces heat stress, and promotes sustainable urban design.",
+            "BehavioralChangeTargeted": null,
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": "The \"Public Shading\" climate action promotes equity and inclusion by:\n\n1. **Accessibility for Vulnerable Populations**: By providing shade in public spaces, the action directly benefits vulnerable communities, including low-income individuals, the elderly, and those with health conditions that make them more susceptible to heat stress.\n\n2. **Enhanced Outdoor Comfort**: The implementation of shade structures improves outdoor comfort for all community members, encouraging greater use of public spaces by underserved populations who may otherwise avoid them due to extreme heat.\n\n3. **Sustainable Urban Design**: The focus on eco-engineering and sustainable design ensures that the benefits of climate action are integrated into the urban environment, fostering inclusive spaces that serve diverse community needs.\n\n4. **Community Engagement**: The development of public shading initiatives often involves community input, ensuring that the voices of underserved populations are heard and considered in the planning process.\n\n5. **Health Benefits**: By reducing heat stress, the action contributes to better health outcomes for marginalized groups who may lack access to air conditioning or other cooling resources, thereby promoting health equity.\n\nOverall, the \"Public Shading\" initiative addresses the needs of vulnerable communities, ensuring that climate adaptation measures are inclusive and equitable.",
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Availability of funding for the construction and maintenance of shade structures",
+                "Collaboration with urban planners and architects for design integration",
+                "Community engagement to ensure public support and usage",
+                "Assessment of local climate conditions to determine optimal shading solutions",
+                "Compliance with local regulations and zoning laws regarding public space modifications"
+            ],
+            "KeyPerformanceIndicators": [
+                "Reduction in average surface temperature in shaded areas",
+                "Increase in public space usage during peak heat hours",
+                "Number of shade structures installed",
+                "User satisfaction ratings of shaded areas",
+                "Decrease in heat-related health incidents",
+                "Increase in biodiversity in shaded areas",
+                "Energy savings in nearby buildings due to reduced heat",
+                "Community engagement and participation in shading initiatives"
+            ],
+            "Impacts": [
+                "Enhances outdoor comfort for all community members",
+                "Reduces heat stress, particularly benefiting vulnerable populations",
+                "Promotes health equity by improving health outcomes for marginalized groups",
+                "Encourages greater use of public spaces by underserved populations",
+                "Integrates community input in planning, fostering inclusivity"
+            ]
+        }
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "c40_0046",
+        "actionName": "Coastal Protection",
+        "actionPriority": 19,
+        "explanation": "Ranked #19 due to its role in safeguarding urban areas from coastal hazards. Even though its quantitative score is slightly lower, coastal protection is crucial given the potential high risk from sea level rise and other geo-hydrological hazards, protecting infrastructure and community safety.",
+        "action": {
+            "ActionID": "c40_0046",
+            "ActionName": "Coastal Protection",
+            "ActionType": [
+                "adaptation"
+            ],
+            "AdaptationCategory": "Eco-engineering",
+            "Hazard": [
+                "floods"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "InterventionType": null,
+            "Description": "\"Coastal Protection\" strategies include the construction of sea walls and protective structures to mitigate the impact of rising sea levels and coastal erosion. This adaptation measure enhances the resilience of coastal areas and protects communities from the impacts of climate change.",
             "BehavioralChangeTargeted": null,
             "CoBenefits": {
                 "air_quality": 0,
                 "water_quality": 0,
                 "habitat": 1,
-                "cost_of_living": -1,
-                "housing": 1,
+                "cost_of_living": 0,
+                "housing": 0,
                 "mobility": 0,
-                "stakeholder_engagement": 1
+                "stakeholder_engagement": 0
             },
-            "EquityAndInclusionConsiderations": "Provides flood mitigation and safety for vulnerable coastal populations, though local opposition has limited implementation in some areas.",
+            "EquityAndInclusionConsiderations": "The \"Coastal Protection\" strategies inherently promote equity and inclusion by focusing on the protection of vulnerable coastal communities that are often the most affected by climate change impacts, such as rising sea levels and erosion. These communities frequently include low-income populations, marginalized groups, and those with limited resources to adapt to environmental changes. \n\nBy constructing sea walls and protective structures, the action directly addresses the needs of these underserved populations, ensuring their safety and stability in the face of climate threats. Additionally, the implementation of such strategies often involves community engagement and input, allowing affected residents to have a voice in the decision-making process, which fosters a sense of ownership and inclusion. \n\nFurthermore, the focus on enhancing resilience in these areas helps to safeguard not only the physical infrastructure but also the social and economic well-being of the communities, thereby promoting equitable access to resources and opportunities in the context of climate adaptation.",
             "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "medium",
+            "AdaptationEffectiveness": "high",
             "CostInvestmentNeeded": "high",
             "TimelineForImplementation": "5-10 years",
             "Dependencies": [
-                "Government subsidies",
-                "Community support",
-                "Availability of construction materials"
+                "Availability of funding and resources for construction and maintenance of protective structures",
+                "Access to engineering expertise for designing effective sea walls and coastal defenses",
+                "Collaboration with local communities and stakeholders for planning and implementation",
+                "Regulatory approvals and compliance with environmental laws and policies",
+                "Research and data on coastal erosion patterns and sea level rise projections"
             ],
             "KeyPerformanceIndicators": [
-                "Percentage of houses elevated",
-                "Reduction in flood-related damages",
-                "Number of roads raised"
+                "Reduction in coastal erosion rate",
+                "Increase in coastal property value",
+                "Number of communities protected",
+                "Extent of area protected by sea walls",
+                "Frequency of flooding events",
+                "Community awareness and preparedness levels",
+                "Cost-effectiveness of protective measures",
+                "Biodiversity health in coastal areas"
             ],
             "Impacts": [
-                "Improved flood resilience",
-                "Reduced damage to infrastructure",
-                "Safer living conditions for communities in flood-prone areas"
+                "Enhances resilience of vulnerable coastal communities",
+                "Protects against flooding and coastal erosion",
+                "Promotes equity and inclusion for marginalized groups",
+                "Fosters community engagement in decision-making",
+                "Safeguards social and economic well-being of communities"
+            ]
+        }
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "c40_0059",
+        "actionName": "Early Warning",
+        "actionPriority": 20,
+        "explanation": "Ranked #20 as this additional early warning system complements the earlier disaster early warning strategy. While its quantitative score is lower, it reinforces preparedness and rapid response in reducing multiple climate hazards, ensuring layered risk management in Cama\u00e7ari.",
+        "action": {
+            "ActionID": "c40_0059",
+            "ActionName": "Early Warning",
+            "ActionType": [
+                "adaptation"
+            ],
+            "AdaptationCategory": "Educational/Informational\u00a0actions",
+            "Hazard": [
+                "storms"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "InterventionType": null,
+            "Description": "\"Early Warning\" systems involve the timely detection and communication of potential climate-related hazards, enabling proactive responses to mitigate risks. This initiative enhances community preparedness and reduces the impact of adverse events.",
+            "BehavioralChangeTargeted": null,
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": "The \"Early Warning\" systems initiative promotes equity and inclusion by ensuring that vulnerable or underserved communities receive timely and accessible information about climate-related hazards. By focusing on proactive communication, the action helps to empower these communities, which often lack the resources to prepare for and respond to climate threats. \n\nAdditionally, the initiative can be designed to reach diverse populations, including those with language barriers or disabilities, ensuring that all community members can understand and act on the warnings. This inclusivity helps to reduce disparities in risk and enhances overall community resilience, as everyone is better equipped to respond to potential hazards. \n\nOverall, the action recognizes the unique challenges faced by underserved communities and aims to provide them with the necessary tools and information to protect themselves from climate impacts, thereby fostering a more equitable approach to climate resilience.",
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "high",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Access to reliable climate data and forecasting models",
+                "Effective communication infrastructure for disseminating warnings",
+                "Community engagement and education on climate risks",
+                "Collaboration with local and national emergency response agencies",
+                "Funding and resources for technology and system maintenance"
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of early warnings issued",
+                "Response time to warnings",
+                "Community awareness and preparedness levels",
+                "Reduction in disaster-related damages",
+                "Number of training sessions conducted",
+                "Stakeholder engagement and participation rates",
+                "Feedback from community on warning effectiveness",
+                "Frequency of drills and simulations conducted"
+            ],
+            "Impacts": [
+                "Enhanced community preparedness for storms",
+                "Reduced impact of climate-related hazards",
+                "Empowerment of vulnerable communities",
+                "Improved equity and inclusion in climate resilience efforts",
+                "Increased accessibility of information for diverse populations"
             ]
         }
     }

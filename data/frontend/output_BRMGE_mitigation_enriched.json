@@ -1,13 +1,13 @@
 [
     {
-        "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
         "actionId": "ipcc_0053",
         "actionName": "Afforestation, Reforestation and Forest Ecosystem Restoration",
         "actionPriority": 1,
-        "explanation": "This action achieved the highest quantitative score and directly targets land use management\u2014the city's largest emission source. By enhancing forest cover, it promises significant GHG emission reductions and aligns perfectly with Corumb\u00e1\u2019s need to curb deforestation-related emissions.",
+        "explanation": "This action attains the highest quantitative score, indicating strong potential for GHG emissions reduction primarily in the land use sector, which is the most emission intensive in Maranguape. Despite desert conditions potentially complicating large-scale forestry, the mitigation benefits remain critical, making it the top priority.",
         "action": {
             "ActionID": "ipcc_0053",
             "ActionName": "Afforestation, Reforestation and Forest Ecosystem Restoration",
@@ -75,14 +75,14 @@
         }
     },
     {
-        "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
         "actionId": "ipcc_0052",
         "actionName": "Reduce Deforestation and Degradation",
         "actionPriority": 2,
-        "explanation": "Focusing on preventing deforestation, this action is critical for reducing emissions stemming from land use changes. Its high relevance to the largest emission sector makes it a top priority despite having a slightly lower score than the first action.",
+        "explanation": "Targeting the same high-emission land use sector as the first action, reducing deforestation and degradation offers substantial emissions cuts. Its direct relevance to Maranguape\u2019s large land use footprint places it as the second priority.",
         "action": {
             "ActionID": "ipcc_0052",
             "ActionName": "Reduce Deforestation and Degradation",
@@ -148,14 +148,14 @@
         }
     },
     {
-        "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
         "actionId": "ipcc_0061",
         "actionName": "Soil Carbon Management in Croplands and Grasslands",
         "actionPriority": 3,
-        "explanation": "Given Corumb\u00e1's extensive grassland ecosystems, this action helps boost soil carbon sequestration in agricultural areas. It provides substantial mitigation benefits by targeting a significant emission pathway in croplands and grasslands.",
+        "explanation": "This action directly addresses emissions from agricultural lands through improved soil carbon sequestration. Given its high quantitative score and its relevance for soils and croplands that may exist on the urban fringe or rural areas, it is appropriately ranked third.",
         "action": {
             "ActionID": "ipcc_0061",
             "ActionName": "Soil Carbon Management in Croplands and Grasslands",
@@ -222,88 +222,14 @@
         }
     },
     {
-        "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0058",
-        "actionName": "Peatland Restoration",
-        "actionPriority": 4,
-        "explanation": "This action offers strong emission reduction potential by restoring natural carbon sinks. Although Corumb\u00e1 is primarily grassland-savanna where peatlands might be less common, the overall benefits justify its high ranking among mitigation actions.",
-        "action": {
-            "ActionID": "ipcc_0058",
-            "ActionName": "Peatland Restoration",
-            "ActionType": [
-                "mitigation"
-            ],
-            "AdaptationCategory": null,
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "land"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "InterventionType": [
-                "programs_and_initiatives",
-                "infrastructure_investments",
-                "incentives_and_subsidies"
-            ],
-            "Description": "Peatland restoration involves rewetting and revegetating degraded peatlands to increase carbon accumulation in vegetation and soils, while avoiding ongoing CO2 emissions. This includes restoring hydrology, reducing fire risk, and maintaining ecosystem services like water regulation and flood prevention. It also addresses biodiversity conservation and paludiculture.",
-            "BehavioralChangeTargeted": "Encourages sustainable land management practices, collaboration among stakeholders, and the prioritization of ecosystem restoration over competing land uses.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": "Promotes the inclusion of local communities in planning and implementation, ensures alternative livelihoods are maintained, and addresses potential conflicts over land use.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "60-79"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": ">10 years",
-            "Dependencies": [
-                "Availability of funding",
-                "collaboration among local and national stakeholders",
-                "scientific research on optimal restoration practices",
-                "policies to incentivize restoration efforts"
-            ],
-            "KeyPerformanceIndicators": [
-                "Availability of funding",
-                "collaboration among local and national stakeholders",
-                "scientific research on optimal restoration practices",
-                "policies to incentivize restoration efforts"
-            ],
-            "Impacts": [
-                "Significant reductions in CO2 emissions",
-                "improved biodiversity",
-                "enhanced water regulation",
-                "reduced flooding risks",
-                "increased resilience to climate change"
-            ]
-        }
-    },
-    {
-        "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
         "actionId": "ipcc_0068",
         "actionName": "Bioenergy and BECCS(Bioenergy with Carbon Capture and Storage)",
-        "actionPriority": 5,
-        "explanation": "With a high quantitative score and capability to reduce emissions through technological innovation, Bioenergy and BECCS represents a promising pathway. It targets energy-related emissions, albeit with higher capital requirements than forest-based strategies.",
+        "actionPriority": 4,
+        "explanation": "Bioenergy coupled with CCS represents a modern, technology-driven mitigation measure with a strong emissions reduction potential. It also offers the benefit of energy transition, which is critical for addressing both stationary energy and transportation emissions, making it the fourth priority.",
         "action": {
             "ActionID": "ipcc_0068",
             "ActionName": "Bioenergy and BECCS(Bioenergy with Carbon Capture and Storage)",
@@ -370,14 +296,88 @@
         }
     },
     {
-        "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "ipcc_0058",
+        "actionName": "Peatland Restoration",
+        "actionPriority": 5,
+        "explanation": "Despite having a high quantitative score, peatland restoration may be less compatible with Maranguape's desert biome. Nevertheless, its significant reduction potential in applicable contexts earns it a high ranking, albeit slightly lower than similar high-impact actions.",
+        "action": {
+            "ActionID": "ipcc_0058",
+            "ActionName": "Peatland Restoration",
+            "ActionType": [
+                "mitigation"
+            ],
+            "AdaptationCategory": null,
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "land"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "InterventionType": [
+                "programs_and_initiatives",
+                "infrastructure_investments",
+                "incentives_and_subsidies"
+            ],
+            "Description": "Peatland restoration involves rewetting and revegetating degraded peatlands to increase carbon accumulation in vegetation and soils, while avoiding ongoing CO2 emissions. This includes restoring hydrology, reducing fire risk, and maintaining ecosystem services like water regulation and flood prevention. It also addresses biodiversity conservation and paludiculture.",
+            "BehavioralChangeTargeted": "Encourages sustainable land management practices, collaboration among stakeholders, and the prioritization of ecosystem restoration over competing land uses.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": "Promotes the inclusion of local communities in planning and implementation, ensures alternative livelihoods are maintained, and addresses potential conflicts over land use.",
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "60-79"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "high",
+            "TimelineForImplementation": ">10 years",
+            "Dependencies": [
+                "Availability of funding",
+                "collaboration among local and national stakeholders",
+                "scientific research on optimal restoration practices",
+                "policies to incentivize restoration efforts"
+            ],
+            "KeyPerformanceIndicators": [
+                "Availability of funding",
+                "collaboration among local and national stakeholders",
+                "scientific research on optimal restoration practices",
+                "policies to incentivize restoration efforts"
+            ],
+            "Impacts": [
+                "Significant reductions in CO2 emissions",
+                "improved biodiversity",
+                "enhanced water regulation",
+                "reduced flooding risks",
+                "increased resilience to climate change"
+            ]
+        }
+    },
+    {
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
         "actionId": "ipcc_0059",
         "actionName": "Reduce Conversion of Coastal Wetlands",
         "actionPriority": 6,
-        "explanation": "Although the score is moderately high, its focus on coastal wetlands is less aligned with Corumb\u00e1's grassland savanna biome. Nevertheless, it remains important for ecosystem protection and potential localized emission savings if applicable.",
+        "explanation": "This action focuses on preventing the loss of coastal wetlands. Although Maranguape has a desert context and the direct presence of coastal wetlands may be uncertain, the emission reduction potential and co-benefits to local ecosystem integrity still provide value.",
         "action": {
             "ActionID": "ipcc_0059",
             "ActionName": "Reduce Conversion of Coastal Wetlands",
@@ -444,14 +444,167 @@
         }
     },
     {
-        "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "ipcc_0012",
+        "actionName": "Electric Technologies",
+        "actionPriority": 7,
+        "explanation": "Electric Technologies target reductions in industrial and possibly transportation emissions. Their potential to overhaul energy use through electrification is important, and a relatively high quantitative score supports a high ranking.",
+        "action": {
+            "ActionID": "ipcc_0012",
+            "ActionName": "Electric Technologies",
+            "ActionType": [
+                "mitigation"
+            ],
+            "AdaptationCategory": null,
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "on-road"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "InterventionType": [
+                "programs_and_initiatives",
+                "infrastructure_investments",
+                "incentives_and_subsidies",
+                "regulations_and_laws"
+            ],
+            "Description": "Adoption of electric vehicle technologies, including Battery Electric Vehicles (BEVs), Hybrid Electric Vehicles (HEVs), and Plug-in Hybrid Electric Vehicles (PHEVs), to reduce GHG emissions and dependence on fossil fuels. BEVs operate on electricity alone, producing zero emissions; HEVs combine an internal combustion engine with an electric motor; PHEVs allow extended electric-only driving.",
+            "BehavioralChangeTargeted": "Encourages a shift from internal combustion engine vehicles to electric vehicles and adoption of renewable energy for charging.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 1,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": "Reduces reliance on fossil fuels, improves air quality, and provides cleaner transport options that can benefit underserved communities.",
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "80-100",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "high",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Dependence on advancements in battery technologies",
+                "development of charging infrastructure",
+                "policies for subsidies and incentives",
+                "integration with renewable energy sources for electricity generation"
+            ],
+            "KeyPerformanceIndicators": [
+                "Percentage of electric vehicles in the vehicle fleet",
+                "reduction in GHG emissions per kilometer traveled",
+                "availability of charging infrastructure"
+            ],
+            "Impacts": [
+                "Reduced GHG emissions",
+                "improved urban air quality",
+                "decreased reliance on fossil fuels",
+                "greater energy security"
+            ]
+        }
+    },
+    {
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "c40_0026",
+        "actionName": "Vehicle Emissions",
+        "actionPriority": 8,
+        "explanation": "Focusing on one of the major emission sectors \u2013 transportation \u2013 this action is vital for a city whose transportation emissions are substantial. Its strong score makes it an effective intervention, placing it 8th.",
+        "action": {
+            "ActionID": "c40_0026",
+            "ActionName": "Vehicle Emissions",
+            "ActionType": [
+                "mitigation"
+            ],
+            "AdaptationCategory": null,
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "on-road"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "InterventionType": [
+                "incentives_and_subsidies",
+                "regulations_and_laws",
+                "programs_and_initiatives"
+            ],
+            "Description": "\"Vehicle Emissions\" reduction strategies focus on minimizing the environmental impact of all types of vehicles. Implementing cleaner technologies and promoting alternative fuels contribute to lower emissions, fostering sustainable and eco-friendly transportation.",
+            "BehavioralChangeTargeted": "The targeted behavioral shift that the \"Vehicle Emissions\" reduction strategies aim to achieve is the increased adoption of cleaner transportation options, such as electric vehicles and alternative fuel vehicles, as well as a greater reliance on public transportation, biking, and walking. This shift is encouraged through financial incentives, regulations mandating lower emissions, and programs promoting sustainable transportation practices, ultimately leading to a significant reduction in greenhouse gas emissions from the transportation sector.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": "The \"Vehicle Emissions\" reduction strategies inherently promote equity and inclusion by addressing the environmental impacts that disproportionately affect vulnerable and underserved communities. These communities often experience higher levels of air pollution and related health issues due to proximity to high-traffic areas and industrial zones. By implementing cleaner technologies and promoting alternative fuels, the action directly benefits these populations by improving air quality and reducing health risks.\n\nAdditionally, the focus on sustainable and eco-friendly transportation can enhance access to affordable and efficient transportation options for underserved communities, which may lack reliable public transit. This inclusivity ensures that all community members, regardless of socioeconomic status, can benefit from cleaner air and improved public health outcomes. Overall, the action recognizes and addresses the specific needs of vulnerable populations, fostering a more equitable approach to climate action.",
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "80-100",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Development and availability of cleaner vehicle technologies",
+                "Infrastructure for alternative fuel distribution",
+                "Government policies and regulations supporting emissions reduction",
+                "Public awareness and acceptance of eco-friendly transportation options",
+                "Investment in research and development for sustainable transportation solutions"
+            ],
+            "KeyPerformanceIndicators": [
+                "Reduction in vehicle emissions (CO2, NOx, PM)",
+                "Percentage of vehicles using alternative fuels",
+                "Number of electric vehicles on the road",
+                "Fuel efficiency improvements (miles per gallon)",
+                "Adoption rate of cleaner technologies",
+                "Reduction in fossil fuel consumption",
+                "Public transportation usage rates",
+                "Air quality index improvements",
+                "Percentage of low-emission zones established",
+                "Investment in sustainable transportation infrastructure"
+            ],
+            "Impacts": [
+                "Significant reduction in greenhouse gas emissions from the transportation sector",
+                "Improved air quality benefiting vulnerable and underserved communities",
+                "Increased adoption of cleaner transportation options",
+                "Enhanced access to affordable and efficient transportation for underserved populations"
+            ]
+        }
+    },
+    {
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
         "actionId": "ipcc_0077",
         "actionName": "Urban Tree Planting and Management",
-        "actionPriority": 7,
-        "explanation": "This action contributes to urban greening and helps absorb CO2, while also addressing urban heat island effects. With moderate emissions reduction impact, it aligns well with local urban environmental needs.",
+        "actionPriority": 9,
+        "explanation": "Urban tree planting helps reduce urban heat island effects and sequester carbon, which is valuable despite potential water scarcity in a desert biome. The moderate emissions reduction impact and socio-environmental benefits justify a mid-level ranking.",
         "action": {
             "ActionID": "ipcc_0077",
             "ActionName": "Urban Tree Planting and Management",
@@ -519,14 +672,85 @@
         }
     },
     {
-        "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "ipcc_0011",
+        "actionName": "Alternative Fuels for Vehicles",
+        "actionPriority": 10,
+        "explanation": "Shifting vehicle energy sources to alternative fuels targets transportation emissions. Given the importance of this sector and a solid quantitative score, it ranks tenth, supporting a cleaner transport sector.",
+        "action": {
+            "ActionID": "ipcc_0011",
+            "ActionName": "Alternative Fuels for Vehicles",
+            "ActionType": [
+                "mitigation"
+            ],
+            "AdaptationCategory": null,
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "on-road"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "InterventionType": [
+                "programs_and_initiatives",
+                "infrastructure_investments",
+                "regulations_and_laws"
+            ],
+            "Description": "Utilizes low-carbon or zero-carbon fuels, including natural gas, biofuels, ammonia, and synthetic fuels, to replace conventional petrol and diesel in internal combustion engines (ICE). These fuels offer pathways to reduce greenhouse gas emissions and diversify energy sources, though challenges remain in production costs, lifecycle emissions, and infrastructure.",
+            "BehavioralChangeTargeted": "Encourages adoption of low-carbon fuel alternatives and a shift from conventional petrol and diesel to more sustainable fuel sources.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 1,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": "Provides a pathway to reduce energy dependency and enhance energy equity by enabling access to alternative fuels that support local and regional energy needs.",
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "80-100",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "high",
+            "TimelineForImplementation": ">10 years",
+            "Dependencies": [
+                "Development of low-cost and sustainable production technologies",
+                "supportive policy measures (e.g., fuel standards, blending mandates)",
+                "investment in distribution and storage infrastructure"
+            ],
+            "KeyPerformanceIndicators": [
+                "Reduction in GHG emissions from fuel lifecycle",
+                "percentage of vehicle fleet using alternative fuels",
+                "infrastructure deployment metrics"
+            ],
+            "Impacts": [
+                "Reduced GHG emissions",
+                "improved air quality",
+                "energy diversification",
+                "increased resilience in transportation systems"
+            ]
+        }
+    },
+    {
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
         "actionId": "ipcc_0054",
         "actionName": "Improved Forest Management",
-        "actionPriority": 8,
-        "explanation": "Enhancing sustainable forest use, this action reduces emissions from mismanaged forest resources. Its relevance to land use efficiency and carbon sequestration supports its priority ranking.",
+        "actionPriority": 11,
+        "explanation": "Improved forest management practices enhance the sustainability of existing forest areas. While related to higher priority forestry actions, its slightly lower quantitative score places it at rank 11.",
         "action": {
             "ActionID": "ipcc_0054",
             "ActionName": "Improved Forest Management",
@@ -593,14 +817,14 @@
         }
     },
     {
-        "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
         "actionId": "ipcc_0069",
         "actionName": "Shift to sustainable healthy diets",
-        "actionPriority": 9,
-        "explanation": "While not directly targeting a single emission source, promoting sustainable diets can lead to reduced demand pressures on land use and agriculture, indirectly contributing to emission reductions and public health benefits.",
+        "actionPriority": 12,
+        "explanation": "Though not directly linked to major emission sectors like land use or transportation, promoting sustainable diets helps reduce emissions indirectly through changes in food production systems. Its societal and co-benefit aspects are valued though its direct emission mitigation is lower, leading to a 12th rank.",
         "action": {
             "ActionID": "ipcc_0069",
             "ActionName": "Shift to sustainable healthy diets",
@@ -665,14 +889,14 @@
         }
     },
     {
-        "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
         "actionId": "ipcc_0071",
         "actionName": "Improved and enhanced use of wood products",
-        "actionPriority": 10,
-        "explanation": "This action supports more efficient use of wood, helping reduce deforestation pressures by promoting sustainable practices. Although its quantitative score mirrors similar actions, it offers additional benefits in resource circularity.",
+        "actionPriority": 13,
+        "explanation": "This action leverages wood products to extend the carbon storage potential of biomass, indirectly supporting emissions reduction. However, its impact is relatively lower compared to direct interventions in sectors with higher emissions, hence ranking 13.",
         "action": {
             "ActionID": "ipcc_0071",
             "ActionName": "Improved and enhanced use of wood products",
@@ -737,14 +961,14 @@
         }
     },
     {
-        "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
         "actionId": "ipcc_0057",
         "actionName": "Reduce Degradation and Conversion of Peatlands Activities, Co-benefits, Risks and Implementation Barriers",
-        "actionPriority": 11,
-        "explanation": "Addressing the complex challenges in peatland management, this action offers notable emission reductions and co-benefits. However, its dependence on overcoming implementation barriers places it slightly lower in priority.",
+        "actionPriority": 14,
+        "explanation": "Similar to peatland restoration, this action addresses emissions from peatlands with additional focus on overcoming barriers. The higher dependency and implementation challenges place it below other forestry and land use actions, earning it the 14th rank.",
         "action": {
             "ActionID": "ipcc_0057",
             "ActionName": "Reduce Degradation and Conversion of Peatlands Activities, Co-benefits, Risks and Implementation Barriers",
@@ -812,14 +1036,14 @@
         }
     },
     {
-        "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
         "actionId": "ipcc_0063",
         "actionName": "Agroforesry",
-        "actionPriority": 12,
-        "explanation": "Agroforestry blends agricultural productivity with tree cultivation, enhancing carbon sequestration and providing local environmental benefits. Its balanced approach to emissions reduction and ecosystem resilience earns it a mid-level ranking.",
+        "actionPriority": 15,
+        "explanation": "Agroforestry combines agricultural production with forestry practices, offering moderate emissions reduction potential and additional socio-economic benefits. Its comparatively lower quantitative score positions it midway in the ranking.",
         "action": {
             "ActionID": "ipcc_0063",
             "ActionName": "Agroforesry",
@@ -889,14 +1113,86 @@
         }
     },
     {
-        "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "ipcc_0019",
+        "actionName": "Modal Shift from Aircraft to Train",
+        "actionPriority": 16,
+        "explanation": "While a modal shift in transportation can yield emissions benefits, this action is less relevant for a city of Maranguape\u2019s size where air travel is likely less frequent. Consequently, despite a decent score, it is ranked lower.",
+        "action": {
+            "ActionID": "ipcc_0019",
+            "ActionName": "Modal Shift from Aircraft to Train",
+            "ActionType": [
+                "mitigation"
+            ],
+            "AdaptationCategory": null,
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "aviation"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "InterventionType": [
+                "infrastructure_investments",
+                "regulations_and_laws",
+                "incentives_and_subsidies",
+                "programs_and_initiatives"
+            ],
+            "Description": "Promoting a shift from regional and medium-haul flights to high-speed rail (HSR) as a low-carbon alternative. HSR can serve distances of 400\u20131000 km effectively, reducing demand for air travel and associated emissions. Infrastructure improvements, supportive policies, and enhanced HSR networks are critical for this transition.",
+            "BehavioralChangeTargeted": "Encourages a shift in consumer travel preferences from air travel to high-speed rail, fostering acceptance of HSR as a primary mode for regional trips.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 1,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": "Provides affordable and accessible regional travel options, particularly benefiting communities with limited access to air travel and reducing transportation inequities.",
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "40-59",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "high",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Requires significant investments in HSR infrastructure",
+                "policy support to limit competing air travel options",
+                "integration of rail networks with existing transportation systems"
+            ],
+            "KeyPerformanceIndicators": [
+                "Reduction in domestic and regional air travel demand",
+                "increase in HSR ridership",
+                "measurable reductions in transportation sector GHG emissions"
+            ],
+            "Impacts": [
+                "Reduces aviation emissions",
+                "improves regional connectivity",
+                "decreases transportation-related air pollution",
+                "enhances public transportation networks"
+            ]
+        }
+    },
+    {
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
         "actionId": "c40_0042",
         "actionName": "Biodiversity Expansion",
-        "actionPriority": 13,
-        "explanation": "This action, while indirectly contributing to emissions reduction via ecosystem health, primarily enhances biodiversity. Its benefits support long-term environmental compatibility, though the direct GHG mitigation impact is more modest.",
+        "actionPriority": 17,
+        "explanation": "This action promotes ecological benefits and biodiversity enhancement. Although it supports environmental compatibility and has co-benefits for ecosystem resilience, its direct emissions reduction impact is lower, resulting in the 17th rank.",
         "action": {
             "ActionID": "c40_0042",
             "ActionName": "Biodiversity Expansion",
@@ -968,27 +1264,109 @@
         }
     },
     {
-        "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0060",
-        "actionName": "Coastal Wetland Restoration",
-        "actionPriority": 14,
-        "explanation": "Similar to action ipcc_0059, restoration of coastal wetlands can be impactful. However, given Corumb\u00e1\u2019s predominantly grassland savanna context, this action is slightly lower on relevance compared to other land use measures.",
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "c40_0038",
+        "actionName": "Sanitary Landfills",
+        "actionPriority": 18,
+        "explanation": "Sanitary Landfills tackle waste-related emissions, an important but relatively smaller contribution compared to sectors like land use and transportation. Their moderate quantitative score and focus on waste emissions justify a ranking of 18.",
         "action": {
-            "ActionID": "ipcc_0060",
-            "ActionName": "Coastal Wetland Restoration",
+            "ActionID": "c40_0038",
+            "ActionName": "Sanitary Landfills",
             "ActionType": [
                 "mitigation"
             ],
             "AdaptationCategory": null,
             "Hazard": null,
             "Sector": [
-                "afolu"
+                "waste"
             ],
             "Subsector": [
-                "land"
+                "all"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "InterventionType": [
+                "infrastructure_investments",
+                "programs_and_initiatives"
+            ],
+            "Description": "\"Sanitary Landfills\" ensure proper disposal of residual waste in engineered facilities, minimizing environmental impact. This mitigation strategy involves utilizing advanced technological solutions to manage waste effectively, promoting sustainable waste disposal practices within a city.",
+            "BehavioralChangeTargeted": "The targeted behavioral change that the climate action of implementing \"Sanitary Landfills\" aims to achieve is the increased adoption of sustainable waste disposal practices among residents and businesses. This includes encouraging individuals to properly separate and dispose of their waste, reduce overall waste generation, and support the use of engineered facilities for waste management. By improving perceptions of waste disposal safety, convenience, and environmental responsibility, the intervention seeks to shift behaviors towards more environmentally friendly waste management practices, ultimately leading to a reduction in greenhouse gas emissions associated with improper waste disposal.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 1,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": "The implementation of sanitary landfills as a climate action promotes equity and inclusion in several ways:\n\n1. **Access to Clean Environments**: By ensuring proper disposal of residual waste, sanitary landfills help reduce pollution and environmental hazards in underserved communities, which are often disproportionately affected by waste mismanagement.\n\n2. **Health Benefits**: Proper waste management minimizes health risks associated with improper disposal, such as contamination and disease, thereby protecting vulnerable populations who may have limited access to healthcare.\n\n3. **Job Creation**: The establishment and maintenance of sanitary landfills can create job opportunities for local residents, particularly in underserved areas, contributing to economic equity.\n\n4. **Community Engagement**: The planning and operation of sanitary landfills can involve local communities, ensuring that their voices are heard and their needs are considered, fostering a sense of inclusion.\n\n5. **Sustainable Practices**: By promoting sustainable waste disposal practices, the action supports long-term environmental justice, benefiting all community members, especially those in vulnerable situations who may rely more heavily on local natural resources. \n\nOverall, the action of implementing sanitary landfills addresses the needs of underserved communities by prioritizing their health, economic opportunities, and environmental safety.",
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": "60-79",
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "high",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Availability of engineered landfill sites designed to minimize environmental impact",
+                "Implementation of advanced waste management technologies",
+                "Regulatory frameworks and policies supporting sustainable waste disposal",
+                "Public awareness and community engagement in waste management practices",
+                "Funding and investment for infrastructure development and maintenance"
+            ],
+            "KeyPerformanceIndicators": [
+                "Waste diversion rate",
+                "Landfill gas emissions reduction",
+                "Leachate management efficiency",
+                "Volume of waste processed",
+                "Recycling rate",
+                "Public awareness and participation",
+                "Cost-effectiveness of waste management",
+                "Compliance with environmental regulations",
+                "Reduction in illegal dumping incidents",
+                "Sustainability of landfill operations"
+            ],
+            "Impacts": [
+                "Reduction of greenhouse gas emissions by 60-79% in the waste sector",
+                "Improved air quality due to reduced pollution from waste mismanagement",
+                "Enhanced water quality through proper waste disposal practices",
+                "Increased job opportunities in local communities",
+                "Promotion of sustainable waste disposal practices among residents and businesses",
+                "Health benefits for vulnerable populations through reduced environmental hazards",
+                "Community engagement in waste management planning and operations"
+            ]
+        }
+    },
+    {
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "ipcc_0013",
+        "actionName": "Fuel Cell Technologies",
+        "actionPriority": 19,
+        "explanation": "Fuel cell technologies represent an innovative solution for reducing emissions in energy systems. However, high costs, longer implementation timelines, and dependency on advanced infrastructure reduce its immediate practicality for Maranguape, leading to a 19th rank.",
+        "action": {
+            "ActionID": "ipcc_0013",
+            "ActionName": "Fuel Cell Technologies",
+            "ActionType": [
+                "mitigation"
+            ],
+            "AdaptationCategory": null,
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "on-road"
             ],
             "PrimaryPurpose": [
                 "ghg_reduction"
@@ -996,65 +1374,60 @@
             "InterventionType": [
                 "programs_and_initiatives",
                 "infrastructure_investments",
+                "incentives_and_subsidies",
                 "regulations_and_laws"
             ],
-            "Description": "Coastal wetland restoration involves restoring degraded or damaged coastal ecosystems, including mangroves, salt marshes, and seagrass beds, to sequester \"blue carbon\" in vegetation and soils. Restoration includes passive (removal of degradation drivers) and active (environmental manipulation) approaches to reinstate ecosystem functions and carbon sequestration potential.",
-            "BehavioralChangeTargeted": "Encourages the prevention of wetland degradation, active participation of local communities in restoration efforts, and sustainable management of coastal ecosystems.",
+            "Description": "Use of fuel cell technology to power vehicles by converting hydrogen into electricity through an electrochemical reaction. Produces zero emissions at the point of use and water as a by-product. Hydrogen fuel cells are highly efficient, particularly when hydrogen is produced from renewable sources.",
+            "BehavioralChangeTargeted": "Encourages a shift from internal combustion engine vehicles to hydrogen-powered fuel cell vehicles, promoting cleaner transport options.",
             "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 1,
-                "habitat": 1,
+                "air_quality": 1,
+                "water_quality": 0,
+                "habitat": 0,
                 "cost_of_living": 0,
                 "housing": 0,
-                "mobility": 0,
+                "mobility": 1,
                 "stakeholder_engagement": 0
             },
-            "EquityAndInclusionConsiderations": "Involves local communities in decision-making, implementation, and monitoring stages to ensure equitable access to ecosystem benefits and protection of vulnerable coastal populations.",
+            "EquityAndInclusionConsiderations": "Reduces emissions in underserved and urban areas, offering cleaner air and sustainable mobility solutions for all communities.",
             "GHGReductionPotential": {
                 "stationary_energy": null,
-                "transportation": null,
+                "transportation": "60-79",
                 "waste": null,
                 "ippu": null,
-                "afolu": "40-59"
+                "afolu": null
             },
             "AdaptationEffectiveness": null,
             "CostInvestmentNeeded": "high",
             "TimelineForImplementation": ">10 years",
             "Dependencies": [
-                "Requires long-term commitments",
-                "supportive policies",
-                "funding",
-                "monitoring frameworks",
-                "technical capacity",
-                "to address drivers of degradation",
-                "ensure restoration success"
+                "Hydrogen production infrastructure",
+                "availability of low-carbon hydrogen",
+                "cost reductions in fuel cell systems",
+                "durable policies to support adoption"
             ],
             "KeyPerformanceIndicators": [
-                "Area of wetlands restored",
-                "carbon sequestration rates",
-                "biodiversity recovery metrics",
-                "reduction in storm damage costs",
-                "water quality improvements"
+                "Share of fuel cell vehicles in the vehicle fleet",
+                "reduction in GHG emissions per kilometer",
+                "deployment of hydrogen refueling stations",
+                "cost parity with diesel vehicles"
             ],
             "Impacts": [
-                "Enhanced ecosystem resilience",
-                "improved carbon sequestration",
-                "protection against sea-level rise and storms",
-                "increased biodiversity",
-                "strengthened coastal livelihoods",
-                "food security"
+                "Reduced GHG emissions",
+                "improved air quality",
+                "energy diversification",
+                "advancement of clean technologies for transportation"
             ]
         }
     },
     {
-        "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
         "actionId": "ipcc_0062",
         "actionName": "Biochar",
-        "actionPriority": 15,
-        "explanation": "Biochar can improve soil fertility and sequester carbon in soils. Despite its lower quantitative score, it is cost-effective and useful in agricultural contexts, hence its placement in the mid-to-lower priority group.",
+        "actionPriority": 20,
+        "explanation": "Biochar is a promising approach to sequester carbon in soils, yet it tends to have lower immediate emissions reduction and faces several implementation challenges. Its lower quantitative score compared to other actions places it at the lowest priority in this ranking.",
         "action": {
             "ActionID": "ipcc_0062",
             "ActionName": "Biochar",
@@ -1117,372 +1490,6 @@
                 "reduced pollution",
                 "long-term carbon storage in soils",
                 "contributing to global climate goals"
-            ]
-        }
-    },
-    {
-        "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0067",
-        "actionName": "Manure management",
-        "actionPriority": 16,
-        "explanation": "Targeting agricultural emissions (particularly methane), manure management offers a moderate impact on overall emissions. Its benefits are clear but the absolute reduction potential is less when compared to top land use actions.",
-        "action": {
-            "ActionID": "ipcc_0067",
-            "ActionName": "Manure management",
-            "ActionType": [
-                "mitigation"
-            ],
-            "AdaptationCategory": null,
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "livestock"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "InterventionType": [
-                "programs_and_initiatives",
-                "infrastructure_investments",
-                "incentives_and_subsidies"
-            ],
-            "Description": "Manure management measures aim to mitigate CH4 and N2O emissions from manure storage and deposition through techniques such as anaerobic digestion, nitrification inhibitors, composting, improved storage and application practices, grazing practices, and livestock diet alteration. Co-benefits include improved nutrient recovery, fertiliser value, and biogas production.",
-            "BehavioralChangeTargeted": "Encourages adoption of sustainable manure management practices, including reducing nitrogen excretion, improving application timing, and adopting biogas production methods.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "Supports small-scale anaerobic digestion technologies and regionally applicable measures in developing countries, providing economic opportunities and improving resilience for underserved farming communities.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "20-39"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Development of cost-effective anaerobic digestion systems",
-                "supportive policies for nitrification inhibitors",
-                "region-specific training programs",
-                "accessible financing for farmers"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in CH4 and N2O emissions from manure storage",
-                "increased adoption of anaerobic digestion systems",
-                "improved nitrogen use efficiency",
-                "enhanced biogas production"
-            ],
-            "Impacts": [
-                "Reduces greenhouse gas emissions",
-                "improves local water and air quality",
-                "enhances soil health",
-                "supports food security",
-                "provides renewable energy through biogas production"
-            ]
-        }
-    },
-    {
-        "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0064",
-        "actionName": "Enteric fermentation",
-        "actionPriority": 17,
-        "explanation": "This action addresses methane emissions from livestock. While important for the agriculture sector, its overall quantitative impact is lower, placing it in the later part of the priority ranking.",
-        "action": {
-            "ActionID": "ipcc_0064",
-            "ActionName": "Enteric fermentation",
-            "ActionType": [
-                "mitigation"
-            ],
-            "AdaptationCategory": null,
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "livestock"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "InterventionType": [
-                "regulations_and_laws",
-                "incentives_and_subsidies",
-                "programs_and_initiatives"
-            ],
-            "Description": "This action targets methane (CH4) emissions from enteric fermentation in livestock through direct interventions like feed additives, inhibitors, or vaccines, and indirect measures like improving production efficiency through better breeding and husbandry practices. It also includes early-life manipulation of the ruminal biome.",
-            "BehavioralChangeTargeted": "Encourages adoption of advanced feeding practices, use of additives or vaccines, and selection of low-emission livestock breeds to reduce methane emissions while improving productivity.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "Supports small-scale farmers in accessing advanced technologies and breeding programs, with special focus on developing countries where feed quality improvement can enhance livestock productivity.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "20-39"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Development and regulatory approval of feed additives, vaccines, and inhibitors",
-                "regional adaptation of mitigation strategies",
-                "overcoming barriers like costs, infrastructure, and public acceptance"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in CH4 emissions per animal",
-                "adoption rates of improved feeding practices",
-                "increase in production efficiency per unit of livestock product"
-            ],
-            "Impacts": [
-                "Reduction in global agricultural methane emissions",
-                "improved livestock productivity",
-                "enhanced food security",
-                "particularly in regions with high agricultural dependence"
-            ]
-        }
-    },
-    {
-        "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0066",
-        "actionName": "Crop nutrient management",
-        "actionPriority": 18,
-        "explanation": "Focused on reducing emissions related to fertilizer use, this action offers incremental benefits in emission control. Its moderate score and niche impact in agricultural practices support its lower ranking.",
-        "action": {
-            "ActionID": "ipcc_0066",
-            "ActionName": "Crop nutrient management",
-            "ActionType": [
-                "mitigation"
-            ],
-            "AdaptationCategory": null,
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "land"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "InterventionType": [
-                "programs_and_initiatives",
-                "incentives_and_subsidies",
-                "regulations_and_laws"
-            ],
-            "Description": "Implementation of improved crop nutrient management practices to reduce N2O emissions from cropland soils. Practices include optimizing fertilizer application rates, timing, and types; using nitrification inhibitors and slow-release fertilizers; and integrating nutrient management techniques such as crop rotations, cover crops, and bio-fertilizer application.",
-            "BehavioralChangeTargeted": "Encourages farmers to adopt precision fertilization, use organic and synthetic fertilizers efficiently, and employ sustainable agricultural practices for reduced emissions and enhanced productivity.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "Promotes sustainable agricultural practices that can be adapted for smallholder and large-scale farms, addressing regional imbalances in fertilizer access and ensuring inclusivity in adoption of new technologies.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "20-39"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Availability of training and technical support for farmers",
-                "development of regional nutrient management roadmaps",
-                "access to affordable fertilizers and inhibitors"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in N2O emissions",
-                "improvement in crop yields",
-                "increase in soil carbon sequestration",
-                "reduction in fertilizer use per hectare"
-            ],
-            "Impacts": [
-                "Contributes to climate mitigation",
-                "improves food and nutrition security",
-                "enhances environmental sustainability",
-                "supports long-term agricultural productivity"
-            ]
-        }
-    },
-    {
-        "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0055",
-        "actionName": "Fire Management (Forest and Grassland / Savanna Fires)",
-        "actionPriority": 19,
-        "explanation": "Fire management is crucial for controlling emissions in savanna ecosystems. Despite the city's grassland context where fire risks are significant, its lower quantitative score and implementation dependencies position it as a lower priority action.",
-        "action": {
-            "ActionID": "ipcc_0055",
-            "ActionName": "Fire Management (Forest and Grassland / Savanna Fires)",
-            "ActionType": [
-                "mitigation"
-            ],
-            "AdaptationCategory": null,
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "land"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "InterventionType": [
-                "programs_and_initiatives",
-                "infrastructure_investments",
-                "regulations_and_laws"
-            ],
-            "Description": "Implementation of fire management practices, including prescribed burning and natural resource management, to reduce uncontrolled wildfires in forests and savannas. Focuses on safeguarding life, property, and resources while mitigating GHG emissions and maintaining carbon stocks.",
-            "BehavioralChangeTargeted": "Encourages adoption of prescribed burning and sustainable fire management practices among communities and land managers to reduce uncontrolled wildfires and their associated GHG emissions.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "Promotes equitable access to fire management resources, focusing on capacity building and governance in vulnerable or underserved regions such as least developed countries in Africa.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "20-39"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Effective governance frameworks",
-                "access to research and technology for fire management",
-                "community engagement",
-                "alignment with regional legal and policy frameworks"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in frequency and intensity of uncontrolled wildfires",
-                "Area managed with prescribed burns",
-                "Reduction in GHG emissions from fires",
-                "Improvement in biodiversity and soil health metrics"
-            ],
-            "Impacts": [
-                "Reduced GHG emissions",
-                "improved biodiversity conservation",
-                "prevention of soil erosion",
-                "enhanced land productivity",
-                "reduced risks to life and property from uncontrolled wildfires"
-            ]
-        }
-    },
-    {
-        "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0065",
-        "actionName": "Improve rice management",
-        "actionPriority": 20,
-        "explanation": "This action targets rice management practices, which are less relevant in Corumb\u00e1\u2019s predominantly grassland and savanna environment. Given the limited scope of rice production and a lower quantitative score, it ranks last in the priority order.",
-        "action": {
-            "ActionID": "ipcc_0065",
-            "ActionName": "Improve rice management",
-            "ActionType": [
-                "mitigation"
-            ],
-            "AdaptationCategory": null,
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "land"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "InterventionType": [
-                "programs_and_initiatives",
-                "incentives_and_subsidies",
-                "regulations_and_laws"
-            ],
-            "Description": "Implementation of improved water management practices (e.g., single and multiple drainage systems), residue management, better fertiliser application (e.g., slow-release fertilisers), and soil amendments (e.g., biochar) to reduce CH4 and N2O emissions while enhancing sustainability and system resilience.",
-            "BehavioralChangeTargeted": "Encourages adoption of sustainable cultivation practices, such as reducing water waste, improving fertiliser use efficiency, and adopting innovative drainage and residue management techniques.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 1,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "Supports small-scale farmers by reducing input costs (e.g., seeds, labour, and water), increasing income through higher yields, and providing tools and knowledge for sustainable rice farming.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "20-39"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Adequate irrigation infrastructure",
-                "training for farmers on advanced techniques",
-                "access to slow-release fertilisers and biochar",
-                "coordinated water management practices among neighboring farmers and regions"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in CH4 and N2O emissions per hectare",
-                "increased water use efficiency",
-                "yield stability during droughts",
-                "adoption rate of improved rice cultivation techniques"
-            ],
-            "Impacts": [
-                "Reduced greenhouse gas emissions",
-                "improved water use efficiency",
-                "enhanced drought resilience",
-                "increased farm income",
-                "more sustainable agricultural practices",
-                "contributing to food security"
             ]
         }
     }

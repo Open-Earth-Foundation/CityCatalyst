@@ -4,10 +4,81 @@
         "cityName": "Serra",
         "region": "BR-ES",
         "regionName": "Esp\u00edrito Santo",
+        "actionId": "ipcc_0039",
+        "actionName": "Carbon Capture and Storage (CCS)",
+        "actionPriority": 1,
+        "explanation": "This action has the highest quantitative score (3.334) and directly addresses one of the most critical emission sources in industrial processes. Given that industrial process emissions are the city\u2019s largest contributor, CCS is prioritized for its high emissions reduction potential with relatively fewer dependencies.",
+        "action": {
+            "ActionID": "ipcc_0039",
+            "ActionName": "Carbon Capture and Storage (CCS)",
+            "ActionType": [
+                "mitigation"
+            ],
+            "AdaptationCategory": null,
+            "Hazard": null,
+            "Sector": [
+                "ippu"
+            ],
+            "Subsector": [
+                "product_use"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "InterventionType": [
+                "infrastructure_investments",
+                "programs_and_initiatives",
+                "regulations_and_laws"
+            ],
+            "Description": "Carbon Capture and Storage (CCS) involves capturing CO2 from industrial processes, energy generation, or the atmosphere and storing it in geological formations for millennia to prevent its release into the atmosphere. CCS technologies can also enable near-zero or negative emissions when combined with sustainably sourced biofuels or direct air capture, supporting decarbonization of hard-to-abate sectors.",
+            "BehavioralChangeTargeted": "Encourages industries to adopt CCS technologies for emission reduction, contributing to compliance with climate targets and fostering sustainable innovation.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": "Supports equitable transition by providing decarbonization pathways for energy-intensive and hard-to-abate industries, ensuring jobs and economic stability in regions dependent on these sectors.",
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": "80-100",
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "high",
+            "TimelineForImplementation": ">10 years",
+            "Dependencies": [
+                "Requires the development of CO2 transport and storage infrastructure",
+                "supportive policy frameworks",
+                "sufficient clean energy for capture processes",
+                "incentives for adoption"
+            ],
+            "KeyPerformanceIndicators": [
+                "Amount of CO2 captured and stored annually",
+                "percentage reduction in industrial emissions",
+                "operational capacity of CCS projects globally"
+            ],
+            "Impacts": [
+                "Significant reductions in GHG emissions",
+                "mitigation of climate change effects",
+                "increased energy security through sustainable industrial practices"
+            ]
+        }
+    },
+    {
+        "locode": "BRSER",
+        "cityName": "Serra",
+        "region": "BR-ES",
+        "regionName": "Esp\u00edrito Santo",
         "actionId": "ipcc_0033",
         "actionName": "Electrification of Processes",
-        "actionPriority": 1,
-        "explanation": "Electrification of processes is highly cost-effective and significantly reduces emissions in the industrial sector, which is the largest emission source in Serra. It aligns with the city's capacity and can be implemented relatively quickly.",
+        "actionPriority": 2,
+        "explanation": "With a strong quantitative score (2.964), electrification offers significant emissions reduction by substituting fossil fuel processes in industrial applications. It is well-aligned with both the emission reduction priority and sector relevance guidelines.",
         "action": {
             "ActionID": "ipcc_0033",
             "ActionName": "Electrification of Processes",
@@ -74,95 +145,13 @@
         "cityName": "Serra",
         "region": "BR-ES",
         "regionName": "Esp\u00edrito Santo",
-        "actionId": "c40_0038",
-        "actionName": "Sanitary Landfills",
-        "actionPriority": 2,
-        "explanation": "Sanitary landfills address waste emissions, a major source in Serra. They are cost-effective, reduce health risks, and can be implemented with existing city infrastructure.",
-        "action": {
-            "ActionID": "c40_0038",
-            "ActionName": "Sanitary Landfills",
-            "ActionType": [
-                "mitigation"
-            ],
-            "AdaptationCategory": null,
-            "Hazard": null,
-            "Sector": [
-                "waste"
-            ],
-            "Subsector": [
-                "all"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "InterventionType": [
-                "infrastructure_investments",
-                "programs_and_initiatives"
-            ],
-            "Description": "\"Sanitary Landfills\" ensure proper disposal of residual waste in engineered facilities, minimizing environmental impact. This mitigation strategy involves utilizing advanced technological solutions to manage waste effectively, promoting sustainable waste disposal practices within a city.",
-            "BehavioralChangeTargeted": "The targeted behavioral change that the climate action of implementing \"Sanitary Landfills\" aims to achieve is the increased adoption of sustainable waste disposal practices among residents and businesses. This includes encouraging individuals to properly separate and dispose of their waste, reduce overall waste generation, and support the use of engineered facilities for waste management. By improving perceptions of waste disposal safety, convenience, and environmental responsibility, the intervention seeks to shift behaviors towards more environmentally friendly waste management practices, ultimately leading to a reduction in greenhouse gas emissions associated with improper waste disposal.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "The implementation of sanitary landfills as a climate action promotes equity and inclusion in several ways:\n\n1. **Access to Clean Environments**: By ensuring proper disposal of residual waste, sanitary landfills help reduce pollution and environmental hazards in underserved communities, which are often disproportionately affected by waste mismanagement.\n\n2. **Health Benefits**: Proper waste management minimizes health risks associated with improper disposal, such as contamination and disease, thereby protecting vulnerable populations who may have limited access to healthcare.\n\n3. **Job Creation**: The establishment and maintenance of sanitary landfills can create job opportunities for local residents, particularly in underserved areas, contributing to economic equity.\n\n4. **Community Engagement**: The planning and operation of sanitary landfills can involve local communities, ensuring that their voices are heard and their needs are considered, fostering a sense of inclusion.\n\n5. **Sustainable Practices**: By promoting sustainable waste disposal practices, the action supports long-term environmental justice, benefiting all community members, especially those in vulnerable situations who may rely more heavily on local natural resources. \n\nOverall, the action of implementing sanitary landfills addresses the needs of underserved communities by prioritizing their health, economic opportunities, and environmental safety.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": "60-79",
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Availability of engineered landfill sites designed to minimize environmental impact",
-                "Implementation of advanced waste management technologies",
-                "Regulatory frameworks and policies supporting sustainable waste disposal",
-                "Public awareness and community engagement in waste management practices",
-                "Funding and investment for infrastructure development and maintenance"
-            ],
-            "KeyPerformanceIndicators": [
-                "Waste diversion rate",
-                "Landfill gas emissions reduction",
-                "Leachate management efficiency",
-                "Volume of waste processed",
-                "Recycling rate",
-                "Public awareness and participation",
-                "Cost-effectiveness of waste management",
-                "Compliance with environmental regulations",
-                "Reduction in illegal dumping incidents",
-                "Sustainability of landfill operations"
-            ],
-            "Impacts": [
-                "Reduction of greenhouse gas emissions by 60-79% in the waste sector",
-                "Improved air quality due to reduced pollution from waste mismanagement",
-                "Enhanced water quality through proper waste disposal practices",
-                "Increased job opportunities in local communities",
-                "Promotion of sustainable waste disposal practices among residents and businesses",
-                "Health benefits for vulnerable populations through reduced environmental hazards",
-                "Community engagement in waste management planning and operations"
-            ]
-        }
-    },
-    {
-        "locode": "BRSER",
-        "cityName": "Serra",
-        "region": "BR-ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "ipcc_0045",
-        "actionName": "Behavioral Changes for Reduced Waste (e.g., Food)",
+        "actionId": "ipcc_0037",
+        "actionName": "Feedstock Decarbonisation",
         "actionPriority": 3,
-        "explanation": "Promoting behavioral changes is low-cost and can lead to significant waste reduction. It is socio-demographically suitable and can be quickly implemented with educational campaigns.",
+        "explanation": "Feedstock Decarbonisation (score 2.714) directly targets the materials input used in high-emission industrial sectors. Its clear focus on reducing the carbon intensity of inputs makes it a top action especially for a city with heavy industrial process emissions.",
         "action": {
-            "ActionID": "ipcc_0045",
-            "ActionName": "Behavioral Changes for Reduced Waste (e.g., Food)",
+            "ActionID": "ipcc_0037",
+            "ActionName": "Feedstock Decarbonisation",
             "ActionType": [
                 "mitigation"
             ],
@@ -172,53 +161,54 @@
                 "ippu"
             ],
             "Subsector": [
-                "industrial_processes"
+                "product_use"
             ],
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
             "InterventionType": [
+                "infrastructure_investments",
                 "programs_and_initiatives",
                 "incentives_and_subsidies",
                 "regulations_and_laws"
             ],
-            "Description": "Encouraging behavioral changes to reduce waste in industrial processes and consumer habits, particularly in food production and consumption. This includes reducing food waste through better planning, optimizing portion sizes, and improving recycling and reuse practices in production and post-consumption stages.",
-            "BehavioralChangeTargeted": "Encourages individuals and industries to adopt waste-reduction strategies, reduce overproduction, optimize food usage, and recycle waste effectively.",
+            "Description": "Decarbonising feedstocks for industrial processes through Carbon Capture and Storage (CCS), Carbon Capture and Utilisation (CCU), and integration with low-carbon energy sources. This includes capturing carbon from various industrial emissions and reusing or storing it to reduce greenhouse gas emissions. Applications include creating synthetic fuels, chemicals, and materials while using renewable energy or biogenic carbon sources.",
+            "BehavioralChangeTargeted": "Encourages industrial stakeholders to adopt CCS and CCU technologies, shifting towards low-carbon and circular economy feedstocks.",
             "CoBenefits": {
                 "air_quality": 1,
                 "water_quality": 0,
                 "habitat": 0,
-                "cost_of_living": 1,
+                "cost_of_living": 0,
                 "housing": 0,
                 "mobility": 0,
-                "stakeholder_engagement": 1
+                "stakeholder_engagement": 0
             },
-            "EquityAndInclusionConsiderations": "Promotes fair access to education and resources for waste reduction, particularly for low-income and underserved communities to improve resource efficiency and reduce waste management costs.",
+            "EquityAndInclusionConsiderations": "Supports equitable industrial development by promoting access to cleaner technologies, especially for industries in developing regions, to reduce emissions without compromising economic growth.",
             "GHGReductionPotential": {
                 "stationary_energy": null,
                 "transportation": null,
                 "waste": null,
-                "ippu": "20-39",
+                "ippu": "60-79",
                 "afolu": null
             },
             "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
+            "CostInvestmentNeeded": "high",
+            "TimelineForImplementation": ">10 years",
             "Dependencies": [
-                "Availability of infrastructure for waste collection and recycling",
-                "public awareness campaigns",
-                "supportive policy frameworks"
+                "Requires advancements in CCS and CCU technologies",
+                "availability of low-GHG electricity",
+                "supportive policies to incentivize industrial decarbonization"
             ],
             "KeyPerformanceIndicators": [
-                "Reduction in food waste percentage",
-                "increased recycling rates",
-                "reduced greenhouse gas emissions from waste management"
+                "Reduction in GHG emissions from industrial processes",
+                "increase in the use of low-carbon feedstocks",
+                "the number of CCS/CCU projects implemented"
             ],
             "Impacts": [
-                "Reduced environmental burden",
-                "enhanced resource efficiency",
-                "improved urban livability",
-                "cost savings in waste management systems"
+                "Enhanced industrial sustainability",
+                "reduced dependence on fossil fuels",
+                "advancement of circular economy principles",
+                "mitigation of climate change impacts"
             ]
         }
     },
@@ -227,13 +217,13 @@
         "cityName": "Serra",
         "region": "BR-ES",
         "regionName": "Esp\u00edrito Santo",
-        "actionId": "ipcc_0026",
-        "actionName": "Heat Recovery and Reuse through Heat Exchanger Networks or Heat Pumps",
+        "actionId": "ipcc_0076",
+        "actionName": "Switching to Net-zero-emissions Materials and Supply Chains",
         "actionPriority": 4,
-        "explanation": "This action is cost-effective and reduces industrial emissions. It aligns with Serra's industrial profile and can be implemented with moderate dependencies.",
+        "explanation": "Scoring 2.514, this action is critical as it impacts the entire supply chain of industrial production. It promotes systemic changes by encouraging the use of net-zero materials \u2013 a key strategy for reducing emissions in the dominant industrial sector of Serra.",
         "action": {
-            "ActionID": "ipcc_0026",
-            "ActionName": "Heat Recovery and Reuse through Heat Exchanger Networks or Heat Pumps",
+            "ActionID": "ipcc_0076",
+            "ActionName": "Switching to Net-zero-emissions Materials and Supply Chains",
             "ActionType": [
                 "mitigation"
             ],
@@ -249,12 +239,12 @@
                 "ghg_reduction"
             ],
             "InterventionType": [
+                "regulations_and_laws",
                 "infrastructure_investments",
-                "programs_and_initiatives",
-                "incentives_and_subsidies"
+                "programs_and_initiatives"
             ],
-            "Description": "This action involves improving heat-use energy efficiency by utilizing heat exchanger networks and high-temperature heat pumps to recover and reuse waste heat in industrial processes. Techniques include reducing heat needs via thermal insulation, reusing waste heat at various temperature grades, and recycling waste heat for power generation through technologies such as mechanical vapor recompression and thermoelectric conversion.",
-            "BehavioralChangeTargeted": "Encourages industries to adopt energy-efficient technologies for heat recovery and reuse, reducing reliance on high-emission heat production methods.",
+            "Description": "Transition to net-zero embodied carbon in construction materials and supply chains by substituting emissions-intensive materials like steel and concrete with engineered timber systems. This includes mass timber technologies for mid-rise urban buildings, integrating sustainable forestry, recycling, and reuse.",
+            "BehavioralChangeTargeted": "Encourages adoption of low-carbon building materials and design practices, and promotes sustainable consumption patterns in construction sectors.",
             "CoBenefits": {
                 "air_quality": 1,
                 "water_quality": 0,
@@ -264,32 +254,36 @@
                 "mobility": 0,
                 "stakeholder_engagement": 0
             },
-            "EquityAndInclusionConsiderations": "Ensures that advanced heat recovery technologies are accessible to small and medium industries, particularly in developing regions, helping them reduce energy costs and emissions.",
+            "EquityAndInclusionConsiderations": "Supports regions with low forest cover through sustainable timber trade and agroforestry practices to reduce land-use conflicts. Promotes job creation in sustainable forestry and timber industries.",
             "GHGReductionPotential": {
                 "stationary_energy": null,
                 "transportation": null,
                 "waste": null,
-                "ippu": "40-59",
+                "ippu": "60-79",
                 "afolu": null
             },
             "AdaptationEffectiveness": null,
             "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "5-10 years",
+            "TimelineForImplementation": ">10 years",
             "Dependencies": [
-                "Availability of advanced heat recovery and pump technologies",
-                "skilled workforce for installation and maintenance",
-                "policy support for adoption of waste heat recovery systems"
+                "Sustainable forestry management",
+                "international carbon accounting standards",
+                "development of mass timber technologies",
+                "robust forest and urban land governance policies",
+                "incentivized afforestation practices"
             ],
             "KeyPerformanceIndicators": [
-                "Increase in waste heat recovery rate",
-                "reduction in energy intensity",
-                "percentage of heat reused through high-efficiency systems"
+                "Reduction in embodied carbon in construction",
+                "number of mid-rise urban buildings using engineered timber",
+                "carbon sequestration capacity of urban timber infrastructure",
+                "improvement in sustainable forestry practices"
             ],
             "Impacts": [
-                "Significant reductions in industrial energy consumption and GHG emissions",
-                "enhanced energy security",
-                "cost savings for manufacturers",
-                "reduced environmental waste"
+                "Reduced GHG emissions from construction",
+                "enhanced carbon storage in urban environments",
+                "sustainable urbanization",
+                "improved resource efficiency",
+                "reduced pressure on natural ecosystems"
             ]
         }
     },
@@ -298,13 +292,13 @@
         "cityName": "Serra",
         "region": "BR-ES",
         "regionName": "Esp\u00edrito Santo",
-        "actionId": "ipcc_0027",
-        "actionName": "Process Coupling and Improvements",
+        "actionId": "ipcc_0044",
+        "actionName": "Alternative feedstocks (e.g. in cement)",
         "actionPriority": 5,
-        "explanation": "Process improvements are cost-effective and reduce emissions in the industrial sector. They are suitable for Serra's industrial capacity and can be implemented with existing technologies.",
+        "explanation": "This action (score 2.244) is particularly valuable for the cement industry, a major contributor in industrial processes. By substituting conventional feedstocks with low-carbon alternatives, it directly reduces emissions in one of the highest-impact sectors.",
         "action": {
-            "ActionID": "ipcc_0027",
-            "ActionName": "Process Coupling and Improvements",
+            "ActionID": "ipcc_0044",
+            "ActionName": "Alternative feedstocks (e.g. in cement)",
             "ActionType": [
                 "mitigation"
             ],
@@ -320,14 +314,14 @@
                 "ghg_reduction"
             ],
             "InterventionType": [
-                "infrastructure_investments",
                 "programs_and_initiatives",
+                "infrastructure_investments",
                 "incentives_and_subsidies"
             ],
-            "Description": "This action focuses on reducing energy and emissions intensity in the steel production process by improving coupling between processes, such as Endless Strip Production (ESP). Techniques include reducing the number of temperature cycles, integrating process stages, and adopting energy-efficient technologies.",
-            "BehavioralChangeTargeted": "Encourages manufacturers to optimize production stages, adopt efficient technologies, and reduce waste to improve overall energy efficiency and reduce emissions.",
+            "Description": "Utilizing alternative feedstocks, such as blast furnace slag, fly ash, and pozzolans, to reduce the clinker-to-cement ratio in cement production. These alternatives lower emissions associated with calcination and energy-intensive processes. Improved material efficiency through high-strength concretes and innovative placement methods further reduces material usage.",
+            "BehavioralChangeTargeted": "Encourages the adoption of alternative materials and innovative construction practices to reduce reliance on traditional clinker-intensive cement production.",
             "CoBenefits": {
-                "air_quality": 0,
+                "air_quality": 1,
                 "water_quality": 0,
                 "habitat": 0,
                 "cost_of_living": 0,
@@ -335,7 +329,7 @@
                 "mobility": 0,
                 "stakeholder_engagement": 0
             },
-            "EquityAndInclusionConsiderations": "Promotes access to advanced manufacturing technologies for small and medium-sized enterprises, ensuring broader participation in decarbonization efforts.",
+            "EquityAndInclusionConsiderations": "Promotes equitable access to innovative cement technologies and ensures benefits are shared across both developed and developing nations, fostering inclusive construction practices.",
             "GHGReductionPotential": {
                 "stationary_energy": null,
                 "transportation": null,
@@ -347,20 +341,20 @@
             "CostInvestmentNeeded": "high",
             "TimelineForImplementation": "5-10 years",
             "Dependencies": [
-                "Development and deployment of advanced process integration technologies",
-                "skilled workforce training",
-                "supportive policies to incentivize adoption"
+                "Development and availability of alternative feedstocks",
+                "regulatory support for material substitution",
+                "investment in research and development for innovative concrete applications"
             ],
             "KeyPerformanceIndicators": [
-                "Reduction in energy consumption per unit of steel",
-                "increase in process coupling efficiency",
-                "reduction in GHG emissions per ton of steel produced"
+                "Reduction in clinker-to-cement ratio",
+                "lower CO2 emissions per tonne of cement",
+                "increased adoption of alternative materials in cement production"
             ],
             "Impacts": [
-                "Improved energy efficiency",
-                "reduced emissions",
-                "cost savings for manufacturers",
-                "enhanced competitiveness of the steel industry in global markets"
+                "Reduced GHG emissions",
+                "enhanced resource efficiency",
+                "lower energy consumption in cement production",
+                "improved environmental quality in cement manufacturing regions"
             ]
         }
     },
@@ -372,7 +366,7 @@
         "actionId": "ipcc_0032",
         "actionName": "Fuel Switching to Renewable Fuels",
         "actionPriority": 6,
-        "explanation": "Switching to renewable fuels significantly reduces emissions and is compatible with Serra's environmental goals. It requires moderate investment but offers long-term benefits.",
+        "explanation": "Fuel switching (score 2.244) is prioritized due to its ability to reduce GHG emissions significantly by replacing fossil fuels with renewable alternatives, a strategy especially relevant for high-energy demanding industrial operations.",
         "action": {
             "ActionID": "ipcc_0032",
             "ActionName": "Fuel Switching to Renewable Fuels",
@@ -440,10 +434,152 @@
         "cityName": "Serra",
         "region": "BR-ES",
         "regionName": "Esp\u00edrito Santo",
+        "actionId": "ipcc_0027",
+        "actionName": "Process Coupling and Improvements",
+        "actionPriority": 7,
+        "explanation": "This action (score 2.244) focuses on optimizing industrial processes by integrating operations in a more efficient manner. Its direct impact on energy use and emissions in industrial settings gives it high priority according to the guidelines.",
+        "action": {
+            "ActionID": "ipcc_0027",
+            "ActionName": "Process Coupling and Improvements",
+            "ActionType": [
+                "mitigation"
+            ],
+            "AdaptationCategory": null,
+            "Hazard": null,
+            "Sector": [
+                "ippu"
+            ],
+            "Subsector": [
+                "industrial_processes"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "InterventionType": [
+                "infrastructure_investments",
+                "programs_and_initiatives",
+                "incentives_and_subsidies"
+            ],
+            "Description": "This action focuses on reducing energy and emissions intensity in the steel production process by improving coupling between processes, such as Endless Strip Production (ESP). Techniques include reducing the number of temperature cycles, integrating process stages, and adopting energy-efficient technologies.",
+            "BehavioralChangeTargeted": "Encourages manufacturers to optimize production stages, adopt efficient technologies, and reduce waste to improve overall energy efficiency and reduce emissions.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": "Promotes access to advanced manufacturing technologies for small and medium-sized enterprises, ensuring broader participation in decarbonization efforts.",
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": "40-59",
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "high",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Development and deployment of advanced process integration technologies",
+                "skilled workforce training",
+                "supportive policies to incentivize adoption"
+            ],
+            "KeyPerformanceIndicators": [
+                "Reduction in energy consumption per unit of steel",
+                "increase in process coupling efficiency",
+                "reduction in GHG emissions per ton of steel produced"
+            ],
+            "Impacts": [
+                "Improved energy efficiency",
+                "reduced emissions",
+                "cost savings for manufacturers",
+                "enhanced competitiveness of the steel industry in global markets"
+            ]
+        }
+    },
+    {
+        "locode": "BRSER",
+        "cityName": "Serra",
+        "region": "BR-ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "ipcc_0026",
+        "actionName": "Heat Recovery and Reuse through Heat Exchanger Networks or Heat Pumps",
+        "actionPriority": 8,
+        "explanation": "High on the list (score 2.244), this action improves energy efficiency by recovering waste heat. Its cost-effectiveness and rapid implementation potential make it an excellent candidate for reducing industrial process emissions.",
+        "action": {
+            "ActionID": "ipcc_0026",
+            "ActionName": "Heat Recovery and Reuse through Heat Exchanger Networks or Heat Pumps",
+            "ActionType": [
+                "mitigation"
+            ],
+            "AdaptationCategory": null,
+            "Hazard": null,
+            "Sector": [
+                "ippu"
+            ],
+            "Subsector": [
+                "industrial_processes"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "InterventionType": [
+                "infrastructure_investments",
+                "programs_and_initiatives",
+                "incentives_and_subsidies"
+            ],
+            "Description": "This action involves improving heat-use energy efficiency by utilizing heat exchanger networks and high-temperature heat pumps to recover and reuse waste heat in industrial processes. Techniques include reducing heat needs via thermal insulation, reusing waste heat at various temperature grades, and recycling waste heat for power generation through technologies such as mechanical vapor recompression and thermoelectric conversion.",
+            "BehavioralChangeTargeted": "Encourages industries to adopt energy-efficient technologies for heat recovery and reuse, reducing reliance on high-emission heat production methods.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": "Ensures that advanced heat recovery technologies are accessible to small and medium industries, particularly in developing regions, helping them reduce energy costs and emissions.",
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": "40-59",
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "high",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Availability of advanced heat recovery and pump technologies",
+                "skilled workforce for installation and maintenance",
+                "policy support for adoption of waste heat recovery systems"
+            ],
+            "KeyPerformanceIndicators": [
+                "Increase in waste heat recovery rate",
+                "reduction in energy intensity",
+                "percentage of heat reused through high-efficiency systems"
+            ],
+            "Impacts": [
+                "Significant reductions in industrial energy consumption and GHG emissions",
+                "enhanced energy security",
+                "cost savings for manufacturers",
+                "reduced environmental waste"
+            ]
+        }
+    },
+    {
+        "locode": "BRSER",
+        "cityName": "Serra",
+        "region": "BR-ES",
+        "regionName": "Esp\u00edrito Santo",
         "actionId": "ipcc_0034",
         "actionName": "Energy Recycling in Furnaces and Kilns",
-        "actionPriority": 7,
-        "explanation": "Energy recycling is cost-effective and reduces emissions in industrial processes. It aligns with Serra's industrial emissions profile and can be implemented with existing technologies.",
+        "actionPriority": 9,
+        "explanation": "This measure (score 2.244) is critical in industries that use furnaces and kilns, enabling the reuse of energy and reducing overall fuel use. Its sector relevance and efficiency in mitigating emissions position it as a high-priority action.",
         "action": {
             "ActionID": "ipcc_0034",
             "ActionName": "Energy Recycling in Furnaces and Kilns",
@@ -513,8 +649,8 @@
         "regionName": "Esp\u00edrito Santo",
         "actionId": "ipcc_0042",
         "actionName": "Design for Recovery, Reuse, or Repurposing",
-        "actionPriority": 8,
-        "explanation": "This action supports a circular economy, reducing waste and emissions. It is cost-effective and aligns with Serra's waste management goals.",
+        "actionPriority": 10,
+        "explanation": "Also scoring 2.244, this action shifts industrial design towards a circular economy. It minimizes waste and lowers emissions by promoting product recovery and reuse, aligning well with both emissions reduction and environmental compatibility criteria.",
         "action": {
             "ActionID": "ipcc_0042",
             "ActionName": "Design for Recovery, Reuse, or Repurposing",
@@ -582,81 +718,10 @@
         "cityName": "Serra",
         "region": "BR-ES",
         "regionName": "Esp\u00edrito Santo",
-        "actionId": "ipcc_0044",
-        "actionName": "Alternative feedstocks (e.g. in cement)",
-        "actionPriority": 9,
-        "explanation": "Using alternative feedstocks reduces emissions in the industrial sector. It is cost-effective and aligns with Serra's industrial capacity.",
-        "action": {
-            "ActionID": "ipcc_0044",
-            "ActionName": "Alternative feedstocks (e.g. in cement)",
-            "ActionType": [
-                "mitigation"
-            ],
-            "AdaptationCategory": null,
-            "Hazard": null,
-            "Sector": [
-                "ippu"
-            ],
-            "Subsector": [
-                "industrial_processes"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "InterventionType": [
-                "programs_and_initiatives",
-                "infrastructure_investments",
-                "incentives_and_subsidies"
-            ],
-            "Description": "Utilizing alternative feedstocks, such as blast furnace slag, fly ash, and pozzolans, to reduce the clinker-to-cement ratio in cement production. These alternatives lower emissions associated with calcination and energy-intensive processes. Improved material efficiency through high-strength concretes and innovative placement methods further reduces material usage.",
-            "BehavioralChangeTargeted": "Encourages the adoption of alternative materials and innovative construction practices to reduce reliance on traditional clinker-intensive cement production.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "Promotes equitable access to innovative cement technologies and ensures benefits are shared across both developed and developing nations, fostering inclusive construction practices.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": "40-59",
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Development and availability of alternative feedstocks",
-                "regulatory support for material substitution",
-                "investment in research and development for innovative concrete applications"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in clinker-to-cement ratio",
-                "lower CO2 emissions per tonne of cement",
-                "increased adoption of alternative materials in cement production"
-            ],
-            "Impacts": [
-                "Reduced GHG emissions",
-                "enhanced resource efficiency",
-                "lower energy consumption in cement production",
-                "improved environmental quality in cement manufacturing regions"
-            ]
-        }
-    },
-    {
-        "locode": "BRSER",
-        "cityName": "Serra",
-        "region": "BR-ES",
-        "regionName": "Esp\u00edrito Santo",
         "actionId": "ipcc_0035",
         "actionName": "Technology Improvements of Processes",
-        "actionPriority": 10,
-        "explanation": "Improving technology in industrial processes reduces emissions and is cost-effective. It aligns with Serra's industrial profile and can be implemented with existing resources.",
+        "actionPriority": 11,
+        "explanation": "With a score of 2.144, technological enhancements in industrial processes can lead to substantial efficiency gains and emission reductions. This action is critical for modernizing high-emission sectors and has fewer dependencies.",
         "action": {
             "ActionID": "ipcc_0035",
             "ActionName": "Technology Improvements of Processes",
@@ -729,8 +794,8 @@
         "regionName": "Esp\u00edrito Santo",
         "actionId": "ipcc_0043",
         "actionName": "Circular Economy Policies",
-        "actionPriority": 11,
-        "explanation": "Circular economy policies reduce waste and emissions, aligning with Serra's environmental goals. They are cost-effective and can be implemented with existing frameworks.",
+        "actionPriority": 12,
+        "explanation": "Also at 2.144, policy-level interventions promoting a circular economy support sustainable industrial practices. While slightly less direct in emission reductions compared to technical measures, this action builds the framework for lasting change.",
         "action": {
             "ActionID": "ipcc_0043",
             "ActionName": "Circular Economy Policies",
@@ -801,13 +866,13 @@
         "cityName": "Serra",
         "region": "BR-ES",
         "regionName": "Esp\u00edrito Santo",
-        "actionId": "ipcc_0028",
-        "actionName": "Introduction of Energy Efficiency Technologies in Processing",
-        "actionPriority": 12,
-        "explanation": "Energy efficiency technologies reduce emissions and are cost-effective. They align with Serra's industrial capacity and can be implemented with existing technologies.",
+        "actionId": "ipcc_0030",
+        "actionName": "Material Recycling",
+        "actionPriority": 13,
+        "explanation": "Scoring 2.079, material recycling directly cuts down raw material extraction and production emissions by reusing materials. This is particularly relevant in reducing the footprint of industrial sectors, making it a high-priority action.",
         "action": {
-            "ActionID": "ipcc_0028",
-            "ActionName": "Introduction of Energy Efficiency Technologies in Processing",
+            "ActionID": "ipcc_0030",
+            "ActionName": "Material Recycling",
             "ActionType": [
                 "mitigation"
             ],
@@ -823,12 +888,12 @@
                 "ghg_reduction"
             ],
             "InterventionType": [
-                "infrastructure_investments",
                 "programs_and_initiatives",
+                "infrastructure_investments",
                 "incentives_and_subsidies"
             ],
-            "Description": "Implementation of energy-efficient technologies in mining processes, particularly in comminution, by upgrading ore concentration methods, using efficient grinding and crushing technologies, and optimizing particle size feed. Other opportunities include improving separation, drying, and materials handling processes.",
-            "BehavioralChangeTargeted": "Encourages the adoption of advanced technologies and optimization of resource use to reduce energy consumption and emissions in mining processes.",
+            "Description": "Material recycling involves recovering and reprocessing materials such as paper, aluminium, and other metals to reduce energy consumption, lower emissions, and conserve resources. It includes techniques like paper recycling, aluminium reuse, and increased recovery of valuable metals from industrial waste.",
+            "BehavioralChangeTargeted": "Promotes increased adoption of recycling practices, reducing waste generation and encouraging efficient material use across industries.",
             "CoBenefits": {
                 "air_quality": 0,
                 "water_quality": 0,
@@ -838,32 +903,32 @@
                 "mobility": 0,
                 "stakeholder_engagement": 0
             },
-            "EquityAndInclusionConsiderations": "Promotes equitable access to efficient technologies for small-scale mining operations, reducing energy costs and environmental impacts for vulnerable communities dependent on mining activities.",
+            "EquityAndInclusionConsiderations": "Ensures access to recycling programs and technologies for small businesses and underserved communities, fostering inclusive participation in waste reduction efforts.",
             "GHGReductionPotential": {
                 "stationary_energy": null,
                 "transportation": null,
                 "waste": null,
-                "ippu": "20-39",
+                "ippu": "40-59",
                 "afolu": null
             },
             "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
+            "CostInvestmentNeeded": "medium",
             "TimelineForImplementation": "5-10 years",
             "Dependencies": [
-                "Development of advanced comminution and ore sorting technologies",
-                "availability of renewable energy sources for power generation",
-                "policy support to incentivize adoption"
+                "Availability of recycling infrastructure",
+                "advanced technologies for material separation and recovery",
+                "supportive policies for incentivizing recycling practices"
             ],
             "KeyPerformanceIndicators": [
-                "Reduction in energy consumption per ton of ore processed",
-                "improvement in ore recovery ratio",
-                "reduction in GHG emissions from mining operations"
+                "Recycling rates by material type",
+                "reduction in energy consumption for material production",
+                "decrease in landfill waste volumes"
             ],
             "Impacts": [
-                "Improved energy efficiency in mining",
-                "reduced operational costs",
-                "decreased environmental footprint of mining activities",
-                "enhanced resource utilization"
+                "Reduces reliance on virgin material extraction",
+                "lowers industrial energy demand",
+                "mitigates GHG emissions",
+                "supports sustainable production practices"
             ]
         }
     },
@@ -872,13 +937,13 @@
         "cityName": "Serra",
         "region": "BR-ES",
         "regionName": "Esp\u00edrito Santo",
-        "actionId": "ipcc_0031",
-        "actionName": "Smart Energy Management",
-        "actionPriority": 13,
-        "explanation": "Smart energy management reduces emissions and is cost-effective. It aligns with Serra's energy goals and can be implemented with existing infrastructure.",
+        "actionId": "ipcc_0047",
+        "actionName": "Enhanced product service levels per product (e.g. product sharing)",
+        "actionPriority": 14,
+        "explanation": "At a score of 2.079, enhancing product service levels reduces the need for new production, thereby lowering emissions. This approach is especially effective in urban settings with high material throughput and aligns with societal and environmental goals.",
         "action": {
-            "ActionID": "ipcc_0031",
-            "ActionName": "Smart Energy Management",
+            "ActionID": "ipcc_0047",
+            "ActionName": "Enhanced product service levels per product (e.g. product sharing)",
             "ActionType": [
                 "mitigation"
             ],
@@ -895,46 +960,45 @@
             ],
             "InterventionType": [
                 "programs_and_initiatives",
-                "infrastructure_investments",
                 "incentives_and_subsidies"
             ],
-            "Description": "The implementation of energy management systems using digitalisation and smart technologies to optimise energy use. These systems leverage real-time monitoring, advanced analytics, machine learning, and automation to improve energy efficiency, productivity, and cost-effectiveness.",
-            "BehavioralChangeTargeted": "Encourages adoption of real-time energy management practices and optimization of energy-intensive processes, fostering a culture of sustainability in industries.",
+            "Description": "Promotes more intensive use of durable products by encouraging product sharing, which reduces the demand for new products and the associated GHG emissions from their manufacturing and supply chain.",
+            "BehavioralChangeTargeted": "Encourages users to share durable products and adopt product-service systems that emphasize using goods more efficiently rather than owning them individually.",
             "CoBenefits": {
                 "air_quality": 0,
                 "water_quality": 0,
                 "habitat": 0,
-                "cost_of_living": 0,
+                "cost_of_living": 1,
                 "housing": 0,
                 "mobility": 1,
                 "stakeholder_engagement": 1
             },
-            "EquityAndInclusionConsiderations": "Facilitates access to energy-efficient technologies for small and medium enterprises, ensuring equitable participation in energy-saving initiatives.",
+            "EquityAndInclusionConsiderations": "Supports equitable access to goods and services by reducing ownership costs, enabling underserved communities to participate in product-sharing initiatives.",
             "GHGReductionPotential": {
                 "stationary_energy": null,
                 "transportation": null,
                 "waste": null,
-                "ippu": "20-39",
+                "ippu": "40-59",
                 "afolu": null
             },
             "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
+            "CostInvestmentNeeded": "medium",
             "TimelineForImplementation": "5-10 years",
             "Dependencies": [
-                "Availability of advanced technologies like sensors and machine learning systems",
-                "adequate digital infrastructure",
-                "supportive policies for energy efficiency adoption"
+                "Development of platforms and systems to facilitate product sharing",
+                "stakeholder collaboration",
+                "supportive policies to incentivize shared usage models"
             ],
             "KeyPerformanceIndicators": [
-                "Reduction in energy use",
-                "cost savings per production cycle",
-                "percentage improvement in process efficiency"
+                "Number of shared product-service systems implemented",
+                "reduction in material demand per capita",
+                "decrease in GHG emissions from product manufacturing"
             ],
             "Impacts": [
-                "Enhanced energy efficiency",
-                "reduced operational costs",
-                "improved industrial competitiveness",
-                "support for decarbonization goals"
+                "Reduction in resource use and emissions",
+                "cost savings for consumers",
+                "increased accessibility to products",
+                "fostering a circular economy through more efficient use of materials"
             ]
         }
     },
@@ -943,83 +1007,13 @@
         "cityName": "Serra",
         "region": "BR-ES",
         "regionName": "Esp\u00edrito Santo",
-        "actionId": "ipcc_0036",
-        "actionName": "On-site Combined Heat and Power (CHP)",
-        "actionPriority": 14,
-        "explanation": "CHP systems reduce emissions and are cost-effective. They align with Serra's industrial capacity and can be implemented with existing technologies.",
-        "action": {
-            "ActionID": "ipcc_0036",
-            "ActionName": "On-site Combined Heat and Power (CHP)",
-            "ActionType": [
-                "mitigation"
-            ],
-            "AdaptationCategory": null,
-            "Hazard": null,
-            "Sector": [
-                "ippu"
-            ],
-            "Subsector": [
-                "industrial_processes"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "InterventionType": [
-                "infrastructure_investments",
-                "programs_and_initiatives"
-            ],
-            "Description": "Implementation of on-site combined heat and power (CHP) systems in the pulp and paper industry to improve energy efficiency and reduce GHG emissions. CHP systems efficiently generate electricity and heat simultaneously.",
-            "BehavioralChangeTargeted": "Encourages adoption of more energy-efficient technologies and integration of heat and power systems at manufacturing sites.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "Promotes equitable access to advanced energy technologies and reduced energy costs, benefiting smaller and less-resourced manufacturers.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": "20-39",
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Access to biomass resources",
-                "skilled workforce for CHP system operation",
-                "supportive policies to incentivize adoption of CHP systems"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in energy intensity per ton of paper",
-                "decrease in direct and indirect CO2 emissions",
-                "increase in on-site electricity production through CHP systems"
-            ],
-            "Impacts": [
-                "Improved energy efficiency",
-                "reduced emissions",
-                "enhanced competitiveness of the pulp and paper industry",
-                "long-term cost savings for manufacturers"
-            ]
-        }
-    },
-    {
-        "locode": "BRSER",
-        "cityName": "Serra",
-        "region": "BR-ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "ipcc_0038",
-        "actionName": "Carbon Capture and Utilization (CCU)",
+        "actionId": "ipcc_0048",
+        "actionName": "Design for extended product life-time",
         "actionPriority": 15,
-        "explanation": "CCU reduces emissions in the industrial sector. It requires moderate investment but offers long-term benefits and aligns with Serra's industrial profile.",
+        "explanation": "This action (score 2.079) extends the lifespan of products, reducing the frequency of manufacturing and associated emissions. It supports both emissions reduction and cost-effectiveness strategies, fitting well with city-level priorities.",
         "action": {
-            "ActionID": "ipcc_0038",
-            "ActionName": "Carbon Capture and Utilization (CCU)",
+            "ActionID": "ipcc_0048",
+            "ActionName": "Design for extended product life-time",
             "ActionType": [
                 "mitigation"
             ],
@@ -1035,352 +1029,48 @@
                 "ghg_reduction"
             ],
             "InterventionType": [
+                "programs_and_initiatives",
                 "infrastructure_investments",
-                "programs_and_initiatives",
-                "incentives_and_subsidies"
-            ],
-            "Description": "Capturing carbon dioxide (CO2) from industrial processes or combustion gases and reusing it for producing fuels, chemicals, and building materials. This process reduces emissions from the initial source and provides an alternative to using new fossil or biomass feedstocks.",
-            "BehavioralChangeTargeted": "Encourages industries to adopt carbon reuse technologies, reducing reliance on virgin feedstocks and enhancing the circular economy.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "Ensures that benefits from CCU technologies are accessible to low-income regions, including reduced costs of building materials and fuels.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": "20-39",
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Availability of clean energy for hydrogen production",
-                "development of CCU technologies",
-                "policies to support adoption"
-            ],
-            "KeyPerformanceIndicators": [
-                "Quantity of CO2 captured and reused",
-                "reduction in emissions per ton of product",
-                "market penetration of CCU-derived products"
-            ],
-            "Impacts": [
-                "Reduction in GHG emissions",
-                "enhanced energy security",
-                "development of sustainable industries"
-            ]
-        }
-    },
-    {
-        "locode": "BRSER",
-        "cityName": "Serra",
-        "region": "BR-ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "c40_0028",
-        "actionName": "Zero Emission Buses",
-        "actionPriority": 16,
-        "explanation": "Zero emission buses reduce transportation emissions and are cost-effective. They align with Serra's transportation goals and can be implemented with existing infrastructure.",
-        "action": {
-            "ActionID": "c40_0028",
-            "ActionName": "Zero Emission Buses",
-            "ActionType": [
-                "mitigation"
-            ],
-            "AdaptationCategory": null,
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "InterventionType": [
-                "programs_and_initiatives",
-                "infrastructure_investments"
-            ],
-            "Description": "\"Zero Emission Buses\" initiatives focus on integrating electric or other zero-emission technologies into public transportation fleets. This strategy aims to eliminate traditional bus emissions, contributing to cleaner air and a more sustainable urban transit system.",
-            "BehavioralChangeTargeted": "The targeted behavioral shift that the \"Zero Emission Buses\" initiative aims to achieve is an increased reliance on public transportation, specifically the use of electric or zero-emission buses, over personal vehicles. This shift is intended to encourage individuals to choose cleaner, more sustainable transit options, thereby reducing greenhouse gas emissions and contributing to improved air quality in urban areas. By enhancing the perception of public transportation as a convenient, safe, and environmentally friendly alternative, the initiative seeks to foster a cultural norm that prioritizes sustainable commuting practices.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "The \"Zero Emission Buses\" initiative promotes equity and inclusion by prioritizing cleaner air in urban areas, which often include vulnerable or underserved communities that are disproportionately affected by air pollution. By transitioning to electric or zero-emission buses, the initiative directly addresses health disparities faced by these populations, improving their overall quality of life.\n\nAdditionally, the integration of zero-emission technologies into public transportation enhances accessibility to reliable and sustainable transit options for low-income individuals who may rely on public transport for their daily commutes. This ensures that all community members, regardless of socioeconomic status, have equitable access to clean transportation.\n\nFurthermore, the initiative may create job opportunities in the maintenance and operation of zero-emission buses, particularly in communities that have historically faced economic disadvantages. This can help foster economic inclusion and support local workforce development.\n\nOverall, the initiative's focus on reducing emissions and improving public transportation aligns with the needs of underserved communities, promoting environmental justice and equitable access to clean transit solutions.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "20-39",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Availability of electric or zero-emission bus technology",
-                "Investment in charging infrastructure for electric buses",
-                "Supportive government policies and regulations promoting zero-emission transportation",
-                "Public funding or financial incentives for transit agencies",
-                "Training and workforce development for maintenance and operation of new technologies",
-                "Public acceptance and demand for cleaner public transportation options"
-            ],
-            "KeyPerformanceIndicators": [
-                "Number of zero-emission buses deployed",
-                "Reduction in greenhouse gas emissions",
-                "Percentage of public transportation fleet that is zero-emission",
-                "Air quality improvement metrics",
-                "Operational cost savings from zero-emission buses",
-                "Public ridership levels",
-                "Energy consumption per mile",
-                "Maintenance costs of zero-emission buses",
-                "User satisfaction ratings",
-                "Reduction in noise pollution"
-            ],
-            "Impacts": [
-                "Reduction of greenhouse gas emissions in the transportation sector by 20-39%",
-                "Improvement of air quality in urban areas",
-                "Promotion of equity and inclusion for underserved communities",
-                "Enhanced accessibility to public transportation for low-income individuals",
-                "Creation of job opportunities in the maintenance and operation of zero-emission buses"
-            ]
-        }
-    },
-    {
-        "locode": "BRSER",
-        "cityName": "Serra",
-        "region": "BR-ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "ipcc_0002",
-        "actionName": "Active Transport Modes",
-        "actionPriority": 17,
-        "explanation": "Promoting active transport reduces emissions and is cost-effective. It aligns with Serra's transportation goals and can be implemented with existing infrastructure.",
-        "action": {
-            "ActionID": "ipcc_0002",
-            "ActionName": "Active Transport Modes",
-            "ActionType": [
-                "mitigation"
-            ],
-            "AdaptationCategory": null,
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "InterventionType": [
-                "infrastructure_investments",
-                "programs_and_initiatives"
-            ],
-            "Description": "Promoting walking and cycling as primary modes of transport for short journeys (5 km or less) to reduce dependency on light-duty vehicles and decrease GHG emissions.",
-            "BehavioralChangeTargeted": "Encourages a modal shift from car and motorcycle use to walking and cycling.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 1,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "Improves access to safe and affordable transport options, particularly for low-income communities, while enhancing urban mobility for underserved groups.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "0-19",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Investment in safe walking and cycling infrastructure",
-                "public awareness campaigns",
-                "supportive urban planning policies"
-            ],
-            "KeyPerformanceIndicators": [
-                "Increase in kilometers of bicycle and walking networks",
-                "rise in active transport modal share",
-                "reduction in car usage for short trips"
-            ],
-            "Impacts": [
-                "Improved public health",
-                "reduced urban congestion",
-                "lower transport-related GHG emissions",
-                "enhanced quality of urban life"
-            ]
-        }
-    },
-    {
-        "locode": "BRSER",
-        "cityName": "Serra",
-        "region": "BR-ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "c40_0035",
-        "actionName": "Waste Efficiency",
-        "actionPriority": 18,
-        "explanation": "Improving waste efficiency reduces emissions and is cost-effective. It aligns with Serra's waste management goals and can be implemented with existing infrastructure.",
-        "action": {
-            "ActionID": "c40_0035",
-            "ActionName": "Waste Efficiency",
-            "ActionType": [
-                "mitigation"
-            ],
-            "AdaptationCategory": null,
-            "Hazard": null,
-            "Sector": [
-                "waste"
-            ],
-            "Subsector": [
-                "all"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "InterventionType": [
-                "programs_and_initiatives"
-            ],
-            "Description": "\"Waste Efficiency\" initiatives aim to improve the efficiency of waste collection processes, reducing resource consumption and minimizing environmental impact. This includes optimizing waste management systems to enhance energy efficiency and promote sustainable waste disposal practices.",
-            "BehavioralChangeTargeted": "The targeted behavioral change that the \"Waste Efficiency\" initiatives aim to achieve is for individuals and organizations to adopt more sustainable waste disposal practices and actively participate in optimizing waste management systems. This includes reducing waste generation, increasing recycling rates, and utilizing energy-efficient waste collection methods. By enhancing awareness and perceptions of the environmental impact of waste, the initiative encourages people to prioritize waste efficiency in their daily activities, leading to a collective shift towards more responsible waste management behaviors.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 1,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "The \"Waste Efficiency\" initiatives promote equity and inclusion by focusing on underserved communities that often bear the brunt of inefficient waste management systems. By optimizing waste collection processes, these initiatives can reduce the environmental burden on vulnerable populations, who may live in areas disproportionately affected by waste and pollution. \n\nAdditionally, improving energy efficiency in waste management can lead to cost savings, which can be reinvested into community services or infrastructure that benefit low-income neighborhoods. The promotion of sustainable waste disposal practices also ensures that all community members, regardless of socioeconomic status, have access to environmentally responsible options, fostering a sense of shared responsibility and inclusion in climate action efforts. \n\nOverall, these initiatives recognize the unique challenges faced by underserved communities and aim to create a more equitable waste management system that benefits all residents.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": "80-100",
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Effective waste management infrastructure and technology",
-                "Collaboration with local governments and waste management authorities",
-                "Public awareness and education on waste disposal practices",
-                "Access to data for monitoring and optimizing waste collection processes",
-                "Investment in sustainable waste processing facilities"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in waste collection costs",
-                "Percentage decrease in waste sent to landfills",
-                "Increase in recycling rates",
-                "Energy consumption per ton of waste collected",
-                "Carbon emissions reduction from waste management",
-                "Customer satisfaction with waste collection services",
-                "Volume of waste processed through sustainable methods",
-                "Operational efficiency of waste collection routes"
-            ],
-            "Impacts": [
-                "Reduction in greenhouse gas emissions by 80-100% in the waste sector",
-                "Improved water quality through better waste management practices",
-                "Enhanced equity and inclusion for underserved communities",
-                "Increased community awareness and participation in sustainable waste practices",
-                "Cost savings from energy-efficient waste management reinvested into community services"
-            ]
-        }
-    },
-    {
-        "locode": "BRSER",
-        "cityName": "Serra",
-        "region": "BR-ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "c40_0036",
-        "actionName": "Landfill Management",
-        "actionPriority": 19,
-        "explanation": "Improved landfill management reduces emissions and is cost-effective. It aligns with Serra's waste management goals and can be implemented with existing infrastructure.",
-        "action": {
-            "ActionID": "c40_0036",
-            "ActionName": "Landfill Management",
-            "ActionType": [
-                "mitigation"
-            ],
-            "AdaptationCategory": null,
-            "Hazard": null,
-            "Sector": [
-                "waste"
-            ],
-            "Subsector": [
-                "all"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "InterventionType": [
-                "programs_and_initiatives",
                 "regulations_and_laws"
             ],
-            "Description": "\"Landfill Management\" strategies focus on responsible and sustainable landfill practices to minimize environmental degradation. By adopting effective management techniques, cities aim to reduce the ecological footprint associated with landfill sites and encourage waste reduction.",
-            "BehavioralChangeTargeted": "The targeted behavioral change that the \"Landfill Management\" climate action aims to achieve is a reduction in waste generation and an increase in responsible waste disposal practices among individuals and communities. This includes encouraging people to adopt habits such as recycling, composting, and minimizing single-use items, ultimately leading to a shift towards more sustainable consumption patterns and a decreased ecological footprint associated with landfill sites.",
+            "Description": "Designing products with longer lifespans, increased reusability, repairability, and recyclability to reduce material use and improve resource efficiency. This includes optimizing product designs to minimize material consumption and emissions, supporting a circular economy.",
+            "BehavioralChangeTargeted": "Encourages manufacturers and consumers to prioritize durability, reuse, and efficient use of materials to reduce waste and emissions.",
             "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
+                "air_quality": 0,
+                "water_quality": 0,
                 "habitat": 0,
                 "cost_of_living": 0,
                 "housing": 0,
                 "mobility": 0,
-                "stakeholder_engagement": 0
+                "stakeholder_engagement": 1
             },
-            "EquityAndInclusionConsiderations": "The \"Landfill Management\" strategies promote equity and inclusion by addressing the environmental impacts of landfill sites, which often disproportionately affect vulnerable and underserved communities. These communities frequently reside near landfills and are more susceptible to health risks associated with pollution and environmental degradation. By implementing responsible and sustainable landfill practices, the action aims to reduce these negative impacts, thereby improving the quality of life for residents in these areas.\n\nAdditionally, effective waste reduction techniques can create opportunities for community engagement and participation, allowing underserved populations to have a voice in local environmental decisions. This inclusion fosters a sense of ownership and empowerment among community members, ensuring that their needs and concerns are considered in the management of landfill sites. Overall, the action acknowledges and seeks to mitigate the inequities faced by marginalized communities in relation to waste management and environmental health.",
+            "EquityAndInclusionConsiderations": "Promotes affordability of durable and reusable products, ensuring low-income populations have access to long-lasting, high-quality goods.",
             "GHGReductionPotential": {
                 "stationary_energy": null,
                 "transportation": null,
-                "waste": "60-79",
-                "ippu": null,
+                "waste": null,
+                "ippu": "40-59",
                 "afolu": null
             },
             "AdaptationEffectiveness": null,
             "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
+            "TimelineForImplementation": "5-10 years",
             "Dependencies": [
-                "Effective waste segregation practices to ensure proper disposal and recycling",
-                "Investment in technology for waste treatment and landfill monitoring",
-                "Community engagement and education on waste reduction and recycling",
-                "Regulatory frameworks and policies supporting sustainable landfill practices",
-                "Collaboration with local governments and organizations for resource sharing and best practices"
+                "Requires collaboration across material supply chains",
+                "advancements in product design",
+                "supportive policy frameworks to incentivize circular economy practices"
             ],
             "KeyPerformanceIndicators": [
-                "Reduction in landfill waste volume",
-                "Percentage of waste diverted from landfills",
-                "Rate of landfill gas capture",
-                "Soil and water quality around landfill sites",
-                "Frequency of landfill inspections",
-                "Public awareness and engagement levels",
-                "Cost savings from improved landfill management practices",
-                "Compliance with environmental regulations"
+                "Reduction in material use per product",
+                "increase in product lifespan",
+                "rate of reuse and repair",
+                "reduction in GHG emissions from material production and waste"
             ],
             "Impacts": [
-                "Reduction in greenhouse gas emissions from waste management",
-                "Improvement in air quality due to reduced landfill emissions",
-                "Enhancement of water quality by minimizing leachate from landfills",
-                "Promotion of equity and inclusion for underserved communities",
-                "Encouragement of sustainable waste disposal practices among individuals and communities"
+                "Significant emissions reductions",
+                "resource conservation",
+                "cost savings for consumers",
+                "strengthened circular economy practices"
             ]
         }
     },
@@ -1389,13 +1079,154 @@
         "cityName": "Serra",
         "region": "BR-ES",
         "regionName": "Esp\u00edrito Santo",
-        "actionId": "ipcc_0023",
-        "actionName": "Improved Heat and Energy Recovery",
-        "actionPriority": 20,
-        "explanation": "Improving heat and energy recovery reduces emissions and is cost-effective. It aligns with Serra's industrial capacity and can be implemented with existing technologies.",
+        "actionId": "ipcc_0049",
+        "actionName": "Improved product stock maintenance to extend life-time",
+        "actionPriority": 16,
+        "explanation": "With the same quantitative score (2.079), improved maintenance extends the useful life of infrastructure and equipment. It contributes indirectly to reducing overall emissions by delaying new production needs, and is thus prioritized accordingly.",
         "action": {
-            "ActionID": "ipcc_0023",
-            "ActionName": "Improved Heat and Energy Recovery",
+            "ActionID": "ipcc_0049",
+            "ActionName": "Improved product stock maintenance to extend life-time",
+            "ActionType": [
+                "mitigation"
+            ],
+            "AdaptationCategory": null,
+            "Hazard": null,
+            "Sector": [
+                "ippu"
+            ],
+            "Subsector": [
+                "industrial_processes"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "InterventionType": [
+                "infrastructure_investments",
+                "programs_and_initiatives"
+            ],
+            "Description": "Extending the lifespan of buildings and infrastructure by maintaining their structural integrity through improved product stock maintenance. This involves ensuring concrete structures remain functional for over 200 years.",
+            "BehavioralChangeTargeted": "Encourages extending the lifetime of concrete structures and promoting more sustainable construction and maintenance practices.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": "Supports affordable infrastructure by reducing the need for frequent rebuilding, benefiting underserved and resource-limited communities.",
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": "40-59",
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Development of advanced maintenance techniques",
+                "effective policies to promote longer building lifespans",
+                "education for construction professionals on durable practices"
+            ],
+            "KeyPerformanceIndicators": [
+                "Increase in the average lifespan of buildings and infrastructure",
+                "reduction in cement demand per capita",
+                "overall CO2 emissions reductions in cement production"
+            ],
+            "Impacts": [
+                "Reduction in demand for new concrete and cement production",
+                "reduced emissions",
+                "enhanced resource efficiency",
+                "increased affordability and sustainability of infrastructure"
+            ]
+        }
+    },
+    {
+        "locode": "BRSER",
+        "cityName": "Serra",
+        "region": "BR-ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "ipcc_0051",
+        "actionName": "Reducing overall demand for product services",
+        "actionPriority": 17,
+        "explanation": "Also scored at 2.079, this action targets demand-side management, reducing the necessity for extensive production and its associated emissions. Although its impact is more diffuse, it is important for long-term sustainability and risk reduction.",
+        "action": {
+            "ActionID": "ipcc_0051",
+            "ActionName": "Reducing overall demand for product services",
+            "ActionType": [
+                "mitigation"
+            ],
+            "AdaptationCategory": null,
+            "Hazard": null,
+            "Sector": [
+                "ippu"
+            ],
+            "Subsector": [
+                "product_use"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "InterventionType": [
+                "programs_and_initiatives",
+                "incentives_and_subsidies",
+                "regulations_and_laws"
+            ],
+            "Description": "This action focuses on mitigating climate change by reducing the demand for industrial products and services, particularly in sectors such as clothing and tourism. It emphasizes behavioral and lifestyle changes, such as sustainable consumption patterns, reduced long-haul travel, and lower demand for products linked to excessive material production and emissions.",
+            "BehavioralChangeTargeted": "Promotes sustainable consumption and lifestyle changes, such as reduced reliance on fast fashion, decreased long-haul travel, and responsible use of industrial products to limit resource consumption and emissions.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 1,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": "Encourages equitable access to sustainable alternatives, particularly for underserved communities, ensuring reduced environmental impacts without excluding vulnerable populations.",
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": "40-59",
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Implementation of policies and programs promoting sustainable consumption",
+                "availability of alternatives to high-emission activities",
+                "societal support for behavioral and lifestyle changes"
+            ],
+            "KeyPerformanceIndicators": [
+                "Reduction in demand for high-emission products and services",
+                "decreased industrial emissions linked to product use",
+                "increased adoption of sustainable consumption practices"
+            ],
+            "Impacts": [
+                "Reduction in global GHG emissions",
+                "improved resource efficiency",
+                "enhanced sustainability in consumption patterns",
+                "reduced strain on environmental resources"
+            ]
+        }
+    },
+    {
+        "locode": "BRSER",
+        "cityName": "Serra",
+        "region": "BR-ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "ipcc_0041",
+        "actionName": "Improved Material Utilization (Near-Net Shape Casting)",
+        "actionPriority": 18,
+        "explanation": "With a score of 1.979, this action focuses on precision in manufacturing to reduce waste. It is particularly relevant for industrial sectors where material efficiency can lead to measurable emission reductions, even if its quantitative score is slightly lower.",
+        "action": {
+            "ActionID": "ipcc_0041",
+            "ActionName": "Improved Material Utilization (Near-Net Shape Casting)",
             "ActionType": [
                 "mitigation"
             ],
@@ -1413,13 +1244,12 @@
             "InterventionType": [
                 "infrastructure_investments",
                 "programs_and_initiatives",
-                "incentives_and_subsidies",
                 "regulations_and_laws"
             ],
-            "Description": "Enhanced energy efficiency in industrial processes by recovering heat and energy from waste streams, improving process coupling, and adopting advanced technologies such as coke dry quenching, black liquor gasification, and top pressure recovery turbines. Includes reducing energy use in comminution, paper drying, and other industrial processes through optimized designs, operational improvements, and material efficiency strategies.",
-            "BehavioralChangeTargeted": "Encourages adoption of energy recovery technologies, waste reduction practices, and material efficiency improvements in industrial processes. Promotes recycling and sustainable resource management.",
+            "Description": "This action focuses on enhancing material efficiency by adopting near-net shape casting and similar innovative manufacturing techniques. These methods reduce material wastage during production, improve yield from raw materials, and enhance energy efficiency by minimizing reprocessing. Strategies include optimizing product design, lightweighting, and improving recycling and reuse processes.",
+            "BehavioralChangeTargeted": "Encourages manufacturers to adopt innovative manufacturing processes, optimize material usage, and reduce production waste.",
             "CoBenefits": {
-                "air_quality": 1,
+                "air_quality": 0,
                 "water_quality": 0,
                 "habitat": 0,
                 "cost_of_living": 0,
@@ -1427,7 +1257,153 @@
                 "mobility": 0,
                 "stakeholder_engagement": 0
             },
-            "EquityAndInclusionConsiderations": "Supports equitable access to energy-efficient technologies and promotes sustainable practices in developing regions with high industrial emissions. Focuses on reducing resource competition and ensuring fair distribution of technological advancements.",
+            "EquityAndInclusionConsiderations": "Promotes access to advanced material-efficient technologies for industries of all scales, enabling smaller enterprises to participate in sustainable manufacturing practices.",
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": "40-59",
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Availability of advanced manufacturing technologies",
+                "workforce training",
+                "supportive regulations",
+                "access to materials for near-net shape casting"
+            ],
+            "KeyPerformanceIndicators": [
+                "Reduction in material waste",
+                "increase in production yield",
+                "reduction in GHG emissions per unit of material produced"
+            ],
+            "Impacts": [
+                "Significant reduction in material and energy use",
+                "enhanced production efficiency",
+                "reduced emissions",
+                "improved sustainability across industrial supply chains"
+            ]
+        }
+    },
+    {
+        "locode": "BRSER",
+        "cityName": "Serra",
+        "region": "BR-ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "ipcc_0040",
+        "actionName": "Design with Less / Lightweighting of Products",
+        "actionPriority": 19,
+        "explanation": "Scoring 1.879, lightweighting of products is a cost-effective strategy that reduces energy use across the product lifecycle. Its alignment with both cost-effectiveness and environmental compatibility makes it a significant action, though it ranks slightly lower in direct emission reduction potential.",
+        "action": {
+            "ActionID": "ipcc_0040",
+            "ActionName": "Design with Less / Lightweighting of Products",
+            "ActionType": [
+                "mitigation"
+            ],
+            "AdaptationCategory": null,
+            "Hazard": null,
+            "Sector": [
+                "ippu"
+            ],
+            "Subsector": [
+                "industrial_processes"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "InterventionType": [
+                "programs_and_initiatives",
+                "regulations_and_laws",
+                "incentives_and_subsidies"
+            ],
+            "Description": "This action involves improving material efficiency by designing lighter products, optimizing material usage to maintain functionality, and incorporating circular economy principles such as reusability, repairability, and recyclability. It spans the entire product lifecycle, from design to end-of-life management.",
+            "BehavioralChangeTargeted": "Encourages adoption of efficient material use practices, longer product lifespans, and repair/reuse behaviors among manufacturers and consumers.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": "Promotes access to durable, affordable products for underserved communities and reduces waste in resource-constrained regions.",
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": "40-59",
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Availability of advanced materials",
+                "supportive policies for circular economy",
+                "stakeholder collaboration across supply chains",
+                "investment in R&D for lightweight materials",
+                "high-efficiency design methods"
+            ],
+            "KeyPerformanceIndicators": [
+                "Reduction in material usage per product",
+                "increase in product lifespan",
+                "percentage of materials recovered and reused",
+                "reduction in GHG emissions from production processes"
+            ],
+            "Impacts": [
+                "Reduced environmental footprint",
+                "lower production costs",
+                "improved resource efficiency",
+                "enhanced sustainability of industrial processes"
+            ]
+        }
+    },
+    {
+        "locode": "BRSER",
+        "cityName": "Serra",
+        "region": "BR-ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "ipcc_0045",
+        "actionName": "Behavioral Changes for Reduced Waste (e.g., Food)",
+        "actionPriority": 20,
+        "explanation": "With the lowest score (1.61), this action targets behavioral change to reduce waste. While important for overall environmental sustainability and risk reduction, its impact on direct industrial emissions is less pronounced than the technical or process innovations, placing it last in the priority ranking.",
+        "action": {
+            "ActionID": "ipcc_0045",
+            "ActionName": "Behavioral Changes for Reduced Waste (e.g., Food)",
+            "ActionType": [
+                "mitigation"
+            ],
+            "AdaptationCategory": null,
+            "Hazard": null,
+            "Sector": [
+                "ippu"
+            ],
+            "Subsector": [
+                "industrial_processes"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "InterventionType": [
+                "programs_and_initiatives",
+                "incentives_and_subsidies",
+                "regulations_and_laws"
+            ],
+            "Description": "Encouraging behavioral changes to reduce waste in industrial processes and consumer habits, particularly in food production and consumption. This includes reducing food waste through better planning, optimizing portion sizes, and improving recycling and reuse practices in production and post-consumption stages.",
+            "BehavioralChangeTargeted": "Encourages individuals and industries to adopt waste-reduction strategies, reduce overproduction, optimize food usage, and recycle waste effectively.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": "Promotes fair access to education and resources for waste reduction, particularly for low-income and underserved communities to improve resource efficiency and reduce waste management costs.",
             "GHGReductionPotential": {
                 "stationary_energy": null,
                 "transportation": null,
@@ -1436,25 +1412,23 @@
                 "afolu": null
             },
             "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "5-10 years",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
             "Dependencies": [
-                "Availability of advanced technologies",
-                "supportive regulatory frameworks",
-                "investment in research and development",
-                "alignment with global standards for emissions reduction and energy efficiency"
+                "Availability of infrastructure for waste collection and recycling",
+                "public awareness campaigns",
+                "supportive policy frameworks"
             ],
             "KeyPerformanceIndicators": [
-                "Reduction in industrial GHG emissions",
-                "adoption rates of heat and energy recovery technologies",
-                "energy intensity improvements in key industries",
-                "recycling rates"
+                "Reduction in food waste percentage",
+                "increased recycling rates",
+                "reduced greenhouse gas emissions from waste management"
             ],
             "Impacts": [
-                "Significant reductions in industrial emissions",
-                "improved resource efficiency",
-                "enhanced energy security",
-                "increased sustainability in manufacturing and construction sectors"
+                "Reduced environmental burden",
+                "enhanced resource efficiency",
+                "improved urban livability",
+                "cost savings in waste management systems"
             ]
         }
     }

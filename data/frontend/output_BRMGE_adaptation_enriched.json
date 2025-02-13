@@ -1,13 +1,13 @@
 [
     {
-        "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
         "actionId": "ipcc_0087",
         "actionName": "Infrastructure retrofitting",
         "actionPriority": 1,
-        "explanation": "This action scores highest with a quantitative score of 1.6017 and directly addresses infrastructure vulnerabilities\u2014a key risk in Corumb\u00e1 given the high exposure to hazards like heatwaves and landslides. While emissions reduction is the top guideline, in the adaptation context for Corumb\u00e1, strengthening infrastructure is critical and offers broad risk mitigation.",
+        "explanation": "Ranked first due to its high quantitative score and its role in strengthening critical infrastructure. By retrofitting buildings and transportation networks, the action reduces risk from hazards (such as heatwaves and drought\u2010induced stress) which is vital in a low\u2010income desert city. Although adaptation in nature, improving resilience can indirectly contribute to lower operational emissions by preventing repeated damage and reconstruction.",
         "action": {
             "ActionID": "ipcc_0087",
             "ActionName": "Infrastructure retrofitting",
@@ -63,14 +63,76 @@
         }
     },
     {
-        "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "ipcc_0091",
+        "actionName": "Diversification of livelihoods ",
+        "actionPriority": 2,
+        "explanation": "This action scores highly and is essential for socio-demographic suitability, especially given the city's very high low-income population. It helps communities adapt to climate shocks by providing alternative income sources and reducing vulnerability, which is critical in a context with significant risks to food and energy security.",
+        "action": {
+            "ActionID": "ipcc_0091",
+            "ActionName": "Diversification of livelihoods ",
+            "ActionType": [
+                "adaptation"
+            ],
+            "AdaptationCategory": "Livelihood Adaptation",
+            "Hazard": [
+                "storms",
+                "sea-level-rise"
+            ],
+            "Sector": [
+                "food_security",
+                "biodiversity"
+            ],
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "InterventionType": null,
+            "Description": "Diversifying income-generating activities within fisheries and mariculture sectors to mitigate the economic impacts of climate change. This includes shifting target species, adapting harvest tactics, and transitioning to mariculture and ecotourism. Technology and infrastructure upgrades improve marine harvest efficiency and promote sustainable resource management. These adaptations aim to stabilize fisheries, enhance sustainability, and protect livelihoods under shifting marine species distributions and climate variability.",
+            "BehavioralChangeTargeted": null,
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 1,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": "Promotes equitable opportunities for vulnerable fishing communities by supporting transitions to alternative employment sectors like ecotourism and mariculture.",
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Investment in education",
+                "infrastructure",
+                "technology to support the transition to diversified livelihoods"
+            ],
+            "KeyPerformanceIndicators": [
+                "Increase in income diversity",
+                "employment rates in alternative sectors",
+                "reduction in overexploitation of marine species"
+            ],
+            "Impacts": [
+                "Improved livelihood stability",
+                "economic resilience",
+                "enhanced resource sustainability"
+            ]
+        }
+    },
+    {
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
         "actionId": "ipcc_0095",
         "actionName": "Disaster early warning",
-        "actionPriority": 2,
-        "explanation": "Disaster early warning (score 1.5867) rapidly improves the city\u2019s ability to prepare for and respond to climate hazards. Given Corumb\u00e1\u2019s exposure to hazards that can damage infrastructure, this action is vital, even though it does not directly reduce emissions\u2014its role in risk reduction makes it high priority.",
+        "actionPriority": 3,
+        "explanation": "With a strong quantitative score and a primary role in risk reduction, this early warning system can alert residents to impending hazards such as droughts and heatwaves. Effective early warning can reduce damage across multiple sectors, thereby protecting both lives and critical assets.",
         "action": {
             "ActionID": "ipcc_0095",
             "ActionName": "Disaster early warning",
@@ -130,76 +192,14 @@
         }
     },
     {
-        "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0091",
-        "actionName": "Diversification of livelihoods ",
-        "actionPriority": 3,
-        "explanation": "At a score of 1.52, diversifying livelihoods is essential for increasing resilience of local populations, especially in a city with high socio-economic vulnerability. It helps reduce dependence on climate\u2010sensitive sectors, providing robust socio-demographic suitability.",
-        "action": {
-            "ActionID": "ipcc_0091",
-            "ActionName": "Diversification of livelihoods ",
-            "ActionType": [
-                "adaptation"
-            ],
-            "AdaptationCategory": "Livelihood Adaptation",
-            "Hazard": [
-                "storms",
-                "sea-level-rise"
-            ],
-            "Sector": [
-                "food_security",
-                "biodiversity"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "InterventionType": null,
-            "Description": "Diversifying income-generating activities within fisheries and mariculture sectors to mitigate the economic impacts of climate change. This includes shifting target species, adapting harvest tactics, and transitioning to mariculture and ecotourism. Technology and infrastructure upgrades improve marine harvest efficiency and promote sustainable resource management. These adaptations aim to stabilize fisheries, enhance sustainability, and protect livelihoods under shifting marine species distributions and climate variability.",
-            "BehavioralChangeTargeted": null,
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 1,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": "Promotes equitable opportunities for vulnerable fishing communities by supporting transitions to alternative employment sectors like ecotourism and mariculture.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Investment in education",
-                "infrastructure",
-                "technology to support the transition to diversified livelihoods"
-            ],
-            "KeyPerformanceIndicators": [
-                "Increase in income diversity",
-                "employment rates in alternative sectors",
-                "reduction in overexploitation of marine species"
-            ],
-            "Impacts": [
-                "Improved livelihood stability",
-                "economic resilience",
-                "enhanced resource sustainability"
-            ]
-        }
-    },
-    {
-        "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
         "actionId": "c40_0053",
         "actionName": "Water Savings",
         "actionPriority": 4,
-        "explanation": "With a score of 1.485, Water Savings directly addresses water management challenges. Although not an emissions reduction measure per se, in Corumb\u00e1\u2019s climate context (where drought is a concern) it is both cost\u2010effective and sector relevant given water is a critical resource.",
+        "explanation": "Water scarcity is a major issue in a desert biome and high risk is noted for water resources. This action not only conserves water but also mitigates the impacts of drought. It is highly relevant to the city\u2019s most pressing water challenges, aligning with both sector relevance and risk reduction.",
         "action": {
             "ActionID": "c40_0053",
             "ActionName": "Water Savings",
@@ -258,78 +258,14 @@
         }
     },
     {
-        "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0092",
-        "actionName": "Social safety nets",
-        "actionPriority": 5,
-        "explanation": "Social safety nets (score 1.4367) are prioritized due to the city\u2019s very high low-income socio-economic factors. By cushioning vulnerable populations against climate impacts, this action aligns well with risk reduction and socio-demographic suitability.",
-        "action": {
-            "ActionID": "ipcc_0092",
-            "ActionName": "Social safety nets",
-            "ActionType": [
-                "adaptation"
-            ],
-            "AdaptationCategory": "Social Protection and Risk Reduction",
-            "Hazard": [
-                "droughts",
-                "heatwaves",
-                "floods",
-                "storms"
-            ],
-            "Sector": [
-                "food_security",
-                "public_health"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "InterventionType": null,
-            "Description": "Social safety nets encompass adaptive social protection mechanisms to reduce food insecurity and malnutrition, especially for vulnerable populations. These include cash transfers, school feeding programs, public work initiatives, unemployment compensation, land reforms, credit and insurance schemes. Integrated approaches combine climate risk assessments with disaster risk reduction, education, and social equity to enhance resilience to climate stresses.",
-            "BehavioralChangeTargeted": null,
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 2,
-                "housing": 1,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": "Enhances the social status and rights of marginalized groups, protects vulnerable populations, reduces inequalities, and promotes education and gender equity.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Integration of climate and disaster risk into social protection",
-                "education programs",
-                "coordination with sustainable livelihoods and financial inclusion initiatives"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in malnutrition rates",
-                "Increase in education access for vulnerable groups",
-                "Participation in social protection programs"
-            ],
-            "Impacts": [
-                "Improved public health",
-                "Reduced poverty and inequality",
-                "Strengthened resilience and social empowerment"
-            ]
-        }
-    },
-    {
-        "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
         "actionId": "c40_0054",
         "actionName": "Water Recycling",
-        "actionPriority": 6,
-        "explanation": "Water Recycling (score 1.385) enhances water security and is particularly relevant in addressing drought-related risks. Its cost-effectiveness and clear sector relevance for water management make it a high priority in Corumb\u00e1.",
+        "actionPriority": 5,
+        "explanation": "Water recycling directly addresses water scarcity by improving water reuse, making it both cost-effective and highly applicable to the city\u2019s environmental context. This adaptation measure enhances water security and helps manage available water resources efficiently.",
         "action": {
             "ActionID": "c40_0054",
             "ActionName": "Water Recycling",
@@ -392,14 +328,142 @@
         }
     },
     {
-        "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "ipcc_0093",
+        "actionName": "Availability of health infrastructure",
+        "actionPriority": 6,
+        "explanation": "By ensuring improved health infrastructure, the city can better cope with public health risks, including heatwaves and disease outbreaks. Given the very high normalized risk scores related to public health, this action is prioritized among the groups with equal quantitative scores.",
+        "action": {
+            "ActionID": "ipcc_0093",
+            "ActionName": "Availability of health infrastructure",
+            "ActionType": [
+                "adaptation"
+            ],
+            "AdaptationCategory": "Infrastructure Adaptation",
+            "Hazard": [
+                "droughts",
+                "floods",
+                "sea-level-rise",
+                "diseases"
+            ],
+            "Sector": [
+                "public_health",
+                "water_resources"
+            ],
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "InterventionType": null,
+            "Description": "Ensuring access to safe drinking water infrastructure, protecting health services, and improving sanitation systems to mitigate climate impacts. This includes developing adaptive measures for water security against droughts, floods, and sea-level rise. Strengthening infrastructure resilience ensures equitable access to health services, reduces contamination risks, and addresses the impacts of climate-induced hazards.",
+            "BehavioralChangeTargeted": null,
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 2,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": "Enhances access to critical health and water resources for vulnerable and underserved communities, mitigating inequities caused by climate impacts.",
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Adequate funding",
+                "technological investments in health and water infrastructure",
+                "effective governance and cross-sector coordination"
+            ],
+            "KeyPerformanceIndicators": [
+                "Reduction in waterborne diseases",
+                "improved access to potable water",
+                "number of resilient health facilities developed"
+            ],
+            "Impacts": [
+                "Improved public health",
+                "enhanced water security",
+                "resilience against climate-induced hazards"
+            ]
+        }
+    },
+    {
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "ipcc_0092",
+        "actionName": "Social safety nets",
+        "actionPriority": 7,
+        "explanation": "This action is crucial for protecting the vulnerable population. Strong social safety nets help mitigate economic shocks due to climate hazards, aligning well with the socio-demographic context in Maranguape, where low income is very high.",
+        "action": {
+            "ActionID": "ipcc_0092",
+            "ActionName": "Social safety nets",
+            "ActionType": [
+                "adaptation"
+            ],
+            "AdaptationCategory": "Social Protection and Risk Reduction",
+            "Hazard": [
+                "droughts",
+                "heatwaves",
+                "floods",
+                "storms"
+            ],
+            "Sector": [
+                "food_security",
+                "public_health"
+            ],
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "InterventionType": null,
+            "Description": "Social safety nets encompass adaptive social protection mechanisms to reduce food insecurity and malnutrition, especially for vulnerable populations. These include cash transfers, school feeding programs, public work initiatives, unemployment compensation, land reforms, credit and insurance schemes. Integrated approaches combine climate risk assessments with disaster risk reduction, education, and social equity to enhance resilience to climate stresses.",
+            "BehavioralChangeTargeted": null,
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 2,
+                "housing": 1,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": "Enhances the social status and rights of marginalized groups, protects vulnerable populations, reduces inequalities, and promotes education and gender equity.",
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Integration of climate and disaster risk into social protection",
+                "education programs",
+                "coordination with sustainable livelihoods and financial inclusion initiatives"
+            ],
+            "KeyPerformanceIndicators": [
+                "Reduction in malnutrition rates",
+                "Increase in education access for vulnerable groups",
+                "Participation in social protection programs"
+            ],
+            "Impacts": [
+                "Improved public health",
+                "Reduced poverty and inequality",
+                "Strengthened resilience and social empowerment"
+            ]
+        }
+    },
+    {
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
         "actionId": "ipcc_0088",
         "actionName": "Building codes",
-        "actionPriority": 7,
-        "explanation": "Building codes (score 1.37) help ensure that new constructions are resilient to climate hazards such as heatwaves and landslides. This action improves long-term infrastructure durability and risk reduction, making it a strategic priority.",
+        "actionPriority": 8,
+        "explanation": "Updating building codes ensures that new constructions are climate-resilient. While the quantitative score is on the lower end of this subset, enforcing robust building standards is essential to reduce risks from hazards and indirectly contributes to energy efficiency and emissions reduction over time.",
         "action": {
             "ActionID": "ipcc_0088",
             "ActionName": "Building codes",
@@ -453,28 +517,27 @@
         }
     },
     {
-        "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0094",
-        "actionName": "Access to health care",
-        "actionPriority": 8,
-        "explanation": "Access to health care (score 1.3367) is vital in an adaptation strategy, particularly for a city with socio-economic vulnerabilities. It strengthens community resilience and reduces adverse public health impacts during climate events.",
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "ipcc_0101",
+        "actionName": "Efficient water supply/distribution",
+        "actionPriority": 9,
+        "explanation": "In a desert city facing water scarcity and high water resource risks, ensuring efficient water distribution is of paramount importance. This action can quickly improve water access and reduce losses, directly addressing critical resource challenges.",
         "action": {
-            "ActionID": "ipcc_0094",
-            "ActionName": "Access to health care",
+            "ActionID": "ipcc_0101",
+            "ActionName": "Efficient water supply/distribution",
             "ActionType": [
                 "adaptation"
             ],
-            "AdaptationCategory": "Health Systems Strengthening",
+            "AdaptationCategory": "Sustainable Resource Management",
             "Hazard": [
-                "heatwaves",
+                "droughts",
                 "floods",
-                "droughts"
+                "storms"
             ],
             "Sector": [
-                "public_health",
                 "water_resources"
             ],
             "Subsector": null,
@@ -482,51 +545,181 @@
                 "climate_resilience"
             ],
             "InterventionType": null,
-            "Description": "Enhancing access to health care services, including health and nutrition services, clean water, sanitation, and culturally appropriate mental health resources. Expanding telemedicine capabilities enables efficient health service delivery, particularly for remote and underserved populations. Strengthening basic public health systems and disaster preparedness can rapidly reduce vulnerability to climate-related health risks.",
+            "Description": "Implementing sustainable water supply systems by constructing irrigation infrastructure, promoting inter-basin water transfers, utilizing nature-based solutions (NBS) such as rain gardens, bioswales, and wetlands, and integrating advanced techniques like water reuse and water upgrading. Water reuse involves treating and recycling wastewater for non-potable or potable purposes, while water upgrading focuses on improving the quality of available water for diverse uses. These approaches enhance stormwater infiltration, improve urban water management, increase drought resilience, and support groundwater recharge. They provide energy-efficient and economical water solutions while maintaining sustainable urban development.",
             "BehavioralChangeTargeted": null,
             "CoBenefits": {
-                "air_quality": 1,
+                "air_quality": 0,
                 "water_quality": 2,
-                "habitat": 0,
+                "habitat": 2,
                 "cost_of_living": 1,
-                "housing": 1,
+                "housing": 0,
                 "mobility": 0,
-                "stakeholder_engagement": 2
+                "stakeholder_engagement": 1
             },
-            "EquityAndInclusionConsiderations": "Promotes equitable access to health care for marginalized and vulnerable groups, including homeless populations, remote communities, and those affected by housing inequities.",
+            "EquityAndInclusionConsiderations": "Promotes equitable access to water resources, particularly in underserved urban areas, by integrating natural and engineered water management systems to benefit all communities, including low-income groups.",
             "GHGReductionPotential": null,
             "AdaptationEffectiveness": "high",
             "CostInvestmentNeeded": "medium",
             "TimelineForImplementation": "5-10 years",
             "Dependencies": [
-                "Investment in telemedicine technologies",
-                "Strengthened governance of public health systems",
-                "Capacity building for health workers",
-                "Infrastructure upgrades for health facilities"
+                "Adequate funding for infrastructure development",
+                "Community engagement for NBS implementation",
+                "Integration of urban planning with water management"
             ],
             "KeyPerformanceIndicators": [
-                "Reduction in climate-related mortality",
-                "Increased access to telemedicine",
-                "Number of culturally tailored health programs implemented",
-                "Improved water and sanitation access metrics"
+                "Reduction in water scarcity incidents",
+                "Increase in groundwater recharge rates",
+                "Enhanced urban water infiltration capacity"
             ],
             "Impacts": [
-                "Improved public health",
-                "Reduced health inequities",
-                "Enhanced disaster preparedness",
-                "Stronger health system resilience"
+                "Improved water security",
+                "Enhanced urban livability",
+                "Increased resilience to climate-related water risks"
             ]
         }
     },
     {
-        "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "ipcc_0100",
+        "actionName": "Efficient water use/demand",
+        "actionPriority": 10,
+        "explanation": "Optimizing water use is vital in a water-scarce environment. This action enhances cost-effectiveness and rapid implementation by encouraging conservation measures that lessen the burden on limited water supplies.",
+        "action": {
+            "ActionID": "ipcc_0100",
+            "ActionName": "Efficient water use/demand",
+            "ActionType": [
+                "adaptation"
+            ],
+            "AdaptationCategory": "Integrated Water Management",
+            "Hazard": [
+                "droughts",
+                "heatwaves"
+            ],
+            "Sector": [
+                "water_resources",
+                "food_security"
+            ],
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "InterventionType": null,
+            "Description": "Implementing advanced irrigation techniques such as precision and drip irrigation to enhance water use efficiency in agriculture. Managed Aquifer Recharge (MAR) is applied to replenish groundwater supplies using stormwater, treated wastewater, or other sources. These actions are complemented by cooperative policies across multiple sectors to ensure sustainable water resource management, equitable access, and regional collaboration. Additionally, promoting changes in water consumption patterns, such as reducing waste and improving efficiency in urban and agricultural water use, supports resilience against water scarcity and enhances adaptive capacity in vulnerable regions. These efforts collectively aim to address the growing demand for freshwater in the face of climate change and ensure long-term sustainability.",
+            "BehavioralChangeTargeted": null,
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 2,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": "Supports vulnerable farming and urban communities by ensuring equitable access to water resources, promoting sustainable consumption patterns, and addressing persistent water stress in underserved areas.",
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Infrastructure for water reuse and MAR",
+                "Regulatory frameworks for water management",
+                "Education and training on irrigation techniques",
+                "Regional and cross-sector policy coordination"
+            ],
+            "KeyPerformanceIndicators": [
+                "Reduction in agricultural water usage",
+                "Increase in groundwater recharge rates",
+                "Improved crop yields",
+                "Adoption of sustainable water consumption patterns",
+                "Regional collaboration metrics"
+            ],
+            "Impacts": [
+                "Enhanced water resource sustainability",
+                "Improved food security",
+                "Increased resilience against water scarcity",
+                "Strengthened regional and cross-sector collaboration"
+            ]
+        }
+    },
+    {
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "ipcc_0099",
+        "actionName": "Water capture/storage",
+        "actionPriority": 11,
+        "explanation": "By maximizing water capture and storage capacity, the city can safeguard against drought conditions. This measure is crucial for adapting to a desert climate and ensuring a steady water supply during periods of scarcity.",
+        "action": {
+            "ActionID": "ipcc_0099",
+            "ActionName": "Water capture/storage",
+            "ActionType": [
+                "adaptation"
+            ],
+            "AdaptationCategory": "Infrastructure-Based Adaptation",
+            "Hazard": [
+                "droughts",
+                "floods",
+                "storms"
+            ],
+            "Sector": [
+                "water_resources",
+                "food_security",
+                "energy_security",
+                "geo-hydrological_disasters"
+            ],
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "InterventionType": null,
+            "Description": "Implementing water capture and storage solutions such as farm ponds, revival of water bodies, rain gardens, bioswales, retention ponds, and water storage tanks. These measures aim to mitigate climate-induced impacts by improving water management, reducing stormwater runoff, enhancing water quality, and supporting agriculture and energy production under changing climate scenarios. Multi-purpose water reservoirs and dams provide additional benefits by addressing water shortages and managing risks associated with natural hazards.",
+            "BehavioralChangeTargeted": null,
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 1,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": "Ensures access to water for underserved communities, supports sustainable livelihoods in water-scarce regions, and promotes equitable resource distribution through inclusive decision-making processes.",
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Investment in green infrastructure",
+                "community engagement",
+                "policy support for water resource management"
+            ],
+            "KeyPerformanceIndicators": [
+                "Reduction in stormwater runoff",
+                "increase in water storage capacity",
+                "improvement in water quality",
+                "stability in agricultural yields"
+            ],
+            "Impacts": [
+                "Improved water availability",
+                "enhanced climate resilience",
+                "sustainable agriculture and energy production",
+                "reduced risk of flooding and drought"
+            ]
+        }
+    },
+    {
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
         "actionId": "ipcc_0096",
         "actionName": "Farm/fishery improvements",
-        "actionPriority": 9,
-        "explanation": "Farm/fishery improvements (score 1.3367) directly target the agricultural sector, which is closely linked to land use\u2014the largest emission sector in Corumb\u00e1. This action not only aids adaptation but also holds the potential for indirect emissions reduction through more sustainable practices.",
+        "actionPriority": 12,
+        "explanation": "Improving local food production systems enhances food security, a critical need given the near-unity risk scores related to drought impacts on food security. This action fosters sustainable livelihoods while indirectly contributing to decreased dependence on imported goods and associated emissions.",
         "action": {
             "ActionID": "ipcc_0096",
             "ActionName": "Farm/fishery improvements",
@@ -586,14 +779,14 @@
         }
     },
     {
-        "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
         "actionId": "ipcc_0097",
         "actionName": "Food storage/distribution improvements",
-        "actionPriority": 10,
-        "explanation": "At the same score (1.3367), this action boosts food security by ensuring efficiency in storage and distribution. In a city where food security risks are present due to drought and flooding, this measure is both relevant and timely.",
+        "actionPriority": 13,
+        "explanation": "Better food storage and distribution systems can considerably reduce losses during climate shocks, ensuring community resilience by maintaining food security under adverse conditions.",
         "action": {
             "ActionID": "ipcc_0097",
             "ActionName": "Food storage/distribution improvements",
@@ -653,14 +846,14 @@
         }
     },
     {
-        "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
         "actionId": "ipcc_0098",
         "actionName": "Behaviour change in diets and food waste",
-        "actionPriority": 11,
-        "explanation": "This action (score 1.3367) promotes dietary shifts and reduces food waste, which can lead to indirect emissions reductions\u2014especially important given Corumb\u00e1\u2019s dominant land use emissions. Its socio-economic benefits further bolster its priority.",
+        "actionPriority": 14,
+        "explanation": "Encouraging behavioural change can lead to significant reductions in food waste, indirectly enhancing food security. While its immediate impact might be less than infrastructural improvements, it supports long-term adaptation and cost-effectiveness within the community.",
         "action": {
             "ActionID": "ipcc_0098",
             "ActionName": "Behaviour change in diets and food waste",
@@ -721,80 +914,143 @@
         }
     },
     {
-        "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0100",
-        "actionName": "Efficient water use/demand",
-        "actionPriority": 12,
-        "explanation": "Efficient water use/demand (score 1.3367) improves water management and can mitigate drought impacts. Although part of a cluster with equal quantitative scores, its focus on water demand management makes it slightly lower than some food-security-related actions given the overall risk profile.",
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "ipcc_0094",
+        "actionName": "Access to health care",
+        "actionPriority": 15,
+        "explanation": "Expanding access to health care is essential in a city with high exposure to heatwaves and other health-related risks. Though it falls within the 1.27 quantitative group, its critical role in protecting public health merits a high priority.",
         "action": {
-            "ActionID": "ipcc_0100",
-            "ActionName": "Efficient water use/demand",
+            "ActionID": "ipcc_0094",
+            "ActionName": "Access to health care",
             "ActionType": [
                 "adaptation"
             ],
-            "AdaptationCategory": "Integrated Water Management",
+            "AdaptationCategory": "Health Systems Strengthening",
             "Hazard": [
-                "droughts",
-                "heatwaves"
+                "heatwaves",
+                "floods",
+                "droughts"
             ],
             "Sector": [
-                "water_resources",
-                "food_security"
+                "public_health",
+                "water_resources"
             ],
             "Subsector": null,
             "PrimaryPurpose": [
                 "climate_resilience"
             ],
             "InterventionType": null,
-            "Description": "Implementing advanced irrigation techniques such as precision and drip irrigation to enhance water use efficiency in agriculture. Managed Aquifer Recharge (MAR) is applied to replenish groundwater supplies using stormwater, treated wastewater, or other sources. These actions are complemented by cooperative policies across multiple sectors to ensure sustainable water resource management, equitable access, and regional collaboration. Additionally, promoting changes in water consumption patterns, such as reducing waste and improving efficiency in urban and agricultural water use, supports resilience against water scarcity and enhances adaptive capacity in vulnerable regions. These efforts collectively aim to address the growing demand for freshwater in the face of climate change and ensure long-term sustainability.",
+            "Description": "Enhancing access to health care services, including health and nutrition services, clean water, sanitation, and culturally appropriate mental health resources. Expanding telemedicine capabilities enables efficient health service delivery, particularly for remote and underserved populations. Strengthening basic public health systems and disaster preparedness can rapidly reduce vulnerability to climate-related health risks.",
             "BehavioralChangeTargeted": null,
             "CoBenefits": {
-                "air_quality": 0,
+                "air_quality": 1,
                 "water_quality": 2,
-                "habitat": 1,
+                "habitat": 0,
                 "cost_of_living": 1,
-                "housing": 0,
+                "housing": 1,
                 "mobility": 0,
                 "stakeholder_engagement": 2
             },
-            "EquityAndInclusionConsiderations": "Supports vulnerable farming and urban communities by ensuring equitable access to water resources, promoting sustainable consumption patterns, and addressing persistent water stress in underserved areas.",
+            "EquityAndInclusionConsiderations": "Promotes equitable access to health care for marginalized and vulnerable groups, including homeless populations, remote communities, and those affected by housing inequities.",
             "GHGReductionPotential": null,
             "AdaptationEffectiveness": "high",
             "CostInvestmentNeeded": "medium",
             "TimelineForImplementation": "5-10 years",
             "Dependencies": [
-                "Infrastructure for water reuse and MAR",
-                "Regulatory frameworks for water management",
-                "Education and training on irrigation techniques",
-                "Regional and cross-sector policy coordination"
+                "Investment in telemedicine technologies",
+                "Strengthened governance of public health systems",
+                "Capacity building for health workers",
+                "Infrastructure upgrades for health facilities"
             ],
             "KeyPerformanceIndicators": [
-                "Reduction in agricultural water usage",
-                "Increase in groundwater recharge rates",
-                "Improved crop yields",
-                "Adoption of sustainable water consumption patterns",
-                "Regional collaboration metrics"
+                "Reduction in climate-related mortality",
+                "Increased access to telemedicine",
+                "Number of culturally tailored health programs implemented",
+                "Improved water and sanitation access metrics"
             ],
             "Impacts": [
-                "Enhanced water resource sustainability",
-                "Improved food security",
-                "Increased resilience against water scarcity",
-                "Strengthened regional and cross-sector collaboration"
+                "Improved public health",
+                "Reduced health inequities",
+                "Enhanced disaster preparedness",
+                "Stronger health system resilience"
             ]
         }
     },
     {
-        "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "ipcc_0102",
+        "actionName": "Seasonal/temporary mobility",
+        "actionPriority": 16,
+        "explanation": "While not as directly impactful as water or health interventions, facilitating seasonal or temporary mobility ensures that populations can relocate or access services during extreme events. This action, with an adaptation focus, aids in risk reduction albeit with longer-term benefits.",
+        "action": {
+            "ActionID": "ipcc_0102",
+            "ActionName": "Seasonal/temporary mobility",
+            "ActionType": [
+                "adaptation"
+            ],
+            "AdaptationCategory": "Livelihood Adaptation",
+            "Hazard": [
+                "sea-level-rise",
+                "storms",
+                "droughts"
+            ],
+            "Sector": [
+                "food_security",
+                "biodiversity"
+            ],
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "InterventionType": null,
+            "Description": "Facilitating mobility of fishing fleets and workers to adapt to shifting marine species distributions caused by climate change. This includes enabling seasonal or temporary migration to align with the availability of resources, improving infrastructure and technology to support mobility, and fostering flexible governance to manage transboundary resources sustainably. These actions aim to maintain livelihoods and reduce economic impacts of climate variability.",
+            "BehavioralChangeTargeted": null,
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 1,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 2,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": "Ensures equitable access to resources for vulnerable communities, including small-scale fishers and those dependent on seasonal income, by promoting inclusive governance structures and reducing barriers to mobility.",
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Infrastructure and technology investments",
+                "Transboundary agreements",
+                "Capacity-building initiatives to support mobility"
+            ],
+            "KeyPerformanceIndicators": [
+                "Reduction in resource overexploitation",
+                "Increase in seasonal employment opportunities",
+                "Enhanced management of transboundary fisheries"
+            ],
+            "Impacts": [
+                "Improved economic resilience",
+                "Stabilized food security",
+                "Sustainable management of marine biodiversity"
+            ]
+        }
+    },
+    {
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
         "actionId": "c40_0050",
         "actionName": "White Roofs",
-        "actionPriority": 13,
-        "explanation": "White Roofs (score 1.3217) provide urban heat mitigation benefits. By reducing urban heat island effects and lowering cooling energy requirements, this action indirectly contributes to emissions reduction and improved infrastructure resilience.",
+        "actionPriority": 17,
+        "explanation": "White roofs help reduce urban heat island effects by reflecting solar radiation. This measure is cost-effective and offers quick implementation benefits, contributing modestly to risk reduction and improved environmental compatibility in urban settings.",
         "action": {
             "ActionID": "c40_0050",
             "ActionName": "White Roofs",
@@ -854,14 +1110,14 @@
         }
     },
     {
-        "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
         "actionId": "c40_0051",
         "actionName": "Public Shading",
-        "actionPriority": 14,
-        "explanation": "Also scoring 1.3217, Public Shading helps alleviate urban heat stress. Its role in reducing building energy demand and improving outdoor comfort aligns with both climate adaptation and broader environmental compatibility goals.",
+        "actionPriority": 18,
+        "explanation": "Public shading reduces outdoor temperatures and offers immediate relief during heatwaves. Although its direct emissions reduction impact may be limited, it plays a valuable role in enhancing public comfort and reducing climate-related health risks.",
         "action": {
             "ActionID": "c40_0051",
             "ActionName": "Public Shading",
@@ -921,270 +1177,14 @@
         }
     },
     {
-        "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0099",
-        "actionName": "Water capture/storage",
-        "actionPriority": 15,
-        "explanation": "Among the actions with a score of 1.27, Water capture/storage is prioritized first because of its direct contribution to water resilience in the face of drought conditions. This makes it extremely relevant for risk reduction despite not directly addressing emissions.",
-        "action": {
-            "ActionID": "ipcc_0099",
-            "ActionName": "Water capture/storage",
-            "ActionType": [
-                "adaptation"
-            ],
-            "AdaptationCategory": "Infrastructure-Based Adaptation",
-            "Hazard": [
-                "droughts",
-                "floods",
-                "storms"
-            ],
-            "Sector": [
-                "water_resources",
-                "food_security",
-                "energy_security",
-                "geo-hydrological_disasters"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "InterventionType": null,
-            "Description": "Implementing water capture and storage solutions such as farm ponds, revival of water bodies, rain gardens, bioswales, retention ponds, and water storage tanks. These measures aim to mitigate climate-induced impacts by improving water management, reducing stormwater runoff, enhancing water quality, and supporting agriculture and energy production under changing climate scenarios. Multi-purpose water reservoirs and dams provide additional benefits by addressing water shortages and managing risks associated with natural hazards.",
-            "BehavioralChangeTargeted": null,
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 1,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": "Ensures access to water for underserved communities, supports sustainable livelihoods in water-scarce regions, and promotes equitable resource distribution through inclusive decision-making processes.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Investment in green infrastructure",
-                "community engagement",
-                "policy support for water resource management"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in stormwater runoff",
-                "increase in water storage capacity",
-                "improvement in water quality",
-                "stability in agricultural yields"
-            ],
-            "Impacts": [
-                "Improved water availability",
-                "enhanced climate resilience",
-                "sustainable agriculture and energy production",
-                "reduced risk of flooding and drought"
-            ]
-        }
-    },
-    {
-        "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0101",
-        "actionName": "Efficient water supply/distribution",
-        "actionPriority": 16,
-        "explanation": "Efficient water supply/distribution (score 1.27) ensures the reliability of critical water infrastructure. Its importance in maintaining service levels during climate extremes boosts its ranking within the adaptation portfolio.",
-        "action": {
-            "ActionID": "ipcc_0101",
-            "ActionName": "Efficient water supply/distribution",
-            "ActionType": [
-                "adaptation"
-            ],
-            "AdaptationCategory": "Sustainable Resource Management",
-            "Hazard": [
-                "droughts",
-                "floods",
-                "storms"
-            ],
-            "Sector": [
-                "water_resources"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "InterventionType": null,
-            "Description": "Implementing sustainable water supply systems by constructing irrigation infrastructure, promoting inter-basin water transfers, utilizing nature-based solutions (NBS) such as rain gardens, bioswales, and wetlands, and integrating advanced techniques like water reuse and water upgrading. Water reuse involves treating and recycling wastewater for non-potable or potable purposes, while water upgrading focuses on improving the quality of available water for diverse uses. These approaches enhance stormwater infiltration, improve urban water management, increase drought resilience, and support groundwater recharge. They provide energy-efficient and economical water solutions while maintaining sustainable urban development.",
-            "BehavioralChangeTargeted": null,
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": "Promotes equitable access to water resources, particularly in underserved urban areas, by integrating natural and engineered water management systems to benefit all communities, including low-income groups.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Adequate funding for infrastructure development",
-                "Community engagement for NBS implementation",
-                "Integration of urban planning with water management"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in water scarcity incidents",
-                "Increase in groundwater recharge rates",
-                "Enhanced urban water infiltration capacity"
-            ],
-            "Impacts": [
-                "Improved water security",
-                "Enhanced urban livability",
-                "Increased resilience to climate-related water risks"
-            ]
-        }
-    },
-    {
-        "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0093",
-        "actionName": "Availability of health infrastructure",
-        "actionPriority": 17,
-        "explanation": "Also with a score of 1.27, this action strengthens health infrastructure, a key component of community resilience. Although its immediate impact may be secondary to water or mobility actions, it addresses important aspects of public health risks.",
-        "action": {
-            "ActionID": "ipcc_0093",
-            "ActionName": "Availability of health infrastructure",
-            "ActionType": [
-                "adaptation"
-            ],
-            "AdaptationCategory": "Infrastructure Adaptation",
-            "Hazard": [
-                "droughts",
-                "floods",
-                "sea-level-rise",
-                "diseases"
-            ],
-            "Sector": [
-                "public_health",
-                "water_resources"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "InterventionType": null,
-            "Description": "Ensuring access to safe drinking water infrastructure, protecting health services, and improving sanitation systems to mitigate climate impacts. This includes developing adaptive measures for water security against droughts, floods, and sea-level rise. Strengthening infrastructure resilience ensures equitable access to health services, reduces contamination risks, and addresses the impacts of climate-induced hazards.",
-            "BehavioralChangeTargeted": null,
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 2,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": "Enhances access to critical health and water resources for vulnerable and underserved communities, mitigating inequities caused by climate impacts.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Adequate funding",
-                "technological investments in health and water infrastructure",
-                "effective governance and cross-sector coordination"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in waterborne diseases",
-                "improved access to potable water",
-                "number of resilient health facilities developed"
-            ],
-            "Impacts": [
-                "Improved public health",
-                "enhanced water security",
-                "resilience against climate-induced hazards"
-            ]
-        }
-    },
-    {
-        "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0102",
-        "actionName": "Seasonal/temporary mobility",
-        "actionPriority": 18,
-        "explanation": "Seasonal/temporary mobility (score 1.27) deals with adaptive responses in transportation and movement during climate events. While important, it has more dependency factors and indirect benefits relative to other measures, positioning it lower among equal scorers.",
-        "action": {
-            "ActionID": "ipcc_0102",
-            "ActionName": "Seasonal/temporary mobility",
-            "ActionType": [
-                "adaptation"
-            ],
-            "AdaptationCategory": "Livelihood Adaptation",
-            "Hazard": [
-                "sea-level-rise",
-                "storms",
-                "droughts"
-            ],
-            "Sector": [
-                "food_security",
-                "biodiversity"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "InterventionType": null,
-            "Description": "Facilitating mobility of fishing fleets and workers to adapt to shifting marine species distributions caused by climate change. This includes enabling seasonal or temporary migration to align with the availability of resources, improving infrastructure and technology to support mobility, and fostering flexible governance to manage transboundary resources sustainably. These actions aim to maintain livelihoods and reduce economic impacts of climate variability.",
-            "BehavioralChangeTargeted": null,
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 1,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": "Ensures equitable access to resources for vulnerable communities, including small-scale fishers and those dependent on seasonal income, by promoting inclusive governance structures and reducing barriers to mobility.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Infrastructure and technology investments",
-                "Transboundary agreements",
-                "Capacity-building initiatives to support mobility"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in resource overexploitation",
-                "Increase in seasonal employment opportunities",
-                "Enhanced management of transboundary fisheries"
-            ],
-            "Impacts": [
-                "Improved economic resilience",
-                "Stabilized food security",
-                "Sustainable management of marine biodiversity"
-            ]
-        }
-    },
-    {
-        "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
         "actionId": "c40_0059",
         "actionName": "Early Warning",
         "actionPriority": 19,
-        "explanation": "This Early Warning action (score 1.235) overlaps in purpose with Disaster Early Warning but is ranked lower due to its lower quantitative score and potential redundancy. Its benefits, while real, are slightly less distinct given the existence of a higher\u2010priority disaster early warning measure.",
+        "explanation": "This additional early warning action supports broader disaster preparedness, complementing the main 'Disaster early warning' action. While it has a slightly lower quantitative score, it contributes to timely risk reduction across various hazards.",
         "action": {
             "ActionID": "c40_0059",
             "ActionName": "Early Warning",
@@ -1244,14 +1244,14 @@
         }
     },
     {
-        "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
         "actionId": "c40_0046",
         "actionName": "Coastal Protection",
         "actionPriority": 20,
-        "explanation": "Despite a score of 1.235, Coastal Protection is the lowest priority because Corumb\u00e1 is an inland city with no coastal exposure. Consequently, its sectoral relevance and effectiveness in addressing local climate hazards are minimal.",
+        "explanation": "Although coastal protection is critical in many contexts, for Maranguape\u2014a city in a desert biome and inland setting\u2014this action is less relevant. It is therefore ranked last despite its technical merits, as its environmental compatibility with the local context is limited.",
         "action": {
             "ActionID": "c40_0046",
             "ActionName": "Coastal Protection",

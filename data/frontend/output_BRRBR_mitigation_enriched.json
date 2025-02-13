@@ -4,83 +4,10 @@
         "cityName": "Rio Branco",
         "region": "BR-AC",
         "regionName": "Acre",
-        "actionId": "ipcc_0052",
-        "actionName": "Reduce Deforestation and Degradation",
-        "actionPriority": 1,
-        "explanation": "This action directly targets the largest emission sector in Rio Branco, land use, which accounts for over 85% of the city's emissions. It is cost-effective and aligns with the Amazon rainforest biome, making it a top priority.",
-        "action": {
-            "ActionID": "ipcc_0052",
-            "ActionName": "Reduce Deforestation and Degradation",
-            "ActionType": [
-                "mitigation"
-            ],
-            "AdaptationCategory": null,
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "land"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "InterventionType": [
-                "regulations_and_laws",
-                "programs_and_initiatives",
-                "infrastructure_investments"
-            ],
-            "Description": "Reducing deforestation and forest degradation conserves carbon pools in forest vegetation and soil by avoiding tree cover loss and disturbance. This involves controlling drivers of deforestation, improving forest governance, and supporting community forest management.",
-            "BehavioralChangeTargeted": "Encourages sustainable land management practices, community engagement in conservation, and improved governance to reduce activities driving deforestation and degradation.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "Promotes secure land tenure, supports community-based forest management, and ensures participation of marginalized and indigenous groups in decision-making processes.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "60-79"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Requires improved governance",
-                "clear land tenure policies",
-                "funding for protected areas",
-                "community participation in forest conservation efforts"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in deforestation rates",
-                "increased forest cover",
-                "the amount of GHG emissions avoided per year"
-            ],
-            "Impacts": [
-                "Preserves biodiversity",
-                "enhances ecosystem services",
-                "improves air and water quality",
-                "contributes to climate stabilization",
-                "sustainable development"
-            ]
-        }
-    },
-    {
-        "locode": "BRRBR",
-        "cityName": "Rio Branco",
-        "region": "BR-AC",
-        "regionName": "Acre",
         "actionId": "ipcc_0053",
         "actionName": "Afforestation, Reforestation and Forest Ecosystem Restoration",
-        "actionPriority": 2,
-        "explanation": "This action supports the restoration of the Amazon rainforest, contributing significantly to emissions reduction and biodiversity preservation. It is highly compatible with the local environment and addresses climate risks.",
+        "actionPriority": 1,
+        "explanation": "This action has the highest quantitative score and directly addresses the deforestation issue in the land use sector \u2013 the city\u2019s largest emissions source. Its alignment with tropical rainforest ecosystems and strong potential for GHG reduction make it the top priority.",
         "action": {
             "ActionID": "ipcc_0053",
             "ActionName": "Afforestation, Reforestation and Forest Ecosystem Restoration",
@@ -152,10 +79,305 @@
         "cityName": "Rio Branco",
         "region": "BR-AC",
         "regionName": "Acre",
+        "actionId": "ipcc_0052",
+        "actionName": "Reduce Deforestation and Degradation",
+        "actionPriority": 2,
+        "explanation": "Reducing deforestation is critical for curbing land use emissions. This action targets the core emission source by preventing forest loss and degradation, essential for a tropical rainforest area like Rio Branco.",
+        "action": {
+            "ActionID": "ipcc_0052",
+            "ActionName": "Reduce Deforestation and Degradation",
+            "ActionType": [
+                "mitigation"
+            ],
+            "AdaptationCategory": null,
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "land"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "InterventionType": [
+                "regulations_and_laws",
+                "programs_and_initiatives",
+                "infrastructure_investments"
+            ],
+            "Description": "Reducing deforestation and forest degradation conserves carbon pools in forest vegetation and soil by avoiding tree cover loss and disturbance. This involves controlling drivers of deforestation, improving forest governance, and supporting community forest management.",
+            "BehavioralChangeTargeted": "Encourages sustainable land management practices, community engagement in conservation, and improved governance to reduce activities driving deforestation and degradation.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 1,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": "Promotes secure land tenure, supports community-based forest management, and ensures participation of marginalized and indigenous groups in decision-making processes.",
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "60-79"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Requires improved governance",
+                "clear land tenure policies",
+                "funding for protected areas",
+                "community participation in forest conservation efforts"
+            ],
+            "KeyPerformanceIndicators": [
+                "Reduction in deforestation rates",
+                "increased forest cover",
+                "the amount of GHG emissions avoided per year"
+            ],
+            "Impacts": [
+                "Preserves biodiversity",
+                "enhances ecosystem services",
+                "improves air and water quality",
+                "contributes to climate stabilization",
+                "sustainable development"
+            ]
+        }
+    },
+    {
+        "locode": "BRRBR",
+        "cityName": "Rio Branco",
+        "region": "BR-AC",
+        "regionName": "Acre",
+        "actionId": "ipcc_0061",
+        "actionName": "Soil Carbon Management in Croplands and Grasslands",
+        "actionPriority": 3,
+        "explanation": "Soil carbon management offers significant emissions reduction in cropland and grassland areas. It is cost\u2010effective, has a relatively fast implementation timeline, and complements land use strategies by enhancing carbon sequestration in agricultural landscapes.",
+        "action": {
+            "ActionID": "ipcc_0061",
+            "ActionName": "Soil Carbon Management in Croplands and Grasslands",
+            "ActionType": [
+                "mitigation"
+            ],
+            "AdaptationCategory": null,
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "land"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "InterventionType": [
+                "programs_and_initiatives",
+                "incentives_and_subsidies",
+                "regulations_and_laws"
+            ],
+            "Description": "Implementation of sustainable soil management practices in croplands and grasslands to enhance soil organic carbon. Practices include improved crop and nutrient management, reduced tillage, residue retention, water and rice management, biochar application, improved grass varieties, livestock stocking management, and fire management. These activities aim to increase soil organic matter, mitigate GHG emissions, and provide co-benefits for biodiversity, water provision, and food security.",
+            "BehavioralChangeTargeted": "Encourages adoption of sustainable soil management practices to increase soil organic carbon, optimize water and nutrient use, and reduce emissions.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 1,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": "Promotes inclusion of smallholder farmers and resource-limited communities by providing cost-effective and regionally adaptable practices that improve agricultural productivity and resilience to climate change.",
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "60-79"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Success depends on the availability of resources for monitoring and verification",
+                "regional adaptation of practices",
+                "addressing barriers such as soil saturation and permanence issues"
+            ],
+            "KeyPerformanceIndicators": [
+                "Increase in soil organic carbon",
+                "reduction in GHG emissions",
+                "improvement in agricultural productivity",
+                "biodiversity enhancements"
+            ],
+            "Impacts": [
+                "Enhanced soil health",
+                "improved water retention",
+                "increased crop yields",
+                "greater biodiversity",
+                "reduced erosion",
+                "resilience to climate change in agricultural and grassland ecosystems"
+            ]
+        }
+    },
+    {
+        "locode": "BRRBR",
+        "cityName": "Rio Branco",
+        "region": "BR-AC",
+        "regionName": "Acre",
+        "actionId": "ipcc_0058",
+        "actionName": "Peatland Restoration",
+        "actionPriority": 4,
+        "explanation": "With a high quantitative score, peatland restoration can sequester large amounts of carbon if peatlands are present. Despite some contextual uncertainties for Rio Branco, its potential contribution to emissions reduction earns it a high rank.",
+        "action": {
+            "ActionID": "ipcc_0058",
+            "ActionName": "Peatland Restoration",
+            "ActionType": [
+                "mitigation"
+            ],
+            "AdaptationCategory": null,
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "land"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "InterventionType": [
+                "programs_and_initiatives",
+                "infrastructure_investments",
+                "incentives_and_subsidies"
+            ],
+            "Description": "Peatland restoration involves rewetting and revegetating degraded peatlands to increase carbon accumulation in vegetation and soils, while avoiding ongoing CO2 emissions. This includes restoring hydrology, reducing fire risk, and maintaining ecosystem services like water regulation and flood prevention. It also addresses biodiversity conservation and paludiculture.",
+            "BehavioralChangeTargeted": "Encourages sustainable land management practices, collaboration among stakeholders, and the prioritization of ecosystem restoration over competing land uses.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": "Promotes the inclusion of local communities in planning and implementation, ensures alternative livelihoods are maintained, and addresses potential conflicts over land use.",
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "60-79"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "high",
+            "TimelineForImplementation": ">10 years",
+            "Dependencies": [
+                "Availability of funding",
+                "collaboration among local and national stakeholders",
+                "scientific research on optimal restoration practices",
+                "policies to incentivize restoration efforts"
+            ],
+            "KeyPerformanceIndicators": [
+                "Availability of funding",
+                "collaboration among local and national stakeholders",
+                "scientific research on optimal restoration practices",
+                "policies to incentivize restoration efforts"
+            ],
+            "Impacts": [
+                "Significant reductions in CO2 emissions",
+                "improved biodiversity",
+                "enhanced water regulation",
+                "reduced flooding risks",
+                "increased resilience to climate change"
+            ]
+        }
+    },
+    {
+        "locode": "BRRBR",
+        "cityName": "Rio Branco",
+        "region": "BR-AC",
+        "regionName": "Acre",
+        "actionId": "ipcc_0068",
+        "actionName": "Bioenergy and BECCS(Bioenergy with Carbon Capture and Storage)",
+        "actionPriority": 5,
+        "explanation": "This technologically advanced option promises significant GHG reductions. However, given Rio Branco\u2019s limited capacity and economic constraints, it is ranked below natural climate solutions though it still targets large emission reductions.",
+        "action": {
+            "ActionID": "ipcc_0068",
+            "ActionName": "Bioenergy and BECCS(Bioenergy with Carbon Capture and Storage)",
+            "ActionType": [
+                "mitigation"
+            ],
+            "AdaptationCategory": null,
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "land"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "InterventionType": [
+                "infrastructure_investments",
+                "programs_and_initiatives",
+                "regulations_and_laws"
+            ],
+            "Description": "Bioenergy involves producing energy from organic sources like biomass, organic waste, and harvest residues, displacing fossil fuels in heat, electricity, and fuel production. When combined with carbon capture and storage (BECCS), it stores biogenic carbon in geological or terrestrial reservoirs, achieving negative emissions. BECCS can also integrate with agriculture and forestry for co-benefits like land restoration and biogas production.",
+            "BehavioralChangeTargeted": "Promotes the adoption of sustainable land-use practices, integration of biomass production with agriculture, and support for renewable energy adoption.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 1,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": "Focuses on sustainable land-use practices, including degraded land restoration, while ensuring energy access and food security for vulnerable communities.",
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "60-79"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "high",
+            "TimelineForImplementation": ">10 years",
+            "Dependencies": [
+                "Requires sustainable land management",
+                "advanced bioenergy technology development",
+                "infrastructure for carbon capture and storage",
+                "global governance for trade and supply chains"
+            ],
+            "KeyPerformanceIndicators": [
+                "Amount of carbon removed through BECCS (in GtCO2 per year)",
+                "total energy produced from bioenergy",
+                "land restored for biomass production",
+                "GHG emissions reduction from displaced fossil fuel use"
+            ],
+            "Impacts": [
+                "Enhanced energy security",
+                "reduced GHG emissions",
+                "restored degraded lands",
+                "improved air and water quality",
+                "biodiversity conservation"
+            ]
+        }
+    },
+    {
+        "locode": "BRRBR",
+        "cityName": "Rio Branco",
+        "region": "BR-AC",
+        "regionName": "Acre",
         "actionId": "ipcc_0054",
         "actionName": "Improved Forest Management",
-        "actionPriority": 3,
-        "explanation": "Enhancing forest management practices can significantly reduce emissions from land use. It is a cost-effective measure with a relatively short implementation timeline.",
+        "actionPriority": 6,
+        "explanation": "Improving the management of existing forests is vital for sustaining carbon sinks in tropical regions. Even though its quantitative score is slightly lower than some urban or coastal actions, its direct relevance to reducing deforestation impacts in a rainforest setting pushes it high in the priority list.",
         "action": {
             "ActionID": "ipcc_0054",
             "ActionName": "Improved Forest Management",
@@ -226,84 +448,10 @@
         "cityName": "Rio Branco",
         "region": "BR-AC",
         "regionName": "Acre",
-        "actionId": "ipcc_0059",
-        "actionName": "Reduce Conversion of Coastal Wetlands",
-        "actionPriority": 4,
-        "explanation": "Although not directly related to the Amazon, protecting wetlands can prevent emissions and support biodiversity, aligning with environmental goals.",
-        "action": {
-            "ActionID": "ipcc_0059",
-            "ActionName": "Reduce Conversion of Coastal Wetlands",
-            "ActionType": [
-                "mitigation"
-            ],
-            "AdaptationCategory": null,
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "land"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "InterventionType": [
-                "regulations_and_laws",
-                "incentives_and_subsidies",
-                "programs_and_initiatives",
-                "infrastructure_investments"
-            ],
-            "Description": "This action involves reducing the conversion of coastal wetlands such as mangroves, marshes, and seagrass ecosystems to avoid emissions from biomass and soil carbon loss. It also supports biodiversity conservation, fisheries production, soil stabilization, water quality regulation, flood prevention, and resilience against cyclones.",
-            "BehavioralChangeTargeted": "Promotes sustainable land-use practices and prioritizes wetland preservation over aquaculture, agriculture, and urban development.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "Supports coastal communities by preserving livelihoods linked to wetlands, enhancing resilience to climate change, and ensuring fair distribution of benefits from ecosystem services.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "40-59"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Effective integration of coastal climate mitigation policies",
-                "marine spatial planning",
-                "economic incentives to prioritize wetland conservation"
-            ],
-            "KeyPerformanceIndicators": [
-                "Area of coastal wetlands preserved",
-                "GHG emissions avoided from biomass and soil carbon loss",
-                "improvements in biodiversity metrics",
-                "ecosystem resilience"
-            ],
-            "Impacts": [
-                "Increased carbon sequestration",
-                "enhanced resilience to climate impacts",
-                "improved biodiversity",
-                "better water quality",
-                "greater protection against flooding and storm surges"
-            ]
-        }
-    },
-    {
-        "locode": "BRRBR",
-        "cityName": "Rio Branco",
-        "region": "BR-AC",
-        "regionName": "Acre",
         "actionId": "ipcc_0077",
         "actionName": "Urban Tree Planting and Management",
-        "actionPriority": 5,
-        "explanation": "Urban tree planting can reduce urban heat, improve air quality, and sequester carbon, addressing both emissions and public health risks from heatwaves.",
+        "actionPriority": 7,
+        "explanation": "Urban tree planting boosts local carbon sequestration and offers co\u2010benefits like heat mitigation. While its scale is smaller compared to large forest interventions, it remains important for urban areas and aligns with the city\u2019s development context.",
         "action": {
             "ActionID": "ipcc_0077",
             "ActionName": "Urban Tree Planting and Management",
@@ -375,174 +523,23 @@
         "cityName": "Rio Branco",
         "region": "BR-AC",
         "regionName": "Acre",
-        "actionId": "c40_0028",
-        "actionName": "Zero Emission Buses",
-        "actionPriority": 6,
-        "explanation": "Transitioning to zero-emission buses can significantly reduce transportation emissions, which is the second-largest emission sector in the city.",
-        "action": {
-            "ActionID": "c40_0028",
-            "ActionName": "Zero Emission Buses",
-            "ActionType": [
-                "mitigation"
-            ],
-            "AdaptationCategory": null,
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "InterventionType": [
-                "programs_and_initiatives",
-                "infrastructure_investments"
-            ],
-            "Description": "\"Zero Emission Buses\" initiatives focus on integrating electric or other zero-emission technologies into public transportation fleets. This strategy aims to eliminate traditional bus emissions, contributing to cleaner air and a more sustainable urban transit system.",
-            "BehavioralChangeTargeted": "The targeted behavioral shift that the \"Zero Emission Buses\" initiative aims to achieve is an increased reliance on public transportation, specifically the use of electric or zero-emission buses, over personal vehicles. This shift is intended to encourage individuals to choose cleaner, more sustainable transit options, thereby reducing greenhouse gas emissions and contributing to improved air quality in urban areas. By enhancing the perception of public transportation as a convenient, safe, and environmentally friendly alternative, the initiative seeks to foster a cultural norm that prioritizes sustainable commuting practices.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "The \"Zero Emission Buses\" initiative promotes equity and inclusion by prioritizing cleaner air in urban areas, which often include vulnerable or underserved communities that are disproportionately affected by air pollution. By transitioning to electric or zero-emission buses, the initiative directly addresses health disparities faced by these populations, improving their overall quality of life.\n\nAdditionally, the integration of zero-emission technologies into public transportation enhances accessibility to reliable and sustainable transit options for low-income individuals who may rely on public transport for their daily commutes. This ensures that all community members, regardless of socioeconomic status, have equitable access to clean transportation.\n\nFurthermore, the initiative may create job opportunities in the maintenance and operation of zero-emission buses, particularly in communities that have historically faced economic disadvantages. This can help foster economic inclusion and support local workforce development.\n\nOverall, the initiative's focus on reducing emissions and improving public transportation aligns with the needs of underserved communities, promoting environmental justice and equitable access to clean transit solutions.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "20-39",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Availability of electric or zero-emission bus technology",
-                "Investment in charging infrastructure for electric buses",
-                "Supportive government policies and regulations promoting zero-emission transportation",
-                "Public funding or financial incentives for transit agencies",
-                "Training and workforce development for maintenance and operation of new technologies",
-                "Public acceptance and demand for cleaner public transportation options"
-            ],
-            "KeyPerformanceIndicators": [
-                "Number of zero-emission buses deployed",
-                "Reduction in greenhouse gas emissions",
-                "Percentage of public transportation fleet that is zero-emission",
-                "Air quality improvement metrics",
-                "Operational cost savings from zero-emission buses",
-                "Public ridership levels",
-                "Energy consumption per mile",
-                "Maintenance costs of zero-emission buses",
-                "User satisfaction ratings",
-                "Reduction in noise pollution"
-            ],
-            "Impacts": [
-                "Reduction of greenhouse gas emissions in the transportation sector by 20-39%",
-                "Improvement of air quality in urban areas",
-                "Promotion of equity and inclusion for underserved communities",
-                "Enhanced accessibility to public transportation for low-income individuals",
-                "Creation of job opportunities in the maintenance and operation of zero-emission buses"
-            ]
-        }
-    },
-    {
-        "locode": "BRRBR",
-        "cityName": "Rio Branco",
-        "region": "BR-AC",
-        "regionName": "Acre",
-        "actionId": "ipcc_0002",
-        "actionName": "Active Transport Modes",
-        "actionPriority": 7,
-        "explanation": "Promoting walking and cycling reduces transportation emissions and improves public health, with minimal costs and dependencies.",
-        "action": {
-            "ActionID": "ipcc_0002",
-            "ActionName": "Active Transport Modes",
-            "ActionType": [
-                "mitigation"
-            ],
-            "AdaptationCategory": null,
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "InterventionType": [
-                "infrastructure_investments",
-                "programs_and_initiatives"
-            ],
-            "Description": "Promoting walking and cycling as primary modes of transport for short journeys (5 km or less) to reduce dependency on light-duty vehicles and decrease GHG emissions.",
-            "BehavioralChangeTargeted": "Encourages a modal shift from car and motorcycle use to walking and cycling.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 1,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "Improves access to safe and affordable transport options, particularly for low-income communities, while enhancing urban mobility for underserved groups.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "0-19",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Investment in safe walking and cycling infrastructure",
-                "public awareness campaigns",
-                "supportive urban planning policies"
-            ],
-            "KeyPerformanceIndicators": [
-                "Increase in kilometers of bicycle and walking networks",
-                "rise in active transport modal share",
-                "reduction in car usage for short trips"
-            ],
-            "Impacts": [
-                "Improved public health",
-                "reduced urban congestion",
-                "lower transport-related GHG emissions",
-                "enhanced quality of urban life"
-            ]
-        }
-    },
-    {
-        "locode": "BRRBR",
-        "cityName": "Rio Branco",
-        "region": "BR-AC",
-        "regionName": "Acre",
-        "actionId": "ipcc_0045",
-        "actionName": "Behavioral Changes for Reduced Waste (e.g., Food)",
+        "actionId": "ipcc_0069",
+        "actionName": "Shift to sustainable healthy diets",
         "actionPriority": 8,
-        "explanation": "Encouraging waste reduction behaviors can lower waste emissions and is cost-effective with immediate impact.",
+        "explanation": "Promoting sustainable and healthy diets can indirectly lower agricultural emissions. It addresses socio-demographic factors and is cost-effective, making it a strategic complementary action despite not being a direct land use intervention.",
         "action": {
-            "ActionID": "ipcc_0045",
-            "ActionName": "Behavioral Changes for Reduced Waste (e.g., Food)",
+            "ActionID": "ipcc_0069",
+            "ActionName": "Shift to sustainable healthy diets",
             "ActionType": [
                 "mitigation"
             ],
             "AdaptationCategory": null,
             "Hazard": null,
             "Sector": [
-                "ippu"
+                "afolu"
             ],
             "Subsector": [
-                "industrial_processes"
+                "livestock"
             ],
             "PrimaryPurpose": [
                 "ghg_reduction"
@@ -552,159 +549,8 @@
                 "incentives_and_subsidies",
                 "regulations_and_laws"
             ],
-            "Description": "Encouraging behavioral changes to reduce waste in industrial processes and consumer habits, particularly in food production and consumption. This includes reducing food waste through better planning, optimizing portion sizes, and improving recycling and reuse practices in production and post-consumption stages.",
-            "BehavioralChangeTargeted": "Encourages individuals and industries to adopt waste-reduction strategies, reduce overproduction, optimize food usage, and recycle waste effectively.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": "Promotes fair access to education and resources for waste reduction, particularly for low-income and underserved communities to improve resource efficiency and reduce waste management costs.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": "20-39",
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Availability of infrastructure for waste collection and recycling",
-                "public awareness campaigns",
-                "supportive policy frameworks"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in food waste percentage",
-                "increased recycling rates",
-                "reduced greenhouse gas emissions from waste management"
-            ],
-            "Impacts": [
-                "Reduced environmental burden",
-                "enhanced resource efficiency",
-                "improved urban livability",
-                "cost savings in waste management systems"
-            ]
-        }
-    },
-    {
-        "locode": "BRRBR",
-        "cityName": "Rio Branco",
-        "region": "BR-AC",
-        "regionName": "Acre",
-        "actionId": "c40_0038",
-        "actionName": "Sanitary Landfills",
-        "actionPriority": 9,
-        "explanation": "Improving landfill management can reduce methane emissions from waste, a significant emission source in Rio Branco.",
-        "action": {
-            "ActionID": "c40_0038",
-            "ActionName": "Sanitary Landfills",
-            "ActionType": [
-                "mitigation"
-            ],
-            "AdaptationCategory": null,
-            "Hazard": null,
-            "Sector": [
-                "waste"
-            ],
-            "Subsector": [
-                "all"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "InterventionType": [
-                "infrastructure_investments",
-                "programs_and_initiatives"
-            ],
-            "Description": "\"Sanitary Landfills\" ensure proper disposal of residual waste in engineered facilities, minimizing environmental impact. This mitigation strategy involves utilizing advanced technological solutions to manage waste effectively, promoting sustainable waste disposal practices within a city.",
-            "BehavioralChangeTargeted": "The targeted behavioral change that the climate action of implementing \"Sanitary Landfills\" aims to achieve is the increased adoption of sustainable waste disposal practices among residents and businesses. This includes encouraging individuals to properly separate and dispose of their waste, reduce overall waste generation, and support the use of engineered facilities for waste management. By improving perceptions of waste disposal safety, convenience, and environmental responsibility, the intervention seeks to shift behaviors towards more environmentally friendly waste management practices, ultimately leading to a reduction in greenhouse gas emissions associated with improper waste disposal.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "The implementation of sanitary landfills as a climate action promotes equity and inclusion in several ways:\n\n1. **Access to Clean Environments**: By ensuring proper disposal of residual waste, sanitary landfills help reduce pollution and environmental hazards in underserved communities, which are often disproportionately affected by waste mismanagement.\n\n2. **Health Benefits**: Proper waste management minimizes health risks associated with improper disposal, such as contamination and disease, thereby protecting vulnerable populations who may have limited access to healthcare.\n\n3. **Job Creation**: The establishment and maintenance of sanitary landfills can create job opportunities for local residents, particularly in underserved areas, contributing to economic equity.\n\n4. **Community Engagement**: The planning and operation of sanitary landfills can involve local communities, ensuring that their voices are heard and their needs are considered, fostering a sense of inclusion.\n\n5. **Sustainable Practices**: By promoting sustainable waste disposal practices, the action supports long-term environmental justice, benefiting all community members, especially those in vulnerable situations who may rely more heavily on local natural resources. \n\nOverall, the action of implementing sanitary landfills addresses the needs of underserved communities by prioritizing their health, economic opportunities, and environmental safety.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": "60-79",
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Availability of engineered landfill sites designed to minimize environmental impact",
-                "Implementation of advanced waste management technologies",
-                "Regulatory frameworks and policies supporting sustainable waste disposal",
-                "Public awareness and community engagement in waste management practices",
-                "Funding and investment for infrastructure development and maintenance"
-            ],
-            "KeyPerformanceIndicators": [
-                "Waste diversion rate",
-                "Landfill gas emissions reduction",
-                "Leachate management efficiency",
-                "Volume of waste processed",
-                "Recycling rate",
-                "Public awareness and participation",
-                "Cost-effectiveness of waste management",
-                "Compliance with environmental regulations",
-                "Reduction in illegal dumping incidents",
-                "Sustainability of landfill operations"
-            ],
-            "Impacts": [
-                "Reduction of greenhouse gas emissions by 60-79% in the waste sector",
-                "Improved air quality due to reduced pollution from waste mismanagement",
-                "Enhanced water quality through proper waste disposal practices",
-                "Increased job opportunities in local communities",
-                "Promotion of sustainable waste disposal practices among residents and businesses",
-                "Health benefits for vulnerable populations through reduced environmental hazards",
-                "Community engagement in waste management planning and operations"
-            ]
-        }
-    },
-    {
-        "locode": "BRRBR",
-        "cityName": "Rio Branco",
-        "region": "BR-AC",
-        "regionName": "Acre",
-        "actionId": "c40_0035",
-        "actionName": "Waste Efficiency",
-        "actionPriority": 10,
-        "explanation": "Enhancing waste efficiency can further reduce emissions from waste management, aligning with the city's emission reduction goals.",
-        "action": {
-            "ActionID": "c40_0035",
-            "ActionName": "Waste Efficiency",
-            "ActionType": [
-                "mitigation"
-            ],
-            "AdaptationCategory": null,
-            "Hazard": null,
-            "Sector": [
-                "waste"
-            ],
-            "Subsector": [
-                "all"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "InterventionType": [
-                "programs_and_initiatives"
-            ],
-            "Description": "\"Waste Efficiency\" initiatives aim to improve the efficiency of waste collection processes, reducing resource consumption and minimizing environmental impact. This includes optimizing waste management systems to enhance energy efficiency and promote sustainable waste disposal practices.",
-            "BehavioralChangeTargeted": "The targeted behavioral change that the \"Waste Efficiency\" initiatives aim to achieve is for individuals and organizations to adopt more sustainable waste disposal practices and actively participate in optimizing waste management systems. This includes reducing waste generation, increasing recycling rates, and utilizing energy-efficient waste collection methods. By enhancing awareness and perceptions of the environmental impact of waste, the initiative encourages people to prioritize waste efficiency in their daily activities, leading to a collective shift towards more responsible waste management behaviors.",
+            "Description": "Transitioning dietary patterns to promote individual health and well-being while minimizing environmental impacts. Focuses on reducing animal-based food consumption, particularly from ruminant animals, and increasing plant-based food consumption to reduce GHG emissions and preserve biodiversity.",
+            "BehavioralChangeTargeted": "Encourages a shift in consumer behavior towards adopting plant-rich diets, reducing red meat consumption, and increasing awareness of the environmental and health benefits of sustainable diets.",
             "CoBenefits": {
                 "air_quality": 0,
                 "water_quality": 1,
@@ -714,40 +560,489 @@
                 "mobility": 0,
                 "stakeholder_engagement": 0
             },
-            "EquityAndInclusionConsiderations": "The \"Waste Efficiency\" initiatives promote equity and inclusion by focusing on underserved communities that often bear the brunt of inefficient waste management systems. By optimizing waste collection processes, these initiatives can reduce the environmental burden on vulnerable populations, who may live in areas disproportionately affected by waste and pollution. \n\nAdditionally, improving energy efficiency in waste management can lead to cost savings, which can be reinvested into community services or infrastructure that benefit low-income neighborhoods. The promotion of sustainable waste disposal practices also ensures that all community members, regardless of socioeconomic status, have access to environmentally responsible options, fostering a sense of shared responsibility and inclusion in climate action efforts. \n\nOverall, these initiatives recognize the unique challenges faced by underserved communities and aim to create a more equitable waste management system that benefits all residents.",
+            "EquityAndInclusionConsiderations": "Promotes access to affordable, culturally acceptable diets that meet nutritional needs, particularly in underserved and vulnerable communities. Policies address equity in food access and mitigate adverse economic impacts on agricultural sectors.",
             "GHGReductionPotential": {
                 "stationary_energy": null,
                 "transportation": null,
-                "waste": "80-100",
+                "waste": null,
                 "ippu": null,
-                "afolu": null
+                "afolu": "40-59"
             },
             "AdaptationEffectiveness": null,
             "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
+            "TimelineForImplementation": "5-10 years",
             "Dependencies": [
-                "Effective waste management infrastructure and technology",
-                "Collaboration with local governments and waste management authorities",
-                "Public awareness and education on waste disposal practices",
-                "Access to data for monitoring and optimizing waste collection processes",
-                "Investment in sustainable waste processing facilities"
+                "Implementation of integrated food-system policies",
+                "financial incentives for sustainable agriculture",
+                "awareness campaigns",
+                "the development of local food systems to support dietary transitions"
             ],
             "KeyPerformanceIndicators": [
-                "Reduction in waste collection costs",
-                "Percentage decrease in waste sent to landfills",
-                "Increase in recycling rates",
-                "Energy consumption per ton of waste collected",
-                "Carbon emissions reduction from waste management",
-                "Customer satisfaction with waste collection services",
-                "Volume of waste processed through sustainable methods",
-                "Operational efficiency of waste collection routes"
+                "Reduction in GHG emissions from food production",
+                "reduction in land use for livestock",
+                "increase in plant-based food consumption",
+                "improvement in public health metrics related to diet-related diseases"
             ],
             "Impacts": [
-                "Reduction in greenhouse gas emissions by 80-100% in the waste sector",
-                "Improved water quality through better waste management practices",
-                "Enhanced equity and inclusion for underserved communities",
-                "Increased community awareness and participation in sustainable waste practices",
-                "Cost savings from energy-efficient waste management reinvested into community services"
+                "Improved public health outcomes",
+                "reduced environmental pressures (e.g., deforestation, biodiversity loss)",
+                "strengthened food security through sustainable practices"
+            ]
+        }
+    },
+    {
+        "locode": "BRRBR",
+        "cityName": "Rio Branco",
+        "region": "BR-AC",
+        "regionName": "Acre",
+        "actionId": "ipcc_0071",
+        "actionName": "Improved and enhanced use of wood products",
+        "actionPriority": 9,
+        "explanation": "This action supports the sustainable use of forest resources by encouraging better wood product utilization. It aids in reducing demand for virgin timber and helps in lowering overall land use emissions.",
+        "action": {
+            "ActionID": "ipcc_0071",
+            "ActionName": "Improved and enhanced use of wood products",
+            "ActionType": [
+                "mitigation"
+            ],
+            "AdaptationCategory": null,
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "land"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "InterventionType": [
+                "programs_and_initiatives",
+                "infrastructure_investments",
+                "incentives_and_subsidies"
+            ],
+            "Description": "Promotes the use of sustainably harvested wood for material substitution (e.g., replacing concrete or steel) and increasing carbon storage in wood products. Includes strategies like increasing recycling, extending product lifetimes, and shifting to long-lived wood products.",
+            "BehavioralChangeTargeted": "Encourages the adoption of wood-based materials in construction and other industries while promoting sustainable forest management.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 0,
+                "habitat": 1,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": "Supports local and indigenous communities by creating sustainable livelihoods, promoting equitable forest resource management, and enhancing access to long-term benefits.",
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "40-59"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Requires sustainable forest management practices",
+                "advanced wood processing technologies",
+                "market demand for wood substitutes",
+                "global cooperation to prevent resource exploitation"
+            ],
+            "KeyPerformanceIndicators": [
+                "Increased use of wood products in construction",
+                "reduction in GHG emissions from material substitution",
+                "increase in recycled wood product utilization rates"
+            ],
+            "Impacts": [
+                "Reduces emissions from traditional material production",
+                "enhances carbon sequestration",
+                "supports sustainable forest industries",
+                "provides economic opportunities in rural and forested areas"
+            ]
+        }
+    },
+    {
+        "locode": "BRRBR",
+        "cityName": "Rio Branco",
+        "region": "BR-AC",
+        "regionName": "Acre",
+        "actionId": "ipcc_0057",
+        "actionName": "Reduce Degradation and Conversion of Peatlands Activities, Co-benefits, Risks and Implementation Barriers",
+        "actionPriority": 10,
+        "explanation": "Complementing peatland restoration efforts, this action focuses on reducing further degradation. It is important for emissions reduction if peatlands are relevant locally, though it is ranked slightly below direct restoration interventions.",
+        "action": {
+            "ActionID": "ipcc_0057",
+            "ActionName": "Reduce Degradation and Conversion of Peatlands Activities, Co-benefits, Risks and Implementation Barriers",
+            "ActionType": [
+                "mitigation"
+            ],
+            "AdaptationCategory": null,
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "land"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "InterventionType": [
+                "regulations_and_laws",
+                "programs_and_initiatives",
+                "incentives_and_subsidies"
+            ],
+            "Description": "Prevent conversion and degradation of peatlands to avoid emissions from vegetation clearing, fires, and peat decomposition. Includes improving governance and management to preserve carbon-rich ecosystems critical for biodiversity and carbon storage.",
+            "BehavioralChangeTargeted": "Encourages sustainable land management practices and prioritization of conservation over land conversion for agriculture, mining, or urban expansion.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": "Promotes equitable access to preserved peatland resources while reducing health risks caused by fire-related pollutants, especially for vulnerable and rural communities.",
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "40-59"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "high",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Requires strong governance",
+                "financial support",
+                "international cooperation",
+                "policies to control land conversion drivers",
+                "such as agriculture",
+                "mining",
+                "urban development"
+            ],
+            "KeyPerformanceIndicators": [
+                "Reduction in peatland conversion rates",
+                "avoided emissions per hectare",
+                "improvements in biodiversity and water quality metrics"
+            ],
+            "Impacts": [
+                "Reduced GHG emissions",
+                "enhanced biodiversity",
+                "improved water regulation",
+                "decreased fire-related health hazards"
+            ]
+        }
+    },
+    {
+        "locode": "BRRBR",
+        "cityName": "Rio Branco",
+        "region": "BR-AC",
+        "regionName": "Acre",
+        "actionId": "ipcc_0063",
+        "actionName": "Agroforesry",
+        "actionPriority": 11,
+        "explanation": "Agroforestry integrates trees into agricultural systems and can enhance carbon sequestration while delivering co-benefits in rural landscapes. Its relevance to land use and agriculture supports its placement in the middle of the list.",
+        "action": {
+            "ActionID": "ipcc_0063",
+            "ActionName": "Agroforesry",
+            "ActionType": [
+                "mitigation"
+            ],
+            "AdaptationCategory": null,
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "land"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "InterventionType": [
+                "programs_and_initiatives",
+                "regulations_and_laws",
+                "incentives_and_subsidies"
+            ],
+            "Description": "Agroforestry integrates trees and shrubs with crops and/or livestock to sequester carbon, enhance soil health, reduce soil erosion, improve water quality, and diversify livelihoods. It also offers co-benefits like mitigating regional climates and increasing land productivity while addressing risks like biodiversity and hydrology impacts.",
+            "BehavioralChangeTargeted": "Encourages farmers to adopt sustainable land management practices by integrating trees, crops, and livestock to improve productivity, carbon sequestration, and resilience.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": "Supports smallholder farmers by providing access to tools, market opportunities, and information while addressing barriers like land tenure, credit access, and species selection suitable for local contexts.",
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "40-59"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Requires access to appropriate germplasm",
+                "supportive policies",
+                "extension systems",
+                "credit access",
+                "reforms in land tenure systems",
+                "Adoption depends on aligning agroforestry practices to biophysical and socio-economic contexts"
+            ],
+            "KeyPerformanceIndicators": [
+                "Carbon sequestration rates (above and below ground)",
+                "improved soil health metrics",
+                "increase in farmer income",
+                "reduction in soil erosion",
+                "adoption rates of agroforestry systems"
+            ],
+            "Impacts": [
+                "Enhanced land productivity",
+                "improved livelihoods",
+                "increased carbon storage",
+                "better water quality",
+                "resilience to climate change"
+            ]
+        }
+    },
+    {
+        "locode": "BRRBR",
+        "cityName": "Rio Branco",
+        "region": "BR-AC",
+        "regionName": "Acre",
+        "actionId": "c40_0042",
+        "actionName": "Biodiversity Expansion",
+        "actionPriority": 12,
+        "explanation": "Biodiversity expansion has clear environmental benefits and can indirectly support climate mitigation. However, its direct impact on emissions reduction is secondary, which positions it after more targeted mitigation actions.",
+        "action": {
+            "ActionID": "c40_0042",
+            "ActionName": "Biodiversity Expansion",
+            "ActionType": [
+                "mitigation"
+            ],
+            "AdaptationCategory": null,
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "InterventionType": [
+                "programs_and_initiatives"
+            ],
+            "Description": "\"Biodiversity Expansion\" initiatives aim to preserve and expand green spaces, promoting biodiversity within urban areas. By preserving natural habitats, cities enhance ecosystem services and create resilient environments that support diverse flora and fauna.",
+            "BehavioralChangeTargeted": "The targeted behavioral shift that the \"Biodiversity Expansion\" initiatives aim to achieve is an increased public engagement in the preservation and creation of green spaces within urban areas. This includes encouraging individuals and communities to actively participate in activities such as planting trees, maintaining parks, and supporting local biodiversity efforts. By fostering a greater appreciation for natural habitats and their benefits, the initiative seeks to change perceptions about the importance of green spaces, ultimately leading to more sustainable urban living practices and a collective commitment to enhancing biodiversity in cities.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": "The \"Biodiversity Expansion\" initiatives promote equity and inclusion by ensuring that underserved communities have access to preserved green spaces, which are often lacking in urban areas. By focusing on enhancing biodiversity in these neighborhoods, the action addresses environmental justice by improving the quality of life for vulnerable populations who may face higher exposure to pollution and limited access to nature. Additionally, the creation of resilient environments supports diverse flora and fauna, which can enhance local ecosystems that these communities rely on for recreational, cultural, and economic benefits. Overall, the initiative fosters a sense of community ownership and involvement in the preservation of natural habitats, ensuring that the voices of marginalized groups are included in urban planning and environmental stewardship.",
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "40-59"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Availability of funding for green space projects",
+                "Community engagement and support for biodiversity initiatives",
+                "Collaboration with local governments and environmental organizations",
+                "Access to scientific research on local ecosystems",
+                "Regulatory frameworks that support land conservation and urban planning"
+            ],
+            "KeyPerformanceIndicators": [
+                "Increase in green space area (hectares)",
+                "Number of native species introduced",
+                "Biodiversity index improvement",
+                "Percentage of urban areas with accessible green spaces",
+                "Community engagement in biodiversity programs",
+                "Reduction in urban heat island effect",
+                "Increase in pollinator populations",
+                "Improvement in air quality metrics",
+                "Number of partnerships with local conservation organizations",
+                "Public awareness and education outreach metrics"
+            ],
+            "Impacts": [
+                "Enhances urban biodiversity",
+                "Improves air quality",
+                "Improves water quality",
+                "Supports habitat preservation",
+                "Promotes equity and inclusion in green space access",
+                "Encourages community engagement in environmental stewardship",
+                "Potential GHG reduction of 40-59% in AFOLU sector"
+            ]
+        }
+    },
+    {
+        "locode": "BRRBR",
+        "cityName": "Rio Branco",
+        "region": "BR-AC",
+        "regionName": "Acre",
+        "actionId": "ipcc_0059",
+        "actionName": "Reduce Conversion of Coastal Wetlands",
+        "actionPriority": 13,
+        "explanation": "Despite a relatively high quantitative score, this action targets coastal wetlands \u2013 a sector less relevant to Rio Branco given its inland tropical rainforest context. Thus, its priority is reduced.",
+        "action": {
+            "ActionID": "ipcc_0059",
+            "ActionName": "Reduce Conversion of Coastal Wetlands",
+            "ActionType": [
+                "mitigation"
+            ],
+            "AdaptationCategory": null,
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "land"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "InterventionType": [
+                "regulations_and_laws",
+                "incentives_and_subsidies",
+                "programs_and_initiatives",
+                "infrastructure_investments"
+            ],
+            "Description": "This action involves reducing the conversion of coastal wetlands such as mangroves, marshes, and seagrass ecosystems to avoid emissions from biomass and soil carbon loss. It also supports biodiversity conservation, fisheries production, soil stabilization, water quality regulation, flood prevention, and resilience against cyclones.",
+            "BehavioralChangeTargeted": "Promotes sustainable land-use practices and prioritizes wetland preservation over aquaculture, agriculture, and urban development.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": "Supports coastal communities by preserving livelihoods linked to wetlands, enhancing resilience to climate change, and ensuring fair distribution of benefits from ecosystem services.",
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "40-59"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "high",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Effective integration of coastal climate mitigation policies",
+                "marine spatial planning",
+                "economic incentives to prioritize wetland conservation"
+            ],
+            "KeyPerformanceIndicators": [
+                "Area of coastal wetlands preserved",
+                "GHG emissions avoided from biomass and soil carbon loss",
+                "improvements in biodiversity metrics",
+                "ecosystem resilience"
+            ],
+            "Impacts": [
+                "Increased carbon sequestration",
+                "enhanced resilience to climate impacts",
+                "improved biodiversity",
+                "better water quality",
+                "greater protection against flooding and storm surges"
+            ]
+        }
+    },
+    {
+        "locode": "BRRBR",
+        "cityName": "Rio Branco",
+        "region": "BR-AC",
+        "regionName": "Acre",
+        "actionId": "ipcc_0060",
+        "actionName": "Coastal Wetland Restoration",
+        "actionPriority": 14,
+        "explanation": "Similar to the previous coastal action, coastal wetland restoration is less applicable to Rio Branco. Its lower sector relevance leads to a lower ranking despite making important contributions in coastal settings.",
+        "action": {
+            "ActionID": "ipcc_0060",
+            "ActionName": "Coastal Wetland Restoration",
+            "ActionType": [
+                "mitigation"
+            ],
+            "AdaptationCategory": null,
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "land"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "InterventionType": [
+                "programs_and_initiatives",
+                "infrastructure_investments",
+                "regulations_and_laws"
+            ],
+            "Description": "Coastal wetland restoration involves restoring degraded or damaged coastal ecosystems, including mangroves, salt marshes, and seagrass beds, to sequester \"blue carbon\" in vegetation and soils. Restoration includes passive (removal of degradation drivers) and active (environmental manipulation) approaches to reinstate ecosystem functions and carbon sequestration potential.",
+            "BehavioralChangeTargeted": "Encourages the prevention of wetland degradation, active participation of local communities in restoration efforts, and sustainable management of coastal ecosystems.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": "Involves local communities in decision-making, implementation, and monitoring stages to ensure equitable access to ecosystem benefits and protection of vulnerable coastal populations.",
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "40-59"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "high",
+            "TimelineForImplementation": ">10 years",
+            "Dependencies": [
+                "Requires long-term commitments",
+                "supportive policies",
+                "funding",
+                "monitoring frameworks",
+                "technical capacity",
+                "to address drivers of degradation",
+                "ensure restoration success"
+            ],
+            "KeyPerformanceIndicators": [
+                "Area of wetlands restored",
+                "carbon sequestration rates",
+                "biodiversity recovery metrics",
+                "reduction in storm damage costs",
+                "water quality improvements"
+            ],
+            "Impacts": [
+                "Enhanced ecosystem resilience",
+                "improved carbon sequestration",
+                "protection against sea-level rise and storms",
+                "increased biodiversity",
+                "strengthened coastal livelihoods",
+                "food security"
             ]
         }
     },
@@ -758,8 +1053,8 @@
         "regionName": "Acre",
         "actionId": "ipcc_0062",
         "actionName": "Biochar",
-        "actionPriority": 11,
-        "explanation": "Biochar can sequester carbon and improve soil health, offering a sustainable solution for emissions reduction.",
+        "actionPriority": 15,
+        "explanation": "Biochar can enhance soil carbon storage in agricultural systems. Although its quantitative score is modest, it offers additional soil benefits and is suitable as a supplementary climate mitigation measure.",
         "action": {
             "ActionID": "ipcc_0062",
             "ActionName": "Biochar",
@@ -832,8 +1127,8 @@
         "regionName": "Acre",
         "actionId": "ipcc_0067",
         "actionName": "Manure management",
-        "actionPriority": 12,
-        "explanation": "Effective manure management can reduce methane emissions from agriculture, contributing to overall emissions reduction.",
+        "actionPriority": 16,
+        "explanation": "Manure management helps reduce GHG emissions in the agricultural sector, particularly methane. Given its moderate quantitative score and targeted impact, it is ranked as a supportive measure.",
         "action": {
             "ActionID": "ipcc_0067",
             "ActionName": "Manure management",
@@ -904,76 +1199,69 @@
         "cityName": "Rio Branco",
         "region": "BR-AC",
         "regionName": "Acre",
-        "actionId": "c40_0036",
-        "actionName": "Landfill Management",
-        "actionPriority": 13,
-        "explanation": "Optimizing landfill operations can further reduce emissions from waste, supporting the city's environmental goals.",
+        "actionId": "ipcc_0064",
+        "actionName": "Enteric fermentation",
+        "actionPriority": 17,
+        "explanation": "Addressing methane emissions from livestock, this action contributes to reducing agricultural GHG outputs. Its moderate impact and longer implementation timeline place it in the lower-middle priority range.",
         "action": {
-            "ActionID": "c40_0036",
-            "ActionName": "Landfill Management",
+            "ActionID": "ipcc_0064",
+            "ActionName": "Enteric fermentation",
             "ActionType": [
                 "mitigation"
             ],
             "AdaptationCategory": null,
             "Hazard": null,
             "Sector": [
-                "waste"
+                "afolu"
             ],
             "Subsector": [
-                "all"
+                "livestock"
             ],
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
             "InterventionType": [
-                "programs_and_initiatives",
-                "regulations_and_laws"
+                "regulations_and_laws",
+                "incentives_and_subsidies",
+                "programs_and_initiatives"
             ],
-            "Description": "\"Landfill Management\" strategies focus on responsible and sustainable landfill practices to minimize environmental degradation. By adopting effective management techniques, cities aim to reduce the ecological footprint associated with landfill sites and encourage waste reduction.",
-            "BehavioralChangeTargeted": "The targeted behavioral change that the \"Landfill Management\" climate action aims to achieve is a reduction in waste generation and an increase in responsible waste disposal practices among individuals and communities. This includes encouraging people to adopt habits such as recycling, composting, and minimizing single-use items, ultimately leading to a shift towards more sustainable consumption patterns and a decreased ecological footprint associated with landfill sites.",
+            "Description": "This action targets methane (CH4) emissions from enteric fermentation in livestock through direct interventions like feed additives, inhibitors, or vaccines, and indirect measures like improving production efficiency through better breeding and husbandry practices. It also includes early-life manipulation of the ruminal biome.",
+            "BehavioralChangeTargeted": "Encourages adoption of advanced feeding practices, use of additives or vaccines, and selection of low-emission livestock breeds to reduce methane emissions while improving productivity.",
             "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
+                "air_quality": 0,
+                "water_quality": 0,
                 "habitat": 0,
                 "cost_of_living": 0,
                 "housing": 0,
                 "mobility": 0,
                 "stakeholder_engagement": 0
             },
-            "EquityAndInclusionConsiderations": "The \"Landfill Management\" strategies promote equity and inclusion by addressing the environmental impacts of landfill sites, which often disproportionately affect vulnerable and underserved communities. These communities frequently reside near landfills and are more susceptible to health risks associated with pollution and environmental degradation. By implementing responsible and sustainable landfill practices, the action aims to reduce these negative impacts, thereby improving the quality of life for residents in these areas.\n\nAdditionally, effective waste reduction techniques can create opportunities for community engagement and participation, allowing underserved populations to have a voice in local environmental decisions. This inclusion fosters a sense of ownership and empowerment among community members, ensuring that their needs and concerns are considered in the management of landfill sites. Overall, the action acknowledges and seeks to mitigate the inequities faced by marginalized communities in relation to waste management and environmental health.",
+            "EquityAndInclusionConsiderations": "Supports small-scale farmers in accessing advanced technologies and breeding programs, with special focus on developing countries where feed quality improvement can enhance livestock productivity.",
             "GHGReductionPotential": {
                 "stationary_energy": null,
                 "transportation": null,
-                "waste": "60-79",
+                "waste": null,
                 "ippu": null,
-                "afolu": null
+                "afolu": "20-39"
             },
             "AdaptationEffectiveness": null,
             "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
+            "TimelineForImplementation": "5-10 years",
             "Dependencies": [
-                "Effective waste segregation practices to ensure proper disposal and recycling",
-                "Investment in technology for waste treatment and landfill monitoring",
-                "Community engagement and education on waste reduction and recycling",
-                "Regulatory frameworks and policies supporting sustainable landfill practices",
-                "Collaboration with local governments and organizations for resource sharing and best practices"
+                "Development and regulatory approval of feed additives, vaccines, and inhibitors",
+                "regional adaptation of mitigation strategies",
+                "overcoming barriers like costs, infrastructure, and public acceptance"
             ],
             "KeyPerformanceIndicators": [
-                "Reduction in landfill waste volume",
-                "Percentage of waste diverted from landfills",
-                "Rate of landfill gas capture",
-                "Soil and water quality around landfill sites",
-                "Frequency of landfill inspections",
-                "Public awareness and engagement levels",
-                "Cost savings from improved landfill management practices",
-                "Compliance with environmental regulations"
+                "Reduction in CH4 emissions per animal",
+                "adoption rates of improved feeding practices",
+                "increase in production efficiency per unit of livestock product"
             ],
             "Impacts": [
-                "Reduction in greenhouse gas emissions from waste management",
-                "Improvement in air quality due to reduced landfill emissions",
-                "Enhancement of water quality by minimizing leachate from landfills",
-                "Promotion of equity and inclusion for underserved communities",
-                "Encouragement of sustainable waste disposal practices among individuals and communities"
+                "Reduction in global agricultural methane emissions",
+                "improved livestock productivity",
+                "enhanced food security",
+                "particularly in regions with high agricultural dependence"
             ]
         }
     },
@@ -982,13 +1270,13 @@
         "cityName": "Rio Branco",
         "region": "BR-AC",
         "regionName": "Acre",
-        "actionId": "ipcc_0057",
-        "actionName": "Reduce Degradation and Conversion of Peatlands Activities, Co-benefits, Risks and Implementation Barriers",
-        "actionPriority": 14,
-        "explanation": "Protecting peatlands can prevent significant carbon emissions, although it may have limited direct impact in the Amazon context.",
+        "actionId": "ipcc_0066",
+        "actionName": "Crop nutrient management",
+        "actionPriority": 18,
+        "explanation": "This action helps optimize fertilizer use and reduce nitrous oxide emissions in agriculture. While beneficial, it offers relatively lower emissions reduction compared to core land use interventions and is thus ranked slightly lower.",
         "action": {
-            "ActionID": "ipcc_0057",
-            "ActionName": "Reduce Degradation and Conversion of Peatlands Activities, Co-benefits, Risks and Implementation Barriers",
+            "ActionID": "ipcc_0066",
+            "ActionName": "Crop nutrient management",
             "ActionType": [
                 "mitigation"
             ],
@@ -1004,12 +1292,12 @@
                 "ghg_reduction"
             ],
             "InterventionType": [
-                "regulations_and_laws",
                 "programs_and_initiatives",
-                "incentives_and_subsidies"
+                "incentives_and_subsidies",
+                "regulations_and_laws"
             ],
-            "Description": "Prevent conversion and degradation of peatlands to avoid emissions from vegetation clearing, fires, and peat decomposition. Includes improving governance and management to preserve carbon-rich ecosystems critical for biodiversity and carbon storage.",
-            "BehavioralChangeTargeted": "Encourages sustainable land management practices and prioritization of conservation over land conversion for agriculture, mining, or urban expansion.",
+            "Description": "Implementation of improved crop nutrient management practices to reduce N2O emissions from cropland soils. Practices include optimizing fertilizer application rates, timing, and types; using nitrification inhibitors and slow-release fertilizers; and integrating nutrient management techniques such as crop rotations, cover crops, and bio-fertilizer application.",
+            "BehavioralChangeTargeted": "Encourages farmers to adopt precision fertilization, use organic and synthetic fertilizers efficiently, and employ sustainable agricultural practices for reduced emissions and enhanced productivity.",
             "CoBenefits": {
                 "air_quality": 0,
                 "water_quality": 1,
@@ -1019,263 +1307,33 @@
                 "mobility": 0,
                 "stakeholder_engagement": 0
             },
-            "EquityAndInclusionConsiderations": "Promotes equitable access to preserved peatland resources while reducing health risks caused by fire-related pollutants, especially for vulnerable and rural communities.",
+            "EquityAndInclusionConsiderations": "Promotes sustainable agricultural practices that can be adapted for smallholder and large-scale farms, addressing regional imbalances in fertilizer access and ensuring inclusivity in adoption of new technologies.",
             "GHGReductionPotential": {
                 "stationary_energy": null,
                 "transportation": null,
                 "waste": null,
                 "ippu": null,
-                "afolu": "40-59"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Requires strong governance",
-                "financial support",
-                "international cooperation",
-                "policies to control land conversion drivers",
-                "such as agriculture",
-                "mining",
-                "urban development"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in peatland conversion rates",
-                "avoided emissions per hectare",
-                "improvements in biodiversity and water quality metrics"
-            ],
-            "Impacts": [
-                "Reduced GHG emissions",
-                "enhanced biodiversity",
-                "improved water regulation",
-                "decreased fire-related health hazards"
-            ]
-        }
-    },
-    {
-        "locode": "BRRBR",
-        "cityName": "Rio Branco",
-        "region": "BR-AC",
-        "regionName": "Acre",
-        "actionId": "ipcc_0019",
-        "actionName": "Modal Shift from Aircraft to Train",
-        "actionPriority": 15,
-        "explanation": "Encouraging a shift from air to rail travel can reduce transportation emissions, though its impact may be limited by existing infrastructure.",
-        "action": {
-            "ActionID": "ipcc_0019",
-            "ActionName": "Modal Shift from Aircraft to Train",
-            "ActionType": [
-                "mitigation"
-            ],
-            "AdaptationCategory": null,
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "aviation"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "InterventionType": [
-                "infrastructure_investments",
-                "regulations_and_laws",
-                "incentives_and_subsidies",
-                "programs_and_initiatives"
-            ],
-            "Description": "Promoting a shift from regional and medium-haul flights to high-speed rail (HSR) as a low-carbon alternative. HSR can serve distances of 400\u20131000 km effectively, reducing demand for air travel and associated emissions. Infrastructure improvements, supportive policies, and enhanced HSR networks are critical for this transition.",
-            "BehavioralChangeTargeted": "Encourages a shift in consumer travel preferences from air travel to high-speed rail, fostering acceptance of HSR as a primary mode for regional trips.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 1,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "Provides affordable and accessible regional travel options, particularly benefiting communities with limited access to air travel and reducing transportation inequities.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "40-59",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Requires significant investments in HSR infrastructure",
-                "policy support to limit competing air travel options",
-                "integration of rail networks with existing transportation systems"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in domestic and regional air travel demand",
-                "increase in HSR ridership",
-                "measurable reductions in transportation sector GHG emissions"
-            ],
-            "Impacts": [
-                "Reduces aviation emissions",
-                "improves regional connectivity",
-                "decreases transportation-related air pollution",
-                "enhances public transportation networks"
-            ]
-        }
-    },
-    {
-        "locode": "BRRBR",
-        "cityName": "Rio Branco",
-        "region": "BR-AC",
-        "regionName": "Acre",
-        "actionId": "ipcc_0015",
-        "actionName": "Improved Energy Efficiency for Vehicles",
-        "actionPriority": 16,
-        "explanation": "Enhancing vehicle energy efficiency can reduce transportation emissions, though it may require significant investment.",
-        "action": {
-            "ActionID": "ipcc_0015",
-            "ActionName": "Improved Energy Efficiency for Vehicles",
-            "ActionType": [
-                "mitigation"
-            ],
-            "AdaptationCategory": null,
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road",
-                "railways",
-                "waterborne_navigation",
-                "aviation"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "InterventionType": [
-                "regulations_and_laws",
-                "programs_and_initiatives",
-                "infrastructure_investments"
-            ],
-            "Description": "Optimizing vehicle design, technology, and operations to reduce energy consumption and emissions. This includes advanced aerodynamics, efficient powertrains, low rolling resistance tires, better thermal management systems, turbocharging, direct fuel injection, and cylinder deactivation in internal combustion engines, among others.",
-            "BehavioralChangeTargeted": "Encourages adoption of fuel-efficient technologies and operational practices across vehicle types.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 1,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "Promotes access to efficient and cost-saving transportation technologies, benefiting diverse communities, including underserved regions with high transport costs.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "20-39",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Development and deployment of advanced vehicle technologies",
-                "regulatory frameworks",
-                "consumer acceptance"
-            ],
-            "KeyPerformanceIndicators": [
-                "Improvements in fuel economy (km/l)",
-                "reduction in GHG emissions per km",
-                "share of energy-efficient vehicles in fleets",
-                "fuel cost savings"
-            ],
-            "Impacts": [
-                "Reduced GHG emissions",
-                "enhanced fuel efficiency",
-                "lower operating costs",
-                "improved air quality"
-            ]
-        }
-    },
-    {
-        "locode": "BRRBR",
-        "cityName": "Rio Branco",
-        "region": "BR-AC",
-        "regionName": "Acre",
-        "actionId": "c40_0026",
-        "actionName": "Vehicle Emissions",
-        "actionPriority": 17,
-        "explanation": "Reducing vehicle emissions is crucial for lowering transportation emissions, but may face implementation challenges.",
-        "action": {
-            "ActionID": "c40_0026",
-            "ActionName": "Vehicle Emissions",
-            "ActionType": [
-                "mitigation"
-            ],
-            "AdaptationCategory": null,
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "InterventionType": [
-                "incentives_and_subsidies",
-                "regulations_and_laws",
-                "programs_and_initiatives"
-            ],
-            "Description": "\"Vehicle Emissions\" reduction strategies focus on minimizing the environmental impact of all types of vehicles. Implementing cleaner technologies and promoting alternative fuels contribute to lower emissions, fostering sustainable and eco-friendly transportation.",
-            "BehavioralChangeTargeted": "The targeted behavioral shift that the \"Vehicle Emissions\" reduction strategies aim to achieve is the increased adoption of cleaner transportation options, such as electric vehicles and alternative fuel vehicles, as well as a greater reliance on public transportation, biking, and walking. This shift is encouraged through financial incentives, regulations mandating lower emissions, and programs promoting sustainable transportation practices, ultimately leading to a significant reduction in greenhouse gas emissions from the transportation sector.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "The \"Vehicle Emissions\" reduction strategies inherently promote equity and inclusion by addressing the environmental impacts that disproportionately affect vulnerable and underserved communities. These communities often experience higher levels of air pollution and related health issues due to proximity to high-traffic areas and industrial zones. By implementing cleaner technologies and promoting alternative fuels, the action directly benefits these populations by improving air quality and reducing health risks.\n\nAdditionally, the focus on sustainable and eco-friendly transportation can enhance access to affordable and efficient transportation options for underserved communities, which may lack reliable public transit. This inclusivity ensures that all community members, regardless of socioeconomic status, can benefit from cleaner air and improved public health outcomes. Overall, the action recognizes and addresses the specific needs of vulnerable populations, fostering a more equitable approach to climate action.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "80-100",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
+                "afolu": "20-39"
             },
             "AdaptationEffectiveness": null,
             "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
+            "TimelineForImplementation": "5-10 years",
             "Dependencies": [
-                "Development and availability of cleaner vehicle technologies",
-                "Infrastructure for alternative fuel distribution",
-                "Government policies and regulations supporting emissions reduction",
-                "Public awareness and acceptance of eco-friendly transportation options",
-                "Investment in research and development for sustainable transportation solutions"
+                "Availability of training and technical support for farmers",
+                "development of regional nutrient management roadmaps",
+                "access to affordable fertilizers and inhibitors"
             ],
             "KeyPerformanceIndicators": [
-                "Reduction in vehicle emissions (CO2, NOx, PM)",
-                "Percentage of vehicles using alternative fuels",
-                "Number of electric vehicles on the road",
-                "Fuel efficiency improvements (miles per gallon)",
-                "Adoption rate of cleaner technologies",
-                "Reduction in fossil fuel consumption",
-                "Public transportation usage rates",
-                "Air quality index improvements",
-                "Percentage of low-emission zones established",
-                "Investment in sustainable transportation infrastructure"
+                "Reduction in N2O emissions",
+                "improvement in crop yields",
+                "increase in soil carbon sequestration",
+                "reduction in fertilizer use per hectare"
             ],
             "Impacts": [
-                "Significant reduction in greenhouse gas emissions from the transportation sector",
-                "Improved air quality benefiting vulnerable and underserved communities",
-                "Increased adoption of cleaner transportation options",
-                "Enhanced access to affordable and efficient transportation for underserved populations"
+                "Contributes to climate mitigation",
+                "improves food and nutrition security",
+                "enhances environmental sustainability",
+                "supports long-term agricultural productivity"
             ]
         }
     },
@@ -1284,69 +1342,72 @@
         "cityName": "Rio Branco",
         "region": "BR-AC",
         "regionName": "Acre",
-        "actionId": "ipcc_0007",
-        "actionName": "Smart Mobility",
-        "actionPriority": 18,
-        "explanation": "Implementing smart mobility solutions can optimize transportation systems, though it may require technological investments.",
+        "actionId": "ipcc_0055",
+        "actionName": "Fire Management (Forest and Grassland / Savanna Fires)",
+        "actionPriority": 19,
+        "explanation": "Effective fire management can prevent significant GHG emissions from uncontrolled fires. However, its lower quantitative score and potential dependencies mean it is prioritized after higher impact actions.",
         "action": {
-            "ActionID": "ipcc_0007",
-            "ActionName": "Smart Mobility",
+            "ActionID": "ipcc_0055",
+            "ActionName": "Fire Management (Forest and Grassland / Savanna Fires)",
             "ActionType": [
                 "mitigation"
             ],
             "AdaptationCategory": null,
             "Hazard": null,
             "Sector": [
-                "transportation"
+                "afolu"
             ],
             "Subsector": [
-                "on-road"
+                "land"
             ],
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
             "InterventionType": [
-                "infrastructure_investments",
                 "programs_and_initiatives",
+                "infrastructure_investments",
                 "regulations_and_laws"
             ],
-            "Description": "Utilizing advanced technologies, such as ICT, IoT sensors, AI, and Mobility as a Service (MaaS), to improve transport efficiency, reduce emissions, and enhance urban mobility. Smart mobility integrates various transport modes and optimizes operations to compete with private vehicles.",
-            "BehavioralChangeTargeted": "Encourages a shift from private vehicle use to integrated, efficient, and shared transport solutions.",
+            "Description": "Implementation of fire management practices, including prescribed burning and natural resource management, to reduce uncontrolled wildfires in forests and savannas. Focuses on safeguarding life, property, and resources while mitigating GHG emissions and maintaining carbon stocks.",
+            "BehavioralChangeTargeted": "Encourages adoption of prescribed burning and sustainable fire management practices among communities and land managers to reduce uncontrolled wildfires and their associated GHG emissions.",
             "CoBenefits": {
                 "air_quality": 1,
                 "water_quality": 0,
                 "habitat": 0,
                 "cost_of_living": 0,
                 "housing": 0,
-                "mobility": 1,
-                "stakeholder_engagement": 1
+                "mobility": 0,
+                "stakeholder_engagement": 0
             },
-            "EquityAndInclusionConsiderations": "Improves access to efficient and affordable transportation options, especially for marginalized groups, while supporting urban regeneration and connectivity.",
+            "EquityAndInclusionConsiderations": "Promotes equitable access to fire management resources, focusing on capacity building and governance in vulnerable or underserved regions such as least developed countries in Africa.",
             "GHGReductionPotential": {
                 "stationary_energy": null,
-                "transportation": "0-19",
+                "transportation": null,
                 "waste": null,
                 "ippu": null,
-                "afolu": null
+                "afolu": "20-39"
             },
             "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
+            "CostInvestmentNeeded": "medium",
             "TimelineForImplementation": "5-10 years",
             "Dependencies": [
-                "Widespread adoption of ICT and IoT technologies",
-                "supportive urban planning",
-                "investments in shared and digitalized mobility systems"
+                "Effective governance frameworks",
+                "access to research and technology for fire management",
+                "community engagement",
+                "alignment with regional legal and policy frameworks"
             ],
             "KeyPerformanceIndicators": [
-                "Increase in shared and public transport use",
-                "reduction in private vehicle kilometers traveled",
-                "decreased transport-related emissions"
+                "Reduction in frequency and intensity of uncontrolled wildfires",
+                "Area managed with prescribed burns",
+                "Reduction in GHG emissions from fires",
+                "Improvement in biodiversity and soil health metrics"
             ],
             "Impacts": [
-                "Enhanced urban livability",
-                "reduced congestion",
-                "improved air quality",
-                "significant advancements in transport efficiency"
+                "Reduced GHG emissions",
+                "improved biodiversity conservation",
+                "prevention of soil erosion",
+                "enhanced land productivity",
+                "reduced risks to life and property from uncontrolled wildfires"
             ]
         }
     },
@@ -1355,140 +1416,73 @@
         "cityName": "Rio Branco",
         "region": "BR-AC",
         "regionName": "Acre",
-        "actionId": "ipcc_0026",
-        "actionName": "Heat Recovery and Reuse through Heat Exchanger Networks or Heat Pumps",
-        "actionPriority": 19,
-        "explanation": "This action can improve energy efficiency, though its impact may be limited by the city's current infrastructure and energy needs.",
-        "action": {
-            "ActionID": "ipcc_0026",
-            "ActionName": "Heat Recovery and Reuse through Heat Exchanger Networks or Heat Pumps",
-            "ActionType": [
-                "mitigation"
-            ],
-            "AdaptationCategory": null,
-            "Hazard": null,
-            "Sector": [
-                "ippu"
-            ],
-            "Subsector": [
-                "industrial_processes"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "InterventionType": [
-                "infrastructure_investments",
-                "programs_and_initiatives",
-                "incentives_and_subsidies"
-            ],
-            "Description": "This action involves improving heat-use energy efficiency by utilizing heat exchanger networks and high-temperature heat pumps to recover and reuse waste heat in industrial processes. Techniques include reducing heat needs via thermal insulation, reusing waste heat at various temperature grades, and recycling waste heat for power generation through technologies such as mechanical vapor recompression and thermoelectric conversion.",
-            "BehavioralChangeTargeted": "Encourages industries to adopt energy-efficient technologies for heat recovery and reuse, reducing reliance on high-emission heat production methods.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "Ensures that advanced heat recovery technologies are accessible to small and medium industries, particularly in developing regions, helping them reduce energy costs and emissions.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": "40-59",
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Availability of advanced heat recovery and pump technologies",
-                "skilled workforce for installation and maintenance",
-                "policy support for adoption of waste heat recovery systems"
-            ],
-            "KeyPerformanceIndicators": [
-                "Increase in waste heat recovery rate",
-                "reduction in energy intensity",
-                "percentage of heat reused through high-efficiency systems"
-            ],
-            "Impacts": [
-                "Significant reductions in industrial energy consumption and GHG emissions",
-                "enhanced energy security",
-                "cost savings for manufacturers",
-                "reduced environmental waste"
-            ]
-        }
-    },
-    {
-        "locode": "BRRBR",
-        "cityName": "Rio Branco",
-        "region": "BR-AC",
-        "regionName": "Acre",
-        "actionId": "ipcc_0027",
-        "actionName": "Process Coupling and Improvements",
+        "actionId": "ipcc_0065",
+        "actionName": "Improve rice management",
         "actionPriority": 20,
-        "explanation": "While beneficial for industrial processes, this action may have limited applicability in Rio Branco due to the absence of significant industrial emissions.",
+        "explanation": "While improving rice management can lead to reductions in methane emissions, its overall impact is limited within the context of Rio Branco\u2019s emission profile and socio-economic capacity, placing it at the lowest priority among the options.",
         "action": {
-            "ActionID": "ipcc_0027",
-            "ActionName": "Process Coupling and Improvements",
+            "ActionID": "ipcc_0065",
+            "ActionName": "Improve rice management",
             "ActionType": [
                 "mitigation"
             ],
             "AdaptationCategory": null,
             "Hazard": null,
             "Sector": [
-                "ippu"
+                "afolu"
             ],
             "Subsector": [
-                "industrial_processes"
+                "land"
             ],
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
             "InterventionType": [
-                "infrastructure_investments",
                 "programs_and_initiatives",
-                "incentives_and_subsidies"
+                "incentives_and_subsidies",
+                "regulations_and_laws"
             ],
-            "Description": "This action focuses on reducing energy and emissions intensity in the steel production process by improving coupling between processes, such as Endless Strip Production (ESP). Techniques include reducing the number of temperature cycles, integrating process stages, and adopting energy-efficient technologies.",
-            "BehavioralChangeTargeted": "Encourages manufacturers to optimize production stages, adopt efficient technologies, and reduce waste to improve overall energy efficiency and reduce emissions.",
+            "Description": "Implementation of improved water management practices (e.g., single and multiple drainage systems), residue management, better fertiliser application (e.g., slow-release fertilisers), and soil amendments (e.g., biochar) to reduce CH4 and N2O emissions while enhancing sustainability and system resilience.",
+            "BehavioralChangeTargeted": "Encourages adoption of sustainable cultivation practices, such as reducing water waste, improving fertiliser use efficiency, and adopting innovative drainage and residue management techniques.",
             "CoBenefits": {
                 "air_quality": 0,
-                "water_quality": 0,
+                "water_quality": 1,
                 "habitat": 0,
                 "cost_of_living": 0,
                 "housing": 0,
                 "mobility": 0,
                 "stakeholder_engagement": 0
             },
-            "EquityAndInclusionConsiderations": "Promotes access to advanced manufacturing technologies for small and medium-sized enterprises, ensuring broader participation in decarbonization efforts.",
+            "EquityAndInclusionConsiderations": "Supports small-scale farmers by reducing input costs (e.g., seeds, labour, and water), increasing income through higher yields, and providing tools and knowledge for sustainable rice farming.",
             "GHGReductionPotential": {
                 "stationary_energy": null,
                 "transportation": null,
                 "waste": null,
-                "ippu": "40-59",
-                "afolu": null
+                "ippu": null,
+                "afolu": "20-39"
             },
             "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
+            "CostInvestmentNeeded": "medium",
             "TimelineForImplementation": "5-10 years",
             "Dependencies": [
-                "Development and deployment of advanced process integration technologies",
-                "skilled workforce training",
-                "supportive policies to incentivize adoption"
+                "Adequate irrigation infrastructure",
+                "training for farmers on advanced techniques",
+                "access to slow-release fertilisers and biochar",
+                "coordinated water management practices among neighboring farmers and regions"
             ],
             "KeyPerformanceIndicators": [
-                "Reduction in energy consumption per unit of steel",
-                "increase in process coupling efficiency",
-                "reduction in GHG emissions per ton of steel produced"
+                "Reduction in CH4 and N2O emissions per hectare",
+                "increased water use efficiency",
+                "yield stability during droughts",
+                "adoption rate of improved rice cultivation techniques"
             ],
             "Impacts": [
-                "Improved energy efficiency",
-                "reduced emissions",
-                "cost savings for manufacturers",
-                "enhanced competitiveness of the steel industry in global markets"
+                "Reduced greenhouse gas emissions",
+                "improved water use efficiency",
+                "enhanced drought resilience",
+                "increased farm income",
+                "more sustainable agricultural practices",
+                "contributing to food security"
             ]
         }
     }

@@ -4,10 +4,244 @@
         "cityName": "Caxias do Sul",
         "region": "BR-RS",
         "regionName": "Rio Grande do Sul",
+        "actionId": "c40_0035",
+        "actionName": "Waste Efficiency",
+        "actionPriority": 1,
+        "explanation": "This action directly targets the waste sector, which is by far the largest source of emissions in Caxias do Sul. With the highest quantitative score (3.873), it promises substantial GHG reduction and is highly aligned with the primary objective of addressing the city\u2019s most emission-intensive sector.",
+        "action": {
+            "ActionID": "c40_0035",
+            "ActionName": "Waste Efficiency",
+            "ActionType": [
+                "mitigation"
+            ],
+            "AdaptationCategory": null,
+            "Hazard": null,
+            "Sector": [
+                "waste"
+            ],
+            "Subsector": [
+                "all"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "InterventionType": [
+                "programs_and_initiatives"
+            ],
+            "Description": "\"Waste Efficiency\" initiatives aim to improve the efficiency of waste collection processes, reducing resource consumption and minimizing environmental impact. This includes optimizing waste management systems to enhance energy efficiency and promote sustainable waste disposal practices.",
+            "BehavioralChangeTargeted": "The targeted behavioral change that the \"Waste Efficiency\" initiatives aim to achieve is for individuals and organizations to adopt more sustainable waste disposal practices and actively participate in optimizing waste management systems. This includes reducing waste generation, increasing recycling rates, and utilizing energy-efficient waste collection methods. By enhancing awareness and perceptions of the environmental impact of waste, the initiative encourages people to prioritize waste efficiency in their daily activities, leading to a collective shift towards more responsible waste management behaviors.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 1,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": "The \"Waste Efficiency\" initiatives promote equity and inclusion by focusing on underserved communities that often bear the brunt of inefficient waste management systems. By optimizing waste collection processes, these initiatives can reduce the environmental burden on vulnerable populations, who may live in areas disproportionately affected by waste and pollution. \n\nAdditionally, improving energy efficiency in waste management can lead to cost savings, which can be reinvested into community services or infrastructure that benefit low-income neighborhoods. The promotion of sustainable waste disposal practices also ensures that all community members, regardless of socioeconomic status, have access to environmentally responsible options, fostering a sense of shared responsibility and inclusion in climate action efforts. \n\nOverall, these initiatives recognize the unique challenges faced by underserved communities and aim to create a more equitable waste management system that benefits all residents.",
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": "80-100",
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Effective waste management infrastructure and technology",
+                "Collaboration with local governments and waste management authorities",
+                "Public awareness and education on waste disposal practices",
+                "Access to data for monitoring and optimizing waste collection processes",
+                "Investment in sustainable waste processing facilities"
+            ],
+            "KeyPerformanceIndicators": [
+                "Reduction in waste collection costs",
+                "Percentage decrease in waste sent to landfills",
+                "Increase in recycling rates",
+                "Energy consumption per ton of waste collected",
+                "Carbon emissions reduction from waste management",
+                "Customer satisfaction with waste collection services",
+                "Volume of waste processed through sustainable methods",
+                "Operational efficiency of waste collection routes"
+            ],
+            "Impacts": [
+                "Reduction in greenhouse gas emissions by 80-100% in the waste sector",
+                "Improved water quality through better waste management practices",
+                "Enhanced equity and inclusion for underserved communities",
+                "Increased community awareness and participation in sustainable waste practices",
+                "Cost savings from energy-efficient waste management reinvested into community services"
+            ]
+        }
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "c40_0041",
+        "actionName": "Waste Collection",
+        "actionPriority": 2,
+        "explanation": "Waste Collection is another waste-focused intervention with a very high quantitative score (3.688). Given that waste emissions dominate the city's overall emissions profile, improving collection efficiency will have a significant impact on reducing GHG emissions.",
+        "action": {
+            "ActionID": "c40_0041",
+            "ActionName": "Waste Collection",
+            "ActionType": [
+                "mitigation"
+            ],
+            "AdaptationCategory": null,
+            "Hazard": null,
+            "Sector": [
+                "waste"
+            ],
+            "Subsector": [
+                "all"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "InterventionType": [
+                "programs_and_initiatives",
+                "infrastructure_investments"
+            ],
+            "Description": "\"Waste Collection\" initiatives focus on achieving universal waste collection, ensuring that all residents have access to proper waste disposal services. This contributes to a cleaner and healthier urban environment while promoting sustainable waste management practices.",
+            "BehavioralChangeTargeted": "The targeted behavioral change that the \"Waste Collection\" initiative aims to achieve is increased participation in proper waste disposal practices among residents. By ensuring universal access to waste collection services, the initiative encourages individuals to dispose of their waste responsibly, reducing littering and promoting recycling and composting behaviors. This shift in behavior contributes to a cleaner urban environment and supports sustainable waste management practices, ultimately leading to a reduction in greenhouse gas emissions associated with improper waste disposal.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 1,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": "The \"Waste Collection\" initiatives promote equity and inclusion by ensuring that all residents, particularly those in vulnerable or underserved communities, have access to proper waste disposal services. This universal access helps to address disparities in waste management, which often disproportionately affect low-income neighborhoods. By providing equitable waste collection services, the initiative contributes to a cleaner and healthier urban environment for all, reducing health risks associated with improper waste disposal. Additionally, the focus on sustainable waste management practices encourages community engagement and awareness, fostering a sense of ownership and responsibility among residents, including those from marginalized backgrounds. Overall, the initiative actively works to uplift underserved communities by prioritizing their needs in waste management.",
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": "80-100",
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "high",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Availability of waste collection infrastructure and vehicles",
+                "Training and capacity building for waste management personnel",
+                "Public awareness and education programs on waste disposal",
+                "Collaboration with local governments and communities",
+                "Sufficient funding and resources for waste management initiatives",
+                "Regulatory frameworks supporting waste collection services"
+            ],
+            "KeyPerformanceIndicators": [
+                "Percentage of residents with access to waste collection services",
+                "Volume of waste collected per capita",
+                "Percentage reduction in illegal dumping incidents",
+                "Recycling rate of collected waste",
+                "Customer satisfaction rate with waste collection services",
+                "Frequency of waste collection services",
+                "Cost-effectiveness of waste collection operations",
+                "Reduction in landfill waste",
+                "Number of public awareness campaigns conducted"
+            ],
+            "Impacts": [
+                "Reduction in greenhouse gas emissions from improved waste disposal practices",
+                "Improvement in air quality due to reduced littering and waste accumulation",
+                "Enhancement of water quality by preventing waste contamination",
+                "Promotion of equity and inclusion in waste management services",
+                "Increased community engagement and awareness regarding sustainable waste practices"
+            ]
+        }
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "c40_0040",
+        "actionName": "Volume-Based Collection",
+        "actionPriority": 3,
+        "explanation": "This action, scoring 3.458, is crucial for optimizing waste management. Its emphasis on volume-based strategies enhances cost-effectiveness and timely implementation while targeting the waste sector, the city\u2019s highest emission source.",
+        "action": {
+            "ActionID": "c40_0040",
+            "ActionName": "Volume-Based Collection",
+            "ActionType": [
+                "mitigation"
+            ],
+            "AdaptationCategory": null,
+            "Hazard": null,
+            "Sector": [
+                "waste"
+            ],
+            "Subsector": [
+                "all"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "InterventionType": [
+                "taxes_and_fees",
+                "incentives_and_subsidies"
+            ],
+            "Description": "\"Volume-Based Collection\" policies incentivize waste reduction by implementing fees or incentives based on the amount of waste generated. This approach encourages residents to minimize waste production, contributing to overall waste reduction goals.",
+            "BehavioralChangeTargeted": "The targeted behavioral shift that the \"Volume-Based Collection\" climate action aims to achieve is a reduction in waste generation among residents. By implementing fees or incentives based on the amount of waste produced, the intervention encourages individuals to minimize their waste output. This shift is expected to lead to more sustainable waste management practices, as residents become more conscious of their consumption habits and actively seek to reduce the volume of waste they generate, ultimately contributing to broader waste reduction goals and lower greenhouse gas emissions.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": "The \"Volume-Based Collection\" policies promote equity and inclusion by:\n\n1. **Incentivizing Participation**: By linking fees or incentives to the amount of waste generated, the policy encourages all residents, including those from vulnerable or underserved communities, to actively participate in waste reduction efforts. This can empower these communities to take ownership of their waste management practices.\n\n2. **Financial Relief for Low-Volume Generators**: Households that produce less waste, often found in underserved communities, may benefit from lower fees, providing them with financial relief and encouraging sustainable practices without imposing a disproportionate burden.\n\n3. **Awareness and Education**: The implementation of volume-based policies often includes educational components that inform residents about waste reduction strategies. This can particularly benefit underserved communities by providing them with knowledge and resources to reduce waste effectively.\n\n4. **Community Engagement**: The policy can foster community engagement by involving residents in discussions about waste management and reduction strategies, ensuring that the voices of vulnerable populations are heard and considered in the decision-making process.\n\n5. **Equitable Resource Allocation**: By focusing on waste reduction, the policy can lead to more equitable allocation of resources for waste management services, ensuring that underserved communities receive adequate support and infrastructure to manage their waste effectively.",
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": "80-100",
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Effective communication and education programs to inform residents about the benefits of waste reduction",
+                "A reliable waste measurement system to accurately track the volume of waste generated",
+                "Support from local government and policymakers to implement and enforce the volume-based collection policies",
+                "Availability of alternative waste management options, such as recycling and composting facilities",
+                "Community engagement and participation to foster a culture of sustainability and waste reduction"
+            ],
+            "KeyPerformanceIndicators": [
+                "Reduction in total waste generated",
+                "Increase in recycling rates",
+                "Participation rate in volume-based collection program",
+                "Average waste per household",
+                "Cost savings from reduced waste disposal",
+                "Public awareness and engagement levels",
+                "Change in composting rates"
+            ],
+            "Impacts": [
+                "Encourages waste reduction among residents",
+                "Promotes equity and inclusion in waste management",
+                "Provides financial relief for low-waste households",
+                "Fosters community engagement and education",
+                "Contributes to significant GHG reduction in the waste sector"
+            ]
+        }
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
         "actionId": "c40_0038",
         "actionName": "Sanitary Landfills",
-        "actionPriority": 1,
-        "explanation": "Sanitary landfills address the largest emission sector in Caxias do Sul, waste emissions, which account for a significant portion of the city's total emissions. This action is cost-effective and aligns with the city's waste management needs.",
+        "actionPriority": 4,
+        "explanation": "Sanitary Landfills, with a high score of 3.251, address waste management by treating waste in a controlled environment. This is important for reducing methane emissions and aligns with both emissions reduction and environmental compatibility criteria.",
         "action": {
             "ActionID": "c40_0038",
             "ActionName": "Sanitary Landfills",
@@ -86,87 +320,10 @@
         "cityName": "Caxias do Sul",
         "region": "BR-RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "c40_0035",
-        "actionName": "Waste Efficiency",
-        "actionPriority": 2,
-        "explanation": "Improving waste efficiency can significantly reduce emissions from the waste sector. It is cost-effective and can be implemented relatively quickly, making it a high-priority action.",
-        "action": {
-            "ActionID": "c40_0035",
-            "ActionName": "Waste Efficiency",
-            "ActionType": [
-                "mitigation"
-            ],
-            "AdaptationCategory": null,
-            "Hazard": null,
-            "Sector": [
-                "waste"
-            ],
-            "Subsector": [
-                "all"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "InterventionType": [
-                "programs_and_initiatives"
-            ],
-            "Description": "\"Waste Efficiency\" initiatives aim to improve the efficiency of waste collection processes, reducing resource consumption and minimizing environmental impact. This includes optimizing waste management systems to enhance energy efficiency and promote sustainable waste disposal practices.",
-            "BehavioralChangeTargeted": "The targeted behavioral change that the \"Waste Efficiency\" initiatives aim to achieve is for individuals and organizations to adopt more sustainable waste disposal practices and actively participate in optimizing waste management systems. This includes reducing waste generation, increasing recycling rates, and utilizing energy-efficient waste collection methods. By enhancing awareness and perceptions of the environmental impact of waste, the initiative encourages people to prioritize waste efficiency in their daily activities, leading to a collective shift towards more responsible waste management behaviors.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 1,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "The \"Waste Efficiency\" initiatives promote equity and inclusion by focusing on underserved communities that often bear the brunt of inefficient waste management systems. By optimizing waste collection processes, these initiatives can reduce the environmental burden on vulnerable populations, who may live in areas disproportionately affected by waste and pollution. \n\nAdditionally, improving energy efficiency in waste management can lead to cost savings, which can be reinvested into community services or infrastructure that benefit low-income neighborhoods. The promotion of sustainable waste disposal practices also ensures that all community members, regardless of socioeconomic status, have access to environmentally responsible options, fostering a sense of shared responsibility and inclusion in climate action efforts. \n\nOverall, these initiatives recognize the unique challenges faced by underserved communities and aim to create a more equitable waste management system that benefits all residents.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": "80-100",
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Effective waste management infrastructure and technology",
-                "Collaboration with local governments and waste management authorities",
-                "Public awareness and education on waste disposal practices",
-                "Access to data for monitoring and optimizing waste collection processes",
-                "Investment in sustainable waste processing facilities"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in waste collection costs",
-                "Percentage decrease in waste sent to landfills",
-                "Increase in recycling rates",
-                "Energy consumption per ton of waste collected",
-                "Carbon emissions reduction from waste management",
-                "Customer satisfaction with waste collection services",
-                "Volume of waste processed through sustainable methods",
-                "Operational efficiency of waste collection routes"
-            ],
-            "Impacts": [
-                "Reduction in greenhouse gas emissions by 80-100% in the waste sector",
-                "Improved water quality through better waste management practices",
-                "Enhanced equity and inclusion for underserved communities",
-                "Increased community awareness and participation in sustainable waste practices",
-                "Cost savings from energy-efficient waste management reinvested into community services"
-            ]
-        }
-    },
-    {
-        "locode": "BRCXL",
-        "cityName": "Caxias do Sul",
-        "region": "BR-RS",
-        "regionName": "Rio Grande do Sul",
         "actionId": "c40_0036",
         "actionName": "Landfill Management",
-        "actionPriority": 3,
-        "explanation": "Effective landfill management can further reduce emissions from waste, complementing sanitary landfill improvements. It is crucial for addressing the city's largest emission source.",
+        "actionPriority": 5,
+        "explanation": "Landfill Management (score 3.086) plays a key role in minimizing emissions from waste. Its ability to improve existing infrastructure while delivering cost-effective and timely benefits makes it a priority action for mitigating waste-related GHG releases.",
         "action": {
             "ActionID": "c40_0036",
             "ActionName": "Landfill Management",
@@ -241,90 +398,10 @@
         "cityName": "Caxias do Sul",
         "region": "BR-RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "c40_0041",
-        "actionName": "Waste Collection",
-        "actionPriority": 4,
-        "explanation": "Enhancing waste collection systems can improve overall waste management efficiency, reducing emissions and aligning with the city's environmental goals.",
-        "action": {
-            "ActionID": "c40_0041",
-            "ActionName": "Waste Collection",
-            "ActionType": [
-                "mitigation"
-            ],
-            "AdaptationCategory": null,
-            "Hazard": null,
-            "Sector": [
-                "waste"
-            ],
-            "Subsector": [
-                "all"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "InterventionType": [
-                "programs_and_initiatives",
-                "infrastructure_investments"
-            ],
-            "Description": "\"Waste Collection\" initiatives focus on achieving universal waste collection, ensuring that all residents have access to proper waste disposal services. This contributes to a cleaner and healthier urban environment while promoting sustainable waste management practices.",
-            "BehavioralChangeTargeted": "The targeted behavioral change that the \"Waste Collection\" initiative aims to achieve is increased participation in proper waste disposal practices among residents. By ensuring universal access to waste collection services, the initiative encourages individuals to dispose of their waste responsibly, reducing littering and promoting recycling and composting behaviors. This shift in behavior contributes to a cleaner urban environment and supports sustainable waste management practices, ultimately leading to a reduction in greenhouse gas emissions associated with improper waste disposal.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "The \"Waste Collection\" initiatives promote equity and inclusion by ensuring that all residents, particularly those in vulnerable or underserved communities, have access to proper waste disposal services. This universal access helps to address disparities in waste management, which often disproportionately affect low-income neighborhoods. By providing equitable waste collection services, the initiative contributes to a cleaner and healthier urban environment for all, reducing health risks associated with improper waste disposal. Additionally, the focus on sustainable waste management practices encourages community engagement and awareness, fostering a sense of ownership and responsibility among residents, including those from marginalized backgrounds. Overall, the initiative actively works to uplift underserved communities by prioritizing their needs in waste management.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": "80-100",
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Availability of waste collection infrastructure and vehicles",
-                "Training and capacity building for waste management personnel",
-                "Public awareness and education programs on waste disposal",
-                "Collaboration with local governments and communities",
-                "Sufficient funding and resources for waste management initiatives",
-                "Regulatory frameworks supporting waste collection services"
-            ],
-            "KeyPerformanceIndicators": [
-                "Percentage of residents with access to waste collection services",
-                "Volume of waste collected per capita",
-                "Percentage reduction in illegal dumping incidents",
-                "Recycling rate of collected waste",
-                "Customer satisfaction rate with waste collection services",
-                "Frequency of waste collection services",
-                "Cost-effectiveness of waste collection operations",
-                "Reduction in landfill waste",
-                "Number of public awareness campaigns conducted"
-            ],
-            "Impacts": [
-                "Reduction in greenhouse gas emissions from improved waste disposal practices",
-                "Improvement in air quality due to reduced littering and waste accumulation",
-                "Enhancement of water quality by preventing waste contamination",
-                "Promotion of equity and inclusion in waste management services",
-                "Increased community engagement and awareness regarding sustainable waste practices"
-            ]
-        }
-    },
-    {
-        "locode": "BRCXL",
-        "cityName": "Caxias do Sul",
-        "region": "BR-RS",
-        "regionName": "Rio Grande do Sul",
         "actionId": "c40_0039",
         "actionName": "Gas Management",
-        "actionPriority": 5,
-        "explanation": "Gas management in landfills can capture and utilize methane emissions, providing a dual benefit of emissions reduction and energy generation.",
+        "actionPriority": 6,
+        "explanation": "Gas Management directly tackles methane and other GHG releases from waste sites, with a score of 3.001. It is vital in reducing emissions in the waste sector and helps in aligning with risk reduction by addressing potential hazards related to gas leaks.",
         "action": {
             "ActionID": "c40_0039",
             "ActionName": "Gas Management",
@@ -399,79 +476,73 @@
         "cityName": "Caxias do Sul",
         "region": "BR-RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "c40_0028",
-        "actionName": "Zero Emission Buses",
-        "actionPriority": 6,
-        "explanation": "Transitioning to zero-emission buses addresses transportation emissions, the second-largest emission sector. It is a visible and impactful action with long-term benefits.",
+        "actionId": "ipcc_0080",
+        "actionName": "Avoiding, Minimising, and Recycling Waste",
+        "actionPriority": 7,
+        "explanation": "Scoring 1.948, this action supports comprehensive waste management. It reduces overall volumes of waste requiring treatment or disposal, thus contributing to significant reductions in GHG emissions in Caxias do Sul's dominant waste sector.",
         "action": {
-            "ActionID": "c40_0028",
-            "ActionName": "Zero Emission Buses",
+            "ActionID": "ipcc_0080",
+            "ActionName": "Avoiding, Minimising, and Recycling Waste",
             "ActionType": [
                 "mitigation"
             ],
             "AdaptationCategory": null,
             "Hazard": null,
             "Sector": [
-                "transportation"
+                "waste"
             ],
             "Subsector": [
-                "on-road"
+                "disposal_of_solid_waste_generated_in_the_city"
             ],
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
             "InterventionType": [
+                "regulations_and_laws",
                 "programs_and_initiatives",
                 "infrastructure_investments"
             ],
-            "Description": "\"Zero Emission Buses\" initiatives focus on integrating electric or other zero-emission technologies into public transportation fleets. This strategy aims to eliminate traditional bus emissions, contributing to cleaner air and a more sustainable urban transit system.",
-            "BehavioralChangeTargeted": "The targeted behavioral shift that the \"Zero Emission Buses\" initiative aims to achieve is an increased reliance on public transportation, specifically the use of electric or zero-emission buses, over personal vehicles. This shift is intended to encourage individuals to choose cleaner, more sustainable transit options, thereby reducing greenhouse gas emissions and contributing to improved air quality in urban areas. By enhancing the perception of public transportation as a convenient, safe, and environmentally friendly alternative, the initiative seeks to foster a cultural norm that prioritizes sustainable commuting practices.",
+            "Description": "Implementation of waste hierarchy principles to reduce waste generation, improve source separation, and increase recycling and composting. Promotes decentralized waste management, home composting, and circular economy approaches to transform waste into energy or by-products while minimizing transport-related emissions.",
+            "BehavioralChangeTargeted": "Encourages waste separation at source, adoption of recycling and composting behaviors, and increased public participation in waste management programs.",
             "CoBenefits": {
-                "air_quality": 2,
+                "air_quality": 1,
                 "water_quality": 0,
                 "habitat": 0,
-                "cost_of_living": 0,
+                "cost_of_living": 1,
                 "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
+                "mobility": 1,
+                "stakeholder_engagement": 1
             },
-            "EquityAndInclusionConsiderations": "The \"Zero Emission Buses\" initiative promotes equity and inclusion by prioritizing cleaner air in urban areas, which often include vulnerable or underserved communities that are disproportionately affected by air pollution. By transitioning to electric or zero-emission buses, the initiative directly addresses health disparities faced by these populations, improving their overall quality of life.\n\nAdditionally, the integration of zero-emission technologies into public transportation enhances accessibility to reliable and sustainable transit options for low-income individuals who may rely on public transport for their daily commutes. This ensures that all community members, regardless of socioeconomic status, have equitable access to clean transportation.\n\nFurthermore, the initiative may create job opportunities in the maintenance and operation of zero-emission buses, particularly in communities that have historically faced economic disadvantages. This can help foster economic inclusion and support local workforce development.\n\nOverall, the initiative's focus on reducing emissions and improving public transportation aligns with the needs of underserved communities, promoting environmental justice and equitable access to clean transit solutions.",
+            "EquityAndInclusionConsiderations": "Supports informal workers in waste management, provides employment opportunities, and reduces inequalities by integrating informal sectors into formal systems. Ensures cost-sharing and benefit distribution among stakeholders.",
             "GHGReductionPotential": {
                 "stationary_energy": null,
-                "transportation": "20-39",
-                "waste": null,
+                "transportation": null,
+                "waste": "40-59",
                 "ippu": null,
                 "afolu": null
             },
             "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "<5 years",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
             "Dependencies": [
-                "Availability of electric or zero-emission bus technology",
-                "Investment in charging infrastructure for electric buses",
-                "Supportive government policies and regulations promoting zero-emission transportation",
-                "Public funding or financial incentives for transit agencies",
-                "Training and workforce development for maintenance and operation of new technologies",
-                "Public acceptance and demand for cleaner public transportation options"
+                "Requires institutional capacity",
+                "governance",
+                "cross-sectoral coordination",
+                "public awareness campaigns",
+                "needs infrastructure for decentralized waste treatment",
+                "policies to promote circular economy practices"
             ],
             "KeyPerformanceIndicators": [
-                "Number of zero-emission buses deployed",
-                "Reduction in greenhouse gas emissions",
-                "Percentage of public transportation fleet that is zero-emission",
-                "Air quality improvement metrics",
-                "Operational cost savings from zero-emission buses",
-                "Public ridership levels",
-                "Energy consumption per mile",
-                "Maintenance costs of zero-emission buses",
-                "User satisfaction ratings",
-                "Reduction in noise pollution"
+                "Reduction in waste generation per capita",
+                "increase in recycling and composting rates",
+                "reduction in CH4 emissions from waste",
+                "employment opportunities created in waste management"
             ],
             "Impacts": [
-                "Reduction of greenhouse gas emissions in the transportation sector by 20-39%",
-                "Improvement of air quality in urban areas",
-                "Promotion of equity and inclusion for underserved communities",
-                "Enhanced accessibility to public transportation for low-income individuals",
-                "Creation of job opportunities in the maintenance and operation of zero-emission buses"
+                "Improved urban livability",
+                "reduction in landfill emissions",
+                "enhanced resource efficiency",
+                "economic growth through job creation in the waste management sector"
             ]
         }
     },
@@ -480,47 +551,47 @@
         "cityName": "Caxias do Sul",
         "region": "BR-RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0002",
-        "actionName": "Active Transport Modes",
-        "actionPriority": 7,
-        "explanation": "Promoting active transport modes like cycling and walking can reduce vehicle emissions, improve public health, and is cost-effective.",
+        "actionId": "c40_0037",
+        "actionName": "Source Separation",
+        "actionPriority": 8,
+        "explanation": "Although its quantitative score is lower (0.624), Source Separation is a key waste management initiative that improves recycling rates and reduces landfill burdens. Its focus on early-stage waste processing makes it relevant for achieving long-term emissions reductions.",
         "action": {
-            "ActionID": "ipcc_0002",
-            "ActionName": "Active Transport Modes",
+            "ActionID": "c40_0037",
+            "ActionName": "Source Separation",
             "ActionType": [
                 "mitigation"
             ],
             "AdaptationCategory": null,
             "Hazard": null,
             "Sector": [
-                "transportation"
+                "waste"
             ],
             "Subsector": [
-                "on-road"
+                "all"
             ],
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
             "InterventionType": [
-                "infrastructure_investments",
-                "programs_and_initiatives"
+                "programs_and_initiatives",
+                "regulations_and_laws"
             ],
-            "Description": "Promoting walking and cycling as primary modes of transport for short journeys (5 km or less) to reduce dependency on light-duty vehicles and decrease GHG emissions.",
-            "BehavioralChangeTargeted": "Encourages a modal shift from car and motorcycle use to walking and cycling.",
+            "Description": "\"Source Separation\" policies involve the adoption of practices like separate collection for dry recyclables and organic compostable waste. By encouraging residents to sort their waste at the source, cities promote recycling, reduce contamination, and contribute to overall waste management efficiency.",
+            "BehavioralChangeTargeted": "The targeted behavioral shift that the \"Source Separation\" climate action aims to achieve is for residents to actively sort their waste into designated categories (recyclables, organic compostable waste, etc.) at the point of disposal. This shift encourages individuals to adopt responsible waste management practices, thereby increasing recycling rates, reducing contamination of recyclable materials, and enhancing overall waste management efficiency. By fostering a culture of waste separation, the intervention seeks to change perceptions about waste disposal and promote environmentally conscious behaviors among community members.",
             "CoBenefits": {
-                "air_quality": 1,
+                "air_quality": 0,
                 "water_quality": 0,
                 "habitat": 0,
-                "cost_of_living": 1,
+                "cost_of_living": 0,
                 "housing": 0,
-                "mobility": 1,
+                "mobility": 0,
                 "stakeholder_engagement": 0
             },
-            "EquityAndInclusionConsiderations": "Improves access to safe and affordable transport options, particularly for low-income communities, while enhancing urban mobility for underserved groups.",
+            "EquityAndInclusionConsiderations": "The \"Source Separation\" policies promote equity and inclusion by:\n\n1. **Accessibility**: By implementing separate collection systems, cities can ensure that all residents, including those in vulnerable or underserved communities, have access to recycling and composting services. This helps to address disparities in waste management services.\n\n2. **Community Engagement**: These policies often involve outreach and education efforts tailored to diverse communities, ensuring that all residents understand the importance of waste separation and how to participate effectively, thereby fostering a sense of inclusion.\n\n3. **Job Creation**: The implementation of source separation can create job opportunities in waste management and recycling sectors, particularly benefiting underserved communities that may face higher unemployment rates.\n\n4. **Health Benefits**: By reducing contamination and improving waste management, these policies can lead to cleaner environments in underserved areas, which often face higher pollution levels and associated health risks.\n\n5. **Empowerment**: Encouraging residents to actively participate in waste separation empowers them to take ownership of their community\u2019s environmental health, fostering a sense of agency and responsibility among all community members, particularly those from marginalized backgrounds. \n\nOverall, the \"Source Separation\" policies are designed to be inclusive and equitable, ensuring that all community members can participate in and benefit from improved waste management practices.",
             "GHGReductionPotential": {
                 "stationary_energy": null,
-                "transportation": "0-19",
-                "waste": null,
+                "transportation": null,
+                "waste": "0-19",
                 "ippu": null,
                 "afolu": null
             },
@@ -528,20 +599,111 @@
             "CostInvestmentNeeded": "medium",
             "TimelineForImplementation": "<5 years",
             "Dependencies": [
-                "Investment in safe walking and cycling infrastructure",
-                "public awareness campaigns",
-                "supportive urban planning policies"
+                "Public awareness and education on the importance of waste separation",
+                "Availability of appropriate collection infrastructure for different waste types",
+                "Support from local government and policy frameworks",
+                "Community engagement and participation in waste management programs",
+                "Access to recycling and composting facilities",
+                "Monitoring and enforcement mechanisms to ensure compliance"
             ],
             "KeyPerformanceIndicators": [
-                "Increase in kilometers of bicycle and walking networks",
-                "rise in active transport modal share",
-                "reduction in car usage for short trips"
+                "Percentage of waste diverted from landfills",
+                "Rate of participation in source separation programs",
+                "Volume of recyclables collected",
+                "Volume of organic waste composted",
+                "Contamination rate of recyclables",
+                "Public awareness and education levels",
+                "Cost savings from reduced landfill use",
+                "Reduction in greenhouse gas emissions from waste management"
             ],
             "Impacts": [
-                "Improved public health",
-                "reduced urban congestion",
-                "lower transport-related GHG emissions",
-                "enhanced quality of urban life"
+                "Increased recycling rates",
+                "Reduced contamination of recyclable materials",
+                "Enhanced waste management efficiency",
+                "Improved access to waste management services for underserved communities",
+                "Job creation in waste management and recycling sectors",
+                "Health benefits from cleaner environments",
+                "Empowerment of residents through active participation in waste separation"
+            ]
+        }
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "c40_0034",
+        "actionName": "Material Bans",
+        "actionPriority": 9,
+        "explanation": "Material Bans score 0.559 and are prioritized for their ability to limit the use of particularly harmful materials. This policy-driven approach complements other waste management strategies to reduce overall waste emissions.",
+        "action": {
+            "ActionID": "c40_0034",
+            "ActionName": "Material Bans",
+            "ActionType": [
+                "mitigation"
+            ],
+            "AdaptationCategory": null,
+            "Hazard": null,
+            "Sector": [
+                "waste"
+            ],
+            "Subsector": [
+                "disposal_of_solid_waste_generated_in_the_city"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "InterventionType": [
+                "regulations_and_laws"
+            ],
+            "Description": "\"Material Bans\" involve imposing restrictions on single-use or non-recyclable materials to reduce environmental impact. By prohibiting certain materials, cities aim to promote the use of sustainable alternatives, contributing to waste reduction and overall environmental conservation.",
+            "BehavioralChangeTargeted": "The targeted behavioral change that the \"Material Bans\" climate action aims to achieve is a reduction in the consumption and disposal of single-use and non-recyclable materials. By imposing regulations that prohibit these materials, the intervention encourages individuals and businesses to adopt sustainable alternatives, such as reusable or recyclable products. This shift not only aims to decrease waste generation but also fosters a broader cultural acceptance of environmentally friendly practices, ultimately contributing to waste reduction and enhanced environmental conservation.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 1,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": "The \"Material Bans\" climate action promotes equity and inclusion by addressing the disproportionate impact of waste and pollution on vulnerable and underserved communities. By reducing single-use and non-recyclable materials, the action helps to improve environmental health in areas that are often more affected by waste management issues. \n\nAdditionally, the promotion of sustainable alternatives can create economic opportunities for local businesses, particularly those in underserved areas, by encouraging the development and distribution of eco-friendly products. This can lead to job creation and support for local economies.\n\nFurthermore, the implementation of material bans often involves community engagement and education, ensuring that the voices of marginalized groups are heard and considered in the decision-making process. This participatory approach fosters a sense of ownership and empowerment among community members, enhancing social equity. \n\nOverall, the action not only aims to reduce environmental impact but also actively considers the needs and contributions of vulnerable populations, promoting a more inclusive and equitable transition to sustainability.",
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": "0-19",
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Public awareness and support for environmental issues",
+                "Availability of sustainable alternatives to banned materials",
+                "Effective enforcement mechanisms to ensure compliance with bans",
+                "Collaboration with businesses to transition to eco-friendly practices",
+                "Education and outreach programs to inform the community about the changes"
+            ],
+            "KeyPerformanceIndicators": [
+                "Reduction in single-use material consumption",
+                "Increase in recycling rates",
+                "Amount of waste diverted from landfills",
+                "Number of sustainable alternatives adopted",
+                "Public awareness and engagement levels",
+                "Compliance rate among businesses",
+                "Reduction in litter in public spaces",
+                "Carbon footprint reduction associated with material bans"
+            ],
+            "Impacts": [
+                "Reduction in waste generation",
+                "Promotion of sustainable alternatives",
+                "Improvement in water quality",
+                "Enhanced environmental health in underserved communities",
+                "Creation of economic opportunities and job creation",
+                "Increased community engagement and empowerment",
+                "Support for local economies",
+                "Contribution to GHG reduction in the waste sector"
             ]
         }
     },
@@ -552,8 +714,8 @@
         "regionName": "Rio Grande do Sul",
         "actionId": "ipcc_0045",
         "actionName": "Behavioral Changes for Reduced Waste (e.g., Food)",
-        "actionPriority": 8,
-        "explanation": "Encouraging behavioral changes to reduce waste can have a significant impact on emissions and is a low-cost, high-impact action.",
+        "actionPriority": 10,
+        "explanation": "At a score of 0.53, this action encourages community-level behavioral changes that can lead to significant waste reduction. Although its quantitative score is modest, its role in promoting sustainable consumption patterns is essential in the broader waste reduction strategy.",
         "action": {
             "ActionID": "ipcc_0045",
             "ActionName": "Behavioral Changes for Reduced Waste (e.g., Food)",
@@ -621,10 +783,83 @@
         "cityName": "Caxias do Sul",
         "region": "BR-RS",
         "regionName": "Rio Grande do Sul",
+        "actionId": "ipcc_0012",
+        "actionName": "Electric Technologies",
+        "actionPriority": 11,
+        "explanation": "Transitioning to Electric Technologies, with a score of 0.896, targets the transportation sector\u2014a secondary contributor relative to waste but still crucial. This action promises meaningful emissions reductions by modernizing energy use in transport.",
+        "action": {
+            "ActionID": "ipcc_0012",
+            "ActionName": "Electric Technologies",
+            "ActionType": [
+                "mitigation"
+            ],
+            "AdaptationCategory": null,
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "on-road"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "InterventionType": [
+                "programs_and_initiatives",
+                "infrastructure_investments",
+                "incentives_and_subsidies",
+                "regulations_and_laws"
+            ],
+            "Description": "Adoption of electric vehicle technologies, including Battery Electric Vehicles (BEVs), Hybrid Electric Vehicles (HEVs), and Plug-in Hybrid Electric Vehicles (PHEVs), to reduce GHG emissions and dependence on fossil fuels. BEVs operate on electricity alone, producing zero emissions; HEVs combine an internal combustion engine with an electric motor; PHEVs allow extended electric-only driving.",
+            "BehavioralChangeTargeted": "Encourages a shift from internal combustion engine vehicles to electric vehicles and adoption of renewable energy for charging.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 1,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": "Reduces reliance on fossil fuels, improves air quality, and provides cleaner transport options that can benefit underserved communities.",
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "80-100",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "high",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Dependence on advancements in battery technologies",
+                "development of charging infrastructure",
+                "policies for subsidies and incentives",
+                "integration with renewable energy sources for electricity generation"
+            ],
+            "KeyPerformanceIndicators": [
+                "Percentage of electric vehicles in the vehicle fleet",
+                "reduction in GHG emissions per kilometer traveled",
+                "availability of charging infrastructure"
+            ],
+            "Impacts": [
+                "Reduced GHG emissions",
+                "improved urban air quality",
+                "decreased reliance on fossil fuels",
+                "greater energy security"
+            ]
+        }
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
         "actionId": "c40_0026",
         "actionName": "Vehicle Emissions",
-        "actionPriority": 9,
-        "explanation": "Reducing vehicle emissions is crucial for addressing transportation emissions. This action is relevant and necessary for the city's emission reduction goals.",
+        "actionPriority": 12,
+        "explanation": "Scoring 0.881, this action focuses on reducing vehicle emissions. Given the significance of the transportation sector in the city\u2019s emissions profile, mitigating these emissions is both sector-relevant and cost-effective.",
         "action": {
             "ActionID": "c40_0026",
             "ActionName": "Vehicle Emissions",
@@ -703,8 +938,8 @@
         "regionName": "Rio Grande do Sul",
         "actionId": "ipcc_0019",
         "actionName": "Modal Shift from Aircraft to Train",
-        "actionPriority": 10,
-        "explanation": "Encouraging a modal shift from aircraft to train can reduce emissions from long-distance travel, aligning with sustainable transport goals.",
+        "actionPriority": 13,
+        "explanation": "With a score of 0.751, promoting a modal shift from aircraft to train supports transportation decarbonization. It offers a clear emissions reduction pathway in a sector that, while less intensive than waste, still requires attention.",
         "action": {
             "ActionID": "ipcc_0019",
             "ActionName": "Modal Shift from Aircraft to Train",
@@ -773,10 +1008,81 @@
         "cityName": "Caxias do Sul",
         "region": "BR-RS",
         "regionName": "Rio Grande do Sul",
+        "actionId": "ipcc_0011",
+        "actionName": "Alternative Fuels for Vehicles",
+        "actionPriority": 14,
+        "explanation": "Alternative Fuels for Vehicles (score 0.746) enhances the sustainability of transportation activities. Its focus on substituting conventional fuels meets both emissions reduction and risk reduction criteria.",
+        "action": {
+            "ActionID": "ipcc_0011",
+            "ActionName": "Alternative Fuels for Vehicles",
+            "ActionType": [
+                "mitigation"
+            ],
+            "AdaptationCategory": null,
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "on-road"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "InterventionType": [
+                "programs_and_initiatives",
+                "infrastructure_investments",
+                "regulations_and_laws"
+            ],
+            "Description": "Utilizes low-carbon or zero-carbon fuels, including natural gas, biofuels, ammonia, and synthetic fuels, to replace conventional petrol and diesel in internal combustion engines (ICE). These fuels offer pathways to reduce greenhouse gas emissions and diversify energy sources, though challenges remain in production costs, lifecycle emissions, and infrastructure.",
+            "BehavioralChangeTargeted": "Encourages adoption of low-carbon fuel alternatives and a shift from conventional petrol and diesel to more sustainable fuel sources.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 1,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": "Provides a pathway to reduce energy dependency and enhance energy equity by enabling access to alternative fuels that support local and regional energy needs.",
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "80-100",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "high",
+            "TimelineForImplementation": ">10 years",
+            "Dependencies": [
+                "Development of low-cost and sustainable production technologies",
+                "supportive policy measures (e.g., fuel standards, blending mandates)",
+                "investment in distribution and storage infrastructure"
+            ],
+            "KeyPerformanceIndicators": [
+                "Reduction in GHG emissions from fuel lifecycle",
+                "percentage of vehicle fleet using alternative fuels",
+                "infrastructure deployment metrics"
+            ],
+            "Impacts": [
+                "Reduced GHG emissions",
+                "improved air quality",
+                "energy diversification",
+                "increased resilience in transportation systems"
+            ]
+        }
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
         "actionId": "ipcc_0015",
         "actionName": "Improved Energy Efficiency for Vehicles",
-        "actionPriority": 11,
-        "explanation": "Enhancing vehicle energy efficiency can reduce fuel consumption and emissions, supporting the city's transportation emission reduction efforts.",
+        "actionPriority": 15,
+        "explanation": "At 0.629, improving energy efficiency for vehicles is a cost-effective action that reduces fuel consumption and emissions. It supports the transportation sector\u2019s transition to cleaner technologies.",
         "action": {
             "ActionID": "ipcc_0015",
             "ActionName": "Improved Energy Efficiency for Vehicles",
@@ -848,10 +1154,243 @@
         "cityName": "Caxias do Sul",
         "region": "BR-RS",
         "regionName": "Rio Grande do Sul",
+        "actionId": "ipcc_0002",
+        "actionName": "Active Transport Modes",
+        "actionPriority": 16,
+        "explanation": "Scoring 0.591, promoting active transport modes (walking, cycling) addresses transportation emissions while providing additional health and socio-demographic benefits. It is a timely measure with low dependency requirements.",
+        "action": {
+            "ActionID": "ipcc_0002",
+            "ActionName": "Active Transport Modes",
+            "ActionType": [
+                "mitigation"
+            ],
+            "AdaptationCategory": null,
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "on-road"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "InterventionType": [
+                "infrastructure_investments",
+                "programs_and_initiatives"
+            ],
+            "Description": "Promoting walking and cycling as primary modes of transport for short journeys (5 km or less) to reduce dependency on light-duty vehicles and decrease GHG emissions.",
+            "BehavioralChangeTargeted": "Encourages a modal shift from car and motorcycle use to walking and cycling.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 1,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": "Improves access to safe and affordable transport options, particularly for low-income communities, while enhancing urban mobility for underserved groups.",
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "0-19",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Investment in safe walking and cycling infrastructure",
+                "public awareness campaigns",
+                "supportive urban planning policies"
+            ],
+            "KeyPerformanceIndicators": [
+                "Increase in kilometers of bicycle and walking networks",
+                "rise in active transport modal share",
+                "reduction in car usage for short trips"
+            ],
+            "Impacts": [
+                "Improved public health",
+                "reduced urban congestion",
+                "lower transport-related GHG emissions",
+                "enhanced quality of urban life"
+            ]
+        }
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "c40_0028",
+        "actionName": "Zero Emission Buses",
+        "actionPriority": 17,
+        "explanation": "With a quantitative score of 0.579, Zero Emission Buses represent a targeted measure within the transportation sector, directly reducing fossil fuel use and urban air pollution, thus aligning with both emissions reduction and risk mitigation goals.",
+        "action": {
+            "ActionID": "c40_0028",
+            "ActionName": "Zero Emission Buses",
+            "ActionType": [
+                "mitigation"
+            ],
+            "AdaptationCategory": null,
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "on-road"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "InterventionType": [
+                "programs_and_initiatives",
+                "infrastructure_investments"
+            ],
+            "Description": "\"Zero Emission Buses\" initiatives focus on integrating electric or other zero-emission technologies into public transportation fleets. This strategy aims to eliminate traditional bus emissions, contributing to cleaner air and a more sustainable urban transit system.",
+            "BehavioralChangeTargeted": "The targeted behavioral shift that the \"Zero Emission Buses\" initiative aims to achieve is an increased reliance on public transportation, specifically the use of electric or zero-emission buses, over personal vehicles. This shift is intended to encourage individuals to choose cleaner, more sustainable transit options, thereby reducing greenhouse gas emissions and contributing to improved air quality in urban areas. By enhancing the perception of public transportation as a convenient, safe, and environmentally friendly alternative, the initiative seeks to foster a cultural norm that prioritizes sustainable commuting practices.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": "The \"Zero Emission Buses\" initiative promotes equity and inclusion by prioritizing cleaner air in urban areas, which often include vulnerable or underserved communities that are disproportionately affected by air pollution. By transitioning to electric or zero-emission buses, the initiative directly addresses health disparities faced by these populations, improving their overall quality of life.\n\nAdditionally, the integration of zero-emission technologies into public transportation enhances accessibility to reliable and sustainable transit options for low-income individuals who may rely on public transport for their daily commutes. This ensures that all community members, regardless of socioeconomic status, have equitable access to clean transportation.\n\nFurthermore, the initiative may create job opportunities in the maintenance and operation of zero-emission buses, particularly in communities that have historically faced economic disadvantages. This can help foster economic inclusion and support local workforce development.\n\nOverall, the initiative's focus on reducing emissions and improving public transportation aligns with the needs of underserved communities, promoting environmental justice and equitable access to clean transit solutions.",
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "20-39",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "high",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Availability of electric or zero-emission bus technology",
+                "Investment in charging infrastructure for electric buses",
+                "Supportive government policies and regulations promoting zero-emission transportation",
+                "Public funding or financial incentives for transit agencies",
+                "Training and workforce development for maintenance and operation of new technologies",
+                "Public acceptance and demand for cleaner public transportation options"
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of zero-emission buses deployed",
+                "Reduction in greenhouse gas emissions",
+                "Percentage of public transportation fleet that is zero-emission",
+                "Air quality improvement metrics",
+                "Operational cost savings from zero-emission buses",
+                "Public ridership levels",
+                "Energy consumption per mile",
+                "Maintenance costs of zero-emission buses",
+                "User satisfaction ratings",
+                "Reduction in noise pollution"
+            ],
+            "Impacts": [
+                "Reduction of greenhouse gas emissions in the transportation sector by 20-39%",
+                "Improvement of air quality in urban areas",
+                "Promotion of equity and inclusion for underserved communities",
+                "Enhanced accessibility to public transportation for low-income individuals",
+                "Creation of job opportunities in the maintenance and operation of zero-emission buses"
+            ]
+        }
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "c40_0027",
+        "actionName": "Rail Improvements",
+        "actionPriority": 18,
+        "explanation": "Rail Improvements (score 0.551) aim to enhance the efficiency of existing transportation networks. Better rail services can shift modal share from more polluting transport modes, contributing to lower overall GHG emissions in the city.",
+        "action": {
+            "ActionID": "c40_0027",
+            "ActionName": "Rail Improvements",
+            "ActionType": [
+                "mitigation"
+            ],
+            "AdaptationCategory": null,
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "railways"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "InterventionType": [
+                "infrastructure_investments",
+                "programs_and_initiatives"
+            ],
+            "Description": "\"Rail Improvements\" involve enhancing the efficiency and sustainability of railway systems. By investing in modernization and eco-friendly practices, cities aim to promote rail as a low-emission and energy-efficient mode of transportation.",
+            "BehavioralChangeTargeted": "The targeted behavioral change that the \"Rail Improvements\" climate action aims to achieve is an increased reliance on rail transportation as a primary mode of travel, leading to a reduction in the use of personal vehicles. This shift is encouraged by enhancing the efficiency, safety, and convenience of rail systems, thereby changing public perceptions about rail travel and promoting it as a low-emission, energy-efficient alternative. Ultimately, this behavioral change contributes to a broader activity shift towards sustainable transportation practices, reducing greenhouse gas emissions in urban areas.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": "The \"Rail Improvements\" climate action promotes equity and inclusion in several ways:\n\n1. **Accessibility for Underserved Communities**: By enhancing railway systems, the action aims to provide better access to public transportation for vulnerable populations, including low-income individuals and communities that may lack reliable transportation options.\n\n2. **Affordable Transportation**: Modernized and efficient rail systems can lead to lower operational costs, which may translate into more affordable fares for riders, benefiting those who are economically disadvantaged.\n\n3. **Job Creation**: The investment in rail improvements can create job opportunities in construction, maintenance, and operation, particularly benefiting local communities that may face higher unemployment rates.\n\n4. **Reduced Environmental Impact**: By promoting low-emission rail transport, the action addresses environmental justice concerns, as underserved communities often bear the brunt of pollution and climate change impacts.\n\n5. **Community Engagement**: The planning and implementation of rail improvements can involve input from local communities, ensuring that the needs and preferences of diverse populations are considered in the development process.\n\n6. **Health Benefits**: Improved rail systems can lead to reduced air pollution and traffic congestion, contributing to better health outcomes for vulnerable communities that are disproportionately affected by environmental hazards. \n\nOverall, the \"Rail Improvements\" initiative is designed to enhance transportation equity and support the inclusion of underserved communities in sustainable development efforts.",
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "40-59",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "high",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Investment in infrastructure and technology for rail systems",
+                "Government policies and regulations supporting sustainable transportation",
+                "Public and private partnerships for funding and implementation",
+                "Community support and public awareness of rail benefits",
+                "Availability of eco-friendly materials and practices for modernization"
+            ],
+            "KeyPerformanceIndicators": [
+                "Reduction in greenhouse gas emissions from rail transport",
+                "Increase in rail ridership",
+                "Percentage of trains using renewable energy sources",
+                "Improvement in energy efficiency of rail systems",
+                "Reduction in travel time for rail passengers",
+                "Increase in freight transported by rail",
+                "Customer satisfaction ratings for rail services",
+                "Investment in rail infrastructure improvements",
+                "Reduction in maintenance costs for rail systems",
+                "Percentage of rail network electrified"
+            ],
+            "Impacts": [
+                "Reduction in greenhouse gas emissions from transportation by 40-59%",
+                "Improved air quality due to decreased reliance on personal vehicles",
+                "Enhanced accessibility to public transportation for underserved communities",
+                "Creation of job opportunities in rail construction and maintenance",
+                "Lower operational costs leading to more affordable fares for riders",
+                "Health benefits from reduced air pollution and traffic congestion",
+                "Increased community engagement in transportation planning"
+            ]
+        }
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
         "actionId": "ipcc_0059",
         "actionName": "Reduce Conversion of Coastal Wetlands",
-        "actionPriority": 12,
-        "explanation": "Protecting coastal wetlands can prevent emissions from land-use changes and support biodiversity, aligning with environmental compatibility goals.",
+        "actionPriority": 19,
+        "explanation": "Though its score is 0.586, this land use action is placed after transportation initiatives because the city\u2019s waste and transport sectors are more emission-intensive. Protecting coastal wetlands is important for environmental compatibility and long-term risk reduction.",
         "action": {
             "ActionID": "ipcc_0059",
             "ActionName": "Reduce Conversion of Coastal Wetlands",
@@ -922,535 +1461,23 @@
         "cityName": "Caxias do Sul",
         "region": "BR-RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0007",
-        "actionName": "Smart Mobility",
-        "actionPriority": 13,
-        "explanation": "Implementing smart mobility solutions can optimize transportation systems, reduce emissions, and improve urban living conditions.",
-        "action": {
-            "ActionID": "ipcc_0007",
-            "ActionName": "Smart Mobility",
-            "ActionType": [
-                "mitigation"
-            ],
-            "AdaptationCategory": null,
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "InterventionType": [
-                "infrastructure_investments",
-                "programs_and_initiatives",
-                "regulations_and_laws"
-            ],
-            "Description": "Utilizing advanced technologies, such as ICT, IoT sensors, AI, and Mobility as a Service (MaaS), to improve transport efficiency, reduce emissions, and enhance urban mobility. Smart mobility integrates various transport modes and optimizes operations to compete with private vehicles.",
-            "BehavioralChangeTargeted": "Encourages a shift from private vehicle use to integrated, efficient, and shared transport solutions.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": "Improves access to efficient and affordable transportation options, especially for marginalized groups, while supporting urban regeneration and connectivity.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "0-19",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Widespread adoption of ICT and IoT technologies",
-                "supportive urban planning",
-                "investments in shared and digitalized mobility systems"
-            ],
-            "KeyPerformanceIndicators": [
-                "Increase in shared and public transport use",
-                "reduction in private vehicle kilometers traveled",
-                "decreased transport-related emissions"
-            ],
-            "Impacts": [
-                "Enhanced urban livability",
-                "reduced congestion",
-                "improved air quality",
-                "significant advancements in transport efficiency"
-            ]
-        }
-    },
-    {
-        "locode": "BRCXL",
-        "cityName": "Caxias do Sul",
-        "region": "BR-RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0012",
-        "actionName": "Electric Technologies",
-        "actionPriority": 14,
-        "explanation": "Adopting electric technologies in transportation and industry can significantly reduce emissions and align with global electrification trends.",
-        "action": {
-            "ActionID": "ipcc_0012",
-            "ActionName": "Electric Technologies",
-            "ActionType": [
-                "mitigation"
-            ],
-            "AdaptationCategory": null,
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "InterventionType": [
-                "programs_and_initiatives",
-                "infrastructure_investments",
-                "incentives_and_subsidies",
-                "regulations_and_laws"
-            ],
-            "Description": "Adoption of electric vehicle technologies, including Battery Electric Vehicles (BEVs), Hybrid Electric Vehicles (HEVs), and Plug-in Hybrid Electric Vehicles (PHEVs), to reduce GHG emissions and dependence on fossil fuels. BEVs operate on electricity alone, producing zero emissions; HEVs combine an internal combustion engine with an electric motor; PHEVs allow extended electric-only driving.",
-            "BehavioralChangeTargeted": "Encourages a shift from internal combustion engine vehicles to electric vehicles and adoption of renewable energy for charging.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 1,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "Reduces reliance on fossil fuels, improves air quality, and provides cleaner transport options that can benefit underserved communities.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "80-100",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Dependence on advancements in battery technologies",
-                "development of charging infrastructure",
-                "policies for subsidies and incentives",
-                "integration with renewable energy sources for electricity generation"
-            ],
-            "KeyPerformanceIndicators": [
-                "Percentage of electric vehicles in the vehicle fleet",
-                "reduction in GHG emissions per kilometer traveled",
-                "availability of charging infrastructure"
-            ],
-            "Impacts": [
-                "Reduced GHG emissions",
-                "improved urban air quality",
-                "decreased reliance on fossil fuels",
-                "greater energy security"
-            ]
-        }
-    },
-    {
-        "locode": "BRCXL",
-        "cityName": "Caxias do Sul",
-        "region": "BR-RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "c40_0023",
-        "actionName": "Bus Emissions",
-        "actionPriority": 15,
-        "explanation": "Reducing emissions from buses is a targeted action within the transportation sector, contributing to overall emission reduction goals.",
-        "action": {
-            "ActionID": "c40_0023",
-            "ActionName": "Bus Emissions",
-            "ActionType": [
-                "mitigation"
-            ],
-            "AdaptationCategory": null,
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "InterventionType": [
-                "programs_and_initiatives",
-                "infrastructure_investments"
-            ],
-            "Description": "\"Bus Emissions\" mitigation focuses on reducing the environmental impact of bus fleets. Implementing cleaner technologies and fuels helps minimize emissions, contributing to improved air quality and sustainable urban transportation.",
-            "BehavioralChangeTargeted": "The targeted behavioral shift that the \"Bus Emissions\" mitigation climate action aims to achieve is an increased reliance on public transportation, specifically buses, by encouraging individuals to choose cleaner, more sustainable transit options over personal vehicles. This shift is facilitated by the implementation of cleaner technologies and fuels in bus fleets, which enhances the perceived safety, convenience, and environmental benefits of using public transport, ultimately leading to a reduction in greenhouse gas emissions and improved air quality in urban areas.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "The \"Bus Emissions\" mitigation action promotes equity and inclusion by targeting improvements in air quality, which directly benefits vulnerable and underserved communities that are often disproportionately affected by pollution. By implementing cleaner technologies and fuels in bus fleets, the action reduces harmful emissions in areas where low-income populations and marginalized groups reside, thereby addressing environmental justice concerns. Additionally, enhancing urban transportation through cleaner buses ensures that all community members, including those who rely on public transit, have access to healthier and more sustainable transportation options. This approach fosters inclusivity by prioritizing the needs of those who may have limited mobility or financial resources, ensuring that the benefits of cleaner air and improved transit are equitably distributed.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "20-39",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Availability of cleaner technologies and fuels for bus fleets",
-                "Investment in infrastructure to support cleaner bus operations",
-                "Regulatory support and incentives for adopting low-emission buses",
-                "Public awareness and acceptance of cleaner transportation options",
-                "Collaboration between government, transit authorities, and manufacturers"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in CO2 emissions (tons)",
-                "Percentage of bus fleet using clean technologies",
-                "Fuel efficiency of bus fleet (miles per gallon)",
-                "Number of buses retrofitted or replaced with cleaner models",
-                "Air quality improvement metrics (e.g., PM2.5 levels)",
-                "Public transportation ridership rates",
-                "Cost savings from fuel efficiency improvements",
-                "Percentage reduction in nitrogen oxides (NOx) emissions"
-            ],
-            "Impacts": [
-                "Reduction in greenhouse gas emissions by 20-39% in the transportation sector",
-                "Improved air quality benefiting vulnerable and underserved communities",
-                "Increased reliance on public transportation leading to sustainable urban mobility",
-                "Promotion of environmental justice by addressing pollution in marginalized areas"
-            ]
-        }
-    },
-    {
-        "locode": "BRCXL",
-        "cityName": "Caxias do Sul",
-        "region": "BR-RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "c40_0025",
-        "actionName": "Truck Emissions",
-        "actionPriority": 16,
-        "explanation": "Addressing truck emissions is crucial for reducing transportation emissions, especially in a city with significant industrial activity.",
-        "action": {
-            "ActionID": "c40_0025",
-            "ActionName": "Truck Emissions",
-            "ActionType": [
-                "mitigation"
-            ],
-            "AdaptationCategory": null,
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "InterventionType": [
-                "programs_and_initiatives",
-                "incentives_and_subsidies"
-            ],
-            "Description": "\"Truck Emissions\" mitigation involves adopting cleaner fuels and technologies to reduce the environmental impact of freight transportation. This initiative aims to decrease air pollution, promote sustainability, and improve the overall efficiency of urban logistics.",
-            "BehavioralChangeTargeted": "The targeted behavioral change that the \"Truck Emissions\" mitigation initiative aims to achieve is the adoption of cleaner fuels and technologies by freight transportation companies. This shift encourages these companies to prioritize sustainability and efficiency in their logistics operations, ultimately leading to a reduction in air pollution and greenhouse gas emissions associated with freight transport. By implementing financial incentives and supportive programs, the initiative seeks to influence the perceptions of these companies regarding the benefits of cleaner technologies, fostering a broader transition towards environmentally friendly practices in urban logistics.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "The \"Truck Emissions\" mitigation initiative promotes equity and inclusion by addressing the disproportionate impact of air pollution on vulnerable and underserved communities, often located near freight corridors. By adopting cleaner fuels and technologies, the action directly benefits these communities by improving air quality, which is crucial for public health, particularly for low-income populations and communities of color that may have limited access to healthcare resources. \n\nAdditionally, the initiative enhances sustainability and urban logistics efficiency, which can lead to economic opportunities and job creation in these underserved areas. By prioritizing cleaner transportation methods, the action supports a more equitable distribution of environmental benefits, ensuring that marginalized communities are not left behind in the transition to a greener economy. Overall, the focus on reducing emissions aligns with the goal of fostering healthier, more resilient communities that are often the most affected by environmental degradation.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "20-39",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Availability of cleaner fuel alternatives",
-                "Development and adoption of advanced emission-reducing technologies",
-                "Supportive regulatory frameworks and policies",
-                "Investment in infrastructure for cleaner freight options",
-                "Collaboration between stakeholders in the logistics and transportation sectors"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in CO2 emissions (tons)",
-                "Percentage of trucks using cleaner fuels",
-                "Improvement in fuel efficiency (miles per gallon)",
-                "Reduction in particulate matter emissions (PM2.5)",
-                "Increase in the number of electric or hybrid trucks",
-                "Cost savings from fuel efficiency improvements",
-                "Percentage decrease in urban air pollution levels",
-                "Number of logistics companies adopting sustainable practices"
-            ],
-            "Impacts": [
-                "Reduction in greenhouse gas emissions by 20-39% in the transportation sector",
-                "Improvement in air quality benefiting vulnerable communities",
-                "Promotion of cleaner fuels and technologies in freight transportation",
-                "Encouragement of sustainable practices in urban logistics",
-                "Potential economic opportunities and job creation in underserved areas"
-            ]
-        }
-    },
-    {
-        "locode": "BRCXL",
-        "cityName": "Caxias do Sul",
-        "region": "BR-RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0026",
-        "actionName": "Heat Recovery and Reuse through Heat Exchanger Networks or Heat Pumps",
-        "actionPriority": 17,
-        "explanation": "Implementing heat recovery systems can improve energy efficiency in industrial processes, reducing emissions and energy costs.",
-        "action": {
-            "ActionID": "ipcc_0026",
-            "ActionName": "Heat Recovery and Reuse through Heat Exchanger Networks or Heat Pumps",
-            "ActionType": [
-                "mitigation"
-            ],
-            "AdaptationCategory": null,
-            "Hazard": null,
-            "Sector": [
-                "ippu"
-            ],
-            "Subsector": [
-                "industrial_processes"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "InterventionType": [
-                "infrastructure_investments",
-                "programs_and_initiatives",
-                "incentives_and_subsidies"
-            ],
-            "Description": "This action involves improving heat-use energy efficiency by utilizing heat exchanger networks and high-temperature heat pumps to recover and reuse waste heat in industrial processes. Techniques include reducing heat needs via thermal insulation, reusing waste heat at various temperature grades, and recycling waste heat for power generation through technologies such as mechanical vapor recompression and thermoelectric conversion.",
-            "BehavioralChangeTargeted": "Encourages industries to adopt energy-efficient technologies for heat recovery and reuse, reducing reliance on high-emission heat production methods.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "Ensures that advanced heat recovery technologies are accessible to small and medium industries, particularly in developing regions, helping them reduce energy costs and emissions.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": "40-59",
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Availability of advanced heat recovery and pump technologies",
-                "skilled workforce for installation and maintenance",
-                "policy support for adoption of waste heat recovery systems"
-            ],
-            "KeyPerformanceIndicators": [
-                "Increase in waste heat recovery rate",
-                "reduction in energy intensity",
-                "percentage of heat reused through high-efficiency systems"
-            ],
-            "Impacts": [
-                "Significant reductions in industrial energy consumption and GHG emissions",
-                "enhanced energy security",
-                "cost savings for manufacturers",
-                "reduced environmental waste"
-            ]
-        }
-    },
-    {
-        "locode": "BRCXL",
-        "cityName": "Caxias do Sul",
-        "region": "BR-RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0027",
-        "actionName": "Process Coupling and Improvements",
-        "actionPriority": 18,
-        "explanation": "Enhancing industrial processes through coupling and improvements can reduce emissions and increase efficiency, aligning with industrial emission reduction goals.",
-        "action": {
-            "ActionID": "ipcc_0027",
-            "ActionName": "Process Coupling and Improvements",
-            "ActionType": [
-                "mitigation"
-            ],
-            "AdaptationCategory": null,
-            "Hazard": null,
-            "Sector": [
-                "ippu"
-            ],
-            "Subsector": [
-                "industrial_processes"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "InterventionType": [
-                "infrastructure_investments",
-                "programs_and_initiatives",
-                "incentives_and_subsidies"
-            ],
-            "Description": "This action focuses on reducing energy and emissions intensity in the steel production process by improving coupling between processes, such as Endless Strip Production (ESP). Techniques include reducing the number of temperature cycles, integrating process stages, and adopting energy-efficient technologies.",
-            "BehavioralChangeTargeted": "Encourages manufacturers to optimize production stages, adopt efficient technologies, and reduce waste to improve overall energy efficiency and reduce emissions.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "Promotes access to advanced manufacturing technologies for small and medium-sized enterprises, ensuring broader participation in decarbonization efforts.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": "40-59",
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Development and deployment of advanced process integration technologies",
-                "skilled workforce training",
-                "supportive policies to incentivize adoption"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in energy consumption per unit of steel",
-                "increase in process coupling efficiency",
-                "reduction in GHG emissions per ton of steel produced"
-            ],
-            "Impacts": [
-                "Improved energy efficiency",
-                "reduced emissions",
-                "cost savings for manufacturers",
-                "enhanced competitiveness of the steel industry in global markets"
-            ]
-        }
-    },
-    {
-        "locode": "BRCXL",
-        "cityName": "Caxias do Sul",
-        "region": "BR-RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0028",
-        "actionName": "Introduction of Energy Efficiency Technologies in Processing",
-        "actionPriority": 19,
-        "explanation": "Introducing energy efficiency technologies in processing can reduce industrial emissions and support sustainable industrial practices.",
-        "action": {
-            "ActionID": "ipcc_0028",
-            "ActionName": "Introduction of Energy Efficiency Technologies in Processing",
-            "ActionType": [
-                "mitigation"
-            ],
-            "AdaptationCategory": null,
-            "Hazard": null,
-            "Sector": [
-                "ippu"
-            ],
-            "Subsector": [
-                "industrial_processes"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "InterventionType": [
-                "infrastructure_investments",
-                "programs_and_initiatives",
-                "incentives_and_subsidies"
-            ],
-            "Description": "Implementation of energy-efficient technologies in mining processes, particularly in comminution, by upgrading ore concentration methods, using efficient grinding and crushing technologies, and optimizing particle size feed. Other opportunities include improving separation, drying, and materials handling processes.",
-            "BehavioralChangeTargeted": "Encourages the adoption of advanced technologies and optimization of resource use to reduce energy consumption and emissions in mining processes.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "Promotes equitable access to efficient technologies for small-scale mining operations, reducing energy costs and environmental impacts for vulnerable communities dependent on mining activities.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": "20-39",
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Development of advanced comminution and ore sorting technologies",
-                "availability of renewable energy sources for power generation",
-                "policy support to incentivize adoption"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in energy consumption per ton of ore processed",
-                "improvement in ore recovery ratio",
-                "reduction in GHG emissions from mining operations"
-            ],
-            "Impacts": [
-                "Improved energy efficiency in mining",
-                "reduced operational costs",
-                "decreased environmental footprint of mining activities",
-                "enhanced resource utilization"
-            ]
-        }
-    },
-    {
-        "locode": "BRCXL",
-        "cityName": "Caxias do Sul",
-        "region": "BR-RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0031",
-        "actionName": "Smart Energy Management",
+        "actionId": "ipcc_0053",
+        "actionName": "Afforestation, Reforestation and Forest Ecosystem Restoration",
         "actionPriority": 20,
-        "explanation": "Implementing smart energy management systems can optimize energy use across sectors, reducing emissions and supporting sustainability goals.",
+        "explanation": "With the lowest quantitative score (0.542), this action supports carbon sequestration and biodiversity. While it is essential for environmental sustainability, its direct impact on the major emission sources is less than that of waste and transportation actions, placing it last in the current priority ranking.",
         "action": {
-            "ActionID": "ipcc_0031",
-            "ActionName": "Smart Energy Management",
+            "ActionID": "ipcc_0053",
+            "ActionName": "Afforestation, Reforestation and Forest Ecosystem Restoration",
             "ActionType": [
                 "mitigation"
             ],
             "AdaptationCategory": null,
             "Hazard": null,
             "Sector": [
-                "ippu"
+                "afolu"
             ],
             "Subsector": [
-                "industrial_processes"
+                "land"
             ],
             "PrimaryPurpose": [
                 "ghg_reduction"
@@ -1460,43 +1487,47 @@
                 "infrastructure_investments",
                 "incentives_and_subsidies"
             ],
-            "Description": "The implementation of energy management systems using digitalisation and smart technologies to optimise energy use. These systems leverage real-time monitoring, advanced analytics, machine learning, and automation to improve energy efficiency, productivity, and cost-effectiveness.",
-            "BehavioralChangeTargeted": "Encourages adoption of real-time energy management practices and optimization of energy-intensive processes, fostering a culture of sustainability in industries.",
+            "Description": "Activities focused on converting land to forests, restoring degraded forests, and prioritizing ecological integrity. Afforestation targets historically non-forested land, while reforestation targets previously forested areas. Efforts include enhancing biodiversity, improving ecosystem services, and increasing carbon sequestration.",
+            "BehavioralChangeTargeted": "Encourages sustainable land management, restoration of degraded ecosystems, and adoption of forest-friendly agricultural practices.",
             "CoBenefits": {
                 "air_quality": 0,
-                "water_quality": 0,
-                "habitat": 0,
+                "water_quality": 1,
+                "habitat": 1,
                 "cost_of_living": 0,
                 "housing": 0,
-                "mobility": 1,
-                "stakeholder_engagement": 1
+                "mobility": 0,
+                "stakeholder_engagement": 0
             },
-            "EquityAndInclusionConsiderations": "Facilitates access to energy-efficient technologies for small and medium enterprises, ensuring equitable participation in energy-saving initiatives.",
+            "EquityAndInclusionConsiderations": "Supports local livelihoods, promotes land-use equity, and ensures inclusive stakeholder participation in afforestation and restoration programs.",
             "GHGReductionPotential": {
                 "stationary_energy": null,
                 "transportation": null,
                 "waste": null,
-                "ippu": "20-39",
-                "afolu": null
+                "ippu": null,
+                "afolu": "60-79"
             },
             "AdaptationEffectiveness": null,
             "CostInvestmentNeeded": "high",
             "TimelineForImplementation": "5-10 years",
             "Dependencies": [
-                "Availability of advanced technologies like sensors and machine learning systems",
-                "adequate digital infrastructure",
-                "supportive policies for energy efficiency adoption"
+                "Requires funding for land restoration",
+                "access to suitable species for planting",
+                "local community engagement",
+                "monitoring systems for ecosystem integrity and carbon sequestration"
             ],
             "KeyPerformanceIndicators": [
-                "Reduction in energy use",
-                "cost savings per production cycle",
-                "percentage improvement in process efficiency"
+                "Area of land reforested or afforested",
+                "carbon sequestration rates",
+                "improvement in biodiversity indices",
+                "ecosystem service metrics such as water regulation and soil quality"
             ],
             "Impacts": [
-                "Enhanced energy efficiency",
-                "reduced operational costs",
-                "improved industrial competitiveness",
-                "support for decarbonization goals"
+                "Increased carbon sequestration",
+                "improved biodiversity",
+                "enhanced ecosystem resilience",
+                "better water regulation",
+                "soil stabilization",
+                "support for local communities through sustainable resource use"
             ]
         }
     }

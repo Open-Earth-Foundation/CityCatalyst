@@ -11,20 +11,20 @@ set -o pipefail
 
 # OS-specific paths
 if [[ "$OSTYPE" == "linux-gnu"* || "$OSTYPE" == "darwin"* ]]; then
-  VENV_PYTHON="../.cap/bin/python"
-  VENV_ACTIVATE="../.cap/bin/activate"
+  VENV_PYTHON=".cap/bin/python"
+  VENV_ACTIVATE=".cap/bin/activate"
 elif [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "cygwin"* || "$OSTYPE" == "win32" ]]; then
-  VENV_PYTHON="../.cap/Scripts/python.exe"
-  VENV_ACTIVATE="../.cap/Scripts/activate"
+  VENV_PYTHON=".cap/Scripts/python.exe"
+  VENV_ACTIVATE=".cap/Scripts/activate"
 else
   echo "Unsupported OS: $OSTYPE"
   exit 1
 fi
 
 # Paths to the scripts
-PRIORITIZER_SCRIPT="../prioritizer/prioritizer.py"
-ENRICHER_SCRIPT="./enrich_for_frontend_schema.py"
-UPLOAD_SCRIPT="./upload_to_s3.py"
+PRIORITIZER_SCRIPT="prioritizer/prioritizer.py"
+ENRICHER_SCRIPT="scripts/enrich_for_frontend_schema.py"
+UPLOAD_SCRIPT="scripts/upload_to_s3.py"
 
 # Ensure virtual environment is deactivated on exit
 trap "deactivate; echo 'Virtual environment deactivated.'" EXIT
@@ -51,19 +51,15 @@ fi
 
 
 echo "Prioritizer..."
-# Run the prirotizer script with input arguments
-$VENV_PYTHON "$PRIORITIZER_SCRIPT" --locode "$LOCODE"
+$VENV_PYTHON -m prioritizer.prioritizer --locode "$LOCODE"
 echo -e "Prioritization done.\n"
 
 echo "Enrich for frontend..."
-# Run the enricher script with input arguments
-# Run the script twice, once for each action type
-$VENV_PYTHON "$ENRICHER_SCRIPT" --locode "$LOCODE" --action_type "mitigation"
-$VENV_PYTHON "$ENRICHER_SCRIPT" --locode "$LOCODE" --action_type "adaptation"
-echo -e "Enriching done. \n"
+$VENV_PYTHON -m scripts.enrich_for_frontend_schema --locode "$LOCODE" --action_type "mitigation"
+$VENV_PYTHON -m scripts.enrich_for_frontend_schema --locode "$LOCODE" --action_type "adaptation"
+echo -e "Enriching done.\n"
 
 echo "Upload to S3..."
-# Run the upload script with input arguments
-$VENV_PYTHON "$UPLOAD_SCRIPT" --file_path "../data/frontend/output_${LOCODE}_adaptation_enriched.json" --s3_key "data/adaptation/${LOCODE}.json"
-$VENV_PYTHON "$UPLOAD_SCRIPT" --file_path "../data/frontend/output_${LOCODE}_mitigation_enriched.json" --s3_key "data/mitigation/${LOCODE}.json"
+$VENV_PYTHON -m scripts.upload_to_s3 --file_path "data/frontend/output_${LOCODE}_adaptation_enriched.json" --s3_key "data/adaptation/${LOCODE}.json"
+$VENV_PYTHON -m scripts.upload_to_s3 --file_path "data/frontend/output_${LOCODE}_mitigation_enriched.json" --s3_key "data/mitigation/${LOCODE}.json"
 echo -e "Upload to S3 done.\n"

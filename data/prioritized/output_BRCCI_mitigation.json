@@ -7,7 +7,7 @@
         "actionId": "ipcc_0039",
         "actionName": "Carbon Capture and Storage (CCS)",
         "actionPriority": 1,
-        "explanation": "This action has the highest quantitative score (2.379) and directly targets major industrial process emissions. Its ability to capture and store CO2 makes it crucial for cities with high industrial outputs like Cama\u00e7ari."
+        "explanation": "This action has the highest quantitative score (2.379) and directly targets industrial process emissions, which are the most emission-intensive in Cama\u00e7ari. It offers significant GHG reductions and aligns closely with emission reduction priorities."
     },
     {
         "locode": "BRCCI",
@@ -17,7 +17,7 @@
         "actionId": "ipcc_0033",
         "actionName": "Electrification of Processes",
         "actionPriority": 2,
-        "explanation": "With a score of 2.221, this action transforms energy sources in industrial processes. Given Cama\u00e7ari\u2019s large industrial energy footprint, shifting to electric processes can significantly reduce GHG emissions."
+        "explanation": "With a high score of 2.221, this action is highly effective in reducing emissions in industrial processes. It is highly relevant to the city's largest emission sector and promises rapid and cost-effective benefits."
     },
     {
         "locode": "BRCCI",
@@ -27,7 +27,7 @@
         "actionId": "ipcc_0037",
         "actionName": "Feedstock Decarbonisation",
         "actionPriority": 3,
-        "explanation": "Scoring 1.971, this action reduces emissions by replacing carbon intensive feedstocks. It is particularly relevant for industrial sectors in Cama\u00e7ari and directly contributes to emissions reduction."
+        "explanation": "Scoring 1.971, this action focuses on decarbonising the feedstocks used in industrial processes. It directly tackles high-emission sources and supports sectoral relevance, making it a top priority."
     },
     {
         "locode": "BRCCI",
@@ -37,7 +37,7 @@
         "actionId": "c40_0035",
         "actionName": "Waste Efficiency",
         "actionPriority": 4,
-        "explanation": "This action, with a score of 1.823, targets the waste sector\u2014the second highest emissions contributor in the city. Enhancing waste efficiency can lower emissions and improve resource management in Cama\u00e7ari."
+        "explanation": "With a score of 1.823, Waste Efficiency targets the waste management sector\u2014a significant contributor to city emissions. It also complements circular economy principles and offers a substantial mitigation potential."
     },
     {
         "locode": "BRCCI",
@@ -47,27 +47,7 @@
         "actionId": "ipcc_0076",
         "actionName": "Switching to Net-zero-emissions Materials and Supply Chains",
         "actionPriority": 5,
-        "explanation": "At a score of 1.771, this action integrates net-zero practices within supply chains, making it highly relevant for reducing indirect industrial emissions and aligning with broader circular economy principles."
-    },
-    {
-        "locode": "BRCCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BR-BA",
-        "regionName": "Bahia",
-        "actionId": "ipcc_0032",
-        "actionName": "Fuel Switching to Renewable Fuels",
-        "actionPriority": 6,
-        "explanation": "With a score of 1.714, this action is prioritized for its direct impact on industrial energy use. The transition to renewable fuels can rapidly reduce emissions, especially in high-energy, heavy industrial sectors."
-    },
-    {
-        "locode": "BRCCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BR-BA",
-        "regionName": "Bahia",
-        "actionId": "ipcc_0034",
-        "actionName": "Energy Recycling in Furnaces and Kilns",
-        "actionPriority": 7,
-        "explanation": "Also scoring 1.714, this measure improves energy efficiency in energy\u2010intensive industrial processes. Recycling excess energy contributes to both cost effectiveness and reductions in high industrial emissions."
+        "explanation": "This action (score 1.771) focuses on transforming supply chains and material usage in industrial processes. It aligns with emissions reduction and sector relevance, making it a critical next step."
     },
     {
         "locode": "BRCCI",
@@ -76,8 +56,8 @@
         "regionName": "Bahia",
         "actionId": "ipcc_0026",
         "actionName": "Heat Recovery and Reuse through Heat Exchanger Networks or Heat Pumps",
-        "actionPriority": 8,
-        "explanation": "Matching the 1.714 score level, this action is valuable for capturing waste heat in industrial settings. It offers cost\u2010effective emissions reduction and faster implementation, which is key for timely climate resilience."
+        "actionPriority": 6,
+        "explanation": "With a score of 1.714, this action enhances energy efficiency in industrial operations. It has clear cost-effectiveness and rapid implementation potential, reducing emissions through improved thermal management."
     },
     {
         "locode": "BRCCI",
@@ -86,18 +66,28 @@
         "regionName": "Bahia",
         "actionId": "ipcc_0027",
         "actionName": "Process Coupling and Improvements",
-        "actionPriority": 9,
-        "explanation": "This technological improvement (score 1.714) optimizes industrial processes to minimize energy waste, directly addressing emissions in the city's largest emission sectors."
+        "actionPriority": 7,
+        "explanation": "Also scoring 1.714, this action optimizes industrial processes by reducing waste and energy losses. It has high relevance for emissions reduction and aligns well with cost-effective industrial improvements."
     },
     {
         "locode": "BRCCI",
         "cityName": "Cama\u00e7ari",
         "region": "BR-BA",
         "regionName": "Bahia",
-        "actionId": "ipcc_0044",
-        "actionName": "Alternative feedstocks (e.g. in cement)",
-        "actionPriority": 10,
-        "explanation": "At the same score level (1.714), using alternative feedstocks reduces the carbon footprint in material-intensive industrial sectors, making it highly relevant for a city with significant industrial process emissions."
+        "actionId": "ipcc_0032",
+        "actionName": "Fuel Switching to Renewable Fuels",
+        "actionPriority": 8,
+        "explanation": "With a score of 1.714, switching to renewable fuels directly replaces high-emission energy sources in industrial settings. This action supports the transition to lower carbon operations in the city."
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "ipcc_0034",
+        "actionName": "Energy Recycling in Furnaces and Kilns",
+        "actionPriority": 9,
+        "explanation": "Also at 1.714, this action improves energy efficiency in high-temperature industrial processes. Its implementation can rapidly reduce emissions from energy-intensive operations."
     },
     {
         "locode": "BRCCI",
@@ -106,8 +96,18 @@
         "regionName": "Bahia",
         "actionId": "ipcc_0042",
         "actionName": "Design for Recovery, Reuse, or Repurposing",
+        "actionPriority": 10,
+        "explanation": "Scoring 1.714, this action embeds circular economy principles into industrial and urban systems. It reduces waste and promotes resource efficiency, contributing effectively to emissions reduction."
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "ipcc_0044",
+        "actionName": "Alternative feedstocks (e.g. in cement)",
         "actionPriority": 11,
-        "explanation": "Also scoring 1.714, this action encourages circular design principles. It contributes to lowering emissions by promoting the extended use and re-manufacture of products, supporting environmental sustainability."
+        "explanation": "With the same score of 1.714, targeting alternative feedstocks\u2014especially within high-emission sectors like cement\u2014directly addresses significant industrial emissions and aligns with the city's needs."
     },
     {
         "locode": "BRCCI",
@@ -117,7 +117,7 @@
         "actionId": "c40_0038",
         "actionName": "Sanitary Landfills",
         "actionPriority": 12,
-        "explanation": "Scoring 1.656, this waste management option addresses emissions from the waste sector. It is important for managing bio-degradable waste effectively and reducing associated methane emissions."
+        "explanation": "Scoring 1.656, Sanitary Landfills improve waste management by reducing methane emissions and protecting public health, a key consideration given the city\u2019s waste emission footprint."
     },
     {
         "locode": "BRCCI",
@@ -127,7 +127,7 @@
         "actionId": "c40_0041",
         "actionName": "Waste Collection",
         "actionPriority": 13,
-        "explanation": "At a score of 1.638, efficient waste collection optimizes the overall waste management system, reducing emissions from improperly managed waste and enhancing urban environmental health."
+        "explanation": "With a score of 1.638, effective waste collection ensures timely and efficient handling of waste, reducing environmental impacts and contributing to improved urban emissions profiles."
     },
     {
         "locode": "BRCCI",
@@ -137,7 +137,7 @@
         "actionId": "ipcc_0035",
         "actionName": "Technology Improvements of Processes",
         "actionPriority": 14,
-        "explanation": "This action (score 1.614) leverages technological advancements to boost industrial efficiency. It directly supports emissions reduction efforts within high-emission sectors."
+        "explanation": "Scoring 1.614, this action focuses on upgrading industrial technologies for better efficiency and lower emissions. It is strategically important for long-term industrial competitiveness and risk reduction."
     },
     {
         "locode": "BRCCI",
@@ -147,7 +147,7 @@
         "actionId": "ipcc_0043",
         "actionName": "Circular Economy Policies",
         "actionPriority": 15,
-        "explanation": "Scoring 1.614, policy initiatives that drive the circular economy can create systemic change. Such policies enable broader adoption of low-emission technologies and practices."
+        "explanation": "Also at 1.614, Circular Economy Policies institutionalize practices that promote resource efficiency and waste minimization across sectors, delivering cumulative emissions reduction benefits."
     },
     {
         "locode": "BRCCI",
@@ -157,7 +157,7 @@
         "actionId": "ipcc_0030",
         "actionName": "Material Recycling",
         "actionPriority": 16,
-        "explanation": "With a score of 1.549, material recycling is fundamental to reducing overall resource demand and emissions associated with manufacturing, pivotal in a city aiming for sustainable industrial practices."
+        "explanation": "With a score of 1.549, Material Recycling plays a key role in reducing the demand for virgin materials, lowering emissions and supporting a circular economic framework in the city."
     },
     {
         "locode": "BRCCI",
@@ -167,7 +167,7 @@
         "actionId": "ipcc_0047",
         "actionName": "Enhanced product service levels per product (e.g. product sharing)",
         "actionPriority": 17,
-        "explanation": "Also scoring 1.549, this action promotes a service-oriented usage model that lowers production emissions and improves resource efficiency through shared services."
+        "explanation": "Scoring 1.549, this approach encourages product sharing models that reduce overall consumption and emissions. It is particularly suited to urban settings with socio-economic challenges."
     },
     {
         "locode": "BRCCI",
@@ -177,7 +177,7 @@
         "actionId": "ipcc_0048",
         "actionName": "Design for extended product life-time",
         "actionPriority": 18,
-        "explanation": "At a score of 1.549, designing products for extended lifetimes reduces replacement cycles and emissions that result from manufacturing new products, fitting well with sustainable urban goals."
+        "explanation": "Also at 1.549, extending product life-times minimizes waste and resource use. This action supports long-term sustainability by reducing the frequency of product turnover and associated emissions."
     },
     {
         "locode": "BRCCI",
@@ -187,7 +187,7 @@
         "actionId": "ipcc_0049",
         "actionName": "Improved product stock maintenance to extend life-time",
         "actionPriority": 19,
-        "explanation": "This measure (score 1.549) supports the maintenance and longevity of products. By reducing wasteful replacements, it mitigates emissions and supports a more sustainable consumption pattern."
+        "explanation": "With the same score of 1.549, this action improves maintenance practices to prolong product lifespans, effectively lowering resource consumption and overall emissions."
     },
     {
         "locode": "BRCCI",
@@ -197,6 +197,6 @@
         "actionId": "ipcc_0051",
         "actionName": "Reducing overall demand for product services",
         "actionPriority": 20,
-        "explanation": "Also at 1.549, reducing the overall demand for product services addresses the root cause of high material and energy use. Although its impact is broad and systemic, it is ranked slightly lower due to its dependence on significant behavioral change."
+        "explanation": "Scoring 1.549, this action directly targets the reduction in consumption demand, leading to a decrease in associated emissions. It complements other circular strategies by addressing the demand side of emissions."
     }
 ]

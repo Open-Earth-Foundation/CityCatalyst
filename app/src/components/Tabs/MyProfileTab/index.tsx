@@ -7,6 +7,7 @@ import { TFunction } from "i18next";
 import AccountDetailsTabPanel from "./AccountDetailsTabPanel";
 import ManageUsersTabPanel from "./ManageUsersTabPanel";
 import ManageCitiesTabPanel from "./ManageCitiesTabPanel";
+import ManagePasswordTabContent from "./ManagePasswordTabContent";
 
 interface MyProfileTabProps {
   t: TFunction;
@@ -121,6 +122,30 @@ export const MyProfileTab: FC<MyProfileTabProps> = ({ t, lng, userInfo }) => {
               >
                 {t("city")}
               </Tabs.Trigger>
+              <Tabs.Trigger
+                value="manage-password"
+                fontFamily="heading"
+                justifyContent={"left"}
+                letterSpacing={"wide"}
+                color="content.secondary"
+                lineHeight="20px"
+                fontStyle="normal"
+                fontSize="label.lg"
+                height="52px"
+                w={"223px"}
+                _selected={{
+                  color: "content.link",
+                  fontSize: "label.lg",
+                  fontWeight: "medium",
+                  backgroundColor: "background.neutral",
+                  borderRadius: "8px",
+                  borderWidth: "1px",
+                  borderStyle: "solid",
+                  borderColor: "content.link",
+                }}
+              >
+                {t("manage-password")}
+              </Tabs.Trigger>
             </Tabs.List>
 
             <Tabs.Content
@@ -172,6 +197,15 @@ export const MyProfileTab: FC<MyProfileTabProps> = ({ t, lng, userInfo }) => {
               gap="24px"
             >
               <ManageCitiesTabPanel t={t} />
+            </Tabs.Content>
+            <Tabs.Content
+              value="manage-password"
+              padding="24px"
+              display="flex"
+              flexDirection="column"
+              gap="24px"
+            >
+              <ManagePasswordTabContent t={t} />
             </Tabs.Content>
           </Tabs.Root>
         </Box>

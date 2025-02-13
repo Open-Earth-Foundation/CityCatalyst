@@ -71,5 +71,6 @@
   "invite-cancel-fail": "No se pudo cancelar la invitación",
   "invite-sent": "Invitación enviada con éxito",
   "invite-send-fail": "No se pudo enviar la invitación",
-  "number-of-cities": "# de ciudades"
+  "number-of-cities": "# de ciudades",
+  "manage-password": "Gestionar contraseña"
 }

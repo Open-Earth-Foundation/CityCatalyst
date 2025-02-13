@@ -71,5 +71,6 @@
   "invite-cancel-fail": "Einladung konnte nicht storniert werden",
   "invite-sent": "Einladung erfolgreich gesendet",
   "invite-send-fail": "Einladung konnte nicht gesendet werden",
-  "number-of-cities": "# der Städte"
+  "number-of-cities": "# der Städte",
+  "manage-password": "Passwort verwalten"
 }

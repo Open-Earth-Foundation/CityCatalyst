@@ -23,6 +23,8 @@ import { logger } from "@/services/logger";
 import { useRouter, useSearchParams } from "next/navigation";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { Field } from "@/components/ui/field";
+import { api } from "@/services/api";
+import { Toaster, toaster } from "@/components/ui/toaster";
 
 interface ManagePasswordProps {
   t: TFunction;
@@ -35,9 +37,7 @@ type Inputs = {
 };
 
 const ManagePasswordTabContent: FC<ManagePasswordProps> = ({ t }) => {
-  const router = useRouter();
   const searchParams = useSearchParams();
-  const resetToken = searchParams.get("token");
   const [error, setError] = useState("");
 
   const {
@@ -46,7 +46,12 @@ const ManagePasswordTabContent: FC<ManagePasswordProps> = ({ t }) => {
     formState: { errors, isSubmitting },
     setError: setFormError,
     watch,
+    reset,
   } = useForm<Inputs>();
+
+  const [updatePassword, { isLoading, isError, isSuccess }] =
+    api.useUpdatePasswordMutation();
+
   const watchPassword = watch("newPassword", "");
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     if (data.newPassword !== data.confirmPassword) {
@@ -58,18 +63,21 @@ const ManagePasswordTabContent: FC<ManagePasswordProps> = ({ t }) => {
     }
     const body = {
       currentPassword: data.currentPassword,
-      newPassword: data.currentPassword,
       confirmPassword: data.confirmPassword,
     };
     try {
-      const res = await fetch("/api/v0/auth/update-password", {
-        method: "POST",
-        body: JSON.stringify(body),
-        headers: {
-          "Content-Type": "application/json",
-        },
+      const res: any = await updatePassword(body);
+      if (res.error) {
+        console.log(res.error.data.error.message);
+        setError(res.error.data.error.message);
+        return;
+      }
+      toaster.create({
+        title: t("password-updated"),
+        description: t("password-updated-success"),
+        type: "success",
       });
-      console.log(await res.json());
+      reset();
       setError("");
     } catch (err: any) {
       setError(err);
@@ -117,6 +125,7 @@ const ManagePasswordTabContent: FC<ManagePasswordProps> = ({ t }) => {
           </Button>
         </form>
       </Box>
+      <Toaster />
     </>
   );
 };

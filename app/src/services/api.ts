@@ -776,6 +776,13 @@ export const api = createApi({
           response.data,
         invalidatesTags: ["Inventory"],
       }),
+      updatePassword: builder.mutation({
+        query: (data) => ({
+          url: `/auth/update-password`,
+          method: "POST",
+          body: data,
+        }),
+      }),
     };
   },
 });
@@ -850,5 +857,6 @@ export const {
   useUpdateInventoryMutation,
   useUpdateOrCreateInventoryValueMutation,
   useGetCityInvitesQuery,
+  useUpdatePasswordMutation,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

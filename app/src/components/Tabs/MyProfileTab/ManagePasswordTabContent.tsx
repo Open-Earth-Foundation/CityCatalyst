@@ -29,7 +29,8 @@ interface ManagePasswordProps {
 }
 
 type Inputs = {
-  password: string;
+  currentPassword: string;
+  newPassword: string;
   confirmPassword: string;
 };
 
@@ -46,34 +47,23 @@ const ManagePasswordTabContent: FC<ManagePasswordProps> = ({ t }) => {
     setError: setFormError,
     watch,
   } = useForm<Inputs>();
-  const watchPassword = watch("password", "");
+  const watchPassword = watch("newPassword", "");
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
-    if (data.password !== data.confirmPassword) {
+    if (data.newPassword !== data.confirmPassword) {
       setFormError("confirmPassword", {
         type: "custom",
         message: "Passwords don't match!",
       });
       return;
     }
-    const body = { newPassword: data.password, resetToken };
+    const body = {
+      current: data.currentPassword,
+      newPassword: data.currentPassword,
+      confirmPassword: data.confirmPassword,
+    };
     try {
-      const res = await fetch("/api/v0/auth/password", {
-        method: "POST",
-        body: JSON.stringify(body),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (!res.ok) {
-        const data = await res.json();
-        logger.error("Failed to reset password", data);
-        setError(data.error.message);
-        return;
-      }
-
+      console.log(body);
       setError("");
-      router.push(`/auth/reset-successful`);
     } catch (err: any) {
       setError(err);
     }
@@ -89,15 +79,23 @@ const ManagePasswordTabContent: FC<ManagePasswordProps> = ({ t }) => {
       </VStack>
       <Box>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          <PasswordInput
+            register={register}
+            error={errors.currentPassword}
+            name={t("current-password")}
+            id="currentPassword"
+            t={t}
+          />
           <Field>
             <PasswordInput
               register={register}
-              error={errors.password}
-              name={t("current-password")}
+              error={errors.newPassword}
+              name={t("new-password")}
               t={t}
+              id="newPassword"
               shouldValidate
               watchPassword={watchPassword}
-            ></PasswordInput>
+            />
           </Field>
           <PasswordInput
             register={register}
@@ -109,17 +107,6 @@ const ManagePasswordTabContent: FC<ManagePasswordProps> = ({ t }) => {
           {error && <Text color="semantic.danger">{error}</Text>}
           <Button type="submit" loading={isSubmitting} h={16} width="full">
             {t("reset-button")}
-          </Button>
-          <Button
-            type="reset"
-            disabled={isSubmitting}
-            variant="ghost"
-            h={16}
-            width="full"
-            mt={4}
-            onClick={() => router.back()}
-          >
-            {t("cancel")}
           </Button>
         </form>
       </Box>

@@ -86,5 +86,7 @@
   "password-min-length-check": "At least {{length}} characters",
   "password-upper-case-check": "At least one uppercase letter",
   "password-lower-case-check": "At least one lowercase letter",
-  "password-number-check": "At least one number"
+  "password-number-check": "At least one number",
+  "password-updated": "Password updated",
+  "password-updated-success": "Password updated successfully"
 }

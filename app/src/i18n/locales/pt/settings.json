@@ -75,5 +75,8 @@
   "manage-password": "Gerenciar senha",
   "update-password-details": "",
   "current-password": "Senha atual",
-  "confirm-password": "Confirmar Senha"
+  "confirm-password": "Confirmar Senha",
+  "password-number-check": "A senha deve conter pelo menos um número",
+  "password-updated": "Senha atualizada com sucesso",
+  "password-updated-success": "Senha atualizada com sucesso"
 }

@@ -57,12 +57,19 @@ const ManagePasswordTabContent: FC<ManagePasswordProps> = ({ t }) => {
       return;
     }
     const body = {
-      current: data.currentPassword,
+      currentPassword: data.currentPassword,
       newPassword: data.currentPassword,
       confirmPassword: data.confirmPassword,
     };
     try {
-      console.log(body);
+      const res = await fetch("/api/v0/auth/update-password", {
+        method: "POST",
+        body: JSON.stringify(body),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(await res.json());
       setError("");
     } catch (err: any) {
       setError(err);

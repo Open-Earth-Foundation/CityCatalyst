@@ -238,3 +238,10 @@ export const fetchEmissionsFactorRequest = z.object({
   regionLocode: z.string().optional(),
   metadata: z.record(z.string(), z.any()).optional(),
 });
+
+export const updatePasswordRequest = z.object({
+  currentPassword: z.string().min(4),
+  confirmPassword: z.string().min(4).regex(passwordRegex),
+});
+
+export type UpdatePasswordRequest = z.infer<typeof updatePasswordRequest>;

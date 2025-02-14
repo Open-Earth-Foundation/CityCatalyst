@@ -4,12 +4,11 @@ import {
   HStack,
   Heading,
   Link,
-  NumberInput,
-  Select,
   Text,
   Textarea,
   Group,
   InputAddon,
+  createListCollection,
 } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import { Trans } from "react-i18next/TransWithoutContext";
@@ -18,13 +17,20 @@ import type { EmissionsFactorWithDataSources } from "@/util/types";
 import type { EmissionsFactorData } from "./types";
 import { useEffect } from "react";
 import { getTranslationFromDict } from "@/i18n";
-import { InputGroup } from "@/components/ui/input-group";
 import {
   NumberInputField,
   NumberInputRoot,
 } from "@/components/ui/number-input";
 import { Tooltip } from "@/components/ui/tooltip";
 import { Field } from "@/components/ui/field";
+import {
+  SelectContent,
+  SelectItem,
+  SelectLabel,
+  SelectRoot,
+  SelectTrigger,
+  SelectValueText,
+} from "@/components/ui/select";
 
 const activityDataUnits: Record<string, string[]> = {
   I: [
@@ -110,6 +116,31 @@ export function ActivityDataTab({
       ? customUnits
       : Object.keys(factorsByUnit);
 
+  // create collections for dropdowns
+  const scopeUnitCollection = createListCollection({
+    items: scopeUnits,
+    itemToString: (item) => t(item),
+    itemToValue: (item) => item,
+  });
+
+  /* TODO translate values and use internal value for saving */
+  const emissionsFactorItems = emissionsFactorTypes.map((type) => ({
+    value: type,
+    label: type,
+  }));
+  emissionsFactorItems.push({ value: "custom", label: t("add-custom") });
+  const emissionsFactorTypeCollection = createListCollection({
+    items: emissionsFactorItems,
+  });
+
+  const dataQualityCollection = createListCollection({
+    items: [
+      { value: "high", label: "detailed-emissions-data" },
+      { value: "medium", label: "modeled-emissions-data" },
+      { value: "low", label: "highly-modeled-uncertain-emissions-data" },
+    ],
+  });
+
   // TODO this should happen in default form value, as the form still contains null/ undefined here
   const selectedUnit =
     watch(prefix + "activityDataUnit") ?? scopeUnits[0] ?? "";
@@ -186,34 +217,41 @@ export function ActivityDataTab({
               pr={0}
               bgColor="base.light"
             >
-              <Select.Root
-                variant="unstyled"
+              <SelectRoot
+                collection={scopeUnitCollection}
                 {...register(prefix + "activityDataUnit")}
               >
-                {scopeUnits.map((unit) => (
-                  <option key={unit} value={unit}>
-                    {t(unit)}
-                  </option>
-                ))}
-              </Select.Root>
+                <SelectTrigger>
+                  <SelectValueText />
+                </SelectTrigger>
+                <SelectContent portalled={false}>
+                  {scopeUnitCollection.items.map((unit) => (
+                    <SelectItem key={unit} item={unit}>
+                      {t(unit)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </SelectRoot>
             </InputAddon>
           </Group>
         </Field>
         <Field label={t("emission-factor-type")}>
-          <Select.Root
-            {...register(prefix + "emissionFactorType")}
+          <SelectRoot
+            collection={emissionsFactorTypeCollection}
             bgColor="base.light"
+            {...register(prefix + "emissionFactorType")}
           >
-            {/* TODO translate values and use internal value for saving */}
-            {emissionsFactorTypes.map((type) => (
-              <option key={type} value={type}>
-                {type}
-              </option>
-            ))}
-            <option key="custom" value="custom">
-              {t("add-custom")}
-            </option>
-          </Select.Root>
+            <SelectTrigger>
+              <SelectValueText />
+            </SelectTrigger>
+            <SelectContent portalled={false}>
+              {emissionsFactorTypeCollection.items.map((unit) => (
+                <SelectItem key={unit.value} item={unit}>
+                  {unit.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </SelectRoot>
         </Field>
       </HStack>
       <Heading size="sm" mb={4} className="font-normal">
@@ -302,19 +340,24 @@ export function ActivityDataTab({
         errorText={resolve(prefix + "dataQuality", errors)?.message}
         mb={12}
       >
-        <Select.Root
+        <SelectRoot
+          collection={dataQualityCollection}
           bgColor="base.light"
-          placeholder={t("data-quality-placeholder")}
           {...register(prefix + "dataQuality", {
             required: t("option-required"),
           })}
         >
-          <option value="high">{t("detailed-emissions-data")}</option>
-          <option value="medium">{t("modeled-emissions-data")}</option>
-          <option value="low">
-            {t("highly-modeled-uncertain-emissions-data")}
-          </option>
-        </Select.Root>
+          <SelectTrigger>
+            <SelectValueText placeholder={t("data-quality-placeholder")} />
+          </SelectTrigger>
+          <SelectContent>
+            {dataQualityCollection.items.map((item) => (
+              <SelectItem key={item.value} item={item}>
+                {t(item.label)}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </SelectRoot>
       </Field>
       <Field
         label={t("source-reference")}

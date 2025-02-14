@@ -239,10 +239,10 @@ if __name__ == "__main__":
     accuracy_quanti = get_accuracy_expert_vs_quanti(df_all_comparisons_cleaned, actions)
     print(f"\nAccuracy for quantitative ranking is {accuracy_quanti}\n\n")
 
-    accuracy_quali = get_accuracy_expert_vs_quali(df_all_comparisons_cleaned, actions)
-    print(f"\nAccuracy for qualitative ranking is {accuracy_quali}\n\n")
+    # accuracy_quali = get_accuracy_expert_vs_quali(df_all_comparisons_cleaned, actions)
+    # print(f"\nAccuracy for qualitative ranking is {accuracy_quali}\n\n")
 
     # Final print out to not get lost in all the intermediate print statements
     print("Final result:")
     print(f"\nAccuracy for quantitative ranking is {accuracy_quanti}\n\n")
-    print(f"\nAccuracy for qualitative ranking is {accuracy_quali}\n\n")
+    # print(f"\nAccuracy for qualitative ranking is {accuracy_quali}\n\n")

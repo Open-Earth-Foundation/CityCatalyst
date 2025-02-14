@@ -23,6 +23,7 @@ from prioritizer.utils.reading_writing_data import read_city_inventory, read_act
 
 
 # Initialize weights as torch tensors
+# Not a random initialization but initialized closer to optimal values
 weights = {
     "GHGReductionPotential": torch.tensor(5.0, dtype=torch.float, requires_grad=True),
     "AdaptationEffectiveness": torch.tensor(1.0, dtype=torch.float, requires_grad=True),
@@ -30,7 +31,7 @@ weights = {
         0.5, dtype=torch.float, requires_grad=True
     ),
     "CostInvestmentNeeded": torch.tensor(0.5, dtype=torch.float, requires_grad=True),
-    "Hazard": torch.tensor(0.5, dtype=torch.float, requires_grad=True),
+    "Hazard": torch.tensor(2.5, dtype=torch.float, requires_grad=True),
     "Dependencies": torch.tensor(0.1, dtype=torch.float, requires_grad=True),
 }
 
@@ -261,7 +262,7 @@ def compute_loss():
     print("Total hinge loss:", total_loss)
 
 
-def optimize_weights(num_epochs, optimizer, weights):
+def optimize_weights(num_epochs, optimizer, weights, m):
 
     num_epochs = num_epochs
     for epoch in range(num_epochs):
@@ -270,7 +271,7 @@ def optimize_weights(num_epochs, optimizer, weights):
 
         skipped = []
         # Iterate over each pair
-        for index, row in df_all_comparisons_cleaned.iterrows():
+        for _, row in df_all_comparisons_cleaned.iterrows():
             # Retrieve city data and actions based on your current code.
             city_data = read_city_inventory(row["CityLocode"])
             actionA = row["ActionA"]
@@ -295,7 +296,7 @@ def optimize_weights(num_epochs, optimizer, weights):
                 # Map the PreferredAction label to +1 (if actionA is preferred) or -1 (if actionB is preferred).
                 y = 1.0 if row["PreferredAction"] == actionA else -1.0
 
-                loss = hinge_loss_torch(score_diff, y, margin=1.0)
+                loss = hinge_loss_torch(score_diff, y, margin=m)
                 total_loss = total_loss + loss
             else:
                 # Add the missing action to the skipped list to keep track of them
@@ -307,8 +308,8 @@ def optimize_weights(num_epochs, optimizer, weights):
                     skipped.append(actionA)
                     skipped.append(actionB)
 
-                print("Action not found. Probably removed from the action data.")
-                print("Skipping this comparison")
+                # print("Action not found. Probably removed from the action data.")
+                # print("Skipping this comparison")
 
         print(
             f"\nSkipped {len(skipped)} comparisons due to missing actions for this training epoch."
@@ -349,11 +350,11 @@ if __name__ == "__main__":
     actions = read_actions()
 
     # Compute the hinge loss piror to optimization
-    compute_loss()
+    # compute_loss()
 
     # Create an optimizer over the weight parameters.
     # To optimize weights in a dictionary, we pass a list of their values.
-    optimizer = optim.Adam(list(weights.values()), lr=0.005)
+    optimizer = optim.Adam(list(weights.values()), lr=0.1)
 
     # Run the optimization process
-    optimize_weights(300, optimizer, weights)
+    optimize_weights(150, optimizer, weights, m=1.2)

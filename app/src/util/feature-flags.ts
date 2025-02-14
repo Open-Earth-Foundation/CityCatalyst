@@ -1,5 +1,3 @@
-"use client";
-
 import { env } from "next-runtime-env";
 
 export function getFeatureFlags(): string[] {

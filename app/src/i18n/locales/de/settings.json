@@ -76,5 +76,6 @@
   "update-password-details": "",
   "current-password": "Aktuelles Passwort",
   "confirm-password": "Passwort bestätigen",
-  "passwords-dont-match": "Passwörter stimmen nicht überein"
+  "passwords-dont-match": "Passwörter stimmen nicht überein",
+  "email-placeholder": "E-Mail-Adresse"
 }

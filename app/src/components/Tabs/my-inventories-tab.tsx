@@ -73,6 +73,23 @@ const MyInventoriesTab: FC<MyInventoriesTabProps> = ({
     role: Roles.User,
   });
 
+  // Converts the lastUpdated string to a Date object and returns a formatted date
+  function InventoryLastUpdated(lastUpdated: Date) {
+    if (!lastUpdated) {
+      return <p>No date available</p>;
+    }
+
+    // Convert the string to a Date object
+    const date = new Date(lastUpdated);
+
+    // If date is invalid (e.g., `new Date('Invalid')`), handle that
+    if (isNaN(date.getTime())) {
+      return <p>Invalid date</p>;
+    }
+
+    return <p>{date.toLocaleDateString()}</p>;
+  }
+
   return (
     <>
       <Tabs.Content value="my-inventories">
@@ -252,7 +269,7 @@ const MyInventoriesTab: FC<MyInventoriesTabProps> = ({
                                 </Table.Cell>
                                 {/* TODO remove hardcoded date https://openearth.atlassian.net/browse/ON-3350 */}
                                 <Table.Cell align="right">
-                                  21 Sept, 2023
+                                  {InventoryLastUpdated(inventory.lastUpdated!)}
                                 </Table.Cell>
                                 <Table.Cell align="right">
                                   <Popover.Root lazyMount>

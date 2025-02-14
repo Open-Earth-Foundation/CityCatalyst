@@ -65,11 +65,12 @@ export default function ChatPopover({
             fontWeight="600"
             letterSpacing="wider"
             py="26px"
+            maxW="220px"
             fontFamily="heading"
             aria-label={t("ai-expert")}
             variant="solid"
           >
-            {/* <Icon as={AskAiIcon} h={24} w={24} /> */}
+            <Icon as={AskAiIcon} h={24} w={24} />
             {t("ask-ai")}
           </Button>
         </PopoverTrigger>

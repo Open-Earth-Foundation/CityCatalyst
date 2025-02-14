@@ -240,8 +240,8 @@ export const fetchEmissionsFactorRequest = z.object({
 });
 
 export const updatePasswordRequest = z.object({
-  currentPassword: z.string().min(4),
-  confirmPassword: z.string().min(4).regex(passwordRegex),
+  currentPassword: z.string().min(4).max(64),
+  confirmPassword: z.string().min(4).max(64).regex(passwordRegex),
 });
 
 export type UpdatePasswordRequest = z.infer<typeof updatePasswordRequest>;

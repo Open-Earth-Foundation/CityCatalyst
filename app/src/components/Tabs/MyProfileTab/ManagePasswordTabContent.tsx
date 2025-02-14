@@ -57,7 +57,7 @@ const ManagePasswordTabContent: FC<ManagePasswordProps> = ({ t }) => {
     if (data.newPassword !== data.confirmPassword) {
       setFormError("confirmPassword", {
         type: "custom",
-        message: "Passwords don't match!",
+        message: t("passwords-dont-match"),
       });
       return;
     }
@@ -68,7 +68,6 @@ const ManagePasswordTabContent: FC<ManagePasswordProps> = ({ t }) => {
     try {
       const res: any = await updatePassword(body);
       if (res.error) {
-        console.log(res.error.data.error.message);
         setError(res.error.data.error.message);
         return;
       }

@@ -75,5 +75,6 @@
   "manage-password": "Passwort verwalten",
   "update-password-details": "",
   "current-password": "Aktuelles Passwort",
-  "confirm-password": "Passwort bestätigen"
+  "confirm-password": "Passwort bestätigen",
+  "passwords-dont-match": "Passwörter stimmen nicht überein"
 }

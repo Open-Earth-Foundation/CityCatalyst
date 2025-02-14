@@ -78,5 +78,6 @@
  "confirm-password": "Confirmar contraseña",
  "password-number-check": "La contraseña debe contener al menos un número",
  "password-updated": "Contraseña actualizada",
- "password-updated-success": "¡Contraseña actualizada con éxito!"
+ "password-updated-success": "¡Contraseña actualizada con éxito!",
+ "passwords-dont-match": "Las contraseñas no coinciden"
 }

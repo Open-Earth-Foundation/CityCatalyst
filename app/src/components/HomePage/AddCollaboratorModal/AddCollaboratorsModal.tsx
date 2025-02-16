@@ -96,8 +96,8 @@ const AddCollaboratorsDialog = ({
         <DialogCloseTrigger />
         <Separator my="24px" />
         <DialogBody>
-          <TitleLarge text={t("select-cities-to-share")} />
-          <BodyLarge text={t("select-cities-to-share-description")} />
+          <TitleLarge>{t("select-cities-to-share")}</TitleLarge>
+          <BodyLarge>{t("select-cities-to-share-description")}</BodyLarge>
           <CheckboxGroup>
             {citiesAndYears?.map(({ city }) => (
               <Checkbox
@@ -111,7 +111,7 @@ const AddCollaboratorsDialog = ({
               </Checkbox>
             ))}
           </CheckboxGroup>
-          <TitleLarge text={t("send-invites")} mt={"48px"} />
+          <TitleLarge mt={"48px"}>{t("send-invites")}</TitleLarge>
           <Text>
             {t("send-invites-description-1")}
             <Text as="span" fontWeight="bold">

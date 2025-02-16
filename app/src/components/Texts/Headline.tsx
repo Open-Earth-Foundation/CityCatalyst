@@ -16,3 +16,15 @@ export const HeadlineSmall = ({ text, ...props }: HeadlineProps) => (
     {text}
   </Heading>
 );
+
+export const HeadlineLarge = ({ children, ...props }: HeadingProps) => (
+  <Heading
+    fontFamily="heading"
+    fontWeight="bold"
+    fontSize="headline.lg"
+    className="flex items-center justify-center"
+    {...props}
+  >
+    {children}
+  </Heading>
+);

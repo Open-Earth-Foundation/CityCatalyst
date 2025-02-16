@@ -15,6 +15,7 @@ export enum InventoryTypeEnum {
 }
 
 export interface ISector {
+  id: string; // id from DB
   number: number;
   referenceNumber: string;
   icon: React.ElementType<IconBaseProps>;
@@ -69,6 +70,7 @@ export const getScopesForInventoryAndSector = (
 
 export const SECTORS: ISector[] = [
   {
+    id: "5da765a9-1ca6-37e1-bcd6-7b387f909a4e",
     referenceNumber: "I",
     number: 1,
     name: "stationary-energy",
@@ -82,6 +84,7 @@ export const SECTORS: ISector[] = [
     testId: "stationary-energy-sector-card",
   },
   {
+    id: "73eb7b71-159c-3eda-b7fc-f6eb53754dc3",
     referenceNumber: "II",
     number: 2,
     name: "transportation",
@@ -95,6 +98,7 @@ export const SECTORS: ISector[] = [
     testId: "transportation-sector-card",
   },
   {
+    id: "d5acb72e-d915-310f-b3a3-77f634bcbf5e",
     referenceNumber: "III",
     number: 3,
     name: "waste",
@@ -108,6 +112,7 @@ export const SECTORS: ISector[] = [
     testId: "waste-sector-card",
   },
   {
+    id: "6e986105-3df9-30de-8997-041d93537278",
     referenceNumber: "IV",
     number: 4,
     name: "ippu",
@@ -121,6 +126,7 @@ export const SECTORS: ISector[] = [
     },
   },
   {
+    id: "b7845aa4-e50b-3b8c-8941-77d098a73e82",
     referenceNumber: "V",
     number: 5,
     name: "afolu",

@@ -33,8 +33,6 @@ const AccountDetailsTabPanel: FC<AccountDetailsFormProps> = ({
     setValue("role", userInfo.role);
   }
 
-  console.log(userInfo);
-
   const onSubmit: SubmitHandler<ProfileInputs> = async (data) => {
     await setCurrentUserData({
       userId: userInfo.userId,

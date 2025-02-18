@@ -192,11 +192,9 @@ function SubSectorPage({
     `${searchParams.get("refNo")}.1`,
   );
 
-  // console.log(getSectorRefNo(step));
-
   useEffect(() => {
-    if (scopes.length > 0 && !loadingState) {
-      setReferenceNumber(scopes[0]?.referenceNumber);
+    if (scopes.length > 0 && !loadingState && subSectorData) {
+      setReferenceNumber(subSectorData.referenceNumber!);
     }
   }, [scopes, loadingState]);
 

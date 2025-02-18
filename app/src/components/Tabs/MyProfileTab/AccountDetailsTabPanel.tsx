@@ -22,9 +22,18 @@ const AccountDetailsTabPanel: FC<AccountDetailsFormProps> = ({
   const {
     handleSubmit,
     register,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<ProfileInputs>();
   const [setCurrentUserData] = useSetCurrentUserDataMutation();
+
+  if (userInfo) {
+    setValue("name", userInfo.name);
+    setValue("email", userInfo.email);
+    setValue("role", userInfo.role);
+  }
+
+  console.log(userInfo);
 
   const onSubmit: SubmitHandler<ProfileInputs> = async (data) => {
     await setCurrentUserData({

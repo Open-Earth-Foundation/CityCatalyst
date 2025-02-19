@@ -5,7 +5,10 @@ export function getFeatureFlags(): string[] {
   let flagsList: string[] = [];
 
   if (flags) {
-    flagsList = flags.split(",");
+    flagsList = flags
+      .split(",")
+      .map((flag) => flag.trim())
+      .filter((flag) => flag.length > 0);
   }
 
   return flagsList;

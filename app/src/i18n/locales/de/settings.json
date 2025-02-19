@@ -72,5 +72,10 @@
   "invite-sent": "Einladung erfolgreich gesendet",
   "invite-send-fail": "Einladung konnte nicht gesendet werden",
   "number-of-cities": "# der Städte",
+  "manage-password": "Passwort verwalten",
+  "update-password-details": "",
+  "current-password": "Aktuelles Passwort",
+  "confirm-password": "Passwort bestätigen",
+  "passwords-dont-match": "Passwörter stimmen nicht überein",
   "email-placeholder": "E-Mail-Adresse"
 }

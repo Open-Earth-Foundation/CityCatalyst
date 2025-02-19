@@ -176,9 +176,11 @@ function SectorTabs({
         return (
           <Tabs.Content value={name} key={name}>
             {isTopEmissionsResponseLoading ? (
-              <ProgressCircleRoot>
-                <ProgressCircleRing cap="round" />
-              </ProgressCircleRoot>
+              <Center w="full" h="full">
+                <ProgressCircleRoot>
+                  <ProgressCircleRing cap="round" />
+                </ProgressCircleRoot>
+              </Center>
             ) : (
               <Card.Root divideX="2px" divideColor="border.overlay">
                 <SectorHeader

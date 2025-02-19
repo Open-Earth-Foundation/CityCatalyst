@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { Box, Button } from "@chakra-ui/react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { ProfileInputs } from "@/app/[lng]/[inventory]/settings/page";
@@ -27,11 +27,13 @@ const AccountDetailsTabPanel: FC<AccountDetailsFormProps> = ({
   } = useForm<ProfileInputs>();
   const [setCurrentUserData] = useSetCurrentUserDataMutation();
 
-  if (userInfo) {
-    setValue("name", userInfo.name);
-    setValue("email", userInfo.email);
-    setValue("role", userInfo.role);
-  }
+  useEffect(() => {
+    if (userInfo) {
+      setValue("name", userInfo.name);
+      setValue("email", userInfo.email);
+      setValue("role", userInfo.role);
+    }
+  }, [setValue, userInfo]);
 
   const onSubmit: SubmitHandler<ProfileInputs> = async (data) => {
     await setCurrentUserData({

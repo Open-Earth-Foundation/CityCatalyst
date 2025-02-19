@@ -135,7 +135,7 @@ function SectorTabs({
       <Tabs.List>
         {getSectorsForInventory(inventory?.inventoryType).map(
           ({ icon, name }, index) => (
-            <Tabs.Trigger key={index} value="">
+            <Tabs.Trigger key={index} value={name}>
               <Icon
                 as={icon}
                 height="24px"

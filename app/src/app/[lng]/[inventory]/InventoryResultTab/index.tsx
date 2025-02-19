@@ -5,6 +5,7 @@ import {
   Box,
   Card,
   CardHeader,
+  Center,
   Heading,
   HStack,
   Icon,
@@ -129,13 +130,14 @@ function SectorTabs({
     <Tabs.Root
       // align="start"
       variant="line"
+      defaultValue={SECTORS[0].name}
       // index={selectedIndex}
       // onChange={(index) => setSelectedIndex(index)}
     >
       <Tabs.List>
         {getSectorsForInventory(inventory?.inventoryType).map(
           ({ icon, name }, index) => (
-            <Tabs.Trigger key={index} value="">
+            <Tabs.Trigger key={index} value={name}>
               <Icon
                 as={icon}
                 height="24px"
@@ -175,11 +177,13 @@ function SectorTabs({
         return (
           <Tabs.Content value={name} key={name}>
             {isTopEmissionsResponseLoading ? (
-              <ProgressCircleRoot>
-                <ProgressCircleRing cap="round" />
-              </ProgressCircleRoot>
+              <Center w="full" h="full">
+                <ProgressCircleRoot>
+                  <ProgressCircleRing cap="round" />
+                </ProgressCircleRoot>
+              </Center>
             ) : (
-              <Card.Root divideX="2px" divideColor="border.overlay">
+              <Card.Root divideX="2px" divideColor="border.overlay" p={4}>
                 <SectorHeader
                   icon={icon}
                   sectorName={t(name)}

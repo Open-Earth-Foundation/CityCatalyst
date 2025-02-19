@@ -1,13 +1,13 @@
-import { FC, useState } from "react";
-import { Box, Button, Text, useToast } from "@chakra-ui/react";
+import { FC, useEffect, useState } from "react";
+import { Box, Button } from "@chakra-ui/react";
 import { useForm, SubmitHandler } from "react-hook-form";
-import { MdCheckCircleOutline } from "react-icons/md";
 import { ProfileInputs } from "@/app/[lng]/[inventory]/settings/page";
 import FormInput from "../../form-input";
 import EmailInput from "../../email-input";
 import FormSelectInput from "../../form-select-input";
 import { useSetCurrentUserDataMutation } from "@/services/api";
 import { TFunction } from "i18next";
+import { toaster } from "@/components/ui/toaster";
 
 interface AccountDetailsFormProps {
   t: TFunction;
@@ -22,10 +22,18 @@ const AccountDetailsTabPanel: FC<AccountDetailsFormProps> = ({
   const {
     handleSubmit,
     register,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<ProfileInputs>();
   const [setCurrentUserData] = useSetCurrentUserDataMutation();
-  const toast = useToast();
+
+  useEffect(() => {
+    if (userInfo) {
+      setValue("name", userInfo.name);
+      setValue("email", userInfo.email);
+      setValue("role", userInfo.role);
+    }
+  }, [setValue, userInfo]);
 
   const onSubmit: SubmitHandler<ProfileInputs> = async (data) => {
     await setCurrentUserData({
@@ -34,37 +42,9 @@ const AccountDetailsTabPanel: FC<AccountDetailsFormProps> = ({
       email: data.email,
       role: data.role,
     }).then(() =>
-      toast({
+      toaster.success({
         description: t("user-details-updated"),
-        status: "success",
         duration: 5000,
-        isClosable: true,
-        render: () => (
-          <Box
-            display="flex"
-            gap="8px"
-            color="white"
-            alignItems="center"
-            justifyContent="space-between"
-            p={3}
-            bg="interactive.primary"
-            width="600px"
-            height="60px"
-            borderRadius="8px"
-          >
-            <Box display="flex" gap="8px" alignItems="center">
-              <MdCheckCircleOutline fontSize="24px" />
-              <Text
-                color="base.light"
-                fontWeight="bold"
-                lineHeight="52"
-                fontSize="label.lg"
-              >
-                {t("user-details-updated")}
-              </Text>
-            </Box>
-          </Box>
-        ),
       }),
     );
   };
@@ -103,7 +83,7 @@ const AccountDetailsTabPanel: FC<AccountDetailsFormProps> = ({
         <Box display="flex" w="100%" justifyContent="right" marginTop="12px">
           <Button
             type="submit"
-            isLoading={isSubmitting}
+            loading={isSubmitting}
             h="48px"
             w="auto"
             paddingTop="16px"

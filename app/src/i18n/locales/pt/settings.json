@@ -71,5 +71,14 @@
   "invite-cancel-fail": "Não foi possível cancelar o convite",
   "invite-sent": "Convite enviado com sucesso",
   "invite-send-fail": "Não foi possível enviar o convite",
-  "number-of-cities": "# de cidades"
+  "number-of-cities": "# de cidades",
+  "manage-password": "Gerenciar senha",
+  "update-password-details": "",
+  "current-password": "Senha atual",
+  "confirm-password": "Confirmar Senha",
+  "password-number-check": "A senha deve conter pelo menos um número",
+  "password-updated": "Senha atualizada com sucesso",
+  "password-updated-success": "Senha atualizada com sucesso",
+  "passwords-dont-match": "As senhas não coincidem",
+  "email-placeholder": "Endereço de e-mail"
 }

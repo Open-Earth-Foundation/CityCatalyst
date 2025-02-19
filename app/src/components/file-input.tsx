@@ -1,13 +1,12 @@
-import { Box, FormLabel, Heading, Input, Text, VStack } from "@chakra-ui/react";
+import { Box, Heading, Input, Text, VStack } from "@chakra-ui/react";
 import { TFunction } from "i18next";
-import React, {
-  useState,
-  DragEvent,
-  ChangeEvent,
-  Dispatch,
-  SetStateAction,
-} from "react";
+import React, { useState, DragEvent, Dispatch, SetStateAction } from "react";
 import { FiUpload } from "react-icons/fi";
+import { Field } from "./ui/field";
+import {
+  FileUploadDropzone,
+  FileUploadRoot,
+} from "@/components/ui/file-upload";
 
 interface FileUploadProps {
   onFileSelect: (file: File) => void; // Define a type for the onFileSelect prop
@@ -33,7 +32,7 @@ const FileInput: React.FC<FileUploadProps> = ({
     setDragging(false);
   };
 
-  const handleDrop = (e: DragEvent<HTMLDivElement>) => {
+  const handleDrop = (e: any) => {
     e.preventDefault();
     setDragging(false);
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
@@ -42,10 +41,12 @@ const FileInput: React.FC<FileUploadProps> = ({
     }
   };
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      onFileSelect(e.target.files[0]);
-      setUploadedFile(e.target.files[0]);
+  const handleChange = (e: any) => {
+    console.log(e.acceptedFiles);
+    console.log(e.acceptedFiles[0]);
+    if (e.acceptedFiles && e.acceptedFiles[0]) {
+      onFileSelect(e.acceptedFiles[0]);
+      setUploadedFile(e.acceptedFiles[0]);
     }
   };
 
@@ -65,53 +66,63 @@ const FileInput: React.FC<FileUploadProps> = ({
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
     >
-      <Input
-        type="file"
-        onChange={handleChange}
-        size="lg"
-        display="none"
-        id="file-upload"
-      />
-      <FormLabel cursor="pointer" htmlFor="file-upload">
-        <Box
-          display="flex"
-          justifyContent="center"
-          flexDirection="column"
-          alignItems="center"
-          gap=""
-        >
-          <Box
-            color="base.light"
-            h="48px"
-            w="48px"
-            bg="content.link"
-            borderRadius="50px"
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-            mb="12px"
-          >
-            <FiUpload size="20px" />
-          </Box>
-          <Box display="flex">
-            <Text
-              size="title.md"
-              fontFamily="heading"
-              color="content.link"
-              textDecoration="underline"
-              fontWeight="semibold"
+      <FileUploadRoot
+        maxW="206px"
+        w="full"
+        alignItems="stretch"
+        onFileChange={(e: any) => handleChange(e)}
+        border="none"
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+      >
+        <FileUploadDropzone
+          label={
+            <Box
+              display="flex"
+              justifyContent="center"
+              flexDirection="column"
+              alignItems="center"
+              w="full"
             >
-              {t("click-to-upload")}
-            </Text>{" "}
-            <Text size="title.md" fontWeight="semibold" fontFamily="heading">
-              &nbsp;{t("drag-and-drop")}
-            </Text>
-          </Box>
-          <Text fontSize="body.sm" mt="4px">
-            {t("csv-or-json")}
-          </Text>
-        </Box>
-      </FormLabel>
+              <Box
+                color="base.light"
+                h="48px"
+                w="48px"
+                bg="content.link"
+                borderRadius="50px"
+                display="flex"
+                alignItems="center"
+                justifyContent="center"
+                mb="12px"
+              >
+                <FiUpload size="20px" />
+              </Box>
+              <Box display="flex" w="full" truncate>
+                <Text
+                  fontSize="title.md"
+                  fontFamily="heading"
+                  color="content.link"
+                  textDecoration="underline"
+                  fontWeight="semibold"
+                >
+                  {t("click-to-upload")}
+                </Text>{" "}
+                <Text
+                  fontSize="title.md"
+                  fontWeight="semibold"
+                  fontFamily="heading"
+                >
+                  &nbsp;{t("drag-and-drop")}
+                </Text>
+              </Box>
+              <Text fontSize="body.sm" mt="4px">
+                {t("csv-or-json")}
+              </Text>
+            </Box>
+          }
+          datatest-id="file-upload"
+        />
+      </FileUploadRoot>
     </VStack>
   );
 };

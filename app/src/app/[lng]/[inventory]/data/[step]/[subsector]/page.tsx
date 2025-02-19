@@ -6,25 +6,21 @@ import { useTranslation } from "@/i18n/client";
 import { SubSectorAttributes } from "@/models/SubSector";
 import { api, useGetInventoryValuesBySubsectorQuery } from "@/services/api";
 import { MANUAL_INPUT_HIERARCHY } from "@/util/form-schema";
-import { ArrowBackIcon, ChevronRightIcon } from "@chakra-ui/icons";
 import {
   Box,
-  Breadcrumb,
   BreadcrumbItem,
   BreadcrumbLink,
   Button,
-  CircularProgress,
   Icon,
-  Tab,
-  TabList,
-  TabPanels,
+  Spinner,
   Tabs,
+  TabsList,
   Text,
 } from "@chakra-ui/react";
 
-import { useRouter } from "next/navigation";
-import { forwardRef, useState } from "react";
-import { MdOutlineHomeWork } from "react-icons/md";
+import { useRouter, useSearchParams } from "next/navigation";
+import { forwardRef, useEffect, useState } from "react";
+import { MdArrowBack, MdChevronRight, MdOutlineHomeWork } from "react-icons/md";
 import {
   AnimatePresence,
   easeInOut,
@@ -37,6 +33,10 @@ import Link from "next/link";
 import type { InventoryValueAttributes } from "@/models/InventoryValue";
 import { getScopesForInventoryAndSector, SECTORS } from "@/util/constants";
 import { toKebabCase } from "@/util/helpers";
+import {
+  BreadcrumbCurrentLink,
+  BreadcrumbRoot,
+} from "@/components/ui/breadcrumb";
 
 const MotionBox = motion(
   // the display name is added below, but the linter isn't picking it up
@@ -59,6 +59,7 @@ function SubSectorPage({
   params: { lng: string; step: string; inventory: string; subsector: string };
 }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { t } = useTranslation(lng, "data");
   const { scrollY } = useScroll();
 
@@ -150,7 +151,7 @@ function SubSectorPage({
     // the display name is added below, but the linter isn't picking it up
     // eslint-disable-next-line react/display-name
     forwardRef<HTMLDivElement, any>((props, ref) => (
-      <TabList ref={ref} {...props} />
+      <TabsList ref={ref} {...props} />
     )),
   );
   MotionTabList.displayName = "MotionTabList";
@@ -187,9 +188,18 @@ function SubSectorPage({
     isInventoryValueLoading ||
     isInventoryProgressLoading ||
     isUserInfoLoading;
+  const [referenceNumber, setReferenceNumber] = useState<string>(
+    `${searchParams.get("refNo")}.1`,
+  );
+
+  useEffect(() => {
+    if (scopes.length > 0 && !loadingState && subSectorData) {
+      setReferenceNumber(subSectorData.referenceNumber!);
+    }
+  }, [scopes, loadingState, subSectorData]);
 
   return (
-    <Tabs>
+    <Tabs.Root defaultValue={referenceNumber}>
       <MotionBox
         bg="background.backgroundLight"
         className="fixed z-10 top-0 w-full transition-all"
@@ -220,9 +230,10 @@ function SubSectorPage({
                 <Button
                   variant="ghost"
                   fontSize="14px"
-                  leftIcon={<ArrowBackIcon boxSize={6} />}
+                  color="content.link"
                   onClick={() => router.back()}
                 >
+                  <Icon as={MdArrowBack} boxSize={6} />
                   {t("go-back")}
                 </Button>
                 <Box
@@ -231,20 +242,22 @@ function SubSectorPage({
                   h="24px"
                 />
                 <Box>
-                  <Breadcrumb
-                    spacing="8px"
+                  <BreadcrumbRoot
+                    gap="8px"
                     fontFamily="heading"
                     fontWeight="bold"
-                    fontSize="14px"
                     letterSpacing="widest"
+                    fontSize="14px"
                     textTransform="uppercase"
-                    separator={<ChevronRightIcon color="gray.500" h="24px" />}
+                    separator={
+                      <Icon as={MdChevronRight} color="gray.500" h="24px" />
+                    }
                   >
                     <BreadcrumbItem>
                       <BreadcrumbLink
                         href={`/${inventoryId}/data`}
                         color="content.tertiary"
-                        isTruncated
+                        truncate
                       >
                         {t("all-sectors")}
                       </BreadcrumbLink>
@@ -253,27 +266,24 @@ function SubSectorPage({
                       <BreadcrumbLink
                         href={`/${inventoryId}/data/${step}`}
                         color="content.tertiary"
-                        isTruncated
+                        truncate
                       >
                         {t(getSectorName(step))}
                       </BreadcrumbLink>
                     </BreadcrumbItem>
-                    <BreadcrumbItem>
-                      <BreadcrumbLink href="#" color="content.link">
-                        <Text noOfLines={1}>
-                          {!subSectorData ? (
-                            <CircularProgress
-                              isIndeterminate
-                              color="content.tertiary"
-                              size={"30px"}
-                            />
-                          ) : (
-                            t(kebab(subSectorData?.subsectorName))
-                          )}
-                        </Text>
-                      </BreadcrumbLink>
-                    </BreadcrumbItem>
-                  </Breadcrumb>
+                    <BreadcrumbCurrentLink
+                      color="content.link"
+                      textDecoration="underline"
+                    >
+                      <Text truncate lineClamp={1}>
+                        {!subSectorData ? (
+                          <Spinner size="xs" />
+                        ) : (
+                          t(kebab(subSectorData?.subsectorName))
+                        )}
+                      </Text>
+                    </BreadcrumbCurrentLink>
+                  </BreadcrumbRoot>
                 </Box>
               </MotionBox>
             )}
@@ -296,7 +306,7 @@ function SubSectorPage({
                 >
                   <Link href={`/${inventoryId}/data/${step}`}>
                     <Icon
-                      as={ArrowBackIcon}
+                      as={MdArrowBack}
                       h="24px"
                       w="24px"
                       mt="24px"
@@ -337,11 +347,7 @@ function SubSectorPage({
                   }}
                 >
                   {!subSectorData ? (
-                    <CircularProgress
-                      isIndeterminate
-                      color="content.tertiary"
-                      size={"30px"}
-                    />
+                    <Spinner size="xs" />
                   ) : subSectorData?.referenceNumber != undefined ? (
                     subSectorData?.referenceNumber +
                     " " +
@@ -407,9 +413,11 @@ function SubSectorPage({
             h="80px"
           >
             {scopes?.map((scope, index) => (
-              <Tab
+              <Tabs.Trigger
                 key={index}
                 className="[&[aria-selected='false']]:border-[transparent]"
+                value={scope.referenceNumber}
+                mt="40px"
               >
                 <Text
                   fontFamily="heading"
@@ -418,38 +426,36 @@ function SubSectorPage({
                 >
                   {t("scope")} {scope.scope}
                 </Text>
-              </Tab>
+              </Tabs.Trigger>
             ))}
           </MotionTabList>
         </Box>
       </MotionBox>
       <div className="pt-16 w-[1090px] max-w-full mx-auto px-4 pb-[100px] mt-[240px]">
         <Box mt="48px">
-          <TabPanels>
-            {loadingState ? (
-              <LoadingState />
-            ) : (
-              scopes?.map((scope) => {
-                return (
-                  <ActivityTab
-                    referenceNumber={scope.referenceNumber!}
-                    key={scope.referenceNumber}
-                    t={t}
-                    inventoryId={inventoryId}
-                    subsectorId={subsector}
-                    step={step}
-                    activityData={activityData}
-                    inventoryValues={getFilteredInventoryValues(
-                      scope.referenceNumber,
-                    )}
-                  />
-                );
-              })
-            )}
-          </TabPanels>
+          {loadingState ? (
+            <LoadingState />
+          ) : (
+            scopes?.map((scope) => {
+              return (
+                <ActivityTab
+                  referenceNumber={scope.referenceNumber!}
+                  key={scope.referenceNumber}
+                  t={t}
+                  inventoryId={inventoryId}
+                  subsectorId={subsector}
+                  step={step}
+                  activityData={activityData}
+                  inventoryValues={getFilteredInventoryValues(
+                    scope.referenceNumber,
+                  )}
+                />
+              );
+            })
+          )}
         </Box>
       </div>
-    </Tabs>
+    </Tabs.Root>
   );
 }
 

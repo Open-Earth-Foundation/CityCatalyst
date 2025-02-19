@@ -1,20 +1,15 @@
-import { InfoOutlineIcon } from "@chakra-ui/icons";
+import { MdOutlineInfo } from "react-icons/md";
 import {
-  FormControl,
-  FormErrorMessage,
-  FormHelperText,
-  FormLabel,
+  Icon,
   HStack,
   Heading,
-  InputGroup,
-  InputRightAddon,
   Link,
   NumberInput,
-  NumberInputField,
   Select,
   Text,
   Textarea,
-  Tooltip,
+  Group,
+  InputAddon,
 } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import { Trans } from "react-i18next/TransWithoutContext";
@@ -23,6 +18,13 @@ import type { EmissionsFactorWithDataSources } from "@/util/types";
 import type { EmissionsFactorData } from "./types";
 import { useEffect } from "react";
 import { getTranslationFromDict } from "@/i18n";
+import { InputGroup } from "@/components/ui/input-group";
+import {
+  NumberInputField,
+  NumberInputRoot,
+} from "@/components/ui/number-input";
+import { Tooltip } from "@/components/ui/tooltip";
+import { Field } from "@/components/ui/field";
 
 const activityDataUnits: Record<string, string[]> = {
   I: [
@@ -150,22 +152,25 @@ export function ActivityDataTab({
 
   return (
     <>
-      <HStack spacing={4} mb={12} className="items-start">
-        <FormControl
-          isInvalid={!!resolve(prefix + "activityDataAmount", errors)}
+      <HStack spaceX={4} spaceY={4} mb={12} className="items-start">
+        <Field
+          invalid={!!resolve(prefix + "activityDataAmount", errors)}
+          errorText={resolve(prefix + "activityDataAmount", errors)?.message}
+          label={
+            <>
+              {t("activity-data-amount")}{" "}
+              <Tooltip
+                showArrow
+                content={t("value-types-tooltip")}
+                positioning={{ placement: "bottom-start" }}
+              >
+                <Icon as={MdOutlineInfo} mt={-0.5} color="content.tertiary" />
+              </Tooltip>
+            </>
+          }
         >
-          <FormLabel>
-            {t("activity-data-amount")}{" "}
-            <Tooltip
-              hasArrow
-              label={t("value-types-tooltip")}
-              placement="bottom-start"
-            >
-              <InfoOutlineIcon mt={-0.5} color="content.tertiary" />
-            </Tooltip>
-          </FormLabel>
-          <InputGroup>
-            <NumberInput defaultValue={0} w="full">
+          <Group attached>
+            <NumberInputRoot defaultValue="0" w="full">
               <NumberInputField
                 placeholder={t("activity-data-amount-placeholder")}
                 borderRightRadius={0}
@@ -174,14 +179,14 @@ export function ActivityDataTab({
                   required: t("value-required"),
                 })}
               />
-            </NumberInput>
-            <InputRightAddon
+            </NumberInputRoot>
+            <InputAddon
               className="border-l-2"
               pl={4}
               pr={0}
               bgColor="base.light"
             >
-              <Select
+              <Select.Root
                 variant="unstyled"
                 {...register(prefix + "activityDataUnit")}
               >
@@ -190,16 +195,12 @@ export function ActivityDataTab({
                     {t(unit)}
                   </option>
                 ))}
-              </Select>
-            </InputRightAddon>
-          </InputGroup>
-          <FormErrorMessage>
-            {resolve(prefix + "activityDataAmount", errors)?.message}
-          </FormErrorMessage>
-        </FormControl>
-        <FormControl>
-          <FormLabel>{t("emission-factor-type")}</FormLabel>
-          <Select
+              </Select.Root>
+            </InputAddon>
+          </Group>
+        </Field>
+        <Field label={t("emission-factor-type")}>
+          <Select.Root
             {...register(prefix + "emissionFactorType")}
             bgColor="base.light"
           >
@@ -212,111 +213,96 @@ export function ActivityDataTab({
             <option key="custom" value="custom">
               {t("add-custom")}
             </option>
-          </Select>
-        </FormControl>
+          </Select.Root>
+        </Field>
       </HStack>
       <Heading size="sm" mb={4} className="font-normal">
         {t("emission-factors-values")}{" "}
         <Tooltip
-          hasArrow
-          label={t("value-types-tooltip")}
-          placement="bottom-start"
+          showArrow
+          content={t("value-types-tooltip")}
+          positioning={{ placement: "bottom-start" }}
         >
-          <InfoOutlineIcon mt={-0.5} color="content.tertiary" />
+          <Icon as={MdOutlineInfo} mt={-0.5} color="content.tertiary" />
         </Tooltip>
       </Heading>
-      <HStack spacing={4} mb={5}>
-        <FormControl>
-          <FormLabel color="content.tertiary">
-            {t("co2-emission-factor")}
-          </FormLabel>
-          <InputGroup>
+      <HStack spaceX={4} spaceY={4} mb={5}>
+        <Field label={t("co2-emission-factor")} labelColor="content.tertiary">
+          <Group attached>
             {/* TODO translate values and use internal value for checking */}
-            <NumberInput
-              defaultValue={0}
+            <NumberInputRoot
+              defaultValue="0"
               min={0}
-              isDisabled={selectedEmissionFactorType !== "custom"}
+              disabled={selectedEmissionFactorType !== "custom"}
             >
               <NumberInputField
                 borderRightRadius={0}
                 {...register(prefix + "co2EmissionFactor")}
                 bgColor="background.neutral"
               />
-            </NumberInput>
-            <InputRightAddon
-              bgColor="background.neutral"
-              color="content.tertiary"
-            >
+              =
+            </NumberInputRoot>
+            <InputAddon bgColor="background.neutral" color="content.tertiary">
               {selectedUnitShort}
-            </InputRightAddon>
-          </InputGroup>
-          <FormHelperText>&nbsp;</FormHelperText>
-        </FormControl>
-        <FormControl>
-          <FormLabel color="content.tertiary">
-            {t("n2o-emission-factor")}
-          </FormLabel>
-          <InputGroup>
-            <NumberInput
-              defaultValue={0}
+            </InputAddon>
+          </Group>
+        </Field>
+        <Field
+          label={t("n2o-emission-factor")}
+          helperText={t("optional")}
+          labelColor="content.tertiary"
+        >
+          <Group attached>
+            <NumberInputRoot
+              defaultValue="0"
               min={0}
-              isDisabled={selectedEmissionFactorType !== "custom"}
+              disabled={selectedEmissionFactorType !== "custom"}
             >
               <NumberInputField
                 borderRightRadius={0}
                 {...register(prefix + "n2oEmissionFactor")}
                 bgColor="background.neutral"
               />
-            </NumberInput>
-            <InputRightAddon
-              bgColor="background.neutral"
-              color="content.tertiary"
-            >
+            </NumberInputRoot>
+            <InputAddon bgColor="background.neutral" color="content.tertiary">
               {selectedUnitShort}
-            </InputRightAddon>
-          </InputGroup>
-          <FormHelperText color="content.tertiary">
-            {t("optional")}
-          </FormHelperText>
-        </FormControl>
-        <FormControl>
-          <FormLabel color="content.tertiary">
-            {t("ch4-emission-factor")}
-          </FormLabel>
-          <InputGroup>
-            <NumberInput
-              defaultValue={0}
+            </InputAddon>
+          </Group>
+        </Field>
+        <Field
+          label={t("ch4-emission-factor")}
+          helperText={t("optional")}
+          labelColor="content.tertiary"
+        >
+          <Group attached>
+            <NumberInputRoot
+              defaultValue="0"
               min={0}
-              isDisabled={selectedEmissionFactorType !== "custom"}
+              disabled={selectedEmissionFactorType !== "custom"}
             >
               <NumberInputField
                 borderRightRadius={0}
                 {...register(prefix + "ch4EmissionFactor")}
                 bgColor="background.neutral"
               />
-            </NumberInput>
-            <InputRightAddon
-              bgColor="background.neutral"
-              color="content.tertiary"
-            >
+            </NumberInputRoot>
+            <InputAddon bgColor="background.neutral" color="content.tertiary">
               {selectedUnitShort}
-            </InputRightAddon>
-          </InputGroup>
-          <FormHelperText color="content.tertiary">
-            {t("optional")}
-          </FormHelperText>
-        </FormControl>
+            </InputAddon>
+          </Group>
+        </Field>
       </HStack>
       <HStack className="items-start" mb={5}>
-        <InfoOutlineIcon mt={1} color="content.link" />
+        <Icon as={MdOutlineInfo} mt={1} color="content.link" />
         <Text color="content.tertiary">{t("emissions-factor-details")}</Text>
       </HStack>
-      <FormControl
-        isInvalid={!!resolve(prefix + "dataQuality", errors)}
+      <Field
+        invalid={!!resolve(prefix + "dataQuality", errors)}
+        label={t("data-quality")}
+        errorText={resolve(prefix + "dataQuality", errors)?.message}
         mb={12}
       >
-        <FormLabel>{t("data-quality")}</FormLabel>
-        <Select
+        <Select.Root
           bgColor="base.light"
           placeholder={t("data-quality-placeholder")}
           {...register(prefix + "dataQuality", {
@@ -328,28 +314,23 @@ export function ActivityDataTab({
           <option value="low">
             {t("highly-modeled-uncertain-emissions-data")}
           </option>
-        </Select>
-        <FormErrorMessage>
-          {resolve(prefix + "dataQuality", errors)?.message}
-        </FormErrorMessage>
-      </FormControl>
-      <FormControl
-        isInvalid={!!resolve(prefix + "sourceReference", errors)}
+        </Select.Root>
+      </Field>
+      <Field
+        label={t("source-reference")}
+        invalid={!!resolve(prefix + "sourceReference", errors)}
+        errorText={resolve(prefix + "sourceReference", errors)?.message}
         mb={12}
       >
-        <FormLabel>{t("source-reference")}</FormLabel>
         <Textarea
           placeholder={t("source-reference-placeholder")}
           {...register(prefix + "sourceReference", {
             required: t("source-reference-required"),
           })}
         />
-        <FormErrorMessage>
-          {resolve(prefix + "sourceReference", errors)?.message}
-        </FormErrorMessage>
-      </FormControl>
+      </Field>
       <HStack className="items-start" mb={13}>
-        <InfoOutlineIcon mt={1} color="content.link" />
+        <Icon as={MdOutlineInfo} mt={1} color="content.link" />
         <Text color="content.tertiary">
           <Trans t={t} i18nKey="calculations-details">
             All calculations use the{" "}

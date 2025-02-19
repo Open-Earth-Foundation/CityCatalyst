@@ -62,7 +62,7 @@ export default function ForgotPassword({
         <Button
           type="submit"
           formNoValidate
-          isLoading={isSubmitting}
+          loading={isSubmitting}
           h={16}
           width="full"
           mt={4}

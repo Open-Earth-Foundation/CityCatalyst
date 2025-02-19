@@ -1,8 +1,15 @@
 import type { TFunction } from "i18next";
-import { Badge, Button, HStack, Text, VStack } from "@chakra-ui/react";
-import { Img } from "@react-email/components";
-import { ChevronRightIcon } from "@chakra-ui/icons";
+import {
+  Badge,
+  Button,
+  HStack,
+  Text,
+  VStack,
+  Image,
+  Icon,
+} from "@chakra-ui/react";
 import React from "react";
+import { BsChevronRight } from "react-icons/bs";
 
 const PublishButtons = ({
   t,
@@ -38,9 +45,7 @@ const PublishButtons = ({
           my="24px"
           mx="24px"
           variant="ghost"
-          leftIcon={<Img src={src} alt={title} width="32px" height="32px" />}
-          rightIcon={<ChevronRightIcon width="24px" height="24px" mx="16px" />}
-          isDisabled={!isAvailable}
+          disabled={!isAvailable}
           style={{
             backgroundColor: "white",
             color: "black",
@@ -51,6 +56,7 @@ const PublishButtons = ({
           w="full"
           onClick={onClick}
         >
+          <Image src={src} alt={title} width="32px" height="32px" />
           <VStack align="flex-start" w="full" mx="16px">
             <HStack w="full" justify="flex-start">
               <Text
@@ -68,7 +74,7 @@ const PublishButtons = ({
                   py="4px"
                   px="8px"
                   borderRadius="full"
-                  textColor="content.secondary"
+                  color="content.secondary"
                   fontSize="body.sm"
                   bg="base.light"
                 >
@@ -84,11 +90,12 @@ const PublishButtons = ({
                 overflow: "hidden",
                 textOverflow: "ellipsis",
               }}
-              align="left"
+              textAlign="left"
             >
               {t(`${title}-description`)}
             </Text>
           </VStack>
+          <Icon as={BsChevronRight} width="24px" height="24px" mx="16px" />
         </Button>
       ))}
     </>

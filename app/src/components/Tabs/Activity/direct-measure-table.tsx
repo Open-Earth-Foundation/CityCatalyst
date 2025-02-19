@@ -1,39 +1,34 @@
 import { ActivityValue } from "@/models/ActivityValue";
 import { convertKgToTonnes } from "@/util/helpers";
 import {
-  Accordion,
-  AccordionButton,
-  AccordionIcon,
-  AccordionItem,
-  AccordionPanel,
   Box,
   Icon,
   IconButton,
-  Popover,
   PopoverArrow,
   PopoverBody,
-  PopoverContent,
   PopoverTrigger,
   Table,
-  Tag,
   TagLabel,
-  Tbody,
-  Td,
   Text,
-  Th,
-  Thead,
-  Tr,
 } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import React, { FC, useMemo } from "react";
 import { FiTrash2 } from "react-icons/fi";
-import { MdModeEditOutline, MdMoreVert } from "react-icons/md";
+import { MdAdd, MdModeEditOutline, MdMoreVert } from "react-icons/md";
 import {
   DirectMeasure,
   ExtraField,
   MANUAL_INPUT_HIERARCHY,
 } from "@/util/form-schema";
-import { AddIcon } from "@chakra-ui/icons";
+
+import { PopoverContent, PopoverRoot } from "@/components/ui/popover";
+import { Tag } from "@/components/ui/tag";
+import {
+  AccordionItem,
+  AccordionItemContent,
+  AccordionItemTrigger,
+  AccordionRoot,
+} from "@/components/ui/accordion";
 import { useParams } from "next/navigation";
 import { REGIONALLOCALES } from "@/util/constants";
 
@@ -85,85 +80,148 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
 
   const renderTable = (list: ActivityValue[]) => {
     return (
-      <Table variant="simple" overflowX="scroll" borderWidth="1px">
-        <Thead bg="background.backgroundLight">
-          <Tr fontSize="button.sm" fontWeight="bold">
+      <Table.Root variant="outline" overflowX="scroll" borderWidth="1px">
+        <Table.Header bg="background.backgroundLight">
+          <Table.Row>
             {filteredFields.length > 0 && (
-              <Th isTruncated>{t(filteredFields[0].id)}</Th>
+              <Table.ColumnHeader
+                truncate
+                fontWeight="bold"
+                fontFamily="heading"
+                textTransform="uppercase"
+                fontSize="body.sm"
+                color="content.secondary"
+              >
+                {t(filteredFields[0].id)}
+              </Table.ColumnHeader>
             )}
 
-            <Th isTruncated>{t("data-quality")}</Th>
-            <Th isTruncated>{t(sourceField as string)}</Th>
-            <Th isNumeric isTruncated>
+            <Table.ColumnHeader
+              truncate
+              fontWeight="bold"
+              fontFamily="heading"
+              textTransform="uppercase"
+              fontSize="body.sm"
+              color="content.secondary"
+            >
+              {t("data-quality")}
+            </Table.ColumnHeader>
+            <Table.ColumnHeader
+              truncate
+              fontWeight="bold"
+              fontFamily="heading"
+              textTransform="uppercase"
+              fontSize="body.sm"
+              color="content.secondary"
+            >
+              {t(sourceField as string)}
+            </Table.ColumnHeader>
+            <Table.ColumnHeader
+              textAlign="end"
+              truncate
+              fontWeight="bold"
+              fontFamily="heading"
+              textTransform="uppercase"
+              fontSize="body.sm"
+              color="content.secondary"
+            >
               {t("co2-emissions")}
-            </Th>
-            <Th isNumeric isTruncated>
+            </Table.ColumnHeader>
+            <Table.ColumnHeader
+              textAlign="end"
+              truncate
+              fontWeight="bold"
+              fontFamily="heading"
+              textTransform="uppercase"
+              fontSize="body.sm"
+              color="content.secondary"
+            >
               {t("n2o-emissions")}
-            </Th>
-            <Th isNumeric isTruncated>
+            </Table.ColumnHeader>
+            <Table.ColumnHeader
+              textAlign="end"
+              truncate
+              fontWeight="bold"
+              fontFamily="heading"
+              textTransform="uppercase"
+              fontSize="body.sm"
+              color="content.secondary"
+            >
               {t("ch4-emissions")}
-            </Th>
-            <Th></Th>
-          </Tr>
-        </Thead>
-        <Tbody>
+            </Table.ColumnHeader>
+            <Table.ColumnHeader></Table.ColumnHeader>
+          </Table.Row>
+        </Table.Header>
+        <Table.Body>
           {list?.map((activity: ActivityValue, i: number) => {
             const dataQuality = activity?.metadata?.dataQuality;
             return (
-              <Tr key={i}>
+              <Table.Row key={i} fontSize="body.md">
                 {filteredFields.length > 0 && (
-                  <Td
+                  <Table.Cell
                     title={t(activity?.activityData?.[filteredFields[0].id])}
-                    isTruncated
+                    truncate
                     maxWidth="200px"
                   >
                     {t(activity?.activityData?.[filteredFields[0].id])}
-                  </Td>
+                  </Table.Cell>
                 )}
-                <Td>
-                  <Tag p="8px" minW="50px" variant={dataQuality}>
+                <Table.Cell>
+                  <Tag
+                    p="8px"
+                    minW="50px"
+                    variant="surface"
+                    colorPalette={
+                      activity?.metadata?.dataQuality === "high"
+                        ? "green"
+                        : activity?.metadata?.dataQuality === "medium"
+                          ? "yellow"
+                          : "blue"
+                    }
+                  >
                     <TagLabel textTransform="capitalize">
                       {t(dataQuality!)}
                     </TagLabel>
                   </Tag>
-                </Td>
-                <Td>
-                  <Text maxWidth="100px" isTruncated>
+                </Table.Cell>
+                <Table.Cell>
+                  <Text maxWidth="100px" truncate>
                     {activity?.activityData?.[sourceField as string]}
                   </Text>
-                </Td>
-                <Td isNumeric isTruncated>
+                </Table.Cell>
+                <Table.Cell textAlign="end" truncate>
                   {/*Direct measure entries are collected in tonnes by default*/}
                   {convertKgToTonnes(
                     activity?.activityData?.co2_amount * 1000,
                     "CO2e",
                     REGIONALLOCALES[lng as string],
                   )}
-                </Td>
-                <Td isNumeric isTruncated>
+                </Table.Cell>
+                <Table.Cell textAlign="end" truncate>
                   {convertKgToTonnes(
                     activity?.activityData?.n2o_amount * 1000,
                     "N2O",
                     REGIONALLOCALES[lng as string],
                   )}
-                </Td>
-                <Td isNumeric isTruncated>
+                </Table.Cell>
+                <Table.Cell textAlign="end" truncate>
                   {convertKgToTonnes(
                     activity?.activityData?.ch4_amount * 1000,
                     "CH4",
                     REGIONALLOCALES[lng as string],
                   )}
-                </Td>
-                <Td>
-                  <Popover>
+                </Table.Cell>
+                <Table.Cell>
+                  <PopoverRoot>
                     <PopoverTrigger>
                       <IconButton
                         data-testid="activity-more-icon"
-                        icon={<MdMoreVert size="24px" />}
                         aria-label="more-icon"
                         variant="ghost"
                         color="content.tertiary"
-                      />
+                      >
+                        <Icon as={MdMoreVert} size="lg" />
+                      </IconButton>
                     </PopoverTrigger>
                     <PopoverContent
                       w="auto"
@@ -228,13 +286,13 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
                         </Box>
                       </PopoverBody>
                     </PopoverContent>
-                  </Popover>
-                </Td>
-              </Tr>
+                  </PopoverRoot>
+                </Table.Cell>
+              </Table.Row>
             );
           })}
-        </Tbody>
-      </Table>
+        </Table.Body>
+      </Table.Root>
     );
   };
 
@@ -244,97 +302,91 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
         Object.keys(activityGroups)
           .sort()
           .map((key) => (
-            <Accordion key={key} defaultIndex={[0]} allowMultiple>
+            <AccordionRoot
+              key={key}
+              defaultValue={["main"]}
+              multiple
+              collapsible
+            >
               <AccordionItem
+                value="main"
                 backgroundColor="white"
                 borderWidth="1px"
                 padding="0px"
                 borderColor="border.overlay"
               >
-                <h2>
-                  <AccordionButton padding="0px">
+                <AccordionItemTrigger padding="0px">
+                  <Box
+                    display="flex"
+                    justifyContent="space-between"
+                    w="full"
+                    padding="24px"
+                    alignItems="center"
+                  >
                     <Box
                       display="flex"
-                      justifyContent="space-between"
-                      w="full"
-                      padding="24px"
-                      alignItems="center"
+                      flexDir="column"
+                      alignItems="start"
+                      gap="8px"
                     >
-                      <Box
-                        display="flex"
-                        flexDir="column"
-                        alignItems="start"
-                        gap="8px"
+                      <Text
+                        fontFamily="heading"
+                        fontSize="title.md"
+                        fontWeight="semibold"
                       >
-                        <Text
-                          fontFamily="heading"
-                          fontSize="title.md"
-                          fontWeight="semibold"
-                        >
-                          {key.includes(",") ? t(`mixed${tag}`) : t(key)}
-                        </Text>
-                        <Text
-                          color="content.tertiary"
-                          letterSpacing="wide"
-                          fontSize="body.md"
-                        >
-                          {activityGroups[key]?.length} {t("activities-added")}
+                        {key.includes(",") ? t(`mixed${tag}`) : t(key)}
+                      </Text>
+                      <Text
+                        color="content.tertiary"
+                        letterSpacing="wide"
+                        fontSize="body.md"
+                      >
+                        {activityGroups[key]?.length} {t("activities-added")}
+                      </Text>
+                    </Box>
+                    <Box display="flex" alignItems="center" gap="6">
+                      <Box
+                        alignItems="start"
+                        display="flex"
+                        fontFamily="heading"
+                      >
+                        <Text fontWeight="medium">{t("emissions")}:&nbsp;</Text>
+                        <Text fontWeight="normal">
+                          {" "}
+                          {convertKgToTonnes(
+                            activityGroups[key]?.reduce(
+                              (acc, curr) => acc + BigInt(curr.co2eq as bigint),
+                              0n,
+                            ),
+                          )}{" "}
                         </Text>
                       </Box>
-                      <Box display="flex" alignItems="center" gap="6">
-                        <Box
-                          alignItems="start"
-                          display="flex"
-                          fontFamily="heading"
+                      <Box pr="56px">
+                        <IconButton
+                          bg="none"
+                          pos="relative"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            showActivityModal();
+                          }}
+                          _hover={{ bg: "none" }}
+                          aria-label="add-activity"
                         >
-                          <Text fontWeight="medium">
-                            {t("emissions")}:&nbsp;
-                          </Text>
-                          <Text fontWeight="normal">
-                            {" "}
-                            {convertKgToTonnes(
-                              activityGroups[key]?.reduce(
-                                (acc, curr) =>
-                                  acc + BigInt(curr.co2eq as bigint),
-                                0n,
-                              ),
-                              null,
-                              REGIONALLOCALES[lng as string],
-                            )}{" "}
-                          </Text>
-                        </Box>
-                        <Box pr="56px">
-                          <IconButton
-                            bg="none"
-                            pos="relative"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              showActivityModal();
-                            }}
-                            _hover={{ bg: "none" }}
-                            aria-label="add-activity"
-                            icon={
-                              <AddIcon
-                                color="interactive.control"
-                                fontSize="24px"
-                              />
-                            }
+                          <Icon
+                            as={MdAdd}
+                            color="interactive.control"
+                            size="2xl"
                           />
-                        </Box>
+                        </IconButton>
                       </Box>
                     </Box>
-                    <AccordionIcon
-                      color="interactive.control"
-                      marginRight="24px"
-                      style={{ fontSize: "40px" }}
-                    />
-                  </AccordionButton>
-                </h2>
-                <AccordionPanel padding="0px" pb={4} overflowX="scroll">
+                  </Box>
+                </AccordionItemTrigger>
+                <AccordionItemContent padding="0px" pb={4} overflowX="scroll">
                   {renderTable(activityGroups[key])}
-                </AccordionPanel>
+                </AccordionItemContent>
               </AccordionItem>
-            </Accordion>
+            </AccordionRoot>
           ))
       ) : (
         <Box

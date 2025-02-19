@@ -5,18 +5,12 @@ import {
   Box,
   Card,
   CardHeader,
-  CircularProgress,
-  Divider,
+  Center,
   Heading,
   HStack,
   Icon,
-  Tab,
-  TabList,
-  TabPanel,
-  TabPanels,
   Tabs,
   Text,
-  useToast,
 } from "@chakra-ui/react";
 import { TabHeader } from "@/components/HomePage/TabHeader";
 import EmissionsWidget from "@/app/[lng]/[inventory]/InventoryResultTab/EmissionsWidget";
@@ -48,6 +42,11 @@ import { MdBarChart, MdTableChart } from "react-icons/md";
 import EmissionBySectorTableSection from "@/app/[lng]/[inventory]/InventoryResultTab/EmissionBySectorTable";
 import EmissionBySectorChart from "@/app/[lng]/[inventory]/InventoryResultTab/EmissionBySectorChart";
 import { EmissionsForecastSection } from "@/app/[lng]/[inventory]/InventoryResultTab/EmissionsForecast/EmissionsForecastSection";
+import { toaster } from "@/components/ui/toaster";
+import {
+  ProgressCircleRing,
+  ProgressCircleRoot,
+} from "@/components/ui/progress-circle";
 import { TooltipProvider } from "@nivo/tooltip";
 
 enum TableView {
@@ -99,15 +98,12 @@ function SectorTabs({
     inventoryId: inventory!.inventoryId!,
     sector: SECTORS[selectedIndex].name,
   });
-  const toast = useToast();
 
   const makeErrorToast = (title: string, description?: string) => {
-    toast({
+    toaster.create({
       title,
       description,
-      position: "bottom",
-      status: "error",
-      isClosable: true,
+      type: "error",
       duration: 10000,
     });
   };
@@ -131,16 +127,17 @@ function SectorTabs({
     Object.entries(sectorBreakdown?.byScope || {}).length === 0;
 
   return (
-    <Tabs
-      align="start"
+    <Tabs.Root
+      // align="start"
       variant="line"
-      index={selectedIndex}
-      onChange={(index) => setSelectedIndex(index)}
+      defaultValue={SECTORS[0].name}
+      // index={selectedIndex}
+      // onChange={(index) => setSelectedIndex(index)}
     >
-      <TabList>
+      <Tabs.List>
         {getSectorsForInventory(inventory?.inventoryType).map(
           ({ icon, name }, index) => (
-            <Tab key={index}>
+            <Tabs.Trigger key={index} value={name}>
               <Icon
                 as={icon}
                 height="24px"
@@ -160,50 +157,48 @@ function SectorTabs({
               >
                 {t(name)}
               </Text>
-            </Tab>
+            </Tabs.Trigger>
           ),
         )}
-      </TabList>
+      </Tabs.List>
 
-      <TabPanels>
-        {SECTORS.map(({ icon, name }) => {
-          const shouldShowTableByActivity =
-            !isEmptyInventory &&
-            !isResultsLoading &&
-            false && // ON-3126 restore view by activity
-            selectedTableView === TableView.BY_ACTIVITY;
-          const shouldShowTableByScope =
-            !isEmptyInventory &&
-            inventory &&
-            !isResultsLoading &&
-            !isLoadingNewData; // &&
-          // selectedTableView === TableView.BY_SCOPE; ON-3126 restore view by activity
-          return (
-            <TabPanel key={name}>
-              {isTopEmissionsResponseLoading ? (
-                <CircularProgress isIndeterminate />
-              ) : (
-                <Card>
-                  <SectorHeader
-                    icon={icon}
-                    sectorName={t(name)}
-                    dataForSector={getDataForSector(name)}
-                    t={t}
-                  />
-                  <Divider
-                    borderColor="border.overlay"
-                    borderWidth="1px"
-                    my={"24px"}
-                  />
-                  <HStack justifyContent="space-between" width="100%">
-                    <Text
-                      fontFamily="heading"
-                      fontSize="title.md"
-                      fontWeight="medium"
-                    >
-                      {t("breakdown-of-sub-sector-emissions")}
-                    </Text>
-                    {/*<Box paddingBottom={"12px"}>
+      {SECTORS.map(({ icon, name }) => {
+        const shouldShowTableByActivity =
+          !isEmptyInventory &&
+          !isResultsLoading &&
+          false && // ON-3126 restore view by activity
+          selectedTableView === TableView.BY_ACTIVITY;
+        const shouldShowTableByScope =
+          !isEmptyInventory &&
+          inventory &&
+          !isResultsLoading &&
+          !isLoadingNewData; // &&
+        // selectedTableView === TableView.BY_SCOPE; ON-3126 restore view by activity
+        return (
+          <Tabs.Content value={name} key={name}>
+            {isTopEmissionsResponseLoading ? (
+              <Center w="full" h="full">
+                <ProgressCircleRoot>
+                  <ProgressCircleRing cap="round" />
+                </ProgressCircleRoot>
+              </Center>
+            ) : (
+              <Card.Root divideX="2px" divideColor="border.overlay" p={4}>
+                <SectorHeader
+                  icon={icon}
+                  sectorName={t(name)}
+                  dataForSector={getDataForSector(name)}
+                  t={t}
+                />
+                <HStack justifyContent="space-between" width="100%">
+                  <Text
+                    fontFamily="heading"
+                    fontSize="title.md"
+                    fontWeight="medium"
+                  >
+                    {t("breakdown-of-sub-sector-emissions")}
+                  </Text>
+                  {/*<Box paddingBottom={"12px"}>
                       <Selector
                         options={[TableView.BY_ACTIVITY, TableView.BY_SCOPE]}
                         value={selectedTableView}
@@ -212,43 +207,44 @@ function SectorTabs({
                       />
                     </Box>
                     {***[ON-3126 restore view by activity]*/}
-                  </HStack>
-                  {(isResultsLoading || isLoadingNewData) && (
-                    <CircularProgress isIndeterminate />
-                  )}
-                  {isEmptyInventory && (
-                    <EmptyStateCardContent
-                      t={t}
-                      inventoryId={inventory.inventoryId}
-                      width={"1042px"}
-                      height={"592px"}
-                      isPublic={isPublic}
-                    />
-                  )}
-                  {shouldShowTableByActivity && (
-                    <ByActivityView
-                      sectorBreakdown={sectorBreakdown!}
-                      tData={tData}
-                      tDashboard={t}
-                      sectorName={name}
-                    />
-                  )}
-                  {shouldShowTableByScope && (
-                    <ByScopeView
-                      inventoryType={inventory.inventoryType}
-                      data={sectorBreakdown!.byScope}
-                      tData={tData}
-                      tDashboard={t}
-                      sectorName={name}
-                    />
-                  )}
-                </Card>
-              )}
-            </TabPanel>
-          );
-        })}
-      </TabPanels>
-    </Tabs>
+                </HStack>
+                {(isResultsLoading || isLoadingNewData) && (
+                  <ProgressCircleRoot>
+                    <ProgressCircleRing cap="round" />
+                  </ProgressCircleRoot>
+                )}
+                {isEmptyInventory && (
+                  <EmptyStateCardContent
+                    t={t}
+                    inventoryId={inventory.inventoryId}
+                    width={"1042px"}
+                    height={"592px"}
+                    isPublic={isPublic}
+                  />
+                )}
+                {shouldShowTableByActivity && (
+                  <ByActivityView
+                    sectorBreakdown={sectorBreakdown!}
+                    tData={tData}
+                    tDashboard={t}
+                    sectorName={name}
+                  />
+                )}
+                {shouldShowTableByScope && (
+                  <ByScopeView
+                    inventoryType={inventory.inventoryType}
+                    data={sectorBreakdown!.byScope}
+                    tData={tData}
+                    tDashboard={t}
+                    sectorName={name}
+                  />
+                )}
+              </Card.Root>
+            )}
+          </Tabs.Content>
+        );
+      })}
+    </Tabs.Root>
   );
 }
 
@@ -415,16 +411,18 @@ export function EmissionPerSectors({
 
   return (
     <Box className="flex flex-col gap-[8px] w-full">
-      <Card paddingY="16px" paddingX="24px">
+      <Card.Root paddingY="16px" paddingX="24px">
         <Box className="flex items-center justify-between">
-          <CardHeader padding={0}>
+          <Card.Header padding={0}>
             <Heading size="sm">{t("ghg-by-sector-heading")}</Heading>
-          </CardHeader>
+          </Card.Header>
           <ButtonGroupToggle options={options} activeOption={selectedView} />
         </Box>
         {loadingState && (
           <Box className="w-full py-12 flex items-center justify-center">
-            <CircularProgress isIndeterminate />
+            <ProgressCircleRoot>
+              <ProgressCircleRing cap="round" />
+            </ProgressCircleRoot>
           </Box>
         )}
         {!loadingState && transformedYearOverYearData.length === 0 && (
@@ -458,7 +456,7 @@ export function EmissionPerSectors({
             </Box>
           )
         }
-      </Card>
+      </Card.Root>
     </Box>
   );
 }

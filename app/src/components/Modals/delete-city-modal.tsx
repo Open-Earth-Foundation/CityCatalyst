@@ -1,39 +1,35 @@
 "use client";
 
-import {
-  Badge,
-  Box,
-  Button,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
-  Text,
-  useToast,
-} from "@chakra-ui/react";
+import { Badge, Box, Button, Text, Icon } from "@chakra-ui/react";
 import React, { FC, useState } from "react";
 
 import { FiTrash2 } from "react-icons/fi";
 import PasswordInput from "../password-input";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { TFunction } from "i18next";
-import { InfoOutlineIcon } from "@chakra-ui/icons";
-import { UserAttributes } from "@/models/User";
+import { MdInfoOutline } from "react-icons/md";
 import { api } from "@/services/api";
-import { CityAttributes } from "@/models/City";
-import { MdCheckCircleOutline } from "react-icons/md";
+import type { CityAttributes } from "@/models/City";
 
-interface DeleteCityModalProps {
+import {
+  DialogRoot,
+  DialogBody,
+  DialogCloseTrigger,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+} from "@/components/ui/dialog";
+
+import { toaster } from "@/components/ui/toaster";
+
+interface DeleteCityDialogProps {
   isOpen: boolean;
   onClose: any;
   cityData: CityAttributes;
   t: TFunction;
 }
 
-const DeleteCityModal: FC<DeleteCityModalProps> = ({
+const DeleteCityDialog: FC<DeleteCityDialogProps> = ({
   isOpen,
   onClose,
   cityData,
@@ -50,7 +46,6 @@ const DeleteCityModal: FC<DeleteCityModalProps> = ({
   const { data: token } = api.useGetVerifcationTokenQuery({});
   const [removeCity] = api.useRemoveCityMutation();
   const [isPasswordCorrect, setIsPasswordCorrect] = useState<boolean>(true);
-  const toast = useToast();
 
   const onSubmit: SubmitHandler<{ password: string }> = async (data) => {
     await requestPasswordConfirm({
@@ -63,38 +58,9 @@ const DeleteCityModal: FC<DeleteCityModalProps> = ({
         }).then((res: any) => {
           onClose();
           setIsPasswordCorrect(true);
-          toast({
+          toaster.success({
             description: t("city-deleted"),
-            status: "success",
             duration: 5000,
-            isClosable: true,
-            render: () => (
-              <Box
-                display="flex"
-                gap="8px"
-                color="white"
-                alignItems="center"
-                justifyContent="space-between"
-                p={3}
-                bg="interactive.primary"
-                width="600px"
-                height="60px"
-                borderRadius="8px"
-              >
-                <Box display="flex" gap="8px" alignItems="center">
-                  <MdCheckCircleOutline fontSize="24px" />
-
-                  <Text
-                    color="base.light"
-                    fontWeight="bold"
-                    lineHeight="52"
-                    fontSize="label.lg"
-                  >
-                    {t("city-deleted")}
-                  </Text>
-                </Box>
-              </Box>
-            ),
           });
         });
       } else {
@@ -105,10 +71,9 @@ const DeleteCityModal: FC<DeleteCityModalProps> = ({
 
   return (
     <>
-      <Modal blockScrollOnMount={false} isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay />
-        <ModalContent minH="520px" minW="568px" marginTop="10%">
-          <ModalHeader
+      <DialogRoot preventScroll open={isOpen} onOpenChange={onClose}>
+        <DialogContent minH="520px" minW="568px" marginTop="10%">
+          <DialogHeader
             display="flex"
             justifyContent="center"
             fontWeight="semibold"
@@ -121,9 +86,9 @@ const DeleteCityModal: FC<DeleteCityModalProps> = ({
             borderColor="border.neutral"
           >
             {t("remove-city")}
-          </ModalHeader>
-          <ModalCloseButton marginTop="10px" />
-          <ModalBody paddingTop="24px">
+          </DialogHeader>
+          <DialogCloseTrigger marginTop="10px" />
+          <DialogBody paddingTop="24px">
             <Box
               display="flex"
               flexDirection="column"
@@ -192,7 +157,10 @@ const DeleteCityModal: FC<DeleteCityModalProps> = ({
                         w="365px"
                         gap="6px"
                       >
-                        <InfoOutlineIcon color="interactive.secondary" />
+                        <Icon
+                          as={MdInfoOutline}
+                          color="interactive.secondary"
+                        />
                         {isPasswordCorrect ? (
                           <Text
                             fontSize="body.md"
@@ -222,8 +190,8 @@ const DeleteCityModal: FC<DeleteCityModalProps> = ({
                 </form>
               </Box>
             </Box>
-          </ModalBody>
-          <ModalFooter
+          </DialogBody>
+          <DialogFooter
             borderTopWidth="1px"
             borderStyle="solid"
             borderColor="border.neutral"
@@ -251,11 +219,11 @@ const DeleteCityModal: FC<DeleteCityModalProps> = ({
             >
               {t("remove-city")}
             </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+          </DialogFooter>
+        </DialogContent>
+      </DialogRoot>
     </>
   );
 };
 
-export default DeleteCityModal;
+export default DeleteCityDialog;

@@ -1,5 +1,12 @@
 import type { TFunction } from "i18next";
-import { Checkbox, ModalBody, Text } from "@chakra-ui/react";
+import { Text } from "@chakra-ui/react";
+import {
+  DialogRoot,
+  DialogBody,
+  DialogContent,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export function UnpublishedView({
   checked,
@@ -11,14 +18,14 @@ export function UnpublishedView({
   t: TFunction;
 }) {
   return (
-    <ModalBody>
+    <DialogBody>
       <Text fontWeight="600" fontSize="title.lg">
         {t("make-public")}
       </Text>
       <Text>{t("make-public-description")}</Text>
-      <Checkbox my="16px" isChecked={checked} onChange={onAuthorizeChange}>
+      <Checkbox my="16px" checked={checked} onChange={onAuthorizeChange}>
         {t("i-authorize")}
       </Checkbox>
-    </ModalBody>
+    </DialogBody>
   );
 }

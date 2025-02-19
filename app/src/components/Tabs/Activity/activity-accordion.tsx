@@ -1,36 +1,33 @@
 import { ActivityValue } from "@/models/ActivityValue";
 import { convertKgToTonnes } from "@/util/helpers";
-import { AddIcon } from "@chakra-ui/icons";
 import {
   Accordion,
-  AccordionButton,
-  AccordionIcon,
-  AccordionItem,
-  AccordionPanel,
   Box,
   Icon,
   IconButton,
-  Popover,
-  PopoverArrow,
-  PopoverBody,
-  PopoverContent,
-  PopoverTrigger,
   Table,
-  TableContainer,
-  Tag,
   TagLabel,
-  Tbody,
-  Td,
   Text,
-  Th,
-  Thead,
-  Tr,
 } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import React, { FC, useMemo } from "react";
-import { MdModeEditOutline, MdMoreVert } from "react-icons/md";
+import { MdAdd, MdModeEditOutline, MdMoreVert } from "react-icons/md";
 import { FiTrash2 } from "react-icons/fi";
 import { ExtraField, findMethodology, Methodology } from "@/util/form-schema";
+import { Tag } from "@/components/ui/tag";
+import {
+  PopoverArrow,
+  PopoverBody,
+  PopoverContent,
+  PopoverRoot,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  AccordionItem,
+  AccordionItemContent,
+  AccordionItemTrigger,
+  AccordionRoot,
+} from "@/components/ui/accordion";
 import { useParams } from "next/navigation";
 import { REGIONALLOCALES } from "@/util/constants";
 
@@ -154,7 +151,7 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
     return {
       activityGroups,
     };
-  }, [activityData, methodology]);
+  }, [activityData, methodology, referenceNumber]);
 
   // let extraFields = (methodology as Methodology)?.activities?.[0]?.[
   //   "extra-fields"
@@ -193,149 +190,197 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
     title: string,
   ) => {
     return (
-      <TableContainer px={0}>
-        <Table
-          variant="simple"
-          borderLeft="0px"
-          borderBottom="0px"
-          borderRight="0px"
-          borderWidth="1px"
-          borderRadius="20px"
+      <Table.Root
+        px={0}
+        variant="line"
+        borderLeft="0px"
+        borderBottom="0px"
+        borderRight="0px"
+        borderWidth="1px"
+        borderRadius="20px"
+      >
+        <Table.Header
+          backgroundColor="background.backgroundLight"
+          fontWeight="bold"
         >
-          <Thead backgroundColor="background.backgroundLight">
-            <Tr>
-              {filteredFields?.length! > 0 && (
-                <Th
-                  title={t(filteredFields[0].id)}
-                  maxWidth="200px"
-                  isTruncated
-                >
-                  {t(filteredFields[0].id)}
-                </Th>
-              )}
-              <Th>{t("data-quality")}</Th>
-              <Th>{t(sourceField as string)}</Th>
-              <Th>{t(title)}</Th>
-              <Th>{t("emissions")}</Th>
-              <Th></Th>
-            </Tr>
-          </Thead>
-          <Tbody>
-            {list?.map((activity: any, i: number) => {
-              return (
-                <Tr
-                  title={t(activity.activityData?.[filteredFields[0].id])}
-                  maxWidth="200px"
-                  key={i}
-                  isTruncated
-                >
-                  {filteredFields?.length! > 0 && (
-                    <Td>{t(activity.activityData?.[filteredFields[0].id])}</Td>
-                  )}
-                  <Td>
-                    <Tag
-                      size="lg"
-                      variant={activity?.metadata?.dataQuality}
-                      colorScheme="blue"
-                      borderRadius="full"
-                    >
-                      <TagLabel>{t(activity?.metadata?.dataQuality)}</TagLabel>
-                    </Tag>
-                  </Td>
-                  <Td maxWidth="100px" isTruncated>
-                    {activity?.activityData[sourceField as string]}
-                  </Td>
-                  <Td>
-                    {parseFloat(activity?.activityData[title])}{" "}
-                    {t(activity?.activityData[title + "-unit"])}
-                  </Td>
-                  <Td>
-                    {convertKgToTonnes(
-                      activity?.co2eq,
-                      null,
-                      REGIONALLOCALES[lng as string],
-                    )}
-                  </Td>
-                  <Td>
-                    <Popover>
-                      <PopoverTrigger>
-                        <IconButton
-                          icon={<MdMoreVert size="24px" />}
-                          aria-label="more-icon"
-                          variant="ghost"
-                          color="content.tertiary"
-                        />
-                      </PopoverTrigger>
-                      <PopoverContent
-                        w="auto"
-                        borderRadius="8px"
-                        shadow="2dp"
-                        px="0"
+          <Table.Row>
+            {filteredFields?.length! > 0 && (
+              <Table.ColumnHeader
+                title={t(filteredFields[0].id)}
+                maxWidth="200px"
+                truncate
+                fontWeight="bold"
+                fontFamily="heading"
+                textTransform="uppercase"
+                fontSize="body.sm"
+                color="content.secondary"
+              >
+                {t(filteredFields[0].id)}
+              </Table.ColumnHeader>
+            )}
+            <Table.ColumnHeader
+              fontWeight="bold"
+              fontFamily="heading"
+              textTransform="uppercase"
+              fontSize="body.sm"
+              color="content.secondary"
+            >
+              {t("data-quality")}
+            </Table.ColumnHeader>
+            <Table.ColumnHeader
+              fontWeight="bold"
+              fontFamily="heading"
+              textTransform="uppercase"
+              fontSize="body.sm"
+              color="content.secondary"
+            >
+              {t(sourceField as string)}
+            </Table.ColumnHeader>
+            <Table.ColumnHeader
+              fontWeight="bold"
+              fontFamily="heading"
+              textTransform="uppercase"
+              fontSize="body.sm"
+              color="content.secondary"
+            >
+              {t(title)}
+            </Table.ColumnHeader>
+            <Table.ColumnHeader
+              fontWeight="bold"
+              fontFamily="heading"
+              textTransform="uppercase"
+              fontSize="body.sm"
+              color="content.secondary"
+            >
+              {t("emissions")}
+            </Table.ColumnHeader>
+            <Table.ColumnHeader
+              fontWeight="bold"
+              fontFamily="heading"
+              textTransform="uppercase"
+              fontSize="body.sm"
+              color="content.secondary"
+            ></Table.ColumnHeader>
+          </Table.Row>
+        </Table.Header>
+        <Table.Body>
+          {list?.map((activity: any, i: number) => {
+            return (
+              <Table.Row
+                title={t(activity.activityData?.[filteredFields[0].id])}
+                maxWidth="200px"
+                key={i}
+                truncate
+              >
+                {filteredFields?.length! > 0 && (
+                  <Table.Cell>
+                    {t(activity.activityData?.[filteredFields[0].id])}
+                  </Table.Cell>
+                )}
+                <Table.Cell>
+                  <Tag
+                    size="lg"
+                    variant="surface"
+                    colorPalette={
+                      activity?.metadata?.dataQuality === "high"
+                        ? "green"
+                        : activity?.metadata?.dataQuality === "medium"
+                          ? "yellow"
+                          : "red"
+                    }
+                    colorScheme="blue"
+                    borderRadius="lg"
+                  >
+                    <TagLabel>{t(activity?.metadata?.dataQuality)}</TagLabel>
+                  </Tag>
+                </Table.Cell>
+                <Table.Cell maxWidth="100px" truncate>
+                  {activity?.activityData[sourceField as string]}
+                </Table.Cell>
+                <Table.Cell>
+                  {parseFloat(activity?.activityData[title])}{" "}
+                  {t(activity?.activityData[title + "-unit"])}
+                </Table.Cell>
+                <Table.Cell>{convertKgToTonnes(activity?.co2eq)}</Table.Cell>
+                <Table.Cell>
+                  <PopoverRoot>
+                    <PopoverTrigger asChild>
+                      <IconButton
+                        aria-label="more-icon"
+                        variant="ghost"
+                        color="content.tertiary"
                       >
-                        <PopoverArrow />
-                        <PopoverBody p="0px">
-                          <Box
-                            p="16px"
-                            display="flex"
-                            alignItems="center"
-                            gap="16px"
-                            _hover={{
-                              bg: "content.link",
-                              cursor: "pointer",
-                            }}
-                            className="group"
-                            onClick={() => onEditActivity(activity)}
+                        <Icon as={MdMoreVert} size="lg" />
+                      </IconButton>
+                    </PopoverTrigger>
+                    <PopoverContent
+                      w="auto"
+                      borderRadius="8px"
+                      shadow="2dp"
+                      px="0"
+                    >
+                      <PopoverBody p="0px">
+                        <Box
+                          p="16px"
+                          display="flex"
+                          alignItems="center"
+                          gap="16px"
+                          _hover={{
+                            bg: "content.link",
+                            cursor: "pointer",
+                          }}
+                          className="group"
+                          onClick={() => onEditActivity(activity)}
+                        >
+                          <Icon
+                            className="group-hover:text-white"
+                            color="interactive.control"
+                            as={MdModeEditOutline}
+                            h="24px"
+                            w="24px"
+                          />
+                          <Text
+                            className="group-hover:text-white"
+                            color="content.primary"
                           >
-                            <Icon
-                              className="group-hover:text-white"
-                              color="interactive.control"
-                              as={MdModeEditOutline}
-                              h="24px"
-                              w="24px"
-                            />
-                            <Text
-                              className="group-hover:text-white"
-                              color="content.primary"
-                            >
-                              {t("update-activity")}
-                            </Text>
-                          </Box>
-                          <Box
-                            p="16px"
-                            display="flex"
-                            alignItems="center"
-                            gap="16px"
-                            _hover={{
-                              bg: "content.link",
-                              cursor: "pointer",
-                            }}
-                            className="group"
-                            onClick={() => onDeleteActivity(activity)}
+                            {t("update-activity")}
+                          </Text>
+                        </Box>
+                        <Box
+                          p="16px"
+                          display="flex"
+                          alignItems="center"
+                          gap="16px"
+                          _hover={{
+                            bg: "content.link",
+                            cursor: "pointer",
+                          }}
+                          className="group"
+                          onClick={() => onDeleteActivity(activity)}
+                        >
+                          <Icon
+                            className="group-hover:text-white"
+                            color="sentiment.negativeDefault"
+                            as={FiTrash2}
+                            h="24px"
+                            w="24px"
+                          />
+                          <Text
+                            className="group-hover:text-white"
+                            color="content.primary"
                           >
-                            <Icon
-                              className="group-hover:text-white"
-                              color="sentiment.negativeDefault"
-                              as={FiTrash2}
-                              h="24px"
-                              w="24px"
-                            />
-                            <Text
-                              className="group-hover:text-white"
-                              color="content.primary"
-                            >
-                              {t("delete-activity")}
-                            </Text>
-                          </Box>
-                        </PopoverBody>
-                      </PopoverContent>
-                    </Popover>
-                  </Td>
-                </Tr>
-              );
-            })}
-          </Tbody>
-        </Table>
-      </TableContainer>
+                            {t("delete-activity")}
+                          </Text>
+                        </Box>
+                      </PopoverBody>
+                    </PopoverContent>
+                  </PopoverRoot>
+                </Table.Cell>
+              </Table.Row>
+            );
+          })}
+        </Table.Body>
+      </Table.Root>
     );
   };
 
@@ -345,114 +390,113 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
         Object.keys(activityGroups)
           .sort()
           .map((key) => (
-            <Accordion key={key} defaultIndex={[0]} allowMultiple>
+            <AccordionRoot
+              key={key}
+              defaultValue={["main"]}
+              multiple={true}
+              collapsible
+            >
               <AccordionItem
+                value="main"
                 backgroundColor="white"
                 borderWidth="1px"
                 padding="0px"
                 borderColor="border.overlay"
               >
-                <h2>
-                  <AccordionButton padding="0px">
+                <AccordionItemTrigger padding="0px">
+                  <Box
+                    display="flex"
+                    justifyContent="space-between"
+                    w="full"
+                    padding="24px"
+                    alignItems="center"
+                  >
                     <Box
                       display="flex"
-                      justifyContent="space-between"
-                      w="full"
-                      padding="24px"
-                      alignItems="center"
+                      flexDir="column"
+                      alignItems="start"
+                      gap="8px"
                     >
-                      <Box
-                        display="flex"
-                        flexDir="column"
-                        alignItems="start"
-                        gap="8px"
+                      <Text
+                        fontFamily="heading"
+                        fontSize="title.md"
+                        fontWeight="semibold"
                       >
-                        <Text
-                          fontFamily="heading"
-                          fontSize="title.md"
-                          fontWeight="semibold"
-                        >
-                          {key.includes(",")
-                            ? t(`mixed${activityGroups[key].tag}`)
-                            : t(key)}
-                        </Text>
-                        <Text
-                          color="content.tertiary"
-                          letterSpacing="wide"
-                          fontSize="body.md"
-                        >
-                          {activityGroups[key]?.activityData.length}{" "}
-                          {t("activities-added")}
+                        {key.includes(",")
+                          ? t(`mixed${activityGroups[key].tag}`)
+                          : t(key)}
+                      </Text>
+                      <Text
+                        color="content.tertiary"
+                        letterSpacing="wide"
+                        fontSize="body.md"
+                      >
+                        {activityGroups[key]?.activityData.length}{" "}
+                        {t("activities-added")}
+                      </Text>
+                    </Box>
+                    {/*Todo find a way to sum all consumptions regardless of their units*/}
+                    {/*<Box*/}
+                    {/*  alignItems="start"*/}
+                    {/*  display="flex"*/}
+                    {/*  fontFamily="heading"*/}
+                    {/*>*/}
+                    {/*  <Text fontWeight="medium">{t(title)}:&nbsp;</Text>*/}
+                    {/*  <Text fontWeight="normal">0M gallons</Text>*/}
+                    {/*</Box>*/}
+                    <Box display="flex" alignItems="center" gap="6">
+                      <Box
+                        alignItems="start"
+                        display="flex"
+                        fontFamily="heading"
+                      >
+                        <Text fontWeight="medium">{t("emissions")}:&nbsp;</Text>
+                        <Text fontWeight="normal">
+                          {" "}
+                          {convertKgToTonnes(
+                            activityGroups[key].activityData?.reduce(
+                              (acc, curr) => acc + BigInt(curr.co2eq as bigint),
+                              0n,
+                            ),
+                            null,
+                            REGIONALLOCALES[lng as string],
+                          )}{" "}
                         </Text>
                       </Box>
-                      {/*Todo find a way to sum all consumptions regardless of their units*/}
-                      {/*<Box*/}
-                      {/*  alignItems="start"*/}
-                      {/*  display="flex"*/}
-                      {/*  fontFamily="heading"*/}
-                      {/*>*/}
-                      {/*  <Text fontWeight="medium">{t(title)}:&nbsp;</Text>*/}
-                      {/*  <Text fontWeight="normal">0M gallons</Text>*/}
-                      {/*</Box>*/}
-                      <Box display="flex" alignItems="center" gap="6">
-                        <Box
-                          alignItems="start"
-                          display="flex"
-                          fontFamily="heading"
+                      <Box pr="56px">
+                        <IconButton
+                          bg="none"
+                          pos="relative"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            showActivityModal();
+                          }}
+                          _hover={{ bg: "none" }}
+                          aria-label="add-activity"
                         >
-                          <Text fontWeight="medium">
-                            {t("emissions")}:&nbsp;
-                          </Text>
-                          <Text fontWeight="normal">
-                            {" "}
-                            {convertKgToTonnes(
-                              activityGroups[key].activityData?.reduce(
-                                (acc, curr) =>
-                                  acc + BigInt(curr.co2eq as bigint),
-                                0n,
-                              ),
-                              null,
-                              REGIONALLOCALES[lng as string],
-                            )}{" "}
-                          </Text>
-                        </Box>
-                        <Box pr="56px">
-                          <IconButton
-                            bg="none"
-                            pos="relative"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              showActivityModal();
-                            }}
-                            _hover={{ bg: "none" }}
-                            aria-label="add-activity"
-                            icon={
-                              <AddIcon
-                                color="interactive.control"
-                                fontSize="24px"
-                              />
-                            }
+                          <Icon
+                            as={MdAdd}
+                            color="interactive.control"
+                            size="2xl"
                           />
-                        </Box>
+                        </IconButton>
+
+                        <Text fontWeight="normal"> </Text>
                       </Box>
                     </Box>
-                    <AccordionIcon
-                      color="interactive.control"
-                      marginRight="24px"
-                      style={{ fontSize: "40px" }}
-                    />
-                  </AccordionButton>
-                </h2>
-                <AccordionPanel padding="0px" pb={4}>
+                  </Box>
+                </AccordionItemTrigger>
+
+                <AccordionItemContent padding="0px" pb={4}>
                   {renderTable(
                     activityGroups[key].activityData as ActivityValue[],
                     activityGroups[key].filteredFields as ExtraField[],
                     activityGroups[key].sourceField as string,
                     activityGroups[key].title as string,
                   )}
-                </AccordionPanel>
+                </AccordionItemContent>
               </AccordionItem>
-            </Accordion>
+            </AccordionRoot>
           ))
       ) : (
         <Box

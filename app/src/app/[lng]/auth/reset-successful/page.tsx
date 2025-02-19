@@ -1,8 +1,8 @@
 "use client";
 
 import { useTranslation } from "@/i18n/client";
-import { ArrowForwardIcon } from "@chakra-ui/icons";
-import { Button, Heading, Text } from "@chakra-ui/react";
+import { MdArrowForward } from "react-icons/md";
+import { Button, Heading, Icon, Text } from "@chakra-ui/react";
 import NextLink from "next/link";
 import { Trans } from "react-i18next/TransWithoutContext";
 
@@ -20,7 +20,7 @@ export default function ResetSuccessful({
       </Text>
       <NextLink href="/" passHref legacyBehavior>
         <Button as="a" h={16} width="full" mt={4}>
-          {t("continue")} <ArrowForwardIcon ml={2} boxSize={6} />
+          {t("continue")} <Icon as={MdArrowForward} ml={2} boxSize={6} />
         </Button>
       </NextLink>
     </>

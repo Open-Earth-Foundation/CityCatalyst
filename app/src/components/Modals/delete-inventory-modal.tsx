@@ -1,46 +1,39 @@
 "use client";
 
-import {
-  Badge,
-  Box,
-  Button,
-  FormControl,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
-  Text,
-  useToast,
-} from "@chakra-ui/react";
+import { Badge, Box, Button, Text, Icon, DialogFooter } from "@chakra-ui/react";
 import React, { FC, useState } from "react";
-
 import { FiTrash2 } from "react-icons/fi";
-import PasswordInput from "../password-input";
+import { MdOutlineInfo } from "react-icons/md";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { Trans } from "react-i18next/TransWithoutContext";
 import { TFunction } from "i18next";
-import { InfoOutlineIcon } from "@chakra-ui/icons";
-import { UserAttributes } from "@/models/User";
-import { api } from "@/services/api";
-import { MdCheckCircleOutline } from "react-icons/md";
 
-interface DeleteInventoryModalProps {
+import {
+  DialogBody,
+  DialogCloseTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogRoot,
+} from "@/components/ui/dialog";
+import { Field } from "@/components/ui/field";
+import { toaster } from "@/components/ui/toaster";
+import PasswordInput from "@/components/password-input";
+
+import type { UserAttributes } from "@/models/User";
+import { api } from "@/services/api";
+
+interface DeleteInventoryDialogProps {
   isOpen: boolean;
   onClose: any;
   userData: UserAttributes;
   t: TFunction;
-  lng: string;
   inventoryId: string;
 }
 
-const DeleteInventoryModal: FC<DeleteInventoryModalProps> = ({
+const DeleteInventoryDialog: FC<DeleteInventoryDialogProps> = ({
   isOpen,
   onClose,
   userData,
-  lng,
   inventoryId,
   t,
 }) => {
@@ -48,7 +41,6 @@ const DeleteInventoryModal: FC<DeleteInventoryModalProps> = ({
     handleSubmit,
     register,
     formState: { errors },
-    setValue,
     reset,
   } = useForm<{ password: string }>();
   const [requestPasswordConfirm] = api.useRequestVerificationMutation();
@@ -57,7 +49,6 @@ const DeleteInventoryModal: FC<DeleteInventoryModalProps> = ({
   });
   const [deleteInventory, { isLoading }] = api.useDeleteInventoryMutation();
   const [isPasswordCorrect, setIsPasswordCorrect] = useState<boolean>(true);
-  const toast = useToast();
 
   const onSubmit: SubmitHandler<{ password: string }> = async (data) => {
     await requestPasswordConfirm({
@@ -67,42 +58,13 @@ const DeleteInventoryModal: FC<DeleteInventoryModalProps> = ({
       if (res.data?.comparePassword) {
         await deleteInventory({
           inventoryId,
-        }).then((res: any) => {
+        }).then((_res: any) => {
           reset();
           onClose();
           setIsPasswordCorrect(true);
-          toast({
+          toaster.success({
             description: t("inventory-deleted"),
-            status: "success",
             duration: 5000,
-            isClosable: true,
-            render: () => (
-              <Box
-                display="flex"
-                gap="8px"
-                color="white"
-                alignItems="center"
-                justifyContent="space-between"
-                p={3}
-                bg="interactive.primary"
-                width="600px"
-                height="60px"
-                borderRadius="8px"
-              >
-                <Box display="flex" gap="8px" alignItems="center">
-                  <MdCheckCircleOutline fontSize="24px" />
-
-                  <Text
-                    color="base.light"
-                    fontWeight="bold"
-                    lineHeight="52"
-                    fontSize="label.lg"
-                  >
-                    {t("inventory-deleted")}
-                  </Text>
-                </Box>
-              </Box>
-            ),
           });
         });
       } else {
@@ -113,11 +75,10 @@ const DeleteInventoryModal: FC<DeleteInventoryModalProps> = ({
 
   return (
     <>
-      <Modal blockScrollOnMount={false} isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay />
-        <ModalContent minH="520px" minW="568px" marginTop="10%">
+      <DialogRoot preventScroll open={isOpen} onOpenChange={onClose}>
+        <DialogContent minH="520px" minW="568px" marginTop="10%">
           <form onSubmit={handleSubmit(onSubmit)}>
-            <ModalHeader
+            <DialogHeader
               display="flex"
               justifyContent="center"
               fontWeight="semibold"
@@ -130,9 +91,9 @@ const DeleteInventoryModal: FC<DeleteInventoryModalProps> = ({
               fontFamily="heading"
             >
               {t("delete-inventory")}
-            </ModalHeader>
-            <ModalCloseButton marginTop="10px" />
-            <ModalBody paddingTop="24px">
+            </DialogHeader>
+            <DialogCloseTrigger marginTop="10px" />
+            <DialogBody paddingTop="24px">
               <Box
                 display="flex"
                 flexDirection="column"
@@ -173,7 +134,7 @@ const DeleteInventoryModal: FC<DeleteInventoryModalProps> = ({
                   </Text>
                 </Box>
                 <Box>
-                  <FormControl>
+                  <Field>
                     <Box
                       display="flex"
                       flexDirection="column"
@@ -201,7 +162,10 @@ const DeleteInventoryModal: FC<DeleteInventoryModalProps> = ({
                           w="365px"
                           gap="6px"
                         >
-                          <InfoOutlineIcon color="interactive.secondary" />
+                          <Icon
+                            as={MdOutlineInfo}
+                            color="interactive.secondary"
+                          />
                           {isPasswordCorrect ? (
                             <Text
                               fontSize="body.md"
@@ -228,11 +192,11 @@ const DeleteInventoryModal: FC<DeleteInventoryModalProps> = ({
                         </Box>
                       </Box>
                     </Box>
-                  </FormControl>
+                  </Field>
                 </Box>
               </Box>
-            </ModalBody>
-            <ModalFooter
+            </DialogBody>
+            <DialogFooter
               borderTopWidth="1px"
               borderStyle="solid"
               borderColor="border.neutral"
@@ -254,19 +218,19 @@ const DeleteInventoryModal: FC<DeleteInventoryModalProps> = ({
                 fontWeight="semibold"
                 fontSize="button.md"
                 type="submit"
-                isLoading={isLoading}
+                loading={isLoading}
                 onClick={handleSubmit(onSubmit)}
                 p={0}
                 m={0}
               >
                 {t("delete-inventory")}
               </Button>
-            </ModalFooter>
+            </DialogFooter>
           </form>
-        </ModalContent>
-      </Modal>
+        </DialogContent>
+      </DialogRoot>
     </>
   );
 };
 
-export default DeleteInventoryModal;
+export default DeleteInventoryDialog;

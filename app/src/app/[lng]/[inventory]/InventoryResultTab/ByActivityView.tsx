@@ -1,19 +1,15 @@
 import React from "react";
-import {
-  Accordion,
-  AccordionButton,
-  AccordionIcon,
-  AccordionItem,
-  AccordionPanel,
-  Box,
-  Heading,
-  HStack,
-  Text,
-} from "@chakra-ui/react";
+import { Box, Heading, HStack, Text } from "@chakra-ui/react";
 import { capitalizeFirstLetter, convertKgToTonnes } from "@/util/helpers";
 import ByActivityViewTable from "@/app/[lng]/[inventory]/InventoryResultTab/ByActivityViewTable";
 import type { TFunction } from "i18next";
 import type { SectorBreakdownResponse } from "@/util/types";
+import {
+  AccordionItem,
+  AccordionItemContent,
+  AccordionItemTrigger,
+  AccordionRoot,
+} from "@/components/ui/accordion";
 
 interface EmissionsBreakdownByActivityProps {
   tData: TFunction;
@@ -29,7 +25,7 @@ export const ByActivityView: React.FC<EmissionsBreakdownByActivityProps> = ({
   sectorBreakdown,
 }) => {
   return (
-    <Accordion>
+    <AccordionRoot>
       {Object.entries(sectorBreakdown!.byActivity || {}).map(
         ([subSector, values]) => {
           const consumptions = Object.entries(
@@ -39,15 +35,15 @@ export const ByActivityView: React.FC<EmissionsBreakdownByActivityProps> = ({
           const consumptionOrMassOfWasteTitle =
             sectorName !== "waste" ? "consumption" : "mass-of-waste";
           return (
-            <AccordionItem key={subSector}>
-              <AccordionButton
-                sx={{
+            <AccordionItem key={subSector} value={subSector}>
+              <AccordionItemTrigger
+                style={{
                   display: "flex",
                   justifyContent: "space-between",
                 }}
               >
                 <HStack
-                  sx={{
+                  style={{
                     width: "100%",
                     display: "flex",
                     justifyContent: "space-between",
@@ -59,9 +55,9 @@ export const ByActivityView: React.FC<EmissionsBreakdownByActivityProps> = ({
                     justifyContent="space-between"
                     width="100%"
                   >
-                    <Heading size="title.sm">{tData(subSector)} </Heading>
-                    <HStack alignItems="flex-start" spacing={4}>
-                      <Heading size="title.sm">
+                    <Heading size="sm">{tData(subSector)} </Heading>
+                    <HStack alignItems="flex-start" gap={4}>
+                      <Heading size="sm">
                         {capitalizeFirstLetter(
                           tDashboard(consumptionOrMassOfWasteTitle),
                         )}
@@ -78,7 +74,7 @@ export const ByActivityView: React.FC<EmissionsBreakdownByActivityProps> = ({
                           ))
                         )}
                       </Box>
-                      <Heading size="title.sm">
+                      <Heading size="sm">
                         {capitalizeFirstLetter(tDashboard("emissions"))}:{" "}
                       </Heading>
                       <Text>
@@ -89,20 +85,19 @@ export const ByActivityView: React.FC<EmissionsBreakdownByActivityProps> = ({
                     </HStack>
                   </Box>
                 </HStack>
-                <AccordionIcon />
-              </AccordionButton>
-              <AccordionPanel>
+              </AccordionItemTrigger>
+              <AccordionItemContent>
                 <ByActivityViewTable
                   data={values}
                   tData={tData}
                   tDashboard={tDashboard}
                   sectorName={sectorName}
                 />
-              </AccordionPanel>
+              </AccordionItemContent>
             </AccordionItem>
           );
         },
       )}
-    </Accordion>
+    </AccordionRoot>
   );
 };

@@ -1,26 +1,31 @@
 import React, { useEffect, useState } from "react";
 import {
   Box,
-  Tag,
-  TagLabel,
-  TagCloseButton,
-  Checkbox,
   List,
   ListItem,
   Text,
   Input,
-  FormLabel,
+  TagLabel,
+  IconButton,
+  Icon,
+  Fieldset,
+  CheckboxGroup,
 } from "@chakra-ui/react";
-import { MdArrowDropDown, MdArrowDropUp } from "react-icons/md";
+import { MdArrowDropDown, MdArrowDropUp, MdClose } from "react-icons/md";
 import { SubSectorWithRelations } from "@/app/[lng]/[inventory]/data/[step]/types";
 import {
   UseFormRegister,
   UseFormSetValue,
   UseFormWatch,
+  useController,
   useForm,
 } from "react-hook-form";
-import { FileData } from "./Modals/add-file-data-modal";
+import { FileData } from "./Modals/add-file-data-dialog";
 import { TFunction } from "i18next";
+import { Tag } from "./ui/tag";
+import { Checkbox } from "./ui/checkbox";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 
 interface DropdownSelectProps {
   subsectors: SubSectorWithRelations[] | null;
@@ -38,33 +43,30 @@ const DropdownSelectInput: React.FC<DropdownSelectProps> = ({
   register,
 }) => {
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
+  const [showDropdown, setShowDropdown] = useState<boolean>(false);
 
-  const handleCheckboxChange = (
-    event: React.ChangeEvent<HTMLInputElement>,
-    value: string,
-  ) => {
-    if (event.target.checked) {
-      setSelectedItems([...selectedItems, value]);
+  const handleShowdropDown = () => {
+    setShowDropdown((prev) => !prev);
+  };
+
+  const handleCheckboxChange = (checked: boolean, value: string) => {
+    if (checked) {
+      console.log(value);
+      setSelectedItems((prev) => [...prev, value]);
     } else {
-      setSelectedItems(selectedItems.filter((item) => item !== value));
+      setSelectedItems((prev) => prev.filter((item) => item !== value));
     }
   };
 
   useEffect(() => {
-    const subsectorValues = selectedItems.slice().join(",");
-    setValue("subsectors", subsectorValues);
-  }, [setValue, selectedItems]);
+    setValue("subsectors", selectedItems.join(","));
+  }, [selectedItems, setValue]);
 
   const handleRemoveItem = (item: string) => {
-    setSelectedItems(
-      selectedItems.filter((selectedItem) => selectedItem !== item),
-    );
+    setSelectedItems((prev) => prev.filter((selected) => selected !== item));
   };
 
-  const [showDropdown, setShowDropdown] = useState<boolean>(false);
-  const handleShowdropDown = () => {
-    setShowDropdown((prev) => !prev);
-  };
+  console.log(subsectors);
 
   return (
     <Box className="w-full">
@@ -95,22 +97,28 @@ const DropdownSelectInput: React.FC<DropdownSelectProps> = ({
               {t("select-placeholder")}
             </Text>
           )}
-          {selectedItems.map((item) => (
+          {selectedItems.map((item, i) => (
             <Tag
-              key={item}
+              key={i}
               mt={2}
               mr={2}
+              p={2}
               size="md"
-              borderRadius="full"
               variant="solid"
               color="content.alternative"
               bg="background.neutral"
-              maxW="150px"
+              maxW="200px"
+              display="flex"
+              flexDirection="row"
+              justifyContent="space-between"
+              alignContent="space-between"
             >
-              <TagLabel>{item}</TagLabel>
-              <TagCloseButton
+              <Text as="span">{t(item)}</Text>{" "}
+              <Icon
+                as={MdClose}
                 onClick={() => handleRemoveItem(item)}
                 color="content.alternative"
+                boxSize="16px"
               />
             </Tag>
           ))}
@@ -136,41 +144,37 @@ const DropdownSelectInput: React.FC<DropdownSelectProps> = ({
           py="16px"
           zIndex="50"
         >
-          <List>
-            {subsectors?.map((subsector) => (
-              <ListItem
-                key={subsector.subsectorId}
-                display="flex"
-                p="16px"
-                alignItems="center"
-                gap="16px"
-                h="full"
-                _hover={{
-                  color: "white",
-                  bg: "content.link",
-                  cursor: "pointer",
-                }}
-              >
-                <Checkbox
-                  top={2}
-                  pos="relative"
-                  id={subsector.subsectorName}
-                  onChange={(e) =>
-                    handleCheckboxChange(e, subsector.subsectorName!)
-                  }
-                />
-                <FormLabel
-                  htmlFor={subsector.subsectorName}
-                  pos="relative"
-                  top="8px"
-                  h="full"
-                  w="full"
-                >
-                  <Text fontWeight="200">{subsector.subsectorName}</Text>
-                </FormLabel>
-              </ListItem>
-            ))}
-          </List>
+          <Box w="full">
+            <Fieldset.Root>
+              <CheckboxGroup>
+                <Fieldset.Content>
+                  {subsectors?.map((subsector) => {
+                    return (
+                      <Checkbox
+                        _hover={{ bg: "content.link", color: "base.light" }}
+                        p="16px"
+                        w="full"
+                        cursor="pointer"
+                        key={subsector.subsectorId}
+                        id={subsector.subsectorId}
+                        value={subsector.subsectorName}
+                        checked={selectedItems.includes(
+                          subsector.subsectorName!,
+                        )}
+                        onChange={(e: any) =>
+                          handleCheckboxChange(e, subsector.subsectorName!)
+                        }
+                      >
+                        <Text h="full" w="full" fontWeight="200">
+                          {t(subsector?.subsectorName!)}
+                        </Text>
+                      </Checkbox>
+                    );
+                  })}
+                </Fieldset.Content>
+              </CheckboxGroup>
+            </Fieldset.Root>
+          </Box>
         </Box>
       )}
     </Box>

@@ -1,7 +1,7 @@
 import { Box, Heading, Text } from "@chakra-ui/react";
 import { api } from "@/services/api";
 import { BlueSubtitle } from "@/components/Texts/BlueSubtitle";
-import { TFunction } from "i18next/typescript/t";
+import type { TFunction } from "i18next";
 import { EmissionsForecastCard } from "@/app/[lng]/[inventory]/InventoryResultTab/EmissionsForecast/EmissionsForecastCard";
 
 export const EmissionsForecastSection = ({
@@ -39,7 +39,7 @@ export const EmissionsForecastSection = ({
       >
         {t("sector-emissions-forecast-description")}
       </Text>
-      <Box height="400px" width="100%">
+      <Box height="auto" width="100%">
         <EmissionsForecastCard t={t} forecast={forecast} lng={lng} />
       </Box>
     </Box>

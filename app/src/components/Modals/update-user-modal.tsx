@@ -1,33 +1,32 @@
 "use client";
 
-import {
-  Box,
-  Button,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
-} from "@chakra-ui/react";
+import { Box, Button } from "@chakra-ui/react";
 import React, { FC, useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
-import FormInput from "../form-input";
-import FormSelectInput from "../form-select-input";
-import { api } from "@/services/api";
 import { TFunction } from "i18next";
+
+import { api } from "@/services/api";
 import { GetUserCityInvitesResponseUserData, Roles } from "@/util/types";
 import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
+import FormInput from "@/components/form-input";
+import FormSelectInput from "@/components/form-select-input";
+import {
+  DialogRoot,
+  DialogBody,
+  DialogCloseTrigger,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+} from "@/components/ui/dialog";
 
-interface UpdateUserModalProps {
+interface UpdateUserDialogProps {
   isOpen: boolean;
   onClose: any;
   t: TFunction;
   userData: GetUserCityInvitesResponseUserData;
 }
 
-const UpdateUserModal: FC<UpdateUserModalProps> = ({
+const UpdateUserDialog: FC<UpdateUserDialogProps> = ({
   isOpen,
   onClose,
   t,
@@ -85,10 +84,9 @@ const UpdateUserModal: FC<UpdateUserModalProps> = ({
 
   return (
     <>
-      <Modal blockScrollOnMount={false} isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay />
-        <ModalContent minH="524px" minW="568px" marginTop="10%">
-          <ModalHeader
+      <DialogRoot preventScroll open={isOpen} onExitComplete={onClose}>
+        <DialogContent minH="524px" minW="568px" marginTop="10%">
+          <DialogHeader
             display="flex"
             justifyContent="center"
             fontWeight="semibold"
@@ -101,9 +99,9 @@ const UpdateUserModal: FC<UpdateUserModalProps> = ({
             borderColor="border.neutral"
           >
             {t("edit-user")}
-          </ModalHeader>
-          <ModalCloseButton marginTop="10px" />
-          <ModalBody paddingTop="24px" px="48px">
+          </DialogHeader>
+          <DialogCloseTrigger marginTop="10px" />
+          <DialogBody paddingTop="24px" px="48px">
             <form>
               <Box display="flex" flexDirection="column" gap="24px">
                 <FormInput
@@ -129,8 +127,8 @@ const UpdateUserModal: FC<UpdateUserModalProps> = ({
                 />
               </Box>
             </form>
-          </ModalBody>
-          <ModalFooter
+          </DialogBody>
+          <DialogFooter
             borderTopWidth="1px"
             borderStyle="solid"
             borderColor="border.neutral"
@@ -158,11 +156,11 @@ const UpdateUserModal: FC<UpdateUserModalProps> = ({
             >
               {t("save-changes")}
             </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+          </DialogFooter>
+        </DialogContent>
+      </DialogRoot>
     </>
   );
 };
 
-export default UpdateUserModal;
+export default UpdateUserDialog;

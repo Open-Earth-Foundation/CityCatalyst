@@ -10,7 +10,7 @@ export const BodyXLarge = ({ text, ...props }: BodyProps) => (
     fontSize="body.xl"
     fontWeight="regular"
     lineHeight="32"
-    textColor={"content.tertiary"}
+    color="content.tertiary"
     {...props}
   >
     {text}
@@ -24,7 +24,7 @@ export const BodyLarge = ({ text, ...props }: BodyProps) => (
     fontSize="body.lg"
     fontWeight="regular"
     lineHeight="24"
-    textColor={"content.tertiary"}
+    color="content.tertiary"
     {...props}
   >
     {text}
@@ -37,7 +37,7 @@ export const BodyMedium = ({ text, ...props }: BodyProps) => (
     fontSize="body.md"
     fontWeight="regular"
     lineHeight="20"
-    textColor={"content.tertiary"}
+    color="content.tertiary"
     {...props}
   >
     {text}

@@ -1,12 +1,13 @@
 "use client";
+import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/i18n/client";
 import { api } from "@/services/api";
-import { ArrowForwardIcon } from "@chakra-ui/icons";
-import { Box, Text } from "@chakra-ui/layout";
-import { Button, IconButton } from "@chakra-ui/react";
+
+import { Text, Box, Icon } from "@chakra-ui/react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React from "react";
+import { MdArrowForward } from "react-icons/md";
 
 const NotFound = ({ params: { lng } }: { params: { lng: string } }) => {
   const { data: userInfo, isLoading: isUserInfoLoading } =
@@ -58,10 +59,10 @@ const NotFound = ({ params: { lng } }: { params: { lng: string } }) => {
           h="48px"
           px="24px"
           fontSize="body.md"
-          isLoading={isUserInfoLoading}
-          rightIcon={<ArrowForwardIcon />}
+          loading={isUserInfoLoading}
         >
           {t("goto-dashboard")}
+          <Icon as={MdArrowForward} />
         </Button>
       </Box>
     </Box>

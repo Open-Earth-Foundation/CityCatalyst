@@ -3,20 +3,29 @@ import React, { FC, useEffect, useState } from "react";
 import {
   Box,
   Center,
-  CircularProgress,
+  ProgressCircle,
   HStack,
   Input,
-  InputGroup,
-  InputLeftElement,
   Select,
+  Icon,
+  createListCollection,
 } from "@chakra-ui/react";
 import { api } from "@/services/api";
 import { GetUserCityInvitesResponse } from "@/util/types";
 import ManageUsersTable from "./ManageUsersTable";
-import { SearchIcon } from "@chakra-ui/icons";
+import { MdSearch } from "react-icons/md";
 import { TitleMedium } from "@/components/Texts/Title";
 import { AddCollaboratorButtonSmall } from "./AddCollaboratorButtonSmall";
 import { useTranslation } from "@/i18n/client";
+import { InputGroup } from "@/components/ui/input-group";
+import {
+  SelectContent,
+  SelectItem,
+  SelectLabel,
+  SelectRoot,
+  SelectTrigger,
+  SelectValueText,
+} from "@/components/ui/select";
 
 interface ManageUsersProps {
   lng: string;
@@ -32,6 +41,14 @@ const ManageUsersTabPanel: FC<ManageUsersProps> = ({ lng }) => {
   const [filteredInvites, setFilteredInvites] = useState<
     Array<GetUserCityInvitesResponse>
   >([]);
+
+  const roleCollection = createListCollection({
+    items: [
+      { label: t("all"), value: "all" },
+      { label: t("admin"), value: "admin" },
+      { label: t("contributor"), value: "contributor" },
+    ],
+  });
 
   useEffect(() => {
     if (cityInvites) {
@@ -76,16 +93,17 @@ const ManageUsersTabPanel: FC<ManageUsersProps> = ({ lng }) => {
                 borderWidth="1px"
                 borderStyle="solid"
                 borderColor="border.neutral"
+                startElement={
+                  <Icon
+                    as={MdSearch}
+                    color="content.tertiary"
+                    display="flex"
+                    pointerEvents="none"
+                    alignItems="center"
+                    size="md"
+                  />
+                }
               >
-                <InputLeftElement
-                  h="100%"
-                  display="flex"
-                  paddingLeft="10px"
-                  pointerEvents="none"
-                  alignItems="center"
-                >
-                  <SearchIcon color="content.tertiary" />
-                </InputLeftElement>
                 <Input
                   type="search"
                   fontSize="body.md"
@@ -98,25 +116,40 @@ const ManageUsersTabPanel: FC<ManageUsersProps> = ({ lng }) => {
                   onChange={(e) => setFilterTerm(e.target.value)}
                 />
               </InputGroup>
-              <Select
+              <SelectRoot
+                collection={roleCollection}
                 h="48px"
-                w="auto"
+                padding={0}
+                w="150px"
                 borderWidth="1px"
                 borderStyle="solid"
                 borderColor="border.neutral"
-                onChange={(e) => setFilterRole(e.target.value)}
+                onValueChange={(e) => setFilterRole(e.value[0])}
               >
-                <option value="all">{t("all")}</option>
-                <option value="admin">{t("admin")}</option>
-                <option value="contributor">{t("contributor")}</option>
-              </Select>
+                <SelectTrigger display="flex" height="full">
+                  <SelectValueText placeContent="Select User Type" />
+                </SelectTrigger>
+                <SelectContent>
+                  {roleCollection.items.map((item) => (
+                    <SelectItem item={item} key={item.value}>
+                      {item.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </SelectRoot>
             </Box>
           </Box>
           <ManageUsersTable cityInvites={filteredInvites} t={t} />
         </>
       ) : (
         <Center>
-          <CircularProgress isIndeterminate />
+          <ProgressCircle.Root value={null}>
+            <ProgressCircle.Circle>
+              <ProgressCircle.Track />
+              <ProgressCircle.Range />
+            </ProgressCircle.Circle>
+            <ProgressCircle.ValueText />
+          </ProgressCircle.Root>
         </Center>
       )}
     </>

@@ -1,14 +1,5 @@
 import React from "react";
-import {
-  Box,
-  Table,
-  TableContainer,
-  Tbody,
-  Td,
-  Th,
-  Thead,
-  Tr,
-} from "@chakra-ui/react";
+import { Box, Table } from "@chakra-ui/react";
 import type { TFunction } from "i18next";
 import { ActivityBreakdown } from "@/util/types";
 import { convertKgToTonnes } from "@/util/helpers";
@@ -41,16 +32,16 @@ const ByActivityViewTable: React.FC<ByActivityViewTableProps> = ({
           totalEmissionsPercentage,
         } = details;
         rows.push(
-          <Tr key={`${subSector}-${activity}-${activityUnits}`}>
-            <Td>{tData(subSector)}</Td>
-            <Td>
+          <Table.Row key={`${subSector}-${activity}-${activityUnits}`}>
+            <Table.Cell>{tData(subSector)}</Table.Cell>
+            <Table.Cell>
               {activityValue === "N/A"
                 ? "N/A"
                 : `${activityValue} ${tData(activityUnits)}`}
-            </Td>
-            <Td>{convertKgToTonnes(totalActivityEmissions)}</Td>
-            <Td>{totalEmissionsPercentage}%</Td>
-          </Tr>,
+            </Table.Cell>
+            <Table.Cell>{convertKgToTonnes(totalActivityEmissions)}</Table.Cell>
+            <Table.Cell>{totalEmissionsPercentage}%</Table.Cell>
+          </Table.Row>,
         );
       });
     });
@@ -61,19 +52,23 @@ const ByActivityViewTable: React.FC<ByActivityViewTableProps> = ({
     sectorName !== "waste" ? "consumption" : "mass-of-waste";
   return (
     <Box p={4}>
-      <TableContainer>
-        <Table variant="simple">
-          <Thead>
-            <Tr>
-              <Th>{tDashboard("activity-type")}</Th>
-              <Th>{tDashboard(consumptionOrMassTitle)}</Th>
-              <Th>{tDashboard("emissions")}</Th>
-              <Th>{tDashboard("%-of-sub-sector-emissions")}</Th>
-            </Tr>
-          </Thead>
-          <Tbody>{renderRows(data)}</Tbody>
-        </Table>
-      </TableContainer>
+      <Table.Root unstyled>
+        <Table.Header>
+          <Table.Row>
+            <Table.ColumnHeader>
+              {tDashboard("activity-type")}
+            </Table.ColumnHeader>
+            <Table.ColumnHeader>
+              {tDashboard(consumptionOrMassTitle)}
+            </Table.ColumnHeader>
+            <Table.ColumnHeader>{tDashboard("emissions")}</Table.ColumnHeader>
+            <Table.ColumnHeader>
+              {tDashboard("%-of-sub-sector-emissions")}
+            </Table.ColumnHeader>
+          </Table.Row>
+        </Table.Header>
+        <Table.Body>{renderRows(data)}</Table.Body>
+      </Table.Root>
     </Box>
   );
 };

@@ -188,18 +188,9 @@ function SubSectorPage({
     isInventoryValueLoading ||
     isInventoryProgressLoading ||
     isUserInfoLoading;
-  const [referenceNumber, setReferenceNumber] = useState<string>(
-    `${searchParams.get("refNo")}.1`,
-  );
-
-  useEffect(() => {
-    if (scopes.length > 0 && !loadingState && subSectorData) {
-      setReferenceNumber(subSectorData.referenceNumber!);
-    }
-  }, [scopes, loadingState, subSectorData]);
 
   return (
-    <Tabs.Root defaultValue={referenceNumber}>
+    <Tabs.Root defaultValue="0">
       <MotionBox
         bg="background.backgroundLight"
         className="fixed z-10 top-0 w-full transition-all"
@@ -416,7 +407,7 @@ function SubSectorPage({
               <Tabs.Trigger
                 key={index}
                 className="[&[aria-selected='false']]:border-[transparent]"
-                value={scope.referenceNumber}
+                value={index.toString()}
                 mt="40px"
               >
                 <Text
@@ -436,20 +427,27 @@ function SubSectorPage({
           {loadingState ? (
             <LoadingState />
           ) : (
-            scopes?.map((scope) => {
+            scopes?.map((scope, index) => {
               return (
-                <ActivityTab
-                  referenceNumber={scope.referenceNumber!}
-                  key={scope.referenceNumber}
-                  t={t}
-                  inventoryId={inventoryId}
-                  subsectorId={subsector}
-                  step={step}
-                  activityData={activityData}
-                  inventoryValues={getFilteredInventoryValues(
-                    scope.referenceNumber,
-                  )}
-                />
+                <Tabs.Content
+                  key={index}
+                  value={index.toString()}
+                  p="0"
+                  pt="48px"
+                >
+                  <ActivityTab
+                    referenceNumber={scope.referenceNumber!}
+                    key={scope.referenceNumber}
+                    t={t}
+                    inventoryId={inventoryId}
+                    subsectorId={subsector}
+                    step={step}
+                    activityData={activityData}
+                    inventoryValues={getFilteredInventoryValues(
+                      scope.referenceNumber,
+                    )}
+                  />
+                </Tabs.Content>
               );
             })
           )}

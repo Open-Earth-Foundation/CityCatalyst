@@ -5,6 +5,7 @@ import {
   Box,
   Card,
   CardHeader,
+  Center,
   Heading,
   HStack,
   Icon,
@@ -182,7 +183,7 @@ function SectorTabs({
                 </ProgressCircleRoot>
               </Center>
             ) : (
-              <Card.Root divideX="2px" divideColor="border.overlay">
+              <Card.Root divideX="2px" divideColor="border.overlay" p={4}>
                 <SectorHeader
                   icon={icon}
                   sectorName={t(name)}

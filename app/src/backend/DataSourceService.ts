@@ -6,6 +6,8 @@ import createHttpError from "http-errors";
 import Decimal from "decimal.js";
 import { decimalToBigInt } from "@/util/big_int";
 import type { SubSector } from "@/models/SubSector";
+import sumBy from "lodash.sumby";
+import { DataSourceActivityDataRecord } from "@/app/[lng]/[inventory]/data/[step]/types";
 
 const EARTH_LOCATION = "EARTH";
 
@@ -205,7 +207,13 @@ export default class DataSourceService {
       sectorId: subSector.sectorId,
       gpcReferenceNumber,
     });
-
+    if (data.records) {
+      await DataSourceService.saveActivityValues({
+        inventoryValueId: inventoryValue.id,
+        records: data.records,
+        gpcReferenceNumber,
+      });
+    }
     // store values for co2, ch4, n2o separately for accounting and editing
     await db.models.GasValue.create({
       id: randomUUID(),
@@ -227,5 +235,73 @@ export default class DataSourceService {
     });
 
     return true;
+  }
+
+  private static async saveActivityValue({
+    inventoryValueId,
+    activity,
+    gpcReferenceNumber,
+  }: {
+    inventoryValueId: string;
+    activity: DataSourceActivityDataRecord;
+    gpcReferenceNumber: string | undefined;
+  }) {
+    const co2eq = activity.gases.reduce(
+      (sum, gas) => sum.plus(new Decimal(gas.emissions_value_100yr)),
+      new Decimal(0),
+    );
+
+    const activityValue = await db.models.ActivityValue.create({
+      id: randomUUID(),
+      inventoryValueId,
+      co2eq: BigInt(decimalToBigInt(co2eq)),
+      co2eqYears: 100,
+      metadata: {
+        activityId: activity.activity_name + "-activity",
+        ...activity.activity_subcategory_type,
+      },
+    });
+    const emissionsFactors = activity.gases.map((gas) => ({
+      id: randomUUID(),
+      gas: gas.gas_name,
+      gpcReferenceNumber,
+      emissionsPerActivity: gas.emissionfactor_value,
+      units: activity.activity_units,
+    }));
+
+    const createdEmissionsFactors = await db.models.EmissionsFactor.bulkCreate(
+      emissionsFactors,
+      { returning: true },
+    );
+
+    const gasValues = activity.gases.map((gas, index) => ({
+      id: randomUUID(),
+      activityValueId: activityValue.id,
+      gas: gas.gas_name,
+      gasAmount: BigInt(Math.trunc(gas.emissions_value)),
+      emissionsFactorId: createdEmissionsFactors[index].id,
+    }));
+
+    await db.models.GasValue.bulkCreate(gasValues);
+  }
+
+  private static async saveActivityValues({
+    inventoryValueId,
+    records,
+    gpcReferenceNumber,
+  }: {
+    inventoryValueId: string;
+    records: DataSourceActivityDataRecord[];
+    gpcReferenceNumber: string | undefined;
+  }) {
+    await Promise.all(
+      records.map((activity) =>
+        DataSourceService.saveActivityValue({
+          activity,
+          inventoryValueId,
+          gpcReferenceNumber,
+        }),
+      ),
+    );
   }
 }

@@ -246,11 +246,15 @@ export default class DataSourceService {
     activity: DataSourceActivityDataRecord;
     gpcReferenceNumber: string | undefined;
   }) {
-    const co2eq = sumBy(activity.gases, (gas) => gas.emissions_value_100yr);
+    const co2eq = activity.gases.reduce(
+      (sum, gas) => sum.plus(new Decimal(gas.emissions_value_100yr)),
+      new Decimal(0),
+    );
+
     const activityValue = await db.models.ActivityValue.create({
       id: randomUUID(),
       inventoryValueId,
-      co2eq: BigInt(Math.trunc(co2eq)),
+      co2eq: BigInt(decimalToBigInt(co2eq)),
       co2eqYears: 100,
       metadata: {
         activityId: activity.activity_name + "-activity",

@@ -261,23 +261,28 @@ export default class DataSourceService {
         ...activity.activity_subcategory_type,
       },
     });
-    for (const gas of activity.gases) {
-      const emissionsFactor = await db.models.EmissionsFactor.create({
-        id: randomUUID(),
-        gas: gas.gas_name,
-        gpcReferenceNumber,
-        emissionsPerActivity: gas.emissionfactor_value,
-        units: activity.activity_units,
-      });
+    const emissionsFactors = activity.gases.map((gas) => ({
+      id: randomUUID(),
+      gas: gas.gas_name,
+      gpcReferenceNumber,
+      emissionsPerActivity: gas.emissionfactor_value,
+      units: activity.activity_units,
+    }));
 
-      await db.models.GasValue.create({
-        id: randomUUID(),
-        activityValueId: activityValue.id,
-        gas: gas.gas_name,
-        gasAmount: BigInt(Math.trunc(gas.emissions_value)),
-        emissionsFactorId: emissionsFactor.id,
-      });
-    }
+    const createdEmissionsFactors = await db.models.EmissionsFactor.bulkCreate(
+      emissionsFactors,
+      { returning: true },
+    );
+
+    const gasValues = activity.gases.map((gas, index) => ({
+      id: randomUUID(),
+      activityValueId: activityValue.id,
+      gas: gas.gas_name,
+      gasAmount: BigInt(Math.trunc(gas.emissions_value)),
+      emissionsFactorId: createdEmissionsFactors[index].id,
+    }));
+
+    await db.models.GasValue.bulkCreate(gasValues);
   }
 
   private static async saveActivityValues({

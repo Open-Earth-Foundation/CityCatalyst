@@ -129,6 +129,7 @@ function SectorTabs({
     <Tabs.Root
       // align="start"
       variant="line"
+      defaultValue={SECTORS[0].name}
       // index={selectedIndex}
       // onChange={(index) => setSelectedIndex(index)}
     >

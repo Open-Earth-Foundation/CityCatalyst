@@ -196,7 +196,7 @@ function SubSectorPage({
     if (scopes.length > 0 && !loadingState && subSectorData) {
       setReferenceNumber(subSectorData.referenceNumber!);
     }
-  }, [scopes, loadingState]);
+  }, [scopes, loadingState, subSectorData]);
 
   return (
     <Tabs.Root defaultValue={referenceNumber}>

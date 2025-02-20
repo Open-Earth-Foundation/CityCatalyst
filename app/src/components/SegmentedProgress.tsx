@@ -45,7 +45,7 @@ export function SegmentedProgress({
   );
   const shownValues = normalizedValues.filter((v) => v.percentage != 0);
   const tooltipContent = (
-    <Table.Root size={"sm"}>
+    <Table.Root size="sm">
       <Table.Body>
         {normalizedValues.map((value, index) => (
           <Table.Row key={index}>
@@ -66,13 +66,13 @@ export function SegmentedProgress({
         ))}
         <Table.Row>
           <Table.ColumnHeader>
-            <Text color="black" fontWeight="bold" fontSize={"md"}>
+            <Text color="black" fontWeight="bold" fontSize="md">
               {capitalizeFirstLetter(t("total"))}
             </Text>
           </Table.ColumnHeader>
           <Table.Cell></Table.Cell>
           <Table.ColumnHeader>
-            <Text color="black" fontWeight="bold" fontSize={"md"}>
+            <Text color="black" fontWeight="bold" fontSize="md">
               {convertKgToTonnes(total!)}
             </Text>
           </Table.ColumnHeader>

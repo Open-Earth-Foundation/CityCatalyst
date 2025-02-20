@@ -1,20 +1,5 @@
 import { createSystem, defaultConfig } from "@chakra-ui/react";
-import {
-  accordionRecipe,
-  cardRecipe,
-  formRecipe,
-  headingRecipe,
-  linkRecipe,
-  progressRecipe,
-  switchRecipe,
-  tabsRecipe,
-  tagRecipe,
-  textareaRecipe,
-  textRecipe,
-  tooltipRecipe,
-} from "./recipes";
-import { buttonRecipe } from "./recipes/button.recipe";
-import { separatorRecipe } from "./recipes/separator.recipe";
+import { recipes } from "./recipes";
 import { SectorColors } from "./custom-colors";
 
 export const appTheme = createSystem(defaultConfig, {
@@ -24,22 +9,7 @@ export const appTheme = createSystem(defaultConfig, {
     },
   },
   theme: {
-    recipes: {
-      button: buttonRecipe,
-      link: linkRecipe,
-      tag: tagRecipe,
-      card: cardRecipe,
-      tooltip: tooltipRecipe,
-      tab: tabsRecipe,
-      accordion: accordionRecipe,
-      progress: progressRecipe,
-      form: formRecipe,
-      text: textRecipe,
-      heading: headingRecipe,
-      switch: switchRecipe,
-      textarea: textareaRecipe,
-      seperator: separatorRecipe,
-    },
+    recipes,
     semanticTokens: {
       colors: {
         brand: {

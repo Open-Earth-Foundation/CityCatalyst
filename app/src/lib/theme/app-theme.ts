@@ -31,6 +31,11 @@ export enum SubSectorColors {
 }
 
 export const appTheme = createSystem(defaultConfig, {
+  globalCss: {
+    html: {
+      colorPalette: "brand",
+    },
+  },
   theme: {
     recipes: {
       button: buttonRecipe,
@@ -48,11 +53,35 @@ export const appTheme = createSystem(defaultConfig, {
       textarea: textareaRecipe,
       seperator: separatorRecipe,
     },
+    semanticTokens: {
+      colors: {
+        brand: {
+          solid: { value: "{colors.brand.500}" },
+          contrast: { value: "{colors.brand.100}" },
+          fg: { value: "{colors.brand.700}" },
+          muted: { value: "{colors.brand.100}" },
+          subtle: { value: "{colors.brand.200}" },
+          emphasized: { value: "{colors.brand.300}" },
+          focusRing: { value: "{colors.brand.500}" },
+        },
+      },
+    },
     tokens: {
       colors: {
         brand: {
           primary: { value: "#001EA7" },
           secondary: { value: "#2351DC" },
+
+          50: { value: "#f5f7fd" },
+          100: { value: "#d8e0f9" },
+          200: { value: "#b5c5f3" },
+          300: { value: "#8ba4ed" },
+          400: { value: "#7391e9" },
+          500: { value: "#2351DC" },
+          600: { value: "#345fdf" },
+          700: { value: "#1f48c4" },
+          800: { value: "#1a3da6" },
+          900: { value: "#132c79" },
         },
 
         content: {

@@ -286,10 +286,11 @@ export const badgeRecipe = defineRecipe({
   variants: {
     brand: {
       container: {
+        color: "content.secondary",
         borderWidth: "1px",
         borderColor: "border.neutral",
         py: 1,
-        px: 2,
+        px: 3,
         borderRadius: "16px",
         bg: "base.light",
       },

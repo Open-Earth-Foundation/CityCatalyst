@@ -38,7 +38,7 @@ export const appTheme = createSystem(defaultConfig, {
           600: { value: "#345fdf" },
           700: { value: "#1f48c4" },
           800: { value: "#1a3da6" },
-          900: { value: "#132c79" },
+          900: { value: "#001EA7" },
         },
 
         content: {

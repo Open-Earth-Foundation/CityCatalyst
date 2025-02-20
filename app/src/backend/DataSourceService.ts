@@ -6,7 +6,6 @@ import createHttpError from "http-errors";
 import Decimal from "decimal.js";
 import { decimalToBigInt } from "@/util/big_int";
 import type { SubSector } from "@/models/SubSector";
-import sumBy from "lodash.sumby";
 import { DataSourceActivityDataRecord } from "@/app/[lng]/[inventory]/data/[step]/types";
 
 const EARTH_LOCATION = "EARTH";

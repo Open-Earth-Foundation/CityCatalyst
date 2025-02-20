@@ -829,10 +829,6 @@ export default function AddDataSteps({
                           mr="4"
                           color="interactive.secondary"
                           bgColor="none"
-                          colorPalette={[
-                            "content.link",
-                            "interactive.tertiary",
-                          ]}
                           value={
                             (subSector.completedCount / subSector.totalCount) *
                             100
@@ -876,18 +872,14 @@ export default function AddDataSteps({
                       </Stack>
                       <IconButton
                         bg="background.neutral"
-                        color={
-                          subSector.completed
-                            ? "interactive.tertiary"
-                            : "content.link"
-                        }
+                        color={"content.link"}
                         aria-label={
                           subSector.completed
                             ? t("edit-subsector")
                             : t("add-subsector-data")
                         }
                         _hover={{
-                          color: "base.light",
+                          bg: "base.light",
                         }}
                         variant="solid"
                       >

@@ -28,6 +28,7 @@ import {
 import type { DataSourceResponse, SectorProgress } from "@/util/types";
 
 import {
+  Badge,
   Box,
   Card,
   Center,
@@ -740,35 +741,28 @@ export default function AddDataSteps({
                 </Flex>
                 {scrollPosition <= 0 ? (
                   <>
-                    <Tag
-                      mr={4}
-                      startElement={
-                        <Icon
-                          as={CircleIcon}
-                          boxSize={6}
-                          color="interactive.quaternary"
-                        />
-                      }
-                    >
+                    <Badge mr={4}>
+                      <Icon
+                        as={CircleIcon}
+                        boxSize={6}
+                        color="interactive.quaternary"
+                      />
                       {t("data-connected-percent", {
                         progress: formatPercentage(
                           currentStep.connectedProgress,
                         ),
                       })}
-                    </Tag>
-                    <Tag
-                      startElement={
-                        <Icon
-                          as={CircleIcon}
-                          boxSize={6}
-                          color="interactive.tertiary"
-                        />
-                      }
-                    >
+                    </Badge>
+                    <Badge>
+                      <Icon
+                        as={CircleIcon}
+                        boxSize={6}
+                        color="interactive.tertiary"
+                      />
                       {t("data-added-percent", {
                         progress: formatPercentage(currentStep.addedProgress),
                       })}
-                    </Tag>
+                    </Badge>
                   </>
                 ) : (
                   ""

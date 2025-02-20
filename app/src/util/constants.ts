@@ -3,7 +3,7 @@ import { PiPlant, PiTrashLight } from "react-icons/pi";
 import { TbBuildingCommunity } from "react-icons/tb";
 import { IconBaseProps } from "react-icons";
 import { LiaIndustrySolid } from "react-icons/lia";
-import { SectorColors, SubSectorColors } from "@/lib/app-theme"; // Import the appTheme
+import { SectorColors, SubSectorColors } from "@/lib/theme/custom-colors";
 
 export const maxPopulationYearDifference = 5;
 

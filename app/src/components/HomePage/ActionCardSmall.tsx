@@ -22,11 +22,11 @@ const ActionCardSmall: React.FC<ActionCardSmallProps> = ({
       px={6}
     >
       <Box className="flex items-center h-full">
-        <Box className="flex items-center justify-center h-[48px] w-[48px] rounded-full bg-[#2351DC]">
+        <Box className="flex items-center justify-center min-h-[48px] min-w-[48px] rounded-full bg-[#2351DC]">
           {icon}
         </Box>
         <Box>
-          <CardHeader>
+          <CardHeader pt={0}>
             <Text
               fontFamily="heading"
               fontSize="title.lg"

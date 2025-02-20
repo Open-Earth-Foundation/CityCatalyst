@@ -68,13 +68,8 @@ export function TabHeader({
               borderRadius="16px"
               bg="base.light"
             >
-              <Flex>
-                <MdOutlineCalendarToday
-                  size="20px"
-                  style={{ marginRight: 1 }}
-                />
-                {t("year")}: {inventory?.year}
-              </Flex>
+              <MdOutlineCalendarToday size="20px" style={{ marginRight: 1 }} />
+              {t("year")}: {inventory?.year}
             </Badge>
             <Badge
               borderWidth="1px"
@@ -84,12 +79,10 @@ export function TabHeader({
               borderRadius="16px"
               bg="base.light"
             >
-              <Flex>
-                <MdOutlineAccountTree size="20px" style={{ marginRight: 1 }} />
-                {inventory?.inventoryType === InventoryTypeEnum.GPC_BASIC_PLUS
-                  ? t("inventory-format-basic+")
-                  : t("inventory-format-basic")}
-              </Flex>
+              <MdOutlineAccountTree size="20px" style={{ marginRight: 1 }} />
+              {inventory?.inventoryType === InventoryTypeEnum.GPC_BASIC_PLUS
+                ? t("inventory-format-basic+")
+                : t("inventory-format-basic")}
             </Badge>
           </Box>
         </Box>

@@ -54,9 +54,9 @@ export default class PopulationService {
       cityId: cityId,
       population: cityPopulation?.population,
       year: cityPopulation?.year,
-      countryPopulation: countryPopulation?.population,
+      countryPopulation: countryPopulation?.countryPopulation,
       countryPopulationYear: countryPopulation?.year,
-      regionPopulation: regionPopulation?.population,
+      regionPopulation: regionPopulation?.regionPopulation,
       regionPopulationYear: regionPopulation?.year,
     };
   }

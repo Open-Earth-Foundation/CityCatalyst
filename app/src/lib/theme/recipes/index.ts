@@ -316,5 +316,5 @@ export const recipes = {
   heading: headingRecipe,
   switch: switchRecipe,
   textarea: textareaRecipe,
-  seperator: separatorRecipe,
+  separator: separatorRecipe,
 };

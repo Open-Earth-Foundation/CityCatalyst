@@ -1,7 +1,4 @@
-import {
-  DataSourceActivityDataGas,
-  DataSourceActivityDataRecord,
-} from "@/app/[lng]/[inventory]/data/[step]/types";
+import { DataSourceActivityDataRecord } from "@/app/[lng]/[inventory]/data/[step]/types";
 import { TFunction } from "i18next";
 import {
   AccordionItem,
@@ -9,12 +6,11 @@ import {
   AccordionItemTrigger,
   AccordionRoot,
 } from "@/components/ui/accordion";
-import { BodyLarge, BodyMedium } from "@/components/Texts/Body";
-import { TitleMedium, TitleSmall } from "@/components/Texts/Title";
 import { convertKgToTonnes } from "@/util/helpers";
 import { HStack, Table, TableBody, TableCell } from "@chakra-ui/react";
+import { BodyMedium } from "@/components/Texts/Body";
+import { TitleSmall } from "@/components/Texts/Title";
 import { Overline } from "@/components/Texts/Overline";
-import { SECTORS } from "@/util/constants";
 
 interface SourceDrawerActivityTableProps {
   activities: DataSourceActivityDataRecord[];
@@ -39,21 +35,13 @@ export function SourceDrawerActivityTable({
     return convertKgToTonnes(emissions);
   };
 
-  const columns = () => {
-    const baseColumns = [
-      "gas",
-      "emissions",
-      "activity-value",
-      "emission-factor-value",
-      "emission-factor-source",
-    ];
-    if (sectorId !== SECTORS[3].id) {
-      return baseColumns;
-    } else {
-      const waterColumns = ["water-usage"];
-      return [...baseColumns, ...waterColumns];
-    }
-  };
+  const columns = [
+    "gas",
+    "emissions",
+    "activity-value",
+    "emission-factor-value",
+    "emission-factor-source",
+  ];
 
   return (
     <AccordionRoot multiple>
@@ -76,7 +64,7 @@ export function SourceDrawerActivityTable({
               <Table.Root>
                 <Table.Header>
                   <Table.Row backgroundColor="background.neutral">
-                    {columns().map((title) => (
+                    {columns.map((title) => (
                       <TableCell key={title}>
                         <Overline textTransform="uppercase">
                           {t(title)}

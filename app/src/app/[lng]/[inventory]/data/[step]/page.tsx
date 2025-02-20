@@ -199,7 +199,6 @@ export default function AddDataSteps({
 }) {
   const { t } = useTranslation(lng, "data");
   const router = useRouter();
-  // const toast = useToast();
 
   const { data: userInfo, isLoading: isUserInfoLoading } =
     api.useGetUserInfoQuery();
@@ -1209,6 +1208,7 @@ export default function AddDataSteps({
           onConnectClick={() => onConnectClick(selectedSource!)}
           isConnectLoading={isConnectDataSourceLoading}
           t={t}
+          inventoryId={inventory}
         />
       </div>
     </>

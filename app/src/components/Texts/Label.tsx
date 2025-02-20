@@ -1,10 +1,10 @@
 import { Text, TextProps } from "@chakra-ui/react";
 
 interface LabelLargeProps extends TextProps {
-  text: string;
+  text?: string;
 }
 
-const LabelLarge = ({ text, ...props }: LabelLargeProps) => (
+const LabelLarge = ({ text, children, ...props }: LabelLargeProps) => (
   <Text
     fontSize="label.lg"
     fontWeight="medium"
@@ -16,6 +16,7 @@ const LabelLarge = ({ text, ...props }: LabelLargeProps) => (
     {...props}
   >
     {text}
+    {children}
   </Text>
 );
 

@@ -1,7 +1,7 @@
 import { Text, TextProps } from "@chakra-ui/react";
 
 interface BodyProps extends TextProps {
-  text: string;
+  text?: string;
 }
 
 export const BodyXLarge = ({ text, ...props }: BodyProps) => (
@@ -28,10 +28,11 @@ export const BodyLarge = ({ text, ...props }: BodyProps) => (
     {...props}
   >
     {text}
+    {props.children}
   </Text>
 );
 
-export const BodyMedium = ({ text, ...props }: BodyProps) => (
+export const BodyMedium = ({ text, children, ...props }: BodyProps) => (
   <Text
     fontFamily="body"
     fontSize="body.md"
@@ -41,5 +42,6 @@ export const BodyMedium = ({ text, ...props }: BodyProps) => (
     {...props}
   >
     {text}
+    {children}
   </Text>
 );

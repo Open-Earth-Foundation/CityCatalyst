@@ -197,6 +197,7 @@ const ExternalDataSection = ({
         </Box>
       </Box>
       <SourceDrawer
+        inventoryId={inventoryValue.inventoryId!}
         source={{ ...inventoryValue, ...source }}
         hideActions={true}
         totalEmissionsData={inventoryValue.co2eq as unknown as string}

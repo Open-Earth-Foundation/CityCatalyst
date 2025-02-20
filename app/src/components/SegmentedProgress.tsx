@@ -46,6 +46,7 @@ export function SegmentedProgress({
       ? { percentage: v, name: `Segment ${i + 1}`, value: max }
       : v,
   );
+  const shownValues = normalizedValues.filter((v) => v.percentage != 0);
   const tooltipContent = (
     <Table.Root unstyled size={"sm"}>
       <Table.Body>
@@ -100,21 +101,14 @@ export function SegmentedProgress({
         borderRightRadius="10px"
         borderLeftRadius="10px"
       >
-        {normalizedValues.map((value, i) => (
+        {shownValues.map((value, i) => (
           <Box
             key={i}
             backgroundColor={colorValues[i]}
             h={height}
             w={`${(100 * value.percentage) / max}%`}
-            borderStartRadius={
-              i === 0 ||
-              (i === 1 && (normalizedValues[0].percentage ?? 0) === 0)
-                ? "10px"
-                : undefined
-            }
-            borderEndRadius={
-              i === normalizedValues.length - 1 ? "10px" : undefined
-            }
+            borderStartRadius={i === 0 ? "10px" : undefined}
+            borderEndRadius={i === shownValues.length - 1 ? "10px" : undefined}
           />
         ))}
       </Box>
@@ -128,7 +122,6 @@ export function SegmentedProgress({
   return (
     <VStack>
       {progressBars}
-      <Box w="full" className="flex flex-row flex-wrap" borderRadius="full">
         {normalizedValues.map((v, i) => (
           <Badge
             key={i}

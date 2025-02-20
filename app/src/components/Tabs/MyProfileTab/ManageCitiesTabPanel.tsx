@@ -2,21 +2,24 @@ import { FC, useState } from "react";
 import {
   Box,
   Button,
+  Icon,
   IconButton,
   List,
-  Text,
-  Popover,
   PopoverArrow,
   PopoverBody,
   PopoverContent,
   PopoverTrigger,
   Table,
+  Text,
   useDisclosure,
-  Icon,
 } from "@chakra-ui/react";
-import { MdAdd } from "react-icons/md";
+import {
+  MdAdd,
+  MdDomain,
+  MdMoreVert,
+  MdOutlineFileDownload,
+} from "react-icons/md";
 import { FiTrash2 } from "react-icons/fi";
-import { MdDomain, MdMoreVert, MdOutlineFileDownload } from "react-icons/md";
 import NextLink from "next/link";
 import { TFunction } from "i18next";
 import { api } from "@/services/api";
@@ -170,7 +173,7 @@ const ManageCitiesTabPanel: FC<ManageCitiesProps> = ({ t }) => {
                               letterSpacing="wide"
                               fontWeight="normal"
                               fontSize="body.lg"
-                              className="group-hover:text-white"
+                              className="group-hover:text-white capitalize"
                             >
                               {t("download-city-data")}
                             </Text>

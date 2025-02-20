@@ -54,10 +54,17 @@ export default function Login({
 
   const searchParams = useSearchParams();
   const queryParams = Object.fromEntries(searchParams.entries());
-  const callbackUrl = decodeURIComponent(queryParams.callbackUrl || "");
-  const finalCallbackUrl =
-    callbackUrl ||
-    `/${lng}/user/invite?${new URLSearchParams(queryParams).toString()}`;
+  let callbackUrl = decodeURIComponent(queryParams.callbackUrl || "");
+
+  // only redirect to user invite page as a fallback if there is a token present in the search params
+  if (!callbackUrl) {
+    if ("token" in queryParams) {
+      const paramsString = new URLSearchParams(queryParams).toString();
+      callbackUrl = `/${lng}/user/invites?${paramsString}`;
+    } else {
+      callbackUrl = "/";
+    }
+  }
 
   const { showLoginSuccessToast } = useAuthToast(t);
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
@@ -66,12 +73,12 @@ export default function Login({
         redirect: false,
         email: data.email,
         password: data.password,
-        callbackUrl: finalCallbackUrl,
+        callbackUrl,
       });
 
       if (res?.ok && !res?.error) {
         showLoginSuccessToast();
-        router.push(finalCallbackUrl);
+        router.push(callbackUrl);
         setError("");
         return;
       } else {
@@ -116,7 +123,7 @@ export default function Login({
       >
         {t("no-account")}{" "}
         <Link
-          href={`/auth/signup?callbackUrl=${encodeURIComponent(finalCallbackUrl)}`}
+          href={`/auth/signup?callbackUrl=${encodeURIComponent(callbackUrl)}`}
           className="underline"
         >
           {t("sign-up")}

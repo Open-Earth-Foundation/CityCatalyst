@@ -60,25 +60,11 @@ export function TabHeader({
             </Heading>
           </Box>
           <Box className="flex items-center gap-3">
-            <Badge
-              borderWidth="1px"
-              borderColor="border.neutral"
-              py={1}
-              px={2}
-              borderRadius="16px"
-              bg="base.light"
-            >
+            <Badge>
               <MdOutlineCalendarToday size="20px" style={{ marginRight: 1 }} />
               {t("year")}: {inventory?.year}
             </Badge>
-            <Badge
-              borderWidth="1px"
-              borderColor="border.neutral"
-              py={1}
-              px={2}
-              borderRadius="16px"
-              bg="base.light"
-            >
+            <Badge>
               <MdOutlineAccountTree size="20px" style={{ marginRight: 1 }} />
               {inventory?.inventoryType === InventoryTypeEnum.GPC_BASIC_PLUS
                 ? t("inventory-format-basic+")

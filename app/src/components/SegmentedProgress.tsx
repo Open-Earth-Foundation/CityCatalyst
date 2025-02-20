@@ -1,13 +1,5 @@
 import React, { useRef } from "react";
-import {
-  Badge,
-  Box,
-  Flex,
-  Table,
-  Text,
-  useToken,
-  VStack,
-} from "@chakra-ui/react";
+import { Badge, Box, Table, Text, useToken, VStack } from "@chakra-ui/react";
 import {
   capitalizeFirstLetter,
   convertKgToTonnes,
@@ -43,8 +35,13 @@ export function SegmentedProgress({
   const tooltipRef = useRef(null);
   const normalizedValues = values.map((v, i) =>
     typeof v === "number"
-      ? { percentage: v, name: `Segment ${i + 1}`, value: max }
-      : v,
+      ? {
+          percentage: v,
+          name: `Segment ${i + 1}`,
+          value: max,
+          color: colorValues[i],
+        }
+      : { ...v, color: colorValues[i] },
   );
   const shownValues = normalizedValues.filter((v) => v.percentage != 0);
   const tooltipContent = (
@@ -103,7 +100,7 @@ export function SegmentedProgress({
         {shownValues.map((value, i) => (
           <Box
             key={i}
-            backgroundColor={colorValues[i]}
+            backgroundColor={value.color}
             h={height}
             w={`${(100 * value.percentage) / max}%`}
             borderStartRadius={i === 0 ? "10px" : undefined}

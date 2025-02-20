@@ -4,12 +4,10 @@ import { SegmentedProgress } from "@/components/SegmentedProgress";
 import FileInput from "@/components/file-input";
 import {
   CircleIcon,
-  DataAlertIcon,
   DataCheckIcon,
   ExcelFileIcon,
   MissingDataIcon,
   NoDatasourcesIcon,
-  WorldSearchIcon,
 } from "@/components/icons";
 import {
   clear,
@@ -818,10 +816,8 @@ export default function AddDataSteps({
                       {subSector.completedCount > 0 &&
                       subSector.completedCount < subSector.totalCount ? (
                         <ProgressCircleRoot
-                          css={{ "--thickness": "12px" }}
-                          mr="4"
-                          color="interactive.secondary"
-                          bgColor="background.neutral"
+                          size="xs"
+                          mr={1}
                           value={
                             (subSector.completedCount / subSector.totalCount) *
                             100

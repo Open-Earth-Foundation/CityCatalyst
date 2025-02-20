@@ -37,6 +37,7 @@ import {
   Icon,
   IconButton,
   Link,
+  ProgressCircle,
   SimpleGrid,
   Spinner,
   Stack,
@@ -827,13 +828,20 @@ export default function AddDataSteps({
                           css={{ "--thickness": "12px" }}
                           mr="4"
                           color="interactive.secondary"
-                          bgColor="background.neutral"
+                          bgColor="none"
+                          colorPalette={[
+                            "content.link",
+                            "interactive.tertiary",
+                          ]}
                           value={
                             (subSector.completedCount / subSector.totalCount) *
                             100
                           }
                         >
-                          <ProgressCircleRing />
+                          <ProgressCircle.Circle>
+                            <ProgressCircle.Track />
+                            <ProgressCircle.Range stroke="content.link" />
+                          </ProgressCircle.Circle>
                         </ProgressCircleRoot>
                       ) : (
                         <Icon

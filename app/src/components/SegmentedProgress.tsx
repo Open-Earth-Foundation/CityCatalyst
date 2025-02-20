@@ -122,28 +122,31 @@ export function SegmentedProgress({
   return (
     <VStack>
       {progressBars}
+      <Box
+        w="full"
+        className="flex flex-row flex-wrap"
+        borderRadius="full"
+        verticalAlign="center"
+        gap={2}
+      >
         {normalizedValues.map((v, i) => (
           <Badge
             key={i}
             borderWidth="1px"
             borderColor="border.neutral"
-            py={1}
+            py={2}
             px={2}
-            marginRight={2}
             borderRadius="10px"
             bg="base.light"
           >
-            <Flex>
-              <Box
-                width={3}
-                height={3}
-                bg={colors[i]}
-                borderRadius="10px"
-                mx={2}
-                my={1}
-              />
-              {t(toKebabCase(v.name))}
-            </Flex>
+            <Box
+              width={3}
+              height={3}
+              bg={colors[i]}
+              borderRadius="10px"
+              mx={2}
+            />
+            {t(toKebabCase(v.name))}
           </Badge>
         ))}
       </Box>

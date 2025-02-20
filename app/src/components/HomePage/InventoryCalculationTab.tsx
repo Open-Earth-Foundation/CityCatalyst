@@ -126,11 +126,12 @@ export default function InventoryCalculationTab({
                 <Spinner size="lg" />
               </Center>
             ) : (
+              inventoryProgress &&
               sectorsForInventory.map((sector, i) => (
                 <SectorCard
                   key={sector.name}
                   sectorProgress={getSectorProgresses(
-                    inventoryProgress!,
+                    inventoryProgress,
                     sector.referenceNumber,
                   )}
                   sector={SECTORS[i]}

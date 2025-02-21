@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Box, Card, Heading, HStack, Table, Text } from "@chakra-ui/react";
 import { convertKgToTonnes, toKebabCase } from "@/util/helpers";
 import {
@@ -11,6 +11,7 @@ import { ButtonSmall } from "@/components/Texts/Button";
 import { TitleMedium } from "@/components/Texts/Title";
 import { getColorForSeries } from "./EmissionsForecastChart";
 import type { TFunction } from "i18next";
+import { EmissionsForecastData } from "@/util/types";
 
 interface PointData {
   x: string;
@@ -35,26 +36,43 @@ interface Point {
 interface TooltipCardProps {
   point: Point;
   data: { id: string; color: string; data: { x: string; y: string }[] }[];
-  forecast: any;
+  forecast: EmissionsForecastData;
   t: TFunction;
 }
 
+function debounce(func: Function, wait: number) {
+  let timeout: NodeJS.Timeout;
+  return function (this: void, ...args: any[]) {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func.apply(this, args), wait);
+  };
+}
+
 const TooltipCard = ({ point, data, forecast, t }: TooltipCardProps) => {
-  console.log("point", JSON.stringify(point, null, 2)); // TODO NINA
-  console.log("data", JSON.stringify(data, null, 2)); // TODO NINA
-  console.log("forecast", JSON.stringify(forecast, null, 2)); // TODO NINA
+  const [containerWidth, setContainerWidth] = useState(
+    typeof window !== "undefined" ? window.innerWidth : 0,
+  );
+
+  const handleResize = useCallback(() => {
+    setContainerWidth(window.innerWidth);
+  }, []);
+
+  useEffect(() => {
+    const debouncedResize = debounce(handleResize, 100);
+    window.addEventListener("resize", debouncedResize);
+    return () => {
+      window.removeEventListener("resize", debouncedResize);
+    };
+  }, [handleResize]);
+
   const year = point.data.x;
   const sumOfYs = data.reduce((sum, series) => {
     const yearData = series.data.find(({ x }) => x === year);
     return sum + parseInt((yearData?.y as unknown as string) || "0");
   }, 0);
 
-  // Get the container width
-  const containerWidth = typeof window !== "undefined" ? window.innerWidth : 0;
-  // Get the x position from the point
   const xPosition = point.x;
-  const GRAPH_RATIO = 0.68; // the ratio of the graph to the container
-  // Determine if we're in the left or right half of the screen
+  const GRAPH_RATIO = 0.68;
   const isLeftHalf = xPosition < (containerWidth * GRAPH_RATIO) / 2;
   return (
     <div

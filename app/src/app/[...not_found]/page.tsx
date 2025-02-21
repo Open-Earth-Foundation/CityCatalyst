@@ -1,7 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/i18n/client";
-import { api } from "@/services/api";
 
 import { Text, Box, Icon } from "@chakra-ui/react";
 import Image from "next/image";
@@ -10,8 +9,6 @@ import React from "react";
 import { MdArrowForward } from "react-icons/md";
 
 const NotFound = ({ params: { lng } }: { params: { lng: string } }) => {
-  const { data: userInfo, isLoading: isUserInfoLoading } =
-    api.useGetUserInfoQuery();
   const router = useRouter();
   const { t } = useTranslation(lng, "not-found");
 
@@ -54,12 +51,11 @@ const NotFound = ({ params: { lng } }: { params: { lng: string } }) => {
           {t("not-found-description")}
         </Text>
         <Button
-          onClick={() => router.push(`/${userInfo?.defaultInventoryId}`)}
+          onClick={() => router.push("/")}
           gap="8px"
           h="48px"
           px="24px"
           fontSize="body.md"
-          loading={isUserInfoLoading}
         >
           {t("goto-dashboard")}
           <Icon as={MdArrowForward} />

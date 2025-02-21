@@ -3,6 +3,8 @@
  */
 
 import { defineRecipe } from "@chakra-ui/react";
+import { buttonRecipe } from "./button.recipe";
+import { separatorRecipe } from "./separator.recipe";
 
 // define a recipe for the link (anchor tag)
 export const linkRecipe = defineRecipe({
@@ -279,3 +281,40 @@ export const textareaRecipe = defineRecipe({
     brand: "container",
   },
 });
+
+export const badgeRecipe = defineRecipe({
+  variants: {
+    brand: {
+      container: {
+        color: "content.secondary",
+        borderWidth: "1px",
+        borderColor: "border.neutral",
+        py: 1,
+        px: 3,
+        borderRadius: "16px",
+        bg: "base.light",
+      },
+    },
+  },
+  defaultVariants: {
+    brand: "container",
+  },
+});
+
+export const recipes = {
+  button: buttonRecipe,
+  badge: badgeRecipe,
+  link: linkRecipe,
+  tag: tagRecipe,
+  card: cardRecipe,
+  tooltip: tooltipRecipe,
+  tab: tabsRecipe,
+  accordion: accordionRecipe,
+  progress: progressRecipe,
+  form: formRecipe,
+  text: textRecipe,
+  heading: headingRecipe,
+  switch: switchRecipe,
+  textarea: textareaRecipe,
+  separator: separatorRecipe,
+};

@@ -21,29 +21,23 @@ const ActionCardSmall: React.FC<ActionCardSmallProps> = ({
       py={0}
       px={6}
     >
-      <Card.Body
-        display="flex"
-        flexDir="row"
-        alignItems="center"
-        h="full"
-        gap="4"
-        px={0}
-      >
-        <Box className="flex items-center justify-center h-[48px] w-[48px] rounded-full bg-[#2351DC]">
+      <Box className="flex items-center h-full">
+        <Box className="flex items-center justify-center min-h-[48px] min-w-[48px] rounded-full bg-[#2351DC]">
           {icon}
         </Box>
         <Box>
-          <Text
-            fontFamily="heading"
-            fontSize="title.lg"
-            color="interactive.secondary"
-            fontWeight="semibold"
-            truncate
-          >
-            {title}
-          </Text>
+          <CardHeader pt={0}>
+            <Text
+              fontFamily="heading"
+              fontSize="title.lg"
+              color="interactive.secondary"
+              fontWeight="semibold"
+            >
+              {title}
+            </Text>
+          </CardHeader>
         </Box>
-      </Card.Body>
+      </Box>
     </Card.Root>
   );
 };

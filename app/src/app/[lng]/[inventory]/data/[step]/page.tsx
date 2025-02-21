@@ -4,12 +4,10 @@ import { SegmentedProgress } from "@/components/SegmentedProgress";
 import FileInput from "@/components/file-input";
 import {
   CircleIcon,
-  DataAlertIcon,
   DataCheckIcon,
   ExcelFileIcon,
   MissingDataIcon,
   NoDatasourcesIcon,
-  WorldSearchIcon,
 } from "@/components/icons";
 import {
   clear,
@@ -28,6 +26,7 @@ import {
 import type { DataSourceResponse, SectorProgress } from "@/util/types";
 
 import {
+  Badge,
   Box,
   Card,
   Center,
@@ -201,7 +200,6 @@ export default function AddDataSteps({
 }) {
   const { t } = useTranslation(lng, "data");
   const router = useRouter();
-  // const toast = useToast();
 
   const { data: userInfo, isLoading: isUserInfoLoading } =
     api.useGetUserInfoQuery();
@@ -666,7 +664,7 @@ export default function AddDataSteps({
             </Box>
           </Box>
           {/*** Sector summary section ***/}
-          <Card.Root
+          <Box
             mb={12}
             shadow="none"
             bg="none"
@@ -741,87 +739,77 @@ export default function AddDataSteps({
                 </Flex>
                 {scrollPosition <= 0 ? (
                   <>
-                    <Tag
-                      mr={4}
-                      startElement={
-                        <Icon
-                          as={CircleIcon}
-                          boxSize={6}
-                          color="interactive.quaternary"
-                        />
-                      }
-                    >
+                    <Badge mr={4}>
+                      <Icon
+                        as={CircleIcon}
+                        boxSize={6}
+                        color="interactive.quaternary"
+                      />
                       {t("data-connected-percent", {
                         progress: formatPercentage(
                           currentStep.connectedProgress,
                         ),
                       })}
-                    </Tag>
-                    <Tag
-                      startElement={
-                        <Icon
-                          as={CircleIcon}
-                          boxSize={6}
-                          color="interactive.tertiary"
-                        />
-                      }
-                    >
+                    </Badge>
+                    <Badge>
+                      <Icon
+                        as={CircleIcon}
+                        boxSize={6}
+                        color="interactive.tertiary"
+                      />
                       {t("data-added-percent", {
                         progress: formatPercentage(currentStep.addedProgress),
                       })}
-                    </Tag>
+                    </Badge>
                   </>
                 ) : (
                   ""
                 )}
               </div>
             </Flex>
-          </Card.Root>
+          </Box>
         </div>
       </Box>
       <div className="pt-[48px] pb-16 w-[1090px] max-w-full mx-auto px-4">
         {/*** Manual data entry section for subsectors ***/}
         <Card.Root mb={24} mt="350px" shadow="none" border="none">
-          <Heading fontSize="title.lg" mb={2}>
-            {t("add-data-heading")}
-          </Heading>
-          <Text color="content.tertiary" mb={12}>
-            {t("add-data-details")}
-          </Text>
-          <Heading size="sm" mb={4}>
-            {t("select-subsector")}
-          </Heading>
-          <SimpleGrid minChildWidth="337px" gap={4}>
-            {isInventoryLoading || !currentStep.subSectors ? (
-              <Center>
-                <Spinner size="lg" />
-              </Center>
-            ) : inventoryProgressError ? (
-              <Center>
-                <Icon as={MdWarning} boxSize={8} color="semantic.danger" />
-              </Center>
-            ) : (
-              currentStep.subSectors.map(
-                (subSector: SubSectorWithRelations) => (
-                  <Card.Root
-                    data-testid="subsector-card"
-                    maxHeight="120px"
-                    w="full"
-                    height="100px"
-                    px={4}
-                    className="shadow-none border border-overlay hover:drop-shadow-xl !duration-300 transition-shadow"
-                    onClick={() => {
-                      router.push(
-                        `/${inventory}/data/${convertSectorReferenceNumberToNumber(currentStep.referenceNumber)}/${subSector.subsectorId}?refNo=${subSector.referenceNumber}`,
-                      );
-                    }}
-                    key={subSector.subsectorId}
-                  >
-                    <HStack
-                      align="center"
-                      height="120px"
-                      justify="space-between"
+          <Card.Body>
+            <Heading fontSize="title.lg" mb={2}>
+              {t("add-data-heading")}
+            </Heading>
+            <Text color="content.tertiary" mb={12}>
+              {t("add-data-details")}
+            </Text>
+            <Heading size="sm" mb={4}>
+              {t("select-subsector")}
+            </Heading>
+            <SimpleGrid minChildWidth="337px" gap={4}>
+              {isInventoryLoading || !currentStep.subSectors ? (
+                <Center>
+                  <Spinner size="lg" />
+                </Center>
+              ) : inventoryProgressError ? (
+                <Center>
+                  <Icon as={MdWarning} boxSize={8} color="semantic.danger" />
+                </Center>
+              ) : (
+                currentStep.subSectors.map(
+                  (subSector: SubSectorWithRelations) => (
+                    <Card.Root
+                      data-testid="subsector-card"
+                      maxHeight="120px"
+                      w="full"
+                      height="100px"
+                      px={4}
+                      className="shadow-none border border-overlay hover:drop-shadow-xl !duration-300 transition-shadow"
+                      onClick={() => {
+                        router.push(
+                          `/${inventory}/data/${convertSectorReferenceNumberToNumber(currentStep.referenceNumber)}/${subSector.subsectorId}?refNo=${subSector.referenceNumber}`,
+                        );
+                      }}
+                      key={subSector.subsectorId}
                     >
+<<<<<<< HEAD
                       {subSector.completedCount > 0 &&
                       subSector.completedCount < subSector.totalCount ? (
                         <ProgressCircleRoot
@@ -847,21 +835,75 @@ export default function AddDataSteps({
                               : MissingDataIcon
                           }
                           boxSize={10}
+=======
+                      <HStack
+                        align="center"
+                        height="120px"
+                        justify="space-between"
+                      >
+                        {subSector.completedCount > 0 &&
+                        subSector.completedCount < subSector.totalCount ? (
+                          <ProgressCircleRoot
+                            size="xs"
+                            mr={1}
+                            value={
+                              (subSector.completedCount /
+                                subSector.totalCount) *
+                              100
+                            }
+                          >
+                            <ProgressCircleRing />
+                          </ProgressCircleRoot>
+                        ) : (
+                          <Icon
+                            as={
+                              subSector.completed
+                                ? MdOutlineCheckCircle
+                                : MissingDataIcon
+                            }
+                            boxSize={10}
+                            color={
+                              subSector.completed
+                                ? "interactive.tertiary"
+                                : "sentiment.warningDefault"
+                            }
+                          />
+                        )}
+                        <Stack w="full">
+                          <Heading
+                            fontSize="label.lg"
+                            maxWidth="200px"
+                            lineClamp="2"
+                            lineHeight="20px"
+                            title={t(nameToI18NKey(subSector.subsectorName!))}
+                          >
+                            {t(nameToI18NKey(subSector.subsectorName!))}
+                          </Heading>
+                          {subSector.scope && (
+                            <Text color="content.tertiary">
+                              {t("scope")}: {subSector.scope.scopeName}
+                            </Text>
+                          )}
+                        </Stack>
+                        <IconButton
+                          bg="background.neutral"
+>>>>>>> develop
                           color={
                             subSector.completed
                               ? "interactive.tertiary"
-                              : "sentiment.warningDefault"
+                              : "content.link"
                           }
-                        />
-                      )}
-                      <Stack w="full">
-                        <Heading
-                          fontSize="label.lg"
-                          maxWidth="200px"
-                          lineClamp="2"
-                          lineHeight="20px"
-                          title={t(nameToI18NKey(subSector.subsectorName!))}
+                          aria-label={
+                            subSector.completed
+                              ? t("edit-subsector")
+                              : t("add-subsector-data")
+                          }
+                          _hover={{
+                            color: "base.light",
+                          }}
+                          variant="solid"
                         >
+<<<<<<< HEAD
                           {t(nameToI18NKey(subSector.subsectorName!))}
                         </Heading>
                         {subSector.scope && (
@@ -894,292 +936,317 @@ export default function AddDataSteps({
               )
             )}
           </SimpleGrid>
+=======
+                          <Icon
+                            as={subSector.completed ? MdOutlineEdit : MdAdd}
+                            boxSize={6}
+                          />
+                        </IconButton>
+                      </HStack>
+                    </Card.Root>
+                  ),
+                )
+              )}
+            </SimpleGrid>
+          </Card.Body>
+>>>>>>> develop
         </Card.Root>
         {/*** Third party data source section ***/}
         <Card.Root mb={24} shadow="none" border="none">
-          <Flex
-            align="center"
-            verticalAlign="center"
-            justify="space-between"
-            mb={12}
-          >
-            <Stack>
-              <Heading fontSize="title.lg" mb={2}>
-                {t("check-data-heading")}
-              </Heading>
-              <Text color="content.tertiary">{t("check-data-details")}</Text>
-            </Stack>
-            {dataSources && (
-              <IconButton
-                variant="solid"
-                aria-label="Refresh"
-                size="lg"
-                h={16}
-                w={16}
-                loading={areDataSourcesFetching}
-                onClick={onSearchDataSourcesClicked}
-              >
-                <Icon as={MdRefresh} boxSize={9} />
-              </IconButton>
-            )}
-          </Flex>
-          {!dataSources ? (
-            <SearchDataSourcesPrompt
-              t={t}
-              isSearching={areDataSourcesLoading}
-              onSearchClicked={onSearchDataSourcesClicked}
-            />
-          ) : dataSourcesError ? (
-            <Center>
-              <Icon as={MdWarning} boxSize={8} color="semantic.danger" />
-            </Center>
-          ) : dataSources && dataSources?.length === 0 ? (
-            <NoDataSourcesMessage
-              t={t}
-              sector={currentStep.referenceNumber}
-              locode={locode}
-              year={year}
-            />
-          ) : (
-            <SimpleGrid columns={3} gap={4}>
-              {dataSources
-                .slice(0, isDataSectionExpanded ? dataSources.length : 6)
-                .map(({ source, data }) => {
-                  const isHovered = hoverStates[source.datasourceId];
-                  const { variant, text, icon } = getButtonProps(
-                    source,
-                    isHovered,
-                  );
+          <Card.Body>
+            <Flex
+              align="center"
+              verticalAlign="center"
+              justify="space-between"
+              mb={12}
+            >
+              <Stack>
+                <Heading fontSize="title.lg" mb={2}>
+                  {t("check-data-heading")}
+                </Heading>
+                <Text color="content.tertiary">{t("check-data-details")}</Text>
+              </Stack>
+              {dataSources && (
+                <IconButton
+                  variant="solid"
+                  aria-label="Refresh"
+                  size="lg"
+                  h={16}
+                  w={16}
+                  loading={areDataSourcesFetching}
+                  onClick={onSearchDataSourcesClicked}
+                >
+                  <Icon as={MdRefresh} boxSize={9} />
+                </IconButton>
+              )}
+            </Flex>
+            {!dataSources ? (
+              <SearchDataSourcesPrompt
+                t={t}
+                isSearching={areDataSourcesLoading}
+                onSearchClicked={onSearchDataSourcesClicked}
+              />
+            ) : dataSourcesError ? (
+              <Center>
+                <Icon as={MdWarning} boxSize={8} color="semantic.danger" />
+              </Center>
+            ) : dataSources && dataSources?.length === 0 ? (
+              <NoDataSourcesMessage
+                t={t}
+                sector={currentStep.referenceNumber}
+                locode={locode}
+                year={year}
+              />
+            ) : (
+              <SimpleGrid columns={3} gap={4}>
+                {dataSources
+                  .slice(0, isDataSectionExpanded ? dataSources.length : 6)
+                  .map(({ source, data }) => {
+                    const isHovered = hoverStates[source.datasourceId];
+                    const { variant, text, icon } = getButtonProps(
+                      source,
+                      isHovered,
+                    );
 
-                  return (
-                    <Card.Root
-                      key={source.datasourceId}
-                      variant="outline"
-                      borderColor={
-                        isSourceConnected(source) &&
-                        source.inventoryValues?.length
-                          ? "interactive.tertiary"
-                          : ""
-                      }
-                      borderWidth={2}
-                      className="shadow-none hover:drop-shadow-xl transition-shadow"
-                    >
-                      {/* TODO add icon to DataSource */}
-                      <Icon as={MdHomeWork} boxSize={9} mb={6} />
-                      <Heading size="sm" lineClamp={2} minHeight={10}>
-                        {getTranslationFromDict(source.datasetName)}
-                      </Heading>
-                      <Flex direction="row" my={4} wrap="wrap" gap={2}>
-                        <Tag
-                          startElement={
-                            <Icon
-                              as={DataCheckIcon}
-                              boxSize={5}
-                              color="content.tertiary"
-                            />
-                          }
-                        >
-                          <TagLabel fontSize={11}>
-                            {t("data-quality")}:{" "}
-                            {t("quality-" + source.dataQuality)}
-                          </TagLabel>
-                        </Tag>
-                        {source.subCategory?.scope && (
+                    return (
+                      <Card.Root
+                        key={source.datasourceId}
+                        variant="outline"
+                        borderColor={
+                          isSourceConnected(source) &&
+                          source.inventoryValues?.length
+                            ? "interactive.tertiary"
+                            : ""
+                        }
+                        borderWidth={2}
+                        className="shadow-none hover:drop-shadow-xl transition-shadow"
+                      >
+                        {/* TODO add icon to DataSource */}
+                        <Icon as={MdHomeWork} boxSize={9} mb={6} />
+                        <Heading size="sm" lineClamp={2} minHeight={10}>
+                          {getTranslationFromDict(source.datasetName)}
+                        </Heading>
+                        <Flex direction="row" my={4} wrap="wrap" gap={2}>
                           <Tag
                             startElement={
                               <Icon
-                                as={FiTarget}
-                                boxSize={4}
+                                as={DataCheckIcon}
+                                boxSize={5}
                                 color="content.tertiary"
                               />
                             }
                           >
                             <TagLabel fontSize={11}>
-                              {t("scope")}: {source.subCategory.scope.scopeName}
+                              {t("data-quality")}:{" "}
+                              {t("quality-" + source.dataQuality)}
                             </TagLabel>
                           </Tag>
+                          {source.subCategory?.scope && (
+                            <Tag
+                              startElement={
+                                <Icon
+                                  as={FiTarget}
+                                  boxSize={4}
+                                  color="content.tertiary"
+                                />
+                              }
+                            >
+                              <TagLabel fontSize={11}>
+                                {t("scope")}:{" "}
+                                {source.subCategory.scope.scopeName}
+                              </TagLabel>
+                            </Tag>
+                          )}
+                        </Flex>
+                        <Text
+                          color="content.tertiary"
+                          lineClamp={5}
+                          minHeight={120}
+                        >
+                          {getTranslationFromDict(source.datasetDescription) ||
+                            getTranslationFromDict(
+                              source.methodologyDescription,
+                            )}
+                        </Text>
+                        <Link
+                          className="underline"
+                          mt={4}
+                          mb={6}
+                          onClick={() => onSourceClick(source, data)}
+                        >
+                          {t("see-more-details")}
+                        </Link>
+                        {isSourceConnected(source) &&
+                        source.inventoryValues?.length ? (
+                          <Button
+                            variant="solid"
+                            px={6}
+                            py={4}
+                            onClick={() => onDisconnectThirdPartyData(source)}
+                            loading={
+                              isDisconnectLoading &&
+                              source.datasourceId === disconnectingDataSourceId
+                            }
+                            onMouseEnter={() => onButtonHover(source)}
+                            onMouseLeave={() => onMouseLeave(source)}
+                          >
+                            <Icon as={MdCheckCircle} />
+                            {text}
+                          </Button>
+                        ) : (
+                          <Button
+                            variant="outline"
+                            bgColor="background.neutral"
+                            onClick={() => onConnectClick(source)}
+                            loading={
+                              isConnectDataSourceLoading &&
+                              source.datasourceId === connectingDataSourceId
+                            }
+                          >
+                            {t("connect-data")}
+                          </Button>
                         )}
-                      </Flex>
-                      <Text
-                        color="content.tertiary"
-                        lineClamp={5}
-                        minHeight={120}
-                      >
-                        {getTranslationFromDict(source.datasetDescription) ||
-                          getTranslationFromDict(source.methodologyDescription)}
-                      </Text>
-                      <Link
-                        className="underline"
-                        mt={4}
-                        mb={6}
-                        onClick={() => onSourceClick(source, data)}
-                      >
-                        {t("see-more-details")}
-                      </Link>
-                      {isSourceConnected(source) &&
-                      source.inventoryValues?.length ? (
-                        <Button
-                          variant="solid"
-                          px={6}
-                          py={4}
-                          onClick={() => onDisconnectThirdPartyData(source)}
-                          loading={
-                            isDisconnectLoading &&
-                            source.datasourceId === disconnectingDataSourceId
-                          }
-                          onMouseEnter={() => onButtonHover(source)}
-                          onMouseLeave={() => onMouseLeave(source)}
-                        >
-                          <Icon as={MdCheckCircle} />
-                          {text}
-                        </Button>
-                      ) : (
-                        <Button
-                          variant="outline"
-                          bgColor="background.neutral"
-                          onClick={() => onConnectClick(source)}
-                          loading={
-                            isConnectDataSourceLoading &&
-                            source.datasourceId === connectingDataSourceId
-                          }
-                        >
-                          {t("connect-data")}
-                        </Button>
-                      )}
-                    </Card.Root>
-                  );
-                })}
-            </SimpleGrid>
-          )}
-          {dataSources && dataSources.length > 6 && (
-            <Button
-              variant="ghost"
-              color="content.tertiary"
-              onClick={() => setDataSectionExpanded(!isDataSectionExpanded)}
-              mt={8}
-              fontWeight="normal"
-            >
-              {t(isDataSectionExpanded ? "less-datasets" : "more-datasets")}
-              <Icon
-                boxSize={6}
-                as={isDataSectionExpanded ? MdArrowDropUp : MdArrowDropDown}
-              />
-            </Button>
-          )}
+                      </Card.Root>
+                    );
+                  })}
+              </SimpleGrid>
+            )}
+            {dataSources && dataSources.length > 6 && (
+              <Button
+                variant="ghost"
+                color="content.tertiary"
+                onClick={() => setDataSectionExpanded(!isDataSectionExpanded)}
+                mt={8}
+                fontWeight="normal"
+              >
+                {t(isDataSectionExpanded ? "less-datasets" : "more-datasets")}
+                <Icon
+                  boxSize={6}
+                  as={isDataSectionExpanded ? MdArrowDropUp : MdArrowDropDown}
+                />
+              </Button>
+            )}
+          </Card.Body>
         </Card.Root>
         {/* Upload own data section */}
         <Card.Root mb={24} shadow="none" border="none" w="full">
-          <Heading fontSize="title.lg" mb={2}>
-            {t("upload-your-data-heading")}
-          </Heading>
-          <Text color="content.tertiary" mb={12}>
-            {t("upload-your-data-details")}
-          </Text>
-          <Box display="flex">
-            <Box w="full">
+          <Card.Body>
+            <Heading fontSize="title.lg" mb={2}>
+              {t("upload-your-data-heading")}
+            </Heading>
+            <Text color="content.tertiary" mb={12}>
+              {t("upload-your-data-details")}
+            </Text>
+            <Box display="flex">
               <Box w="full">
-                <Box mb="24px">
-                  <FileInput
-                    onFileSelect={handleFileSelect}
-                    setUploadedFile={setUploadedFile}
-                    t={t}
-                  />
-                </Box>
-                <Box mb="24px">
-                  {sectorData[0]?.files.length > 0 ? (
-                    <Heading size="sm">{t("files-uploaded")}</Heading>
-                  ) : (
-                    ""
-                  )}
-                </Box>
-                <Box display="flex" flexDirection="column" gap="8px">
-                  {sectorData &&
-                    sectorData[0]?.files.map(
-                      (file: InventoryUserFileAttributes, i: number) => {
-                        return (
-                          <Card.Root
-                            shadow="none"
-                            minH="120px"
-                            w="full"
-                            borderWidth="1px"
-                            borderColor="border.overlay"
-                            borderRadius="8px"
-                            px="16px"
-                            py="16px"
-                            key={i}
-                          >
-                            <Box display="flex" gap="16px">
-                              <Box>
-                                <ExcelFileIcon />
-                              </Box>
-                              <Box
-                                display="flex"
-                                flexDirection="column"
-                                justifyContent="center"
-                                gap="8px"
-                              >
-                                <Heading
-                                  fontSize="lable.lg"
-                                  fontWeight="normal"
-                                  letterSpacing="wide"
-                                  truncate
-                                >
-                                  {file.fileName}
-                                </Heading>
-                                <Text
-                                  fontSize="body.md"
-                                  fontWeight="normal"
-                                  color="interactive.control"
-                                >
-                                  {bytesToMB(file.size ?? 0)}
-                                </Text>
-                              </Box>
-                              <Box
-                                color="sentiment.negativeDefault"
-                                display="flex"
-                                justifyContent="right"
-                                alignItems="center"
-                                w="full"
-                              >
-                                <Button
-                                  variant="ghost"
-                                  color="sentiment.negativeDefault"
-                                  onClick={() =>
-                                    removeSectorFile(
-                                      file.fileId,
-                                      sectorData[0].sectorName,
-                                      file.cityId,
-                                    )
-                                  }
-                                >
-                                  <FiTrash2 size={24} />
-                                </Button>
-                              </Box>
-                            </Box>
-                            <Box w="full" className="relative pl-[63px]">
-                              {file.subsectors?.split(",").map((item: any) => (
-                                <Tag
-                                  key={item}
-                                  mt={2}
-                                  mr={2}
-                                  size="md"
-                                  variant="solid"
-                                  color="content.alternative"
-                                  bg="background.neutral"
-                                  maxW="150px"
-                                >
-                                  <TagLabel>{item}</TagLabel>
-                                </Tag>
-                              ))}
-                            </Box>
-                          </Card.Root>
-                        );
-                      },
+                <Box w="full">
+                  <Box mb="24px">
+                    <FileInput
+                      onFileSelect={handleFileSelect}
+                      setUploadedFile={setUploadedFile}
+                      t={t}
+                    />
+                  </Box>
+                  <Box mb="24px">
+                    {sectorData[0]?.files.length > 0 ? (
+                      <Heading size="sm">{t("files-uploaded")}</Heading>
+                    ) : (
+                      ""
                     )}
+                  </Box>
+                  <Box display="flex" flexDirection="column" gap="8px">
+                    {sectorData &&
+                      sectorData[0]?.files.map(
+                        (file: InventoryUserFileAttributes, i: number) => {
+                          return (
+                            <Card.Root
+                              shadow="none"
+                              minH="120px"
+                              w="full"
+                              borderWidth="1px"
+                              borderColor="border.overlay"
+                              borderRadius="8px"
+                              px="16px"
+                              py="16px"
+                              key={i}
+                            >
+                              <Card.Body>
+                                <Box display="flex" gap="16px">
+                                  <Box>
+                                    <ExcelFileIcon />
+                                  </Box>
+                                  <Box
+                                    display="flex"
+                                    flexDirection="column"
+                                    justifyContent="center"
+                                    gap="8px"
+                                  >
+                                    <Heading
+                                      fontSize="lable.lg"
+                                      fontWeight="normal"
+                                      letterSpacing="wide"
+                                      truncate
+                                    >
+                                      {file.fileName}
+                                    </Heading>
+                                    <Text
+                                      fontSize="body.md"
+                                      fontWeight="normal"
+                                      color="interactive.control"
+                                    >
+                                      {bytesToMB(file.size ?? 0)}
+                                    </Text>
+                                  </Box>
+                                  <Box
+                                    color="sentiment.negativeDefault"
+                                    display="flex"
+                                    justifyContent="right"
+                                    alignItems="center"
+                                    w="full"
+                                  >
+                                    <Button
+                                      variant="ghost"
+                                      color="sentiment.negativeDefault"
+                                      onClick={() =>
+                                        removeSectorFile(
+                                          file.fileId,
+                                          sectorData[0].sectorName,
+                                          file.cityId,
+                                        )
+                                      }
+                                    >
+                                      <FiTrash2 size={24} />
+                                    </Button>
+                                  </Box>
+                                </Box>
+                                <Box w="full" className="relative pl-[63px]">
+                                  {file.subsectors
+                                    ?.split(",")
+                                    .map((item: any) => (
+                                      <Tag
+                                        key={item}
+                                        mt={2}
+                                        mr={2}
+                                        size="md"
+                                        variant="solid"
+                                        color="content.alternative"
+                                        bg="background.neutral"
+                                        maxW="150px"
+                                      >
+                                        <TagLabel>{item}</TagLabel>
+                                      </Tag>
+                                    ))}
+                                </Box>
+                              </Card.Body>
+                            </Card.Root>
+                          );
+                        },
+                      )}
+                  </Box>
                 </Box>
               </Box>
             </Box>
-          </Box>
+          </Card.Body>
         </Card.Root>
         {/* Add fole data modal */}
         <AddFileDataDialog
@@ -1205,6 +1272,7 @@ export default function AddDataSteps({
           onConnectClick={() => onConnectClick(selectedSource!)}
           isConnectLoading={isConnectDataSourceLoading}
           t={t}
+          inventoryId={inventory}
         />
       </div>
     </>

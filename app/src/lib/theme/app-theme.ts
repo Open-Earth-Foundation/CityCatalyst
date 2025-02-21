@@ -1,58 +1,44 @@
 import { createSystem, defaultConfig } from "@chakra-ui/react";
-import {
-  accordionRecipe,
-  cardRecipe,
-  formRecipe,
-  headingRecipe,
-  linkRecipe,
-  progressRecipe,
-  switchRecipe,
-  tabsRecipe,
-  tagRecipe,
-  textareaRecipe,
-  textRecipe,
-  tooltipRecipe,
-} from "./recipes";
-import { buttonRecipe } from "./recipes/button.recipe";
-import { separatorRecipe } from "./recipes/separator.recipe";
-
-export enum SectorColors {
-  I = "#5785F4",
-  II = "#DF2222",
-  III = "#F28C37",
-  IV = "#2DD05B",
-  V = "#C6C61D",
-}
-
-export enum SubSectorColors {
-  "V.1" = "#38A857",
-  "V.2" = "#0E5221",
-  "V.3" = "#149037",
-}
+import { recipes } from "./recipes";
+import { SectorColors } from "./custom-colors";
 
 export const appTheme = createSystem(defaultConfig, {
+  globalCss: {
+    html: {
+      colorPalette: "brand",
+    },
+  },
   theme: {
-    recipes: {
-      button: buttonRecipe,
-      link: linkRecipe,
-      tag: tagRecipe,
-      card: cardRecipe,
-      tooltip: tooltipRecipe,
-      tab: tabsRecipe,
-      accordion: accordionRecipe,
-      progress: progressRecipe,
-      form: formRecipe,
-      text: textRecipe,
-      heading: headingRecipe,
-      switch: switchRecipe,
-      textarea: textareaRecipe,
-      seperator: separatorRecipe,
+    recipes,
+    semanticTokens: {
+      colors: {
+        brand: {
+          solid: { value: "{colors.brand.500}" },
+          contrast: { value: "{colors.brand.100}" },
+          fg: { value: "{colors.brand.700}" },
+          muted: { value: "{colors.brand.100}" },
+          subtle: { value: "{colors.brand.200}" },
+          emphasized: { value: "{colors.brand.300}" },
+          focusRing: { value: "{colors.brand.500}" },
+        },
+      },
     },
     tokens: {
       colors: {
         brand: {
           primary: { value: "#001EA7" },
           secondary: { value: "#2351DC" },
+
+          50: { value: "#f5f7fd" },
+          100: { value: "#d8e0f9" },
+          200: { value: "#b5c5f3" },
+          300: { value: "#8ba4ed" },
+          400: { value: "#7391e9" },
+          500: { value: "#2351DC" },
+          600: { value: "#345fdf" },
+          700: { value: "#1f48c4" },
+          800: { value: "#1a3da6" },
+          900: { value: "#001EA7" },
         },
 
         content: {

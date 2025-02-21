@@ -112,63 +112,51 @@ const TopEmissionsWidget = ({
     return (
       <HStack>
         <Card.Root marginLeft={"4"} backgroundColor={"white"} p={4}>
-          {
-            <Center>
-              <ProgressCircleRoot value={null} size="sm">
-                <ProgressCircleRing cap="round" />
-              </ProgressCircleRoot>
-            </Center>
-          }
+          <Center>
+            <ProgressCircleRoot value={null} size="sm">
+              <ProgressCircleRing cap="round" />
+            </ProgressCircleRoot>
+          </Center>
         </Card.Root>
       </HStack>
     );
   } else if (results!?.totalEmissions.total <= 0) {
     return (
-      <>
-        <Card.Root width={"713px"} height={"448px"}>
-          <Heading size="sm">{t("top-emissions")}</Heading>
-          <EmptyStateCardContent
-            width={"665px"}
-            height={"344px"}
-            t={t}
-            inventoryId={inventory?.inventoryId}
-            isPublic={isPublic}
-          />
-        </Card.Root>
-      </>
+      <Card.Root width={"713px"} height={"448px"}>
+        <Heading size="sm">{t("top-emissions")}</Heading>
+        <EmptyStateCardContent
+          width={"665px"}
+          height={"344px"}
+          t={t}
+          inventoryId={inventory?.inventoryId}
+          isPublic={isPublic}
+        />
+      </Card.Root>
     );
   } else {
     return (
       <HStack>
         <Card.Root marginLeft={"4"} backgroundColor={"white"} p={4}>
-          {
-            <>
-              <Box>
-                <Heading size="sm" my={4}>
-                  {t("total-emissions")}
-                </Heading>
-              </Box>
-              <SegmentedProgress
-                values={getPercentagesForProgress()}
-                total={results?.totalEmissions.total}
-                t={t}
-                colors={allSectorColors}
-                showLabels
-                showHover
-              />
-              <Box>
-                <Heading size="sm" marginTop={10} marginBottom={4}>
-                  {t("top-emissions")}
-                </Heading>
-              </Box>
-              <EmissionsTable
-                topEmissions={
-                  results?.topEmissions?.bySubSector?.slice(0, 3) ?? []
-                }
-                t={t}
-              />
-            </>
-          }
+          <Heading size="sm" my={4}>
+            {t("total-emissions")}
+          </Heading>
+          <SegmentedProgress
+            values={getPercentagesForProgress()}
+            total={results?.totalEmissions.total}
+            t={t}
+            colors={allSectorColors}
+            showLabels
+            showHover
+          />
+          <Box>
+            <Heading size="sm" marginTop={10} marginBottom={4}>
+              {t("top-emissions")}
+            </Heading>
+          </Box>
+          <EmissionsTable
+            topEmissions={results?.topEmissions?.bySubSector?.slice(0, 3) ?? []}
+            t={t}
+          />
         </Card.Root>
       </HStack>
     );

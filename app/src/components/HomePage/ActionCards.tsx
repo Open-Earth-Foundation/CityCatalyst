@@ -70,17 +70,15 @@ export function ActionCards({
           </Box>
         </Card.Root>
       </NextLink>
-      <Box display="flex">
-        <Box className="flex-[2_2_0%] flex flex-col gap-[8px]">
-          <AddCollaboratorButton lng={lng} />
-          <DownloadButton
-            lng={lng}
-            t={t}
-            inventoryId={inventoryId!}
-            city={city}
-            inventory={inventory}
-          />
-        </Box>
+      <Box className="flex flex-col gap-[8px]">
+        <AddCollaboratorButton lng={lng} />
+        <DownloadButton
+          lng={lng}
+          t={t}
+          inventoryId={inventoryId!}
+          city={city}
+          inventory={inventory}
+        />
       </Box>
     </Box>
   );

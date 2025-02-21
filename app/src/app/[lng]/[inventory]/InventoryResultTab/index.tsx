@@ -75,7 +75,7 @@ function SectorTabs({
   isPublic: boolean;
 }) {
   const { t: tData } = useTranslation(lng, "data");
-  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [selectedTab, setSelectedTab] = useState(SECTORS[0].name);
   const [selectedTableView, setSelectedTableView] = useState<TableView>(
     TableView.BY_ACTIVITY,
   );
@@ -96,7 +96,7 @@ function SectorTabs({
     refetch,
   } = api.useGetSectorBreakdownQuery({
     inventoryId: inventory!.inventoryId!,
-    sector: SECTORS[selectedIndex].name,
+    sector: selectedTab,
   });
 
   const makeErrorToast = (title: string, description?: string) => {
@@ -116,7 +116,7 @@ function SectorTabs({
   useEffect(() => {
     setIsLoadingNewData(true);
     refetch().finally(() => setIsLoadingNewData(false));
-  }, [selectedIndex, refetch]);
+  }, [selectedTab, refetch]);
 
   const handleViewChange = (event: ChangeEvent<HTMLSelectElement>) => {
     setSelectedTableView(event.target.value as TableView);
@@ -131,8 +131,7 @@ function SectorTabs({
       // align="start"
       variant="line"
       defaultValue={SECTORS[0].name}
-      // index={selectedIndex}
-      // onChange={(index) => setSelectedIndex(index)}
+      onValueChange={(event) => setSelectedTab(event.value)}
     >
       <Tabs.List>
         {getSectorsForInventory(inventory?.inventoryType).map(
@@ -143,16 +142,16 @@ function SectorTabs({
                 height="24px"
                 w="24px"
                 color={
-                  selectedIndex === index ? "content.link" : "content.tertiary"
+                  selectedTab === name ? "content.link" : "content.tertiary"
                 }
               />
               <Text
                 fontSize="16"
                 mx="16px"
-                fontWeight={selectedIndex === index ? 600 : 400}
+                fontWeight={selectedTab === name ? 600 : 400}
                 fontStyle="normal"
                 color={
-                  selectedIndex === index ? "content.link" : "content.tertiary"
+                  selectedTab === name ? "content.link" : "content.tertiary"
                 }
               >
                 {t(name)}
@@ -178,7 +177,7 @@ function SectorTabs({
           <Tabs.Content value={name} key={name}>
             {isTopEmissionsResponseLoading ? (
               <Center w="full" h="full">
-                <ProgressCircleRoot>
+                <ProgressCircleRoot value={null}>
                   <ProgressCircleRing cap="round" />
                 </ProgressCircleRoot>
               </Center>
@@ -209,7 +208,7 @@ function SectorTabs({
                     {***[ON-3126 restore view by activity]*/}
                 </HStack>
                 {(isResultsLoading || isLoadingNewData) && (
-                  <ProgressCircleRoot>
+                  <ProgressCircleRoot value={null}>
                     <ProgressCircleRing cap="round" />
                   </ProgressCircleRoot>
                 )}
@@ -411,51 +410,53 @@ export function EmissionPerSectors({
 
   return (
     <Box className="flex flex-col gap-[8px] w-full">
-      <Card.Root paddingY="16px" paddingX="24px">
-        <Box className="flex items-center justify-between">
-          <Card.Header padding={0}>
-            <Heading size="sm">{t("ghg-by-sector-heading")}</Heading>
-          </Card.Header>
-          <ButtonGroupToggle options={options} activeOption={selectedView} />
-        </Box>
-        {loadingState && (
-          <Box className="w-full py-12 flex items-center justify-center">
-            <ProgressCircleRoot>
-              <ProgressCircleRing cap="round" />
-            </ProgressCircleRoot>
+      <Card.Root>
+        <Card.Body>
+          <Box className="flex items-center justify-between">
+            <Card.Header padding={0}>
+              <Heading size="sm">{t("ghg-by-sector-heading")}</Heading>
+            </Card.Header>
+            <ButtonGroupToggle options={options} activeOption={selectedView} />
           </Box>
-        )}
-        {!loadingState && transformedYearOverYearData.length === 0 && (
-          <EmptyStateCardContent
-            t={t}
-            inventoryId={inventory.inventoryId}
-            width={"1042px"}
-            height={"592px"}
-            isPublic={isPublic}
-          />
-        )}
-        {
-          // if we have data, we can display the table or the chart
-          !loadingState && transformedYearOverYearData.length > 0 && (
-            <Box className="pt-6">
-              {selectedView === "table" ? (
-                <EmissionBySectorTableSection
-                  lng={lng}
-                  data={transformedYearOverYearData}
-                />
-              ) : (
-                <TooltipProvider container={containerRef}>
-                  <div className="min-h-[600px]" ref={containerRef}>
-                    <EmissionBySectorChart
-                      data={transformedYearOverYearData}
-                      lng={lng}
-                    />
-                  </div>
-                </TooltipProvider>
-              )}
+          {loadingState && (
+            <Box className="w-full py-12 flex items-center justify-center">
+              <ProgressCircleRoot value={null}>
+                <ProgressCircleRing cap="round" />
+              </ProgressCircleRoot>
             </Box>
-          )
-        }
+          )}
+          {!loadingState && transformedYearOverYearData.length === 0 && (
+            <EmptyStateCardContent
+              t={t}
+              inventoryId={inventory.inventoryId}
+              width={"1042px"}
+              height={"592px"}
+              isPublic={isPublic}
+            />
+          )}
+          {
+            // if we have data, we can display the table or the chart
+            !loadingState && transformedYearOverYearData.length > 0 && (
+              <Box className="pt-6">
+                {selectedView === "table" ? (
+                  <EmissionBySectorTableSection
+                    lng={lng}
+                    data={transformedYearOverYearData}
+                  />
+                ) : (
+                  <TooltipProvider container={containerRef}>
+                    <div className="min-h-[600px]" ref={containerRef}>
+                      <EmissionBySectorChart
+                        data={transformedYearOverYearData}
+                        lng={lng}
+                      />
+                    </div>
+                  </TooltipProvider>
+                )}
+              </Box>
+            )
+          }
+        </Card.Body>
       </Card.Root>
     </Box>
   );

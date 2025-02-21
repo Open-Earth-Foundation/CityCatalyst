@@ -34,6 +34,7 @@ import {
   AcceptInviteRequest,
   UsersInvitesResponse,
   GetUserCityInvitesResponse,
+  InventoryPopulationsResponse,
 } from "@/util/types";
 import type { GeoJSON } from "geojson";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
@@ -97,6 +98,14 @@ export const api = createApi({
         transformResponse: (response: { data: InventoryResponse }) =>
           response.data,
         providesTags: ["Inventory"],
+      }),
+      getInventoryPopulations: builder.query<
+        InventoryPopulationsResponse,
+        string
+      >({
+        query: (inventoryId: string) => `inventory/${inventoryId}/populations`,
+        transformResponse: (response: { data: InventoryPopulationsResponse }) =>
+          response.data,
       }),
       getRequiredScopes: builder.query<RequiredScopesResponse, string>({
         query: (sectorId) => `sector/${sectorId}/required-scopes`,
@@ -858,5 +867,6 @@ export const {
   useUpdateOrCreateInventoryValueMutation,
   useGetCityInvitesQuery,
   useUpdatePasswordMutation,
+  useGetInventoryPopulationsQuery,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

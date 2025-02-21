@@ -130,10 +130,11 @@ export type DataSourceData = {
   records: DataSourceActivityDataRecord[];
 };
 
-interface DataSourceActivityDataGas {
+export interface DataSourceActivityDataGas {
   gas_name: string;
   emissions_value: number;
   emissionfactor_value: number;
+  emissionfactor_source: string;
   activity_value: number;
   gwp: number;
   emissions_value_100yr: number;

@@ -14,6 +14,7 @@ import {
   TagLabel,
   Text,
   Icon,
+  Badge,
 } from "@chakra-ui/react";
 import { Trans } from "react-i18next/TransWithoutContext";
 import { TabHeader } from "@/components/HomePage/TabHeader";
@@ -83,30 +84,16 @@ export default function InventoryCalculationTab({
             </Heading>
           </Box>
           <Box className="flex gap-4 mt-2">
-            <Tag
-              startElement={
-                <Icon
-                  as={CircleIcon}
-                  boxSize={6}
-                  color="interactive.connected"
-                />
-              }
-            >
+            <Badge>
+              <Icon as={CircleIcon} boxSize={6} color="interactive.connected" />
               {formatPercent(thirdPartyProgress)}%{" "}
               <Trans t={t}>connect-third-party-data</Trans>
-            </Tag>
-            <Tag
-              startElement={
-                <Icon
-                  as={CircleIcon}
-                  boxSize={6}
-                  color="interactive.tertiary"
-                />
-              }
-            >
+            </Badge>
+            <Badge>
+              <Icon as={CircleIcon} boxSize={6} color="interactive.tertiary" />
               {formatPercent(uploadedProgress)}%{" "}
               <Trans t={t}>uploaded-data</Trans>
-            </Tag>
+            </Badge>
           </Box>
           <Box className=" flex flex-col gap-[24px] py-[24px]">
             <BlueSubtitle t={t} text={"sector-data"} />
@@ -126,11 +113,12 @@ export default function InventoryCalculationTab({
                 <Spinner size="lg" />
               </Center>
             ) : (
+              inventoryProgress &&
               sectorsForInventory.map((sector, i) => (
                 <SectorCard
                   key={sector.name}
                   sectorProgress={getSectorProgresses(
-                    inventoryProgress!,
+                    inventoryProgress,
                     sector.referenceNumber,
                   )}
                   sector={SECTORS[i]}

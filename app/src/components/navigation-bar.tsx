@@ -77,6 +77,7 @@ export function NavigationBar({
     api.useGetUserInfoQuery();
   const currentInventoryId = userInfo?.defaultInventoryId;
   const router = useRouter();
+  const dashboardPath = `/${lng}/${inventory ?? currentInventoryId}`;
 
   const [isUserMenuOpen, setUserMenuOpen] = useState(false);
 
@@ -85,7 +86,7 @@ export function NavigationBar({
       className="flex flex-row px-8 py-4 align-middle space-x-12 items-center relative z-50"
       bgColor="content.alternative"
     >
-      <Link href={`/${inventory ? inventory : currentInventoryId}`}>
+      <Link href={dashboardPath}>
         <Image
           src="/assets/logo.svg"
           width={36}
@@ -94,7 +95,7 @@ export function NavigationBar({
           className="mr-[56px]"
         />
       </Link>
-      <Link href={`/${inventory ? inventory : currentInventoryId}`}>
+      <Link href={dashboardPath}>
         <Heading size="lg" color="base.light">
           {t("title")}
         </Heading>
@@ -103,7 +104,7 @@ export function NavigationBar({
       {showNav && !isPublic && (
         <>
           {" "}
-          <Link href={`/${inventory ? inventory : currentInventoryId}`}>
+          <Link href={dashboardPath}>
             <Heading color="base.light" size="md" className="opacity-75" ml={6}>
               {t("dashboard")}
             </Heading>

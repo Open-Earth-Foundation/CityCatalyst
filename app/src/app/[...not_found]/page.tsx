@@ -1,16 +1,13 @@
 "use client";
 import { useTranslation } from "@/i18n/client";
-import { api } from "@/services/api";
 import { ArrowForwardIcon } from "@chakra-ui/icons";
 import { Box, Text } from "@chakra-ui/layout";
-import { Button, IconButton } from "@chakra-ui/react";
+import { Button } from "@chakra-ui/react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React from "react";
 
 const NotFound = ({ params: { lng } }: { params: { lng: string } }) => {
-  const { data: userInfo, isLoading: isUserInfoLoading } =
-    api.useGetUserInfoQuery();
   const router = useRouter();
   const { t } = useTranslation(lng, "not-found");
 
@@ -53,12 +50,11 @@ const NotFound = ({ params: { lng } }: { params: { lng: string } }) => {
           {t("not-found-description")}
         </Text>
         <Button
-          onClick={() => router.push(`/${userInfo?.defaultInventoryId}`)}
+          onClick={() => router.push("/")}
           gap="8px"
           h="48px"
           px="24px"
           fontSize="body.md"
-          isLoading={isUserInfoLoading}
           rightIcon={<ArrowForwardIcon />}
         >
           {t("goto-dashboard")}

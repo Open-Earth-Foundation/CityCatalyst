@@ -14,7 +14,7 @@ const MissingInventory = ({ lng }: { lng: string }) => {
   const router = useRouter();
   useEffect(() => {
     if (!isUserInfoLoading && !userInfo?.defaultInventoryId) {
-      router.push("onboarding");
+      router.push("/onboarding");
     }
   }, [isUserInfoLoading, userInfo, router]);
 
@@ -71,7 +71,7 @@ const MissingInventory = ({ lng }: { lng: string }) => {
               router.push(
                 userInfo?.defaultInventoryId
                   ? `/${userInfo?.defaultInventoryId}`
-                  : "onboarding",
+                  : "/onboarding",
               )
             }
             gap="8px"

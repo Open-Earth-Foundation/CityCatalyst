@@ -8,10 +8,13 @@ import {
   getSubSectorByReferenceNumber,
   ISector,
 } from "@/util/constants";
-import { Badge, Box, Card, Heading, Table, Text } from "@chakra-ui/react";
+import { Box, Card, Heading, HStack, Table, Text } from "@chakra-ui/react";
 import { convertKgToTonnes, toKebabCase } from "@/util/helpers";
 import { ResponsiveLine } from "@nivo/line";
 import CustomLegend from "@/app/[lng]/[inventory]/InventoryResultTab/EmissionsForecast/CustomLegend";
+import { ColoredCircle } from "@/components/ColoredCircle";
+import { ButtonSmall } from "@/components/Texts/Button";
+import { TitleMedium } from "@/components/Texts/Title";
 
 interface LineChartData {
   id: string;
@@ -112,14 +115,22 @@ export const EmissionsForecastChart = ({
                   </Text>
                 </Box>
                 <Box padding="4">
-                  <Table.Root unstyled size={"sm"}>
+                  <Table.Root size={"sm"}>
                     <Table.Header>
                       <Table.Row>
-                        <Table.ColumnHeader>{t("sector")}</Table.ColumnHeader>
-                        <Table.ColumnHeader>{t("rate")}</Table.ColumnHeader>
-                        <Table.ColumnHeader>%</Table.ColumnHeader>
                         <Table.ColumnHeader>
-                          {t("total-emissions")}
+                          <ButtonSmall>{t("sector").toUpperCase()}</ButtonSmall>
+                        </Table.ColumnHeader>
+                        <Table.ColumnHeader>
+                          <ButtonSmall>{t("rate").toUpperCase()}</ButtonSmall>
+                        </Table.ColumnHeader>
+                        <Table.ColumnHeader>
+                          <ButtonSmall>%</ButtonSmall>
+                        </Table.ColumnHeader>
+                        <Table.ColumnHeader>
+                          <ButtonSmall>
+                            {t("total-emissions").toUpperCase()}
+                          </ButtonSmall>
                         </Table.ColumnHeader>
                       </Table.Row>
                     </Table.Header>
@@ -146,12 +157,13 @@ export const EmissionsForecastChart = ({
                         return (
                           <Table.Row key={id}>
                             <Table.Cell>
-                              <Badge
-                                boxSize="10px"
-                                bg={getColorForSeries(id)}
-                                marginRight="8px"
-                              />
-                              {t(id)}
+                              <HStack>
+                                <ColoredCircle
+                                  size="10px"
+                                  color={getColorForSeries(id)}
+                                />
+                                {t(id)}
+                              </HStack>
                             </Table.Cell>
                             <Table.Cell>{growthRate}</Table.Cell>
                             <Table.Cell>{percentage}%</Table.Cell>
@@ -164,10 +176,14 @@ export const EmissionsForecastChart = ({
                         );
                       })}
                       <Table.Row>
-                        <Table.ColumnHeader>{t("total")}</Table.ColumnHeader>
+                        <Table.ColumnHeader>
+                          <TitleMedium>{t("total").toUpperCase()}</TitleMedium>
+                        </Table.ColumnHeader>
                         <Table.ColumnHeader></Table.ColumnHeader>
                         <Table.ColumnHeader>
-                          {convertKgToTonnes(sumOfYs)}
+                          <TitleMedium>
+                            {convertKgToTonnes(sumOfYs)}
+                          </TitleMedium>
                         </Table.ColumnHeader>
                       </Table.Row>
                     </Table.Body>

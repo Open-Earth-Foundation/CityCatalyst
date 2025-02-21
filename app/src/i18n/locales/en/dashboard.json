@@ -171,5 +171,7 @@
   "invite-error-toast-text": "There was an error sending your invitations",
   "afolu-other-agriculture": "Other agriculture",
   "afolu-livestock": "Live stock",
-  "afolu-land": "Land"
+  "afolu-land": "Land",
+  "rate": "rate",
+  "sector": "sector"
 }

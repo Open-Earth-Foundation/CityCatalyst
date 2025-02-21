@@ -30,6 +30,7 @@ import {
   ProgressCircleRing,
   ProgressCircleRoot,
 } from "@/components/ui/progress-circle";
+import { ButtonSmall } from "@/components/Texts/Button";
 
 const EmissionsTable = ({
   topEmissions,
@@ -39,20 +40,19 @@ const EmissionsTable = ({
   t: TFunction;
 }) => {
   return (
-    <Table.Root unstyled my={4}>
+    <Table.Root my={4}>
       <Table.Header>
         <Table.Row>
-          <Table.ColumnHeader
-            css={{ font: "bold", color: "black" }}
-            width={"50%"}
-          >
-            {t("subsector")}
+          <Table.ColumnHeader>
+            <ButtonSmall>{t("subsector").toUpperCase()}</ButtonSmall>
           </Table.ColumnHeader>
-          <Table.ColumnHeader css={{ font: "bold", color: "black" }}>
-            {t("total-emissions-CO2eq")}
+          <Table.ColumnHeader>
+            <ButtonSmall>
+              {t("total-emissions-CO2eq").toUpperCase()}
+            </ButtonSmall>
           </Table.ColumnHeader>
-          <Table.ColumnHeader css={{ font: "bold", color: "black" }}>
-            {t("%-of-emissions")}
+          <Table.ColumnHeader>
+            <ButtonSmall>{t("%-of-emissions").toUpperCase()}</ButtonSmall>
           </Table.ColumnHeader>
         </Table.Row>
       </Table.Header>

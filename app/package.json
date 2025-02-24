@@ -50,7 +50,7 @@
     "@storybook/react": "^8.2.9",
     "@storybook/testing-library": "^0.2.2",
     "@types/bcrypt": "^5.0.2",
-    "@types/geojson": "^7946.0.14",
+    "@types/geojson": "^7946.0.16",
     "@types/http-errors": "^2.0.4",
     "@types/js-cookie": "^3.0.6",
     "@types/jsonwebtoken": "^9.0.6",

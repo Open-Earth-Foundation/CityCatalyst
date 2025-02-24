@@ -1140,5 +1140,6 @@
   "garbage-disposal-type-garbage-disposals": "Dispositivos de eliminación de basura",
   "treatment-type-latrine-dry-climate": "Letrina: Clima seco",
   "treatment-type-latrine-sediment-removal": "Letrina: Eliminación regular de sedimentos",
-  "units-kilograms-N-yr": "kg N/año"
+  "units-kilograms-N-yr": "kg N/año",
+  "subsector": "Subsector"
 }

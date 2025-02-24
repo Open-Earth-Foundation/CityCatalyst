@@ -1155,5 +1155,6 @@
   "garbage-disposal-type-garbage-disposals": "Abfallentsorgungen",
   "treatment-type-latrine-dry-climate": "Latrine: Trockenes Klima",
   "treatment-type-latrine-sediment-removal": "Latrine: Regelmäßige Entfernung von Sedimenten",
-  "units-kilograms-N-yr": "kg N/Jahr"
+  "units-kilograms-N-yr": "kg N/Jahr",
+  "subsector": "Teilsektor"
 }

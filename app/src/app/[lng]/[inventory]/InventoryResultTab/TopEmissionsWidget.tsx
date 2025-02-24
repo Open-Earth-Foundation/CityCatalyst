@@ -40,21 +40,20 @@ const EmissionsTable = ({
   t: TFunction;
 }) => {
   return (
-    <Table.Root my={4}>
-      <Table.Header>
-        <Table.Row>
-          <Table.ColumnHeader>
-            <ButtonSmall>{t("subsector").toUpperCase()}</ButtonSmall>
-          </Table.ColumnHeader>
-          <Table.ColumnHeader>
-            <ButtonSmall>
-              {t("total-emissions-CO2eq").toUpperCase()}
-            </ButtonSmall>
-          </Table.ColumnHeader>
-          <Table.ColumnHeader>
-            <ButtonSmall>{t("%-of-emissions").toUpperCase()}</ButtonSmall>
-          </Table.ColumnHeader>
-        </Table.Row>
+    <Table.Root my={4} variant="outline">
+      <Table.Header
+        className="uppercase"
+        backgroundColor="background.backgroundLight"
+      >
+        <Table.ColumnHeader>
+          <ButtonSmall>{t("subsector")}</ButtonSmall>
+        </Table.ColumnHeader>
+        <Table.ColumnHeader>
+          <ButtonSmall>{t("total-emissions-CO2eq")}</ButtonSmall>
+        </Table.ColumnHeader>
+        <Table.ColumnHeader>
+          <ButtonSmall>{t("%-of-emissions")}</ButtonSmall>
+        </Table.ColumnHeader>
       </Table.Header>
       <Table.Body>
         {(topEmissions || []).map((emission, index) => (

@@ -176,28 +176,41 @@ function SectorTabs({
         return (
           <Tabs.Content value={name} key={name}>
             {isTopEmissionsResponseLoading ? (
-              <Center w="full" h="full">
+              <Center h="128px">
                 <ProgressCircleRoot value={null}>
                   <ProgressCircleRing cap="round" />
                 </ProgressCircleRoot>
               </Center>
             ) : (
-              <Card.Root divideX="2px" divideColor="border.overlay" p={4}>
-                <SectorHeader
-                  icon={icon}
-                  sectorName={t(name)}
-                  dataForSector={getDataForSector(name)}
-                  t={t}
-                />
-                <HStack justifyContent="space-between" width="100%">
-                  <Text
-                    fontFamily="heading"
-                    fontSize="title.md"
-                    fontWeight="medium"
-                  >
-                    {t("breakdown-of-sub-sector-emissions")}
-                  </Text>
-                  {/*<Box paddingBottom={"12px"}>
+              <Card.Root p={4}>
+                <Card.Header>
+                  <HStack>
+                    <SectorHeader
+                      icon={icon}
+                      sectorName={t(name)}
+                      dataForSector={getDataForSector(name)}
+                      t={t}
+                    />
+                    <Box flex={1} />
+                    {(isResultsLoading || isLoadingNewData) && (
+                      <Center>
+                        <ProgressCircleRoot value={null}>
+                          <ProgressCircleRing cap="round" />
+                        </ProgressCircleRoot>
+                      </Center>
+                    )}
+                  </HStack>
+                </Card.Header>
+                <Card.Body>
+                  <HStack justifyContent="space-between" width="100%">
+                    <Text
+                      fontFamily="heading"
+                      fontSize="title.md"
+                      fontWeight="medium"
+                    >
+                      {t("breakdown-of-sub-sector-emissions")}
+                    </Text>
+                    {/*<Box paddingBottom={"12px"}>
                       <Selector
                         options={[TableView.BY_ACTIVITY, TableView.BY_SCOPE]}
                         value={selectedTableView}
@@ -206,38 +219,34 @@ function SectorTabs({
                       />
                     </Box>
                     {***[ON-3126 restore view by activity]*/}
-                </HStack>
-                {(isResultsLoading || isLoadingNewData) && (
-                  <ProgressCircleRoot value={null}>
-                    <ProgressCircleRing cap="round" />
-                  </ProgressCircleRoot>
-                )}
-                {isEmptyInventory && (
-                  <EmptyStateCardContent
-                    t={t}
-                    inventoryId={inventory.inventoryId}
-                    width={"1042px"}
-                    height={"592px"}
-                    isPublic={isPublic}
-                  />
-                )}
-                {shouldShowTableByActivity && (
-                  <ByActivityView
-                    sectorBreakdown={sectorBreakdown!}
-                    tData={tData}
-                    tDashboard={t}
-                    sectorName={name}
-                  />
-                )}
-                {shouldShowTableByScope && (
-                  <ByScopeView
-                    inventoryType={inventory.inventoryType}
-                    data={sectorBreakdown!.byScope}
-                    tData={tData}
-                    tDashboard={t}
-                    sectorName={name}
-                  />
-                )}
+                  </HStack>
+                  {isEmptyInventory && (
+                    <EmptyStateCardContent
+                      t={t}
+                      inventoryId={inventory.inventoryId}
+                      width={"1042px"}
+                      height={"592px"}
+                      isPublic={isPublic}
+                    />
+                  )}
+                  {shouldShowTableByActivity && (
+                    <ByActivityView
+                      sectorBreakdown={sectorBreakdown!}
+                      tData={tData}
+                      tDashboard={t}
+                      sectorName={name}
+                    />
+                  )}
+                  {shouldShowTableByScope && (
+                    <ByScopeView
+                      inventoryType={inventory.inventoryType}
+                      data={sectorBreakdown!.byScope}
+                      tData={tData}
+                      tDashboard={t}
+                      sectorName={name}
+                    />
+                  )}
+                </Card.Body>
               </Card.Root>
             )}
           </Tabs.Content>

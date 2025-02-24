@@ -93,7 +93,12 @@ export default function Login({
   // Extract doesInvitedUserExist from callback params\
   // If it is true, redirect to /user/invites page
   // If it is false, redirect to /auth/signup page
-  const [path, queryString] = callbackUrl.split("?");
+  // Check if the callbackUrl contains a query string
+  const hasQueryString = callbackUrl.includes("?");
+  // Split the URL into path and query string (if query string exists)
+  const [path, queryString] = hasQueryString
+    ? callbackUrl.split("?")
+    : [callbackUrl, ""];
   const callbackUrlParams = new URLSearchParams(queryString);
   const doesInvitedUserExist = callbackUrlParams.get("doesInvitedUserExist");
 

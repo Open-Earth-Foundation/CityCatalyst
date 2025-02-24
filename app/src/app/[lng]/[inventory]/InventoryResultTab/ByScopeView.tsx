@@ -1,9 +1,10 @@
 import React from "react";
-import { Box, Table } from "@chakra-ui/react";
+import { Box, Button, Table } from "@chakra-ui/react";
 import { ActivityDataByScope } from "@/util/types";
 import type { TFunction } from "i18next";
 import { convertKgToTonnes, toKebabCase } from "@/util/helpers";
 import { InventoryTypeEnum, SECTORS } from "@/util/constants";
+import { ButtonSmall } from "@/components/Texts/Button";
 
 interface ByScopeViewProps {
   data: ActivityDataByScope[];
@@ -24,23 +25,25 @@ const ByScopeView: React.FC<ByScopeViewProps> = ({
     inventoryType
   ].scopes;
   return (
-    <Box p={4}>
-      <Table.Root unstyled variant="line">
-        <Table.Header>
-          <Table.Row>
-            <Table.ColumnHeader>{tData("subsector")}</Table.ColumnHeader>
-            <Table.ColumnHeader>
-              {tDashboard("total-emissions")}
-            </Table.ColumnHeader>
-            <Table.ColumnHeader>
-              {tDashboard("%-of-sector-emissions")}
-            </Table.ColumnHeader>
-            {scopes.map((s) => (
-              <Table.ColumnHeader key={s}>
+    <Box py={4}>
+      <Table.Root variant="line">
+        <Table.Header className="uppercase">
+          <Table.ColumnHeader>
+            <ButtonSmall>{tData("subsector")}</ButtonSmall>
+          </Table.ColumnHeader>
+          <Table.ColumnHeader>
+            <ButtonSmall>{tDashboard("total-emissions")}</ButtonSmall>
+          </Table.ColumnHeader>
+          <Table.ColumnHeader>
+            <ButtonSmall>{tDashboard("%-of-sector-emissions")}</ButtonSmall>
+          </Table.ColumnHeader>
+          {scopes.map((s) => (
+            <Table.ColumnHeader key={s}>
+              <ButtonSmall>
                 {tDashboard("emissions-scope")} {s}
-              </Table.ColumnHeader>
-            ))}
-          </Table.Row>
+              </ButtonSmall>
+            </Table.ColumnHeader>
+          ))}
         </Table.Header>
         <Table.Body>
           {data.map((item, index) => (

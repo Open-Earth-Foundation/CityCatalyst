@@ -65,6 +65,22 @@ export default function Login({
     }
   }
 
+  // Extract doesInvitedUserExist from callback params\
+  // If it is true, redirect to /user/invites page
+  // If it is false, redirect to /auth/signup page
+  const [path, queryString] = callbackUrl.split("?");
+  const callbackUrlParams = new URLSearchParams(queryString);
+  const doesInvitedUserExist = callbackUrlParams.get("doesInvitedUserExist");
+
+  if (doesInvitedUserExist && doesInvitedUserExist !== "true") {
+    // remove the doesInvitedUserExist param from the callbackUrl
+    callbackUrlParams.delete("doesInvitedUserExist");
+    const updatedCallbackUrl = `${path}?${callbackUrlParams.toString()}`;
+    return router.push(
+      "/auth/signup/?callbackUrl=" + encodeURIComponent(updatedCallbackUrl),
+    );
+  }
+
   const { showLoginSuccessToast } = useAuthToast(t);
   const onSubmit: SubmitHandler<LoginInputs> = async (data) => {
     try {

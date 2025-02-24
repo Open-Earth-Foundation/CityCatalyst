@@ -1,13 +1,7 @@
 "use client";
 
-import {
-  Icon,
-  IconButton,
-  PopoverHeader,
-  useDisclosure,
-} from "@chakra-ui/react";
+import { Icon, PopoverHeader, useDisclosure } from "@chakra-ui/react";
 import React from "react";
-import { BsStars } from "react-icons/bs";
 import ChatBot from "./chat-bot";
 import { useTranslation } from "@/i18n/client";
 import { AskAiIcon } from "../icons";
@@ -17,11 +11,11 @@ import {
   PopoverCloseTrigger,
   PopoverContent,
   PopoverRoot,
-  PopoverTitle,
   PopoverTrigger,
 } from "@/components/ui/popover";
 
 import { Button } from "@/components/ui/button";
+import { OpenChangeDetails } from "@zag-js/popover";
 
 export default function ChatPopover({
   lng = "en",
@@ -35,27 +29,23 @@ export default function ChatPopover({
   const inputRef = React.useRef(null);
   const { t } = useTranslation(lng, "chat");
 
+  const onOpenChange = (e: OpenChangeDetails) => {
+    if (!e.open) {
+      onClose();
+    } else {
+      onOpen();
+    }
+  };
+
   return (
     <>
       <PopoverRoot
         open={open}
         initialFocusEl={() => inputRef.current}
-        onOpenChange={onOpen}
+        onOpenChange={onOpenChange}
         positioning={{
           placement: "top-end",
         }}
-        // closeOnBlur={false}
-        // strategy="fixed"
-        // modifiers={[
-        //   {
-        //     name: "zIndex",
-        //     enabled: true,
-        //     phase: "write",
-        //     fn: ({ state }) => {
-        //       state.elements.popper.style.zIndex = "9999";
-        //     },
-        //   },
-        // ]}
       >
         <PopoverTrigger asChild>
           <Button

@@ -59,7 +59,7 @@ export default function SetInventoryDetailsStep({
   const yearsCollection = createListCollection({
     items: years.map((year) => ({
       label: year.toString(),
-      value: year,
+      value: year.toString(),
     })),
   });
 
@@ -159,7 +159,7 @@ export default function SetInventoryDetailsStep({
                   </SelectTrigger>
                   <SelectContent>
                     {yearsCollection.items.map(
-                      (year: { label: string; value: number }, i: number) => (
+                      (year: { label: string; value: string }, i: number) => (
                         <SelectItem item={year} key={i}>
                           {year.label}
                         </SelectItem>

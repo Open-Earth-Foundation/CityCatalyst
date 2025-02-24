@@ -124,7 +124,7 @@ export const POST = apiHandler(async (req, { params, session }) => {
           }),
         );
         // Check if invited user exists then flag that user if they don't exist in the database
-        let doe;
+
         const doesInvitedUserExist = await db.models.User.findOne({
           where: { email },
         });

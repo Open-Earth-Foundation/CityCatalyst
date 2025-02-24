@@ -123,8 +123,23 @@ export const POST = apiHandler(async (req, { params, session }) => {
             }
           }),
         );
+        // Check if invited user exists then flag that user if they don't exist in the database
+
+        const doesInvitedUserExist = await db.models.User.findOne({
+          where: { email },
+        });
         const host = process.env.HOST ?? "http://localhost:3000";
-        const url = `${host}/user/invites?cityIds=${encodeURIComponent(invites.map((i) => i.cityId).join(","))}&token=${encodeURIComponent(invitationCode)}&email=${encodeURIComponent(email)}`;
+        const params = new URLSearchParams();
+
+        // Add query parameters
+        params.set("cityIds", invites.map((i) => i.cityId).join(","));
+        params.set("token", invitationCode);
+        params.set("email", email);
+        params.set(
+          "doesInvitedUserExist",
+          doesInvitedUserExist ? "true" : "false",
+        );
+        const url = `${host}/user/invites?${params.toString()}`;
         const sendInvite = await sendEmail({
           to: email!,
           subject: "City Catalyst - City Invitation",

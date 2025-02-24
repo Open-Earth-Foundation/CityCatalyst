@@ -43,7 +43,6 @@ export default function ChatPopover({
         open={open}
         initialFocusEl={() => inputRef.current}
         onOpenChange={onOpenChange}
-        onExitComplete={onClose}
         positioning={{
           placement: "top-end",
         }}

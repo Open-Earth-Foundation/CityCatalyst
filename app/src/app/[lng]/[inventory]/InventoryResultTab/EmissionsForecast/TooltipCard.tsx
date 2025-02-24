@@ -12,30 +12,17 @@ import { TitleMedium } from "@/components/Texts/Title";
 import { getColorForSeries } from "./EmissionsForecastChart";
 import type { TFunction } from "i18next";
 import { EmissionsForecastData } from "@/util/types";
+import type { Point } from "@nivo/line";
 
-interface PointData {
-  x: string;
-  y: number;
-  yStacked: number;
-  xFormatted: string;
-  yFormatted: string;
-}
-
-interface Point {
+interface LineChartData {
   id: string;
-  index: number;
-  serieId: string;
-  serieColor: string;
-  x: number;
-  y: number;
   color: string;
-  borderColor: string;
-  data: PointData;
+  data: { x: string; y: number }[];
 }
 
 interface TooltipCardProps {
   point: Point;
-  data: { id: string; color: string; data: { x: string; y: string }[] }[];
+  data: LineChartData[];
   forecast: EmissionsForecastData;
   t: TFunction;
 }
@@ -122,7 +109,7 @@ const TooltipCard = ({ point, data, forecast, t }: TooltipCardProps) => {
               {data.map(({ data, id }) => {
                 const yearData = data.find(({ x }) => x === point.data.x);
                 const percentage = yearData
-                  ? ((parseInt(yearData.y) / sumOfYs) * 100).toFixed(2)
+                  ? ((yearData.y / sumOfYs) * 100).toFixed(2)
                   : 0;
                 const sectorRefNo =
                   getReferenceNumberByName(

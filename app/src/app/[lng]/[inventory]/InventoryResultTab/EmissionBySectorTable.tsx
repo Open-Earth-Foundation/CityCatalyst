@@ -11,6 +11,7 @@ import {
   AccordionItemTrigger,
   AccordionRoot,
 } from "@/components/ui/accordion";
+import { ButtonSmall } from "@/components/Texts/Button";
 
 interface EmissionBySectorTableProps {
   data: {
@@ -40,24 +41,28 @@ const EmissionBySectorTableSection: React.FC<EmissionBySectorTableProps> = ({
   }) => {
     return (
       <Table.Root
-        unstyled
         borderLeft="0px"
         borderBottom="0px"
         borderRight="0px"
         borderWidth="1px"
         borderRadius="20px"
       >
-        <Table.Header backgroundColor="background.backgroundLight">
-          <Table.Row>
-            <Table.ColumnHeader>{tData("sector")}</Table.ColumnHeader>
-            <Table.ColumnHeader>{tData("emissions")}</Table.ColumnHeader>
-            <Table.ColumnHeader>
-              {tData("percentage-emissions")}
-            </Table.ColumnHeader>
-            <Table.ColumnHeader>
-              {tData("based-on-previous-year")}
-            </Table.ColumnHeader>
-          </Table.Row>
+        <Table.Header
+          backgroundColor="background.backgroundLight"
+          className="uppercase"
+        >
+          <Table.ColumnHeader>
+            <ButtonSmall>{tData("sector")}</ButtonSmall>
+          </Table.ColumnHeader>
+          <Table.ColumnHeader>
+            <ButtonSmall>{tData("emissions")}</ButtonSmall>
+          </Table.ColumnHeader>
+          <Table.ColumnHeader>
+            <ButtonSmall>{tData("percentage-emissions")}</ButtonSmall>
+          </Table.ColumnHeader>
+          <Table.ColumnHeader>
+            <ButtonSmall>{tData("based-on-previous-year")}</ButtonSmall>
+          </Table.ColumnHeader>
         </Table.Header>
         <Table.Body>
           {item.bySector?.map((sectorBreakDown, i) => {

@@ -957,91 +957,88 @@ export default function AddDataSteps({
                         borderWidth={2}
                         className="shadow-none hover:drop-shadow-xl transition-shadow"
                       >
-                        {/* TODO add icon to DataSource */}
-                        <Icon as={MdHomeWork} boxSize={9} mb={6} />
-                        <Heading size="sm" lineClamp={2} minHeight={10}>
-                          {getTranslationFromDict(source.datasetName)}
-                        </Heading>
-                        <Flex direction="row" my={4} wrap="wrap" gap={2}>
-                          <Tag
-                            startElement={
+                        <Card.Header>
+                          {/* TODO add icon to DataSource */}
+                          <Icon as={MdHomeWork} boxSize={9} mb={6} />
+                          <Heading size="sm" lineClamp={2} minHeight={10}>
+                            {getTranslationFromDict(source.datasetName)}
+                          </Heading>
+                        </Card.Header>
+                        <Card.Body>
+                          <Flex direction="row" mb={4} wrap="wrap" gap={2}>
+                            <Badge fontSize={11}>
                               <Icon
                                 as={DataCheckIcon}
                                 boxSize={5}
                                 color="content.tertiary"
                               />
-                            }
-                          >
-                            <TagLabel fontSize={11}>
                               {t("data-quality")}:{" "}
                               {t("quality-" + source.dataQuality)}
-                            </TagLabel>
-                          </Tag>
-                          {source.subCategory?.scope && (
-                            <Tag
-                              startElement={
+                            </Badge>
+                            {source.subCategory?.scope && (
+                              <Badge fontSize={11}>
                                 <Icon
                                   as={FiTarget}
                                   boxSize={4}
                                   color="content.tertiary"
                                 />
-                              }
-                            >
-                              <TagLabel fontSize={11}>
                                 {t("scope")}:{" "}
                                 {source.subCategory.scope.scopeName}
-                              </TagLabel>
-                            </Tag>
-                          )}
-                        </Flex>
-                        <Text
-                          color="content.tertiary"
-                          lineClamp={5}
-                          minHeight={120}
-                        >
-                          {getTranslationFromDict(source.datasetDescription) ||
-                            getTranslationFromDict(
-                              source.methodologyDescription,
+                              </Badge>
                             )}
-                        </Text>
-                        <Link
-                          className="underline"
-                          mt={4}
-                          mb={6}
-                          onClick={() => onSourceClick(source, data)}
-                        >
-                          {t("see-more-details")}
-                        </Link>
-                        {isSourceConnected(source) &&
-                        source.inventoryValues?.length ? (
-                          <Button
-                            variant="solid"
-                            px={6}
-                            py={4}
-                            onClick={() => onDisconnectThirdPartyData(source)}
-                            loading={
-                              isDisconnectLoading &&
-                              source.datasourceId === disconnectingDataSourceId
-                            }
-                            onMouseEnter={() => onButtonHover(source)}
-                            onMouseLeave={() => onMouseLeave(source)}
+                          </Flex>
+                          <Text
+                            color="content.tertiary"
+                            lineClamp={5}
+                            minHeight={120}
                           >
-                            <Icon as={MdCheckCircle} />
-                            {text}
-                          </Button>
-                        ) : (
-                          <Button
-                            variant="outline"
-                            bgColor="background.neutral"
-                            onClick={() => onConnectClick(source)}
-                            loading={
-                              isConnectDataSourceLoading &&
-                              source.datasourceId === connectingDataSourceId
-                            }
+                            {getTranslationFromDict(
+                              source.datasetDescription,
+                            ) ||
+                              getTranslationFromDict(
+                                source.methodologyDescription,
+                              )}
+                          </Text>
+                          <Link
+                            className="underline"
+                            mt={4}
+                            mb={6}
+                            onClick={() => onSourceClick(source, data)}
                           >
-                            {t("connect-data")}
-                          </Button>
-                        )}
+                            {t("see-more-details")}
+                          </Link>
+                          {isSourceConnected(source) &&
+                          source.inventoryValues?.length ? (
+                            <Button
+                              variant="solid"
+                              px={6}
+                              py={4}
+                              onClick={() => onDisconnectThirdPartyData(source)}
+                              loading={
+                                isDisconnectLoading &&
+                                source.datasourceId ===
+                                  disconnectingDataSourceId
+                              }
+                              onMouseEnter={() => onButtonHover(source)}
+                              onMouseLeave={() => onMouseLeave(source)}
+                            >
+                              <Icon as={MdCheckCircle} />
+                              {text}
+                            </Button>
+                          ) : (
+                            <Button
+                              variant="outline"
+                              bgColor="background.neutral"
+                              onClick={() => onConnectClick(source)}
+                              loading={
+                                isConnectDataSourceLoading &&
+                                source.datasourceId === connectingDataSourceId
+                              }
+                            >
+                              {t("connect-data")}
+                            </Button>
+                          )}
+                        </Card.Body>
                       </Card.Root>
                     );
                   })}

@@ -21,13 +21,25 @@ spec:
             imagePullPolicy: Always
             env:
             - name: PGUSER
-              value: "citycatalyst"
+              valueFrom:
+                configMapKeyRef:
+                  key: DATABASE_USER
+                  name: cc-db-configmap
             - name: PGHOST
-              value: "cc-db"
+              valueFrom:
+                configMapKeyRef:
+                  key: DATABASE_HOST
+                  name: cc-db-configmap
             - name: PGDATABASE
-              value: "citycatalyst"
+              valueFrom:
+                configMapKeyRef:
+                  key: DATABASE_NAME
+                  name: cc-db-configmap
             - name: PGPASSWORD
-              value: "development"
+              valueFrom:
+                configMapKeyRef:
+                  key: DATABASE_PASSWORD
+                  name: cc-db-configmap
             args:
             - |
               pg_dump | gzip > /var/backups/citycatalyst.sql.gz

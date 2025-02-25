@@ -1,12 +1,9 @@
 import argparse
 import sys
 import os
-import csv
 from dotenv import load_dotenv
 from openai import OpenAI
-import re
 import json
-import pandas as pd
 from pydantic import BaseModel
 from typing import List
 from pathlib import Path
@@ -61,7 +58,7 @@ def calculate_emissions_reduction(city, action):
     # Get the GHGReductionPotential from the action
     ghg_potential = action.get("GHGReductionPotential", {})
     if not ghg_potential:
-        print("There was no GHGReductionPotential")
+        # print("There was no GHGReductionPotential")
         return 0
 
     # Define the sectors and corresponding city emissions keys
@@ -79,11 +76,11 @@ def calculate_emissions_reduction(city, action):
         if reduction_str is None:
             continue
         elif reduction_str and reduction_str in reduction_mapping:
-            print("Reduction string:", reduction_str)
-            print("Reduction mapping:", reduction_mapping[reduction_str])
+            # print("Reduction string:", reduction_str)
+            # print("Reduction mapping:", reduction_mapping[reduction_str])
             reduction_percentage = reduction_mapping[reduction_str]
             city_emission = city.get(city_emission_key, 0)
-            print("City emission: " + str(city_emission) + " for " + city_emission_key)
+            # print("City emission: " + str(city_emission) + " for " + city_emission_key)
             reduction_amount = city_emission * reduction_percentage
             total_reduction += reduction_amount
 
@@ -126,14 +123,14 @@ def quantitative_score(city, action):
         hazards_weight = weights.get("Hazard", 1)
         # check if it's not 0
         score += matching_hazards_count * hazards_weight
-    print("Score after hazard:", score)
+    # print("Score after hazard:", score)
 
     # Dependencies - caculate the number of dependencies and give a minus score based on that very low impact
     dependencies = action.get("Dependencies", [])
     dependencies_weights = weights.get("Dependencies", 1)
     if isinstance(dependencies, list):
         score -= round(len(dependencies) * dependencies_weights, 3)
-    print("Score after dependencies:", score)
+    # print("Score after dependencies:", score)
     # ActionName - pass
     # AdaptationCategory - pass this time
     # Subsector - skip for now maybe more data needed as now we are covering per sector
@@ -141,27 +138,25 @@ def quantitative_score(city, action):
 
     # Sector - if it matches the most emmissions intensive sectors gets bonus points
     total_emission_reduction_all_sectors = calculate_emissions_reduction(city, action)
-    print(
-        "Total emissions reduction for all sectors:",
-        total_emission_reduction_all_sectors,
-    )
+    # print(
+    #     "Total emissions reduction for all sectors:",
+    #     total_emission_reduction_all_sectors,
+    # )
     weights_emissions = weights.get("GHGReductionPotential", 1)
     if total_emission_reduction_all_sectors > 0:
         total_emissions = city.get("totalEmissions", 1)  # Avoid division by zero
-        print("Total emissions of a city:", total_emissions)
-        reduction_percentage = (
-            total_emission_reduction_all_sectors / total_emissions
-        )
-        print("Reduction percentage:", reduction_percentage)
+        # print("Total emissions of a city:", total_emissions)
+        reduction_percentage = total_emission_reduction_all_sectors / total_emissions
+        # print("Reduction percentage:", reduction_percentage)
         score += round(reduction_percentage * weights_emissions, 3)
-    print("Score after emissions reduction:", score)
+    # print("Score after emissions reduction:", score)
 
     # Calculate for every sector
     weights_emissions = weights.get("GHGReductionPotential", 1)
     most_emissions, percentage_emissions_value = find_highest_emission(city)
     if action.get("Sector") == most_emissions:
         score += (percentage_emissions_value / 100) * weights_emissions
-    print("Score after sector emission reduction:", score)
+    # print("Score after sector emission reduction:", score)
     # InterventionType - skip for now
     # Description - use only for LLM
     # BehavioralChangeTargeted - skip for now
@@ -173,7 +168,7 @@ def quantitative_score(city, action):
         if effective_value:  # Only add score if effective_value is non-zero (non-falsy)
             adaptation_weight = weights.get("AdaptationEffectiveness", 1)
             score += effective_value * adaptation_weight
-    print("Score after adaptation effectiveness:", score)
+    # print("Score after adaptation effectiveness:", score)
 
     # Time in years score
     timeline_str = action.get("TimelineForImplementation", "")
@@ -186,7 +181,7 @@ def quantitative_score(city, action):
     else:
         print("Invalid timeline:", timeline_str)
 
-    print("Score after time in years:", score)
+    # print("Score after time in years:", score)
 
     # Cost score
     if "CostInvestmentNeeded" in action:
@@ -195,8 +190,8 @@ def quantitative_score(city, action):
         cost_score = scale_adaptation_effectiveness.get(cost_investment_needed, 0)
         score += cost_score * cost_score_weight
 
-    print("Score after cost:", score)
-    print("-------------")
+    # print("Score after cost:", score)
+    # print("-------------")
     return score
 
 
@@ -224,6 +219,7 @@ def send_to_llm2(prompt):
     )
     return response.choices[0].message.parsed
 
+
 def send_to_llm(prompt: str) -> PrioritizedActions:
     # Using the o3-mini reasoning model and no max_tokens parameter.
     response = client.beta.chat.completions.parse(
@@ -232,10 +228,10 @@ def send_to_llm(prompt: str) -> PrioritizedActions:
             {"role": "user", "content": prompt},
         ],
         # Specify structured output using the Pydantic class.
-        response_format=PrioritizedActions
+        response_format=PrioritizedActions,
     )
     # Return the parsed structured output.
-    return response.choices[0].message.parsed
+    return response.choices[0].message.parsed  # type: ignore
 
 
 def qualitative_score(city, action):
@@ -322,7 +318,7 @@ def filter_actions_by_biome(actions, city):
     city_biome = city.get("biome")
     if not city_biome:
         return actions
-    
+
     # Keep actions that either:
     # 1. Don't have a biome field, or
     # 2. Have a biome that matches the city's biome
@@ -340,13 +336,17 @@ def main(locode: str):
 
     # 1) Filter the actions by the city's biome
     filtered_actions = filter_actions_by_biome(actions, cities)
-    
+
     # 2) Quantitative prioritization
     top_adaptation, top_mitigation = quantitative_prioritizer(cities, filtered_actions)
 
     # 3) Qualitative prioritization
-    top_qualitative_adaptation = qualitative_prioritizer(top_adaptation, filtered_actions, cities)
-    top_qualitative_mitigation = qualitative_prioritizer(top_mitigation, filtered_actions, cities)
+    top_qualitative_adaptation = qualitative_prioritizer(
+        top_adaptation, filtered_actions, cities
+    )
+    top_qualitative_mitigation = qualitative_prioritizer(
+        top_mitigation, filtered_actions, cities
+    )
 
     # 4) Save outputs to separate files
     write_output(top_qualitative_adaptation, "output_" + locode + "_adaptation.json")

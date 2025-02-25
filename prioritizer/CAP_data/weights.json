@@ -1,9 +1,8 @@
-
 {
-    "GHGReductionPotential": 5.0,
-    "AdaptationEffectiveness": 1.0,
-    "TimelineForImplementation": 0.5,
-    "CostInvestmentNeeded": 0.5,
-    "Hazard": 0.5,
-    "Dependencies": 0.1
+  "GHGReductionPotential": 3.596,
+  "AdaptationEffectiveness": -0.4921,
+  "TimelineForImplementation": 0.798,
+  "CostInvestmentNeeded": -0.6242,
+  "Hazard": 2.1222,
+  "Dependencies": -0.0852
 }

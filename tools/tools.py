@@ -20,7 +20,7 @@ def retriever_main_action_tool(
     The vector store contains a collections with documents related to Brazil's overall climate strategy.
 
     **Input**:
-    - search_query (str) - A detailed, full-sentence, and context-rich query.
+    - search_query (str) - A concise search query.
         * Example: "What is Brazil's national climate strategy?"
         * Example: "What are [climate action] implementation strategies?"
 
@@ -30,6 +30,8 @@ def retriever_main_action_tool(
     **Query Strategies**:
     - Start with broad queries and progressively narrow down the search query.
     """
+
+    print("retriever_main_action_tool")
 
     vector_store = get_vectorstore(collection_name="all_docs_db_small_chunks")
 
@@ -55,10 +57,13 @@ def retriever_main_action_tool(
 
     metadata_filter = {"main_action": {"$eq": True}}
 
+    print("search_query", search_query)
+    print("metadata_filter", metadata_filter)
+
     docs_and_scores = vector_store.similarity_search_with_relevance_scores(
         query=search_query,
         k=5,
-        score_threshold=0.50,
+        score_threshold=0.40,
         filter=metadata_filter,  # Dynamically apply metadata filter
     )
 
@@ -74,7 +79,7 @@ def retriever_sub_action_tool(
     The vector store contains a collection of documents related to specific climate actions, climate strategies and detailed implementation steps.
 
     **Input**:
-    - search_query (str): A detailed, full-sentence, and context-rich query
+    - search_query (str): A concise search query.
         * Example: "What are the specific steps to implement [climate action] to reduce carbon emissions in the [sector]?"
         * Example: "What are the implementation steps for [climate action]."
 
@@ -87,12 +92,17 @@ def retriever_sub_action_tool(
     - Start with broad queries and progressively narrow down
     """
 
+    print("retriever_sub_action_tool")
+
     vector_store = get_vectorstore(collection_name="all_docs_db_small_chunks")
 
     if not vector_store:
         return "Could not load vector store. Please ensure your vector DB is created."
 
     metadata_filter = {"sub_actions": {"$eq": True}}
+
+    print("search_query", search_query)
+    print("metadata_filter", metadata_filter)
 
     docs_and_scores = vector_store.similarity_search_with_relevance_scores(
         query=search_query,
@@ -169,6 +179,8 @@ def inspect_retrieved_results(search_query: str, chunk: str):
     **Output**:
     - result (str) - The result of the inspection of returned chunks.
     """
+
+    print("inspect_retrieved_results")
 
     prompt_str = f"""
     You are given a user query:

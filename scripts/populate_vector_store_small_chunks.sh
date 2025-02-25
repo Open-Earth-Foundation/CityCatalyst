@@ -40,11 +40,13 @@ echo "Adding diverse documents..."
 python add_document_to_vectorstore.py \
   --file_name Brazil_NDC_November_2024.pdf \
   --collection_name "$COLLECTION_NAME" \
-  --metadata main_action=true
+  --metadata main_action=true \
+  --metadata sub_actions=false
 python add_document_to_vectorstore.py \
   --file_name Brazil_NAP_2016.pdf \
   --collection_name "$COLLECTION_NAME" \
-  --metadata main_action=true
+  --metadata main_action=true \
+  --metadata sub_actions=false
 python add_document_to_vectorstore.py \
   --file_name Urban_Solid_Waste_Management_BRCXL.pdf \
   --collection_name "$COLLECTION_NAME" \
@@ -53,10 +55,12 @@ python add_document_to_vectorstore.py \
 python add_document_to_vectorstore.py \
   --file_name Worldbank_Green_Cities_Brazil.pdf \
   --collection_name "$COLLECTION_NAME" \
+  --metadata main_action=false \
   --metadata sub_actions=true
 python add_document_to_vectorstore.py \
   --file_name TNC_Brazil_Annual_Report_2023.pdf \
   --collection_name "$COLLECTION_NAME" \
+  --metadata main_action=false \
   --metadata sub_actions=true
 
 echo "Adding C40 documents to the vector store..."

@@ -1,7 +1,6 @@
 "use client";
 
 import { store } from "@/lib/store";
-// import { CacheProvider } from "@chakra-ui/next-js";
 // TODO enable again when dark mode is supported
 // import { Provider as ChakraProvider } from "@/components/ui/provider";
 import { ChakraProvider } from "@chakra-ui/react";

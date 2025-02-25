@@ -9,9 +9,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Set constants for file paths
 # BASE_DIR = Path("../data")
-ACTION_DATA_PATH = BASE_DIR / "../data/climate_actions/output/combined_output.json"
+ACTION_DATA_PATH = BASE_DIR / "../data/climate_actions/output/merged.json"
 CITY_DATA_PATH = BASE_DIR / "../data/cities/city_data.json"
 OUTPUT_PATH = BASE_DIR / "../data/prioritized/"
+
 
 def read_city_inventory(locode: str) -> dict:
     """
@@ -35,6 +36,7 @@ def read_city_inventory(locode: str) -> dict:
 
     raise ValueError(f"City with locode '{locode}' not found in the data.")
 
+
 def read_actions():
     """
     Reads action data from the defined ACTION_DATA_PATH and returns a list of
@@ -49,7 +51,7 @@ def read_actions():
         sys.exit(1)
 
     for item in data:
-        # Removed keys that are not in the new example: 
+        # Removed keys that are not in the new example:
         #    'AdaptationCategory', 'InterventionType', 'BehaviouralChangeTargeted', 'Impacts'
         # Added 'PowersAndMandates', which appears in the new example.
         action = {
@@ -62,7 +64,9 @@ def read_actions():
             "PrimaryPurpose": item.get("PrimaryPurpose"),
             "Description": item.get("Description"),
             "CoBenefits": item.get("CoBenefits"),
-            "EquityAndInclusionConsiderations": item.get("EquityAndInclusionConsiderations"),
+            "EquityAndInclusionConsiderations": item.get(
+                "EquityAndInclusionConsiderations"
+            ),
             "GHGReductionPotential": item.get("GHGReductionPotential"),
             "AdaptationEffectiveness": item.get("AdaptationEffectiveness"),
             "CostInvestmentNeeded": item.get("CostInvestmentNeeded"),
@@ -73,6 +77,7 @@ def read_actions():
         }
         actions.append(action)
     return actions
+
 
 def write_output(top_actions, filename):
     """

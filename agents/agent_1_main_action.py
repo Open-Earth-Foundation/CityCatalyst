@@ -2,6 +2,19 @@ import json
 from langgraph.prebuilt import create_react_agent
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
 from state.agent_state import AgentState
+from langchain_openai import ChatOpenAI
+
+from tools.tools import (
+    retriever_main_action_tool,
+)
+
+# Create the agents
+model = ChatOpenAI(model="gpt-4o", temperature=0.0, seed=42)
+
+# model = ChatOpenAI(model="o3-mini", temperature=None)
+
+# Define tools for the agent
+tools = [retriever_main_action_tool]
 
 # Define prompts for each agent
 system_prompt_agent_1 = SystemMessage(
@@ -35,8 +48,10 @@ Follow these guidelines carefully to complete the task:
 You have access to the following tools:
 - retriever_main_action_tool:
     A document retrieval tool that can retrieve relevant information from a vector store. 
-    Use this tool to gather general or specific information about climate strategies, climate actions and background information to enrich the introduction.
-    When using this tool, always provide a full sentence including relevant context to search for relevant documents instead of just providing key words.
+    Use this tool to gather information about climate strategies, climate actions and background information to enrich the introduction.
+    When using this tool, optimize the search query for retrieval from a vector database using similarity search. This means that the search query should be a concise representation of the information you are looking for.
+    Use multiple concise queries over one long query for better results.
+    Start with broad queries and progressively narrow down the search query.
 </tools>
 
 <output>
@@ -73,7 +88,7 @@ Be concise, realistic, and specific. Focus on measurable impact and actionable s
 )
 
 
-def build_custom_agent_1(model, tools):
+def build_custom_agent_1():
     """Wrap create_react_agent to store final output in AgentState."""
 
     # The chain returned by create_react_agent

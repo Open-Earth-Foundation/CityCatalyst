@@ -2,6 +2,17 @@ import json
 from langgraph.prebuilt import create_react_agent
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
 from state.agent_state import AgentState
+from langchain_openai import ChatOpenAI
+
+from tools.tools import (
+    retriever_sub_action_tool,
+)
+
+# Create the agents
+model = ChatOpenAI(model="gpt-4o", temperature=0.0, seed=42)
+
+# Define tools for the agent
+tools = [retriever_sub_action_tool]
 
 
 system_prompt_agent_2 = SystemMessage(
@@ -10,8 +21,7 @@ system_prompt_agent_2 = SystemMessage(
 You are a project manager specialized in implementing climate actions and urban planning for a given city.
 You collaborate with a team of experts to create an implementation plan for a climate action.
 The team of experts have provided you with the following information for the climate action implementation plan: 
-- the relevant climate strategies, 
-- the climate action (main action) description
+- the introduction for the climate action implementation plan
 </role> 
 
 <task>
@@ -30,9 +40,13 @@ Follow these guidlines carefully to complete the task:
 </task>
 
 <tools>
-You have access to the following tool:
-- a document retrieval tool that can retrieve relevant information about detailed steps for implementing a climate action. 
+You have access to the following tools:
+- retriever_sub_action_tool:
+    A document retrieval tool that can retrieve relevant information from a vector store. 
     Use this tool to gather specific information on how to implement a certain climate action and which steps (sub actions) are required.
+    When using this tool, optimize the search query for retrieval from a vector database using similarity search. This means that the search query should be a concise representation of the information you are looking for.
+    Use multiple concise queries over one long query for better results.
+    Start with broad queries and progressively narrow down the search query.
 </tools>
 
 <output>
@@ -60,7 +74,7 @@ Be concise, realistic, and specific. Focus on measurable impact and actionable s
 )
 
 
-def build_custom_agent_2(model, tools):
+def build_custom_agent_2():
     """Wrap create_react_agent to store final output in AgentState."""
 
     # The chain returned by create_react_agent

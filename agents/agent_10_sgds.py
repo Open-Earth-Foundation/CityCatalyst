@@ -11,7 +11,7 @@ system_prompt_agent_10 = SystemMessage(
 You are a project manager specializing in climate action implementation and urban planning. 
 You work with a team of experts to develop an implementation plan for a city's climate action.
 The team of experts have provided you with the following information for the climate action implementation plan: 
-- introduction for the climate action implementation plan
+- the introduction for the climate action implementation plan
 </role> 
 
 <task>

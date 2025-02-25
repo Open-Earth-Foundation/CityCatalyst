@@ -17,8 +17,6 @@ from agents.agent_10_sgds import build_custom_agent_10
 from agents.agent_combine import custom_agent_combine
 
 from tools.tools import (
-    retriever_main_action_tool,
-    retriever_sub_action_tool,
     search_municipalities_tool,
     placeholder_tool,
     inspect_retrieved_results,
@@ -26,11 +24,12 @@ from tools.tools import (
 
 
 # Create the agents
-model = ChatOpenAI(model="gpt-4o", temperature=0.0, seed=42)
+model = ChatOpenAI(model="gpt-4o")
+# model = ChatOpenAI(model="gpt-4o", temperature=0.0, seed=42)
 
 
-agent_1 = build_custom_agent_1(model, [retriever_main_action_tool])
-agent_2 = build_custom_agent_2(model, [retriever_sub_action_tool])
+agent_1 = build_custom_agent_1()
+agent_2 = build_custom_agent_2()
 agent_3 = build_custom_agent_3(
     model, [search_municipalities_tool]
 )  # for debugging purposes, 'search' tool is not provided to save on API calls. Add [search] to the list of tools to enable search tool.

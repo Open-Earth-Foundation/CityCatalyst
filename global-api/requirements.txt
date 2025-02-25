@@ -2,7 +2,7 @@ aiohttp==3.11.*
 alembic==1.14.1
 black==25.1.0
 fastapi==0.115.8
-flake8==7.1.1
+flake8==7.1.2
 fsspec==2025.*
 geopandas>=0.12,<1.1
 mypy==1.15.0

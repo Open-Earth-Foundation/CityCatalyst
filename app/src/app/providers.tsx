@@ -1,6 +1,6 @@
 "use client";
 
-import { persistor, store } from "@/lib/store";
+import { store } from "@/lib/store";
 // import { CacheProvider } from "@chakra-ui/next-js";
 // TODO enable again when dark mode is supported
 // import { Provider as ChakraProvider } from "@/components/ui/provider";
@@ -8,7 +8,6 @@ import { ChakraProvider } from "@chakra-ui/react";
 import { SessionProvider } from "next-auth/react";
 import localFont from "next/font/local";
 import { Provider } from "react-redux";
-import { PersistGate } from "redux-persist/integration/react";
 
 import { appTheme } from "@/lib/theme/app-theme";
 
@@ -60,11 +59,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
       {/* <CacheProvider> */}
       <ChakraProvider value={appTheme}>
         <SessionProvider>
-          <Provider store={store}>
-            <PersistGate loading={null} persistor={persistor}>
-              {children}
-            </PersistGate>
-          </Provider>
+          <Provider store={store}>{children}</Provider>
         </SessionProvider>
       </ChakraProvider>
       {/* </CacheProvider> */}

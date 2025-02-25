@@ -11,17 +11,12 @@ spec:
         - name: cc-test-create-admin
           image: ghcr.io/open-earth-foundation/citycatalyst:main
           imagePullPolicy: Always
+          envFrom:
+            - configMapRef:
+                name: cc-test-db-configmap
           env:
             - name: NODE_ENV
               value: development
-            - name: DATABASE_NAME
-              value: "citycatalyst"
-            - name: DATABASE_HOST
-              value: "cc-db"
-            - name: DATABASE_USER
-              value: "citycatalyst"
-            - name: DATABASE_PASSWORD
-              value: "development"
           command: ["npm", "run", "create-admin"]
           resources:
             limits:

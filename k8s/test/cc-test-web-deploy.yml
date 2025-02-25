@@ -21,19 +21,14 @@ spec:
           imagePullPolicy: Always
           ports:
             - containerPort: 3000
+          envFrom:
+            - configMapRef:
+                name: cc-test-db-configmap
           env:
             - name: NODE_ENV
               value: "production"
             - name: PORT
               value: "3000"
-            - name: DATABASE_HOST
-              value: "cc-db"
-            - name: DATABASE_NAME
-              value: "cctest"
-            - name: DATABASE_USER
-              value: "cctest"
-            - name: DATABASE_PASSWORD
-              value: "cctest"
             - name: NEXTAUTH_URL
               value: "https://citycatalyst-test.openearth.dev"
             - name: HOST

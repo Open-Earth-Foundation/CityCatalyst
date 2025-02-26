@@ -540,6 +540,7 @@ const ActivityModalBody = ({
                         bgColor="base.light"
                       >
                         <NativeSelectField
+                          value={field.value}
                           placeholder={t("emissions-factor-type-placeholder")}
                         >
                           {emissionsFactorTypes.map(({ id, name }) => (

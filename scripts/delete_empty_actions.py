@@ -3,33 +3,18 @@ import pandas as pd
 from pathlib import Path
 import numpy as np
 
-def filter_empty_adaptation_fields(df):
-    """Filter out actions with empty Hazard or AdaptationEffectiveness fields"""
+def filter_empty_adaptation_effectiveness(df):
+    """Filter out adaptation actions that have no AdaptationEffectiveness value"""
+    # Identify adaptation actions (where 'adaptation' is in the ActionType list)
+    is_adaptation = df['ActionType'].apply(lambda x: 'adaptation' in x if isinstance(x, list) else False)
     empty_hazard = df['Hazard'].isna()
     empty_adaptation = df['AdaptationEffectiveness'].isna()
     
-    # Get deleted actions
-    deleted_actions = df[empty_hazard | empty_adaptation]
+    # Actions to delete are adaptation actions without AdaptationEffectiveness
+    deleted_actions = df[is_adaptation & empty_hazard & empty_adaptation]
     
-    # Get updated actions by excluding the deleted ones
-    updated_actions = df.drop(deleted_actions.index)
-    
-    return updated_actions, deleted_actions
-
-def filter_empty_mitigation_fields(df):
-    """Filter out mitigation actions that have no GHG reduction potential"""
-    # First identify mitigation actions
-    is_mitigation = df['ActionType'].apply(lambda x: 'mitigation' in x if isinstance(x, list) else False)
-    
-    # Check for empty GHG reduction potential in all sectors
-    ghg_fields = ['stationary_energy', 'transportation', 'waste', 'ippu', 'afolu']
-    has_ghg = df['GHGReductionPotential'].apply(
-        lambda x: any(x.get(field) is not None for field in ghg_fields) if isinstance(x, dict) else False
-    )
-    
-    # Actions to delete are mitigation actions without GHG potential
-    deleted_actions = df[is_mitigation & ~has_ghg]
-    updated_actions = df[~(is_mitigation & ~has_ghg)]
+    # Keep all other actions
+    updated_actions = df[~(is_adaptation & empty_hazard & empty_adaptation)]
     
     return updated_actions, deleted_actions
 
@@ -38,7 +23,7 @@ def main():
     # Set paths using pathlib
     script_dir = Path(__file__).parent
     base_dir = script_dir.parent / 'data/climate_actions/output'
-    output_dir = script_dir / 'scripts_outputs'
+    output_dir = script_dir / 'script_outputs'
 
     # Create scripts_outputs directory if it doesn't exist
     output_dir.mkdir(exist_ok=True)
@@ -51,9 +36,7 @@ def main():
     # ======== Load Data =========
     df = pd.read_json(file_path)
 
-    # Choose which filter to use (uncomment one)
-    # updated_actions, deleted_actions = filter_empty_adaptation_fields(df)
-    updated_actions, deleted_actions = filter_empty_mitigation_fields(df)
+    updated_actions, deleted_actions = filter_empty_adaptation_effectiveness(df)
 
     # ======== Output and Save Results =========
     print("List of Deleted Actions:")

@@ -18,6 +18,30 @@ def filter_empty_adaptation_effectiveness(df):
     
     return updated_actions, deleted_actions
 
+def filter_empty_mitigation_ghg(df):
+    """Filter out mitigation actions that have no GHG reduction potential"""
+    # Identify mitigation actions (where 'mitigation' is in the ActionType list)
+    is_mitigation = df['ActionType'].apply(lambda x: 'mitigation' in x if isinstance(x, list) else False)
+    
+    # Check for empty GHG reduction potential
+    # First check if GHGReductionPotential is null
+    null_ghg = df['GHGReductionPotential'].isna()
+    
+    # For non-null values, check if any sector has a value
+    has_ghg_value = df['GHGReductionPotential'].apply(
+        lambda x: any(x.get(sector) is not None 
+                     for sector in ['stationary_energy', 'transportation', 'waste', 'ippu', 'afolu'])
+        if isinstance(x, dict) else False
+    )
+    
+    # Actions to delete are mitigation actions with null GHG or no sector values
+    deleted_actions = df[is_mitigation & (null_ghg | ~has_ghg_value)]
+    
+    # Keep all other actions
+    updated_actions = df[~(is_mitigation & (null_ghg | ~has_ghg_value))]
+    
+    return updated_actions, deleted_actions
+
 def main():
     # ======== Configuration =========
     # Set paths using pathlib
@@ -36,7 +60,9 @@ def main():
     # ======== Load Data =========
     df = pd.read_json(file_path)
 
-    updated_actions, deleted_actions = filter_empty_adaptation_effectiveness(df)
+    # Choose which filter to use (uncomment one)
+    # updated_actions, deleted_actions = filter_empty_adaptation_effectiveness(df)
+    updated_actions, deleted_actions = filter_empty_mitigation_ghg(df)
 
     # ======== Output and Save Results =========
     print("List of Deleted Actions:")

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "@/i18n/client";
 import { languages } from "@/i18n/settings";
 import { Box, Heading, Icon, Link, Separator, Text } from "@chakra-ui/react";
@@ -57,20 +57,26 @@ export function NavigationBar({
   };
 
   // Checks if language is set in cookie and updates URL if not
-  window.addEventListener("popstate", () => {
-    const cookieLanguage = Cookies.get("i18next");
-    if (cookieLanguage) {
-      const currentPath = location.pathname;
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      if (typeof window !== "undefined") {
+        const handlePopState = () => {
+          const cookieLanguage = Cookies.get("i18next");
+          if (cookieLanguage) {
+            const currentPath = window.location.pathname;
+            // Your logic here
+          }
+        };
 
-      if (!currentPath.startsWith(`/${cookieLanguage}`)) {
-        const newPath = currentPath.replace(
-          /^\/[A-Za-z]+/,
-          `/${cookieLanguage}`,
-        );
-        history.replaceState(null, "", newPath);
+        window.addEventListener("popstate", handlePopState);
+
+        // Cleanup the event listener on component unmount
+        return () => {
+          window.removeEventListener("popstate", handlePopState);
+        };
       }
     }
-  });
+  }, []);
 
   const { data: session, status } = useSession();
   const { data: userInfo, isLoading: isUserInfoLoading } =

@@ -25,7 +25,7 @@ import { SourceDrawer } from "@/app/[lng]/[inventory]/data/[step]/SourceDrawer";
 import type { DataSourceWithRelations } from "@/app/[lng]/[inventory]/data/[step]/types";
 import { api } from "@/services/api";
 import { convertKgToTonnes } from "@/util/helpers";
-import { toaster } from "@/components/ui/toaster";
+import { UseErrorToast } from "@/hooks/Toasts";
 
 const ExternalDataSection = ({
   t,
@@ -56,6 +56,9 @@ const ExternalDataSection = ({
   const buttonContent = hovered ? t("disconnect-data") : t("data-connected");
   const buttonIcon = !hovered ? <Icon as={FiCheckCircle} /> : null;
   const buttonColorScheme = hovered ? "danger" : "primary"; // TODO create these color palletes
+  const { showErrorToast } = UseErrorToast({
+    title: "disconnected-data-source",
+  });
 
   const onDisconnectThirdPartyData = async (
     _source: DataSourceWithRelations,
@@ -64,9 +67,7 @@ const ExternalDataSection = ({
       inventoryId: inventoryValue.inventoryId,
       datasourceId: inventoryValue.datasourceId,
     });
-    toaster.error({
-      title: t("disconnected-data-source"),
-    });
+    showErrorToast();
   };
 
   if (!source) {

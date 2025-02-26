@@ -1,6 +1,6 @@
 "use client";
 
-import { Badge, Box, Button, Text, Icon } from "@chakra-ui/react";
+import { Badge, Box, Button, Icon, Text } from "@chakra-ui/react";
 import React, { FC, useState } from "react";
 
 import { FiTrash2 } from "react-icons/fi";
@@ -12,15 +12,15 @@ import { api } from "@/services/api";
 import type { CityAttributes } from "@/models/City";
 
 import {
-  DialogRoot,
   DialogBody,
   DialogCloseTrigger,
   DialogContent,
   DialogFooter,
   DialogHeader,
+  DialogRoot,
 } from "@/components/ui/dialog";
 
-import { toaster } from "@/components/ui/toaster";
+import { UseSuccessToast } from "@/hooks/Toasts";
 
 interface DeleteCityDialogProps {
   isOpen: boolean;
@@ -46,6 +46,10 @@ const DeleteCityDialog: FC<DeleteCityDialogProps> = ({
   const { data: token } = api.useGetVerifcationTokenQuery({});
   const [removeCity] = api.useRemoveCityMutation();
   const [isPasswordCorrect, setIsPasswordCorrect] = useState<boolean>(true);
+  const { showSuccessToast } = UseSuccessToast({
+    title: t("city-deleted"),
+    duration: 5000,
+  });
 
   const onSubmit: SubmitHandler<{ password: string }> = async (data) => {
     await requestPasswordConfirm({
@@ -58,10 +62,7 @@ const DeleteCityDialog: FC<DeleteCityDialogProps> = ({
         }).then((res: any) => {
           onClose();
           setIsPasswordCorrect(true);
-          toaster.success({
-            description: t("city-deleted"),
-            duration: 5000,
-          });
+          showSuccessToast();
         });
       } else {
         setIsPasswordCorrect(false);

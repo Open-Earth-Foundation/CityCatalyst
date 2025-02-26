@@ -24,13 +24,11 @@ const ManageUsersSubTable = React.memo(function SubTable({
   const { showSuccessToast } = UseSuccessToast({
     description: t("invite-sent"),
     title: t("invite-sent"),
-    text: t("invite-sent"),
   });
 
   const { showErrorToast } = UseErrorToast({
     description: t("invite-send-fail"),
     title: t("invite-send-fail"),
-    text: t("invite-send-fail"),
   });
 
   const subTableColumns: Column<GetUserCityInvitesResponse>[] = useMemo(() => {

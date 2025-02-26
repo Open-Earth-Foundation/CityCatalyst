@@ -4,7 +4,6 @@ import { CityYearData, InventoryResponse, SectorEmission } from "@/util/types";
 import {
   Box,
   Card,
-  CardHeader,
   Center,
   Heading,
   HStack,
@@ -42,12 +41,12 @@ import { MdBarChart, MdTableChart } from "react-icons/md";
 import EmissionBySectorTableSection from "@/app/[lng]/[inventory]/InventoryResultTab/EmissionBySectorTable";
 import EmissionBySectorChart from "@/app/[lng]/[inventory]/InventoryResultTab/EmissionBySectorChart";
 import { EmissionsForecastSection } from "@/app/[lng]/[inventory]/InventoryResultTab/EmissionsForecast/EmissionsForecastSection";
-import { toaster } from "@/components/ui/toaster";
 import {
   ProgressCircleRing,
   ProgressCircleRoot,
 } from "@/components/ui/progress-circle";
 import { TooltipProvider } from "@nivo/tooltip";
+import { UseErrorToast } from "@/hooks/Toasts";
 
 enum TableView {
   BY_ACTIVITY = "by-activity",
@@ -99,17 +98,13 @@ function SectorTabs({
     sector: selectedTab,
   });
 
-  const makeErrorToast = (title: string, description?: string) => {
-    toaster.create({
-      title,
-      description,
-      type: "error",
-      duration: 10000,
-    });
-  };
+  const { showErrorToast } = UseErrorToast({
+    title: t("something-went-wrong"),
+    description: t("error-fetching-sector-breakdown"),
+  });
 
-  if (error) {
-    makeErrorToast(t("something-went-wrong"), t("error-fetching-sector-data"));
+  if (!error) {
+    showErrorToast();
     console.error("Error fetching sector breakdown:", error);
   }
 

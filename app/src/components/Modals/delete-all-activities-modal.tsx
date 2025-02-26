@@ -1,19 +1,12 @@
 "use client";
 
-import { UserFileAttributes } from "@/models/UserFile";
-import {
-  api,
-  useDeleteActivityValueMutation,
-  useDeleteAllActivityValuesMutation,
-} from "@/services/api";
-import { Text, Box, Badge, Icon, DialogRoot } from "@chakra-ui/react";
+import { useDeleteAllActivityValuesMutation } from "@/services/api";
+import { Badge, Box, DialogRoot, Text } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import React, { FC } from "react";
 import { Trans } from "react-i18next";
 
 import { FiTrash2 } from "react-icons/fi";
-import { toaster } from "../ui/toaster";
-import { MdCheckCircle } from "react-icons/md";
 import {
   DialogBackdrop,
   DialogBody,
@@ -24,6 +17,7 @@ import {
   DialogTitle,
 } from "../ui/dialog";
 import { Button } from "../ui/button";
+import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
 
 interface DeleteAllActivitiesModalProps {
   isOpen: boolean;
@@ -44,7 +38,14 @@ const DeleteAllActivitiesModal: FC<DeleteAllActivitiesModalProps> = ({
 }) => {
   const [deleteAllActivityValues, { isLoading }] =
     useDeleteAllActivityValuesMutation();
-  console.log(inventoryId, subsectorId);
+
+  const { showErrorToast } = UseErrorToast({
+    title: t("delete-all-activities-failed"),
+  });
+  const { showSuccessToast } = UseSuccessToast({
+    title: t("all-activities-deleted"),
+  });
+
   // define the function to delete all activities
   const handleDeleteAllActivities = async () => {
     // call the delete all activities mutation
@@ -54,14 +55,10 @@ const DeleteAllActivitiesModal: FC<DeleteAllActivitiesModalProps> = ({
     });
     if (response.data) {
       // TODO create toast wrapper for success state
-      toaster.success({
-        title: t("all-activities-deleted"),
-      });
+      showSuccessToast();
       onClose();
     } else {
-      toaster.error({
-        title: t("delete-all-activities-failed"),
-      });
+      showErrorToast();
     }
   };
 

@@ -2,7 +2,7 @@
 
 import { ActivityValue } from "@/models/ActivityValue";
 import { useDeleteActivityValueMutation } from "@/services/api";
-import { Text, Box, Badge, DialogTitle, Icon } from "@chakra-ui/react";
+import { Badge, Box, DialogTitle, Text } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import React, { FC } from "react";
 import { Trans } from "react-i18next";
@@ -18,8 +18,7 @@ import {
   DialogRoot,
 } from "../ui/dialog";
 import { Button } from "../ui/button";
-import { MdCheckCircle } from "react-icons/md";
-import { toaster } from "../ui/toaster";
+import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
 
 interface DeleteAllActivitiesModalProps {
   isOpen: boolean;
@@ -42,6 +41,13 @@ const DeleteActivityModal: FC<DeleteAllActivitiesModalProps> = ({
 }) => {
   const [deleteActivityValue, { isLoading }] = useDeleteActivityValueMutation();
 
+  const { showErrorToast } = UseErrorToast({
+    title: t("delete-activity-error"),
+  });
+  const { showSuccessToast } = UseSuccessToast({
+    title: t("delete-activity-success"),
+  });
+
   // define the function to delete all activities
   const handleDeleteActivity = async () => {
     // call the delete all activities mutation
@@ -50,16 +56,11 @@ const DeleteActivityModal: FC<DeleteAllActivitiesModalProps> = ({
       activityValueId: selectedActivityValue.id,
     });
     if (response.data?.success) {
-      // TODO create toast wrapper for success state
-      toaster.success({
-        title: t("delete-activity-success"),
-      });
+      showSuccessToast();
       onClose();
       resetSelectedActivityValue();
     } else {
-      toaster.error({
-        title: t("delete-activity-failed"),
-      });
+      showErrorToast();
     }
   };
   return (

@@ -23,8 +23,8 @@ import SetInventoryDetailsStep from "@/components/steps/add-inventory-details-st
 import SetPopulationDataStep from "@/components/steps/add-population-data-step";
 import ConfirmStep from "@/components/steps/confirm-city-data-step";
 import ProgressSteps from "@/components/steps/progress-steps";
-import { Toaster, toaster } from "@/components/ui/toaster";
 import { Button } from "@/components/ui/button";
+import { UseErrorToast } from "@/hooks/Toasts";
 
 export type Inputs = {
   city: string;
@@ -102,13 +102,8 @@ export default function OnboardingSetup({
   const [isConfirming, setConfirming] = useState(false);
 
   const makeErrorToast = (title: string, description?: string) => {
-    toaster.create({
-      title,
-      description,
-      placement: "top",
-      type: "error",
-      duration: 10000,
-    });
+    const { showErrorToast } = UseErrorToast({ description, title });
+    showErrorToast();
   };
 
   // Population data
@@ -172,7 +167,7 @@ export default function OnboardingSetup({
         countryPopulationYear: countryPopulationYear!,
       }).unwrap();
     } catch (err: any) {
-      makeErrorToast("Failed to add city!", err.data?.error?.message);
+      makeErrorToast("failed-to-add-city", err.data?.error?.message);
       setConfirming(false);
       return;
     }
@@ -201,7 +196,7 @@ export default function OnboardingSetup({
       );
     } catch (err: any) {
       console.error("Failed to create new inventory!", err);
-      makeErrorToast("Failed to create inventory!", err.data?.error?.message);
+      makeErrorToast("failed-to-create-inventory", err.data?.error?.message);
       setConfirming(false);
     }
   };
@@ -361,7 +356,6 @@ export default function OnboardingSetup({
             </Box>
           </Box>
         </div>
-        <Toaster />
       </div>
     </>
   );

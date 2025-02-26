@@ -76,7 +76,6 @@ import { motion } from "framer-motion";
 import { getTranslationFromDict } from "@/i18n";
 import { getScopesForInventoryAndSector, SECTORS } from "@/util/constants";
 import { Button } from "@/components/ui/button";
-import { toaster } from "@/components/ui/toaster";
 import {
   BreadcrumbCurrentLink,
   BreadcrumbLink,
@@ -89,6 +88,7 @@ import {
 } from "@/components/ui/progress-circle";
 import { TbWorldSearch } from "react-icons/tb";
 import AddFileDataDialog from "@/components/Modals/add-file-data-dialog";
+import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
 
 function getMailURI(locode?: string, sector?: string, year?: number): string {
   const emails =
@@ -324,11 +324,13 @@ export default function AddDataSteps({
     onSourceDrawerOpen();
   };
 
-  const showError = (title: string, description: string) => {
-    toaster.error({
-      title,
-      description,
+  const showError = (title: string, description: string, duration?: number) => {
+    const { showErrorToast } = UseErrorToast({
+      title: t(title),
+      description: t(description),
+      duration,
     });
+    showErrorToast();
   };
 
   const [connectingDataSourceId, setConnectingDataSourceId] = useState<
@@ -353,14 +355,14 @@ export default function AddDataSteps({
 
       if (response.failed.length > 0) {
         showError(
-          t("data-source-connect-failed"),
-          t("data-source-connect-load-error"),
+          "data-source-connect-failed",
+          "data-source-connect-load-error",
         );
         return;
       } else if (response.invalid.length > 0) {
         showError(
-          t("data-source-connect-failed"),
-          t("data-source-connect-invalid-error"),
+          "data-source-connect-failed",
+          "data-source-connect-invalid-error",
         );
         return;
       }
@@ -373,10 +375,7 @@ export default function AddDataSteps({
       }
     } catch (error: any) {
       console.error("Failed to connect data source", source, error);
-      toaster.error({
-        title: t("data-source-connect-failed"),
-        description: error.data?.error?.message,
-      });
+      showError("data-source-connect-failed", error.data?.error?.message);
     } finally {
       setConnectingDataSourceId(null);
       onSearchDataSourcesClicked();
@@ -460,6 +459,12 @@ export default function AddDataSteps({
     onClose: onfileDataModalClose,
   } = useDisclosure();
 
+  const { showSuccessToast } = UseSuccessToast({
+    title: t("file-deletion-success"),
+    description: t("file-deletion-success"),
+    duration: 2000,
+  });
+
   const [uploadedFile, setUploadedFile] = useState<File>();
 
   const [openFileUploadDialog, setOpenFileUploadDialog] = useState(false);
@@ -481,18 +486,13 @@ export default function AddDataSteps({
   ) {
     deleteUserFile({ fileId, cityId }).then((res: any) => {
       if (res.error) {
-        toaster.error({
-          title: t("file-deletion-error"),
-          description: t("file-deletion-error-description"),
-          duration: 2000,
-        });
+        showError(
+          "file-deletion-error",
+          "file-deletion-error-description",
+          2000,
+        );
       } else {
-        toaster.success({
-          title: t("file-deletion-success"),
-          description: t("file-deletion-success"),
-          duration: 2000,
-        });
-
+        showSuccessToast();
         dispatch(
           removeFile({
             sectorName,

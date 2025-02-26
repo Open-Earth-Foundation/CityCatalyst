@@ -1,6 +1,7 @@
 "use client";
 
 import { NavigationBar } from "@/components/navigation-bar";
+import { Toaster } from "@/components/ui/toaster";
 
 export default function AuthLayout({
   children,
@@ -16,6 +17,7 @@ export default function AuthLayout({
         <div className="bg-[#02061c] w-[485px] hidden md:block bg-roads bg-no-repeat" />
         <div className="w-full">
           <div className="pt-[148px] pb-4 w-[480px] max-w-full mx-auto px-4">
+            <Toaster />
             {children}
           </div>
         </div>

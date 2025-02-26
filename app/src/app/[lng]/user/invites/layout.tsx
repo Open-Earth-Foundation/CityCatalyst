@@ -1,6 +1,7 @@
 "use client";
 
 import { NavigationBar } from "@/components/navigation-bar";
+import { Toaster } from "@/components/ui/toaster";
 import { Box } from "@chakra-ui/react";
 
 export default function InviteLayout({
@@ -16,6 +17,7 @@ export default function InviteLayout({
       bg="background.backgroundLight"
       className="h-full flex flex-col"
     >
+      <Toaster />
       <NavigationBar lng={lng} showNav={false} />
       <Box className="w-full h-full bg-no-repeat px-8">{children}</Box>
     </Box>

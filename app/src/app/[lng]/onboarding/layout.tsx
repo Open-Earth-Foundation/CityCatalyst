@@ -1,6 +1,7 @@
 "use client";
 
 import { NavigationBar } from "@/components/navigation-bar";
+import { Toaster } from "@/components/ui/toaster";
 import { Box } from "@chakra-ui/react";
 
 export default function OnboardingLayout({
@@ -17,6 +18,7 @@ export default function OnboardingLayout({
       className="h-full flex flex-col"
     >
       <NavigationBar lng={lng} showNav={false} />
+      <Toaster />
       <Box className="w-full h-full bg-no-repeat px-8">{children}</Box>
     </Box>
   );

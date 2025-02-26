@@ -791,7 +791,7 @@ const prepareEmissionsData = async (inventoryId: string) => {
 
   return Object.entries(groupedEmissions).map(([referenceNumber, records]) => {
     const co2eqSum = records.reduce(
-      (sum, record) => sum + BigInt(record.co2eq),
+      (sum, record) => sum + BigInt(record.co2eq || 0),
       0n,
     );
     return {

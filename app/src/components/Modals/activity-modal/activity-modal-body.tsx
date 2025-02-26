@@ -356,6 +356,7 @@ const ActivityModalBody = ({
                                   }}
                                 >
                                   <NativeSelectField
+                                    value={field.value}
                                     placeholder={t("select-unit")}
                                   >
                                     {f.units?.map((item: string) => (
@@ -465,7 +466,10 @@ const ActivityModalBody = ({
                               );
                             }}
                           >
-                            <NativeSelectField placeholder={t("select-unit")}>
+                            <NativeSelectField
+                              placeholder={t("select-unit")}
+                              value={field.value}
+                            >
                               {units?.map((item: string) => (
                                 <option key={item} value={item}>
                                   {t(item)}

@@ -2,16 +2,16 @@
 
 import EmailInput from "@/components/email-input";
 import PasswordInput from "@/components/password-input";
-import { useAuthToast } from "@/hooks/useAuthToast";
 import { useTranslation } from "@/i18n/client";
-import { Heading, Text, Link, Box } from "@chakra-ui/react";
+import { Box, Heading, Link, Text } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { Toaster, toaster } from "@/components/ui/toaster";
+import { Toaster } from "@/components/ui/toaster";
 import { Button } from "@/components/ui/button";
+import { UseSuccessToast } from "@/hooks/Toasts";
 
 export type LoginInputs = {
   email: string;
@@ -22,17 +22,17 @@ function VerifiedNotification({ t }: { t: TFunction }) {
   const searchParams = useSearchParams();
   const isVerified = !!searchParams.get("verification-code");
 
+  const { showSuccessToast } = UseSuccessToast({
+    title: t("verified-toast-title"),
+    description: t("verified-toast-description"),
+  });
+
   useEffect(() => {
     if (isVerified) {
-      toaster.create({
-        title: t("verified-toast-title"),
-        description: t("verified-toast-description"),
-        type: "success",
-        duration: 0,
-      });
+      showSuccessToast();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isVerified]);
+  }, [isVerified, showSuccessToast]);
 
   return null;
 }
@@ -65,7 +65,10 @@ export default function Login({
     }
   }
 
-  const { showLoginSuccessToast } = useAuthToast(t);
+  const { showSuccessToast: showLoginSuccessToast } = UseSuccessToast({
+    title: t("verified-toast-title"),
+    description: t("verified-toast-description"),
+  });
   const onSubmit: SubmitHandler<LoginInputs> = async (data) => {
     try {
       const res = await signIn("credentials", {

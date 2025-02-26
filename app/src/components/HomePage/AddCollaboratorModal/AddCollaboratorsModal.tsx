@@ -46,13 +46,11 @@ const AddCollaboratorsDialog = ({
   const { showSuccessToast } = UseSuccessToast({
     title: t("invite-success-toast-title"),
     description: t("invite-success-toast-description"),
-    text: t("invite-success-toast-text"),
   });
 
   const { showErrorToast } = UseErrorToast({
     title: t("invite-error-toast-title"),
     description: t("invite-error-toast-description"),
-    text: t("invite-error-toast-text"),
   });
 
   const { data: citiesAndYears } = useGetCitiesAndYearsQuery();

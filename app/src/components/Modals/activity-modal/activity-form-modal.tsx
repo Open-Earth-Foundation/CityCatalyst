@@ -1,7 +1,7 @@
 "use client";
 
 import { api, useUpdateActivityValueMutation } from "@/services/api";
-import { Box, Button, Text } from "@chakra-ui/react";
+import { Button } from "@chakra-ui/react";
 import { FC } from "react";
 import { SubmitHandler } from "react-hook-form";
 import { TFunction } from "i18next";
@@ -16,7 +16,7 @@ import useActivityForm, {
 } from "@/hooks/activity-value-form/use-activity-form";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import useEmissionFactors from "@/hooks/activity-value-form/use-emission-factors";
-import { toaster } from "@/components/ui/toaster";
+import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
 import {
   DialogBackdrop,
   DialogCloseTrigger,
@@ -25,7 +25,6 @@ import {
   DialogHeader,
   DialogRoot,
 } from "@/components/ui/dialog";
-import { MdCheckCircle } from "react-icons/md";
 
 interface AddActivityModalProps {
   isOpen: boolean;
@@ -111,6 +110,14 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
 
   const [updateActivityValue, { isLoading: updateLoading }] =
     useUpdateActivityValueMutation();
+
+  const { showErrorToast } = UseErrorToast({
+    title: t("activity-value-error"),
+  });
+  const { showSuccessToast } = UseSuccessToast({
+    title: t("activity-value-success"),
+    duration: 1200,
+  });
 
   function extractGasesAndUnits(data: any): {
     gas: string;
@@ -227,10 +234,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
 
     if (response.data) {
       setHasActivityData(!hasActivityData);
-      toaster.success({
-        duration: 1200,
-        title: t("activity-value-success"),
-      });
+      showSuccessToast();
       reset();
       onClose();
       resetSelectedActivityValue();
@@ -241,9 +245,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
         handleManalInputValidationError(errorData.error.issues);
       } else {
         const error = response.error as FetchBaseQueryError;
-        toaster.error({
-          title: errorData.error?.message || t("activity-value-error"),
-        });
+        showErrorToast();
       }
     }
   };

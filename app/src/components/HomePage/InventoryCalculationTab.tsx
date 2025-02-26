@@ -7,25 +7,19 @@ import { useTranslation } from "@/i18n/client";
 import { formatPercent } from "@/util/helpers";
 import { InventoryProgressResponse, InventoryResponse } from "@/util/types";
 import {
+  Badge,
   Box,
   Center,
   Heading,
-  Spinner,
-  TagLabel,
-  Text,
   Icon,
-  Badge,
+  Spinner,
+  Text,
 } from "@chakra-ui/react";
 import { Trans } from "react-i18next/TransWithoutContext";
 import { TabHeader } from "@/components/HomePage/TabHeader";
 import { BlueSubtitle } from "@/components/Texts/BlueSubtitle";
-import {
-  getSectorsForInventory,
-  InventoryType,
-  SECTORS,
-} from "@/util/constants";
-
-import { Tag } from "@/components/ui/tag";
+import { getSectorsForInventory, SECTORS } from "@/util/constants";
+import { UseErrorToast } from "@/hooks/Toasts";
 
 const getSectorProgresses = (
   inventoryProgress: InventoryProgressResponse,

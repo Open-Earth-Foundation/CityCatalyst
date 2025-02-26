@@ -1,30 +1,16 @@
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useState } from "react";
 
-import {
-  Box,
-  Center,
-  ProgressCircle,
-  HStack,
-  Input,
-  Select,
-  Icon,
-  createListCollection,
-  Text,
-  VStack,
-} from "@chakra-ui/react";
-
-import { MdInfoOutline, MdSearch } from "react-icons/md";
+import { Box, Text, VStack } from "@chakra-ui/react";
 import { TitleMedium } from "@/components/Texts/Title";
 
 import { TFunction } from "i18next";
 import PasswordInput from "@/components/password-input";
 import { Button } from "@/components/ui/button";
-import { logger } from "@/services/logger";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { Field } from "@/components/ui/field";
 import { api } from "@/services/api";
-import { Toaster, toaster } from "@/components/ui/toaster";
+import { Toaster } from "@/components/ui/toaster";
+import { UseSuccessToast } from "@/hooks/Toasts";
 
 interface ManagePasswordProps {
   t: TFunction;
@@ -52,6 +38,11 @@ const ManagePasswordTabContent: FC<ManagePasswordProps> = ({ t }) => {
   const [updatePassword, { isLoading, isError, isSuccess }] =
     api.useUpdatePasswordMutation();
 
+  const { showSuccessToast } = UseSuccessToast({
+    title: t("password-updated"),
+    description: t("password-updated-success"),
+  });
+
   const watchPassword = watch("newPassword", "");
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     if (data.newPassword !== data.confirmPassword) {
@@ -71,11 +62,7 @@ const ManagePasswordTabContent: FC<ManagePasswordProps> = ({ t }) => {
         setError(res.error.data.error.message);
         return;
       }
-      toaster.create({
-        title: t("password-updated"),
-        description: t("password-updated-success"),
-        type: "success",
-      });
+      showSuccessToast();
       reset();
       setError("");
     } catch (err: any) {

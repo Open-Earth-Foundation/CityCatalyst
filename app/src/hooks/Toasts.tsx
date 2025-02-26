@@ -1,35 +1,41 @@
 import { toaster } from "@/components/ui/toaster";
 
-export function UseSuccessToast(props: {
+export function UseSuccessToast({
+  title,
+  description,
+  duration = 3000,
+}: {
   title: string;
-  description: string;
-  text: string;
+  description?: string;
+  duration?: number;
 }) {
-  const { title, description, text } = props;
   const showSuccessToast = () => {
-    return toaster.success({
-      title,
-      description,
-      duration: 3000,
-      placement: "top",
+    return toaster.create({
+      title: title,
+      description: description,
+      type: "success",
+      duration: duration,
     });
   };
 
   return { showSuccessToast };
 }
 
-export function UseErrorToast(props: {
+export function UseErrorToast({
+  title,
+  description,
+  duration = 6000,
+}: {
   title: string;
-  description: string;
-  text: string;
+  description?: string;
+  duration?: number;
 }) {
-  const { title, description, text } = props;
   const showErrorToast = () => {
-    return toaster.error({
-      title,
-      description,
-      duration: 6000,
-      placement: "top",
+    return toaster.create({
+      title: title,
+      description: description,
+      duration,
+      type: "error",
     });
   };
 

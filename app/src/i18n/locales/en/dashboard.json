@@ -173,5 +173,6 @@
   "afolu-livestock": "Live stock",
   "afolu-land": "Land",
   "rate": "rate",
-  "sector": "sector"
+  "sector": "sector",
+  "an-error-occurred": "An error occurred"
 }

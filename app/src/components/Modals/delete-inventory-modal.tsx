@@ -1,6 +1,6 @@
 "use client";
 
-import { Badge, Box, Button, Text, Icon, DialogFooter } from "@chakra-ui/react";
+import { Badge, Box, Button, DialogFooter, Icon, Text } from "@chakra-ui/react";
 import React, { FC, useState } from "react";
 import { FiTrash2 } from "react-icons/fi";
 import { MdOutlineInfo } from "react-icons/md";
@@ -16,7 +16,7 @@ import {
   DialogRoot,
 } from "@/components/ui/dialog";
 import { Field } from "@/components/ui/field";
-import { toaster } from "@/components/ui/toaster";
+import { UseSuccessToast } from "@/hooks/Toasts";
 import PasswordInput from "@/components/password-input";
 
 import type { UserAttributes } from "@/models/User";
@@ -50,6 +50,11 @@ const DeleteInventoryDialog: FC<DeleteInventoryDialogProps> = ({
   const [deleteInventory, { isLoading }] = api.useDeleteInventoryMutation();
   const [isPasswordCorrect, setIsPasswordCorrect] = useState<boolean>(true);
 
+  const { showSuccessToast } = UseSuccessToast({
+    title: t("inventory-deleted"),
+    duration: 5000,
+  });
+
   const onSubmit: SubmitHandler<{ password: string }> = async (data) => {
     await requestPasswordConfirm({
       password: data.password!,
@@ -62,10 +67,7 @@ const DeleteInventoryDialog: FC<DeleteInventoryDialogProps> = ({
           reset();
           onClose();
           setIsPasswordCorrect(true);
-          toaster.success({
-            description: t("inventory-deleted"),
-            duration: 5000,
-          });
+          showSuccessToast();
         });
       } else {
         setIsPasswordCorrect(false);

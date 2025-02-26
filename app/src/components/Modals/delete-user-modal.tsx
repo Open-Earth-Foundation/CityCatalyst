@@ -34,13 +34,11 @@ const DeleteUserDialog: FC<DeleteUserDialogProps> = ({
   const { showSuccessToast } = UseSuccessToast({
     description: t("invite-canceled"),
     title: t("invite-canceled"),
-    text: t("invite-canceled"),
   });
 
   const { showErrorToast } = UseErrorToast({
     description: t("invite-cancel-fail"),
     title: t("invite-cancel-fail"),
-    text: t("invite-cancel-fail"),
   });
   const handleCancelInvite = async () => {
     await cancelUserInvite({ cityInviteId }).then(() => {

@@ -6,7 +6,6 @@ import { TFunction } from "i18next";
 import { useDeleteAllActivityValuesMutation } from "@/services/api";
 import { ChangeMethodologyIcon } from "../icons";
 import { Trans } from "react-i18next";
-import { toaster } from "../ui/toaster";
 import {
   DialogBackdrop,
   DialogBody,
@@ -16,6 +15,7 @@ import {
   DialogRoot,
   DialogTitle,
 } from "../ui/dialog";
+import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
 
 interface ChangeMethodologyProps {
   isOpen: boolean;
@@ -39,6 +39,13 @@ const ChangeMethodology: FC<ChangeMethodologyProps> = ({
   const [deleteAllActivityValues, { isLoading: isDeleteAllLoading }] =
     useDeleteAllActivityValuesMutation();
 
+  const { showErrorToast } = UseErrorToast({
+    title: t("change-methodology-error"),
+  });
+  const { showSuccessToast } = UseSuccessToast({
+    title: t("change-methodology-success"),
+  });
+
   const handleDeleteAllActivities = async () => {
     // call the delete all activities mutation
     const response = await deleteAllActivityValues({
@@ -46,16 +53,11 @@ const ChangeMethodology: FC<ChangeMethodologyProps> = ({
       gpcReferenceNumber: gpcReferenceNumber,
     });
     if (response.data) {
-      // TODO create toast wrapper for success state
-      toaster.success({
-        title: t("change-methodology-success"),
-      });
+      showSuccessToast();
       onChangeClicked();
       onClose();
     } else {
-      toaster.error({
-        title: t("change-methodology-error"),
-      });
+      showErrorToast();
     }
   };
 

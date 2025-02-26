@@ -8,9 +8,11 @@ def filter_empty_adaptation_fields(df):
     empty_hazard = df['Hazard'].isna()
     empty_adaptation = df['AdaptationEffectiveness'].isna()
     
-    # Get deleted and updated actions
+    # Get deleted actions
     deleted_actions = df[empty_hazard | empty_adaptation]
-    updated_actions = df[~(empty_hazard | empty_adaptation)]
+    
+    # Get updated actions by excluding the deleted ones
+    updated_actions = df.drop(deleted_actions.index)
     
     return updated_actions, deleted_actions
 

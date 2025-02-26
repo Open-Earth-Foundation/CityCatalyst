@@ -1,7 +1,7 @@
 "use client";
 
 import { api, useUpdateActivityValueMutation } from "@/services/api";
-import { Box, Button, Text } from "@chakra-ui/react";
+import { Button } from "@chakra-ui/react";
 import { FC } from "react";
 import { SubmitHandler } from "react-hook-form";
 import { TFunction } from "i18next";
@@ -25,7 +25,6 @@ import {
   DialogHeader,
   DialogRoot,
 } from "@/components/ui/dialog";
-import { MdCheckCircle } from "react-icons/md";
 
 interface AddActivityModalProps {
   isOpen: boolean;
@@ -232,7 +231,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
         title: t("activity-value-success"),
       });
       reset();
-      onClose();
+      onCloseDialog();
       resetSelectedActivityValue();
     } else {
       const error = response.error as FetchBaseQueryError;

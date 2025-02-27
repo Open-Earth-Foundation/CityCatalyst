@@ -1,12 +1,16 @@
 import { db } from "@/models";
-import type { DataSourceI18n as DataSource } from "@/models/DataSourceI18n";
+import { DataSourceI18n as DataSource } from "@/models/DataSourceI18n";
 import { Inventory } from "@/models/Inventory";
 import { randomUUID } from "crypto";
 import createHttpError from "http-errors";
 import Decimal from "decimal.js";
 import { decimalToBigInt } from "@/util/big_int";
-import type { SubSector } from "@/models/SubSector";
+import { SubSector } from "@/models/SubSector";
 import { DataSourceActivityDataRecord } from "@/app/[lng]/[inventory]/data/[step]/types";
+import { InventoryValue } from "@/models/InventoryValue";
+import { Publisher } from "@/models/Publisher";
+import { Scope } from "@/models/Scope";
+import { SubCategory } from "@/models/SubCategory";
 
 const EARTH_LOCATION = "EARTH";
 
@@ -18,6 +22,54 @@ type FilterSourcesResult = {
 };
 
 export default class DataSourceService {
+  public static async findAllSources(
+    inventoryId: string,
+  ): Promise<DataSource[]> {
+    const include = [
+      {
+        model: DataSource,
+        as: "dataSources",
+        include: [
+          { model: Scope, as: "scopes" },
+          { model: Publisher, as: "publisher" },
+          {
+            model: InventoryValue,
+            as: "inventoryValues",
+            required: false,
+            where: { inventoryId },
+          },
+          { model: SubSector, as: "subSector" },
+          {
+            model: SubCategory,
+            as: "subCategory",
+            include: [
+              { model: SubSector, as: "subsector" },
+              { model: Scope, as: "scope" },
+            ],
+          },
+        ],
+      },
+    ];
+
+    const sectors = await db.models.Sector.findAll({ include });
+    const subSectors = await db.models.SubSector.findAll({ include });
+    const subCategories = await db.models.SubCategory.findAll({ include });
+
+    const sectorSources = sectors.flatMap((sector) => sector.dataSources);
+    const subSectorSources = subSectors.flatMap(
+      (subSector) => subSector.dataSources,
+    );
+    const subCategorySources = subCategories.flatMap(
+      (subCategory) => subCategory.dataSources,
+    );
+
+    const sources = sectorSources
+      .concat(subSectorSources)
+      .concat(subCategorySources);
+
+    return sources;
+  }
+
   public static filterSources(
     inventory: Inventory,
     dataSources: DataSource[],

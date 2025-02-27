@@ -97,48 +97,7 @@ export const GET = apiHandler(async (_req: NextRequest, { params }) => {
     throw new createHttpError.NotFound("Inventory not found");
   }
 
-  const include = [
-    {
-      model: DataSource,
-      as: "dataSources",
-      include: [
-        { model: Scope, as: "scopes" },
-        { model: Publisher, as: "publisher" },
-        {
-          model: InventoryValue,
-          as: "inventoryValues",
-          required: false,
-          where: { inventoryId: params.inventoryId },
-        },
-        { model: SubSector, as: "subSector" },
-        {
-          model: SubCategory,
-          as: "subCategory",
-          include: [
-            { model: SubSector, as: "subsector" },
-            { model: Scope, as: "scope" },
-          ],
-        },
-      ],
-    },
-  ];
-
-  const sectors = await db.models.Sector.findAll({ include });
-  const subSectors = await db.models.SubSector.findAll({ include });
-  const subCategories = await db.models.SubCategory.findAll({ include });
-
-  const sectorSources = sectors.flatMap((sector) => sector.dataSources);
-  const subSectorSources = subSectors.flatMap(
-    (subSector) => subSector.dataSources,
-  );
-  const subCategorySources = subCategories.flatMap(
-    (subCategory) => subCategory.dataSources,
-  );
-
-  const sources = sectorSources
-    .concat(subSectorSources)
-    .concat(subCategorySources);
-
+  const sources = await DataSourceService.findAllSources(params.inventoryId);
   const { applicableSources, removedSources } = DataSourceService.filterSources(
     inventory,
     sources,

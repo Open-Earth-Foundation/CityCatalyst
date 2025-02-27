@@ -63,6 +63,7 @@ export interface DataSourceI18nAttributes {
   subcategoryId?: string;
   created?: Date;
   lastUpdated?: Date;
+  priority?: number; // 1-10, 10 being the highest priority
 }
 
 export type DataSourcePk = "datasourceId";
@@ -94,6 +95,7 @@ export type DataSourceOptionalAttributes =
   | "sectorId"
   | "subsectorId"
   | "subcategoryId"
+  | "priority"
   | "created"
   | "lastUpdated";
 export type DataSourceI18nCreationAttributes = Optional<
@@ -132,6 +134,7 @@ export class DataSourceI18n
   sectorId?: string;
   subsectorId?: string;
   subcategoryId?: string;
+  priority?: number;
   created?: Date;
   lastUpdated?: Date;
 
@@ -907,6 +910,10 @@ export class DataSourceI18n
             key: "subcategory_id",
           },
           field: "subcategory_id",
+        },
+        priority: {
+          type: DataTypes.DOUBLE,
+          allowNull: true,
         },
       },
       {

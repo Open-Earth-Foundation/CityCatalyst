@@ -11,15 +11,39 @@ import { InventoryValue } from "@/models/InventoryValue";
 import { Publisher } from "@/models/Publisher";
 import { Scope } from "@/models/Scope";
 import { SubCategory } from "@/models/SubCategory";
+import { logger } from "@/services/logger";
+import { findClosestYear, PopulationEntry } from "@/util/helpers";
+import { PopulationAttributes } from "@/models/Population";
+import { maxPopulationYearDifference } from "@/util/constants";
+import { Op } from "sequelize";
 
 const EARTH_LOCATION = "EARTH";
 
 export type RemovedSourceResult = { source: DataSource; reason: string };
 export type FailedSourceResult = { source: DataSource; error: string };
-type FilterSourcesResult = {
+export type FilterSourcesResult = {
   applicableSources: DataSource[];
   removedSources: RemovedSourceResult[];
 };
+export type ApplySourceResult = {
+  id: string;
+  success: boolean;
+  issue?: string;
+};
+export type PopulationScaleFactorResponse = {
+  countryPopulationScaleFactor: number;
+  regionPopulationScaleFactor: number;
+  populationIssue: string | null;
+};
+
+export const downscaledByCountryPopulation =
+  "global_api_downscaled_by_population";
+export const downscaledByRegionPopulation =
+  "global_api_downscaled_by_region_population";
+export const populationScalingRetrievalMethods = [
+  downscaledByCountryPopulation,
+  downscaledByRegionPopulation,
+];
 
 export default class DataSourceService {
   public static async findAllSources(
@@ -68,6 +92,128 @@ export default class DataSourceService {
       .concat(subCategorySources);
 
     return sources;
+  }
+
+  public static async findPopulationScaleFactors(
+    inventory: Inventory,
+    sources: DataSource[],
+  ) {
+    let countryPopulationScaleFactor = 1;
+    let regionPopulationScaleFactor = 1;
+    let populationIssue: string | null = null;
+    if (
+      sources.some((source) =>
+        populationScalingRetrievalMethods.includes(
+          source.retrievalMethod ?? "",
+        ),
+      )
+    ) {
+      const populations = await db.models.Population.findAll({
+        where: {
+          cityId: inventory.cityId,
+          year: {
+            [Op.between]: [
+              inventory.year! - maxPopulationYearDifference,
+              inventory.year! + maxPopulationYearDifference,
+            ],
+          },
+        },
+        order: [["year", "DESC"]], // favor more recent population entries
+      });
+      const cityPopulations = populations.filter((pop) => !!pop.population);
+      const cityPopulation = findClosestYear(
+        cityPopulations as PopulationEntry[],
+        inventory.year!,
+      );
+      const countryPopulations = populations.filter(
+        (pop) => !!pop.countryPopulation,
+      );
+      const countryPopulation = findClosestYear(
+        countryPopulations as PopulationEntry[],
+        inventory.year!,
+      ) as PopulationAttributes;
+      const regionPopulations = populations.filter(
+        (pop) => !!pop.regionPopulation,
+      );
+      const regionPopulation = findClosestYear(
+        regionPopulations as PopulationEntry[],
+        inventory.year!,
+      ) as PopulationAttributes;
+      // TODO allow country downscaling to work if there is no region population?
+      if (!cityPopulation || !countryPopulation || !regionPopulation) {
+        // City is missing population/ region population/ country population for a year close to the inventory year
+        populationIssue = "missing-population"; // translation key
+      } else {
+        countryPopulationScaleFactor =
+          cityPopulation.population / countryPopulation.countryPopulation!;
+        regionPopulationScaleFactor =
+          cityPopulation.population / regionPopulation.regionPopulation!;
+      }
+    }
+
+    return {
+      countryPopulationScaleFactor,
+      regionPopulationScaleFactor,
+      populationIssue,
+    };
+  }
+
+  public static async applySource(
+    source: DataSource,
+    inventory: Inventory,
+    populationScaleFactors: PopulationScaleFactorResponse, // obtained from findPopulationScaleFactors
+  ): Promise<ApplySourceResult> {
+    const result: ApplySourceResult = {
+      id: source.datasourceId,
+      success: true,
+      issue: undefined,
+    };
+
+    const {
+      countryPopulationScaleFactor,
+      regionPopulationScaleFactor,
+      populationIssue,
+    } = populationScaleFactors;
+
+    if (source.retrievalMethod === "global_api") {
+      const sourceStatus = await DataSourceService.applyGlobalAPISource(
+        source,
+        inventory,
+      );
+      if (typeof sourceStatus === "string") {
+        result.issue = sourceStatus;
+        result.success = false;
+      }
+    } else if (
+      populationScalingRetrievalMethods.includes(source.retrievalMethod ?? "")
+    ) {
+      if (populationIssue) {
+        result.issue = populationIssue;
+        result.success = false;
+        return result;
+      }
+      let scaleFactor = 1.0;
+      if (source.retrievalMethod === downscaledByCountryPopulation) {
+        scaleFactor = countryPopulationScaleFactor;
+      } else if (source.retrievalMethod === downscaledByRegionPopulation) {
+        scaleFactor = regionPopulationScaleFactor;
+      }
+      const sourceStatus = await DataSourceService.applyGlobalAPISource(
+        source,
+        inventory,
+        scaleFactor,
+      );
+      if (typeof sourceStatus === "string") {
+        result.issue = sourceStatus;
+        result.success = false;
+      }
+    } else {
+      result.issue = `Unsupported retrieval method ${source.retrievalMethod} for data source ${source.datasourceId}`;
+      logger.error(result.issue);
+      result.success = false;
+    }
+
+    return result;
   }
 
   public static filterSources(

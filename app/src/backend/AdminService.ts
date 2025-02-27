@@ -17,13 +17,18 @@ export interface BulkInventoryProps {
   gwp: string; // GWP selection (AR5 or AR6)
 }
 
+export interface CreateBulkInventoriesResponse {
+  errors: { locode: string; error: any }[];
+  results: { locode: string; result: any }[];
+}
+
 const DEFAULT_PRIORITY = 0; // 10 is the highest priority
 
 export default class AdminService {
   public static async createBulkInventories(
     props: BulkInventoryProps,
     session: AppSession | null,
-  ): Promise<any> {
+  ): Promise<CreateBulkInventoriesResponse> {
     // Ensure user has admin role
     const isAdmin = session?.user?.role === Roles.Admin;
     if (!isAdmin) {
@@ -31,6 +36,7 @@ export default class AdminService {
     }
 
     const errors: { locode: string; error: any }[] = [];
+    const results: { locode: string; result: any }[] = [];
 
     // Bulk create inventories
     logger.info(
@@ -51,6 +57,10 @@ export default class AdminService {
       try {
         const createdInventories =
           await db.models.Inventory.bulkCreate(inventories);
+        results.push({
+          locode: cityLocode,
+          result: createdInventories.map((inventory) => inventory.inventoryId),
+        });
       } catch (err) {
         errors.push({ locode: cityLocode, error: err });
       }
@@ -67,7 +77,7 @@ export default class AdminService {
       }
     }
 
-    return errors;
+    return { errors, results };
   }
 
   private static async connectAllDataSources(
@@ -99,15 +109,6 @@ export default class AdminService {
     );
     delete sourcesBySubsector["unknown"];
 
-    // Sort each group by priority field
-    for (const [subSector, sources] of Object.entries(sourcesBySubsector)) {
-      const prioritizedSources = sources.sort(
-        (a, b) =>
-          (b.priority ?? DEFAULT_PRIORITY) - (a.priority ?? DEFAULT_PRIORITY),
-      );
-      sourcesBySubsector[subSector] = prioritizedSources;
-    }
-
     const populationScaleFactors =
       await DataSourceService.findPopulationScaleFactors(
         inventory,
@@ -115,49 +116,53 @@ export default class AdminService {
       );
 
     await Promise.all(
-      Object.entries(sourcesBySubsector).map(
-        async ([subSector, prioritizedSources]) => {
-          // Try one after another until one connects successfully
-          let isSuccessful = false;
-          for (const source of prioritizedSources) {
-            const data = await DataSourceService.retrieveGlobalAPISource(
+      Object.entries(sourcesBySubsector).map(async ([subSector, sources]) => {
+        // Sort each group by priority field
+        const prioritizedSources = sources.sort(
+          (a, b) =>
+            (b.priority ?? DEFAULT_PRIORITY) - (a.priority ?? DEFAULT_PRIORITY),
+        );
+
+        // Try one after another until one connects successfully
+        let isSuccessful = false;
+        for (const source of prioritizedSources) {
+          const data = await DataSourceService.retrieveGlobalAPISource(
+            source,
+            inventory,
+          );
+          if (data instanceof String || typeof data === "string") {
+            errors.push({
+              locode: cityLocode,
+              error: `Failed to fetch source - ${source.datasourceId}: ${data}`,
+            });
+          } else {
+            // save data source to DB
+            // download source data and apply in database
+            const result = await DataSourceService.applySource(
               source,
               inventory,
+              populationScaleFactors,
             );
-            if (data instanceof String || typeof data === "string") {
-              errors.push({
-                locode: cityLocode,
-                error: `Failed to fetch source - ${source.datasourceId}: ${data}`,
-              });
+            if (result.success) {
+              isSuccessful = true;
+              break;
             } else {
-              // save data source to DB
-              // download source data and apply in database
-              const result = await DataSourceService.applySource(
-                source,
-                inventory,
-                populationScaleFactors,
+              logger.error(
+                `Failed to apply source ${source.datasourceId}: ${result.issue}`,
               );
-              if (result.success) {
-                isSuccessful = true;
-                break;
-              } else {
-                logger.error(
-                  `Failed to apply source ${source.datasourceId}: ${result.issue}`,
-                );
-              }
-            }
-
-            if (!isSuccessful) {
-              const message = `Wasn't able to find a data source for subsector ${subSector}`;
-              logger.error(message);
-              errors.push({
-                locode: cityLocode,
-                error: message,
-              });
             }
           }
-        },
-      ),
+
+          if (!isSuccessful) {
+            const message = `Wasn't able to find a data source for subsector ${subSector}`;
+            logger.error(cityLocode, message);
+            errors.push({
+              locode: cityLocode,
+              error: message,
+            });
+          }
+        }
+      }),
     );
 
     return { errors };

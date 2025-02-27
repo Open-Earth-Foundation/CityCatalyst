@@ -11,7 +11,7 @@ import { groupBy } from "@/util/helpers";
 export interface BulkInventoryProps {
   cityLocodes: string[]; // List of city locodes
   emails: string[]; // Comma separated list of emails to invite to the all of the created inventories
-  years: number[]; // List of years to create inventories for (can be comma separated input, multiple select dropdown etc., so multiple years can be chosen)
+  years: number[]; // List of years to create inventories for
   scope: "gpc_basic" | "gpc_basic_plus"; // Scope selection (gpc_basic or gpc_basic_plus)
   gwp: "AR5" | "AR6"; // GWP selection (AR5 or AR6)
 }
@@ -66,7 +66,7 @@ export default class AdminService {
 
       for (const inventory of inventories) {
         // Connect all data sources, rank them by priority, check if they connect
-        const { errors: sourceErrors } = await this.connectAllDataSources(
+        const sourceErrors = await this.connectAllDataSources(
           inventory.inventoryId,
           cityLocode,
         );
@@ -80,9 +80,7 @@ export default class AdminService {
   private static async connectAllDataSources(
     inventoryId: string,
     cityLocode: string,
-  ): Promise<{
-    errors: any[];
-  }> {
+  ): Promise<{ locode: string; error: string }[]> {
     const errors: any[] = [];
     const inventory = await db.models.Inventory.findOne({
       where: { inventoryId },
@@ -162,6 +160,6 @@ export default class AdminService {
       }),
     );
 
-    return { errors };
+    return errors;
   }
 }

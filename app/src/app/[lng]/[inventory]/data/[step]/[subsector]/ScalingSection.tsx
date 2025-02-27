@@ -107,6 +107,7 @@ const ScalingSection = ({ source, t, inventoryId }: ScalingSectionProps) => {
       </Stack>
     );
   }
+  return null;
 };
 
 export default ScalingSection;

@@ -15,13 +15,11 @@ import { Overline } from "@/components/Texts/Overline";
 interface SourceDrawerActivityTableProps {
   activities: DataSourceActivityDataRecord[];
   t: TFunction;
-  sectorId: string | undefined;
 }
 
 export function SourceDrawerActivityTable({
   activities,
   t,
-  sectorId,
 }: SourceDrawerActivityTableProps) {
   const getTotalEmissions = () => {
     const emissions = activities.reduce((acc, activity) => {

@@ -197,7 +197,6 @@ export function SourceDrawer({
                   <TitleMedium>{t("disaggregated-analysis")}</TitleMedium>
                   {sourceData?.records && (
                     <SourceDrawerActivityTable
-                      sectorId={sector?.sectorId}
                       activities={sourceData.records}
                       t={t}
                     />

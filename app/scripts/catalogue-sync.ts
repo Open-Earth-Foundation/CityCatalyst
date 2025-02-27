@@ -36,6 +36,7 @@ interface Source {
   subsector_id?: string;
   created?: Date;
   last_updated?: Date;
+  priority?: number;
 }
 
 function snakeToCamel(str: string): string {
@@ -181,7 +182,6 @@ async function syncDataCatalogue() {
     return result as DataSourceCreationAttributes;
   });
 
-  console.dir(sources);
   logger.debug("Saving sources...");
 
   /*

@@ -85,9 +85,6 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
 
   // watch all the stored values
 
-  const activity = watch("activity");
-  console.log(activity);
-
   const {
     emissionsFactorTypes,
     emissionsFactorsLoading: areEmissionFactorsLoading,

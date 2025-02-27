@@ -1,6 +1,5 @@
 import type { SectorAttributes } from "@/models/Sector";
 import {
-  chakra,
   Heading,
   HStack,
   Icon,
@@ -12,12 +11,7 @@ import {
 } from "@chakra-ui/react";
 import type { TFunction } from "i18next";
 import { RefObject } from "react";
-import {
-  MdArrowBack,
-  MdHomeWork,
-  MdInfoOutline,
-  MdOpenInNew,
-} from "react-icons/md";
+import { MdArrowBack, MdHomeWork, MdInfoOutline } from "react-icons/md";
 import type { DataSourceData, DataSourceWithRelations } from "./types";
 import { getTranslationFromDict } from "@/i18n";
 import { convertKgToTonnes, toKebabCase } from "@/util/helpers";
@@ -33,10 +27,8 @@ import SourceDrawerTags from "./SourceDrawerTags";
 import { TitleLarge, TitleMedium } from "@/components/Texts/Title";
 import { SourceDrawerActivityTable } from "./SourceDrawerActivityTable";
 import { BodyLarge } from "@/components/Texts/Body";
-import { api } from "@/services/api";
-import { HeadlineLarge } from "@/components/Texts/Headline";
-import LabelLarge from "@/components/Texts/Label";
 import { DisplayMedium } from "@/components/Texts/Display";
+import ScalingSection from "./[subsector]/ScalingSection";
 
 export function SourceDrawer({
   source,
@@ -65,13 +57,6 @@ export function SourceDrawer({
   t: TFunction;
   inventoryId: string;
 }) {
-  const { data: populations } = api.useGetInventoryPopulationsQuery(
-    inventoryId,
-    {
-      skip: !inventoryId,
-    },
-  );
-
   const emissionsToBeIncluded = () => {
     let number, unit;
     let converted;
@@ -237,91 +222,11 @@ export function SourceDrawer({
                     </BodyLarge>
                   </VStack>
                   <Separator />
-                  <Stack>
-                    <VStack align="flex-start">
-                      <HStack align="flex-start">
-                        <TitleLarge>{t("how-data-was-scaled")}</TitleLarge>
-                      </HStack>
-                      <BodyLarge>
-                        {t("about-data-availability-description")}
-                      </BodyLarge>
-                    </VStack>
-                    {populations &&
-                      populations.population &&
-                      populations.countryPopulation && (
-                        <HStack
-                          width={"70%"}
-                          justifyContent="center"
-                          alignItems="center"
-                          margin="24px auto"
-                        >
-                          <VStack>
-                            <HeadlineLarge>
-                              {populations.population}
-                            </HeadlineLarge>
-                            <LabelLarge paddingTop={4}>
-                              {t("city-population")}
-                            </LabelLarge>
-                            <LabelLarge>{populations.year}</LabelLarge>
-                          </VStack>
-                          <VStack>
-                            <BodyLarge fontSize={40}>/</BodyLarge>
-                            <LabelLarge paddingTop={4}></LabelLarge>
-                          </VStack>
-                          <VStack>
-                            <HeadlineLarge>
-                              {populations.countryPopulation}
-                            </HeadlineLarge>
-                            <LabelLarge paddingTop={4}>
-                              {t("country-population")}
-                            </LabelLarge>
-                            <LabelLarge>
-                              {populations.countryPopulationYear}
-                            </LabelLarge>
-                          </VStack>
-                          <VStack>
-                            <BodyLarge fontSize={40}>=</BodyLarge>
-                            <LabelLarge paddingTop={4}></LabelLarge>
-                          </VStack>
-                          <VStack>
-                            <HeadlineLarge>
-                              {populations.population /
-                                populations.countryPopulation}
-                            </HeadlineLarge>
-                            <LabelLarge paddingTop={4}>
-                              {t("scaling-factor")}
-                            </LabelLarge>
-                          </VStack>
-                        </HStack>
-                      )}
-                    <chakra.hr borderColor="border.neutral" />
-                    <TitleLarge>
-                      {t("methodology")}
-                      <Link
-                        href={source.methodologyUrl}
-                        target="_blank"
-                        rel="noreferrer noopener"
-                      >
-                        <Icon as={MdOpenInNew} color="content.link" ml={2} />
-                      </Link>
-                    </TitleLarge>
-                    <BodyLarge>
-                      {getTranslationFromDict(source.methodologyDescription)}
-                    </BodyLarge>
-                    <TitleLarge verticalAlign="baseline">
-                      {t("transform-data-heading")}
-                      <Link
-                        href="https://citycatalyst.openearth.org"
-                        target="_blank"
-                        rel="noreferrer noopener"
-                      >
-                        <Icon as={MdOpenInNew} color="content.link" ml={2} />
-                      </Link>
-                    </TitleLarge>
-                    <BodyLarge>
-                      {getTranslationFromDict(source.transformationDescription)}
-                    </BodyLarge>
-                  </Stack>
+                  <ScalingSection
+                    source={source}
+                    t={t}
+                    inventoryId={inventoryId}
+                  />
                 </Stack>
               </DrawerBody>
             )}

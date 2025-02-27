@@ -83,6 +83,8 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
     methodology: methodology,
   });
 
+  // watch all the stored values
+
   const {
     emissionsFactorTypes,
     emissionsFactorsLoading: areEmissionFactorsLoading,
@@ -236,7 +238,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
       setHasActivityData(!hasActivityData);
       showSuccessToast();
       reset();
-      onClose();
+      onCloseDialog();
       resetSelectedActivityValue();
     } else {
       const error = response.error as FetchBaseQueryError;

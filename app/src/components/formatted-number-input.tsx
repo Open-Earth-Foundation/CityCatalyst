@@ -1,6 +1,6 @@
 import React from "react";
 import { Control, Controller, useWatch } from "react-hook-form";
-import { Group, InputAddon, NumberInput } from "@chakra-ui/react";
+import { Group, InputAddon } from "@chakra-ui/react";
 import { useParams } from "next/navigation";
 import {
   NumberInputField,
@@ -8,7 +8,6 @@ import {
   NumberInputRoot,
 } from "./ui/number-input";
 import { REGIONALLOCALES } from "@/util/constants";
-import { InputGroup } from "./ui/input-group";
 
 interface FormattedNumberInputProps extends NumberInputProps {
   control: Control<any, any>;
@@ -142,19 +141,20 @@ function FormattedNumberInput({
             zIndex={3}
             min={min}
             max={max}
-            onValueChange={(valueAsString: any) => {
-              const parsedValue = parse(valueAsString.value);
-              field.onChange(parsedValue);
-            }}
-            onBlur={(e: any) => {
-              e.preventDefault();
-              const parsedValue = parse(e.target.value);
-              field.onChange(parseFloat(parsedValue));
-            }}
             {...rest}
           >
             <NumberInputField
+              value={format(field.value)}
               data-testId={testId}
+              onChange={(e: any) => {
+                const parsedValue = parse(e.target.value);
+                field.onChange(parsedValue);
+              }}
+              onBlur={(e: any) => {
+                e.preventDefault();
+                const parsedValue = parse(e.target.value);
+                field.onChange(parseFloat(parsedValue));
+              }}
               placeholder={placeholder}
               // Use text type to allow formatted input
             />

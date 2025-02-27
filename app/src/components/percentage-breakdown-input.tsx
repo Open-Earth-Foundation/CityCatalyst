@@ -142,10 +142,11 @@ const PercentageBreakdownInput: FC<FormInputProps> = ({
       label={label}
     >
       <PopoverRoot positioning={{ sameWidth: true }}>
-        <PopoverTrigger>
-          <Group>
+        <PopoverTrigger asChild className="w-full">
+          <Group className="w-full">
             <Field invalid={!isValid}>
               <InputGroup
+                className="w-full"
                 startElement={
                   <Box
                     pointerEvents="none"
@@ -182,11 +183,14 @@ const PercentageBreakdownInput: FC<FormInputProps> = ({
             </Field>
           </Group>
         </PopoverTrigger>
-        <PopoverContent w="full">
+        <PopoverContent w="full" portalled={false}>
           <PopoverArrow />
-          <PopoverBody w="full" className="space-y-6 py-6">
+          <PopoverBody
+            w="full"
+            className="space-y-6 py-6 !pointer-events-[all]"
+          >
             {breakdownCategories.map((category) => (
-              <HStack key={category}>
+              <HStack key={category} pointerEvents="all">
                 <Icon as={categoryIconMapping[category]} mr={4} />
                 <Text
                   fontSize="14px"

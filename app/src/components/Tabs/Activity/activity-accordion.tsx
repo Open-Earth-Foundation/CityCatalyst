@@ -1,27 +1,12 @@
 import { ActivityValue } from "@/models/ActivityValue";
 import { convertKgToTonnes } from "@/util/helpers";
-import {
-  Accordion,
-  Box,
-  Icon,
-  IconButton,
-  Table,
-  TagLabel,
-  Text,
-} from "@chakra-ui/react";
+import { Box, Icon, IconButton, Table, TagLabel, Text } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import React, { FC, useMemo } from "react";
 import { MdAdd, MdModeEditOutline, MdMoreVert } from "react-icons/md";
 import { FiTrash2 } from "react-icons/fi";
 import { ExtraField, findMethodology, Methodology } from "@/util/form-schema";
 import { Tag } from "@/components/ui/tag";
-import {
-  PopoverArrow,
-  PopoverBody,
-  PopoverContent,
-  PopoverRoot,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import {
   AccordionItem,
   AccordionItemContent,
@@ -30,6 +15,12 @@ import {
 } from "@/components/ui/accordion";
 import { useParams } from "next/navigation";
 import { REGIONALLOCALES } from "@/util/constants";
+import {
+  MenuContent,
+  MenuItem,
+  MenuRoot,
+  MenuTrigger,
+} from "@/components/ui/menu";
 
 interface IActivityGroup {
   activityData: ActivityValue[];
@@ -303,8 +294,8 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
                 </Table.Cell>
                 <Table.Cell>{convertKgToTonnes(activity?.co2eq)}</Table.Cell>
                 <Table.Cell>
-                  <PopoverRoot>
-                    <PopoverTrigger asChild>
+                  <MenuRoot>
+                    <MenuTrigger asChild>
                       <IconButton
                         aria-label="more-icon"
                         variant="ghost"
@@ -312,69 +303,71 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
                       >
                         <Icon as={MdMoreVert} size="lg" />
                       </IconButton>
-                    </PopoverTrigger>
-                    <PopoverContent
+                    </MenuTrigger>
+                    <MenuContent
                       w="auto"
                       borderRadius="8px"
                       shadow="2dp"
                       px="0"
                     >
-                      <PopoverBody p="0px">
-                        <Box
-                          p="16px"
-                          display="flex"
-                          alignItems="center"
-                          gap="16px"
-                          _hover={{
-                            bg: "content.link",
-                            cursor: "pointer",
-                          }}
-                          className="group"
-                          onClick={() => onEditActivity(activity)}
+                      <MenuItem
+                        value={t("update-activity")}
+                        valueText={t("update-activity")}
+                        p="16px"
+                        display="flex"
+                        alignItems="center"
+                        gap="16px"
+                        _hover={{
+                          bg: "content.link",
+                          cursor: "pointer",
+                        }}
+                        className="group"
+                        onClick={() => onEditActivity(activity)}
+                      >
+                        <Icon
+                          className="group-hover:text-white"
+                          color="interactive.control"
+                          as={MdModeEditOutline}
+                          h="24px"
+                          w="24px"
+                        />
+                        <Text
+                          className="group-hover:text-white"
+                          color="content.primary"
                         >
-                          <Icon
-                            className="group-hover:text-white"
-                            color="interactive.control"
-                            as={MdModeEditOutline}
-                            h="24px"
-                            w="24px"
-                          />
-                          <Text
-                            className="group-hover:text-white"
-                            color="content.primary"
-                          >
-                            {t("update-activity")}
-                          </Text>
-                        </Box>
-                        <Box
-                          p="16px"
-                          display="flex"
-                          alignItems="center"
-                          gap="16px"
-                          _hover={{
-                            bg: "content.link",
-                            cursor: "pointer",
-                          }}
-                          className="group"
-                          onClick={() => onDeleteActivity(activity)}
+                          {t("update-activity")}
+                        </Text>
+                      </MenuItem>
+                      <MenuItem
+                        value={t("delete-activity")}
+                        valueText={t("delete-activity")}
+                        p="16px"
+                        display="flex"
+                        alignItems="center"
+                        gap="16px"
+                        _hover={{
+                          bg: "content.link",
+                          cursor: "pointer",
+                        }}
+                        className="group"
+                        onClick={() => onDeleteActivity(activity)}
+                      >
+                        <Icon
+                          className="group-hover:text-white"
+                          color="sentiment.negativeDefault"
+                          as={FiTrash2}
+                          h="24px"
+                          w="24px"
+                        />
+                        <Text
+                          className="group-hover:text-white"
+                          color="content.primary"
                         >
-                          <Icon
-                            className="group-hover:text-white"
-                            color="sentiment.negativeDefault"
-                            as={FiTrash2}
-                            h="24px"
-                            w="24px"
-                          />
-                          <Text
-                            className="group-hover:text-white"
-                            color="content.primary"
-                          >
-                            {t("delete-activity")}
-                          </Text>
-                        </Box>
-                      </PopoverBody>
-                    </PopoverContent>
-                  </PopoverRoot>
+                          {t("delete-activity")}
+                        </Text>
+                      </MenuItem>
+                    </MenuContent>
+                  </MenuRoot>
                 </Table.Cell>
               </Table.Row>
             );

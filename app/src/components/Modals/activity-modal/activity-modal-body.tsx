@@ -6,7 +6,6 @@ import {
   HStack,
   Icon,
   Input,
-  SelectValueText,
   Spinner,
   Text,
   Textarea,
@@ -333,23 +332,43 @@ const ActivityModalBody = ({
                         w="full"
                       >
                         {f.units && (
-                          <NativeSelectRoot
-                            variant="subtle"
-                            {...register(`activity.${f.id}-unit` as any, {
+                          <Controller
+                            control={control}
+                            name={`activity.${f.id}-unit` as any}
+                            defaultValue=""
+                            rules={{
                               required:
                                 f.required === false
                                   ? false
                                   : t("option-required"),
-                            })}
-                          >
-                            <NativeSelectField placeholder={t("select-unit")}>
-                              {f.units?.map((item: string) => (
-                                <option key={item} value={item}>
-                                  {t(item)}
-                                </option>
-                              ))}
-                            </NativeSelectField>
-                          </NativeSelectRoot>
+                            }}
+                            render={({ field }) => {
+                              return (
+                                <NativeSelectRoot
+                                  variant="subtle"
+                                  {...field}
+                                  onChange={(e: any) => {
+                                    field.onChange(e.currentTarget.value);
+                                    setValue(
+                                      `activity.${f.id}-unit` as any,
+                                      e.target.value,
+                                    );
+                                  }}
+                                >
+                                  <NativeSelectField
+                                    value={field.value}
+                                    placeholder={t("select-unit")}
+                                  >
+                                    {f.units?.map((item: string) => (
+                                      <option key={item} value={item}>
+                                        {t(item)}
+                                      </option>
+                                    ))}
+                                  </NativeSelectField>
+                                </NativeSelectRoot>
+                              );
+                            }}
+                          />
                         )}
                       </FormattedNumberInput>
                       {(errors?.activity?.[f.id] as any) ? (
@@ -439,11 +458,18 @@ const ActivityModalBody = ({
                           <NativeSelectRoot
                             variant="subtle"
                             {...field}
-                            onChange={(e: any) =>
-                              field.onChange(e.target.value)
-                            }
+                            onChange={(e: any) => {
+                              field.onChange(e.target.value);
+                              setValue(
+                                `activity.${title}-unit` as any,
+                                e.target.value,
+                              );
+                            }}
                           >
-                            <NativeSelectField placeholder={t("select-unit")}>
+                            <NativeSelectField
+                              placeholder={t("select-unit")}
+                              value={field.value}
+                            >
                               {units?.map((item: string) => (
                                 <option key={item} value={item}>
                                   {t(item)}
@@ -518,6 +544,7 @@ const ActivityModalBody = ({
                         bgColor="base.light"
                       >
                         <NativeSelectField
+                          value={field.value}
                           placeholder={t("emissions-factor-type-placeholder")}
                         >
                           {emissionsFactorTypes.map(({ id, name }) => (

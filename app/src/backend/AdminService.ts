@@ -71,9 +71,7 @@ export default class AdminService {
           inventory.inventoryId,
           cityLocode,
         );
-        errors.push(
-          ...sourceErrors.map((error: any) => ({ locode: cityLocode, error })),
-        );
+        errors.push(...sourceErrors);
       }
     }
 

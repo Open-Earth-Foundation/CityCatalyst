@@ -86,7 +86,6 @@ export function SourceDrawer({
     }
     if (!!totalEmissions && totalEmissions !== "?") {
       converted = convertKgToTonnes(parseFloat(totalEmissions) * 1000);
-      debugger;
     }
     if (!converted) {
       return { number: totalEmissionsData ?? totalEmissions, unit: "" };

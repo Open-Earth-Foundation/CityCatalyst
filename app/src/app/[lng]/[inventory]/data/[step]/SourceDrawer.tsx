@@ -73,7 +73,6 @@ export function SourceDrawer({
   );
 
   const emissionsToBeIncluded = () => {
-    let number, unit;
     let converted;
     if (!!totalEmissionsData && totalEmissionsData !== "?") {
       converted = convertKgToTonnes(parseFloat(totalEmissionsData));
@@ -86,7 +85,8 @@ export function SourceDrawer({
       totalEmissions = "?";
     }
     if (!!totalEmissions && totalEmissions !== "?") {
-      converted = convertKgToTonnes(parseInt(totalEmissions));
+      converted = convertKgToTonnes(parseFloat(totalEmissions) * 1000);
+      debugger;
     }
     if (!converted) {
       return { number: totalEmissionsData ?? totalEmissions, unit: "" };

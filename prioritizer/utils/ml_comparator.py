@@ -4,6 +4,16 @@ from sklearn.preprocessing import StandardScaler
 import xgboost as xgb
 from pathlib import Path
 
+root_path = Path(__file__).resolve().parent.parent.parent
+
+# Load the scaler from the saved file
+with open(Path(root_path / "data" / "ml" / "scaler" / "scaler.pkl"), "rb") as f:
+    scaler = pickle.load(f)
+
+loaded_model = xgb.XGBClassifier()
+# Load hyperparameters and trained weights
+loaded_model.load_model(root_path / "data" / "ml" / "model" / "xgb_model.json")
+
 
 def ml_compare(city: dict, action_A: dict, action_B: dict) -> int:
     """
@@ -539,15 +549,6 @@ def ml_compare(city: dict, action_A: dict, action_B: dict) -> int:
         if not valid_cols:
             raise ValueError("None of the specified columns exist in the DataFrame.")
 
-        # Apply StandardScaler to selected numerical columns
-        scaler = StandardScaler()
-
-        root_path = Path(__file__).resolve().parent.parent.parent
-
-        # Load the scaler from the saved file
-        with open(Path(root_path / "data" / "ml" / "scaler" / "scaler.pkl"), "rb") as f:
-            scaler = pickle.load(f)
-
         # Scale the selected columns
         df_transformed[valid_cols] = scaler.transform(df_transformed[valid_cols])
 
@@ -581,11 +582,6 @@ def ml_compare(city: dict, action_A: dict, action_B: dict) -> int:
         Returns:
             int: The predicted label (1 for Action A, -1 for Action B).
         """
-        root_path = Path(__file__).resolve().parent.parent.parent
-
-        loaded_model = xgb.XGBClassifier()
-        # Load hyperparameters and trained weights
-        loaded_model.load_model(root_path / "data" / "ml" / "model" / "xgb_model.json")
 
         # Make a prediction using the model
         prediction = loaded_model.predict(df)

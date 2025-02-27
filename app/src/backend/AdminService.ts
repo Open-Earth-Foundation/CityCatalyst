@@ -1,11 +1,10 @@
 import { AppSession } from "@/lib/auth";
 import { db } from "@/models";
 import { logger } from "@/services/logger";
-import { InventoryTypeEnum } from "@/util/constants";
 import { Roles } from "@/util/types";
 import createHttpError from "http-errors";
 import { randomUUID } from "node:crypto";
-import DataSourceService, { ApplySourceResult } from "./DataSourceService";
+import DataSourceService from "./DataSourceService";
 import { City } from "@/models/City";
 import { groupBy } from "@/util/helpers";
 
@@ -13,8 +12,8 @@ export interface BulkInventoryProps {
   cityLocodes: string[]; // List of city locodes
   emails: string[]; // Comma separated list of emails to invite to the all of the created inventories
   years: number[]; // List of years to create inventories for (can be comma separated input, multiple select dropdown etc., so multiple years can be chosen)
-  scope: InventoryTypeEnum; // Scope selection (BASIC or BASIC+)
-  gwp: string; // GWP selection (AR5 or AR6)
+  scope: "gpc_basic" | "gpc_basic_plus"; // Scope selection (gpc_basic or gpc_basic_plus)
+  gwp: "AR5" | "AR6"; // GWP selection (AR5 or AR6)
 }
 
 export interface CreateBulkInventoriesResponse {

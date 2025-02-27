@@ -1,6 +1,7 @@
 import pickle
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
+import xgboost as xgb
 from pathlib import Path
 
 
@@ -65,12 +66,12 @@ def ml_compare(city: dict, action_A: dict, action_B: dict) -> int:
 
     # Build the DataFrame for comparison
     df = build_df(city, action_A, action_B)
-    print(df)
-    print(df.columns)
+    # print(df)
+    # print(df.columns)
 
     # print all the values for each column
-    for col in df.columns:
-        print(f"{col}: {df[col].values[0]}")
+    # for col in df.columns:
+    #     print(f"{col}: {df[col].values[0]}")
 
     # Converting the label is not needed here since we only do predictions
     # def convert_preferred_action_to_binary_labels(df):
@@ -552,6 +553,51 @@ def ml_compare(city: dict, action_A: dict, action_B: dict) -> int:
 
         return df_transformed
 
+    def prepare_final_features(df: pd.DataFrame) -> pd.DataFrame:
+        """
+        Prepare the final features for the ML model by applying all the necessary transformations.
+
+        Parameters:
+            df (pd.DataFrame): The input DataFrame.
+
+        Returns:
+            pd.DataFrame: The DataFrame with final features.
+        """
+        # Create local copy
+        df_copy = df.copy()
+
+        # Remove columns ActionA and ActionB
+        df_copy.drop(columns=["ActionA", "ActionB"], inplace=True)
+
+        return df_copy
+
+    def predict_xgb(df: pd.DataFrame) -> int:
+        """
+        Make a prediction based on the input DataFrame.
+
+        Parameters:
+            df (pd.DataFrame): The input DataFrame with transformed features.
+
+        Returns:
+            int: The predicted label (1 for Action A, -1 for Action B).
+        """
+        root_path = Path(__file__).resolve().parent.parent.parent
+
+        loaded_model = xgb.XGBClassifier()
+        # Load hyperparameters and trained weights
+        loaded_model.load_model(root_path / "data" / "ml" / "model" / "xgb_model.json")
+
+        # Make a prediction using the model
+        prediction = loaded_model.predict(df)
+
+        # XBBoost model returns 1 for Action A and 0 for Action B
+        # Convert the prediction to the expected output format (1 or -1)
+        if prediction == 1:
+            return 1
+        else:
+            return -1
+
+    # Prepare the data for ML comparison (feature engineering)
     df_transformed = prepare_emission_reduction_data(df)
     df_transformed = prepare_action_type_data(df_transformed)
     df_transformed = prepare_cost_investment_needed_data(df_transformed)
@@ -560,6 +606,8 @@ def ml_compare(city: dict, action_A: dict, action_B: dict) -> int:
     df_transformed = process_ccra_hazards_adaptation_effectiveness(df_transformed)
     df_transformed = prepare_co_benefits_data(df_transformed)
     df_transformed = prepare_biome_data(df_transformed)
+
+    # Scale numerical columns
     df_transformed = prepare_numerical_data(
         df_transformed,
         [
@@ -583,13 +631,19 @@ def ml_compare(city: dict, action_A: dict, action_B: dict) -> int:
             "CoBenefits_Diff_stakeholder_engagement",
         ],
     )
-    print(df_transformed.T)
+    # print(df_transformed.T)
 
-    return 1
+    # Final feature cleanup
+    df_transformed = prepare_final_features(df_transformed)
+
+    # Make a prediction with the model
+    prediction = predict_xgb(df_transformed)
+
+    return prediction
 
 
 if __name__ == "__main__":
-    # Example usage
+    # Calling it with test data
     city_data = {
         "locode": "BRCCI",
         "name": "Camaçari",

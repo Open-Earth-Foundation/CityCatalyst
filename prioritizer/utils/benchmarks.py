@@ -11,6 +11,7 @@ import json
 import concurrent.futures
 from prioritizer.prioritizer import quantitative_score, qualitative_score
 from prioritizer.utils.reading_writing_data import read_city_inventory, read_actions
+from prioritizer.utils.ml_comparator import ml_compare
 
 
 def load_data_from_folder(folder_path):
@@ -91,6 +92,67 @@ def get_accuracy_expert_vs_quanti(df: pd.DataFrame, actions: list) -> float:
             # If prediction is correct, add 1 to the score
             if predicted_label == row["PreferredAction"]:
                 score += 1
+        else:
+            # Add the missing action to the skipped list to keep track of them
+            if actionA_with_context is None:
+                skipped.append(actionA)
+            elif actionB_with_context is None:
+                skipped.append(actionB)
+            else:
+                skipped.append(actionA)
+                skipped.append(actionB)
+
+            print("Action not found. Probably removed from the action data.")
+            print("Skipping this comparison")
+
+    print(f"\nSkipped {len(skipped)} comparisons due to missing actions.")
+    print(f"Skipped actions: {set(skipped)}")
+
+    # Calculate accuracy
+    accuracy = score / len(df)
+    return accuracy
+
+
+def get_accuracy_expert_vs_ml(df: pd.DataFrame, actions: list) -> float:
+
+    skipped = []
+    score = 0
+    for _, row in df.iterrows():
+
+        # Read the city data for the comparison
+        city_data = read_city_inventory(row["CityLocode"])
+        actionA = row["ActionA"]
+        actionB = row["ActionB"]
+        preferred_action = row["PreferredAction"]
+
+        # Determine if ActionA or ActionB is preferred
+        if preferred_action == actionA:
+            preferred_action = 1
+        elif preferred_action == actionB:
+            preferred_action = -1
+        else:
+            # Throw error if the preferred action is not found in the comparison
+            raise ValueError("Preferred action not found in the comparison.")
+
+        # Get the actual actions object from the actionsID (filling in the context)
+        actionA_with_context = get_action_by_id(actions, actionA)
+        actionB_with_context = get_action_by_id(actions, actionB)
+
+        # Check if both actions were found
+        if actionA_with_context and actionB_with_context:
+
+            # Calculate the scoring based on the ML model
+            predicted_action = ml_compare(
+                city_data, actionA_with_context, actionB_with_context
+            )
+
+            # If prediction is correct, add 1 to the score
+            if predicted_action == preferred_action:
+                score += 1
+            else:
+                pass
+
+            # input("Press Enter to continue 2")
         else:
             # Add the missing action to the skipped list to keep track of them
             if actionA_with_context is None:
@@ -198,10 +260,14 @@ if __name__ == "__main__":
     accuracy_quanti = get_accuracy_expert_vs_quanti(df_all_comparisons_cleaned, actions)
     print(f"\nAccuracy for quantitative ranking is {accuracy_quanti}\n\n")
 
-    accuracy_quali = get_accuracy_expert_vs_quali(df_all_comparisons_cleaned, actions)
-    print(f"\nAccuracy for qualitative ranking is {accuracy_quali}\n\n")
+    accuracy_ml = get_accuracy_expert_vs_ml(df_all_comparisons_cleaned, actions)
+    print(f"\nAccuracy for ML ranking is {accuracy_ml}\n\n")
+
+    # accuracy_quali = get_accuracy_expert_vs_quali(df_all_comparisons_cleaned, actions)
+    # print(f"\nAccuracy for qualitative ranking is {accuracy_quali}\n\n")
 
     # Final print out to not get lost in all the intermediate print statements
-    print("Final result:")
-    print(f"\nAccuracy for quantitative ranking is {accuracy_quanti}\n\n")
-    print(f"\nAccuracy for qualitative ranking is {accuracy_quali}\n\n")
+    print("Final result:\n")
+    print(f"Accuracy for quantitative ranking is {accuracy_quanti}\n")
+    print(f"Accuracy for ML ranking is {accuracy_ml}\n")
+    # print(f"Accuracy for qualitative ranking is {accuracy_quali}\n")

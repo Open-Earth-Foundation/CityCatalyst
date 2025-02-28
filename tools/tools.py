@@ -114,6 +114,56 @@ def retriever_sub_action_tool(
     return docs_and_scores
 
 
+@tool
+def retriever_indicators_tool(
+    search_query: str,
+) -> Union[list[Tuple[Document, float]], str]:
+    """
+    Retrieve document chunks that provide indicators and guidance for tracking, monitoring,
+    and evaluating the implementation of a specific climate action.
+
+    The function enhances the input search query by appending key terms such as
+    "monitoring", "evaluation", "tracking indicators", and "implementation progress"
+    to guide the retrieval process.
+
+    **Input**:
+    - search_query (str): A concise query for a specific climate action.
+        * Example: "Indicators for renewable energy adoption"
+        * Example: "Tracking progress for urban tree planting initiatives"
+
+    **Output**:
+    - A list of tuples: [(document_text, relevance_score)]
+        * Each tuple contains a relevant document excerpt and its relevance score
+        * Relevance scores range from 0 (least relevant) to 1 (most relevant)
+
+    **Query Strategy**:
+    - Start with broad queries and progressively narrow down
+    """
+
+    print("retriever_indicators_tool")
+
+    vector_store = get_vectorstore(collection_name="all_docs_db_small_chunks")
+    if not vector_store:
+        return "Could not load vector store. Please ensure your vector DB is created."
+
+    # Augment the search query with additional keywords for tracking and evaluation
+    # enhanced_query = f"{search_query} monitoring evaluation tracking indicators implementation progress"
+
+    metadata_filter = {"indicators": {"$eq": True}}
+
+    print("search_query", search_query)
+    print("metadata_filter", metadata_filter)
+
+    docs_and_scores = vector_store.similarity_search_with_relevance_scores(
+        query=search_query,
+        k=5,
+        score_threshold=0.30,
+        filter=metadata_filter,  # Dynamically apply metadata filter
+    )
+
+    return docs_and_scores
+
+
 search_municipalities_tool = TavilySearchResults(
     max_results=3,
     search_depth="advanced",  # change between 'basic' for testing and 'advanced' for production

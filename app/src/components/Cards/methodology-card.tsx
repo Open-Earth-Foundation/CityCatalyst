@@ -70,9 +70,17 @@ const MethodologyCard: FC<MethodologyCardProps> = ({
     >
       <Box w="full" display="flex" justifyContent="space-between">
         <Checkbox
+          variant="subtle"
           disabled={isMethodologyDisabled}
           checked={isSelected}
           onChange={handleRadioChange}
+          css={{
+            borderRadius: "50% !important",
+            "& .chakra-checkbox__control": {
+              borderRadius: "50% !important",
+              background: "base.light",
+            },
+          }}
         />
         {isMethodologyDisabled ? (
           <Badge
@@ -80,7 +88,7 @@ const MethodologyCard: FC<MethodologyCardProps> = ({
             borderColor="border.neutral"
             py="4px"
             px="8px"
-            borderRadius="full"
+            borderRadius="16px"
             color={"content.secondary"}
             fontSize="body.sm"
             bg="base.light"

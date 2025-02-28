@@ -322,11 +322,8 @@ def filter_actions_by_biome(actions, city):
     # Keep actions that either:
     # 1. Don't have a biome field, or
     # 2. Have a biome that matches the city's biome
-    return [
-        action
-        for action in actions
-        if "biome" not in action or action["biome"] == city_biome
-    ]
+    return [action for action in actions if 
+            "Biome" not in action or action["Biome"] == city_biome]
 
 
 def main(locode: str):

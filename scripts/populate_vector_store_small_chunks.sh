@@ -535,5 +535,13 @@ python add_document_to_vectorstore.py \
   --metadata main_action=true \
   --metadata sub_actions=true
 
+echo "Adding indicator documents to the vector store..."
+python add_document_to_vectorstore.py \
+  --file_name Indicators.pdf \
+  --collection_name "$COLLECTION_NAME" \
+  --metadata main_action=false \
+  --metadata sub_actions=false \
+  --metadata indicators=true
+
 # Ensure clean exit
 echo "Vector store setup for "$COLLECTION_NAME" completed successfully."

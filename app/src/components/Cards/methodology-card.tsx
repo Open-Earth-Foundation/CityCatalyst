@@ -4,7 +4,6 @@ import React, { FC, useState } from "react";
 import type { Methodology } from "@/util/form-schema";
 import { toaster } from "../ui/toaster";
 import { Checkbox } from "@/components/ui/checkbox";
-import { bg } from "date-fns/locale";
 
 interface MethodologyCardProps {
   id: string;

@@ -190,3 +190,6 @@ files/*csv
 my_db.*
 
 temp/
+
+# Vector store
+vector_stores/*

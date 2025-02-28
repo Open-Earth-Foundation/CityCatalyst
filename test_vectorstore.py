@@ -1,4 +1,3 @@
-import sys
 from langchain_openai import OpenAIEmbeddings
 from langchain_chroma import Chroma
 from dotenv import load_dotenv
@@ -6,7 +5,9 @@ from pathlib import Path
 
 load_dotenv()
 
-PERSISTENT_DIRECTORY = Path(__file__).parent / "chroma_langchain_db"
+PERSISTENT_DIRECTORY = (
+    Path(__file__).parent / "vector_stores" / "all_docs_db_small_chunks"
+)
 
 print("\nLoading vector store\n")
 
@@ -17,31 +18,26 @@ embeddings = OpenAIEmbeddings(
 
 # Create Chroma vector store
 vector_store = Chroma(
-    collection_name="chroma_db",
+    collection_name="all_docs_db_small_chunks",
     embedding_function=embeddings,
     persist_directory=str(PERSISTENT_DIRECTORY),
 )
 
-print(vector_store.get(ids="6673ca23-05f8-4bf6-84ab-ab014eaf7388"))
-
-if vector_store.get()["documents"]:
-    print(
-        f"\nVector Store loaded with: {len(vector_store.get()['documents'])} documents\n"
-    )
+if vector_store.get()["ids"]:
+    print("Vector store contains data, proceeding with retrieval.")
 else:
-    print(f"\nVector Store is empty. Ending script.\n")
-    sys.exit()
+    print("Warning: Vector store is empty or the collection name is incorrect.")
 
 
-result = vector_store.similarity_search(
-    "Brazil would welcome developed countries bringing their net zero commitments to either 2040 or 2045",
-    k=2,
-)
+enhanced_query = "Monitoramento, avaliação, rastreamento, indicadores"
+
+metadata_filter = {"indicators": {"$eq": True}}
 
 docs_and_scores = vector_store.similarity_search_with_relevance_scores(
-    query="Climate",
-    k=4,  # number of documents to retrieve
-    score_threshold=0.00,  # minimum similarity score
+    query=enhanced_query,
+    k=5,
+    score_threshold=0.00,
+    filter=metadata_filter,  # Dynamically apply metadata filter
 )
 
 # print(result)

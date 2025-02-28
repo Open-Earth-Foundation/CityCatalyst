@@ -21,7 +21,7 @@ Follow these guidelines carefully to complete the task:
 
 1. Understand the details of climate action (main action).
 2. Understand the details of the city you are working on.
-3. Review the national and city-level climate strategies and the main action description.
+3. Review the introduction for the climate action implementation plan.
 4. Review the sub-actions for implementing the climate action.
 5. Use the provided tools to retrieve municipal institutions for the implementation of the specific climate action for the given city.
 Ensure that the retrieved information is relevant to the action and the city.

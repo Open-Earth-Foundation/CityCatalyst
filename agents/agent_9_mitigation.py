@@ -21,7 +21,7 @@ Follow these guidelines carefully to complete the task:
 
 1. Understand the details of climate action that you are provided with.
 2. Understand the details of the city that you are provided with.
-3. Review the national and city-level climate strategies and the main action description you are provided with.
+3. Review the introduction for the climate action implementation plan.
 4. Inspect the provided additional context to climate mitigation sectors.
 5. Based on the provided information, list all mitigation sectors that are relevant and addressed by the climate action. Include a brief description of how they are addressed by the climate action.
 **Important**: It is possible, that a climate action does not address any of the listed mitigation sectors. This can happen for example, when the climate action primarily aims at reducing climate risks (hazards). In this case, state this fact briefly.

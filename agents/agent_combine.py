@@ -2,6 +2,7 @@ from state.agent_state import AgentState
 from pathlib import Path
 from datetime import datetime
 from styles.styles import styles_block
+import markdown
 
 OUTPUT_PATH = Path(__file__).parent.parent / "data" / "output"
 
@@ -47,6 +48,9 @@ def custom_agent_combine(state: AgentState) -> AgentState:
     # Store the combined Markdown response under a new key
     result_state["response_agent_combine"] = combined_markdown
 
+    # Convert Markdown to HTML
+    html_content = markdown.markdown(combined_markdown, extensions=["extra"])
+
     # File output
     OUTPUT_PATH.mkdir(parents=True, exist_ok=True)
 
@@ -56,10 +60,17 @@ def custom_agent_combine(state: AgentState) -> AgentState:
     file_name = (
         f"{current_time}_{city_locode}_{climate_action_id}_implementation_plan.md"
     )
+    file_name_html = (
+        f"{current_time}_{city_locode}_{climate_action_id}_implementation_plan.html"
+    )
 
-    # Write the combined Markdown text to a local file (e.g. "combined_responses.md")
+    # Write the combined Markdown text to a local file
     with open(OUTPUT_PATH / file_name, "w", encoding="utf-8") as md_file:
         md_file.write(combined_markdown)
+
+    # Write the html to a local file
+    with open(OUTPUT_PATH / file_name_html, "w", encoding="utf-8") as md_file:
+        md_file.write(html_content)
 
     print("Outputs finalized\n")
 

@@ -31,8 +31,8 @@ Follow these guidlines carefully to complete the task:
 
 1. Understand the details of the climate action (main action).
 2. Understand the details of the city you are working on.
-3. Review the national and city-level climate strategies and the climate action (main action) description.
-4. Use the provided tools to retrieve relevant documents about detailed steps for implementing the climate action.
+3. Review the introduction for the climate action implementation plan.
+4. Use the provided retriever_sub_action_tool to retrieve relevant documents about detailed steps for implementing the climate action.
 5. Create a list of actionable sub-actions for implementing the climate action. The sub-actions should consider dependencies and be in chronological order if possible.
 **Important**: 
     - When using information from the retrieved documents, include the sources of the retrieved document in the output using the format: `[source: <document title and page>]`

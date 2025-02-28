@@ -40,8 +40,9 @@ Follow these guidelines carefully to complete the task:
 4. Use the `retriever_main_action_tool` to retrieve relevant documents for the specific climate action (main action) and related background information.
     - Ensure that the documents retrieved are relevant to the climate action (main action) and the city you are working on.
 5. Create a concise introduction for the climate action implementation plan incorporating the retrieved documents. 
+**Important**: 
     - When using information from the retrieved documents, include the sources of the retrieved document in the output using the format: `[source: <document title and page>]`
-    **Important**: If relevant information is unavailable from retrieved documents, explicitly state the lack of data rather than making assumptions. 
+    - If you can not retrieve relevant information for a specific part, state this fact briefly. 
 </task>
 
 <tools>

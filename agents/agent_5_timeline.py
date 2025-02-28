@@ -22,7 +22,7 @@ Follow these guidelines carefully to complete the task:
 
 1. Understand the details of climate action that you are provided with.
 2. Understand the details of the city that you are provided with.
-3. Review the national and city-level climate strategies and the main action description you are provided with.
+3. Review the introduction for the climate action implementation plan.
 4. Review the sub-actions for implementing the climate action that you are provided with.
 5. Review the milestones for the implementation of the climate action that you are provided with.
 6. Based on the main action, sub-actions, and the milestones for the implementation of the climate action for the given city, create a timeline for the implementation of the climate action.

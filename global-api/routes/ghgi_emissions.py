@@ -150,6 +150,7 @@ def db_query(datasource_name, spatial_granularity, actor_id, gpc_reference_numbe
 						'gas_name' , e.gas_name,
 						'emissions_value', e.emissions_value,
 						'emissionfactor_value', ef.emissionfactor_value,
+						'emissionfactor_datasource', ef.datasource_name,
 						'activity_value', e.activity_value::numeric,
 						'gwp', COALESCE(gwp.{gwp},0),
 						'emissions_value_100yr', COALESCE(e.emissions_value * gwp.{gwp},0),

@@ -67,3 +67,34 @@ def majority_vote_compare(city: dict, action_A: dict, action_B: dict) -> int:
 # winner_quant -1
 # ml_winner 1
 # final_winner -1
+
+
+def consensus_compare(city: dict, action_A: dict, action_B: dict) -> int:
+    """
+    Compares two actions using a weighted decision approach:
+    - If winner_quant and ml_winner agree, we take that action.
+    - If they disagree, winner_quali decides.
+    """
+
+    # Get the quantitative scores for both actions
+    score_A = quantitative_score(city, action_A)
+    score_B = quantitative_score(city, action_B)
+
+    # Assign winner_quant based on score comparison
+    winner_quant = 0 if score_A == score_B else 1 if score_A > score_B else -1
+
+    # Get the ML winner
+    ml_winner = ml_compare(city, action_A, action_B)
+
+    # If winner_quant and ml_winner agree, return their decision
+    if winner_quant == ml_winner:
+        return winner_quant
+
+    else:
+        # Get the winner of qualitative score (always -1 or 1)
+        quali_score = qualitative_score(city, [action_A, action_B])
+        winner_quali_action_id = quali_score.actions[0].action_id
+        winner_quali = 1 if winner_quali_action_id == action_A["ActionID"] else -1
+
+        # If there is a disagreement, winner_quali decides
+        return winner_quali

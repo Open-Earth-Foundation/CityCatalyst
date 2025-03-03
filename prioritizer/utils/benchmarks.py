@@ -12,7 +12,7 @@ import concurrent.futures
 from prioritizer.prioritizer import quantitative_score, qualitative_score
 from prioritizer.utils.reading_writing_data import read_city_inventory, read_actions
 from prioritizer.utils.ml_comparator import ml_compare
-from prioritizer.utils.majority_vote_comparator import majority_vote_compare
+from prioritizer.utils.various_comparators import majority_vote_compare
 
 
 def load_data_from_folder(folder_path):
@@ -145,6 +145,11 @@ def get_accuracy_expert_vs_ml(df: pd.DataFrame, actions: list) -> float:
         actionA = row["ActionA"]
         actionB = row["ActionB"]
         preferred_action = row["PreferredAction"]
+
+        print(f"\nCity: {row['CityLocode']}")
+        print(f"Action A: {actionA}")
+        print(f"Action B: {actionB}")
+        print(f"Preferred action: {preferred_action}")
 
         # Determine if ActionA or ActionB is preferred
         if preferred_action == actionA:
@@ -333,6 +338,7 @@ if __name__ == "__main__":
     folder_path = (
         Path(__file__).parent.parent.parent / "data" / "expert_labeled_actions"
     )
+    parent_dir = Path(__file__).parent.parent.parent
 
     # Load all comparison data from the folder
     df_all_comparisons = load_data_from_folder(folder_path)
@@ -340,12 +346,27 @@ if __name__ == "__main__":
     print(df_all_comparisons.head())
     print(len(df_all_comparisons))
 
-    df_all_comparisons_cleaned = remove_irrelevant_rows(
-        df_all_comparisons, remove_unsure=True
-    )
+    saved_indexes = pd.read_csv(
+        parent_dir / "data" / "ml" / "indexes.csv", header=None
+    ).squeeze("columns")
 
-    print(df_all_comparisons_cleaned.head())
+    print(saved_indexes)
+
+    # Ensure correct dtype match with original index
+    # saved_indexes = saved_indexes.astype(X_test.index.dtype)
+
+    # Apply the same cut again
+    df_all_comparisons_cleaned = df_all_comparisons.loc[saved_indexes]
+
+    # df_all_comparisons_cleaned = remove_irrelevant_rows(
+    #     df_all_comparisons, remove_unsure=True
+    # )
+
+    print(df_all_comparisons_cleaned.head(50))
+    print(df_all_comparisons_cleaned.tail(50))
     print(len(df_all_comparisons_cleaned))
+
+    input("Press Enter to continue")
 
     actions = read_actions()
 

@@ -29,8 +29,8 @@ def return_prompt(action, city):
             - Based on the rules, evaluate the top 20 actions provided.
             - Consider both qualitative and quantitative aspects of the actions.
             - Remember that data is provided in the order of importance and you should consider emissions and sectors first the 
-            - Rank all 20 actions.
-            - Provide a detailed explanation for why each action was prioritized.
+            - Rank all 2 actions.
+            - Do not provide any extra explanation
 
             ### Action Data (Top 20 Actions):
             {action}
@@ -41,3 +41,7 @@ def return_prompt(action, city):
             RETURN ALL ACTIONS RANKED BY PRIORITY.
             """
     return prompt
+
+
+# - Rank all 20 actions.
+# - Provide a detailed explanation for why each action was prioritized.

@@ -15,22 +15,15 @@ import { Overline } from "@/components/Texts/Overline";
 interface SourceDrawerActivityTableProps {
   activities: DataSourceActivityDataRecord[];
   t: TFunction;
-  sectorId: string | undefined;
 }
 
 export function SourceDrawerActivityTable({
   activities,
   t,
-  sectorId,
 }: SourceDrawerActivityTableProps) {
-  const getTotalEmissions = () => {
-    const emissions = activities.reduce((acc, activity) => {
-      return (
-        acc +
-        activity.gases.reduce((acc, gas) => {
-          return acc + gas.emissions_value_100yr;
-        }, 0)
-      );
+  const getTotalEmissions = (activity: DataSourceActivityDataRecord) => {
+    const emissions = activity.gases.reduce((acc, gas) => {
+      return acc + gas.emissions_value_100yr;
     }, 0);
     return convertKgToTonnes(emissions);
   };
@@ -57,7 +50,7 @@ export function SourceDrawerActivityTable({
                       .map((e) => t(e))
                       .join(" > ")}
                 </BodyMedium>
-                <TitleSmall>{`${t("total")} ${getTotalEmissions()}`}</TitleSmall>
+                <TitleSmall>{`${t("total")} ${getTotalEmissions(activity)}`}</TitleSmall>
               </HStack>
             </AccordionItemTrigger>
             <AccordionItemContent>

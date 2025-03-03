@@ -6,6 +6,7 @@ import createHttpError from "http-errors";
 import Decimal from "decimal.js";
 import { decimalToBigInt } from "@/util/big_int";
 import type { SubSector } from "@/models/SubSector";
+import { DataSourceActivityDataRecord } from "@/app/[lng]/[inventory]/data/[step]/types";
 
 const EARTH_LOCATION = "EARTH";
 
@@ -125,27 +126,11 @@ export default class DataSourceService {
     inventory: Inventory,
     scaleFactor: number = 1.0,
   ): Promise<string | boolean> {
-    const data = await DataSourceService.retrieveGlobalAPISource(
-      source,
-      inventory,
-    );
-    if (typeof data === "string") {
-      return data;
-    }
-
-    const emissions = data.totals.emissions;
-    let co2eq, co2Amount, n2oAmount, ch4Amount: Decimal;
-
-    if (scaleFactor !== 1.0) {
-      co2eq = new Decimal(emissions.co2eq_100yr).times(scaleFactor);
-      co2Amount = new Decimal(emissions.co2_mass).times(scaleFactor);
-      n2oAmount = new Decimal(emissions.n2o_mass).times(scaleFactor);
-      ch4Amount = new Decimal(emissions.ch4_mass).times(scaleFactor);
-    } else {
-      co2eq = new Decimal(emissions.co2eq_100yr);
-      co2Amount = new Decimal(emissions.co2_mass);
-      n2oAmount = new Decimal(emissions.n2o_mass);
-      ch4Amount = new Decimal(emissions.ch4_mass);
+    // TODO adjust into if/ else statement once global_api_activity_data is implemented (then we will need to check for an ActivityValue with a connected source as well for collisions)
+    if (source.retrievalMethod === "global_api_activity_data") {
+      throw new createHttpError.BadRequest(
+        "Data source of retrieval method global_api_activity_data, not yet supported",
+      );
     }
 
     let gpcReferenceNumber: string | undefined;
@@ -181,6 +166,34 @@ export default class DataSourceService {
       );
     }
 
+    // check for another already connected data source with the same GPC refno to prevent overwriting data or surplus emissions
+    const existingInventoryValue = await db.models.InventoryValue.findOne({
+      where: {
+        gpcReferenceNumber,
+        inventoryId: inventory.inventoryId,
+      },
+    });
+    if (existingInventoryValue) {
+      // TODO do we need a "force" parameter that overrides this check and deletes the existing value?
+      throw new createHttpError.BadRequest(
+        "Inventory already has a value for GPC refno " + gpcReferenceNumber,
+      );
+    }
+
+    const data = await DataSourceService.retrieveGlobalAPISource(
+      source,
+      inventory,
+    );
+    if (typeof data === "string") {
+      return data; // this is an error/ validation failure message and handled at the callsite
+    }
+
+    const emissions = data.totals.emissions;
+    const co2eq = new Decimal(emissions.co2eq_100yr).times(scaleFactor);
+    const co2Amount = new Decimal(emissions.co2_mass).times(scaleFactor);
+    const n2oAmount = new Decimal(emissions.n2o_mass).times(scaleFactor);
+    const ch4Amount = new Decimal(emissions.ch4_mass).times(scaleFactor);
+
     // TODO what to do with existing InventoryValues and GasValues?
     const inventoryValue = await db.models.InventoryValue.create({
       datasourceId: source.datasourceId,
@@ -193,7 +206,13 @@ export default class DataSourceService {
       sectorId: subSector.sectorId,
       gpcReferenceNumber,
     });
-
+    if (data.records) {
+      await DataSourceService.saveActivityValues({
+        inventoryValueId: inventoryValue.id,
+        records: data.records,
+        gpcReferenceNumber,
+      });
+    }
     // store values for co2, ch4, n2o separately for accounting and editing
     await db.models.GasValue.create({
       id: randomUUID(),
@@ -215,5 +234,73 @@ export default class DataSourceService {
     });
 
     return true;
+  }
+
+  private static async saveActivityValue({
+    inventoryValueId,
+    activity,
+    gpcReferenceNumber,
+  }: {
+    inventoryValueId: string;
+    activity: DataSourceActivityDataRecord;
+    gpcReferenceNumber: string | undefined;
+  }) {
+    const co2eq = activity.gases.reduce(
+      (sum, gas) => sum.plus(new Decimal(gas.emissions_value_100yr)),
+      new Decimal(0),
+    );
+
+    const activityValue = await db.models.ActivityValue.create({
+      id: randomUUID(),
+      inventoryValueId,
+      co2eq: BigInt(decimalToBigInt(co2eq)),
+      co2eqYears: 100,
+      metadata: {
+        activityId: activity.activity_name + "-activity",
+        ...activity.activity_subcategory_type,
+      },
+    });
+    const emissionsFactors = activity.gases.map((gas) => ({
+      id: randomUUID(),
+      gas: gas.gas_name,
+      gpcReferenceNumber,
+      emissionsPerActivity: gas.emissionfactor_value,
+      units: activity.activity_units,
+    }));
+
+    const createdEmissionsFactors = await db.models.EmissionsFactor.bulkCreate(
+      emissionsFactors,
+      { returning: true },
+    );
+
+    const gasValues = activity.gases.map((gas, index) => ({
+      id: randomUUID(),
+      activityValueId: activityValue.id,
+      gas: gas.gas_name,
+      gasAmount: BigInt(Math.trunc(gas.emissions_value)),
+      emissionsFactorId: createdEmissionsFactors[index].id,
+    }));
+
+    await db.models.GasValue.bulkCreate(gasValues);
+  }
+
+  private static async saveActivityValues({
+    inventoryValueId,
+    records,
+    gpcReferenceNumber,
+  }: {
+    inventoryValueId: string;
+    records: DataSourceActivityDataRecord[];
+    gpcReferenceNumber: string | undefined;
+  }) {
+    await Promise.all(
+      records.map((activity) =>
+        DataSourceService.saveActivityValue({
+          activity,
+          inventoryValueId,
+          gpcReferenceNumber,
+        }),
+      ),
+    );
   }
 }

@@ -1,21 +1,19 @@
 "use client";
-import {
-  Accordion,
-  AccordionButton,
-  AccordionIcon,
-  AccordionItem,
-  AccordionPanel,
-  Box,
-  Card,
-  Heading,
-  Text,
-} from "@chakra-ui/react";
+import { Box, Card, Heading, Text } from "@chakra-ui/react";
 
 import React, { useState } from "react";
 import { format } from "date-fns";
 import { de, enUS, es, fr, it, pt } from "date-fns/locale";
 import { api } from "@/services/api";
 import { useRouter } from "next/navigation";
+import { TFunction } from "i18next";
+
+import {
+  AccordionItem,
+  AccordionItemContent,
+  AccordionItemTrigger,
+  AccordionRoot,
+} from "@/components/ui/accordion";
 
 const localesMap: Record<string, any> = {
   en: enUS,
@@ -33,6 +31,7 @@ function YearCard({
   cityId,
   lastUpdate,
   lng,
+  t,
 }: {
   isActive: boolean;
   cityId: string;
@@ -40,6 +39,7 @@ function YearCard({
   lastUpdate: Date;
   inventoryId: string;
   lng: string;
+  t: TFunction;
 }) {
   const [setUserInfo] = api.useSetUserInfoMutation();
   const router = useRouter();
@@ -50,7 +50,7 @@ function YearCard({
   };
 
   return (
-    <Card
+    <Card.Root
       onClick={onClick}
       key={year}
       className="flex flex-row h-[120px] duration-300 cursor-pointer items-center px-4 gap-4 shadow-none"
@@ -82,13 +82,13 @@ function YearCard({
           lineHeight="20"
           letterSpacing="wide"
         >
-          Last Update:{" "}
+          {t("last-update")}:{" "}
           {format(new Date(lastUpdate), "dd/MM/yyyy", {
             locale: localesMap[lng],
           })}
         </Text>
       </Box>
-    </Card>
+    </Card.Root>
   );
 }
 
@@ -103,7 +103,7 @@ export function YearSelectorCard({
   cityId: string;
   currentInventoryId: string | null;
   lng: string;
-  t: Function;
+  t: TFunction;
 }) {
   const [isAccordionOpen, setAccordionOpen] = useState(false);
   const toggleAccordion = () => setAccordionOpen(!isAccordionOpen);
@@ -124,6 +124,7 @@ export function YearSelectorCard({
             year={year.year}
             lastUpdate={year.lastUpdate}
             lng={lng}
+            t={t}
           />
         ))}
       </Box>
@@ -131,13 +132,14 @@ export function YearSelectorCard({
         /*if more than 4*/
         inventories.length > 4 && (
           <Box className="w-full items-center justify-center">
-            <Accordion border="none" allowToggle w="full">
+            <AccordionRoot border="none" collapsible w="full">
               <AccordionItem
+                value=""
                 backgroundColor="transparent"
                 padding={0}
                 border="none"
               >
-                <AccordionPanel padding={0}>
+                <AccordionItemContent padding={0}>
                   <Box className="grid grid-cols-4 gap-4">
                     {inventories.slice(4).map((year, i) => (
                       <YearCard
@@ -148,11 +150,12 @@ export function YearSelectorCard({
                         year={year.year}
                         lastUpdate={year.lastUpdate}
                         lng={lng}
+                        t={t}
                       />
                     ))}
                   </Box>
-                </AccordionPanel>
-                <AccordionButton
+                </AccordionItemContent>
+                <AccordionItemTrigger
                   onClick={toggleAccordion}
                   className="flex justify-center"
                   background="none"
@@ -169,10 +172,9 @@ export function YearSelectorCard({
                   >
                     {isAccordionOpen ? t("view-less") : t("view-more")}
                   </Text>
-                  <AccordionIcon h={7} w={7} />
-                </AccordionButton>
+                </AccordionItemTrigger>
               </AccordionItem>
-            </Accordion>
+            </AccordionRoot>
           </Box>
         )
       }

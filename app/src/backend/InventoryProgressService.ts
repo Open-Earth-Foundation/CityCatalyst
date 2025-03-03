@@ -8,6 +8,7 @@ import * as process from "node:process";
 import {
   getScopesForInventoryAndSector,
   getSectorsForInventory,
+  SECTORS,
 } from "@/util/constants";
 import { InventoryTypeEnum } from "@/util/enums";
 
@@ -70,6 +71,7 @@ export default class InventoryProgressService {
               ) {
                 return true;
               }
+
               const lastDigit = parseInt(
                 subCategory.referenceNumber?.split(".")[2] as string,
               );
@@ -84,13 +86,37 @@ export default class InventoryProgressService {
             }),
         })),
       }));
+
     const sectorTotals: Record<string, number> = filteredOutSectors.reduce(
       (acc, sector) => {
         const subCategoryCount = sector.subSectors.reduce(
-          (count, subSector) => count + subSector.subCategories.length,
+          (count, subSector) => {
+            const possibleScopesForInventoryType =
+              getScopesForInventoryAndSector(
+                inventory.inventoryType as InventoryTypeEnum,
+                sector.referenceNumber!,
+              );
+            const subCategoryCount = subSector.subCategories.filter(
+              (subcategory) => {
+                const referenceNumber = subcategory.referenceNumber as string;
+                const parts = referenceNumber?.split(".");
+                const lastItem =
+                  parts && parts.length > 0
+                    ? parts[parts.length - 1]
+                    : undefined;
+                return possibleScopesForInventoryType.includes(
+                  parseInt(lastItem as string),
+                );
+              },
+            ).length;
+
+            return count + subCategoryCount;
+          },
           0,
-        );
-        acc[sector.sectorId] = ["I", "II", "III"].includes(sector.sectorName!)
+        ); // the issue with this is that it is not taking into account the inventory type
+        acc[sector.sectorId] = ["I", "II", "III"].includes(
+          sector.referenceNumber!,
+        )
           ? subCategoryCount
           : sector.subSectors.length;
         return acc;
@@ -106,9 +132,7 @@ export default class InventoryProgressService {
       if (inventoryValues) {
         sectorCounts = inventoryValues.reduce(
           (acc, inventoryValue) => {
-            const sourceType = inventoryValue.dataSource?.sourceType;
-
-            if (sourceType === "third_party") {
+            if (inventoryValue.dataSource) {
               acc.thirdParty++;
             } else {
               acc.uploaded++;
@@ -122,10 +146,21 @@ export default class InventoryProgressService {
       // add completed field to subsectors if there is a value for it
       const subSectors = sector.subSectors.map((subSector) => {
         let completed = false;
-        let totalCount =
-          subSector.subCategories.length > 0
-            ? subSector.subCategories.length
-            : 1; // for sectors IV and V there are no subcategories. We use 1 here so that the progress doesn't come back as full when it's empty
+        const subCategoryCount =
+          subSector.referenceNumber?.includes("IV") ||
+          subSector.referenceNumber?.includes("V")
+            ? 1
+            : subSector.subCategories.length;
+        const inventoryTypeSubCategoryCount =
+          SECTORS.find(
+            (sectorConstant) =>
+              sectorConstant.referenceNumber === sector.referenceNumber,
+          )?.inventoryTypes[inventory.inventoryType as InventoryTypeEnum]
+            ?.scopes.length ?? 1;
+        let totalCount = Math.min(
+          subCategoryCount,
+          inventoryTypeSubCategoryCount,
+        ); // TODO remove this when scope 3 is added back for SECTOR 1 and 2 in BASIC+;
         let completedCount = 0;
         if (inventoryValues?.length > 0) {
           completedCount = inventoryValues.filter(

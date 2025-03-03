@@ -2,8 +2,8 @@
 
 import { useTranslation } from "@/i18n/client";
 import { useAppSelector } from "@/lib/hooks";
-import { ArrowForwardIcon } from "@chakra-ui/icons";
-import { Box, Button, Card, Flex, Heading, Text } from "@chakra-ui/react";
+import { MdArrowForward } from "react-icons/md";
+import { Box, Button, Heading, Text } from "@chakra-ui/react";
 import NextLink from "next/link";
 import { Trans } from "react-i18next/TransWithoutContext";
 import { logger } from "@/services/logger";
@@ -58,14 +58,9 @@ export default function OnboardingDone({
           </Button>
         </NextLink>
         <NextLink href={`/${inventory}`} passHref legacyBehavior>
-          <Button
-            as="a"
-            h={16}
-            px={6}
-            rightIcon={<ArrowForwardIcon boxSize={6} />}
-            data-testid="check-dashboard"
-          >
+          <Button as="a" h={16} px={6} data-testid="check-dashboard">
             {t("check-dashboard")}
+            <MdArrowForward width="24px" height="24px" />
           </Button>
         </NextLink>
       </Box>

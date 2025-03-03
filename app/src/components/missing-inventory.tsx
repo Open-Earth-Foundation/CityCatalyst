@@ -1,11 +1,16 @@
 import { Box, Link, Text } from "@chakra-ui/layout";
 import Image from "next/image";
-import { Button, CircularProgress, Heading } from "@chakra-ui/react";
-import { ArrowForwardIcon } from "@chakra-ui/icons";
+import { Heading } from "@chakra-ui/react";
 import React, { useEffect } from "react";
 import { useTranslation } from "@/i18n/client";
 import { useRouter } from "next/navigation";
 import { api } from "@/services/api";
+import { MdArrowForward } from "react-icons/md";
+import { Button } from "@/components/ui/button";
+import {
+  ProgressCircleRing,
+  ProgressCircleRoot,
+} from "@/components/ui/progress-circle";
 
 const MissingInventory = ({ lng }: { lng: string }) => {
   const { data: userInfo, isLoading: isUserInfoLoading } =
@@ -14,7 +19,7 @@ const MissingInventory = ({ lng }: { lng: string }) => {
   const router = useRouter();
   useEffect(() => {
     if (!isUserInfoLoading && !userInfo?.defaultInventoryId) {
-      router.push("onboarding");
+      router.push("/onboarding");
     }
   }, [isUserInfoLoading, userInfo, router]);
 
@@ -61,7 +66,7 @@ const MissingInventory = ({ lng }: { lng: string }) => {
               className="underline text-nowrap"
               fontWeight="semibold"
               color="content.link"
-              href="mailto:greta@openearth.com, ux@openearth.com"
+              href={"mailto://" + process.env.NEXT_PUBLIC_SUPPORT_EMAILS}
             >
               {t("please_contact_us")}
             </Link>{" "}
@@ -71,17 +76,16 @@ const MissingInventory = ({ lng }: { lng: string }) => {
               router.push(
                 userInfo?.defaultInventoryId
                   ? `/${userInfo?.defaultInventoryId}`
-                  : "onboarding",
+                  : "/onboarding",
               )
             }
             gap="8px"
             h="48px"
             px="24px"
             fontSize="body.md"
-            isLoading={isUserInfoLoading}
-            rightIcon={<ArrowForwardIcon />}
+            loading={isUserInfoLoading}
           >
-            {t("goto-dashboard")}
+            <MdArrowForward /> {t("goto-dashboard")}
           </Button>
         </Box>
       </Box>
@@ -93,7 +97,9 @@ const MissingInventory = ({ lng }: { lng: string }) => {
       justifyContent="center"
       className="flex w-full relative h-[100vh] z-10"
     >
-      <CircularProgress isIndeterminate />
+      <ProgressCircleRoot value={null} size="sm">
+        <ProgressCircleRing cap="round" />
+      </ProgressCircleRoot>
     </Box>
   );
 };

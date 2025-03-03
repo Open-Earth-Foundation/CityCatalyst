@@ -1,6 +1,7 @@
 "use client";
 
 import { NavigationBar } from "@/components/navigation-bar";
+import { Toaster } from "@/components/ui/toaster";
 import { Box } from "@chakra-ui/react";
 
 export default function DataLayout({
@@ -13,6 +14,7 @@ export default function DataLayout({
   return (
     <Box className="h-full flex flex-col" bg="background.backgroundLight">
       <NavigationBar lng={lng} isPublic={true} />
+      <Toaster />
       <div className="w-full h-full">{children}</div>
     </Box>
   );

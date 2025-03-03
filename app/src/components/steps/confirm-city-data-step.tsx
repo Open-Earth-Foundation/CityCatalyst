@@ -26,7 +26,7 @@ export default function ConfirmStep({
 }) {
   return (
     <Box w="full">
-      <Box display="flex" flexDir="column" gap="24px">
+      <Box display="flex" flexDir="column" gap="24px" mb={6}>
         <Heading data-testId="confirm-city-data-heading" size="lg">
           {t("confirm-heading")}
         </Heading>
@@ -35,7 +35,7 @@ export default function ConfirmStep({
         </Text>
       </Box>
       <Box w="full">
-        <Card
+        <Card.Root
           px={6}
           py={8}
           shadow="none"
@@ -252,7 +252,7 @@ export default function ConfirmStep({
           <Box w="full">
             <CityMap locode={locode} height={400} width={450} />
           </Box>
-        </Card>
+        </Card.Root>
       </Box>
     </Box>
   );

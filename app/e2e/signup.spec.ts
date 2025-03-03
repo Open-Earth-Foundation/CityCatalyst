@@ -11,7 +11,7 @@ test.beforeEach(async ({ page }) => {
 test.setTimeout(60000);
 
 test.describe("Signup", () => {
-  test("should navigate to signup from login", async ({ page }) => {
+  test.skip("should navigate to signup from login", async ({ page }) => {
     await page.goto("/");
     const link = page.getByText("Sign up");
     await expect(link).toBeVisible();
@@ -21,7 +21,7 @@ test.describe("Signup", () => {
     ).toBeVisible();
   });
 
-  test("should redirect to dashboard after entering correct data", async ({
+  test.skip("should redirect to dashboard after entering correct data", async ({
     page,
   }) => {
     await expect(

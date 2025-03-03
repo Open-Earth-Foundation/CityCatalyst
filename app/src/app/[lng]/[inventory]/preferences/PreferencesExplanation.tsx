@@ -14,7 +14,7 @@ export default function PreferencesExplanation({ t }: { t: TFunction }) {
           fontWeight="semibold"
           lineHeight="24"
           my={4}
-          textColor={"blue"}
+          color="blue"
         >
           {t("city-inventory-preferences").toUpperCase()}
         </Text>

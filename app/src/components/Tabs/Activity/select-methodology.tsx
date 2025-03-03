@@ -65,7 +65,7 @@ const SelectMethodology = ({
         >
           {t("select-methodology")}
         </Text>
-        <SimpleGrid minChildWidth="250px" spacing={4}>
+        <SimpleGrid minChildWidth="250px" gap={4}>
           {(methodologies || []).map(
             ({ id, disabled, activities, inputRequired, ...rest }) => (
               <MethodologyCard

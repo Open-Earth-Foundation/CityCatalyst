@@ -81,7 +81,7 @@ const Footer = ({ lng }: { lng: string }) => {
             </Text>
             <Box
               backgroundColor="border.neutral"
-              borderRadius="full"
+              borderRadius={18}
               className="h-[20px] w-[61px] flex items-center justify-center"
             >
               <Text

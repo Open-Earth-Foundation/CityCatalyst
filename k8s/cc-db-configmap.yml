@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cc-db-configmap
+  namespace: default
+data:
+  DATABASE_HOST: "cc-db"
+  DATABASE_NAME: "citycatalyst"
+  DATABASE_USER: "citycatalyst"
+  DATABASE_PASSWORD: "development"

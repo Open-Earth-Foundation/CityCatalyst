@@ -9,17 +9,7 @@ import {
 } from "@/services/api";
 import { CheckUserSession } from "@/util/check-user-session";
 import { formatEmissions } from "@/util/helpers";
-import {
-  Box,
-  Button,
-  Tab,
-  TabList,
-  TabPanel,
-  TabPanels,
-  Tabs,
-  Text,
-  VStack,
-} from "@chakra-ui/react";
+import { Box, Tabs, Text, VStack, Icon } from "@chakra-ui/react";
 import { useParams, useRouter } from "next/navigation";
 import MissingInventory from "@/components/missing-inventory";
 import InventoryCalculationTab from "@/components/HomePage/InventoryCalculationTab";
@@ -31,7 +21,9 @@ import { InventoryPreferencesCard } from "@/components/HomePage/InventoryPrefere
 import { useEffect } from "react";
 import React, { useMemo } from "react";
 import { YearSelectorCard } from "@/components/Cards/years-selection-card";
-import { AddIcon } from "@chakra-ui/icons";
+import { Button } from "../ui/button";
+import { BsPlus } from "react-icons/bs";
+import Cookies from "js-cookie";
 
 export default function HomePage({
   lng,
@@ -43,11 +35,11 @@ export default function HomePage({
   inventoryId?: string;
 }) {
   const { t } = useTranslation(lng, "dashboard");
+  const cookieLanguage = Cookies.get("i18next");
   const router = useRouter();
-
   // Check if user is authenticated otherwise route to login page
   isPublic || CheckUserSession();
-
+  const language = cookieLanguage ?? lng;
   const { inventory: inventoryParam } = useParams();
   const inventoryIdFromParam = inventoryId || inventoryParam;
   const { data: inventory, isLoading: isInventoryLoading } =
@@ -60,14 +52,22 @@ export default function HomePage({
     if (!inventoryIdFromParam && !isInventoryLoading && inventory) {
       if (inventory.inventoryId) {
         // fix inventoryId in URL without reloading page
-        const newPath = "/" + lng + "/" + inventory.inventoryId;
+        const newPath = "/" + language + "/" + inventory.inventoryId;
         history.replaceState(null, "", newPath);
+        if (typeof window !== "undefined") {
+          const currentPath = window.location.pathname;
+          if (!currentPath.endsWith("/")) {
+            router.replace(`${currentPath}/`);
+          }
+        } else {
+          return;
+        }
       } else {
         // fixes warning "Cannot update a component (`Router`) while rendering a different component (`Home`)"
         setTimeout(() => router.push(`/onboarding`), 0);
       }
     }
-  }, [isInventoryLoading, inventory, inventoryIdFromParam, lng, router]);
+  }, [isInventoryLoading, inventory, inventoryIdFromParam, language, router]);
 
   // query API data
   // TODO maybe rework this logic into one RTK query:
@@ -110,11 +110,11 @@ export default function HomePage({
       {!inventory && !isInventoryLoading && (
         <>
           {isPublic ? (
-            <NotAvailable lng={lng} />
+            <NotAvailable lng={language} />
           ) : (
-            <MissingInventory lng={lng} />
+            <MissingInventory lng={language} />
           )}
-          <Footer lng={lng} />
+          <Footer lng={language} />
         </>
       )}
       {inventory && (
@@ -136,7 +136,7 @@ export default function HomePage({
                 <ActionCards
                   inventoryId={inventory?.inventoryId}
                   t={t}
-                  lng={lng}
+                  lng={language}
                   city={city}
                   inventory={inventory}
                 />
@@ -166,7 +166,6 @@ export default function HomePage({
                     <Button
                       data-testid="add-new-inventory-button"
                       title={t("add-new-inventory")}
-                      leftIcon={<AddIcon h="16px" w="16px" />}
                       h="48px"
                       aria-label="activity-button"
                       fontSize="button.md"
@@ -177,6 +176,7 @@ export default function HomePage({
                         )
                       }
                     >
+                      <Icon as={BsPlus} h="16px" w="16px" />
                       {t("add-new-inventory")}
                     </Button>
                   </Box>
@@ -184,16 +184,21 @@ export default function HomePage({
                     cityId={inventory.cityId as string}
                     inventories={inventoriesForCurrentCity}
                     currentInventoryId={inventory.inventoryId}
-                    lng={lng}
+                    lng={language}
                     t={t}
                   />
-                  <Tabs align="start" className="mt-12" variant="line" isLazy>
-                    <TabList>
+                  <Tabs.Root
+                    className="mt-12"
+                    variant="line"
+                    lazyMount
+                    defaultValue="tab-emission-inventory-calculation-title"
+                  >
+                    <Tabs.List>
                       {[
-                        t("tab-emission-inventory-calculation-title"),
-                        t("tab-emission-inventory-results-title"),
-                      ]?.map((tab, index) => (
-                        <Tab key={index}>
+                        "tab-emission-inventory-calculation-title",
+                        "tab-emission-inventory-results-title",
+                      ].map((tab, index) => (
+                        <Tabs.Trigger key={index} value={tab}>
                           <Text
                             fontFamily="heading"
                             fontSize="title.md"
@@ -201,34 +206,30 @@ export default function HomePage({
                           >
                             {t(tab)}
                           </Text>
-                        </Tab>
+                        </Tabs.Trigger>
                       ))}
-                    </TabList>
-                    <TabPanels>
-                      <TabPanel>
-                        <InventoryCalculationTab
-                          lng={lng}
-                          inventory={inventory}
-                          inventoryProgress={inventoryProgress}
-                          isInventoryProgressLoading={
-                            isInventoryProgressLoading
-                          }
-                        />
-                      </TabPanel>
-                      <TabPanel>
-                        <InventoryReportTab
-                          isPublic={isPublic}
-                          lng={lng}
-                          population={population}
-                          inventory={inventory}
-                        />
-                      </TabPanel>
-                    </TabPanels>
-                  </Tabs>
+                    </Tabs.List>
+                    <Tabs.Content value="tab-emission-inventory-calculation-title">
+                      <InventoryCalculationTab
+                        lng={language}
+                        inventory={inventory}
+                        inventoryProgress={inventoryProgress}
+                        isInventoryProgressLoading={isInventoryProgressLoading}
+                      />
+                    </Tabs.Content>
+                    <Tabs.Content value="tab-emission-inventory-results-title">
+                      <InventoryReportTab
+                        isPublic={isPublic}
+                        lng={language}
+                        population={population}
+                        inventory={inventory}
+                      />
+                    </Tabs.Content>
+                  </Tabs.Root>
                 </>
               ) : (
                 <InventoryReportTab
-                  lng={lng}
+                  lng={language}
                   population={population}
                   inventory={inventory}
                   isPublic={isPublic}
@@ -236,7 +237,7 @@ export default function HomePage({
               )}
             </Box>
           </Box>
-          <Footer lng={lng} />
+          <Footer lng={language} />
         </>
       )}
     </>

@@ -4,6 +4,7 @@ import { Providers } from "../providers";
 import { dir } from "i18next";
 import { languages } from "@/i18n/settings";
 import { NavigationBar } from "@/components/navigation-bar";
+import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
   title: "CityCatalyst",
@@ -30,6 +31,7 @@ export default function RootLayout({
       <body>
         <Providers>
           <NavigationBar lng="" />
+          <Toaster />
           {children}
         </Providers>
       </body>

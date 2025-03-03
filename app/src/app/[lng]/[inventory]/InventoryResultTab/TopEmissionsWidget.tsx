@@ -2,17 +2,10 @@ import {
   Box,
   Card,
   Center,
-  CircularProgress,
   Heading,
   HStack,
   Table,
-  TableContainer,
-  Tbody,
-  Td,
   Text,
-  Th,
-  Thead,
-  Tr,
 } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import type {
@@ -31,6 +24,13 @@ import {
   SegmentedProgressValues,
 } from "@/components/SegmentedProgress";
 import { EmptyStateCardContent } from "@/app/[lng]/[inventory]/InventoryResultTab/EmptyStateCardContent";
+import { allSectorColors, SECTORS } from "@/util/constants";
+
+import {
+  ProgressCircleRing,
+  ProgressCircleRoot,
+} from "@/components/ui/progress-circle";
+import { ButtonSmall } from "@/components/Texts/Button";
 
 const EmissionsTable = ({
   topEmissions,
@@ -40,45 +40,46 @@ const EmissionsTable = ({
   t: TFunction;
 }) => {
   return (
-    <TableContainer my={4}>
-      <Table variant="simple">
-        <Thead>
-          <Tr>
-            <Th sx={{ font: "bold", color: "black" }} width={"50%"}>
-              {t("subsector")}
-            </Th>
-            <Th sx={{ font: "bold", color: "black" }}>
-              {t("total-emissions-CO2eq")}
-            </Th>
-            <Th sx={{ font: "bold", color: "black" }}>{t("%-of-emissions")}</Th>
-          </Tr>
-        </Thead>
-        <Tbody>
-          {(topEmissions || []).map((emission, index) => (
-            <Tr key={index}>
-              <Td sx={{ maxWidth: "50%", wordBreak: "break-word" }}>
-                <Text
-                  fontFamily="heading"
-                  className="text-sm leading-5 tracking-[0.5px]"
-                  sx={{ whiteSpace: "normal" }}
-                >
-                  {t(toKebabCase(emission.subsectorName))}
-                </Text>
-                <Text
-                  fontFamily="heading"
-                  color="content.tertiary"
-                  className="text-xs leading-4 tracking-[0.5px] "
-                >
-                  {`${capitalizeFirstLetter(t("scope"))} ${t(toKebabCase(emission.scopeName))} - ${t(toKebabCase(emission.sectorName))}`}
-                </Text>
-              </Td>
-              <Td>{convertKgToTonnes(emission.co2eq)}</Td>
-              <Td>{emission.percentage}%</Td>
-            </Tr>
-          ))}
-        </Tbody>
-      </Table>
-    </TableContainer>
+    <Table.Root my={4} variant="outline">
+      <Table.Header
+        className="uppercase"
+        backgroundColor="background.backgroundLight"
+      >
+        <Table.ColumnHeader>
+          <ButtonSmall>{t("subsector")}</ButtonSmall>
+        </Table.ColumnHeader>
+        <Table.ColumnHeader>
+          <ButtonSmall>{t("total-emissions-CO2eq")}</ButtonSmall>
+        </Table.ColumnHeader>
+        <Table.ColumnHeader>
+          <ButtonSmall>{t("%-of-emissions")}</ButtonSmall>
+        </Table.ColumnHeader>
+      </Table.Header>
+      <Table.Body>
+        {(topEmissions || []).map((emission, index) => (
+          <Table.Row key={index}>
+            <Table.Cell css={{ maxWidth: "50%", wordBreak: "break-word" }}>
+              <Text
+                fontFamily="heading"
+                className="text-sm leading-5 tracking-[0.5px]"
+                css={{ whiteSpace: "normal" }}
+              >
+                {t(toKebabCase(emission.subsectorName))}
+              </Text>
+              <Text
+                fontFamily="heading"
+                color="content.tertiary"
+                className="text-xs leading-4 tracking-[0.5px] "
+              >
+                {`${capitalizeFirstLetter(t("scope"))} ${t(toKebabCase(emission.scopeName))} - ${t(toKebabCase(emission.sectorName))}`}
+              </Text>
+            </Table.Cell>
+            <Table.Cell>{convertKgToTonnes(emission.co2eq)}</Table.Cell>
+            <Table.Cell>{emission.percentage}%</Table.Cell>
+          </Table.Row>
+        ))}
+      </Table.Body>
+    </Table.Root>
   );
 };
 
@@ -96,11 +97,12 @@ const TopEmissionsWidget = ({
 
   function getPercentagesForProgress(): SegmentedProgressValues[] {
     const bySector: SectorEmission[] = results?.totalEmissions.bySector ?? [];
-    return bySector.map(({ sectorName, co2eq, percentage }) => {
+    return SECTORS.map(({ name }) => {
+      const sector = bySector.find((sector) => sector.sectorName === name)!;
       return {
-        name: sectorName,
-        value: co2eq,
-        percentage: percentage,
+        name,
+        value: sector?.co2eq || 0,
+        percentage: sector?.percentage || 0,
       } as SegmentedProgressValues;
     });
   }
@@ -108,60 +110,53 @@ const TopEmissionsWidget = ({
   if (isTopEmissionsResponseLoading) {
     return (
       <HStack>
-        <Card marginLeft={"4"} backgroundColor={"white"} p={4}>
-          {
-            <Center>
-              <CircularProgress isIndeterminate />
-            </Center>
-          }
-        </Card>
+        <Card.Root marginLeft={"4"} backgroundColor={"white"} p={4}>
+          <Center>
+            <ProgressCircleRoot value={null} size="sm">
+              <ProgressCircleRing cap="round" />
+            </ProgressCircleRoot>
+          </Center>
+        </Card.Root>
       </HStack>
     );
   } else if (results!?.totalEmissions.total <= 0) {
     return (
-      <>
-        <Card width={"713px"} height={"448px"}>
-          <Heading size="sm">{t("top-emissions")}</Heading>
-          <EmptyStateCardContent
-            width={"665px"}
-            height={"344px"}
-            t={t}
-            inventoryId={inventory?.inventoryId}
-            isPublic={isPublic}
-          />
-        </Card>
-      </>
+      <Card.Root width={"713px"} height={"448px"}>
+        <Heading size="sm">{t("top-emissions")}</Heading>
+        <EmptyStateCardContent
+          width={"665px"}
+          height={"344px"}
+          t={t}
+          inventoryId={inventory?.inventoryId}
+          isPublic={isPublic}
+        />
+      </Card.Root>
     );
   } else {
     return (
       <HStack>
-        <Card marginLeft={"4"} backgroundColor={"white"} p={4}>
-          {
-            <>
-              <Box>
-                <Heading size="sm" my={4}>
-                  {t("total-emissions")}
-                </Heading>
-              </Box>
-              <SegmentedProgress
-                values={getPercentagesForProgress()}
-                total={results?.totalEmissions.total}
-                t={t}
-                showLabels
-                showHover
-              />
-              <Box>
-                <Heading size="sm" marginTop={10} marginBottom={4}>
-                  {t("top-emissions")}
-                </Heading>
-              </Box>
-              <EmissionsTable
-                topEmissions={results!?.topEmissions.bySubSector}
-                t={t}
-              />
-            </>
-          }
-        </Card>
+        <Card.Root marginLeft={"4"} backgroundColor={"white"} p={4}>
+          <Heading size="sm" my={4}>
+            {t("total-emissions")}
+          </Heading>
+          <SegmentedProgress
+            values={getPercentagesForProgress()}
+            total={results?.totalEmissions.total}
+            t={t}
+            colors={allSectorColors}
+            showLabels
+            showHover
+          />
+          <Box>
+            <Heading size="sm" marginTop={10} marginBottom={4}>
+              {t("top-emissions")}
+            </Heading>
+          </Box>
+          <EmissionsTable
+            topEmissions={results?.topEmissions?.bySubSector?.slice(0, 3) ?? []}
+            t={t}
+          />
+        </Card.Root>
       </HStack>
     );
   }

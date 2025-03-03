@@ -1,27 +1,30 @@
 import React from "react";
 import { Control, Controller, useWatch } from "react-hook-form";
+import { Group, InputAddon } from "@chakra-ui/react";
+import { useParams } from "next/navigation";
 import {
-  InputGroup,
-  InputRightAddon,
-  NumberInput,
   NumberInputField,
   NumberInputProps,
-} from "@chakra-ui/react";
-import { useParams } from "next/navigation";
+  NumberInputRoot,
+} from "./ui/number-input";
+import { REGIONALLOCALES } from "@/util/constants";
 
 interface FormattedNumberInputProps extends NumberInputProps {
   control: Control<any, any>;
   name: string;
   setError?: Function;
   clearErrors?: Function;
-  defaultValue?: number;
+  defaultValue?: string | undefined;
   isDisabled?: boolean;
   placeholder?: string;
   children?: React.ReactNode;
   id?: string;
   miniAddon?: boolean;
   testId?: string;
+  localization?: string;
   t: Function;
+  max?: number;
+  min?: number;
 }
 
 function FormattedNumberInput({
@@ -30,7 +33,7 @@ function FormattedNumberInput({
   id,
   testId,
   name,
-  defaultValue = 0,
+  defaultValue = "0",
   isDisabled = false,
   children,
   placeholder,
@@ -48,22 +51,41 @@ function FormattedNumberInput({
     name,
   });
 
-  // Format the number according to the locale
   const format = (nval: number | string) => {
-    let val = parseFloat(nval as string);
+    nval = nval.toString();
+    const locale = REGIONALLOCALES[lng as string] || "en-US"; // Get the user's locale
+    const decimalSeparator = (1.1).toLocaleString(locale).substring(1, 2); // Detect the decimal separator
 
-    const lastItemDot = nval.toString().slice(-1) === ".";
-    if (isNaN(val)) return "";
-    return (
-      new Intl.NumberFormat(lng, {
-        maximumFractionDigits: 20,
-      }).format(val) + (lastItemDot ? "." : "")
-    );
+    // Check if the input ends with a decimal separator
+
+    const endsWithSeparator = nval.toString().slice(-1) === decimalSeparator;
+
+    // Replace the locale-specific separator with a dot for parsing
+    const normalizedValue = nval.replace(decimalSeparator, ".");
+
+    // Parse the number
+    const numericValue = parseFloat(normalizedValue);
+
+    // If the input is not a valid number, return it as is
+    if (isNaN(numericValue)) return nval;
+
+    // Format the number part
+    const formattedNumber = new Intl.NumberFormat(locale, {
+      maximumFractionDigits: 20,
+    }).format(numericValue);
+
+    // If the input ends with a separator, add it back to the formatted string
+    return endsWithSeparator
+      ? `${formattedNumber}${decimalSeparator}`
+      : formattedNumber;
   };
 
   // Parse the formatted string into a raw number
   const parse = (val: string) => {
-    const localeDecimalSeparator = (1.1).toLocaleString(lng).substring(1, 2); // Get the decimal separator for the current locale
+    const localeDecimalSeparator = (1.1)
+      .toLocaleString(REGIONALLOCALES[lng as string])
+      .substring(1, 2); // Get the decimal separator for the current locale
+
     const normalizedVal = val.replace(
       new RegExp(`[^0-9${localeDecimalSeparator}-]`, "g"),
       "",
@@ -72,6 +94,19 @@ function FormattedNumberInput({
     return isNaN(parseFloat(normalizedNumber))
       ? ""
       : normalizedNumber.toString();
+  };
+
+  const isCharacterValid = (char: string) => {
+    const normalizedLocale = REGIONALLOCALES[lng as string] || "en-US"; // Default to en-US
+    const decimalSeparator = (1.1)
+      .toLocaleString(normalizedLocale)
+      .substring(1, 2);
+
+    // Build the regex dynamically to include the decimal separator
+    const validRegex = new RegExp(`^[0-9${decimalSeparator}]$`);
+
+    // Check if the character matches the valid regex
+    return validRegex.test(char);
   };
 
   return (
@@ -88,47 +123,47 @@ function FormattedNumberInput({
           if (min && value < min) {
             return t("value-too-low", { min });
           }
-          if (max && value >= max) {
+          if (max && value > max) {
             return t("value-too-high", { max });
           }
         },
       }}
       render={({ field }) => (
-        <InputGroup>
-          <NumberInput
-            isDisabled={isDisabled}
+        <Group>
+          <NumberInputRoot
+            disabled={isDisabled}
             value={format(field.value)}
-            onChange={(valueAsString) => {
-              const parsedValue = parse(valueAsString);
-              field.onChange(parsedValue);
-            }}
-            onBlur={(e) => {
-              e.preventDefault();
-              const parsedValue = parse(e.target.value);
-              field.onChange(parseFloat(parsedValue));
-            }}
+            shadow="1dp"
+            w="full"
+            borderRightRadius={children ? 0 : "md"} // Adjust border radius
+            bgColor={isDisabled ? "background.neutral" : "base.light"}
+            pos="relative"
+            zIndex={3}
+            min={min}
+            max={max}
             {...rest}
           >
             <NumberInputField
-              min={min}
-              max={max}
+              value={format(field.value)}
               data-testId={testId}
+              onChange={(e: any) => {
+                const parsedValue = parse(e.target.value);
+                field.onChange(parsedValue);
+              }}
+              onBlur={(e: any) => {
+                e.preventDefault();
+                const parsedValue = parse(e.target.value);
+                field.onChange(parseFloat(parsedValue));
+              }}
               placeholder={placeholder}
-              h="48px"
-              type="text" // Use text type to allow formatted input
-              shadow="1dp"
-              pr="12px"
-              borderRightRadius={children ? 0 : "md"} // Adjust border radius
-              bgColor={isDisabled ? "background.neutral" : "base.light"}
-              pos="relative"
-              zIndex={3}
+              // Use text type to allow formatted input
             />
-          </NumberInput>
+          </NumberInputRoot>
           {children && (
-            <InputRightAddon
+            <InputAddon
               bgColor={isDisabled ? "background.neutral" : "base.light"}
               color="content.tertiary"
-              h="48px"
+              h="40px"
               fontSize="14px"
               shadow="1dp"
               pos="relative"
@@ -139,9 +174,9 @@ function FormattedNumberInput({
               overflowX={miniAddon ? "hidden" : "visible"}
             >
               {children}
-            </InputRightAddon>
+            </InputAddon>
           )}
-        </InputGroup>
+        </Group>
       )}
     />
   );

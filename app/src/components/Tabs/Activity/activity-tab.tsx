@@ -1,11 +1,4 @@
-import {
-  Box,
-  IconButton,
-  Spinner,
-  Switch,
-  TabPanel,
-  Text,
-} from "@chakra-ui/react";
+import { Box, Icon, IconButton, Spinner, Tabs, Text } from "@chakra-ui/react";
 import React, { FC, useMemo, useState } from "react";
 import HeadingText from "../../heading-text";
 import { TFunction } from "i18next";
@@ -29,6 +22,7 @@ import SelectMethodology from "@/components/Tabs/Activity/select-methodology";
 import ExternalDataSection from "@/components/Tabs/Activity/external-data-section";
 import { api } from "@/services/api";
 import { MdModeEditOutline } from "react-icons/md";
+import { Switch } from "@/components/ui/switch";
 
 interface ActivityTabProps {
   t: TFunction;
@@ -100,7 +94,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
     }
 
     return filteredValues;
-  }, [activityData, referenceNumber]);
+  }, [activityData, referenceNumber, directMeasure, methodologies]);
 
   function getMethodologies() {
     const methodologies =
@@ -114,25 +108,15 @@ const ActivityTab: FC<ActivityTabProps> = ({
     return inventoryValues?.find(
       (value) =>
         value.gpcReferenceNumber === referenceNumber &&
-        (value as unknown as InventoryValue).dataSource?.sourceType ===
-          "third_party",
+        (value as unknown as InventoryValue).dataSource,
     );
   }, [inventoryValues, referenceNumber]);
 
   const [updateInventoryValue, { isLoading }] =
     api.useUpdateOrCreateInventoryValueMutation();
 
-  const makeScopeAvailableFunc = () => {
-    updateInventoryValue({
-      inventoryId: inventoryId,
-      subSectorId: subsectorId,
-      data: {
-        unavailableReason: "",
-        unavailableExplanation: "",
-        gpcReferenceNumber: referenceNumber,
-      },
-    });
-  };
+  const [deleteInventoryValue, { isLoading: isDeletingInventoryValue }] =
+    api.useDeleteInventoryValueMutation();
 
   const inventoryValue = useMemo<InventoryValueAttributes | null>(() => {
     return (
@@ -149,6 +133,25 @@ const ActivityTab: FC<ActivityTabProps> = ({
   }, [inventoryValues, methodology, referenceNumber]);
 
   const activityValues = filteredActivityValues;
+
+  const makeScopeAvailableFunc = () => {
+    if (activityValues?.length && activityValues.length > 0) {
+      updateInventoryValue({
+        inventoryId: inventoryId,
+        subSectorId: subsectorId,
+        data: {
+          unavailableReason: "",
+          unavailableExplanation: "",
+          gpcReferenceNumber: referenceNumber,
+        },
+      });
+    } else {
+      deleteInventoryValue({
+        inventoryId: inventoryId,
+        subSectorId: subsectorId,
+      });
+    }
+  };
 
   const getSuggestedActivities = (): SuggestedActivity[] => {
     if (!selectedMethodology) return [];
@@ -213,165 +216,161 @@ const ActivityTab: FC<ActivityTabProps> = ({
     }
   }, [inventoryValue]);
 
+  console.log(referenceNumber);
+
   return (
     <>
-      <TabPanel key={referenceNumber} p="0" pt="48px">
-        <Box
-          display="flex"
-          alignItems="center"
-          justifyContent="space-between"
-          mb="48px"
-        >
-          <HeadingText
-            data-testid="manual-input-header"
-            title={t("add-data-manually")}
+      <Box
+        display="flex"
+        alignItems="center"
+        justifyContent="space-between"
+        mb="48px"
+      >
+        <HeadingText
+          data-testid="manual-input-header"
+          title={t("add-data-manually")}
+        />
+        <Box display="flex" alignItems="center" gap="16px" fontSize="label.lg">
+          {(isLoading || isDeletingInventoryValue) && (
+            <Spinner size="sm" color="border.neutral" />
+          )}
+          <Switch
+            disabled={!!externalInventoryValue}
+            checked={
+              showUnavailableForm || !!inventoryValue?.unavailableExplanation
+            }
+            onChange={handleSwitch}
           />
-          <Box
-            display="flex"
-            alignItems="center"
-            gap="16px"
-            fontSize="label.lg"
+          <Text
+            opacity={!!externalInventoryValue ? 0.4 : 1}
+            fontFamily="heading"
+            fontWeight="medium"
           >
-            {isLoading && <Spinner size="sm" color="border.neutral" />}
-            <Switch
-              disabled={!!externalInventoryValue}
-              isChecked={
-                showUnavailableForm || !!inventoryValue?.unavailableExplanation
-              }
-              onChange={handleSwitch}
-            />
-            <Text
-              opacity={!!externalInventoryValue ? 0.4 : 1}
-              fontFamily="heading"
-              fontWeight="medium"
-            >
-              {t("scope-not-applicable")}
-            </Text>
-          </Box>
+            {t("scope-not-applicable")}
+          </Text>
         </Box>
-        {inventoryValue?.unavailableExplanation && !showUnavailableForm && (
-          <Box h="auto" px="24px" py="32px" bg="base.light" borderRadius="8px">
-            <Box mb="8px">
-              <HeadingText title={t("scope-unavailable-title")} />
-              <Text
-                letterSpacing="wide"
-                fontSize="body.lg"
-                fontWeight="normal"
-                color="interactive.control"
-                mb="48px"
-              >
-                {t("scope-unavailable-description")}
-              </Text>
+      </Box>
+      {inventoryValue?.unavailableExplanation && !showUnavailableForm && (
+        <Box h="auto" px="24px" py="32px" bg="base.light" borderRadius="8px">
+          <Box mb="8px">
+            <HeadingText title={t("scope-unavailable-title")} />
+            <Text
+              letterSpacing="wide"
+              fontSize="body.lg"
+              fontWeight="normal"
+              color="interactive.control"
+              mb="48px"
+            >
+              {t("scope-unavailable-description")}
+            </Text>
 
-              <Box
-                display="flex"
-                gap="48px"
-                alignItems="center"
-                borderWidth="1px"
-                borderRadius="12px"
-                borderColor="border.neutral"
-                py={4}
-                pl={6}
-                pr={3}
-              >
-                <Box>
-                  <Text
-                    fontWeight="bold"
-                    fontSize="title.md"
-                    fontFamily="heading"
-                  >
-                    {t(notationKey)}
-                  </Text>
-                  <Text fontSize="body.md" color="interactive.control">
-                    {t("notation-key")}
-                  </Text>
-                </Box>
+            <Box
+              display="flex"
+              gap="48px"
+              alignItems="center"
+              borderWidth="1px"
+              borderRadius="12px"
+              borderColor="border.neutral"
+              py={4}
+              pl={6}
+              pr={3}
+            >
+              <Box>
                 <Text
-                  fontSize="body.md"
-                  fontFamily="body"
-                  flex="1 0 0"
-                  className="overflow-ellipsis line-clamp-2"
+                  fontWeight="bold"
+                  fontSize="title.md"
+                  fontFamily="heading"
                 >
-                  <Text fontSize="body.md" fontFamily="body">
-                    <strong> {t("reason")}: </strong>
-                    {t(inventoryValue?.unavailableReason as string)}
-                  </Text>
+                  {t(notationKey)}
                 </Text>
-                <Text
-                  fontSize="body.md"
-                  flex="1 0 0"
-                  fontFamily="body"
-                  className="line-clamp-2"
-                >
-                  {inventoryValue.unavailableExplanation}
+                <Text fontSize="body.md" color="interactive.control">
+                  {t("notation-key")}
                 </Text>
-                <IconButton
-                  onClick={showUnavailableFormFunc}
-                  icon={<MdModeEditOutline size="24px" />}
-                  aria-label="edit"
-                  variant="ghost"
-                  color="content.tertiary"
-                />
               </Box>
+              <Text
+                fontSize="body.md"
+                fontFamily="body"
+                flex="1 0 0"
+                className="overflow-ellipsis line-clamp-2"
+              >
+                <Text fontSize="body.md" fontFamily="body">
+                  <strong> {t("reason")}: </strong>
+                  {t(inventoryValue?.unavailableReason as string)}
+                </Text>
+              </Text>
+              <Text
+                fontSize="body.md"
+                flex="1 0 0"
+                fontFamily="body"
+                className="line-clamp-2"
+              >
+                {inventoryValue.unavailableExplanation}
+              </Text>
+              <IconButton
+                onClick={showUnavailableFormFunc}
+                aria-label="edit"
+                variant="ghost"
+                color="content.tertiary"
+              >
+                <Icon as={MdModeEditOutline} size="lg" />
+              </IconButton>
             </Box>
           </Box>
-        )}
-        {showUnavailableForm && (
-          <ScopeUnavailable
-            inventoryId={inventoryId}
-            gpcReferenceNumber={referenceNumber}
-            subSectorId={subsectorId}
+        </Box>
+      )}
+      {showUnavailableForm && (
+        <ScopeUnavailable
+          inventoryId={inventoryId}
+          gpcReferenceNumber={referenceNumber}
+          subSectorId={subsectorId}
+          t={t}
+          onSubmit={() => setShowUnavailableForm(false)}
+          reason={inventoryValue?.unavailableReason}
+          justification={inventoryValue?.unavailableExplanation}
+        />
+      )}
+      {!scopeNotApplicable && externalInventoryValue && (
+        <Box h="auto" px="24px" py="32px" bg="base.light" borderRadius="8px">
+          <ExternalDataSection
             t={t}
-            onSubmit={() => setShowUnavailableForm(false)}
-            reason={inventoryValue?.unavailableReason}
-            justification={inventoryValue?.unavailableExplanation}
+            inventoryValue={externalInventoryValue as unknown as InventoryValue}
           />
-        )}
-        {!scopeNotApplicable && externalInventoryValue && (
-          <Box h="auto" px="24px" py="32px" bg="base.light" borderRadius="8px">
-            <ExternalDataSection
-              t={t}
-              inventoryValue={
-                externalInventoryValue as unknown as InventoryValue
-              }
-            />
-          </Box>
-        )}
-        {!scopeNotApplicable && !externalInventoryValue && (
-          <>
-            {isMethodologySelected ? (
-              <Box
-                h="auto"
-                px="24px"
-                py="32px"
-                bg="base.light"
-                borderRadius="8px"
-              >
-                {" "}
-                <EmissionDataSection
-                  t={t}
-                  methodology={methodology}
-                  inventoryId={inventoryId}
-                  subsectorId={subsectorId}
-                  refNumberWithScope={referenceNumber}
-                  activityValues={activityValues as unknown as ActivityValue[]}
-                  suggestedActivities={suggestedActivities}
-                  totalEmissions={totalEmissions}
-                  changeMethodology={changeMethodology}
-                  inventoryValue={inventoryValue as unknown as InventoryValue}
-                />
-              </Box>
-            ) : (
-              <SelectMethodology
+        </Box>
+      )}
+      {!scopeNotApplicable && !externalInventoryValue && (
+        <>
+          {isMethodologySelected ? (
+            <Box
+              h="auto"
+              px="24px"
+              py="32px"
+              bg="base.light"
+              borderRadius="8px"
+            >
+              {" "}
+              <EmissionDataSection
                 t={t}
-                methodologies={methodologies}
-                handleMethodologySelected={handleMethodologySelected}
-                directMeasure={directMeasure}
+                methodology={methodology}
+                inventoryId={inventoryId}
+                subsectorId={subsectorId}
+                refNumberWithScope={referenceNumber}
+                activityValues={activityValues as unknown as ActivityValue[]}
+                suggestedActivities={suggestedActivities}
+                totalEmissions={totalEmissions}
+                changeMethodology={changeMethodology}
+                inventoryValue={inventoryValue as unknown as InventoryValue}
               />
-            )}
-          </>
-        )}
-      </TabPanel>
+            </Box>
+          ) : (
+            <SelectMethodology
+              t={t}
+              methodologies={methodologies}
+              handleMethodologySelected={handleMethodologySelected}
+              directMeasure={directMeasure}
+            />
+          )}
+        </>
+      )}
     </>
   );
 };

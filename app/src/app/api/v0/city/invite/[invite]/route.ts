@@ -1,9 +1,9 @@
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";
 import createHttpError from "http-errors";
-import { Session } from "next-auth";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
+import { CityInviteStatus } from "@/util/types";
 
 export const GET = apiHandler(async (req, { params, session }) => {
   const invite = await db.models.CityInvite.findOne({
@@ -27,7 +27,7 @@ export const GET = apiHandler(async (req, { params, session }) => {
   }
 
   await invite.update({
-    status: "accepted",
+    status: CityInviteStatus.ACCEPTED,
   });
 
   const user = await db.models.User.findOne({
@@ -40,8 +40,10 @@ export const GET = apiHandler(async (req, { params, session }) => {
   const city = await db.models.City.findOne({
     where: { cityId: invite.cityId },
   });
-
-  await user?.addCity(city?.cityId);
-
+  if (city && user) {
+    await user.addCity(city.cityId);
+  } else {
+    throw new createHttpError.NotFound("City or User not found");
+  }
   return NextResponse.redirect(`${host}/${inventory}`);
 });

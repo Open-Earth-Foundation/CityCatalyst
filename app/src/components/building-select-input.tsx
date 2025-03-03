@@ -1,18 +1,17 @@
-import { Box, Select, Text } from "@chakra-ui/react";
+import { Box, Icon, NativeSelectRoot, Text } from "@chakra-ui/react";
 import React, { FC, use, useEffect, useRef, useState } from "react";
 import {
   Control,
   Controller,
-  FieldError,
-  FieldErrors,
   UseFormRegister,
   UseFormSetValue,
 } from "react-hook-form";
 import { Inputs } from "./Modals/activity-modal/activity-modal-body";
-import { WarningIcon } from "@chakra-ui/icons";
 import { TFunction } from "i18next";
 import type { SuggestedActivity } from "@/util/form-schema";
 import MultiSelectInput from "@/components/MultiSelectInput";
+import { MdWarning } from "react-icons/md";
+import { NativeSelectField } from "./ui/native-select";
 
 interface BuildingTypeSelectInputProps {
   title: string;
@@ -52,7 +51,7 @@ const BuildingTypeSelectInput: FC<BuildingTypeSelectInputProps> = ({
       setSelectedActivityValue(prefilledValue);
       setValue(activity as any, prefilledValue);
     }
-  }, [prefilledValue]);
+  }, [activity, prefilledValue, setValue]);
 
   if (multiselect) {
     return (
@@ -71,9 +70,8 @@ const BuildingTypeSelectInput: FC<BuildingTypeSelectInputProps> = ({
 
   const error = activity.split(".").reduce((acc, key) => acc?.[key], errors);
   return (
-    <Box display="flex" flexDirection="column" gap="8px">
+    <Box display="flex" flexDirection="column" gap="8px" w="full">
       <Text
-        variant="label"
         fontSize="label.lg"
         fontStyle="normal"
         fontWeight="medium"
@@ -89,40 +87,44 @@ const BuildingTypeSelectInput: FC<BuildingTypeSelectInputProps> = ({
         rules={{ required: required === false ? false : t("option-required") }}
         render={({ field }) => {
           return (
-            <Select
+            <NativeSelectRoot
               {...field}
               shadow="1dp"
               borderRadius="4px"
               borderWidth={error ? "1px" : 0}
-              border="inputBox"
+              border="inpu/tBox"
               borderColor={error ? "sentiment.negativeDefault" : ""}
               background={error ? "sentiment.negativeOverlay" : ""}
               fontSize="body.lg"
-              h="48px"
-              placeholder={placeholder}
+              h="full"
+              w="full"
               _focus={{
                 borderWidth: "1px",
                 borderColor: "content.link",
                 shadow: "none",
               }}
-              onChange={(e) => {
-                field.onChange(e.target.value);
-                setValue(activity as any, e.target.value);
-              }}
-              value={field.value}
             >
-              {options?.map((item: string) => (
-                <option key={item} value={item}>
-                  {t(item)}
-                </option>
-              ))}
-            </Select>
+              <NativeSelectField
+                placeholder={placeholder}
+                onChange={(e) => {
+                  field.onChange(e.currentTarget.value);
+                  setValue(activity as any, e.currentTarget.value);
+                }}
+                value={field.value}
+              >
+                {options?.map((item: string) => (
+                  <option key={item} value={item}>
+                    {t(item)}
+                  </option>
+                ))}
+              </NativeSelectField>
+            </NativeSelectRoot>
           );
         }}
       />
       {error ? (
         <Box display="flex" gap="6px" alignItems="center">
-          <WarningIcon color="sentiment.negativeDefault" />
+          <Icon as={MdWarning} color="sentiment.negativeDefault" />
           <Text fontSize="body.md">{error?.message}</Text>
         </Box>
       ) : (

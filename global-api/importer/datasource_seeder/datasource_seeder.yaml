@@ -1853,3 +1853,283 @@
     api_endpoint: https://ccglobal.openearth.dev/api/v0/source/CAMMESA/region/:region/:year/:gpcReferenceNumber
     gpc_reference_number: I.4.4
     scope: 1
+-
+    datasource_id: b7aa7f41-37a1-468e-9394-fc0b421964de
+    publisher_id: snis
+    datasource_name: SNIS
+    dataset_name: 
+        en: National Sanitation Information System
+        es: Sistema Nacional de Información sobre Saneamiento
+    dataset_description: 
+        en: It contains data on water supply and sewage services, covering aspects such as population served, network connections, water consumption, sewage volumes handled, water losses, and the financial status and investments of service providers.
+        es: Contiene datos sobre los servicios de abastecimiento de agua y alcantarillado, cubriendo aspectos como la población atendida, las conexiones a la red, el consumo de agua, los volúmenes de aguas residuales manejados, las pérdidas de agua y la situación financiera y las inversiones de los prestadores de servicios.
+    source_type: third_party
+    access_type: public
+    dataset_url: https://www.gov.br/cidades/pt-br/acesso-a-informacao/acoes-e-programas/saneamento/snis/produtos-do-snis/diagnosticos-snis
+    geographical_location: Brasil
+    start_year: 2022
+    end_year: 2022
+    latest_accounting_year: 2022 
+    frequency_of_update: annual
+    spatial_resolution: city
+    language: en
+    accessibility: 
+    data_quality: medium
+    notes: Initial import
+    units: kg
+    methodology_description: 
+        en: SNIS annually collects information on the volumes of wastewater collection and treatment, as well as the population served by wastewater systems at the municipal level.
+        es: SNIS recopila anualmente información sobre los volúmenes de recolección y tratamiento de aguas residuales, así como de la población servida por los sistemas aguas residuales a nivel de municipalidades.
+    transformation_description: 
+        en: Emission values ​​from wastewater treatment were calculated using the official methodology of the GPC protocol (V.07) applying default values ​​from the IPCC (2006) for Brazil.
+        es: Los valores de emisiones provenientes del tratamiento de aguas residuales fueron calculados utilizando la metodología oficial del protocolo GPC (V.07) aplicando valores por defecto provenientes del IPCC (2006) para Brazil.
+    methodology_url: https://ghgprotocol.org/ghg-protocol-cities
+    retrieval_method: global_api
+    api_endpoint: https://ccglobal.openearth.dev/api/v0/snis/city/:locode/:year/:gpcReferenceNumber
+    gpc_reference_number: 'III.4.1'
+    scope: 1
+-
+    datasource_id: 123f3cd5-44b0-4858-87b8-e1dd0932b27e
+    publisher_id: snis
+    datasource_name: SNIS
+    dataset_name: 
+        en: National Sanitation Information System
+        es: Sistema Nacional de Información sobre Saneamiento
+    dataset_description: 
+        en: SNIS has gathered data on water supply and sewage services, covering aspects such as population served, network connections, water consumption, sewage volumes handled, water losses, and the financial status and investments of service providers.
+        es: SNIS ha recopilado datos sobre los servicios de abastecimiento de agua y alcantarillado, cubriendo aspectos como la población atendida, las conexiones a la red, el consumo de agua, los volúmenes de aguas residuales manejados, las pérdidas de agua y la situación financiera y las inversiones de los prestadores de servicios.
+    source_type: third_party
+    access_type: public
+    dataset_url: https://www.gov.br/cidades/pt-br/acesso-a-informacao/acoes-e-programas/saneamento/snis/produtos-do-snis/diagnosticos-snis
+    geographical_location: Brasil
+    start_year: 2022
+    end_year: 2022
+    latest_accounting_year: 2022 
+    frequency_of_update: annual
+    spatial_resolution: city
+    language: en
+    accessibility: 
+    data_quality: medium
+    notes: Initial import
+    units: kg
+    methodology_description: 
+        en: SNIS annually collects information on the volumes of wastewater collection and treatment, as well as the population served by wastewater systems at the municipal level.
+        es: SNIS recopila anualmente información sobre los volúmenes de recolección y tratamiento de aguas residuales, así como de la población servida por los sistemas aguas residuales a nivel de municipalidades.
+    transformation_description: 
+        en: Emission values ​​from wastewater treatment were calculated using the official methodology of the GPC protocol (V.07) applying default values ​​from the IPCC (2006) for Brazil.
+        es: Los valores de emisiones provenientes del tratamiento de aguas residuales fueron calculados utilizando la metodología oficial del protocolo GPC (V.07) aplicando valores por defecto provenientes del IPCC (2006) para Brazil.
+    methodology_url: https://ghgprotocol.org/ghg-protocol-cities
+    retrieval_method: global_api
+    api_endpoint: https://ccglobal.openearth.dev/api/v0/snis/city/:locode/:year/:gpcReferenceNumber
+    gpc_reference_number: 'III.4.2'
+    scope: 2
+-
+    datasource_id: df49b122-7b26-4fd7-ba97-83a2be9ac796
+    publisher_id: sinir
+    datasource_name: SINIR
+    dataset_name: 
+        en: National Solid Waste Management Report
+        es: Informe Nacional sobre Gestión de Residuos Sólidos
+    dataset_description: 
+        en: This data compiles information from over 5,000 municipalities, covering about 96.8% of Brazil’s population, and provides data about collection, processing, and disposal methods of solid waste and other operational aspects.
+        es: Estos datos recopilan información de más de 5.000 municipios, que abarcan cerca del 96,8% de la población de Brasil, y proporcionan datos sobre métodos de recolección, procesamiento y disposición de residuos sólidos y otros aspectos operativos.
+    source_type: third_party
+    access_type: public
+    dataset_url: https://www.gov.br/cidades/pt-br/acesso-a-informacao/acoes-e-programas/saneamento/snis/produtos-do-snis/diagnosticos-snis
+    geographical_location: Brasil
+    start_year: 2022
+    end_year: 2022
+    latest_accounting_year: 2022
+    frequency_of_update: annual
+    spatial_resolution: city
+    language: en
+    accessibility: 
+    data_quality: medium
+    notes: Initial import
+    units: kg
+    methodology_description: 
+        en: SINIR annually collects information on the masses of solid waste collected and disposed of in landfills at the municipal level.
+        es: SINIR recopila anualmente información sobre las masas de residuos solidos recolectadas y dispuestas en rellenos sanitarios a nivel municipal.
+    methodology_url: https://ghgprotocol.org/ghg-protocol-cities
+    transformation_description: 
+        en: Emission values ​​from solid waste disposal were calculated using the official methane commitment methodology of the GPC protocol (V.07) applying default values ​​from the IPCC (2006) for Brazil.
+        es: Los valores de emisiones por disposición de residuos sólidos se calcularon utilizando la metodología oficial de compromiso de metano del protocolo GPC (V.07) aplicando valores por defecto del IPCC (2006) para Brasil.
+    retrieval_method: global_api
+    api_endpoint: https://ccglobal.openearth.dev/api/v0/sinir/city/:locode/:year/:gpcReferenceNumber
+    gpc_reference_number: 'III.1.1'
+    scope: 1
+-
+    datasource_id: 94b54d32-87e9-4220-a1cc-cf0058917c59
+    publisher_id: sinir
+    datasource_name: SINIR
+    dataset_name: 
+        en: National Solid Waste Management Report
+        es: Informe Nacional sobre Gestión de Residuos Sólidos
+    dataset_description: 
+        en: This data compiles information from over 5,000 municipalities, covering about 96.8% of Brazil’s population, and provides data about collection, processing, and disposal methods of solid waste and other operational aspects.
+        es: Estos datos recopilan información de más de 5.000 municipios, que abarcan cerca del 96,8% de la población de Brasil, y proporcionan datos sobre métodos de recolección, procesamiento y disposición de residuos sólidos y otros aspectos operativos.
+    source_type: third_party
+    access_type: public
+    dataset_url: https://www.gov.br/cidades/pt-br/acesso-a-informacao/acoes-e-programas/saneamento/snis/produtos-do-snis/diagnosticos-snis
+    geographical_location: Brasil
+    start_year: 2022
+    end_year: 2022
+    latest_accounting_year: 2022 
+    frequency_of_update: annual
+    spatial_resolution: city
+    language: en
+    accessibility: 
+    data_quality: medium
+    notes: Initial import
+    units: kg
+    methodology_description: 
+        en: SINIR annually collects information on the masses of solid waste collected and disposed of in landfills at the municipal level.
+        es: SINIR recopila anualmente información sobre las masas de residuos solidos recolectadas y dispuestas en rellenos sanitarios a nivel municipal.
+    methodology_url: https://ghgprotocol.org/ghg-protocol-cities
+    transformation_description: 
+        en: Emission values ​​from solid waste disposal were calculated using the official methane commitment methodology of the GPC protocol (V.07) applying default values ​​from the IPCC (2006) for Brazil.
+        es: Los valores de emisiones por disposición de residuos sólidos se calcularon utilizando la metodología oficial de compromiso de metano del protocolo GPC (V.07) aplicando valores por defecto del IPCC (2006) para Brasil.
+    retrieval_method: global_api
+    api_endpoint: https://ccglobal.openearth.dev/api/v0/sinir/city/:locode/:year/:gpcReferenceNumber
+    gpc_reference_number: 'III.1.2'
+    scope: 3
+-
+    datasource_id: b5895e06-98c5-416d-869d-a4d43bc2ba4c
+    publisher_id: sinir
+    datasource_name: SINIR
+    dataset_name: 
+        en: National Solid Waste Management Report
+        es: Informe Nacional sobre Gestión de Residuos Sólidos
+    dataset_description: 
+        en: This data compiles information from over 5,000 municipalities, covering about 96.8% of Brazil’s population, and provides data about collection, processing, and disposal methods of solid waste and other operational aspects.
+        es: Estos datos recopilan información de más de 5.000 municipios, que abarcan cerca del 96,8% de la población de Brasil, y proporcionan datos sobre métodos de recolección, procesamiento y disposición de residuos sólidos y otros aspectos operativos.
+    source_type: third_party
+    access_type: public
+    dataset_url: https://www.gov.br/cidades/pt-br/acesso-a-informacao/acoes-e-programas/saneamento/snis/produtos-do-snis/diagnosticos-snis
+    geographical_location: Brasil
+    start_year: 2022
+    end_year: 2022
+    latest_accounting_year: 2022
+    frequency_of_update: annual
+    spatial_resolution: city
+    language: en
+    accessibility: 
+    data_quality: medium
+    notes: Initial import
+    units: kg
+    methodology_description: 
+        en: SINIR annually collects information on the masses of biological waste collected and treated at the municipal level.
+        es: SINIR recopila anualmente información sobre las masas de residuos biológicos recolectadas y tratadas a nivel municipal.
+    methodology_url: https://ghgprotocol.org/ghg-protocol-cities
+    transformation_description: 
+        en: Emission values ​​from biological waste were calculated using the official biological treatment (composting) methodology of the GPC protocol (V.07) applying default values ​​from the IPCC (2006) for Brazil.
+        es: Los valores de emisiones por residuos biológicos se calcularon utilizando la metodología oficial de tratamiento biológico (compostaje) del protocolo GPC (V.07) aplicando valores por defecto del IPCC (2006) para Brasil.
+    retrieval_method: global_api
+    api_endpoint: https://ccglobal.openearth.dev/api/v0/sinir/city/:locode/:year/:gpcReferenceNumber
+    gpc_reference_number: 'III.2.1'
+    scope: 1
+-
+    datasource_id: eff1e226-6b78-4d89-bdda-50f7f310a817
+    publisher_id: sinir
+    datasource_name: SINIR
+    dataset_name: 
+        en: National Solid Waste Management Report
+        es: Informe Nacional sobre Gestión de Residuos Sólidos
+    dataset_description: 
+        en: This data compiles information from over 5,000 municipalities, covering about 96.8% of Brazil’s population, and provides data about collection, processing, and disposal methods of solid waste and other operational aspects.
+        es: Estos datos recopilan información de más de 5.000 municipios, que abarcan cerca del 96,8% de la población de Brasil, y proporcionan datos sobre métodos de recolección, procesamiento y disposición de residuos sólidos y otros aspectos operativos.
+    source_type: third_party
+    access_type: public
+    dataset_url: https://www.gov.br/cidades/pt-br/acesso-a-informacao/acoes-e-programas/saneamento/snis/produtos-do-snis/diagnosticos-snis
+    geographical_location: Brasil
+    start_year: 2022
+    end_year: 2022
+    latest_accounting_year: 2022
+    frequency_of_update: annual
+    spatial_resolution: city
+    language: en
+    accessibility: 
+    data_quality: medium
+    notes: Initial import
+    units: kg
+    methodology_description: 
+        en: SINIR annually collects information on the masses of biological waste collected and treated at the municipal level.
+        es: SINIR recopila anualmente información sobre las masas de residuos biológicos recolectadas y tratadas a nivel municipal.
+    methodology_url: https://ghgprotocol.org/ghg-protocol-cities
+    transformation_description: 
+        en: Emission values ​​from biological waste were calculated using the official biological treatment (composting) methodology of the GPC protocol (V.07) applying default values ​​from the IPCC (2006) for Brazil.
+        es: Los valores de emisiones por residuos biológicos se calcularon utilizando la metodología oficial de tratamiento biológico (compostaje) del protocolo GPC (V.07) aplicando valores por defecto del IPCC (2006) para Brasil.
+    retrieval_method: global_api
+    api_endpoint: https://ccglobal.openearth.dev/api/v0/sinir/city/:locode/:year/:gpcReferenceNumber
+    gpc_reference_number: 'III.2.2'
+    scope: 3
+-
+    datasource_id: c5ce2727-3d05-4979-aeee-e6090e0cd47a
+    publisher_id: sinir
+    datasource_name: SINIR
+    dataset_name: 
+        en: National Solid Waste Management Report
+        es: Informe Nacional sobre Gestión de Residuos Sólidos
+    dataset_description: 
+        en: This data compiles information from over 5,000 municipalities, covering about 96.8% of Brazil’s population, and provides data about collection, processing, and disposal methods of solid waste and other operational aspects.
+        es: Estos datos recopilan información de más de 5.000 municipios, que abarcan cerca del 96,8% de la población de Brasil, y proporcionan datos sobre métodos de recolección, procesamiento y disposición de residuos sólidos y otros aspectos operativos.
+    source_type: third_party
+    access_type: public
+    dataset_url: https://www.gov.br/cidades/pt-br/acesso-a-informacao/acoes-e-programas/saneamento/snis/produtos-do-snis/diagnosticos-snis
+    geographical_location: Brasil
+    start_year: 2022
+    end_year: 2022
+    latest_accounting_year: 20232
+    frequency_of_update: annual
+    spatial_resolution: city
+    language: en
+    accessibility: 
+    data_quality: medium
+    notes: Initial import
+    units: kg
+    methodology_description: 
+        en: SINIR annually collects information on the masses of solid waste collected and incinerated at the municipal level.
+        es: SINIR recopila anualmente información sobre las masas de residuos sólidos recolectadas e incineradas a nivel municipal.
+    methodology_url: https://ghgprotocol.org/ghg-protocol-cities
+    transformation_description: 
+        en: Emission values ​​from incinerated solid waste were calculated using the official waste incineration and open burning methodology of the GPC protocol (V.07) applying default values ​​from the IPCC (2006) for Brazil.
+        es: Los valores de emisiones por residuos sólidos incinerados se calcularon utilizando la metodología oficial de incineración de residuos y quema a cielo abierto del protocolo GPC (V.07) aplicando valores por defecto del IPCC (2006) para Brasil.
+    retrieval_method: global_api
+    api_endpoint: https://ccglobal.openearth.dev/api/v0/sinir/city/:locode/:year/:gpcReferenceNumber
+    gpc_reference_number: 'III.3.1'
+    scope: 1
+-
+    datasource_id: c54e92e6-13a8-41aa-ad80-a19208629777
+    publisher_id: sinir
+    datasource_name: SINIR
+    dataset_name: 
+        en: National Solid Waste Management Report
+        es: Informe Nacional sobre Gestión de Residuos Sólidos
+    dataset_description: 
+        en: This data compiles information from over 5,000 municipalities, covering about 96.8% of Brazil’s population, and provides data about collection, processing, and disposal methods of solid waste and other operational aspects.
+        es: Estos datos recopilan información de más de 5.000 municipios, que abarcan cerca del 96,8% de la población de Brasil, y proporcionan datos sobre métodos de recolección, procesamiento y disposición de residuos sólidos y otros aspectos operativos.
+    source_type: third_party
+    access_type: public
+    dataset_url: https://www.gov.br/cidades/pt-br/acesso-a-informacao/acoes-e-programas/saneamento/snis/produtos-do-snis/diagnosticos-snis
+    geographical_location: Brasil
+    start_year: 2022
+    end_year: 2022
+    latest_accounting_year: 20232
+    frequency_of_update: annual
+    spatial_resolution: city
+    language: en
+    accessibility: 
+    data_quality: medium
+    notes: Initial import
+    units: kg
+    methodology_description: 
+        en: SINIR annually collects information on the masses of solid waste collected and incinerated at the municipal level.
+        es: SINIR recopila anualmente información sobre las masas de residuos sólidos recolectadas e incineradas a nivel municipal.
+    methodology_url: https://ghgprotocol.org/ghg-protocol-cities
+    transformation_description: 
+        en: Emission values ​​from incinerated solid waste were calculated using the official waste incineration and open burning methodology of the GPC protocol (V.07) applying default values ​​from the IPCC (2006) for Brazil.
+        es: Los valores de emisiones por residuos sólidos incinerados se calcularon utilizando la metodología oficial de incineración de residuos y quema a cielo abierto del protocolo GPC (V.07) aplicando valores por defecto del IPCC (2006) para Brasil.
+    retrieval_method: global_api
+    api_endpoint: https://ccglobal.openearth.dev/api/v0/sinir/city/:locode/:year/:gpcReferenceNumber
+    gpc_reference_number: 'III.3.2'
+    scope: 3

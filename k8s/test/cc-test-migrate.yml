@@ -11,17 +11,12 @@ spec:
       - name: cc-test-migrate
         image: ghcr.io/open-earth-foundation/citycatalyst:main
         imagePullPolicy: Always
+        envFrom:
+          - configMapRef:
+              name: cc-test-db-configmap
         env:
         - name: NODE_ENV
           value: development
-        - name: DATABASE_NAME
-          value: "cctest"
-        - name: DATABASE_HOST
-          value: "cc-db"
-        - name: DATABASE_USER
-          value: "cctest"
-        - name: DATABASE_PASSWORD
-          value: "cctest"
         command: ["npm",  "run", "db:migrate"]
         resources:
           limits:

@@ -1,7 +1,9 @@
-import { Badge, Box, Card, Radio, Text } from "@chakra-ui/react";
+import { Badge, Box, Card, Icon, Text } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import React, { FC, useState } from "react";
 import type { Methodology } from "@/util/form-schema";
+import { toaster } from "../ui/toaster";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface MethodologyCardProps {
   id: string;
@@ -30,6 +32,12 @@ const MethodologyCard: FC<MethodologyCardProps> = ({
   };
 
   const handleCardClick = () => {
+    if (disabled) {
+      toaster.create({
+        title: t("selected-methodology-disabled"),
+      });
+      return;
+    }
     if (!isSelected) {
       handleCardSelect({
         disabled,
@@ -41,7 +49,7 @@ const MethodologyCard: FC<MethodologyCardProps> = ({
   };
   const isMethodologyDisabled = disabled;
   return (
-    <Card
+    <Card.Root
       data-testid="methodology-card"
       borderWidth="1px"
       borderRadius="8px"
@@ -61,19 +69,27 @@ const MethodologyCard: FC<MethodologyCardProps> = ({
       backgroundColor={isSelected ? "gray.200" : "white"}
     >
       <Box w="full" display="flex" justifyContent="space-between">
-        <Radio
+        <Checkbox
+          variant="subtle"
           disabled={isMethodologyDisabled}
-          isChecked={isSelected}
+          checked={isSelected}
           onChange={handleRadioChange}
-        />{" "}
+          css={{
+            borderRadius: "50% !important",
+            "& .chakra-checkbox__control": {
+              borderRadius: "50% !important",
+              background: "base.light",
+            },
+          }}
+        />
         {isMethodologyDisabled ? (
           <Badge
             borderWidth="1px"
             borderColor="border.neutral"
             py="4px"
             px="8px"
-            borderRadius="full"
-            textColor={"content.secondary"}
+            borderRadius="16px"
+            color={"content.secondary"}
             fontSize="body.sm"
             bg="base.light"
           >
@@ -129,7 +145,7 @@ const MethodologyCard: FC<MethodologyCardProps> = ({
           </li>
         ))}
       </Box>
-    </Card>
+    </Card.Root>
   );
 };
 

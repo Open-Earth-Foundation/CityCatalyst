@@ -60,10 +60,30 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
     },
   });
 
+  // check if data is marked as not occurring/ otherwise unavailable
+  if (body.unavailableReason || body.unavailableExplanation) {
+    if (!body.unavailableReason || !body.unavailableExplanation) {
+      throw new createHttpError.BadRequest(
+        "unavailableReason and unavailableExplanation need to both be provided if one is used",
+      );
+    }
+
+    body.co2eq = undefined;
+    body.co2eqYears = undefined;
+
+    // for existing data, delete left over ActivityValues
+    if (inventoryValue) {
+      await db.models.ActivityValue.destroy({
+        where: { inventoryValueId: inventoryValue.id },
+      });
+    }
+  }
+
   if (inventoryValue) {
     inventoryValue = await inventoryValue.update({
       ...body,
       id: inventoryValue.id,
+      datasourceId: body.unavailableReason ? null : inventoryValue.datasourceId,
     });
   } else {
     inventoryValue = await db.models.InventoryValue.create({
@@ -77,6 +97,30 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
   }
 
   await inventoryValue.save();
+
+  return NextResponse.json({ data: inventoryValue });
+});
+
+export const DELETE = apiHandler(async (_req, { params, session }) => {
+  const inventory = await UserService.findUserInventory(
+    params.inventory,
+    session,
+  );
+
+  const inventoryValue = await db.models.InventoryValue.findOne({
+    where: {
+      inventoryId: inventory.inventoryId,
+      subSectorId: params.subsector,
+    },
+  });
+
+  if (!inventoryValue) {
+    throw new createHttpError.NotFound(
+      "Inventory value not found for subsector: " + params.subsector,
+    );
+  }
+
+  await inventoryValue.destroy();
 
   return NextResponse.json({ data: inventoryValue });
 });

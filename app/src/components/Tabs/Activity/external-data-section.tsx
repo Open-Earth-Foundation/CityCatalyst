@@ -10,10 +10,8 @@ import {
   SimpleGrid,
   Tag,
   TagLabel,
-  TagLeftIcon,
   Text,
   useDisclosure,
-  useToast,
 } from "@chakra-ui/react";
 import React, { useState } from "react";
 import { TFunction } from "i18next";
@@ -27,6 +25,7 @@ import { SourceDrawer } from "@/app/[lng]/[inventory]/data/[step]/SourceDrawer";
 import type { DataSourceWithRelations } from "@/app/[lng]/[inventory]/data/[step]/types";
 import { api } from "@/services/api";
 import { convertKgToTonnes } from "@/util/helpers";
+import { UseErrorToast } from "@/hooks/Toasts";
 
 const ExternalDataSection = ({
   t,
@@ -35,13 +34,12 @@ const ExternalDataSection = ({
   t: TFunction;
   inventoryValue: InventoryValue;
 }) => {
-  const toast = useToast();
   const source = inventoryValue.dataSource;
   const [disconnectThirdPartyData, { isLoading: isDisconnectLoading }] =
     api.useDisconnectThirdPartyDataMutation();
 
   const {
-    isOpen: isSourceDrawerOpen,
+    open: isSourceDrawerOpen,
     onClose: onSourceDrawerClose,
     onOpen: onSourceDrawerOpen,
   } = useDisclosure();
@@ -56,22 +54,20 @@ const ExternalDataSection = ({
   const handleMouseLeave = () => setHovered(false);
 
   const buttonContent = hovered ? t("disconnect-data") : t("data-connected");
-
   const buttonIcon = !hovered ? <Icon as={FiCheckCircle} /> : null;
-
-  const variant = hovered ? "danger" : "solidPrimary";
+  const buttonColorScheme = hovered ? "danger" : "primary"; // TODO create these color palletes
+  const { showErrorToast } = UseErrorToast({
+    title: "disconnected-data-source",
+  });
 
   const onDisconnectThirdPartyData = async (
     _source: DataSourceWithRelations,
   ) => {
     await disconnectThirdPartyData({
       inventoryId: inventoryValue.inventoryId,
-      subCategoryId: inventoryValue.subCategoryId,
+      datasourceId: inventoryValue.datasourceId,
     });
-    toast({
-      status: "error",
-      title: t("disconnected-data-source"),
-    });
+    showErrorToast();
   };
 
   if (!source) {
@@ -116,8 +112,8 @@ const ExternalDataSection = ({
           </Text>
         </Box>
       </Box>
-      <SimpleGrid columns={3} spacing={4}>
-        <Card
+      <SimpleGrid columns={3} spaceX={4} spaceY={4}>
+        <Card.Root
           key={source.datasourceId}
           variant="outline"
           borderColor={hovered ? "semantic.danger" : "interactive.tertiary"}
@@ -126,34 +122,30 @@ const ExternalDataSection = ({
         >
           {/* TODO add icon to DataSource */}
           <Icon as={MdHomeWork} boxSize={9} mb={6} />
-          <Heading size="sm" noOfLines={2} minHeight={10}>
+          <Heading size="sm" lineClamp={2} minHeight={10}>
             {getTranslationFromDict(source.datasetName)}
           </Heading>
           <Flex direction="row" my={4} wrap="wrap" gap={2}>
-            <Tag>
-              <TagLeftIcon
-                as={DataCheckIcon}
-                boxSize={5}
-                color="content.tertiary"
-              />
-              <TagLabel fontSize={11}>
+            <Tag.Root>
+              <Tag.StartElement>
+                <Icon as={DataCheckIcon} boxSize={5} color="content.tertiary" />
+              </Tag.StartElement>
+              <Tag.Label fontSize={11}>
                 {t("data-quality")}: {t("quality-" + source.dataQuality)}
-              </TagLabel>
-            </Tag>
+              </Tag.Label>
+            </Tag.Root>
             {source.subCategory?.scope && (
-              <Tag>
-                <TagLeftIcon
-                  as={FiTarget}
-                  boxSize={4}
-                  color="content.tertiary"
-                />
+              <Tag.Root>
+                <Tag.StartElement>
+                  <Icon as={FiTarget} boxSize={4} color="content.tertiary" />
+                </Tag.StartElement>
                 <TagLabel fontSize={11}>
                   {t("scope")}: {source.subCategory.scope.scopeName}
                 </TagLabel>
-              </Tag>
+              </Tag.Root>
             )}
           </Flex>
-          <Text color="content.tertiary" noOfLines={5} minHeight={120}>
+          <Text color="content.tertiary" lineClamp={5} minHeight={120}>
             {getTranslationFromDict(source.datasetDescription) ||
               getTranslationFromDict(source.methodologyDescription)}
           </Text>
@@ -166,18 +158,19 @@ const ExternalDataSection = ({
             {t("see-more-details")}
           </Link>
           <Button
-            variant={variant}
+            variant="solid"
+            colorScheme={buttonColorScheme}
             px={6}
             py={4}
             onClick={() => onDisconnectThirdPartyData(source)}
-            isLoading={isDisconnectLoading}
+            loading={isDisconnectLoading}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
-            leftIcon={buttonIcon as React.JSX.Element}
           >
+            {buttonIcon}
             {buttonContent}
           </Button>
-        </Card>
+        </Card.Root>
       </SimpleGrid>
       <Box
         w="full"
@@ -205,6 +198,7 @@ const ExternalDataSection = ({
         </Box>
       </Box>
       <SourceDrawer
+        inventoryId={inventoryValue.inventoryId!}
         source={{ ...inventoryValue, ...source }}
         hideActions={true}
         totalEmissionsData={inventoryValue.co2eq as unknown as string}

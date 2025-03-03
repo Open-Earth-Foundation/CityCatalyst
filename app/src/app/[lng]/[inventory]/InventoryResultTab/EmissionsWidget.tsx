@@ -4,12 +4,11 @@ import {
   Card,
   CardBody,
   CardHeader,
-  CircularProgress,
   Heading,
   HStack,
   Icon,
   Stack,
-  StackDivider,
+  StackSeparator,
   Text,
 } from "@chakra-ui/react";
 import { TFunction } from "i18next";
@@ -17,6 +16,13 @@ import { InventoryResponse } from "@/util/types";
 import { Trans } from "react-i18next/TransWithoutContext";
 import { MdArrowOutward } from "react-icons/md";
 import { PopulationAttributes } from "@/models/Population";
+import { HeatIcon } from "@/components/icons";
+
+import {
+  ProgressCircleRing,
+  ProgressCircleRoot,
+} from "@/components/ui/progress-circle";
+import { FiHeart } from "react-icons/fi";
 
 const EmissionsWidgetCard = ({
   icon,
@@ -40,22 +46,25 @@ const EmissionsWidgetCard = ({
       <Stack w="full" height={"83px"}>
         <HStack align="start">
           {value && showProgress ? (
-            <CircularProgress
-              size="36px"
-              thickness="12px"
-              mr="4"
-              color="interactive.secondary"
-              trackColor="background.neutral"
+            <ProgressCircleRoot
               value={Math.round(value)}
-            />
+              size="sm"
+              color="interactive.secondary"
+              mr="4px"
+            >
+              <ProgressCircleRing cap="round" css={{ "--thickness": "2px" }} />
+            </ProgressCircleRoot>
           ) : (
-            <Icon color={"red"} as={icon} boxSize={8} />
+            <>
+              {" "}
+              <Icon color={"red"} as={HeatIcon} boxSize={8} />
+            </>
           )}
-          <Heading size="lg" noOfLines={3} maxWidth="200px">
+          <Heading size="lg" lineClamp={3} maxWidth="200px">
             {finalValue}
           </Heading>
         </HStack>
-        <Text size={"xs"} color="content.tertiary">
+        <Text fontSize={"xs"} color="content.tertiary">
           {field}
         </Text>
       </Stack>
@@ -72,9 +81,11 @@ const EmissionsWidget = ({
   inventory?: InventoryResponse;
   population?: PopulationAttributes;
 }) => {
+  // Country total is in tonnes, inventory total is in kg
   const percentageOfCountrysEmissions =
     inventory?.totalEmissions && inventory?.totalCountryEmissions
-      ? (inventory.totalEmissions / inventory.totalCountryEmissions) * 100
+      ? (inventory.totalEmissions / (inventory.totalCountryEmissions * 1000)) *
+        100
       : undefined;
   const emissionsPerCapita =
     inventory?.totalEmissions && population?.population
@@ -94,7 +105,7 @@ const EmissionsWidget = ({
         </Trans>
       ),
       value: inventory?.totalEmissions,
-      icon: MdArrowOutward,
+      icon: FiHeart,
       showProgress: false,
     },
     {
@@ -108,7 +119,7 @@ const EmissionsWidget = ({
         ></Trans>
       ),
       value: emissionsPerCapita,
-      icon: MdArrowOutward,
+      icon: FiHeart,
       showProgress: false,
     },
     {
@@ -120,13 +131,13 @@ const EmissionsWidget = ({
   ];
   return (
     <Box>
-      <Card padding={0} height="448px" width={"353px"}>
-        <CardHeader>
+      <Card.Root padding={0} height="448px" width={"353px"}>
+        <Card.Header>
           <Heading size="sm">{t("total-emissions")}</Heading>
-        </CardHeader>
+        </Card.Header>
 
-        <CardBody>
-          <Stack divider={<StackDivider />}>
+        <Card.Body>
+          <Stack separator={<StackSeparator />}>
             {EmissionsData.map(({ id, field, value, icon, showProgress }) => (
               <EmissionsWidgetCard
                 key={id}
@@ -137,8 +148,8 @@ const EmissionsWidget = ({
               />
             ))}
           </Stack>
-        </CardBody>
-      </Card>
+        </Card.Body>
+      </Card.Root>
     </Box>
   );
 };

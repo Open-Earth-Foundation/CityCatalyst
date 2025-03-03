@@ -2,17 +2,18 @@
 
 import EmailInput from "@/components/email-input";
 import PasswordInput from "@/components/password-input";
-import { useAuthToast } from "@/hooks/useAuthToast";
 import { useTranslation } from "@/i18n/client";
-import { Link } from "@chakra-ui/next-js";
-import { Button, Heading, Text, useToast } from "@chakra-ui/react";
+import { Box, Heading, Link, Text } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
+import { Toaster } from "@/components/ui/toaster";
+import { Button } from "@/components/ui/button";
+import { UseSuccessToast } from "@/hooks/Toasts";
 
-type Inputs = {
+export type LoginInputs = {
   email: string;
   password: string;
 };
@@ -20,20 +21,18 @@ type Inputs = {
 function VerifiedNotification({ t }: { t: TFunction }) {
   const searchParams = useSearchParams();
   const isVerified = !!searchParams.get("verification-code");
-  const toast = useToast();
+
+  const { showSuccessToast } = UseSuccessToast({
+    title: t("verified-toast-title"),
+    description: t("verified-toast-description"),
+  });
+
   useEffect(() => {
     if (isVerified) {
-      toast({
-        title: t("verified-toast-title"),
-        description: t("verified-toast-description"),
-        status: "success",
-        duration: null,
-        isClosable: true,
-        position: "bottom-right",
-      });
+      showSuccessToast();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isVerified]);
+  }, [isVerified, showSuccessToast]);
 
   return null;
 }
@@ -45,26 +44,32 @@ export default function Login({
 }) {
   const { t } = useTranslation(lng, "auth");
   const router = useRouter();
+  const [error, setError] = useState("");
   const {
     handleSubmit,
     register,
     formState: { errors, isSubmitting },
-  } = useForm<Inputs>();
+  } = useForm<LoginInputs>();
 
   const searchParams = useSearchParams();
+  const queryParams = Object.fromEntries(searchParams.entries());
+  let callbackUrl = decodeURIComponent(queryParams.callbackUrl || "");
 
-  const [error, setError] = useState("");
-  const callbackParam = searchParams.get("callbackUrl");
-  let callbackUrl = `/${lng}`;
-  if (
-    callbackParam &&
-    callbackParam !== "null" &&
-    callbackParam !== "undefined"
-  ) {
-    callbackUrl = callbackParam;
+  // only redirect to user invite page as a fallback if there is a token present in the search params
+  if (!callbackUrl) {
+    if ("token" in queryParams) {
+      const paramsString = new URLSearchParams(queryParams).toString();
+      callbackUrl = `/${lng}/user/invites?${paramsString}`;
+    } else {
+      callbackUrl = "/";
+    }
   }
-  const { showLoginSuccessToast } = useAuthToast(t);
-  const onSubmit: SubmitHandler<Inputs> = async (data) => {
+
+  const { showSuccessToast: showLoginSuccessToast } = UseSuccessToast({
+    title: t("verified-toast-title"),
+    description: t("verified-toast-description"),
+  });
+  const onSubmit: SubmitHandler<LoginInputs> = async (data) => {
     try {
       const res = await signIn("credentials", {
         redirect: false,
@@ -73,18 +78,13 @@ export default function Login({
         callbackUrl,
       });
 
-      if (res?.ok) {
+      if (res?.ok && !res?.error) {
         showLoginSuccessToast();
         router.push(callbackUrl);
         setError("");
         return;
-      }
-
-      if (!res?.error) {
-        router.push(callbackUrl);
-        setError("");
       } else {
-        console.error("Sign in failure:", res.error);
+        console.error("Sign in failure:", res?.error);
         setError(t("invalid-email-password"));
       }
     } catch (error: any) {
@@ -93,8 +93,29 @@ export default function Login({
     }
   };
 
+  // Extract doesInvitedUserExist from callback params\
+  // If it is true, redirect to /user/invites page
+  // If it is false, redirect to /auth/signup page
+  // Check if the callbackUrl contains a query string
+  const hasQueryString = callbackUrl.includes("?");
+  // Split the URL into path and query string (if query string exists)
+  const [path, queryString] = hasQueryString
+    ? callbackUrl.split("?")
+    : [callbackUrl, ""];
+  const callbackUrlParams = new URLSearchParams(queryString);
+  const doesInvitedUserExist = callbackUrlParams.get("doesInvitedUserExist");
+
+  if (doesInvitedUserExist && doesInvitedUserExist !== "true") {
+    // remove the doesInvitedUserExist param from the callbackUrl
+    callbackUrlParams.delete("doesInvitedUserExist");
+    const updatedCallbackUrl = `${path}?${callbackUrlParams.toString()}`;
+    return router.push(
+      "/auth/signup/?callbackUrl=" + encodeURIComponent(updatedCallbackUrl),
+    );
+  }
+
   return (
-    <>
+    <Box>
       <Heading size="xl">{t("login-heading")}</Heading>
       <Text my={4} color="content.tertiary">
         {t("login-details")}
@@ -111,7 +132,7 @@ export default function Login({
         <Button
           type="submit"
           formNoValidate
-          isLoading={isSubmitting}
+          loading={isSubmitting}
           h={16}
           width="full"
           bgColor="interactive.secondary"
@@ -125,7 +146,7 @@ export default function Login({
       >
         {t("no-account")}{" "}
         <Link
-          href={`/auth/signup?callbackUrl=${callbackUrl}`}
+          href={`/auth/signup?callbackUrl=${encodeURIComponent(callbackUrl)}`}
           className="underline"
         >
           {t("sign-up")}
@@ -134,6 +155,7 @@ export default function Login({
       <Suspense>
         <VerifiedNotification t={t} />
       </Suspense>
-    </>
+      <Toaster />
+    </Box>
   );
 }

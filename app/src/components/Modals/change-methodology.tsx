@@ -1,25 +1,21 @@
 "use client";
 
-import {
-  Box,
-  Button,
-  Icon,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
-  Text,
-  useToast,
-} from "@chakra-ui/react";
+import { Box, Button, DialogHeader, Icon, Text } from "@chakra-ui/react";
 import React, { FC } from "react";
 import { TFunction } from "i18next";
-import { CheckCircleIcon } from "@chakra-ui/icons";
 import { useDeleteAllActivityValuesMutation } from "@/services/api";
 import { ChangeMethodologyIcon } from "../icons";
 import { Trans } from "react-i18next";
+import {
+  DialogBackdrop,
+  DialogBody,
+  DialogCloseTrigger,
+  DialogContent,
+  DialogFooter,
+  DialogRoot,
+  DialogTitle,
+} from "../ui/dialog";
+import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
 
 interface ChangeMethodologyProps {
   isOpen: boolean;
@@ -28,6 +24,7 @@ interface ChangeMethodologyProps {
   t: TFunction;
   gpcReferenceNumber: string;
   inventoryId: string;
+  setChangeMethodology: Function;
 }
 
 const ChangeMethodology: FC<ChangeMethodologyProps> = ({
@@ -37,11 +34,17 @@ const ChangeMethodology: FC<ChangeMethodologyProps> = ({
   t,
   gpcReferenceNumber,
   inventoryId,
+  setChangeMethodology,
 }) => {
-  const toast = useToast();
-
   const [deleteAllActivityValues, { isLoading: isDeleteAllLoading }] =
     useDeleteAllActivityValuesMutation();
+
+  const { showErrorToast } = UseErrorToast({
+    title: t("change-methodology-error"),
+  });
+  const { showSuccessToast } = UseSuccessToast({
+    title: t("change-methodology-success"),
+  });
 
   const handleDeleteAllActivities = async () => {
     // call the delete all activities mutation
@@ -50,34 +53,11 @@ const ChangeMethodology: FC<ChangeMethodologyProps> = ({
       gpcReferenceNumber: gpcReferenceNumber,
     });
     if (response.data) {
-      // TODO create toast wrapper for success state
-      toast({
-        status: "success",
-        title: t("change-methodology-success"),
-        render: ({ title }) => (
-          <Box
-            h="48px"
-            w="600px"
-            borderRadius="8px"
-            display="flex"
-            alignItems="center"
-            color="white"
-            backgroundColor="interactive.primary"
-            gap="8px"
-            px="16px"
-          >
-            <CheckCircleIcon />
-            <Text>{title}</Text>
-          </Box>
-        ),
-      });
+      showSuccessToast();
       onChangeClicked();
       onClose();
     } else {
-      toast({
-        status: "error",
-        title: t("change-methodology-error"),
-      });
+      showErrorToast();
     }
   };
 
@@ -85,10 +65,14 @@ const ChangeMethodology: FC<ChangeMethodologyProps> = ({
 
   return (
     <>
-      <Modal blockScrollOnMount={false} isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay />
-        <ModalContent minH="350px" minW="568px" marginTop="2%">
-          <ModalHeader
+      <DialogRoot
+        open={isOpen}
+        onOpenChange={(e: any) => setChangeMethodology(e.open)}
+        onExitComplete={onClose}
+      >
+        <DialogBackdrop />
+        <DialogContent minH="350px" minW="568px" marginTop="2%">
+          <DialogHeader
             display="flex"
             justifyContent="center"
             fontWeight="semibold"
@@ -100,10 +84,10 @@ const ChangeMethodology: FC<ChangeMethodologyProps> = ({
             borderStyle="solid"
             borderColor="border.neutral"
           >
-            {t("change-methodology")}
-          </ModalHeader>
-          <ModalCloseButton marginTop="10px" />
-          <ModalBody paddingTop="24px" paddingBottom="48px">
+            <DialogTitle>{t("change-methodology")}</DialogTitle>
+          </DialogHeader>
+          <DialogCloseTrigger />
+          <DialogBody paddingTop="24px" paddingBottom="48px">
             <Box
               h="full"
               w="full"
@@ -136,8 +120,8 @@ const ChangeMethodology: FC<ChangeMethodologyProps> = ({
                 </Trans>
               </Text>
             </Box>
-          </ModalBody>
-          <ModalFooter
+          </DialogBody>
+          <DialogFooter
             borderTopWidth="1px"
             borderStyle="solid"
             borderColor="border.neutral"
@@ -150,7 +134,7 @@ const ChangeMethodology: FC<ChangeMethodologyProps> = ({
             <Button
               h="56px"
               w="472px"
-              isLoading={isDeleteAllLoading}
+              loading={isDeleteAllLoading}
               paddingTop="16px"
               paddingBottom="16px"
               px="24px"
@@ -166,9 +150,9 @@ const ChangeMethodology: FC<ChangeMethodologyProps> = ({
             >
               {t("change-methodology")}
             </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+          </DialogFooter>
+        </DialogContent>
+      </DialogRoot>
     </>
   );
 };

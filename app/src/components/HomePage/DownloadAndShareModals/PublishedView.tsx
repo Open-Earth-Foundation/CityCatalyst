@@ -2,20 +2,26 @@ import i18next, { TFunction } from "i18next";
 import {
   Box,
   Button,
-  Divider,
   HStack,
-  ModalBody,
   Text,
   VStack,
+  Link,
+  Icon,
 } from "@chakra-ui/react";
 import { InventoryResponse } from "@/util/types";
 import type { Locale } from "date-fns";
 import { enUS, pt, de, es } from "date-fns/locale";
 import { formatDistance } from "date-fns";
 import { toZonedTime } from "date-fns-tz";
-import { BlueSubtitle } from "@/components/blue-subtitle";
-import { ExternalLinkIcon } from "@chakra-ui/icons";
+import { BlueSubtitle } from "@/components/Texts/BlueSubtitle";
 import "dotenv/config";
+import { FiExternalLink } from "react-icons/fi";
+import {
+  DialogRoot,
+  DialogBody,
+  DialogContent,
+  DialogFooter,
+} from "@/components/ui/dialog";
 
 export function PublishedView({
   inventoryId,
@@ -50,12 +56,12 @@ export function PublishedView({
   const URL = `${window.location.protocol}//${window.location.host}/${lng}/public/${inventoryId}`;
 
   return (
-    <ModalBody>
+    <DialogBody>
       <Text fontWeight="600" fontSize="title.lg">
         {t("public-city-inventory")}
       </Text>
       <Text>{t("manage-public-inventory-description")}</Text>
-      <Divider my="24px" />
+      <Box divideX="2px" my="24px" />
       <HStack justify="space-between">
         <VStack align="left">
           <Text fontWeight="600" fontSize="title.md">
@@ -66,18 +72,14 @@ export function PublishedView({
           </Text>
         </VStack>
         <Box>
-          <Button
-            as="a"
-            href={URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            variant="ghost"
-            rightIcon={<ExternalLinkIcon fontSize="24px" />}
-          >
-            <BlueSubtitle t={t} text="view-site" />
-          </Button>
+          <Link as="a" href={URL} target="_blank" rel="noopener noreferrer">
+            <Button variant="ghost">
+              <BlueSubtitle t={t} text="view-site" />
+              <Icon as={FiExternalLink} fontSize="24px" />
+            </Button>
+          </Link>
         </Box>
       </HStack>
-    </ModalBody>
+    </DialogBody>
   );
 }

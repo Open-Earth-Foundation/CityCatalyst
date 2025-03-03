@@ -42,7 +42,21 @@ export default class ActivityService {
 
     let inventoryValue = await db.models.InventoryValue.findByPk(
       inventoryValueId,
-      { transaction },
+      {
+        transaction,
+        include: [
+          {
+            model: db.models.Inventory,
+            as: "inventory",
+            include: [
+              {
+                model: db.models.City,
+                as: "city",
+              },
+            ],
+          },
+        ],
+      },
     );
 
     if (!inventoryValue) {
@@ -228,6 +242,26 @@ export default class ActivityService {
       inventoryValueId,
     });
 
+    // check if there is an existing InventoryValue for the reference number
+    if (!inventoryValueId && !inventoryValueParams) {
+      throw new createHttpError.BadRequest(
+        "Either inventoryValueId or inventory must be provided",
+      );
+    }
+    if (inventoryValueParams) {
+      const existingInventoryValue = await db.models.InventoryValue.findOne({
+        where: {
+          gpcReferenceNumber: inventoryValueParams?.gpcReferenceNumber,
+          inventoryId,
+        },
+      });
+      if (existingInventoryValue) {
+        throw new createHttpError.BadRequest(
+          `Inventory value for reference number ${existingInventoryValue.gpcReferenceNumber} already exists`,
+        );
+      }
+    }
+
     return await db.sequelize?.transaction(
       async (transaction: Transaction): Promise<ActivityValue> => {
         if (inventoryValueId && inventoryValueParams) {
@@ -253,17 +287,33 @@ export default class ActivityService {
               subCategoryId: subCategoryId ?? undefined,
               gpcReferenceNumber: inventoryValueParams.gpcReferenceNumber,
             },
-            { transaction },
+            {
+              transaction,
+            },
           );
-        } else if (inventoryValueId) {
-          inventoryValue = await db.models.InventoryValue.findByPk(
-            inventoryValueId,
-            { transaction },
-          );
-          if (!inventoryValue) {
-            throw new createHttpError.NotFound("InventoryValue not found");
-          }
-        } else {
+        }
+
+        let finalInventoryValueId = inventoryValueId || inventoryValue?.id;
+        inventoryValue = await db.models.InventoryValue.findByPk(
+          finalInventoryValueId,
+          {
+            transaction,
+            include: [
+              {
+                model: db.models.Inventory,
+                as: "inventory",
+                include: [
+                  {
+                    model: db.models.City,
+                    as: "city",
+                  },
+                ],
+              },
+            ],
+          },
+        );
+
+        if (!inventoryValue) {
           throw new createHttpError.BadRequest(
             "Either inventoryValueId or inventoryValue must be provided",
           );
@@ -283,7 +333,6 @@ export default class ActivityService {
           },
           { transaction },
         );
-
         let { totalCO2e, totalCO2eYears, gases } =
           await CalculationService.calculateGasAmount(
             inventoryValue,
@@ -337,7 +386,8 @@ export default class ActivityService {
               gasValue.gasAmount = BigInt(
                 gases
                   .find((gas) => gas.gas === gasValue.gas)
-                  ?.amount?.toNumber() ?? 0,
+                  ?.amount?.toNumber()
+                  .toFixed(0) ?? 0,
               );
             }
 
@@ -359,12 +409,19 @@ export default class ActivityService {
     );
   }
 
-  public static async deleteActivity(id: string): Promise<number> {
-    return (await db.sequelize?.transaction(async (transaction) => {
+  public static async deleteActivity(id: string): Promise<void> {
+    return await db.sequelize?.transaction(async (transaction) => {
       const activityValue = await db.models.ActivityValue.findByPk(id, {
         include: {
           model: db.models.InventoryValue,
           as: "inventoryValue",
+          include: [
+            {
+              model: db.models.ActivityValue,
+              as: "activityValues",
+              attributes: ["id", "co2eqYears"],
+            },
+          ],
         },
       });
 
@@ -376,19 +433,30 @@ export default class ActivityService {
 
       const inventoryValue = activityValue?.inventoryValue;
 
-      inventoryValue.co2eq =
-        BigInt(inventoryValue.co2eq ?? 0n) - BigInt(activityValue.co2eq ?? 0n);
-      // Todo figure out a way to update the co2eqYears when deleting an activity valye
-      // inventoryValue.co2eqYears = Math.max(
-      //   inventoryValue.co2eqYears ?? 0,
-      //   totalCO2eYears,
-      // );
+      const activityCount = inventoryValue?.activityValues.length;
+      await activityValue.destroy({ transaction });
 
-      await inventoryValue.save({ transaction });
-      return await db.models.ActivityValue.destroy({
-        where: { id },
-      });
-    })) as number;
+      // delete the InventoryValue when its last ActivityValue is deleted
+      if (activityCount <= 1) {
+        await inventoryValue.destroy({ transaction });
+      } else {
+        inventoryValue.co2eq =
+          BigInt(inventoryValue.co2eq ?? 0n) -
+          BigInt(activityValue.co2eq ?? 0n);
+
+        // re-calculate co2eqYears by taking max value of remaining activity values
+        let maxCo2eqYears = 0;
+        for (const activityValue of inventoryValue.activityValues) {
+          maxCo2eqYears = Math.max(
+            maxCo2eqYears,
+            activityValue.co2eqYears ?? 0,
+          );
+        }
+        inventoryValue.co2eqYears = maxCo2eqYears;
+
+        await inventoryValue.save({ transaction });
+      }
+    });
   }
 
   public static async deleteAllActivitiesInSubsector({

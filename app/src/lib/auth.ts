@@ -6,11 +6,7 @@ import {
   CredentialInput,
   CredentialsConfig,
 } from "next-auth/providers/credentials";
-
-export enum Roles {
-  User = "user",
-  Admin = "admin",
-}
+import { Roles } from "@/util/types";
 
 // extracted from next-auth/providers/credentials
 // added here since the node test runner/ tsx wouldn't properly import ESM modules
@@ -36,7 +32,7 @@ export default function Credentials<
 export type AppSession = DefaultSession & {
   user: {
     id: string;
-    role: string;
+    role: Roles;
   };
 };
 

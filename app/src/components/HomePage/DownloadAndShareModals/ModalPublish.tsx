@@ -1,17 +1,4 @@
-import {
-  Box,
-  Button,
-  Divider,
-  HStack,
-  Img,
-  Modal,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
-  Text,
-} from "@chakra-ui/react";
+import { Box, Button, HStack, Image, Text } from "@chakra-ui/react";
 import type { TFunction } from "i18next";
 import { api } from "@/services/api";
 import { useState } from "react";
@@ -19,18 +6,29 @@ import { UnpublishedView } from "@/components/HomePage/DownloadAndShareModals/Un
 import { PublishedView } from "@/components/HomePage/DownloadAndShareModals/PublishedView";
 import { InventoryResponse } from "@/util/types";
 
+import {
+  DialogRoot,
+  DialogContent,
+  DialogHeader,
+  DialogBody,
+  DialogFooter,
+} from "@/components/ui/dialog";
+
 const ModalPublish = ({
   t,
   isPublishOpen,
+  //Todo: resolve close action
   onPublishClose,
   inventoryId,
   inventory,
+  setModalOpen,
 }: {
   t: TFunction;
   isPublishOpen: boolean;
   onPublishClose: () => void;
   inventoryId: string;
   inventory: InventoryResponse;
+  setModalOpen: (open: boolean) => void;
 }) => {
   const [isAuthorized, setIsAuthorized] = useState<boolean>(false);
 
@@ -44,12 +42,11 @@ const ModalPublish = ({
   };
 
   return (
-    <Modal isOpen={isPublishOpen} onClose={onPublishClose}>
-      <ModalOverlay />
-      <ModalContent maxW="container.md">
-        <ModalHeader>
+    <DialogRoot open={isPublishOpen} onOpenChange={(e) => setModalOpen(e.open)}>
+      <DialogContent maxW="container.md">
+        <DialogHeader>
           <HStack>
-            <Img
+            <Image
               src="/assets/publish.svg"
               alt="publish-to-web"
               width="24px"
@@ -59,28 +56,30 @@ const ModalPublish = ({
               {t("publish-to-web")}
             </Text>
           </HStack>
-        </ModalHeader>
-        <ModalCloseButton />
-        <Divider my="24px" />
-        {!inventory.isPublic ? (
-          <UnpublishedView
-            t={t}
-            checked={isAuthorized}
-            onAuthorizeChange={() =>
-              setIsAuthorized((isAuth: boolean) => !isAuth)
-            }
-          />
-        ) : (
-          <PublishedView
-            t={t}
-            inventoryId={inventoryId}
-            inventory={inventory}
-          />
-        )}
-        <ModalFooter>
+        </DialogHeader>
+
+        <DialogBody>
+          <Box my="24px" divideX="2px" />
+          {!inventory.isPublic ? (
+            <UnpublishedView
+              t={t}
+              checked={isAuthorized}
+              onAuthorizeChange={() =>
+                setIsAuthorized((isAuth: boolean) => !isAuth)
+              }
+            />
+          ) : (
+            <PublishedView
+              t={t}
+              inventoryId={inventoryId}
+              inventory={inventory}
+            />
+          )}
+        </DialogBody>
+        <DialogFooter>
           <Box>
             <Button
-              isDisabled={!inventory.isPublic && !isAuthorized}
+              disabled={!inventory.isPublic && !isAuthorized}
               colorScheme="blue"
               mr={3}
               onClick={handlePublishChange}
@@ -88,9 +87,9 @@ const ModalPublish = ({
               {inventory.isPublic ? t("unpublish") : t("publish-to-web")}
             </Button>
           </Box>
-        </ModalFooter>
-      </ModalContent>
-    </Modal>
+        </DialogFooter>
+      </DialogContent>
+    </DialogRoot>
   );
 };
 

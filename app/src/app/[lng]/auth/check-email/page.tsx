@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslation } from "@/i18n/client";
-import { Link } from "@chakra-ui/next-js";
+import { Link } from "@chakra-ui/react";
 import { Button, Heading, Text } from "@chakra-ui/react";
 import NextLink from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -9,7 +9,7 @@ import { Suspense } from "react";
 
 function DynamicContent({ t }: { t: Function }) {
   const searchParams = useSearchParams();
-  const email = searchParams.get("email");
+  const email = searchParams.get("email_address");
   const isReset = !!searchParams.get("reset");
 
   return isReset ? (
@@ -46,17 +46,17 @@ export default function CheckEmail({
   const { t } = useTranslation(lng, "auth");
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl");
+  const queryParams = Object.fromEntries(searchParams.entries());
+  const queryParamsString = new URLSearchParams(queryParams).toString();
+  const callbackParam = callbackUrl ? "&" : "";
+  const nextCallbackUrl = `/auth/login?${callbackParam}${queryParamsString}`;
   return (
     <>
       <Heading size="xl">{t("check-email-heading")}</Heading>
       <Suspense>
         <DynamicContent t={t} />
       </Suspense>
-      <NextLink
-        href={`/auth/login?callbackUrl=${callbackUrl}`}
-        passHref
-        legacyBehavior
-      >
+      <NextLink href={nextCallbackUrl} passHref legacyBehavior>
         <Button as="a" h={16} width="full" mt={4}>
           {t("back-to-login")}
         </Button>

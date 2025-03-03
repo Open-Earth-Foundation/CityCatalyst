@@ -24,7 +24,7 @@ export function InventoryPreferencesCard({
   return (
     <>
       {shouldShowInventoryPreferences && (
-        <Card mt="80px" width="full" backgroundColor="background.neutral">
+        <Card.Root mt="80px" width="full" backgroundColor="background.neutral">
           <HStack>
             <VStack align={"left"}>
               <Text
@@ -33,7 +33,7 @@ export function InventoryPreferencesCard({
                 fontWeight="semibold"
                 lineHeight="24"
                 my={4}
-                textColor={"blue"}
+                color={"blue"}
               >
                 {t("set-inventory-preferences")}
               </Text>
@@ -47,12 +47,13 @@ export function InventoryPreferencesCard({
             </NextLink>
             <IconButton
               variant="ghost"
-              icon={<IoIosClose />}
               onClick={() => setShouldShowInventoryPreferences(false)}
               aria-label={"close"}
-            />
+            >
+              <IoIosClose />
+            </IconButton>
           </HStack>
-        </Card>
+        </Card.Root>
       )}
     </>
   );

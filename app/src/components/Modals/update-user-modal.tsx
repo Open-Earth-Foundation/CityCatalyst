@@ -1,103 +1,76 @@
 "use client";
 
-import {
-  Modal,
-  Button,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
-  Text,
-  ModalProps,
-  Input,
-  FormControl,
-  FormLabel,
-  Box,
-  useToast,
-} from "@chakra-ui/react";
+import { Box, Button } from "@chakra-ui/react";
 import React, { FC, useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
-import FormInput from "../form-input";
-import FormSelectInput from "../form-select-input";
-import { UserAttributes } from "@/models/User";
-import { MdCheckCircleOutline } from "react-icons/md";
-import { api } from "@/services/api";
 import { TFunction } from "i18next";
 
-interface UpdateUserModalProps {
+import { api } from "@/services/api";
+import { GetUserCityInvitesResponseUserData, Roles } from "@/util/types";
+import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
+import FormInput from "@/components/form-input";
+import FormSelectInput from "@/components/form-select-input";
+import {
+  DialogRoot,
+  DialogBody,
+  DialogCloseTrigger,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+} from "@/components/ui/dialog";
+
+interface UpdateUserDialogProps {
   isOpen: boolean;
   onClose: any;
-  userData: UserAttributes;
-  userInfo: UserAttributes;
   t: TFunction;
+  userData: GetUserCityInvitesResponseUserData;
 }
 
-const UpdateUserModal: FC<UpdateUserModalProps> = ({
+const UpdateUserDialog: FC<UpdateUserDialogProps> = ({
   isOpen,
   onClose,
-  userData,
-  userInfo,
   t,
+  userData,
 }) => {
   const {
     handleSubmit,
     register,
     formState: { errors, isSubmitting },
     setValue,
-  } = useForm<UserAttributes>();
+  } = useForm<GetUserCityInvitesResponseUserData>();
 
-  const [setUserData] = api.useSetUserDataMutation();
+  const [setUserData, { isLoading, error }] = api.useSetUserDataMutation();
 
-  const toast = useToast();
+  const { showSuccessToast } = UseSuccessToast({
+    description: t("user-details-updated"),
+    title: t("user-details-updated"),
+  });
+
+  const { showErrorToast } = UseErrorToast({
+    description: t("user-details-update-fail"),
+    title: t("user-details-update-fail"),
+  });
 
   const [inputValue, setInputValue] = useState<string>("");
 
-  const onSubmit: SubmitHandler<UserAttributes> = async (data) => {
-    // TODO
+  const onSubmit: SubmitHandler<GetUserCityInvitesResponseUserData> = async ({
+    role,
+    email,
+    name,
+  }) => {
     // Submit data via the api
     await setUserData({
-      cityId: "", // TODO pass currently selected city's ID in here!
       userId: userData.userId,
-      name: data.name,
-      email: data.email,
-      role: data.role,
+      name: name,
+      email: email,
+      role: role === "admin" ? Roles.Admin : Roles.User,
     }).then(() => {
       onClose();
-      toast({
-        description: t("user-details-updated"),
-        status: "success",
-        duration: 5000,
-        isClosable: true,
-        render: () => (
-          <Box
-            display="flex"
-            gap="8px"
-            color="white"
-            alignItems="center"
-            justifyContent="space-between"
-            p={3}
-            bg="interactive.primary"
-            width="600px"
-            height="60px"
-            borderRadius="8px"
-          >
-            <Box display="flex" gap="8px" alignItems="center">
-              <MdCheckCircleOutline fontSize="24px" />
-
-              <Text
-                color="base.light"
-                fontWeight="bold"
-                lineHeight="52"
-                fontSize="label.lg"
-              >
-                {t("user-details-updated")}
-              </Text>
-            </Box>
-          </Box>
-        ),
-      });
+      if (error) {
+        showErrorToast();
+      } else {
+        showSuccessToast();
+      }
     });
   };
 
@@ -109,10 +82,9 @@ const UpdateUserModal: FC<UpdateUserModalProps> = ({
 
   return (
     <>
-      <Modal blockScrollOnMount={false} isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay />
-        <ModalContent minH="524px" minW="568px" marginTop="10%">
-          <ModalHeader
+      <DialogRoot preventScroll open={isOpen} onExitComplete={onClose}>
+        <DialogContent minH="524px" minW="568px" marginTop="10%">
+          <DialogHeader
             display="flex"
             justifyContent="center"
             fontWeight="semibold"
@@ -125,9 +97,9 @@ const UpdateUserModal: FC<UpdateUserModalProps> = ({
             borderColor="border.neutral"
           >
             {t("edit-user")}
-          </ModalHeader>
-          <ModalCloseButton marginTop="10px" />
-          <ModalBody paddingTop="24px" px="48px">
+          </DialogHeader>
+          <DialogCloseTrigger marginTop="10px" />
+          <DialogBody paddingTop="24px" px="48px">
             <form>
               <Box display="flex" flexDirection="column" gap="24px">
                 <FormInput
@@ -153,8 +125,8 @@ const UpdateUserModal: FC<UpdateUserModalProps> = ({
                 />
               </Box>
             </form>
-          </ModalBody>
-          <ModalFooter
+          </DialogBody>
+          <DialogFooter
             borderTopWidth="1px"
             borderStyle="solid"
             borderColor="border.neutral"
@@ -175,17 +147,18 @@ const UpdateUserModal: FC<UpdateUserModalProps> = ({
               fontWeight="semibold"
               fontSize="button.md"
               type="submit"
+              disabled={isLoading}
               onClick={handleSubmit(onSubmit)}
               p={0}
               m={0}
             >
               {t("save-changes")}
             </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+          </DialogFooter>
+        </DialogContent>
+      </DialogRoot>
     </>
   );
 };
 
-export default UpdateUserModal;
+export default UpdateUserDialog;

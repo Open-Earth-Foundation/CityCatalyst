@@ -3,6 +3,9 @@ import { GlobalWarmingPotentialTypeEnum, InventoryTypeEnum } from "./enums";
 
 export const emailPattern =
   /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+export const tokenRegex = /^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9_\-]+$/;
+export const uuidRegex =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export const geoJSON = z.object({
   title: z.string(),
@@ -166,6 +169,17 @@ export const createUserInvite = z.object({
   cityId: z.string(),
 });
 
+export const AcceptInvite = z.object({
+  email: z.string().email(),
+  cityIds: z.array(z.string()),
+  token: z.string(),
+});
+
+export const CreateUsersInvite = z.object({
+  emails: z.array(z.string().email()),
+  cityIds: z.array(z.string()),
+});
+
 export type CreateUserInvite = z.infer<typeof createUserInvite>;
 
 const gasValueSchema = z.object({
@@ -224,3 +238,10 @@ export const fetchEmissionsFactorRequest = z.object({
   regionLocode: z.string().optional(),
   metadata: z.record(z.string(), z.any()).optional(),
 });
+
+export const updatePasswordRequest = z.object({
+  currentPassword: z.string().min(4).max(64),
+  confirmPassword: z.string().min(4).max(64).regex(passwordRegex),
+});
+
+export type UpdatePasswordRequest = z.infer<typeof updatePasswordRequest>;

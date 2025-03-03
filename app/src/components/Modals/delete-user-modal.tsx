@@ -1,53 +1,60 @@
 "use client";
 
-import type { UserAttributes } from "@/models/User";
+import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
 import { api } from "@/services/api";
-import {
-  Modal,
-  Button,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalHeader,
-  ModalOverlay,
-  Text,
-  Box,
-  Badge,
-  ModalFooter,
-} from "@chakra-ui/react";
+import { Badge, Box, Button, Text } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import React, { FC } from "react";
-import { Trans } from "react-i18next";
 
 import { FiTrash2 } from "react-icons/fi";
+import {
+  DialogBody,
+  DialogCloseTrigger,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogRoot,
+} from "@/components/ui/dialog";
 
-interface DeleteUserModalProps {
+interface DeleteUserDialogProps {
   isOpen: boolean;
   onClose: any;
-  userData: UserAttributes;
-  cityId: string;
+  cityInviteId: string;
   t: TFunction;
 }
 
-const DeleteUserModal: FC<DeleteUserModalProps> = ({
+const DeleteUserDialog: FC<DeleteUserDialogProps> = ({
   isOpen,
   onClose,
-  userData,
-  cityId,
+  cityInviteId,
   t,
 }) => {
-  const [removeUser] = api.useRemoveUserMutation();
-  const handleDeleteUser = async (userId: string, cityId: string) => {
-    await removeUser({ userId, cityId }).then(() => {
+  const [cancelUserInvite, { isLoading, error }] =
+    api.useCancelInviteMutation();
+  const { showSuccessToast } = UseSuccessToast({
+    description: t("invite-canceled"),
+    title: t("invite-canceled"),
+  });
+
+  const { showErrorToast } = UseErrorToast({
+    description: t("invite-cancel-fail"),
+    title: t("invite-cancel-fail"),
+  });
+  const handleCancelInvite = async () => {
+    await cancelUserInvite({ cityInviteId }).then(() => {
       onClose();
+      if (error) {
+        showErrorToast();
+      } else {
+        showSuccessToast();
+      }
     });
   };
   return (
     <>
-      <Modal blockScrollOnMount={false} isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay />
-        <ModalContent minH="388px" minW="568px" marginTop="10%">
-          <ModalHeader
+      <DialogRoot preventScroll open={isOpen} onExitComplete={onClose}>
+        <DialogContent minH="388px" minW="568px" marginTop="10%">
+          <DialogHeader
             display="flex"
             justifyContent="center"
             fontWeight="semibold"
@@ -60,9 +67,9 @@ const DeleteUserModal: FC<DeleteUserModalProps> = ({
             fontFamily="heading"
           >
             {t("remove-user")}
-          </ModalHeader>
-          <ModalCloseButton marginTop="10px" />
-          <ModalBody paddingTop="24px">
+          </DialogHeader>
+          <DialogCloseTrigger marginTop="10px" />
+          <DialogBody paddingTop="24px">
             <Box
               display="flex"
               flexDirection="column"
@@ -96,18 +103,14 @@ const DeleteUserModal: FC<DeleteUserModalProps> = ({
                   letterSpacing="wide"
                   fontStyle="normal"
                 >
-                  <Trans t={t} i18nKey="remove-user-prompt">
-                    Are you sure you want to{" "}
-                    <span style={{ fontWeight: "bold" }}>
-                      permanently remove this user
-                    </span>{" "}
-                    from your team?
-                  </Trans>
+                  {t("are-you-sure-you-want-to")}{" "}
+                  <span style={{ fontWeight: "bold" }}>{t("un-invite")}</span>{" "}
+                  {t("this-user-from-your-city")}
                 </Text>
               </Box>
             </Box>
-          </ModalBody>
-          <ModalFooter
+          </DialogBody>
+          <DialogFooter
             borderTopWidth="1px"
             borderStyle="solid"
             borderColor="border.neutral"
@@ -129,17 +132,18 @@ const DeleteUserModal: FC<DeleteUserModalProps> = ({
               fontWeight="semibold"
               fontSize="button.md"
               type="submit"
-              onClick={() => handleDeleteUser(userData.userId, cityId)}
+              onClick={handleCancelInvite}
+              disabled={isLoading}
               p={0}
               m={0}
             >
               {t("remove-user")}
             </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+          </DialogFooter>
+        </DialogContent>
+      </DialogRoot>
     </>
   );
 };
 
-export default DeleteUserModal;
+export default DeleteUserDialog;

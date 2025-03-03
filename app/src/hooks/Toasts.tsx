@@ -1,0 +1,43 @@
+import { toaster } from "@/components/ui/toaster";
+
+export function UseSuccessToast({
+  title,
+  description,
+  duration = 3000,
+}: {
+  title: string;
+  description?: string;
+  duration?: number;
+}) {
+  const showSuccessToast = () => {
+    return toaster.create({
+      title: title,
+      description: description,
+      type: "success",
+      duration: duration,
+    });
+  };
+
+  return { showSuccessToast };
+}
+
+export function UseErrorToast({
+  title,
+  description,
+  duration = 6000,
+}: {
+  title: string;
+  description?: string;
+  duration?: number;
+}) {
+  const showErrorToast = () => {
+    return toaster.create({
+      title: title,
+      description: description,
+      duration,
+      type: "error",
+    });
+  };
+
+  return { showErrorToast };
+}

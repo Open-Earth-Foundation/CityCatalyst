@@ -7,7 +7,10 @@ import type { ScopeAttributes } from "@/models/Scope";
 import type { SectorAttributes } from "@/models/Sector";
 import type { SubCategoryAttributes } from "@/models/SubCategory";
 import { DataSourceI18nAttributes as DataSourceAttributes } from "@/models/DataSourceI18n";
-import type { InventoryValueAttributes } from "@/models/InventoryValue";
+import {
+  InventoryValue,
+  InventoryValueAttributes,
+} from "@/models/InventoryValue";
 import type { SubSectorAttributes } from "@/models/SubSector";
 import type { InventoryAttributes } from "@/models/Inventory";
 import type { CityAttributes } from "@/models/City";
@@ -18,18 +21,37 @@ import {
   FailedSourceResult,
   RemovedSourceResult,
 } from "@/backend/DataSourceService";
+import { ActivityValue } from "@/models/ActivityValue";
 
-export interface CitiesAndYearsResponse {
+export interface CityAndYearsResponse {
   city: CityAttributes;
-  years: { year: number; inventoryId: string; lastUpdate: Date }[];
+  years: CityYearData[];
 }
 
-export type InventoryResponse = InventoryAttributes & {
+export interface CityYearData {
+  year: number;
+  inventoryId: string;
+  lastUpdate: Date;
+}
+
+interface RequiredInventoryAttributes extends Required<InventoryAttributes> {}
+
+export type InventoryResponse = RequiredInventoryAttributes & {
   city: CityAttributes & {
     populationYear: number;
     population: number;
   };
 };
+
+export interface InventoryPopulationsResponse {
+  cityId: string;
+  population: number;
+  year: number;
+  countryPopulation: number;
+  countryPopulationYear: number;
+  regionPopulation: number;
+  regionPopulationYear: number;
+}
 
 export interface SectorProgress {
   sector: SectorAttributes;
@@ -102,6 +124,15 @@ export interface InventoryValueInSubSectorScopeUpdateQuery {
   data: InventoryValueData;
 }
 
+export interface InventoryValueInSubSectorDeleteQuery {
+  subSectorId: string;
+  inventoryId: string;
+}
+
+export interface InventoryDeleteQuery {
+  inventoryId: string;
+}
+
 export interface InventoryUpdateQuery {
   inventoryId: string;
   data: { isPublic: boolean };
@@ -165,6 +196,54 @@ export interface UserInviteResponse {
   lastUpdated: string;
 }
 
+export enum Roles {
+  User = "user",
+  Admin = "admin",
+}
+
+export interface GetUserCityInvitesResponseUserData {
+  userId: string;
+  role: Roles;
+  email: string;
+  name: string;
+}
+
+export enum CityInviteStatus {
+  PENDING = "pending",
+  ACCEPTED = "accepted",
+  CANCELED = "canceled",
+  EXPIRED = "expired",
+}
+
+export interface GetUserCityInvitesResponse {
+  id: string;
+  email: string;
+  user?: GetUserCityInvitesResponseUserData;
+  cityId: string;
+  userId: string;
+  status: CityInviteStatus;
+  cityInvites: Required<CityAttributes>;
+}
+
+export interface AcceptInviteResponse {
+  success: boolean;
+  error?: string;
+}
+export interface AcceptInviteRequest {
+  email: string;
+  cityIds: string[];
+  token: string;
+}
+
+export interface UsersInvitesRequest {
+  cityIds: string[];
+  emails: string[];
+}
+
+export interface UsersInvitesResponse {
+  success: boolean;
+}
+
 export interface RequiredScopesResponse {
   requiredScopes: string[];
 }
@@ -189,6 +268,23 @@ export interface ResultsResponse {
     total: bigint;
   };
   topEmissions: { bySubSector: TopEmission[] };
+}
+
+export interface ProjectionData {
+  [year: string]: {
+    [sector: string]: number;
+  };
+}
+
+export interface EmissionsForecastData {
+  growthRates: ProjectionData;
+  forecast: ProjectionData;
+  cluster: {
+    id: number;
+    description: {
+      [lng: string]: string;
+    };
+  };
 }
 
 export interface YearOverYearResultResponse {
@@ -248,3 +344,12 @@ export type SectorBreakdownResponse = BreakdownByActivity & {
   byActivity: BreakdownByActivity;
   byScope: ActivityDataByScope[];
 };
+
+export type InventoryValueWithActivityValues = InventoryValue & {
+  activityValues: ActivityValue[];
+};
+
+export type InventoryWithInventoryValuesAndActivityValues =
+  InventoryResponse & {
+    inventoryValues: InventoryValueWithActivityValues[];
+  };

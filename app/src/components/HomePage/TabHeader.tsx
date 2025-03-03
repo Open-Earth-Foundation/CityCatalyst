@@ -54,41 +54,21 @@ export function TabHeader({
               fontSize="headline.sm"
               fontWeight="semibold"
               lineHeight="32"
+              pb={3}
             >
               {t(title)}
             </Heading>
           </Box>
           <Box className="flex items-center gap-3">
-            <Badge
-              borderWidth="1px"
-              borderColor="border.neutral"
-              py={1}
-              px={2}
-              borderRadius="full"
-              bg="base.light"
-            >
-              <Flex>
-                <MdOutlineCalendarToday
-                  size="20px"
-                  style={{ marginRight: 1 }}
-                />
-                {t("year")}: {inventory?.year}
-              </Flex>
+            <Badge>
+              <MdOutlineCalendarToday size="20px" style={{ marginRight: 1 }} />
+              {t("year")}: {inventory?.year}
             </Badge>
-            <Badge
-              borderWidth="1px"
-              borderColor="border.neutral"
-              py={1}
-              px={2}
-              borderRadius="full"
-              bg="base.light"
-            >
-              <Flex>
-                <MdOutlineAccountTree size="20px" style={{ marginRight: 1 }} />
-                {inventory?.inventoryType === InventoryTypeEnum.GPC_BASIC_PLUS
-                  ? t("inventory-format-basic+")
-                  : t("inventory-format-basic")}
-              </Flex>
+            <Badge>
+              <MdOutlineAccountTree size="20px" style={{ marginRight: 1 }} />
+              {inventory?.inventoryType === InventoryTypeEnum.GPC_BASIC_PLUS
+                ? t("inventory-format-basic+")
+                : t("inventory-format-basic")}
             </Badge>
           </Box>
         </Box>

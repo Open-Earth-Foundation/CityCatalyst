@@ -1,48 +1,38 @@
 "use client";
 
-import { UserDetails } from "@/app/[lng]/[inventory]/settings/page";
-import {
-  Modal,
-  Button,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalHeader,
-  ModalOverlay,
-  Text,
-  Box,
-  Badge,
-  useToast,
-  ModalFooter,
-} from "@chakra-ui/react";
+import { Badge, Box, Button, Icon, Text } from "@chakra-ui/react";
 import React, { FC, useState } from "react";
 
 import { FiTrash2 } from "react-icons/fi";
 import PasswordInput from "../password-input";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { useTranslation } from "@/i18n/client";
 import { TFunction } from "i18next";
-import { InfoIcon, InfoOutlineIcon } from "@chakra-ui/icons";
-import { UserAttributes } from "@/models/User";
+import { MdInfoOutline } from "react-icons/md";
 import { api } from "@/services/api";
-import { CityAttributes } from "@/models/City";
-import { MdCheckCircleOutline } from "react-icons/md";
+import type { CityAttributes } from "@/models/City";
 
-interface DeleteCityModalProps {
+import {
+  DialogBody,
+  DialogCloseTrigger,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogRoot,
+} from "@/components/ui/dialog";
+
+import { UseSuccessToast } from "@/hooks/Toasts";
+
+interface DeleteCityDialogProps {
   isOpen: boolean;
   onClose: any;
-  userData: UserAttributes;
   cityData: CityAttributes;
   t: TFunction;
-  lng: string;
 }
 
-const DeleteCityModal: FC<DeleteCityModalProps> = ({
+const DeleteCityDialog: FC<DeleteCityDialogProps> = ({
   isOpen,
   onClose,
-  userData,
   cityData,
-  lng,
   t,
 }) => {
   const {
@@ -53,12 +43,13 @@ const DeleteCityModal: FC<DeleteCityModalProps> = ({
   } = useForm<{ password: string }>();
 
   const [requestPasswordConfirm] = api.useRequestVerificationMutation();
-  const { data: token } = api.useGetVerifcationTokenQuery({
-    skip: !userData,
-  });
+  const { data: token } = api.useGetVerifcationTokenQuery({});
   const [removeCity] = api.useRemoveCityMutation();
   const [isPasswordCorrect, setIsPasswordCorrect] = useState<boolean>(true);
-  const toast = useToast();
+  const { showSuccessToast } = UseSuccessToast({
+    title: t("city-deleted"),
+    duration: 5000,
+  });
 
   const onSubmit: SubmitHandler<{ password: string }> = async (data) => {
     await requestPasswordConfirm({
@@ -67,43 +58,11 @@ const DeleteCityModal: FC<DeleteCityModalProps> = ({
     }).then(async (res: any) => {
       if (res.data?.comparePassword) {
         await removeCity({
-          cityId: cityData.locode!,
+          cityId: cityData.cityId!,
         }).then((res: any) => {
           onClose();
           setIsPasswordCorrect(true);
-          toast({
-            description: t("city-deleted"),
-            status: "success",
-            duration: 5000,
-            isClosable: true,
-            render: () => (
-              <Box
-                display="flex"
-                gap="8px"
-                color="white"
-                alignItems="center"
-                justifyContent="space-between"
-                p={3}
-                bg="interactive.primary"
-                width="600px"
-                height="60px"
-                borderRadius="8px"
-              >
-                <Box display="flex" gap="8px" alignItems="center">
-                  <MdCheckCircleOutline fontSize="24px" />
-
-                  <Text
-                    color="base.light"
-                    fontWeight="bold"
-                    lineHeight="52"
-                    fontSize="label.lg"
-                  >
-                    {t("city-deleted")}
-                  </Text>
-                </Box>
-              </Box>
-            ),
-          });
+          showSuccessToast();
         });
       } else {
         setIsPasswordCorrect(false);
@@ -113,10 +72,9 @@ const DeleteCityModal: FC<DeleteCityModalProps> = ({
 
   return (
     <>
-      <Modal blockScrollOnMount={false} isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay />
-        <ModalContent minH="520px" minW="568px" marginTop="10%">
-          <ModalHeader
+      <DialogRoot preventScroll open={isOpen} onOpenChange={onClose}>
+        <DialogContent minH="520px" minW="568px" marginTop="10%">
+          <DialogHeader
             display="flex"
             justifyContent="center"
             fontWeight="semibold"
@@ -129,9 +87,9 @@ const DeleteCityModal: FC<DeleteCityModalProps> = ({
             borderColor="border.neutral"
           >
             {t("remove-city")}
-          </ModalHeader>
-          <ModalCloseButton marginTop="10px" />
-          <ModalBody paddingTop="24px">
+          </DialogHeader>
+          <DialogCloseTrigger marginTop="10px" />
+          <DialogBody paddingTop="24px">
             <Box
               display="flex"
               flexDirection="column"
@@ -200,7 +158,10 @@ const DeleteCityModal: FC<DeleteCityModalProps> = ({
                         w="365px"
                         gap="6px"
                       >
-                        <InfoOutlineIcon color="interactive.secondary" />
+                        <Icon
+                          as={MdInfoOutline}
+                          color="interactive.secondary"
+                        />
                         {isPasswordCorrect ? (
                           <Text
                             fontSize="body.md"
@@ -230,8 +191,8 @@ const DeleteCityModal: FC<DeleteCityModalProps> = ({
                 </form>
               </Box>
             </Box>
-          </ModalBody>
-          <ModalFooter
+          </DialogBody>
+          <DialogFooter
             borderTopWidth="1px"
             borderStyle="solid"
             borderColor="border.neutral"
@@ -259,11 +220,11 @@ const DeleteCityModal: FC<DeleteCityModalProps> = ({
             >
               {t("remove-city")}
             </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+          </DialogFooter>
+        </DialogContent>
+      </DialogRoot>
     </>
   );
 };
 
-export default DeleteCityModal;
+export default DeleteCityDialog;

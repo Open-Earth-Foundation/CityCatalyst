@@ -6,6 +6,7 @@ import { Trans } from "react-i18next/TransWithoutContext";
 import DownloadButton from "@/components/HomePage/DownloadButton";
 import type { CityAttributes } from "@/models/City";
 import type { InventoryAttributes } from "@/models/Inventory";
+import { AddCollaboratorButton } from "@/components/HomePage/AddCollaboratorButton";
 
 export function ActionCards({
   city,
@@ -21,21 +22,21 @@ export function ActionCards({
   inventory?: InventoryAttributes;
 }) {
   return (
-    <Box className="flex gap-[24px] ">
+    <Box className="flex gap-[24px] w-full">
       <NextLink
         data-testid={"add-data-to-inventory-card"}
         href={`/${inventoryId}/data`}
       >
-        <Card
+        <Card.Root
           shadow="2dp"
           backgroundColor="base.light"
           borderColor="interactive.accent"
           borderWidth="thin"
-          className="h-[132px] hover:shadow-xl"
+          className="h-[208px] hover:shadow-xl"
           py={0}
           px={6}
         >
-          <Box className="flex items-center w-fill">
+          <Box className="flex items-center" height={"100%"}>
             <Box>
               <Box
                 className="flex items-center justify-center h-[48px] w-[48px] rounded-full"
@@ -44,7 +45,7 @@ export function ActionCards({
                 <MdOutlineAddchart className="text-white" size={24} />
               </Box>
             </Box>
-            <Box>
+            <Box display="flex" flexDir="column" gap="12px">
               <CardHeader className="flex h-[20px] gap-2">
                 <Text
                   fontFamily="heading"
@@ -67,9 +68,10 @@ export function ActionCards({
               </CardBody>
             </Box>
           </Box>
-        </Card>
+        </Card.Root>
       </NextLink>
-      <Box>
+      <Box className="flex flex-col gap-[8px]">
+        <AddCollaboratorButton lng={lng} />
         <DownloadButton
           lng={lng}
           t={t}

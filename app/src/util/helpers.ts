@@ -278,13 +278,13 @@ export function convertKgToKiloTonnes(
 
 export function convertKgToTonnes(
   valueInKg: number | Decimal | bigint,
-  gas?: string,
+  gas?: string | null,
+  locale = "en-US",
 ): string {
-  const locale = "en-US";
   const gasSuffix = gas ? ` ${gas}` : " CO2e";
 
   const kg = toDecimal(valueInKg);
-  if (!kg) return "";
+  if (!kg) return `0 t${gasSuffix}`;
   const formatter = new Intl.NumberFormat(locale, { maximumFractionDigits: 2 });
 
   const gigaTonne = new Decimal("1e12");
@@ -320,8 +320,54 @@ export const toKebabCase = (input: string | undefined): string => {
     .replace(/([a-z0-9])([A-Z])/g, "$1-$2")
     .replace(/[\s_]+/g, "-")
     .replace(/^-+|-+$/g, "")
+    .replace(/[^\w-]+/g, "")
     .toLowerCase();
 };
 
 export const capitalizeFirstLetter = (string: string) =>
   string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+
+export const convertSectorReferenceNumberToNumber = (
+  referenceNumber: string,
+) => {
+  switch (referenceNumber) {
+    case "I":
+      return 1;
+    case "II":
+      return 2;
+    case "III":
+      return 3;
+    case "IV":
+      return 4;
+    case "V":
+      return 5;
+    default:
+      return 1;
+  }
+};
+
+const compareGpcRefNumbers = (a: string, b: string) => {
+  const aSplit = a.split(".");
+  const bSplit = b.split(".");
+
+  const aSector = convertSectorReferenceNumberToNumber(aSplit[0]).toString();
+  aSplit[0] = aSector.toString();
+  const bSector = convertSectorReferenceNumberToNumber(bSplit[0]).toString();
+  bSplit[0] = bSector.toString();
+
+  for (let i = 0; i < Math.min(aSplit.length, bSplit.length); i++) {
+    if (aSplit[i] !== bSplit[i]) {
+      return parseInt(aSplit[i]) - parseInt(bSplit[i]);
+    }
+  }
+
+  return 0;
+};
+
+export const sortGpcReferenceNumbers = (refNumbers: string[]): string[] => {
+  return [...refNumbers].sort(compareGpcRefNumbers);
+};
+
+export const isEmptyObject = (obj: Record<string, any>) => {
+  return Object.keys(obj).length === 0 && obj.constructor === Object;
+};

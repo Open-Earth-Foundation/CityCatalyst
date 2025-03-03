@@ -11,17 +11,12 @@ spec:
       - name: cc-seed
         image: ghcr.io/open-earth-foundation/citycatalyst:latest
         imagePullPolicy: Always
+        envFrom:
+          - configMapRef:
+              name: cc-db-configmap
         env:
         - name: NODE_ENV
           value: development
-        - name: DATABASE_NAME
-          value: "citycatalyst"
-        - name: DATABASE_HOST
-          value: "cc-db"
-        - name: DATABASE_USER
-          value: "citycatalyst"
-        - name: DATABASE_PASSWORD
-          value: "development"
         command: ["npm",  "run", "db:seed"]
         resources:
           limits:

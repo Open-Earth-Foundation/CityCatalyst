@@ -1,21 +1,22 @@
-import { InfoOutlineIcon } from "@chakra-ui/icons";
 import {
   Box,
-  FormControl,
-  FormErrorMessage,
-  FormLabel,
   HStack,
   Heading,
-  InputGroup,
-  InputRightAddon,
-  NumberInput,
-  NumberInputField,
+  Group,
+  InputAddon,
   Select,
   Textarea,
-  Tooltip,
+  Icon,
 } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import { resolve } from "@/util/helpers";
+import { Tooltip } from "@/components/ui/tooltip";
+import {
+  NumberInputRoot,
+  NumberInputField,
+} from "@/components/ui/number-input";
+import { MdOutlineInfo } from "react-icons/md";
+import { Field } from "@/components/ui/field";
 
 export function DirectMeasureForm({
   t,
@@ -35,20 +36,22 @@ export function DirectMeasureForm({
       <Heading size="sm" mb={4} className="font-normal">
         {t("emissions-values")}{" "}
         <Tooltip
-          hasArrow
-          label={t("value-types-tooltip")}
-          placement="bottom-start"
+          showArrow
+          content={t("value-types-tooltip")}
+          positioning={{ placement: "bottom-start" }}
         >
-          <InfoOutlineIcon mt={-0.5} color="content.tertiary" />
+          <Icon as={MdOutlineInfo} mt={-0.5} color="content.tertiary" />
         </Tooltip>
       </Heading>
-      <HStack spacing={4} mb={12} className="items-start">
-        <FormControl isInvalid={!!resolve(prefix + "co2Emissions", errors)}>
-          <FormLabel color="content.tertiary">
-            {t("co2-emissions-value")}
-          </FormLabel>
-          <InputGroup>
-            <NumberInput defaultValue={0}>
+      <HStack spaceX={4} spaceY={4} mb={12} className="items-start">
+        <Field
+          invalid={!!resolve(prefix + "co2Emissions", errors)}
+          errorText={resolve(prefix + "co2Emissions", errors)?.message}
+          label={t("co2-emissions-value")}
+          labelColor="content.tertiary"
+        >
+          <Group attached>
+            <NumberInputRoot defaultValue="0">
               <NumberInputField
                 borderRightRadius={0}
                 bgColor="base.light"
@@ -56,21 +59,19 @@ export function DirectMeasureForm({
                   required: t("value-required"),
                 })}
               />
-            </NumberInput>
-            <InputRightAddon bgColor="base.light" color="content.tertiary">
+            </NumberInputRoot>
+            <InputAddon bgColor="base.light" color="content.tertiary">
               tCO2
-            </InputRightAddon>
-          </InputGroup>
-          <FormErrorMessage>
-            {resolve(prefix + "co2Emissions", errors)?.message}
-          </FormErrorMessage>
-        </FormControl>
-        <FormControl isInvalid={!!resolve(prefix + "ch4Emissions", errors)}>
-          <FormLabel color="content.tertiary">
-            {t("ch4-emissions-value")}
-          </FormLabel>
-          <InputGroup>
-            <NumberInput defaultValue={0}>
+            </InputAddon>
+          </Group>
+        </Field>
+        <Field
+          invalid={!!resolve(prefix + "ch4Emissions", errors)}
+          label={t("ch4-emissions-value")}
+          errorText={resolve(prefix + "ch4Emissions", errors)?.message}
+        >
+          <Group attached>
+            <NumberInputRoot defaultValue="0">
               <NumberInputField
                 borderRightRadius={0}
                 bgColor="base.light"
@@ -78,21 +79,19 @@ export function DirectMeasureForm({
                   required: t("value-required"),
                 })}
               />
-            </NumberInput>
-            <InputRightAddon bgColor="base.light" color="content.tertiary">
+            </NumberInputRoot>
+            <InputAddon bgColor="base.light" color="content.tertiary">
               tCH4
-            </InputRightAddon>
-          </InputGroup>
-          <FormErrorMessage>
-            {resolve(prefix + "ch4Emissions", errors)?.message}
-          </FormErrorMessage>
-        </FormControl>
-        <FormControl isInvalid={!!resolve(prefix + "n2oEmissions", errors)}>
-          <FormLabel color="content.tertiary">
-            {t("n2o-emissions-value")}
-          </FormLabel>
-          <InputGroup>
-            <NumberInput defaultValue={0}>
+            </InputAddon>
+          </Group>
+        </Field>
+        <Field
+          label={t("n2o-emissions-value")}
+          invalid={!!resolve(prefix + "n2oEmissions", errors)}
+          errorText={resolve(prefix + "n2oEmissions", errors)?.message}
+        >
+          <Group attached>
+            <NumberInputRoot defaultValue="0">
               <NumberInputField
                 borderRightRadius={0}
                 bgColor="base.light"
@@ -100,22 +99,20 @@ export function DirectMeasureForm({
                   required: t("value-required"),
                 })}
               />
-            </NumberInput>
-            <InputRightAddon bgColor="base.light" color="content.tertiary">
+            </NumberInputRoot>
+            <InputAddon bgColor="base.light" color="content.tertiary">
               tN2O
-            </InputRightAddon>
-          </InputGroup>
-          <FormErrorMessage>
-            {resolve(prefix + "n2oEmissions", errors)?.message}
-          </FormErrorMessage>
-        </FormControl>
+            </InputAddon>
+          </Group>
+        </Field>
       </HStack>
-      <FormControl
-        isInvalid={!!resolve(prefix + "dataQuality", errors)}
+      <Field
+        invalid={!!resolve(prefix + "dataQuality", errors)}
+        label={t("data-quality")}
         mb={12}
+        errorText={resolve(prefix + "dataQuality", errors)?.message}
       >
-        <FormLabel>{t("data-quality")}</FormLabel>
-        <Select
+        <Select.Root
           bgColor="base.light"
           placeholder={t("data-quality-placeholder")}
           {...register(prefix + "dataQuality", {
@@ -127,13 +124,13 @@ export function DirectMeasureForm({
           <option value="low">
             {t("highly-modeled-uncertain-emissions-data")}
           </option>
-        </Select>
-        <FormErrorMessage>
-          {resolve(prefix + "dataQuality", errors)?.message}
-        </FormErrorMessage>
-      </FormControl>
-      <FormControl isInvalid={!!resolve(prefix + "sourceReference", errors)}>
-        <FormLabel>{t("source-reference")}</FormLabel>
+        </Select.Root>
+      </Field>
+      <Field
+        invalid={!!resolve(prefix + "sourceReference", errors)}
+        label={t("source-reference")}
+        errorText={resolve(prefix + "sourceReference", errors)?.message}
+      >
         <Textarea
           placeholder={t("source-reference-placeholder")}
           bgColor="base.light"
@@ -141,10 +138,7 @@ export function DirectMeasureForm({
             required: t("source-reference-required"),
           })}
         />
-        <FormErrorMessage>
-          {resolve(prefix + "sourceReference", errors)?.message}
-        </FormErrorMessage>
-      </FormControl>
+      </Field>
     </Box>
   );
 }

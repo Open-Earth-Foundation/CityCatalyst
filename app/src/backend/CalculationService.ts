@@ -47,6 +47,7 @@ export default class CalculationService {
     const globalWarmingPotential = gasToCO2Eqs.find(
       (entry) => entry.gas === gasName,
     );
+
     if (!globalWarmingPotential) {
       throw new createHttpError.NotFound(
         `Could not find gas ${gasName} in GasToCO2Eq table`,
@@ -170,7 +171,7 @@ export default class CalculationService {
           activityId === "wastewater-outside-industrial-calculator-activity"
         ) {
           let prefixKey = activityId.split("-").slice(0, -1).join("-");
-          gases = handleIndustrialWasteWaterFormula(
+          gases = await handleIndustrialWasteWaterFormula(
             activityValue,
             inventoryValue,
             prefixKey,
@@ -193,6 +194,7 @@ export default class CalculationService {
         gas.gas,
         gas.amount,
       );
+
       totalCO2e = Decimal.sum(totalCO2e, co2eq);
       totalCO2eYears = Math.max(co2eqYears, totalCO2eYears);
     }

@@ -109,11 +109,46 @@ export type DataSourceWithRelations = DataSourceAttributes & {
 };
 
 export type DataSourceData = {
-  totals: { emissions: { co2eq_100yr: string } };
+  totals: {
+    emissions: {
+      co2_mass: string;
+      co2_co2eq: string;
+      ch4_mass: string;
+      ch4_co2eq_100yr: string;
+      ch4_co2eq_20yr: string;
+      n2o_mass: string;
+      n2o_co2eq_100yr: string;
+      n2o_co2eq_20yr: string;
+      co2eq_100yr: string;
+      co2eq_20yr: string;
+      gpc_quality: string;
+    };
+  };
   points?: any;
   scaleFactor: number;
   issue: string | null;
+  records: DataSourceActivityDataRecord[];
 };
+
+export interface DataSourceActivityDataGas {
+  gas_name: string;
+  emissions_value: number;
+  emissionfactor_value: number;
+  emissionfactor_source: string;
+  activity_value: number;
+  gwp: number;
+  emissions_value_100yr: number;
+  emissions_value_20yr: number;
+}
+
+export interface DataSourceActivityDataRecord {
+  methodology_name: string;
+  emissions_geometry: string;
+  activity_name: string;
+  activity_units: string;
+  activity_subcategory_type: { [key: string]: string };
+  gases: DataSourceActivityDataGas[];
+}
 
 export type SubSectorWithRelations = SubSectorAttributes & {
   completed: boolean;

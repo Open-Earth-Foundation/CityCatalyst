@@ -1,18 +1,14 @@
-<<<<<<< HEAD
-import { Roles } from "@/lib/auth";
 import { sendEmail } from "@/lib/email";
 import ConfirmRegistrationTemplate from "@/lib/emails/confirmRegistrationTemplate";
-=======
->>>>>>> develop
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";
+import { Roles } from "@/util/types";
 import { signupRequest } from "@/util/validation";
 import { render } from "@react-email/components";
 import bcrypt from "bcrypt";
 import createHttpError from "http-errors";
 import { NextResponse } from "next/server";
 import { randomUUID } from "node:crypto";
-import { Roles } from "@/util/types";
 
 export const POST = apiHandler(async (req: Request) => {
   const body = signupRequest.parse(await req.json());

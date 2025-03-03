@@ -4,60 +4,60 @@
         "cityName": "Caxias do Sul",
         "region": "BR-RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0091",
-        "actionName": "Diversification of livelihoods ",
+        "actionId": "icare_0148",
+        "actionName": "Create the Municipal Climate Change Forum",
         "actionPriority": 1,
-        "explanation": "This action has the highest quantitative score (1.52) and is prioritized because it enhances community resilience and economic versatility, indirectly reducing emissions by reducing vulnerability in the most emission-intensive and at-risk socio-economic sectors."
+        "explanation": "Ranked #1 by tournament ranking algorithm"
     },
     {
         "locode": "BRCXL",
         "cityName": "Caxias do Sul",
         "region": "BR-RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "c40_0053",
-        "actionName": "Water Savings",
+        "actionId": "icare_0169",
+        "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
         "actionPriority": 2,
-        "explanation": "With a score of 1.485, Water Savings is key given the city\u2019s need to safeguard water resources. It addresses critical adaptation needs that complement efficient emissions management in sectors indirectly affecting water use and scarcity."
+        "explanation": "Ranked #2 by tournament ranking algorithm"
     },
     {
         "locode": "BRCXL",
         "cityName": "Caxias do Sul",
         "region": "BR-RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0093",
-        "actionName": "Availability of health infrastructure",
+        "actionId": "icare_0176",
+        "actionName": "Development of Climate Action Plan",
         "actionPriority": 3,
-        "explanation": "Scoring 1.4367, this action is prioritized because it bolsters public health \u2013 a critical concern for a city facing hazards such as heatwaves and diseases. It also aligns well with socio-demographic needs of a population with high low-income rates."
+        "explanation": "Ranked #3 by tournament ranking algorithm"
     },
     {
         "locode": "BRCXL",
         "cityName": "Caxias do Sul",
         "region": "BR-RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0087",
-        "actionName": "Infrastructure retrofitting",
+        "actionId": "icare_0145",
+        "actionName": "Strengthen the healthcare network to attend to climate victims",
         "actionPriority": 4,
-        "explanation": "With a score of 1.435, retrofitting infrastructure is crucial to mitigate disaster risks (e.g., landslides, flooding) and safeguard key urban services. Its benefits are seen in reduced vulnerability and potential indirect emissions benefits from avoided reconstruction."
+        "explanation": "Ranked #4 by tournament ranking algorithm"
     },
     {
         "locode": "BRCXL",
         "cityName": "Caxias do Sul",
         "region": "BR-RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0095",
-        "actionName": "Disaster early warning",
+        "actionId": "icare_0150",
+        "actionName": "Implement Loss Reduction and Control Program promoting water security for the municipality",
         "actionPriority": 5,
-        "explanation": "At 1.42, this action offers rapid impact in risk reduction by enabling timely responses to climatic hazards. Early warning systems are cost-effective and critical for protecting lives and reducing downstream emissions from disaster recovery efforts."
+        "explanation": "Ranked #5 by tournament ranking algorithm"
     },
     {
         "locode": "BRCXL",
         "cityName": "Caxias do Sul",
         "region": "BR-RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "c40_0054",
-        "actionName": "Water Recycling",
+        "actionId": "icare_0162",
+        "actionName": "Strengthen programs for control and conservation of protected areas",
         "actionPriority": 6,
-        "explanation": "Water Recycling, with a score of 1.385, supports efficient water management in the face of drought risks. While its direct emissions reduction impact is secondary, it is well aligned with sector relevance in water resource management."
+        "explanation": "Ranked #6 by tournament ranking algorithm"
     },
     {
         "locode": "BRCXL",
@@ -67,97 +67,107 @@
         "actionId": "ipcc_0088",
         "actionName": "Building codes",
         "actionPriority": 7,
-        "explanation": "Scoring 1.37, strengthening building codes enhances safety and resilience of the built environment. It reduces risk exposure (especially in hazardous events) and requires relatively low cost, making it a sound adaptation investment."
+        "explanation": "Ranked #7 by tournament ranking algorithm"
     },
     {
         "locode": "BRCXL",
         "cityName": "Caxias do Sul",
         "region": "BR-RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0092",
-        "actionName": "Social safety nets",
+        "actionId": "icare_0181",
+        "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
         "actionPriority": 8,
-        "explanation": "This action (score 1.27) is essential for supporting vulnerable communities and reinforces socio-demographic suitability. It ensures that high-risk groups receive necessary aid, indirectly contributing to sustainable, lower-emission practices by reducing forced risky behaviors."
+        "explanation": "Ranked #8 by tournament ranking algorithm"
     },
     {
         "locode": "BRCXL",
         "cityName": "Caxias do Sul",
         "region": "BR-RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0099",
-        "actionName": "Water capture/storage",
+        "actionId": "icare_0154",
+        "actionName": "Cleaning and Unclogging of Channels with Installation of Eco-barriers",
         "actionPriority": 9,
-        "explanation": "Equally scoring 1.27, water capture and storage is vital for managing water resources, ensuring reliable supply during droughts and aligning with cost-effective measures that offer timely benefits and risk reduction."
+        "explanation": "Ranked #9 by tournament ranking algorithm"
     },
     {
         "locode": "BRCXL",
         "cityName": "Caxias do Sul",
         "region": "BR-RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0101",
-        "actionName": "Efficient water supply/distribution",
+        "actionId": "icare_0151",
+        "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
         "actionPriority": 10,
-        "explanation": "With a score of 1.27, this action improves the reliability and efficiency of water distribution networks. Its quick implementation and direct improvement in water management are crucial for cities facing water resource management challenges."
+        "explanation": "Ranked #10 by tournament ranking algorithm"
     },
     {
         "locode": "BRCXL",
         "cityName": "Caxias do Sul",
         "region": "BR-RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0102",
-        "actionName": "Seasonal/temporary mobility",
+        "actionId": "ipcc_0093",
+        "actionName": "Availability of health infrastructure",
         "actionPriority": 11,
-        "explanation": "Also scoring 1.27, seasonal/temporary mobility measures enhance adaptability during climate events. The action is considered cost-effective and with fast implementation, aiding the community resilience during temporary disruptions."
+        "explanation": "Ranked #11 by tournament ranking algorithm"
     },
     {
         "locode": "BRCXL",
         "cityName": "Caxias do Sul",
         "region": "BR-RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "c40_0046",
-        "actionName": "Coastal Protection",
+        "actionId": "icare_0172",
+        "actionName": "Develop and implement the Municipal Risk Reduction Plan (PMRR) and identify population groups vulnerable to climate risks.",
         "actionPriority": 12,
-        "explanation": "Despite a score of 1.235, Coastal Protection is ranked lower due to the city\u2019s inland nature. However, it still retains some priority for broader regional planning and potential indirect benefits if future expansion or associated vulnerabilities emerge."
+        "explanation": "Ranked #12 by tournament ranking algorithm"
     },
     {
         "locode": "BRCXL",
         "cityName": "Caxias do Sul",
         "region": "BR-RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "c40_0059",
-        "actionName": "Early Warning",
+        "actionId": "icare_0149",
+        "actionName": "Encourage sustainable land use practices",
         "actionPriority": 13,
-        "explanation": "This additional early warning system (score 1.235) reinforces multi-hazard preparedness. Although similar to the earlier disaster early warning action, its slight differentiation in focus places it just one rank lower."
+        "explanation": "Ranked #13 by tournament ranking algorithm"
     },
     {
         "locode": "BRCXL",
         "cityName": "Caxias do Sul",
         "region": "BR-RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0090",
-        "actionName": "Insurance",
+        "actionId": "icare_0180",
+        "actionName": "Implement permeable pavements and increase green areas in roadways",
         "actionPriority": 14,
-        "explanation": "With a score of 1.19, insurance provides a financial safety net against losses from climate hazards. It\u2019s particularly valuable for risk reduction and builds capacity for recovery, even though it may require more financial resources."
+        "explanation": "Ranked #14 by tournament ranking algorithm"
     },
     {
         "locode": "BRCXL",
         "cityName": "Caxias do Sul",
         "region": "BR-RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0082",
-        "actionName": "Coastal Infrastructure",
+        "actionId": "c40_0056",
+        "actionName": "Watershed Preservation",
         "actionPriority": 15,
-        "explanation": "At 1.185, Coastal Infrastructure is less directly relevant for an inland city like Caxias do Sul. However, it is included for comprehensive planning and regional adaptation strategies, albeit with lower priority."
+        "explanation": "Ranked #15 by tournament ranking algorithm"
     },
     {
         "locode": "BRCXL",
         "cityName": "Caxias do Sul",
         "region": "BR-RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0084",
-        "actionName": "Restore/create natural areas",
+        "actionId": "icare_0170",
+        "actionName": "Build safe housing and implement urban rehabilitation projects for populations living in high-risk areas",
         "actionPriority": 16,
-        "explanation": "Scoring 1.17, restoring or creating natural areas contributes to environmental compatibility and ecosystem services. It supports biodiversity and can lead to longer-term resilience, despite a lower direct impact on emissions."
+        "explanation": "Ranked #16 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "c40_0049",
+        "actionName": "Cyclone Shelters",
+        "actionPriority": 17,
+        "explanation": "Ranked #17 by tournament ranking algorithm"
     },
     {
         "locode": "BRCXL",
@@ -166,37 +176,27 @@
         "regionName": "Rio Grande do Sul",
         "actionId": "ipcc_0094",
         "actionName": "Access to health care",
-        "actionPriority": 17,
-        "explanation": "Also scoring 1.17, improving access to health care supports community resilience. Although similar to enhancing health infrastructure, its focus is more on service delivery than structural improvement, which places it slightly lower in priority."
-    },
-    {
-        "locode": "BRCXL",
-        "cityName": "Caxias do Sul",
-        "region": "BR-RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0096",
-        "actionName": "Farm/fishery improvements",
         "actionPriority": 18,
-        "explanation": "This action, with a score of 1.17, targets improvements in food production sectors. In an urban context like Caxias do Sul, its relevance is moderated by limited local agriculture but remains important for food security and rural-urban linkages."
+        "explanation": "Ranked #18 by tournament ranking algorithm"
     },
     {
         "locode": "BRCXL",
         "cityName": "Caxias do Sul",
         "region": "BR-RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0097",
-        "actionName": "Food storage/distribution improvements",
+        "actionId": "ipcc_0092",
+        "actionName": "Social safety nets",
         "actionPriority": 19,
-        "explanation": "Also scoring 1.17, enhancing food storage and distribution is key for maintaining food security during climate shocks. Its cost-effectiveness and potential to reduce risks in supply chain disruptions justify its ranking."
+        "explanation": "Ranked #19 by tournament ranking algorithm"
     },
     {
         "locode": "BRCXL",
         "cityName": "Caxias do Sul",
         "region": "BR-RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0098",
-        "actionName": "Behaviour change in diets and food waste",
+        "actionId": "icare_0144",
+        "actionName": "Creation of a Financial Support Program to Adress Extreme Weather Events",
         "actionPriority": 20,
-        "explanation": "With a score of 1.17, this action plays a dual role by promoting sustainable consumption patterns and reducing food waste. It indirectly contributes to emissions reduction in the waste sector, although its immediate impact may be slower compared to other interventions."
+        "explanation": "Ranked #20 by tournament ranking algorithm"
     }
 ]

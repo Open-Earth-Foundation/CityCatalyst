@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cc-global-api-db-configmap
+  namespace: default
+data:
+  DB_HOST: "cc-global-api-db"
+  DB_PORT: "5432"
+  DB_USER: "ccglobal"
+  DB_PASSWORD: "ccglobal"
+  DB_NAME: "ccglobal"

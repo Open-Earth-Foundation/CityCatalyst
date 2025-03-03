@@ -7,6 +7,9 @@ export const appTheme = createSystem(defaultConfig, {
     html: {
       colorPalette: "brand",
     },
+    textarea: {
+      bg: "base.light !important",
+    },
   },
   theme: {
     recipes,

@@ -174,5 +174,6 @@
   "afolu-land": "Land",
   "rate": "rate",
   "sector": "sector",
-  "an-error-occurred": "An error occurred"
+  "an-error-occurred": "An error occurred",
+  "error-fetching-sector-breakdown": "Error fetching sector breakdown"
 }

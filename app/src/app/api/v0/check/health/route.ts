@@ -13,7 +13,11 @@ export const GET = apiHandler(async () => {
       message: "healthy",
       version: pkg.version
     });
-  } catch (error) {
-    throw new Error("Database connection is not working");
+  } catch (error:any) {
+    throw new Error(
+      "Database connection is not working: " + (error instanceof Error)
+        ? error.message
+        : "unknown reason",
+    );
   }
 });

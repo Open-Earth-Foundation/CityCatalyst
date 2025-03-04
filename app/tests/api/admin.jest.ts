@@ -14,6 +14,8 @@ import { mockRequest, setupTests, testUserData, testUserID } from "../helpers";
 import { AppSession, Auth } from "@/lib/auth";
 import { Roles } from "@/util/types";
 import { BulkInventoryProps } from "@/backend/AdminService";
+import { Op } from "sequelize";
+import _ from "lodash";
 
 const mockSession: AppSession = {
   user: { id: testUserID, role: Roles.User },
@@ -66,13 +68,48 @@ describe("Admin API", () => {
       mockBulkInventoriesRequest.cityLocodes.length,
     );
 
+    // check inventories were created
+    const inventoryIds = body.results.flatMap((result: any) => result.result);
+    expect(inventoryIds.length).toBe(
+      mockBulkInventoriesRequest.years.length *
+        mockBulkInventoriesRequest.cityLocodes.length,
+    );
+    const cities = await db.models.City.findAll({
+      attributes: ["cityId", "locode"],
+      include: {
+        model: db.models.Inventory,
+        as: "inventories",
+        where: { inventoryId: { [Op.in]: inventoryIds } },
+      },
+    });
+    const cityIds = cities.map((city) => city.cityId);
+    const uniqueCityIds = [...new Set(cityIds)];
+
+    // check population entries for inventory
+    for (const cityId of uniqueCityIds) {
+      const populationEntries = await db.models.Population.findAll({
+        where: { cityId },
+      });
+      const hasCityPopulation = _.some(
+        populationEntries,
+        (entry) => entry.population != null,
+      );
+      const hasCountryPopulation = _.some(
+        populationEntries,
+        (entry) => entry.countryPopulation != null,
+      );
+      const hasRegionPopulation = _.some(
+        populationEntries,
+        (entry) => entry.regionPopulation != null,
+      );
+      expect(hasCityPopulation).toBe(true);
+      expect(hasCountryPopulation).toBe(true);
+      expect(hasRegionPopulation).toBe(true);
+    }
+
     // TODO assert required database changes:
-    // TODO check inventories created
-    // TODO check population entries for inventory
     // TODO check all data sources for inventory are connected
     // TODO check that users were added to inventory (without sending the emails)
-    // TODO check all data sources are connected
-    // TODO check all users were invited
   }, 60000);
 
   it("should change the user role when logged in as admin", async () => {

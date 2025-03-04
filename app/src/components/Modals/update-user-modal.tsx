@@ -11,12 +11,12 @@ import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
 import FormInput from "@/components/form-input";
 import FormSelectInput from "@/components/form-select-input";
 import {
-  DialogRoot,
   DialogBody,
   DialogCloseTrigger,
   DialogContent,
   DialogFooter,
   DialogHeader,
+  DialogRoot,
 } from "@/components/ui/dialog";
 
 interface UpdateUserDialogProps {
@@ -82,7 +82,12 @@ const UpdateUserDialog: FC<UpdateUserDialogProps> = ({
 
   return (
     <>
-      <DialogRoot preventScroll open={isOpen} onExitComplete={onClose}>
+      <DialogRoot
+        preventScroll
+        open={isOpen}
+        onOpenChange={onClose}
+        onExitComplete={onClose}
+      >
         <DialogContent minH="524px" minW="568px" marginTop="10%">
           <DialogHeader
             display="flex"

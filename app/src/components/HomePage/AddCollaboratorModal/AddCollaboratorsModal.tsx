@@ -3,11 +3,10 @@ import {
   Box,
   Button,
   CheckboxGroup,
-  Separator,
   HStack,
+  Separator,
   Text,
 } from "@chakra-ui/react";
-import type { TFunction } from "i18next";
 import { MdPersonAdd } from "react-icons/md";
 import { TitleLarge } from "@/components/Texts/Title";
 import { BodyLarge } from "@/components/Texts/Body";
@@ -21,12 +20,12 @@ import MultipleEmailInput from "./MultipleEmailInput";
 import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
 import { useTranslation } from "@/i18n/client";
 import {
-  DialogRoot,
   DialogBody,
   DialogCloseTrigger,
   DialogContent,
   DialogFooter,
   DialogHeader,
+  DialogRoot,
 } from "@/components/ui/dialog";
 import { Checkbox } from "@/components/ui/checkbox";
 
@@ -83,7 +82,7 @@ const AddCollaboratorsDialog = ({
   };
 
   return (
-    <DialogRoot open={isOpen} onExitComplete={onClose}>
+    <DialogRoot open={isOpen} onOpenChange={onClose} onExitComplete={onClose}>
       <DialogContent maxW="container.md">
         <DialogHeader>
           <HStack>

@@ -8,6 +8,7 @@ import ActionCardSmall from "./ActionCardSmall";
 export function AddCollaboratorButton({ lng }: { lng: string }) {
   const {
     open: isModalOpen,
+    setOpen: setIsModalOpen,
     onOpen: onModalOpen,
     onClose: onModalClose,
   } = useDisclosure();

@@ -52,7 +52,12 @@ const DeleteUserDialog: FC<DeleteUserDialogProps> = ({
   };
   return (
     <>
-      <DialogRoot preventScroll open={isOpen} onExitComplete={onClose}>
+      <DialogRoot
+        preventScroll
+        open={isOpen}
+        onOpenChange={onClose}
+        onExitComplete={onClose}
+      >
         <DialogContent minH="388px" minW="568px" marginTop="10%">
           <DialogHeader
             display="flex"

@@ -1,4 +1,5 @@
 import { POST as changeRole } from "@/app/api/v0/auth/role/route";
+import { POST as createBulkInventories } from "@/app/api/v0/admin/bulk/route";
 import { db } from "@/models";
 import {
   beforeAll,
@@ -12,6 +13,7 @@ import {
 import { mockRequest, setupTests, testUserData, testUserID } from "../helpers";
 import { AppSession, Auth } from "@/lib/auth";
 import { Roles } from "@/util/types";
+import { BulkInventoryProps } from "@/backend/AdminService";
 
 const mockSession: AppSession = {
   user: { id: testUserID, role: Roles.User },
@@ -20,6 +22,13 @@ const mockSession: AppSession = {
 const mockAdminSession: AppSession = {
   user: { id: testUserID, role: Roles.Admin },
   expires: "1h",
+};
+const mockBulkInventoriesRequest: BulkInventoryProps = {
+  cityLocodes: ["US NYC", "DE BER", "BR AAX"],
+  emails: ["test1@example.com", "test2@example.com"],
+  years: [2022, 2023, 2024],
+  scope: "gpc_basic_plus",
+  gwp: "AR6",
 };
 
 describe("Admin API", () => {
@@ -44,6 +53,27 @@ describe("Admin API", () => {
       role: Roles.User,
     });
   });
+
+  it("should allow creating bulk inventories for admin users", async () => {
+    const req = mockRequest(mockBulkInventoriesRequest);
+    Auth.getServerSession = jest.fn(() => Promise.resolve(mockAdminSession));
+    const res = await createBulkInventories(req, { params: {} });
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    console.dir(body.errors);
+    expect(body.errors.length).toBe(0); // TODO ignore missing data from Global API in errors
+    expect(body.results.length).toBe(
+      mockBulkInventoriesRequest.cityLocodes.length,
+    );
+
+    // TODO assert required database changes:
+    // TODO check inventories created
+    // TODO check population entries for inventory
+    // TODO check all data sources for inventory are connected
+    // TODO check that users were added to inventory (without sending the emails)
+    // TODO check all data sources are connected
+    // TODO check all users were invited
+  }, 60000);
 
   it("should change the user role when logged in as admin", async () => {
     const req = mockRequest({

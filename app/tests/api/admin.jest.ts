@@ -123,7 +123,7 @@ describe("Admin API", () => {
     const res = await changeRole(req, { params: {} });
     expect(res.status).toBe(400);
 
-    const req2 = mockRequest({ email: "not-an-email", role: "Admin" });
+    const req2 = mockRequest({ email: "not-an-email", role: "admin" });
     const res2 = await changeRole(req2, { params: {} });
     expect(res2.status).toBe(400);
 

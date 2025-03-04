@@ -1,23 +1,221 @@
 import { db } from "@/models";
-import type { DataSourceI18n as DataSource } from "@/models/DataSourceI18n";
+import { DataSourceI18n as DataSource } from "@/models/DataSourceI18n";
 import { Inventory } from "@/models/Inventory";
 import { randomUUID } from "crypto";
 import createHttpError from "http-errors";
 import Decimal from "decimal.js";
 import { decimalToBigInt } from "@/util/big_int";
-import type { SubSector } from "@/models/SubSector";
+import { SubSector } from "@/models/SubSector";
 import { DataSourceActivityDataRecord } from "@/app/[lng]/[inventory]/data/[step]/types";
+import { InventoryValue } from "@/models/InventoryValue";
+import { Publisher } from "@/models/Publisher";
+import { Scope } from "@/models/Scope";
+import { SubCategory } from "@/models/SubCategory";
+import { logger } from "@/services/logger";
+import { findClosestYear, PopulationEntry } from "@/util/helpers";
+import { PopulationAttributes } from "@/models/Population";
+import { maxPopulationYearDifference } from "@/util/constants";
+import { Op } from "sequelize";
 
 const EARTH_LOCATION = "EARTH";
 
 export type RemovedSourceResult = { source: DataSource; reason: string };
 export type FailedSourceResult = { source: DataSource; error: string };
-type FilterSourcesResult = {
+export type FilterSourcesResult = {
   applicableSources: DataSource[];
   removedSources: RemovedSourceResult[];
 };
+export type ApplySourceResult = {
+  id: string;
+  success: boolean;
+  issue?: string;
+};
+export type PopulationScaleFactorResponse = {
+  countryPopulationScaleFactor: number;
+  regionPopulationScaleFactor: number;
+  populationIssue: string | null;
+};
+
+export const downscaledByCountryPopulation =
+  "global_api_downscaled_by_population";
+export const downscaledByRegionPopulation =
+  "global_api_downscaled_by_region_population";
+export const populationScalingRetrievalMethods = [
+  downscaledByCountryPopulation,
+  downscaledByRegionPopulation,
+];
 
 export default class DataSourceService {
+  public static async findAllSources(
+    inventoryId: string,
+  ): Promise<DataSource[]> {
+    const include = [
+      {
+        model: DataSource,
+        as: "dataSources",
+        include: [
+          { model: Scope, as: "scopes" },
+          { model: Publisher, as: "publisher" },
+          {
+            model: InventoryValue,
+            as: "inventoryValues",
+            required: false,
+            where: { inventoryId },
+          },
+          { model: SubSector, as: "subSector" },
+          {
+            model: SubCategory,
+            as: "subCategory",
+            include: [
+              { model: SubSector, as: "subsector" },
+              { model: Scope, as: "scope" },
+            ],
+          },
+        ],
+      },
+    ];
+
+    const sectors = await db.models.Sector.findAll({ include });
+    const subSectors = await db.models.SubSector.findAll({ include });
+    const subCategories = await db.models.SubCategory.findAll({ include });
+
+    const sectorSources = sectors.flatMap((sector) => sector.dataSources);
+    const subSectorSources = subSectors.flatMap(
+      (subSector) => subSector.dataSources,
+    );
+    const subCategorySources = subCategories.flatMap(
+      (subCategory) => subCategory.dataSources,
+    );
+
+    const sources = sectorSources
+      .concat(subSectorSources)
+      .concat(subCategorySources);
+
+    return sources;
+  }
+
+  public static async findPopulationScaleFactors(
+    inventory: Inventory,
+    sources: DataSource[],
+  ) {
+    let countryPopulationScaleFactor = 1;
+    let regionPopulationScaleFactor = 1;
+    let populationIssue: string | null = null;
+    if (
+      sources.some((source) =>
+        populationScalingRetrievalMethods.includes(
+          source.retrievalMethod ?? "",
+        ),
+      )
+    ) {
+      const populations = await db.models.Population.findAll({
+        where: {
+          cityId: inventory.cityId,
+          year: {
+            [Op.between]: [
+              inventory.year! - maxPopulationYearDifference,
+              inventory.year! + maxPopulationYearDifference,
+            ],
+          },
+        },
+        order: [["year", "DESC"]], // favor more recent population entries
+      });
+      const cityPopulations = populations.filter((pop) => !!pop.population);
+      const cityPopulation = findClosestYear(
+        cityPopulations as PopulationEntry[],
+        inventory.year!,
+      );
+      const countryPopulations = populations.filter(
+        (pop) => !!pop.countryPopulation,
+      );
+      const countryPopulation = findClosestYear(
+        countryPopulations as PopulationEntry[],
+        inventory.year!,
+      ) as PopulationAttributes;
+      const regionPopulations = populations.filter(
+        (pop) => !!pop.regionPopulation,
+      );
+      const regionPopulation = findClosestYear(
+        regionPopulations as PopulationEntry[],
+        inventory.year!,
+      ) as PopulationAttributes;
+      // TODO allow country downscaling to work if there is no region population?
+      if (!cityPopulation || !countryPopulation || !regionPopulation) {
+        // City is missing population/ region population/ country population for a year close to the inventory year
+        populationIssue = "missing-population"; // translation key
+      } else {
+        countryPopulationScaleFactor =
+          cityPopulation.population / countryPopulation.countryPopulation!;
+        regionPopulationScaleFactor =
+          cityPopulation.population / regionPopulation.regionPopulation!;
+      }
+    }
+
+    return {
+      countryPopulationScaleFactor,
+      regionPopulationScaleFactor,
+      populationIssue,
+    };
+  }
+
+  public static async applySource(
+    source: DataSource,
+    inventory: Inventory,
+    populationScaleFactors: PopulationScaleFactorResponse, // obtained from findPopulationScaleFactors
+  ): Promise<ApplySourceResult> {
+    const result: ApplySourceResult = {
+      id: source.datasourceId,
+      success: true,
+      issue: undefined,
+    };
+
+    const {
+      countryPopulationScaleFactor,
+      regionPopulationScaleFactor,
+      populationIssue,
+    } = populationScaleFactors;
+
+    if (source.retrievalMethod === "global_api") {
+      const sourceStatus = await DataSourceService.applyGlobalAPISource(
+        source,
+        inventory,
+      );
+      if (typeof sourceStatus === "string") {
+        result.issue = sourceStatus;
+        result.success = false;
+      }
+    } else if (
+      populationScalingRetrievalMethods.includes(source.retrievalMethod ?? "")
+    ) {
+      if (populationIssue) {
+        result.issue = populationIssue;
+        result.success = false;
+        return result;
+      }
+      let scaleFactor = 1.0;
+      if (source.retrievalMethod === downscaledByCountryPopulation) {
+        scaleFactor = countryPopulationScaleFactor;
+      } else if (source.retrievalMethod === downscaledByRegionPopulation) {
+        scaleFactor = regionPopulationScaleFactor;
+      }
+      const sourceStatus = await DataSourceService.applyGlobalAPISource(
+        source,
+        inventory,
+        scaleFactor,
+      );
+      if (typeof sourceStatus === "string") {
+        result.issue = sourceStatus;
+        result.success = false;
+      }
+    } else {
+      result.issue = `Unsupported retrieval method ${source.retrievalMethod} for data source ${source.datasourceId}`;
+      logger.error(result.issue);
+      result.success = false;
+    }
+
+    return result;
+  }
+
   public static filterSources(
     inventory: Inventory,
     dataSources: DataSource[],
@@ -113,9 +311,13 @@ export default class DataSourceService {
     }
 
     if (typeof data.totals !== "object") {
-      const message = "Incorrect response from Global API for URL: " + url;
-      console.error(message, data);
-      return message;
+      if (data.detail === "No data available") {
+        return "Source doesn't have data available for this input";
+      } else {
+        const message = "Incorrect response from Global API for URL: " + url;
+        console.error(message, data);
+        return message;
+      }
     }
 
     return data;

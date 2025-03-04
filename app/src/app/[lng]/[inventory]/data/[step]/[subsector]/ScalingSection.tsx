@@ -42,7 +42,7 @@ const ScalingSection = ({ source, t, inventoryId }: ScalingSectionProps) => {
         </VStack>
         {areaPopulation && (
           <HStack
-            width={"70%"}
+            width={"90%"}
             justifyContent="center"
             alignItems="center"
             margin="24px auto"
@@ -71,7 +71,7 @@ const ScalingSection = ({ source, t, inventoryId }: ScalingSectionProps) => {
             </VStack>
             <VStack>
               <HeadlineLarge>
-                {populations.population / areaPopulation}
+                {(populations.population / areaPopulation).toFixed(8)}
               </HeadlineLarge>
               <LabelLarge paddingTop={4}>{t("scaling-factor")}</LabelLarge>
             </VStack>

@@ -122,7 +122,7 @@ export default class AdminService {
     }
 
     // they might be for the same year, but that is not guaranteed (because of data availability)
-    await db.models.Population.create({
+    await db.models.Population.upsert({
       population: populationData.cityPopulation,
       cityId,
       year: populationData.cityPopulationYear,
@@ -214,7 +214,7 @@ export default class AdminService {
 
           if (!isSuccessful) {
             const message = `Wasn't able to find a data source for subsector ${subSector}`;
-            logger.error(cityLocode, message);
+            logger.error(`${cityLocode} - ${message}`);
             errors.push({
               locode: cityLocode,
               error: message,

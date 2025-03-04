@@ -35,7 +35,7 @@
     "upgrade:ui": "npm uninstall @emotion/styled framer-motion && npm install @chakra-ui/react@latest @emotion/react@latest"
   },
   "dependencies": {
-    "@ai-sdk/openai": "^1.0.8",
+    "@ai-sdk/openai": "^1.2.0",
     "@chakra-ui/react": "^3.8.0",
     "@emotion/react": "^11.14.0",
     "@hookform/resolvers": "^3.10.0",

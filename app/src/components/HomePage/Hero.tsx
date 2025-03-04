@@ -15,6 +15,7 @@ import type { TFunction } from "i18next";
 import type { PopulationAttributes } from "@/models/Population";
 import type { InventoryResponse } from "@/util/types";
 import { Tooltip } from "@/components/ui/tooltip";
+import { useGetOCCityDataQuery } from "@/services/api";
 
 const CityMap = dynamic(() => import("@/components/CityMap"), { ssr: false });
 
@@ -37,6 +38,13 @@ export function Hero({
   population,
   t,
 }: HeroProps) {
+  const { data: cityData } = useGetOCCityDataQuery(inventory.city?.locode!, {
+    skip: !inventory.city?.locode!,
+  });
+  const popWithDS = cityData?.population?.find(
+    (p:any) => p.population == population?.population &&
+          p.year == population?.year
+  );
   return (
     <Box bg="brand.primary" className="w-full h-[491px] pt-[150px]" px={8}>
       <Box className="flex mx-auto max-w-full w-[1090px]">
@@ -163,9 +171,7 @@ export function Hero({
                       <Tooltip
                         content={
                           <>
-                            <Trans i18nKey="source-open-climate" t={t}>
-                              {`Source: OpenClimate`}
-                            </Trans>
+                            { popWithDS ? popWithDS.datasource.name : t('source-open-climate') }
                             <br />
                             {t("population-year", {
                               year: population?.year,

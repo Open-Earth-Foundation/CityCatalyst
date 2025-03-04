@@ -1132,5 +1132,6 @@
   "garbage-disposal-type-garbage-disposals": "Eliminadores de resíduos",
   "treatment-type-latrine-dry-climate": "Latrina: Clima seco",
   "treatment-type-latrine-sediment-removal": "Latrina: Remoção regular de sedimentos",
-  "units-kilograms-N-yr": "kg N/ano"
+  "units-kilograms-N-yr": "kg N/ano",
+  "subsector": "Subsetor"
 }

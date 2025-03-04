@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "@/i18n/client";
 import { languages } from "@/i18n/settings";
 import { Box, Heading, Icon, Link, Separator, Text } from "@chakra-ui/react";
@@ -57,26 +57,33 @@ export function NavigationBar({
   };
 
   // Checks if language is set in cookie and updates URL if not
-  window.addEventListener("popstate", () => {
-    const cookieLanguage = Cookies.get("i18next");
-    if (cookieLanguage) {
-      const currentPath = location.pathname;
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      if (typeof window !== "undefined") {
+        const handlePopState = () => {
+          const cookieLanguage = Cookies.get("i18next");
+          if (cookieLanguage) {
+            const currentPath = window.location.pathname;
+            // Your logic here
+          }
+        };
 
-      if (!currentPath.startsWith(`/${cookieLanguage}`)) {
-        const newPath = currentPath.replace(
-          /^\/[A-Za-z]+/,
-          `/${cookieLanguage}`,
-        );
-        history.replaceState(null, "", newPath);
+        window.addEventListener("popstate", handlePopState);
+
+        // Cleanup the event listener on component unmount
+        return () => {
+          window.removeEventListener("popstate", handlePopState);
+        };
       }
     }
-  });
+  }, []);
 
   const { data: session, status } = useSession();
   const { data: userInfo, isLoading: isUserInfoLoading } =
     api.useGetUserInfoQuery();
   const currentInventoryId = userInfo?.defaultInventoryId;
   const router = useRouter();
+  const dashboardPath = `/${lng}/${inventory ?? currentInventoryId}`;
 
   const [isUserMenuOpen, setUserMenuOpen] = useState(false);
 
@@ -85,7 +92,7 @@ export function NavigationBar({
       className="flex flex-row px-8 py-4 align-middle space-x-12 items-center relative z-50"
       bgColor="content.alternative"
     >
-      <Link href={`/${inventory ? inventory : currentInventoryId}`}>
+      <Link href={dashboardPath}>
         <Image
           src="/assets/logo.svg"
           width={36}
@@ -94,7 +101,7 @@ export function NavigationBar({
           className="mr-[56px]"
         />
       </Link>
-      <Link href={`/${inventory ? inventory : currentInventoryId}`}>
+      <Link href={dashboardPath}>
         <Heading size="lg" color="base.light">
           {t("title")}
         </Heading>
@@ -103,7 +110,7 @@ export function NavigationBar({
       {showNav && !isPublic && (
         <>
           {" "}
-          <Link href={`/${inventory ? inventory : currentInventoryId}`}>
+          <Link href={dashboardPath}>
             <Heading color="base.light" size="md" className="opacity-75" ml={6}>
               {t("dashboard")}
             </Heading>

@@ -19,8 +19,8 @@ const updateUserRequest = z.object({
   role: z.nativeEnum(Roles),
 });
 
-export const PATCH = apiHandler(async (_req, { params, session }) => {
-  const body = updateUserRequest.parse(await _req.json());
+export const PATCH = apiHandler(async (req, { params, session }) => {
+  const body = updateUserRequest.parse(await req.json());
   let user = await db.models.User.findOne({ where: { userId: params.user } });
 
   if (!user) {

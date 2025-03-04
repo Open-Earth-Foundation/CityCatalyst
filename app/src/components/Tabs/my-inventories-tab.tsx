@@ -11,8 +11,8 @@ import {
   PopoverContent,
   PopoverTrigger,
   Progress,
-  Tabs,
   Table,
+  Tabs,
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
@@ -232,6 +232,9 @@ const MyInventoriesTab: FC<MyInventoriesTabProps> = ({
                             </Table.ColumnHeader>
                             <Table.ColumnHeader align="right">
                               {t("last-updated")}
+                            </Table.ColumnHeader>
+                            <Table.ColumnHeader align="right">
+                              {""}
                             </Table.ColumnHeader>
                           </Table.Row>
                         </Table.Header>

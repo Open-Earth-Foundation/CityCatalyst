@@ -69,6 +69,17 @@ const mockGlobalApiResponses = [
   },
 ];
 
+async function cleanupDatabase() {
+  await db.models.Inventory.destroy({ where: { year: inventoryData.year } });
+  await cascadeDeleteDataSource({
+    [Op.or]: [literal(`dataset_name ->> 'en' LIKE 'XX_INVENTORY_TEST_%'`)],
+  });
+  await db.models.City.destroy({ where: { locode } });
+  await db.models.SubCategory.destroy({ where: { subcategoryName } });
+  await db.models.SubSector.destroy({ where: { subsectorName } });
+  await db.models.Sector.destroy({ where: { sectorName } });
+}
+
 describe("DataSource API", () => {
   let city: City;
   let inventory: Inventory;
@@ -80,12 +91,8 @@ describe("DataSource API", () => {
     Auth.getServerSession = jest.fn(() => Promise.resolve(mockSession));
 
     await db.initialize();
+    await cleanupDatabase();
 
-    await db.models.Inventory.destroy({ where: { year: inventoryData.year } });
-    await cascadeDeleteDataSource({
-      [Op.or]: [literal(`dataset_name ->> 'en' LIKE 'XX_INVENTORY_TEST_%'`)],
-    });
-    await db.models.City.destroy({ where: { locode } });
     city = await db.models.City.create({
       cityId: randomUUID(),
       locode,
@@ -96,9 +103,6 @@ describe("DataSource API", () => {
       userId: testUserID,
       cityId: city.cityId,
     });
-    await db.models.SubCategory.destroy({ where: { subcategoryName } });
-    await db.models.SubSector.destroy({ where: { subsectorName } });
-    await db.models.Sector.destroy({ where: { sectorName } });
 
     inventory = await db.models.Inventory.create({
       ...inventoryData,
@@ -147,6 +151,7 @@ describe("DataSource API", () => {
   });
 
   afterAll(async () => {
+    await cleanupDatabase();
     Auth.getServerSession = prevGetServerSession;
     if (db.sequelize) await db.sequelize.close();
   });

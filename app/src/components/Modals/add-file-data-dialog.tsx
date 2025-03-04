@@ -1,6 +1,7 @@
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useState } from "react";
 import { Box, Icon, Separator, Text } from "@chakra-ui/react";
 import DropdownSelectInput from "../dropdown-select-input";
+import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
 
 import {
   DataStep,
@@ -137,20 +138,22 @@ const AddFileDataDialog: FC<AddFileDataDialogProps> = ({
     formData.append("gpcRefNo", "");
     formData.append("data", file, file.name);
 
+    const { showErrorToast } = UseErrorToast({
+      title: t("file-upload-error"),
+      description: t("file-upload-error-description"),
+      duration: 2000,
+    });
+    const { showSuccessToast } = UseSuccessToast({
+      title: t("file-upload-success"),
+      description: t("file-upload-success"),
+      duration: 2000,
+    });
+
     await addUserFile({ formData, cityId }).then((res: any) => {
-      // show toast
       if (res.error) {
-        toaster.error({
-          title: t("file-upload-error"),
-          description: t("file-upload-error-description"),
-          duration: 2000,
-        });
+        showErrorToast();
       } else {
-        toaster.success({
-          title: t("file-upload-success"),
-          description: t("file-upload-success"),
-          duration: 2000,
-        });
+        showSuccessToast();
 
         const fileData = res.data;
 

@@ -6,7 +6,7 @@ import {
   UseFormRegister,
 } from "react-hook-form";
 import { Inputs } from "../../app/[lng]/onboarding/setup/page";
-import { useEffect } from "react";
+import { FC, useEffect, useState } from "react";
 import {
   Box,
   createListCollection,
@@ -29,6 +29,9 @@ import {
   SelectValueText,
 } from "@/components/ui/select";
 import { Field } from "@/components/ui/field";
+import { Button } from "../ui/button";
+import { InventoryButtonCheckIcon } from "../icons";
+import CustomSelectableButton from "../custom-selectable-buttons";
 
 export default function SetInventoryDetailsStep({
   t,
@@ -45,6 +48,12 @@ export default function SetInventoryDetailsStep({
   setValue: any;
   years: number[];
 }) {
+  const [selectedInventoryGoalValue, setSelectedInventoryGoalValue] =
+    useState("");
+  const [
+    selectedGlobalWarmingPotentialValue,
+    setSelectedGlobalWarmingPotentialValue,
+  ] = useState("");
   let year;
   const inventoryGoalOptions: string[] = ["gpc_basic", "gpc_basic_plus"];
   const globalWarmingPotential: string[] = ["ar5", "ar6"];
@@ -59,7 +68,7 @@ export default function SetInventoryDetailsStep({
   const yearsCollection = createListCollection({
     items: years.map((year) => ({
       label: year.toString(),
-      value: year,
+      value: year.toString(),
     })),
   });
 
@@ -159,7 +168,7 @@ export default function SetInventoryDetailsStep({
                   </SelectTrigger>
                   <SelectContent>
                     {yearsCollection.items.map(
-                      (year: { label: string; value: number }, i: number) => (
+                      (year: { label: string; value: string }, i: number) => (
                         <SelectItem item={year} key={i}>
                           {year.label}
                         </SelectItem>
@@ -233,9 +242,14 @@ export default function SetInventoryDetailsStep({
                     <HStack gap="16px">
                       {inventoryGoalOptions.map((value) => {
                         return (
-                          <CustomRadio value={value} key={value}>
-                            {t(value)}
-                          </CustomRadio>
+                          <CustomSelectableButton
+                            field={field}
+                            key={value}
+                            value={value}
+                            inputValue={selectedInventoryGoalValue}
+                            inputValueFunction={setSelectedInventoryGoalValue}
+                            t={t}
+                          />
                         );
                       })}
                     </HStack>
@@ -243,20 +257,22 @@ export default function SetInventoryDetailsStep({
                 </>
               )}
             />
-            <Box display="flex" gap="6px" alignItems="center" py="16px">
-              <MdWarning
-                color="sentiment.negativeDefault"
-                height="16px"
-                width="16px"
-              />
-              <Text
-                fontSize="body.md"
-                color="content.tertiary"
-                fontStyle="normal"
-              >
-                {errors.inventoryGoal && errors.inventoryGoal.message}
-              </Text>
-            </Box>
+            {errors.inventoryGoal && (
+              <Box display="flex" gap="6px" alignItems="center" py="16px">
+                <MdWarning
+                  color="sentiment.negativeDefault"
+                  height="16px"
+                  width="16px"
+                />
+                <Text
+                  fontSize="body.md"
+                  color="content.tertiary"
+                  fontStyle="normal"
+                >
+                  {errors.inventoryGoal.message}
+                </Text>
+              </Box>
+            )}
           </Box>
         </Box>
       </Box>
@@ -315,14 +331,24 @@ export default function SetInventoryDetailsStep({
               render={({ field }) => (
                 <RadioGroup
                   value={field.value}
-                  onValueChange={(e) => field.onChange(e.value)}
+                  onValueChange={(e) => {
+                    field.onChange(e);
+                    setSelectedGlobalWarmingPotentialValue(e.value);
+                  }}
                 >
                   <HStack gap="16px">
                     {globalWarmingPotential.map((value) => {
                       return (
-                        <CustomRadio value={value} key={value}>
-                          {t(value)}
-                        </CustomRadio>
+                        <CustomSelectableButton
+                          field={field}
+                          key={value}
+                          value={value}
+                          inputValue={selectedGlobalWarmingPotentialValue}
+                          inputValueFunction={
+                            setSelectedGlobalWarmingPotentialValue
+                          }
+                          t={t}
+                        />
                       );
                     })}
                   </HStack>

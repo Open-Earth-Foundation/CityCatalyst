@@ -1,10 +1,10 @@
 import { Heading, HeadingProps } from "@chakra-ui/react";
 
 interface DisplayProps extends HeadingProps {
-  text: string;
+  text?: string;
 }
 
-export const DisplaySmall = ({ text, ...props }: DisplayProps) => (
+export const DisplaySmall = ({ text, children, ...props }: DisplayProps) => (
   <Heading
     as="h1"
     color="content.alternative"
@@ -15,5 +15,20 @@ export const DisplaySmall = ({ text, ...props }: DisplayProps) => (
     {...props}
   >
     {text}
+    {children}
+  </Heading>
+);
+
+export const DisplayMedium = ({ children, ...props }: HeadingProps) => (
+  <Heading
+    as="h1"
+    color="content.alternative"
+    fontSize="display.md"
+    lineHeight="52"
+    fontWeight="600"
+    fontStyle="normal"
+    {...props}
+  >
+    {children}
   </Heading>
 );

@@ -1,41 +1,34 @@
 import type { SectorAttributes } from "@/models/Sector";
 import {
-  chakra,
-  Flex,
   Heading,
   HStack,
   Icon,
   Link,
+  Separator,
   Stack,
-  TagLabel,
   Text,
+  VStack,
 } from "@chakra-ui/react";
 import type { TFunction } from "i18next";
 import { RefObject } from "react";
-import {
-  MdHomeWork,
-  MdInfoOutline,
-  MdOpenInNew,
-  MdOutlineLocationOn,
-  MdOutlineTimer,
-  MdToday,
-} from "react-icons/md";
+import { MdArrowBack, MdHomeWork, MdInfoOutline } from "react-icons/md";
 import type { DataSourceData, DataSourceWithRelations } from "./types";
-import { DataCheckIcon, ScaleIcon } from "@/components/icons";
-import { FiTarget } from "react-icons/fi";
 import { getTranslationFromDict } from "@/i18n";
-import { convertKgToTonnes } from "@/util/helpers";
+import { convertKgToTonnes, toKebabCase } from "@/util/helpers";
 import {
   DrawerBackdrop,
   DrawerBody,
   DrawerContent,
-  DrawerHeader,
   DrawerRoot,
-  DrawerTitle,
 } from "@/components/ui/drawer";
 import { Tooltip } from "@/components/ui/tooltip";
-import { Tag } from "@/components/ui/tag";
 import { Button } from "@/components/ui/button";
+import SourceDrawerTags from "./SourceDrawerTags";
+import { TitleLarge, TitleMedium } from "@/components/Texts/Title";
+import { SourceDrawerActivityTable } from "./SourceDrawerActivityTable";
+import { BodyLarge } from "@/components/Texts/Body";
+import { DisplayMedium } from "@/components/Texts/Display";
+import ScalingSection from "./[subsector]/ScalingSection";
 
 export function SourceDrawer({
   source,
@@ -49,6 +42,7 @@ export function SourceDrawer({
   t,
   hideActions,
   totalEmissionsData,
+  inventoryId,
 }: {
   hideActions?: boolean;
   source?: DataSourceWithRelations;
@@ -61,9 +55,9 @@ export function SourceDrawer({
   isConnectLoading: boolean;
   totalEmissionsData?: string;
   t: TFunction;
+  inventoryId: string;
 }) {
   const emissionsToBeIncluded = () => {
-    let number, unit;
     let converted;
     if (!!totalEmissionsData && totalEmissionsData !== "?") {
       converted = convertKgToTonnes(parseFloat(totalEmissionsData));
@@ -76,7 +70,7 @@ export function SourceDrawer({
       totalEmissions = "?";
     }
     if (!!totalEmissions && totalEmissions !== "?") {
-      converted = convertKgToTonnes(parseInt(totalEmissions));
+      converted = convertKgToTonnes(parseFloat(totalEmissions) * 1000);
     }
     if (!converted) {
       return { number: totalEmissionsData ?? totalEmissions, unit: "" };
@@ -86,45 +80,33 @@ export function SourceDrawer({
       unit: converted.split(" ").slice(1).join(" "),
     };
   };
+
   return (
     <DrawerRoot
       open={isOpen}
       placement="end"
       onExitComplete={onClose}
-      size="lg"
+      size="xl"
     >
       <DrawerBackdrop />
-      {/* <DrawerTrigger asChild>
-        <Button
-          variant="ghost"
-          alignSelf="flex-start"
-          onClick={onClose}
-          px={6}
-          py={4}
-          mb={6}
-        >
-          <Icon as={MdArrowBack} boxSize={6} />
-          {t("go-back")}
-        </Button>
-      </DrawerTrigger> */}
       <DrawerContent>
-        <DrawerHeader>
-          <DrawerTitle>Drawer Title</DrawerTitle>
-        </DrawerHeader>
         <DrawerBody>
           <Stack h="full" px={[4, 4, 16]} pt={12}>
+            <Button
+              variant="ghost"
+              color="content.link"
+              alignSelf="flex-start"
+              onClick={onClose}
+              px={6}
+              py={4}
+              mb={6}
+            >
+              <Icon as={MdArrowBack} boxSize={4} />
+              {t("go-back")}
+            </Button>
             {source && (
               <DrawerBody className="space-y-6 overflow-auto" px={0}>
                 <Icon as={MdHomeWork} boxSize={9} />
-                <Heading
-                  color="content.link"
-                  textTransform="uppercase"
-                  letterSpacing="1.25px"
-                  fontSize="title.sm"
-                  lineHeight="16px"
-                >
-                  {source.subcategoryId ? "Scope Data" : "Sub-sector Data"}
-                </Heading>
                 <Heading
                   color="content.tertiary"
                   textTransform="uppercase"
@@ -132,11 +114,20 @@ export function SourceDrawer({
                   fontSize="title.sm"
                   lineHeight="16px"
                 >
-                  {sector?.sectorName} /{" "}
-                  {source.subSector?.subsectorName ||
-                    source.subCategory?.subsector?.subsectorName}
+                  {t(toKebabCase(sector?.sectorName))} /{" "}
+                  {t(
+                    toKebabCase(source.subSector?.subsectorName) ||
+                      toKebabCase(source.subCategory?.subsector?.subsectorName),
+                  )}
                 </Heading>
-
+                <Heading fontSize="title.lg">
+                  {source.subCategory?.referenceNumber ||
+                    source.subSector?.referenceNumber}{" "}
+                  {t(
+                    toKebabCase(source.subCategory?.subcategoryName) ||
+                      toKebabCase(source.subSector?.subsectorName),
+                  )}
+                </Heading>
                 <Heading
                   fontSize="32px"
                   lineHeight="40px"
@@ -144,35 +135,19 @@ export function SourceDrawer({
                 >
                   {getTranslationFromDict(source.datasetName)}
                 </Heading>
-
-                <Heading fontSize="title.sm">
-                  {source.subCategory?.referenceNumber ||
-                    source.subSector?.referenceNumber}{" "}
-                  {source.subCategory?.subcategoryName ||
-                    source.subSector?.subsectorName}
-                </Heading>
-
-                <Text
-                  color="content.link"
-                  fontSize={12}
-                  fontFamily="heading"
-                  textTransform="capitalize"
-                  fontWeight="500"
-                  lineHeight="16px"
-                  letterSpacing="0.5px"
-                >
-                  {t("by")}{" "}
+                <HStack>
+                  <TitleMedium>{t("by")} </TitleMedium>
                   <Link
                     href={source.publisher?.url}
                     target="_blank"
                     rel="noreferrer noopener"
-                    textDecoration="underline"
                   >
-                    {source.publisher?.name}
+                    <TitleMedium color="content.link">
+                      {source.publisher?.name}
+                    </TitleMedium>
                   </Link>
-                </Text>
-
-                <Heading fontSize="title.sm">
+                </HStack>
+                <TitleMedium>
                   {t("total-emissions-included")}{" "}
                   <Tooltip
                     showArrow
@@ -189,12 +164,12 @@ export function SourceDrawer({
                       boxSize={4}
                     />
                   </Tooltip>
-                </Heading>
+                </TitleMedium>
 
                 <HStack align="baseline">
-                  <Heading fontSize="57px" lineHeight="64px">
+                  <DisplayMedium color={"content.link"}>
                     {emissionsToBeIncluded().number}
-                  </Heading>
+                  </DisplayMedium>
                   <Text
                     color="content.tertiary"
                     fontSize="22px"
@@ -212,147 +187,44 @@ export function SourceDrawer({
                   </Text>
                 )}
 
-                <Flex
-                  direction="row"
-                  my={4}
-                  className="gap-4 flex-wrap"
-                  alignItems="start"
-                >
-                  <Tag
-                    startElement={
-                      <Icon
-                        as={MdOutlineLocationOn}
-                        boxSize={6}
-                        mr={2}
-                        color="base.light"
-                      />
-                    }
-                    bgColor="brand.secondary"
-                    border={0}
-                  >
-                    <TagLabel textTransform="capitalize" color="base.light">
-                      {t("Location")}:{" "}
-                      {source.geographicalLocation?.toLowerCase()}
-                    </TagLabel>
-                  </Tag>
-                  {source.subCategory?.scope && (
-                    <Tag
-                      bgColor="brand.secondary"
-                      border={0}
-                      startElement={
-                        <Icon as={FiTarget} boxSize={6} color="base.light" />
-                      }
-                    >
-                      <TagLabel color="base.light">
-                        {t("scope")}: {source.subCategory.scope.scopeName}
-                      </TagLabel>
-                    </Tag>
-                  )}
-                  <Tag
-                    bgColor="brand.secondary"
-                    border={0}
-                    startElement={
-                      <Icon as={ScaleIcon} boxSize={6} color="base.light" />
-                    }
-                  >
-                    <TagLabel color="base.light">
-                      {t("scale")}: {t(source.spatialResolution || "unknown")}
-                    </TagLabel>
-                  </Tag>
-
-                  <Tag
-                    startElement={
-                      <Icon
-                        as={DataCheckIcon}
-                        boxSize={6}
-                        mr={2}
-                        color="content.tertiary"
-                      />
-                    }
-                  >
-                    <TagLabel>
-                      {t("data-quality")}: {t("quality-" + source.dataQuality)}
-                    </TagLabel>
-                  </Tag>
-                  <Tag
-                    startElement={
-                      <Icon as={MdToday} boxSize={6} color="content.tertiary" />
-                    }
-                  >
-                    <TagLabel>
-                      {t("updated-every")}{" "}
-                      {source.frequencyOfUpdate == "annual"
-                        ? t("year")
-                        : t(source.frequencyOfUpdate ?? "unknown")}
-                    </TagLabel>
-                  </Tag>
-                  <Tag
-                    startElement={
-                      <Icon
-                        as={MdOutlineTimer}
-                        boxSize={6}
-                        color="content.tertiary"
-                      />
-                    }
-                  >
-                    <TagLabel>
-                      {source.startYear} - {source.endYear}
-                    </TagLabel>
-                  </Tag>
-                </Flex>
-
+                <SourceDrawerTags t={t} source={source} />
+                <Separator />
                 <Stack className="space-y-4">
-                  <Heading fontSize="title.sm">{t("inside-dataset")}</Heading>
-                  <Text color="content.tertiary">
+                  <TitleLarge>{t("inside-dataset")}</TitleLarge>
+                  <BodyLarge color="content.tertiary">
                     {getTranslationFromDict(source.datasetDescription)}
-                  </Text>
-                  <chakra.hr borderColor="border.neutral" />
-                  <Heading
-                    verticalAlign="baseline"
-                    lineHeight="24px"
-                    fontSize="title.sm"
+                  </BodyLarge>
+                  <TitleMedium>{t("disaggregated-analysis")}</TitleMedium>
+                  {sourceData?.records && (
+                    <SourceDrawerActivityTable
+                      activities={sourceData.records}
+                      t={t}
+                    />
+                  )}
+                  <VStack
+                    backgroundColor="background.neutral"
+                    align="flex-start"
+                    borderRadius="12px"
+                    p={6}
                   >
-                    {t("methodology")}
-                    <Link
-                      href={source.methodologyUrl}
-                      target="_blank"
-                      rel="noreferrer noopener"
-                    >
-                      <Icon
-                        as={MdOpenInNew}
-                        boxSize={6}
-                        color="content.link"
-                        mb="-5px"
-                        ml={2}
-                      />
-                    </Link>
-                  </Heading>
-                  <Text color="content.tertiary">
-                    {getTranslationFromDict(source.methodologyDescription)}
-                  </Text>
-                  <Heading
-                    verticalAlign="baseline"
-                    lineHeight="24px"
-                    fontSize="title.sm"
-                  >
-                    {t("transform-data-heading")}
-                    <Link
-                      href="https://citycatalyst.openearth.org"
-                      target="_blank"
-                      rel="noreferrer noopener"
-                    >
-                      <Icon
-                        as={MdOpenInNew}
-                        boxSize={6}
-                        color="content.link"
-                        mb="-5px"
-                        ml={2}
-                      />
-                    </Link>
-                  </Heading>
-                  <Text color="content.tertiary">
-                    {getTranslationFromDict(source.transformationDescription)}
-                  </Text>
+                    <HStack align="flex-start">
+                      <TitleMedium color={"content.link"}>
+                        <MdInfoOutline />
+                      </TitleMedium>
+                      <TitleMedium color={"content.link"}>
+                        {t("about-data-availability")}
+                      </TitleMedium>
+                    </HStack>
+                    <BodyLarge>
+                      {t("about-data-availability-description")}
+                    </BodyLarge>
+                  </VStack>
+                  <Separator />
+                  <ScalingSection
+                    source={source}
+                    t={t}
+                    inventoryId={inventoryId}
+                  />
                 </Stack>
               </DrawerBody>
             )}

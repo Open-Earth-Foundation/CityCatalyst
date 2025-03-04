@@ -3,11 +3,10 @@ import {
   Box,
   Button,
   CheckboxGroup,
-  Separator,
   HStack,
+  Separator,
   Text,
 } from "@chakra-ui/react";
-import type { TFunction } from "i18next";
 import { MdPersonAdd } from "react-icons/md";
 import { TitleLarge } from "@/components/Texts/Title";
 import { BodyLarge } from "@/components/Texts/Body";
@@ -21,12 +20,12 @@ import MultipleEmailInput from "./MultipleEmailInput";
 import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
 import { useTranslation } from "@/i18n/client";
 import {
-  DialogRoot,
   DialogBody,
   DialogCloseTrigger,
   DialogContent,
   DialogFooter,
   DialogHeader,
+  DialogRoot,
 } from "@/components/ui/dialog";
 import { Checkbox } from "@/components/ui/checkbox";
 
@@ -46,13 +45,11 @@ const AddCollaboratorsDialog = ({
   const { showSuccessToast } = UseSuccessToast({
     title: t("invite-success-toast-title"),
     description: t("invite-success-toast-description"),
-    text: t("invite-success-toast-text"),
   });
 
   const { showErrorToast } = UseErrorToast({
     title: t("invite-error-toast-title"),
     description: t("invite-error-toast-description"),
-    text: t("invite-error-toast-text"),
   });
 
   const { data: citiesAndYears } = useGetCitiesAndYearsQuery();
@@ -85,7 +82,7 @@ const AddCollaboratorsDialog = ({
   };
 
   return (
-    <DialogRoot open={isOpen} onExitComplete={onClose}>
+    <DialogRoot open={isOpen} onOpenChange={onClose} onExitComplete={onClose}>
       <DialogContent maxW="container.md">
         <DialogHeader>
           <HStack>
@@ -96,8 +93,8 @@ const AddCollaboratorsDialog = ({
         <DialogCloseTrigger />
         <Separator my="24px" />
         <DialogBody>
-          <TitleLarge text={t("select-cities-to-share")} />
-          <BodyLarge text={t("select-cities-to-share-description")} />
+          <TitleLarge>{t("select-cities-to-share")}</TitleLarge>
+          <BodyLarge>{t("select-cities-to-share-description")}</BodyLarge>
           <CheckboxGroup>
             {citiesAndYears?.map(({ city }) => (
               <Checkbox
@@ -111,7 +108,7 @@ const AddCollaboratorsDialog = ({
               </Checkbox>
             ))}
           </CheckboxGroup>
-          <TitleLarge text={t("send-invites")} mt={"48px"} />
+          <TitleLarge mt={"48px"}>{t("send-invites")}</TitleLarge>
           <Text>
             {t("send-invites-description-1")}
             <Text as="span" fontWeight="bold">

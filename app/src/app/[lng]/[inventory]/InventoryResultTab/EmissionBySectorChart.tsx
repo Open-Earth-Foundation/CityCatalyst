@@ -216,7 +216,6 @@ const EmissionBySectorChart: React.FC<EmissionBySectorChartProps> = ({
   data,
   lng,
 }) => {
-  const { hideTooltip, showTooltipFromEvent } = useTooltip();
   const { t: tData } = useTranslation(lng, "data");
   const defaultBreakdown = SECTORS.reduce((acc, sector) => {
     return {

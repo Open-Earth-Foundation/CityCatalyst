@@ -24,23 +24,23 @@ const SubSectorCard: FC<SubSectorCardProps> = ({
   t,
 }) => {
   return (
-    <Card.Root className="flex flex-row h-[120px] items-center px-4 gap-4 border border-[#E6E7FF] shadow-none">
+    <Card.Root className="flex flex-row h-[120px] items-center px-4 gap-2 border border-[#E6E7FF] shadow-none">
       {percentageCompletion > 0 && percentageCompletion < 100 ? (
         <ProgressCircleRoot
-          size="sm"
+          size="xs"
           value={percentageCompletion}
           color="background.neutral"
+          mr={4}
         >
           <ProgressCircleRing
-            cap="round"
             color="interactive.secondary"
-            css={{ "--thickness": "12px" }}
+            css={{ "--thickness": "4px" }}
           />
         </ProgressCircleRoot>
       ) : (
         <Icon
           as={isCompleted ? MdOutlineCheckCircle : DataAlertIcon}
-          boxSize={8}
+          boxSize={10}
           color={
             isCompleted ? "interactive.tertiary" : "sentiment.warningDefault"
           }

@@ -11,12 +11,12 @@ import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
 import FormInput from "@/components/form-input";
 import FormSelectInput from "@/components/form-select-input";
 import {
-  DialogRoot,
   DialogBody,
   DialogCloseTrigger,
   DialogContent,
   DialogFooter,
   DialogHeader,
+  DialogRoot,
 } from "@/components/ui/dialog";
 
 interface UpdateUserDialogProps {
@@ -44,13 +44,11 @@ const UpdateUserDialog: FC<UpdateUserDialogProps> = ({
   const { showSuccessToast } = UseSuccessToast({
     description: t("user-details-updated"),
     title: t("user-details-updated"),
-    text: t("user-details-updated"),
   });
 
   const { showErrorToast } = UseErrorToast({
     description: t("user-details-update-fail"),
     title: t("user-details-update-fail"),
-    text: t("user-details-update-fail"),
   });
 
   const [inputValue, setInputValue] = useState<string>("");
@@ -84,7 +82,12 @@ const UpdateUserDialog: FC<UpdateUserDialogProps> = ({
 
   return (
     <>
-      <DialogRoot preventScroll open={isOpen} onExitComplete={onClose}>
+      <DialogRoot
+        preventScroll
+        open={isOpen}
+        onOpenChange={onClose}
+        onExitComplete={onClose}
+      >
         <DialogContent minH="524px" minW="568px" marginTop="10%">
           <DialogHeader
             display="flex"

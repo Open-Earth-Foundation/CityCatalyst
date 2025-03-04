@@ -1,10 +1,6 @@
 import { Heading, HeadingProps } from "@chakra-ui/react";
 
-interface TitleProps extends HeadingProps {
-  text: string;
-}
-
-export const TitleLarge = ({ text, ...props }: TitleProps) => (
+export const TitleLarge = ({ children, ...props }: HeadingProps) => (
   <Heading
     fontFamily="heading"
     fontSize="title.lg"
@@ -13,11 +9,11 @@ export const TitleLarge = ({ text, ...props }: TitleProps) => (
     color="content.secondary"
     {...props}
   >
-    {text}
+    {children}
   </Heading>
 );
 
-export const TitleMedium = ({ ...props }: HeadingProps) => (
+export const TitleMedium = ({ children, ...props }: HeadingProps) => (
   <Heading
     fontFamily="heading"
     fontSize="title.md"
@@ -26,6 +22,19 @@ export const TitleMedium = ({ ...props }: HeadingProps) => (
     color="content.secondary"
     {...props}
   >
-    {props.children}
+    {children}
+  </Heading>
+);
+
+export const TitleSmall = ({ children, ...props }: HeadingProps) => (
+  <Heading
+    fontFamily="heading"
+    fontSize="title.sm"
+    fontWeight="semibold"
+    lineHeight="16px"
+    color="content.secondary"
+    {...props}
+  >
+    {children}
   </Heading>
 );

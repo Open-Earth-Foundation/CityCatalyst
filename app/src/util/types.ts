@@ -43,6 +43,16 @@ export type InventoryResponse = RequiredInventoryAttributes & {
   };
 };
 
+export interface InventoryPopulationsResponse {
+  cityId: string;
+  population: number;
+  year: number;
+  countryPopulation: number;
+  countryPopulationYear: number;
+  regionPopulation: number;
+  regionPopulationYear: number;
+}
+
 export interface SectorProgress {
   sector: SectorAttributes;
   total: number;

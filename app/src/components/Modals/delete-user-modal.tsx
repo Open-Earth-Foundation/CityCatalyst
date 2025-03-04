@@ -34,13 +34,11 @@ const DeleteUserDialog: FC<DeleteUserDialogProps> = ({
   const { showSuccessToast } = UseSuccessToast({
     description: t("invite-canceled"),
     title: t("invite-canceled"),
-    text: t("invite-canceled"),
   });
 
   const { showErrorToast } = UseErrorToast({
     description: t("invite-cancel-fail"),
     title: t("invite-cancel-fail"),
-    text: t("invite-cancel-fail"),
   });
   const handleCancelInvite = async () => {
     await cancelUserInvite({ cityInviteId }).then(() => {
@@ -54,7 +52,12 @@ const DeleteUserDialog: FC<DeleteUserDialogProps> = ({
   };
   return (
     <>
-      <DialogRoot preventScroll open={isOpen} onExitComplete={onClose}>
+      <DialogRoot
+        preventScroll
+        open={isOpen}
+        onOpenChange={onClose}
+        onExitComplete={onClose}
+      >
         <DialogContent minH="388px" minW="568px" marginTop="10%">
           <DialogHeader
             display="flex"

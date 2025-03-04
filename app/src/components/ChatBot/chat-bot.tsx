@@ -28,10 +28,10 @@ import { api, useCreateThreadIdMutation } from "@/services/api";
 import { AssistantStream } from "openai/lib/AssistantStream";
 // @ts-expect-error - no types for this yet
 import { AssistantStreamEvent } from "openai/resources/beta/assistants/assistants";
-import { Toaster, toaster } from "@/components/ui/toaster";
 
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { UseErrorToast } from "@/hooks/Toasts";
 interface Message {
   role: "user" | "assistant" | "code";
   text: string;
@@ -84,13 +84,12 @@ export default function ChatBot({
   const [isGenerating, setIsGenerating] = useState(false); // Track generation state
 
   const handleError = (error: any, errorMessage: string) => {
-    // Display error to user
-    toaster.create({
-      title: "An error occurred",
+    const { showErrorToast } = UseErrorToast({
+      title: t("an-error-occurred"),
       description: errorMessage,
-      type: "error",
-      duration: 5000,
     });
+
+    showErrorToast();
   };
 
   // Automatically scroll to bottom of chat

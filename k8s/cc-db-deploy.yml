@@ -28,9 +28,15 @@ spec:
               cpu: "1000m"
           env:
             - name: "POSTGRES_USER"
-              value: "citycatalyst"
+              valueFrom:
+                configMapKeyRef:
+                  key: DATABASE_USER
+                  name: cc-db-configmap
             - name: "POSTGRES_PASSWORD"
-              value: "development"
+              valueFrom:
+                configMapKeyRef:
+                  key: DATABASE_PASSWORD
+                  name: cc-db-configmap
             - name: PGDATA
               value: /var/lib/postgresql/pgdata
           ports:

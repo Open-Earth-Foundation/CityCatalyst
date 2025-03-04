@@ -1,17 +1,16 @@
 import { EmissionsForecastData } from "@/util/types";
 import type { TFunction } from "i18next";
 import {
-  getReferenceNumberByName,
   getSectorByName,
   getSectorByReferenceNumber,
   getSubSectorByName,
   getSubSectorByReferenceNumber,
-  ISector,
 } from "@/util/constants";
-import { Badge, Box, Card, Heading, Table, Text } from "@chakra-ui/react";
-import { convertKgToTonnes, toKebabCase } from "@/util/helpers";
+import { Box } from "@chakra-ui/react";
+import { convertKgToTonnes } from "@/util/helpers";
 import { ResponsiveLine } from "@nivo/line";
 import CustomLegend from "@/app/[lng]/[inventory]/InventoryResultTab/EmissionsForecast/CustomLegend";
+import TooltipCard from "./TooltipCard";
 
 interface LineChartData {
   id: string;
@@ -90,92 +89,18 @@ export const EmissionsForecastChart = ({
             format: (value: number) => convertKgToTonnes(value),
           }}
           colors={colors}
-          tooltip={({ point }) => {
-            const year = point.data.x;
-            const sumOfYs = data.reduce((sum, series) => {
-              const yearData = series.data.find(({ x }) => x === year);
-              return sum + parseInt((yearData?.y as unknown as string) || "0");
-            }, 0);
-
-            return (
-              <Card.Root py={2} px={2}>
-                <Box padding="4" borderBottom="1px solid">
-                  <Heading size="sm">{t("year")}</Heading>
-                  <Text
-                    fontFamily="heading"
-                    fontSize="label.lg"
-                    fontStyle="normal"
-                    lineHeight="20px"
-                    letterSpacing="wide"
-                  >
-                    {year as unknown as string}
-                  </Text>
-                </Box>
-                <Box padding="4">
-                  <Table.Root unstyled size={"sm"}>
-                    <Table.Header>
-                      <Table.Row>
-                        <Table.ColumnHeader>{t("sector")}</Table.ColumnHeader>
-                        <Table.ColumnHeader>{t("rate")}</Table.ColumnHeader>
-                        <Table.ColumnHeader>%</Table.ColumnHeader>
-                        <Table.ColumnHeader>
-                          {t("total-emissions")}
-                        </Table.ColumnHeader>
-                      </Table.Row>
-                    </Table.Header>
-                    <Table.Body>
-                      {data.map(({ data, id }) => {
-                        const yearData = data.find(
-                          ({ x }) => x === point.data.x,
-                        );
-                        const percentage = yearData
-                          ? ((yearData.y / sumOfYs) * 100).toFixed(2)
-                          : 0;
-                        const sectorRefNo =
-                          getReferenceNumberByName(
-                            toKebabCase(id as string) as keyof ISector,
-                          ) || getSubSectorByName(id)?.referenceNumber;
-
-                        const yearGrowthRates =
-                          yearData &&
-                          forecast.growthRates[yearData.x as string];
-                        const growthRate =
-                          yearGrowthRates?.[sectorRefNo!] ||
-                          yearGrowthRates?.[point.serieId as string];
-
-                        return (
-                          <Table.Row key={id}>
-                            <Table.Cell>
-                              <Badge
-                                boxSize="10px"
-                                bg={getColorForSeries(id)}
-                                marginRight="8px"
-                              />
-                              {t(id)}
-                            </Table.Cell>
-                            <Table.Cell>{growthRate}</Table.Cell>
-                            <Table.Cell>{percentage}%</Table.Cell>
-                            <Table.Cell>
-                              {convertKgToTonnes(
-                                parseInt(yearData?.y as unknown as string),
-                              )}
-                            </Table.Cell>
-                          </Table.Row>
-                        );
-                      })}
-                      <Table.Row>
-                        <Table.ColumnHeader>{t("total")}</Table.ColumnHeader>
-                        <Table.ColumnHeader></Table.ColumnHeader>
-                        <Table.ColumnHeader>
-                          {convertKgToTonnes(sumOfYs)}
-                        </Table.ColumnHeader>
-                      </Table.Row>
-                    </Table.Body>
-                  </Table.Root>
-                </Box>
-              </Card.Root>
-            );
-          }}
+          tooltip={({ point }) => (
+            <TooltipCard point={point} data={data} forecast={forecast} t={t} />
+          )}
+          enableSlices="x"
+          sliceTooltip={({ slice }) => (
+            <TooltipCard
+              point={slice.points[0]}
+              data={data}
+              forecast={forecast}
+              t={t}
+            />
+          )}
           enableGridX={false}
           enableGridY={false}
           enablePoints={false}

@@ -93,6 +93,17 @@ describe("DataSource API", () => {
     await db.initialize();
     await cleanupDatabase();
 
+    city = await db.models.City.create({
+      cityId: randomUUID(),
+      locode,
+      name: "CC_",
+    });
+    await db.models.CityUser.create({
+      cityUserId: randomUUID(),
+      userId: testUserID,
+      cityId: city.cityId,
+    });
+
     inventory = await db.models.Inventory.create({
       ...inventoryData,
       inventoryId: randomUUID(),

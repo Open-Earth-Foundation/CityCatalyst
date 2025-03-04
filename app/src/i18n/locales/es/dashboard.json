@@ -7,6 +7,7 @@
   "total-population": "Población total",
   "total-land-area": "Área de tierra total",
   "gpc-calculation": "Esta barra de progreso muestra cuánto de su inventario GPC ya está lleno, tanto en verde (indicando datos que ha agregado manualmente) como en naranja (datos provenientes de conjuntos de datos de terceros).",
+  "add-a-new-city": "Agregar una nueva ciudad",
   "add-data-to-inventory": "Agregar datos al inventario",
   "add-data-to-inventory-description": "Sube datos o conecta datos de terceros para completar el Inventario Básico de Emisiones del GPC.",
   "about-gpc-protocol": "sobre el protocolo GPC",

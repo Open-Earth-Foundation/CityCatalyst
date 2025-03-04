@@ -7,6 +7,7 @@
   "total-population": "Total Population",
   "total-land-area": "Total land area",
   "gpc-calculation": "This progress bar displays how much of your GPC inventory is already filled, both in green (indicating data you've added manually), and orange (data coming from third-party datasets).",
+  "add-a-new-city": "Add a new city",
   "add-data-to-inventory": "Add data to inventory",
   "add-data-to-inventory-description": "Upload data or connect third-party data to complete the GPC Basic Emissions Inventory",
   "download-and-share": "Download & share",

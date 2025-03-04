@@ -72,6 +72,7 @@ export function Hero({
                     </Heading>
                     {!isPublic && (
                       <InventorySelect
+                        t={t}
                         currentInventoryId={currentInventoryId}
                       />
                     )}

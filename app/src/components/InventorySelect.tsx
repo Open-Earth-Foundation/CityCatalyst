@@ -10,10 +10,13 @@ import {
 } from "react-icons/md";
 import { MenuRoot, MenuContent, MenuItem, MenuTrigger } from "./ui/menu";
 import { Button } from "./ui/button";
+import type { TFunction } from "i18next";
 
 export const InventorySelect = ({
+  t,
   currentInventoryId,
 }: {
+  t: TFunction;
   currentInventoryId?: string | null;
 }) => {
   const router = useRouter();
@@ -71,7 +74,7 @@ export const InventorySelect = ({
         })}
         <MenuItem value="" onClick={goToOnboarding}>
           <Icon as={MdAdd} color="interactive.secondary" boxSize={6} />
-          Add a new city
+          {t("add-a-new-city")}
         </MenuItem>
       </MenuContent>
     </MenuRoot>

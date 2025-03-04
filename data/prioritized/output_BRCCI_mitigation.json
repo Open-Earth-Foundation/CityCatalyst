@@ -4,110 +4,45 @@
         "cityName": "Cama\u00e7ari",
         "region": "BR-BA",
         "regionName": "Bahia",
-        "actionId": "ipcc_0039",
-        "actionName": "Carbon Capture and Storage (CCS)",
-        "actionPriority": 1,
-        "explanation": "This action has the highest quantitative score (2.379) and directly targets industrial process emissions, which are the most emission-intensive in Cama\u00e7ari. It offers significant GHG reductions and aligns closely with emission reduction priorities."
-    },
-    {
-        "locode": "BRCCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BR-BA",
-        "regionName": "Bahia",
-        "actionId": "ipcc_0033",
-        "actionName": "Electrification of Processes",
-        "actionPriority": 2,
-        "explanation": "With a high score of 2.221, this action is highly effective in reducing emissions in industrial processes. It is highly relevant to the city's largest emission sector and promises rapid and cost-effective benefits."
-    },
-    {
-        "locode": "BRCCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BR-BA",
-        "regionName": "Bahia",
-        "actionId": "ipcc_0037",
-        "actionName": "Feedstock Decarbonisation",
-        "actionPriority": 3,
-        "explanation": "Scoring 1.971, this action focuses on decarbonising the feedstocks used in industrial processes. It directly tackles high-emission sources and supports sectoral relevance, making it a top priority."
-    },
-    {
-        "locode": "BRCCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BR-BA",
-        "regionName": "Bahia",
         "actionId": "c40_0035",
         "actionName": "Waste Efficiency",
-        "actionPriority": 4,
-        "explanation": "With a score of 1.823, Waste Efficiency targets the waste management sector\u2014a significant contributor to city emissions. It also complements circular economy principles and offers a substantial mitigation potential."
+        "actionPriority": 1
     },
     {
         "locode": "BRCCI",
         "cityName": "Cama\u00e7ari",
         "region": "BR-BA",
         "regionName": "Bahia",
-        "actionId": "ipcc_0076",
-        "actionName": "Switching to Net-zero-emissions Materials and Supply Chains",
-        "actionPriority": 5,
-        "explanation": "This action (score 1.771) focuses on transforming supply chains and material usage in industrial processes. It aligns with emissions reduction and sector relevance, making it a critical next step."
+        "actionId": "c40_0040",
+        "actionName": "Volume-Based Collection",
+        "actionPriority": 2
     },
     {
         "locode": "BRCCI",
         "cityName": "Cama\u00e7ari",
         "region": "BR-BA",
         "regionName": "Bahia",
-        "actionId": "ipcc_0026",
-        "actionName": "Heat Recovery and Reuse through Heat Exchanger Networks or Heat Pumps",
-        "actionPriority": 6,
-        "explanation": "With a score of 1.714, this action enhances energy efficiency in industrial operations. It has clear cost-effectiveness and rapid implementation potential, reducing emissions through improved thermal management."
+        "actionId": "icare_0052",
+        "actionName": "Develop projects for renewable energy and waste reuse",
+        "actionPriority": 3
     },
     {
         "locode": "BRCCI",
         "cityName": "Cama\u00e7ari",
         "region": "BR-BA",
         "regionName": "Bahia",
-        "actionId": "ipcc_0027",
-        "actionName": "Process Coupling and Improvements",
-        "actionPriority": 7,
-        "explanation": "Also scoring 1.714, this action optimizes industrial processes by reducing waste and energy losses. It has high relevance for emissions reduction and aligns well with cost-effective industrial improvements."
+        "actionId": "c40_0036",
+        "actionName": "Landfill Management",
+        "actionPriority": 4
     },
     {
         "locode": "BRCCI",
         "cityName": "Cama\u00e7ari",
         "region": "BR-BA",
         "regionName": "Bahia",
-        "actionId": "ipcc_0032",
-        "actionName": "Fuel Switching to Renewable Fuels",
-        "actionPriority": 8,
-        "explanation": "With a score of 1.714, switching to renewable fuels directly replaces high-emission energy sources in industrial settings. This action supports the transition to lower carbon operations in the city."
-    },
-    {
-        "locode": "BRCCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BR-BA",
-        "regionName": "Bahia",
-        "actionId": "ipcc_0034",
-        "actionName": "Energy Recycling in Furnaces and Kilns",
-        "actionPriority": 9,
-        "explanation": "Also at 1.714, this action improves energy efficiency in high-temperature industrial processes. Its implementation can rapidly reduce emissions from energy-intensive operations."
-    },
-    {
-        "locode": "BRCCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BR-BA",
-        "regionName": "Bahia",
-        "actionId": "ipcc_0042",
-        "actionName": "Design for Recovery, Reuse, or Repurposing",
-        "actionPriority": 10,
-        "explanation": "Scoring 1.714, this action embeds circular economy principles into industrial and urban systems. It reduces waste and promotes resource efficiency, contributing effectively to emissions reduction."
-    },
-    {
-        "locode": "BRCCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BR-BA",
-        "regionName": "Bahia",
-        "actionId": "ipcc_0044",
-        "actionName": "Alternative feedstocks (e.g. in cement)",
-        "actionPriority": 11,
-        "explanation": "With the same score of 1.714, targeting alternative feedstocks\u2014especially within high-emission sectors like cement\u2014directly addresses significant industrial emissions and aligns with the city's needs."
+        "actionId": "c40_0039",
+        "actionName": "Gas Management",
+        "actionPriority": 5
     },
     {
         "locode": "BRCCI",
@@ -116,87 +51,132 @@
         "regionName": "Bahia",
         "actionId": "c40_0038",
         "actionName": "Sanitary Landfills",
-        "actionPriority": 12,
-        "explanation": "Scoring 1.656, Sanitary Landfills improve waste management by reducing methane emissions and protecting public health, a key consideration given the city\u2019s waste emission footprint."
+        "actionPriority": 6
     },
     {
         "locode": "BRCCI",
         "cityName": "Cama\u00e7ari",
         "region": "BR-BA",
         "regionName": "Bahia",
-        "actionId": "c40_0041",
-        "actionName": "Waste Collection",
-        "actionPriority": 13,
-        "explanation": "With a score of 1.638, effective waste collection ensures timely and efficient handling of waste, reducing environmental impacts and contributing to improved urban emissions profiles."
+        "actionId": "icare_0107",
+        "actionName": "Expand Wastewater Treatment Services",
+        "actionPriority": 7
     },
     {
         "locode": "BRCCI",
         "cityName": "Cama\u00e7ari",
         "region": "BR-BA",
         "regionName": "Bahia",
-        "actionId": "ipcc_0035",
-        "actionName": "Technology Improvements of Processes",
-        "actionPriority": 14,
-        "explanation": "Scoring 1.614, this action focuses on upgrading industrial technologies for better efficiency and lower emissions. It is strategically important for long-term industrial competitiveness and risk reduction."
+        "actionId": "icare_0011",
+        "actionName": "Provide tax incentives for renewable energy in residential projects",
+        "actionPriority": 8
     },
     {
         "locode": "BRCCI",
         "cityName": "Cama\u00e7ari",
         "region": "BR-BA",
         "regionName": "Bahia",
-        "actionId": "ipcc_0043",
-        "actionName": "Circular Economy Policies",
-        "actionPriority": 15,
-        "explanation": "Also at 1.614, Circular Economy Policies institutionalize practices that promote resource efficiency and waste minimization across sectors, delivering cumulative emissions reduction benefits."
+        "actionId": "icare_0092",
+        "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
+        "actionPriority": 9
     },
     {
         "locode": "BRCCI",
         "cityName": "Cama\u00e7ari",
         "region": "BR-BA",
         "regionName": "Bahia",
-        "actionId": "ipcc_0030",
-        "actionName": "Material Recycling",
-        "actionPriority": 16,
-        "explanation": "With a score of 1.549, Material Recycling plays a key role in reducing the demand for virgin materials, lowering emissions and supporting a circular economic framework in the city."
+        "actionId": "icare_0105",
+        "actionName": "Reduce technical losses in energy distribution networks",
+        "actionPriority": 10
     },
     {
         "locode": "BRCCI",
         "cityName": "Cama\u00e7ari",
         "region": "BR-BA",
         "regionName": "Bahia",
-        "actionId": "ipcc_0047",
-        "actionName": "Enhanced product service levels per product (e.g. product sharing)",
-        "actionPriority": 17,
-        "explanation": "Scoring 1.549, this approach encourages product sharing models that reduce overall consumption and emissions. It is particularly suited to urban settings with socio-economic challenges."
+        "actionId": "c40_0015",
+        "actionName": "Existing Building Standards",
+        "actionPriority": 11
     },
     {
         "locode": "BRCCI",
         "cityName": "Cama\u00e7ari",
         "region": "BR-BA",
         "regionName": "Bahia",
-        "actionId": "ipcc_0048",
-        "actionName": "Design for extended product life-time",
-        "actionPriority": 18,
-        "explanation": "Also at 1.549, extending product life-times minimizes waste and resource use. This action supports long-term sustainability by reducing the frequency of product turnover and associated emissions."
+        "actionId": "c40_0018",
+        "actionName": "Existing Building Standards",
+        "actionPriority": 12
     },
     {
         "locode": "BRCCI",
         "cityName": "Cama\u00e7ari",
         "region": "BR-BA",
         "regionName": "Bahia",
-        "actionId": "ipcc_0049",
-        "actionName": "Improved product stock maintenance to extend life-time",
-        "actionPriority": 19,
-        "explanation": "With the same score of 1.549, this action improves maintenance practices to prolong product lifespans, effectively lowering resource consumption and overall emissions."
+        "actionId": "icare_0018",
+        "actionName": "Implement the Sustainable Logistics Plan in all public administration bodies",
+        "actionPriority": 13
     },
     {
         "locode": "BRCCI",
         "cityName": "Cama\u00e7ari",
         "region": "BR-BA",
         "regionName": "Bahia",
-        "actionId": "ipcc_0051",
-        "actionName": "Reducing overall demand for product services",
-        "actionPriority": 20,
-        "explanation": "Scoring 1.549, this action directly targets the reduction in consumption demand, leading to a decrease in associated emissions. It complements other circular strategies by addressing the demand side of emissions."
+        "actionId": "c40_0017",
+        "actionName": "Existing Building Standards",
+        "actionPriority": 14
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "ipcc_0080",
+        "actionName": "Avoiding, Minimising, and Recycling Waste",
+        "actionPriority": 15
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "icare_0137",
+        "actionName": "Replace Inefficient Lighting with LED Technology in Public Spaces",
+        "actionPriority": 16
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "c40_0010",
+        "actionName": "New Building Standards",
+        "actionPriority": 17
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "icare_0111",
+        "actionName": "Strengthen the reverse logistics system.",
+        "actionPriority": 18
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "icare_0121",
+        "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
+        "actionPriority": 19
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "icare_0113",
+        "actionName": "Universalize the coverage of the selective waste collection service for dry materials",
+        "actionPriority": 20
     }
 ]

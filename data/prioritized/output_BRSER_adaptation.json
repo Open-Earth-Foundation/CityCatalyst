@@ -4,80 +4,30 @@
         "cityName": "Serra",
         "region": "BR-ES",
         "regionName": "Esp\u00edrito Santo",
-        "actionId": "ipcc_0087",
-        "actionName": "Infrastructure retrofitting",
+        "actionId": "icare_0169",
+        "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
         "actionPriority": 1,
-        "explanation": "This action scores the highest quantitative value (1.56). It targets critical infrastructure which is highly vulnerable given the city's risk scores for heatwaves, landslides, and flooding. In a city with significant infrastructure risks (normalised risk score of 0.99), retrofitting can both reduce damage and improve overall urban resilience. Its direct alignment with adaptation strategies in an emissions-intensive context makes it top priority."
+        "explanation": "Ranked #1 by tournament ranking algorithm"
     },
     {
         "locode": "BRSER",
         "cityName": "Serra",
         "region": "BR-ES",
         "regionName": "Esp\u00edrito Santo",
-        "actionId": "ipcc_0095",
-        "actionName": "Disaster early warning",
+        "actionId": "icare_0145",
+        "actionName": "Strengthen the healthcare network to attend to climate victims",
         "actionPriority": 2,
-        "explanation": "Ranking second with a quantitative score of 1.545, this action plays a vital role in risk reduction by providing timely alerts about extreme events. With high hazards related to public health (heatwaves at 0.807) and infrastructure risks, effective early warning systems can save lives and reduce economic losses."
+        "explanation": "Ranked #2 by tournament ranking algorithm"
     },
     {
         "locode": "BRSER",
         "cityName": "Serra",
         "region": "BR-ES",
         "regionName": "Esp\u00edrito Santo",
-        "actionId": "ipcc_0091",
-        "actionName": "Diversification of livelihoods ",
+        "actionId": "icare_0176",
+        "actionName": "Development of Climate Action Plan",
         "actionPriority": 3,
-        "explanation": "With a score of 1.52, this action is crucial for socio-economic resilience. For Serra, where socio-economic factors indicate a very high proportion of low-income residents, diversifying income sources can reduce vulnerability to climate impacts while enhancing community stability."
-    },
-    {
-        "locode": "BRSER",
-        "cityName": "Serra",
-        "region": "BR-ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "c40_0053",
-        "actionName": "Water Savings",
-        "actionPriority": 4,
-        "explanation": "Scoring 1.485, water savings directly address key risks in Serra related to water resources. Given the city's exposure to drought and potential flooding, promoting water efficiency is cost-effective and reduces strain on local systems, aligning strongly with environmental compatibility and adaptation strategy."
-    },
-    {
-        "locode": "BRSER",
-        "cityName": "Serra",
-        "region": "BR-ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "ipcc_0092",
-        "actionName": "Social safety nets",
-        "actionPriority": 5,
-        "explanation": "At a quantitative score of 1.395, this action is vital in providing a buffer for vulnerable populations. Considering Serra's socio-economic context with a high proportion of low-income residents, robust social safety nets help mitigate the impacts of climate hazards on livelihoods."
-    },
-    {
-        "locode": "BRSER",
-        "cityName": "Serra",
-        "region": "BR-ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "ipcc_0093",
-        "actionName": "Availability of health infrastructure",
-        "actionPriority": 6,
-        "explanation": "Also scoring 1.395, ensuring robust health infrastructure is essential given the high public health risks such as heatwaves (risk score 0.807) and disease incidence (0.725). This action offers immediate benefits to the city's capacity to respond to climate-induced health challenges."
-    },
-    {
-        "locode": "BRSER",
-        "cityName": "Serra",
-        "region": "BR-ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "c40_0054",
-        "actionName": "Water Recycling",
-        "actionPriority": 7,
-        "explanation": "With a score of 1.385, water recycling supports improved resource management. In a tropical rainforest environment with potential for both water scarcity and excess rainfall, implementing recycling measures is both cost-effective and highly relevant to reducing environmental stress."
-    },
-    {
-        "locode": "BRSER",
-        "cityName": "Serra",
-        "region": "BR-ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "ipcc_0088",
-        "actionName": "Building codes",
-        "actionPriority": 8,
-        "explanation": "Scoring 1.37, modern building codes help ensure that new and retrofitted structures can withstand climate hazards. They reduce long\u2010term risks to infrastructure and fortify the city\u2019s adaptation measures while being relatively easy to implement with regulatory frameworks."
+        "explanation": "Ranked #3 by tournament ranking algorithm"
     },
     {
         "locode": "BRSER",
@@ -86,8 +36,58 @@
         "regionName": "Esp\u00edrito Santo",
         "actionId": "ipcc_0094",
         "actionName": "Access to health care",
+        "actionPriority": 4,
+        "explanation": "Ranked #4 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BRSER",
+        "cityName": "Serra",
+        "region": "BR-ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0149",
+        "actionName": "Encourage sustainable land use practices",
+        "actionPriority": 5,
+        "explanation": "Ranked #5 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BRSER",
+        "cityName": "Serra",
+        "region": "BR-ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0148",
+        "actionName": "Create the Municipal Climate Change Forum",
+        "actionPriority": 6,
+        "explanation": "Ranked #6 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BRSER",
+        "cityName": "Serra",
+        "region": "BR-ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0151",
+        "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
+        "actionPriority": 7,
+        "explanation": "Ranked #7 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BRSER",
+        "cityName": "Serra",
+        "region": "BR-ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0150",
+        "actionName": "Implement Loss Reduction and Control Program promoting water security for the municipality",
+        "actionPriority": 8,
+        "explanation": "Ranked #8 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BRSER",
+        "cityName": "Serra",
+        "region": "BR-ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "ipcc_0087",
+        "actionName": "Infrastructure retrofitting",
         "actionPriority": 9,
-        "explanation": "At a score of 1.295, improving access to health care is crucial to managing public health crises arising from climate hazards. Given the high risk of health impacts in Serra, this action supports rapid response and boosts community resilience."
+        "explanation": "Ranked #9 by tournament ranking algorithm"
     },
     {
         "locode": "BRSER",
@@ -97,7 +97,37 @@
         "actionId": "ipcc_0096",
         "actionName": "Farm/fishery improvements",
         "actionPriority": 10,
-        "explanation": "Also scoring 1.295, this action addresses food security and supports local economies which can be heavily affected during climate events. Enhancing the resilience of agricultural and fishery practices is important in a context with drought and flooding risks."
+        "explanation": "Ranked #10 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BRSER",
+        "cityName": "Serra",
+        "region": "BR-ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0144",
+        "actionName": "Creation of a Financial Support Program to Adress Extreme Weather Events",
+        "actionPriority": 11,
+        "explanation": "Ranked #11 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BRSER",
+        "cityName": "Serra",
+        "region": "BR-ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "ipcc_0088",
+        "actionName": "Building codes",
+        "actionPriority": 12,
+        "explanation": "Ranked #12 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BRSER",
+        "cityName": "Serra",
+        "region": "BR-ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "ipcc_0093",
+        "actionName": "Availability of health infrastructure",
+        "actionPriority": 13,
+        "explanation": "Ranked #13 by tournament ranking algorithm"
     },
     {
         "locode": "BRSER",
@@ -106,97 +136,67 @@
         "regionName": "Esp\u00edrito Santo",
         "actionId": "ipcc_0097",
         "actionName": "Food storage/distribution improvements",
-        "actionPriority": 11,
-        "explanation": "With a quantitative score of 1.295, improving food storage and distribution networks is a key measure for food security. This action ensures that in events of climate disruption, the supply chain remains robust and communities are less vulnerable."
-    },
-    {
-        "locode": "BRSER",
-        "cityName": "Serra",
-        "region": "BR-ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "ipcc_0098",
-        "actionName": "Behaviour change in diets and food waste",
-        "actionPriority": 12,
-        "explanation": "Also rated at 1.295, this action focuses on the longer\u2010term sustainability of food systems. It encourages efficient resource use and helps mitigate the environmental impact of food systems, though its benefits may be more gradual compared to infrastructural adaptations."
-    },
-    {
-        "locode": "BRSER",
-        "cityName": "Serra",
-        "region": "BR-ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "ipcc_0100",
-        "actionName": "Efficient water use/demand",
-        "actionPriority": 13,
-        "explanation": "At a score of 1.295, optimizing water use aligns closely with addressing water resource stress. This action is important for ensuring that demand does not exceed supply, especially during periods of drought or excess precipitation, making it both timely and cost-effective."
-    },
-    {
-        "locode": "BRSER",
-        "cityName": "Serra",
-        "region": "BR-ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "c40_0050",
-        "actionName": "White Roofs",
         "actionPriority": 14,
-        "explanation": "With a score of 1.28, white roofs help reduce urban heat island effects, providing a passive cooling solution. In a city facing dangerous heatwave risks, this low-cost measure can reduce energy demand and improve thermal comfort in urban environments."
+        "explanation": "Ranked #14 by tournament ranking algorithm"
     },
     {
         "locode": "BRSER",
         "cityName": "Serra",
         "region": "BR-ES",
         "regionName": "Esp\u00edrito Santo",
-        "actionId": "c40_0051",
-        "actionName": "Public Shading",
+        "actionId": "icare_0172",
+        "actionName": "Develop and implement the Municipal Risk Reduction Plan (PMRR) and identify population groups vulnerable to climate risks.",
         "actionPriority": 15,
-        "explanation": "Also scoring 1.28, public shading mitigates heat exposure in public spaces, contributing to reduced heat-related health risks. This action is well-suited to densely populated urban areas and complements other heat mitigation measures."
+        "explanation": "Ranked #15 by tournament ranking algorithm"
     },
     {
         "locode": "BRSER",
         "cityName": "Serra",
         "region": "BR-ES",
         "regionName": "Esp\u00edrito Santo",
-        "actionId": "ipcc_0099",
-        "actionName": "Water capture/storage",
+        "actionId": "icare_0155",
+        "actionName": "Preservation and Recovery of Water Bodies",
         "actionPriority": 16,
-        "explanation": "Scoring 1.27, water capture and storage systems are critical for managing variability in water availability. This action is particularly relevant in a climate with dual challenges of drought and heavy rainfall, enhancing resilience in water supply."
+        "explanation": "Ranked #16 by tournament ranking algorithm"
     },
     {
         "locode": "BRSER",
         "cityName": "Serra",
         "region": "BR-ES",
         "regionName": "Esp\u00edrito Santo",
-        "actionId": "ipcc_0101",
-        "actionName": "Efficient water supply/distribution",
+        "actionId": "icare_0152",
+        "actionName": "Recovery of degraded areas",
         "actionPriority": 17,
-        "explanation": "Also with a score of 1.27, improving the efficiency of water supply and distribution systems minimizes losses and ensures that critical water needs are met during emergencies. This systematic improvement supports both daily needs and crisis resilience."
+        "explanation": "Ranked #17 by tournament ranking algorithm"
     },
     {
         "locode": "BRSER",
         "cityName": "Serra",
         "region": "BR-ES",
         "regionName": "Esp\u00edrito Santo",
-        "actionId": "ipcc_0102",
-        "actionName": "Seasonal/temporary mobility",
+        "actionId": "icare_0162",
+        "actionName": "Strengthen programs for control and conservation of protected areas",
         "actionPriority": 18,
-        "explanation": "With a score of 1.27, this action supports adaptive mobility solutions during periods of climate stress. It provides flexibility for residents during disruptions caused by extreme weather, making it an important, though more logistically dependent, measure."
+        "explanation": "Ranked #18 by tournament ranking algorithm"
     },
     {
         "locode": "BRSER",
         "cityName": "Serra",
         "region": "BR-ES",
         "regionName": "Esp\u00edrito Santo",
-        "actionId": "c40_0046",
-        "actionName": "Coastal Protection",
+        "actionId": "ipcc_0095",
+        "actionName": "Disaster early warning",
         "actionPriority": 19,
-        "explanation": "Scoring 1.235, coastal protection is generally a high-priority adaptation measure in coastal regions. Although Serra is more inland, this action might address risks in peripheral coastal zones or be integrated into regional planning, albeit with lower immediate relevance."
+        "explanation": "Ranked #19 by tournament ranking algorithm"
     },
     {
         "locode": "BRSER",
         "cityName": "Serra",
         "region": "BR-ES",
         "regionName": "Esp\u00edrito Santo",
-        "actionId": "c40_0059",
-        "actionName": "Early Warning",
+        "actionId": "icare_0170",
+        "actionName": "Build safe housing and implement urban rehabilitation projects for populations living in high-risk areas",
         "actionPriority": 20,
-        "explanation": "Also scoring 1.235, this early warning action is similar in function to disaster early warning but at a slightly lower quantitative score. Despite its importance in risk management, its slightly lower score and potential overlap with higher-ranked early warning systems places it at the end of the prioritized list."
+        "explanation": "Ranked #20 by tournament ranking algorithm"
     }
 ]

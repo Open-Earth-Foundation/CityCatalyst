@@ -4,10 +4,171 @@
         "cityName": "Maranguape",
         "region": "BR-CE",
         "regionName": "Cear\u00e1",
-        "actionId": "ipcc_0053",
-        "actionName": "Afforestation, Reforestation and Forest Ecosystem Restoration",
-        "actionPriority": 1,
-        "explanation": "This action attains the highest quantitative score, indicating strong potential for GHG emissions reduction primarily in the land use sector, which is the most emission intensive in Maranguape. Despite desert conditions potentially complicating large-scale forestry, the mitigation benefits remain critical, making it the top priority."
+        "actionId": "icare_0133",
+        "actionName": "Promote Urban Reforestation and Green Corridors",
+        "actionPriority": 1
+    },
+    {
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0057",
+        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
+        "actionPriority": 2
+    },
+    {
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0050",
+        "actionName": "Implement Agroforestry Systems",
+        "actionPriority": 3
+    },
+    {
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0098",
+        "actionName": "Strengthen Forest Conservation and Restoration Initiatives",
+        "actionPriority": 4
+    },
+    {
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0086",
+        "actionName": "Promote Soil Carbon Sequestration Techniques",
+        "actionPriority": 5
+    },
+    {
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0068",
+        "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
+        "actionPriority": 6
+    },
+    {
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "c40_0009",
+        "actionName": "New Building Standards",
+        "actionPriority": 7
+    },
+    {
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0102",
+        "actionName": "Promote Sustainable Agricultural Practices",
+        "actionPriority": 8
+    },
+    {
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0096",
+        "actionName": "Promote Organic Farming",
+        "actionPriority": 9
+    },
+    {
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0084",
+        "actionName": "Create Incentives for Agroforestry Practices in Livestock Systems",
+        "actionPriority": 10
+    },
+    {
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0132",
+        "actionName": "Encourage Local Agroecological Production and Short Supply Chains",
+        "actionPriority": 11
+    },
+    {
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0087",
+        "actionName": "Monitor Agricultural Land Use to Prevent Deforestation",
+        "actionPriority": 12
+    },
+    {
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0134",
+        "actionName": "Strengthen Mechanisms for Deforestation Control",
+        "actionPriority": 13
+    },
+    {
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0100",
+        "actionName": "Support Regenerative Agriculture Practices",
+        "actionPriority": 14
+    },
+    {
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0130",
+        "actionName": "Conduct Technical Assistance and Rural Extension (ATER) Actions",
+        "actionPriority": 15
+    },
+    {
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0139",
+        "actionName": "Implementation of urban toll.",
+        "actionPriority": 16
+    },
+    {
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0044",
+        "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
+        "actionPriority": 17
+    },
+    {
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0101",
+        "actionName": "Encourage the Use of Low-Emission Agricultural Machinery",
+        "actionPriority": 18
+    },
+    {
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0127",
+        "actionName": "Accelerate Environmental Regularization of Rural Properties",
+        "actionPriority": 19
     },
     {
         "locode": "BRMGE",
@@ -16,187 +177,6 @@
         "regionName": "Cear\u00e1",
         "actionId": "ipcc_0052",
         "actionName": "Reduce Deforestation and Degradation",
-        "actionPriority": 2,
-        "explanation": "Targeting the same high-emission land use sector as the first action, reducing deforestation and degradation offers substantial emissions cuts. Its direct relevance to Maranguape\u2019s large land use footprint places it as the second priority."
-    },
-    {
-        "locode": "BRMGE",
-        "cityName": "Maranguape",
-        "region": "BR-CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "ipcc_0061",
-        "actionName": "Soil Carbon Management in Croplands and Grasslands",
-        "actionPriority": 3,
-        "explanation": "This action directly addresses emissions from agricultural lands through improved soil carbon sequestration. Given its high quantitative score and its relevance for soils and croplands that may exist on the urban fringe or rural areas, it is appropriately ranked third."
-    },
-    {
-        "locode": "BRMGE",
-        "cityName": "Maranguape",
-        "region": "BR-CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "ipcc_0068",
-        "actionName": "Bioenergy and BECCS(Bioenergy with Carbon Capture and Storage)",
-        "actionPriority": 4,
-        "explanation": "Bioenergy coupled with CCS represents a modern, technology-driven mitigation measure with a strong emissions reduction potential. It also offers the benefit of energy transition, which is critical for addressing both stationary energy and transportation emissions, making it the fourth priority."
-    },
-    {
-        "locode": "BRMGE",
-        "cityName": "Maranguape",
-        "region": "BR-CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "ipcc_0058",
-        "actionName": "Peatland Restoration",
-        "actionPriority": 5,
-        "explanation": "Despite having a high quantitative score, peatland restoration may be less compatible with Maranguape's desert biome. Nevertheless, its significant reduction potential in applicable contexts earns it a high ranking, albeit slightly lower than similar high-impact actions."
-    },
-    {
-        "locode": "BRMGE",
-        "cityName": "Maranguape",
-        "region": "BR-CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "ipcc_0059",
-        "actionName": "Reduce Conversion of Coastal Wetlands",
-        "actionPriority": 6,
-        "explanation": "This action focuses on preventing the loss of coastal wetlands. Although Maranguape has a desert context and the direct presence of coastal wetlands may be uncertain, the emission reduction potential and co-benefits to local ecosystem integrity still provide value."
-    },
-    {
-        "locode": "BRMGE",
-        "cityName": "Maranguape",
-        "region": "BR-CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "ipcc_0012",
-        "actionName": "Electric Technologies",
-        "actionPriority": 7,
-        "explanation": "Electric Technologies target reductions in industrial and possibly transportation emissions. Their potential to overhaul energy use through electrification is important, and a relatively high quantitative score supports a high ranking."
-    },
-    {
-        "locode": "BRMGE",
-        "cityName": "Maranguape",
-        "region": "BR-CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "c40_0026",
-        "actionName": "Vehicle Emissions",
-        "actionPriority": 8,
-        "explanation": "Focusing on one of the major emission sectors \u2013 transportation \u2013 this action is vital for a city whose transportation emissions are substantial. Its strong score makes it an effective intervention, placing it 8th."
-    },
-    {
-        "locode": "BRMGE",
-        "cityName": "Maranguape",
-        "region": "BR-CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "ipcc_0077",
-        "actionName": "Urban Tree Planting and Management",
-        "actionPriority": 9,
-        "explanation": "Urban tree planting helps reduce urban heat island effects and sequester carbon, which is valuable despite potential water scarcity in a desert biome. The moderate emissions reduction impact and socio-environmental benefits justify a mid-level ranking."
-    },
-    {
-        "locode": "BRMGE",
-        "cityName": "Maranguape",
-        "region": "BR-CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "ipcc_0011",
-        "actionName": "Alternative Fuels for Vehicles",
-        "actionPriority": 10,
-        "explanation": "Shifting vehicle energy sources to alternative fuels targets transportation emissions. Given the importance of this sector and a solid quantitative score, it ranks tenth, supporting a cleaner transport sector."
-    },
-    {
-        "locode": "BRMGE",
-        "cityName": "Maranguape",
-        "region": "BR-CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "ipcc_0054",
-        "actionName": "Improved Forest Management",
-        "actionPriority": 11,
-        "explanation": "Improved forest management practices enhance the sustainability of existing forest areas. While related to higher priority forestry actions, its slightly lower quantitative score places it at rank 11."
-    },
-    {
-        "locode": "BRMGE",
-        "cityName": "Maranguape",
-        "region": "BR-CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "ipcc_0069",
-        "actionName": "Shift to sustainable healthy diets",
-        "actionPriority": 12,
-        "explanation": "Though not directly linked to major emission sectors like land use or transportation, promoting sustainable diets helps reduce emissions indirectly through changes in food production systems. Its societal and co-benefit aspects are valued though its direct emission mitigation is lower, leading to a 12th rank."
-    },
-    {
-        "locode": "BRMGE",
-        "cityName": "Maranguape",
-        "region": "BR-CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "ipcc_0071",
-        "actionName": "Improved and enhanced use of wood products",
-        "actionPriority": 13,
-        "explanation": "This action leverages wood products to extend the carbon storage potential of biomass, indirectly supporting emissions reduction. However, its impact is relatively lower compared to direct interventions in sectors with higher emissions, hence ranking 13."
-    },
-    {
-        "locode": "BRMGE",
-        "cityName": "Maranguape",
-        "region": "BR-CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "ipcc_0057",
-        "actionName": "Reduce Degradation and Conversion of Peatlands Activities, Co-benefits, Risks and Implementation Barriers",
-        "actionPriority": 14,
-        "explanation": "Similar to peatland restoration, this action addresses emissions from peatlands with additional focus on overcoming barriers. The higher dependency and implementation challenges place it below other forestry and land use actions, earning it the 14th rank."
-    },
-    {
-        "locode": "BRMGE",
-        "cityName": "Maranguape",
-        "region": "BR-CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "ipcc_0063",
-        "actionName": "Agroforesry",
-        "actionPriority": 15,
-        "explanation": "Agroforestry combines agricultural production with forestry practices, offering moderate emissions reduction potential and additional socio-economic benefits. Its comparatively lower quantitative score positions it midway in the ranking."
-    },
-    {
-        "locode": "BRMGE",
-        "cityName": "Maranguape",
-        "region": "BR-CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "ipcc_0019",
-        "actionName": "Modal Shift from Aircraft to Train",
-        "actionPriority": 16,
-        "explanation": "While a modal shift in transportation can yield emissions benefits, this action is less relevant for a city of Maranguape\u2019s size where air travel is likely less frequent. Consequently, despite a decent score, it is ranked lower."
-    },
-    {
-        "locode": "BRMGE",
-        "cityName": "Maranguape",
-        "region": "BR-CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "c40_0042",
-        "actionName": "Biodiversity Expansion",
-        "actionPriority": 17,
-        "explanation": "This action promotes ecological benefits and biodiversity enhancement. Although it supports environmental compatibility and has co-benefits for ecosystem resilience, its direct emissions reduction impact is lower, resulting in the 17th rank."
-    },
-    {
-        "locode": "BRMGE",
-        "cityName": "Maranguape",
-        "region": "BR-CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "c40_0038",
-        "actionName": "Sanitary Landfills",
-        "actionPriority": 18,
-        "explanation": "Sanitary Landfills tackle waste-related emissions, an important but relatively smaller contribution compared to sectors like land use and transportation. Their moderate quantitative score and focus on waste emissions justify a ranking of 18."
-    },
-    {
-        "locode": "BRMGE",
-        "cityName": "Maranguape",
-        "region": "BR-CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "ipcc_0013",
-        "actionName": "Fuel Cell Technologies",
-        "actionPriority": 19,
-        "explanation": "Fuel cell technologies represent an innovative solution for reducing emissions in energy systems. However, high costs, longer implementation timelines, and dependency on advanced infrastructure reduce its immediate practicality for Maranguape, leading to a 19th rank."
-    },
-    {
-        "locode": "BRMGE",
-        "cityName": "Maranguape",
-        "region": "BR-CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "ipcc_0062",
-        "actionName": "Biochar",
-        "actionPriority": 20,
-        "explanation": "Biochar is a promising approach to sequester carbon in soils, yet it tends to have lower immediate emissions reduction and faces several implementation challenges. Its lower quantitative score compared to other actions places it at the lowest priority in this ranking."
+        "actionPriority": 20
     }
 ]

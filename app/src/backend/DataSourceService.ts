@@ -311,9 +311,13 @@ export default class DataSourceService {
     }
 
     if (typeof data.totals !== "object") {
-      const message = "Incorrect response from Global API for URL: " + url;
-      console.error(message, data);
-      return message;
+      if (data.detail === "No data available") {
+        return "Source doesn't have data available for this input";
+      } else {
+        const message = "Incorrect response from Global API for URL: " + url;
+        console.error(message, data);
+        return message;
+      }
     }
 
     return data;

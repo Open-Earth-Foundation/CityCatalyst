@@ -21,14 +21,18 @@ type FetchPopulationResult = PopulationEntry & { data: any };
 
 export default class OpenClimateService {
   public static async getPopulationData(
-    locode: string,
+    inventoryLocode: string,
     inventoryYear: number,
   ): Promise<PopulationDataResult> {
     const url = OPENCLIMATE_BASE_URL + "/api/v1/actor/";
     const result: PopulationDataResult = {};
 
     try {
-      const cityResult = await this.fetchPopulation(locode, inventoryYear, url);
+      const cityResult = await this.fetchPopulation(
+        inventoryLocode,
+        inventoryYear,
+        url,
+      );
       if (!cityResult) {
         result.error = "No city population result found!";
         return result;
@@ -37,9 +41,11 @@ export default class OpenClimateService {
       result.cityPopulationYear = cityResult.year;
 
       const countryLocode =
-        locode && locode.length > 0 ? locode.split(" ")[0] : null;
+        inventoryLocode && inventoryLocode.length > 0
+          ? inventoryLocode.split(" ")[0]
+          : null;
       if (!countryLocode) {
-        result.error = `Invalid locode supplied, doesn\'t have a country locode: ${locode}`;
+        result.error = `Invalid locode supplied, doesn\'t have a country locode: ${inventoryLocode}`;
         return result;
       }
 
@@ -57,7 +63,7 @@ export default class OpenClimateService {
 
       const regionLocode = cityResult.data.is_part_of;
       if (!regionLocode) {
-        result.error = `City ${locode} does not have a region locode in OpenClimate`;
+        result.error = `City ${inventoryLocode} does not have a region locode in OpenClimate`;
         return result;
       }
 
@@ -73,7 +79,7 @@ export default class OpenClimateService {
       result.regionPopulation = regionResult.population;
       result.regionPopulationYear = regionResult.year;
     } catch (err) {
-      const message = `Failed to query population data for city ${locode} and year ${inventoryYear} from URL ${url}: ${err}`;
+      const message = `Failed to query population data for city ${inventoryLocode} and year ${inventoryYear} from URL ${url}: ${err}`;
       logger.error(message);
       result.error = message;
     }

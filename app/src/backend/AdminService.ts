@@ -40,10 +40,7 @@ export default class AdminService {
 
     // Bulk create inventories
     logger.info(
-      "Creating bulk inventories for cities",
-      props.cityLocodes,
-      "and years",
-      props.years,
+      `Creating bulk inventories for cities ${props.cityLocodes} and years ${props.years}`,
     );
     for (const cityLocode of props.cityLocodes) {
       const cityName = "Test"; // TODO query from OpenClimate
@@ -73,45 +70,12 @@ export default class AdminService {
       }
 
       for (const inventory of inventories) {
-        // query population data from OpenClimate and save in Population table
-        const populationData = await OpenClimateService.getPopulationData(
+        const populationErrors = await this.createPopulationEntries(
           cityLocode,
           inventory.year,
+          city.cityId,
         );
-        if (populationData.error) {
-          errors.push({ locode: cityLocode, error: populationData.error });
-        }
-        if (
-          !populationData.cityPopulation ||
-          !populationData.cityPopulationYear ||
-          !populationData.countryPopulation ||
-          !populationData.countryPopulationYear ||
-          !populationData.regionPopulation ||
-          !populationData.regionPopulationYear
-        ) {
-          errors.push({
-            locode: cityLocode,
-            error: `Population data incomplete for city ${cityLocode} and inventory year ${inventory.year}`,
-          });
-          continue;
-        }
-
-        // they might be for the same year, but that is not guaranteed (because of data availability)
-        await db.models.Population.create({
-          population: populationData.cityPopulation,
-          cityId: city.cityId,
-          year: populationData.cityPopulationYear,
-        });
-        await db.models.Population.upsert({
-          countryPopulation: populationData.countryPopulation,
-          cityId: city.cityId,
-          year: populationData.countryPopulationYear,
-        });
-        await db.models.Population.upsert({
-          regionPopulation: populationData.regionPopulation,
-          cityId: city.cityId,
-          year: populationData.regionPopulationYear,
-        });
+        errors.push(...populationErrors);
 
         // Connect all data sources, rank them by priority, check if they connect
         const sourceErrors = await this.connectAllDataSources(
@@ -125,6 +89,56 @@ export default class AdminService {
     }
 
     return { errors, results };
+  }
+
+  private static async createPopulationEntries(
+    cityLocode: string,
+    inventoryYear: number,
+    cityId: string,
+  ) {
+    const errors: { locode: string; error: string }[] = [];
+
+    // query population data from OpenClimate and save in Population table
+    const populationData = await OpenClimateService.getPopulationData(
+      cityLocode,
+      inventoryYear,
+    );
+    if (populationData.error) {
+      errors.push({ locode: cityLocode, error: populationData.error });
+    }
+    if (
+      !populationData.cityPopulation ||
+      !populationData.cityPopulationYear ||
+      !populationData.countryPopulation ||
+      !populationData.countryPopulationYear ||
+      !populationData.regionPopulation ||
+      !populationData.regionPopulationYear
+    ) {
+      errors.push({
+        locode: cityLocode,
+        error: `Population data incomplete for city ${cityLocode} and inventory year ${inventoryYear}`,
+      });
+      return errors;
+    }
+
+    // they might be for the same year, but that is not guaranteed (because of data availability)
+    await db.models.Population.create({
+      population: populationData.cityPopulation,
+      cityId,
+      year: populationData.cityPopulationYear,
+    });
+    await db.models.Population.upsert({
+      countryPopulation: populationData.countryPopulation,
+      cityId,
+      year: populationData.countryPopulationYear,
+    });
+    await db.models.Population.upsert({
+      regionPopulation: populationData.regionPopulation,
+      cityId,
+      year: populationData.regionPopulationYear,
+    });
+
+    return errors;
   }
 
   private static async connectAllDataSources(

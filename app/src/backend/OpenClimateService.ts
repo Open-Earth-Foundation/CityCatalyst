@@ -9,6 +9,7 @@ const numberOfYearsDisplayed = 10;
 
 interface PopulationDataResult {
   error?: string;
+  cityName?: string;
   cityPopulation?: number;
   cityPopulationYear?: number;
   regionPopulation?: number;
@@ -20,6 +21,14 @@ interface PopulationDataResult {
 type FetchPopulationResult = PopulationEntry & { data: any };
 
 export default class OpenClimateService {
+  public static async getCityName(cityLocode: string): Promise<string | null> {
+    const url = OPENCLIMATE_BASE_URL + "/api/v1/actor/";
+    const request = await fetch(url + cityLocode);
+    const data = await request.json();
+
+    return data.data.name;
+  }
+
   public static async getPopulationData(
     inventoryLocode: string,
     inventoryYear: number,
@@ -39,6 +48,7 @@ export default class OpenClimateService {
       }
       result.cityPopulation = cityResult.population;
       result.cityPopulationYear = cityResult.year;
+      result.cityName = cityResult.data.data.name;
 
       const countryLocode =
         inventoryLocode && inventoryLocode.length > 0

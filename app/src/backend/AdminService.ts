@@ -54,7 +54,13 @@ export default class AdminService {
       `Creating bulk inventories for cities ${props.cityLocodes} and years ${props.years}`,
     );
     for (const cityLocode of props.cityLocodes) {
-      const cityName = "Test"; // TODO query from OpenClimate
+      const cityName = await OpenClimateService.getCityName(cityLocode);
+      if (!cityName) {
+        throw new createHttpError.NotFound(
+          `Failed to query city name from OpenClimate!`,
+        );
+      }
+
       const city = await db.models.City.create({
         cityId: randomUUID(),
         locode: cityLocode,

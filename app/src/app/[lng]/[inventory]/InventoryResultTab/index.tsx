@@ -103,7 +103,7 @@ function SectorTabs({
     description: t("error-fetching-sector-breakdown"),
   });
 
-  if (!error) {
+  if (error) {
     showErrorToast();
     console.error("Error fetching sector breakdown:", error);
   }

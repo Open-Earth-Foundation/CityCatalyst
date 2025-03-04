@@ -359,7 +359,7 @@ def single_elimination_bracket(actions, city):
     wildcard = None
     if len(actions) % 2 == 1:
         wildcard = actions.pop()
-        print(f"  Odd number of actions, wildcard: {wildcard.get('ActionName', 'Unknown')}")
+        print(f"  Odd number of actions, wildcard: {wildcard.get('ActionID', 'Unknown')}")
 
     winners = []
     losers = []
@@ -383,13 +383,13 @@ def single_elimination_bracket(actions, city):
     # If there was a wildcard, it automatically advances
     if wildcard:
         winners.append(wildcard)
-        print(f"  Wildcard {wildcard.get('ActionName', 'Unknown')} automatically advances")
+        print(f"  Wildcard {wildcard.get('ActionID', 'Unknown')} automatically advances")
 
     print(f"  Round complete. {len(winners)} winners advancing to next round")
     
     # If exactly one winner, we found the bracket winner
     if len(winners) == 1:
-        print(f"  Final winner of bracket: {winners[0].get('ActionName', 'Unknown')}")
+        print(f"  Final winner of bracket: {winners[0].get('ActionID', 'Unknown')}")
         return winners[0], losers
     else:
         # Otherwise, recursively determine a single winner
@@ -421,7 +421,7 @@ def final_bracket_for_ranking(actions, city):
             print("  No winner found, breaking")
             break  # no more participants
         
-        print(f"  Rank #{rank}: {winner.get('ActionName', 'Unknown')}")
+        print(f"  Rank #{rank}: {winner.get('ActionID', 'Unknown')}")
         ranking.append(winner)
         participants = losers
         rank += 1
@@ -452,7 +452,7 @@ def tournament_ranking(actions, city):
             break
 
         # Add the winner with their rank
-        print(f"Rank #{current_rank}: {winner.get('ActionName', 'Unknown')}")
+        print(f"Rank #{current_rank}: {winner.get('ActionID', 'Unknown')}")
         full_ranking.append((winner, current_rank))
         current_rank += 1
 
@@ -465,7 +465,7 @@ def tournament_ranking(actions, city):
     # Print final ranking summary
     print("\nFinal Ranking Summary:")
     for action, rank in full_ranking:
-        print(f"  #{rank}: {action.get('ActionName', 'Unknown')} (ID: {action.get('ActionID', 'Unknown')})")
+        print(f"  #{rank}: {action.get('ActionID', 'Unknown')}")
     
     return full_ranking
 

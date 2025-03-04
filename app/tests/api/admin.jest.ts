@@ -25,6 +25,11 @@ const mockAdminSession: AppSession = {
   user: { id: testUserID, role: Roles.Admin },
   expires: "1h",
 };
+const cityLocodeMap: Record<string, string> = {
+  "US NYC": "New York",
+  "DE BER": "Berlin",
+  "BR AAX": "Araxá",
+};
 const mockBulkInventoriesRequest: BulkInventoryProps = {
   cityLocodes: ["US NYC", "DE BER", "BR AAX"],
   emails: [testUserData.email],
@@ -75,13 +80,19 @@ describe("Admin API", () => {
         mockBulkInventoriesRequest.cityLocodes.length,
     );
     const cities = await db.models.City.findAll({
-      attributes: ["cityId", "locode"],
+      attributes: ["cityId", "locode", "name"],
       include: {
         model: db.models.Inventory,
         as: "inventories",
         where: { inventoryId: { [Op.in]: inventoryIds } },
       },
     });
+    for (const city of cities) {
+      expect(city.locode).toBeDefined();
+      const expectedName = cityLocodeMap[city.locode!];
+      expect(city.name).toBe(expectedName);
+    }
+
     const cityIds = cities.map((city) => city.cityId);
     const uniqueCityIds = [...new Set(cityIds)];
 

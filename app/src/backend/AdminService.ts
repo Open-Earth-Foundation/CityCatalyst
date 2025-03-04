@@ -19,7 +19,7 @@ export interface BulkInventoryProps {
 
 export interface CreateBulkInventoriesResponse {
   errors: { locode: string; error: any }[];
-  results: { locode: string; result: any }[];
+  results: { locode: string; result: string[] }[];
 }
 
 const DEFAULT_PRIORITY = 0; // 10 is the highest priority
@@ -36,7 +36,7 @@ export default class AdminService {
     }
 
     const errors: { locode: string; error: any }[] = [];
-    const results: { locode: string; result: any }[] = [];
+    const results: { locode: string; result: string[] }[] = [];
 
     // Bulk create inventories
     logger.info(

@@ -8,6 +8,7 @@ import DataSourceService from "./DataSourceService";
 import { City } from "@/models/City";
 import { groupBy } from "@/util/helpers";
 import OpenClimateService from "./OpenClimateService";
+import { Op } from "sequelize";
 
 export interface BulkInventoryProps {
   cityLocodes: string[]; // List of city locodes
@@ -38,6 +39,16 @@ export default class AdminService {
     const errors: { locode: string; error: any }[] = [];
     const results: { locode: string; result: string[] }[] = [];
 
+    // Find user accounts to add to created inventories
+    const users = await db.models.User.findAll({
+      where: { email: { [Op.in]: props.emails } },
+    });
+    if (users.length !== props.emails.length) {
+      throw new createHttpError.BadRequest(
+        "Not all users to be added to inventories were found",
+      );
+    }
+
     // Bulk create inventories
     logger.info(
       `Creating bulk inventories for cities ${props.cityLocodes} and years ${props.years}`,
@@ -49,6 +60,16 @@ export default class AdminService {
         locode: cityLocode,
         name: cityName,
       });
+
+      // add users to the city
+      await db.models.CityUser.bulkCreate(
+        users.map((user) => ({
+          cityUserId: randomUUID(),
+          cityId: city.cityId,
+          userId: user.userId,
+        })),
+      );
+
       logger.info("Creating inventories for city " + cityLocode);
       const inventories = props.years.map((year) => ({
         inventoryId: randomUUID(),
@@ -83,8 +104,6 @@ export default class AdminService {
           cityLocode,
         );
         errors.push(...sourceErrors);
-
-        // TODO invite users to the inventory
       }
     }
 

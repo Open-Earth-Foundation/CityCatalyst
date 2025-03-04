@@ -27,7 +27,7 @@ const mockAdminSession: AppSession = {
 };
 const mockBulkInventoriesRequest: BulkInventoryProps = {
   cityLocodes: ["US NYC", "DE BER", "BR AAX"],
-  emails: ["test1@example.com", "test2@example.com"],
+  emails: [testUserData.email],
   years: [2022, 2023, 2024],
   scope: "gpc_basic_plus",
   gwp: "AR6",
@@ -105,11 +105,18 @@ describe("Admin API", () => {
       expect(hasCityPopulation).toBe(true);
       expect(hasCountryPopulation).toBe(true);
       expect(hasRegionPopulation).toBe(true);
-    }
 
-    // TODO assert required database changes:
-    // TODO check all data sources for inventory are connected
-    // TODO check that users were added to inventory (without sending the emails)
+      // check that users were added to inventory (without sending the emails)
+      const cityUsers = await db.models.CityUser.findAll({
+        where: { cityId },
+      });
+      expect(cityUsers.length).toBe(1);
+      for (const cityUser of cityUsers) {
+        expect(cityUser.userId).toBe(testUserID);
+      }
+
+      // TODO check all data sources for inventory are connected
+    }
   }, 60000);
 
   it("should change the user role when logged in as admin", async () => {

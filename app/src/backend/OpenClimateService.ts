@@ -61,7 +61,7 @@ export default class OpenClimateService {
       result.countryPopulation = countryResult.population;
       result.countryPopulationYear = countryResult.year;
 
-      const regionLocode = cityResult.data.is_part_of;
+      const regionLocode = cityResult.data.data.is_part_of;
       if (!regionLocode) {
         result.error = `City ${inventoryLocode} does not have a region locode in OpenClimate`;
         return result;

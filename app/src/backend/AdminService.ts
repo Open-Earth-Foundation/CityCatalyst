@@ -7,6 +7,7 @@ import { randomUUID } from "node:crypto";
 import DataSourceService from "./DataSourceService";
 import { City } from "@/models/City";
 import { groupBy } from "@/util/helpers";
+import OpenClimateService from "./OpenClimateService";
 
 export interface BulkInventoryProps {
   cityLocodes: string[]; // List of city locodes
@@ -45,13 +46,20 @@ export default class AdminService {
       props.years,
     );
     for (const cityLocode of props.cityLocodes) {
-      logger.info("Creating inventories for city", cityLocode);
+      const cityName = "Test"; // TODO query from OpenClimate
+      const city = await db.models.City.create({
+        cityId: randomUUID(),
+        locode: cityLocode,
+        name: cityName,
+      });
+      logger.info("Creating inventories for city " + cityLocode);
       const inventories = props.years.map((year) => ({
         inventoryId: randomUUID(),
         cityLocode,
         year,
         scope: props.scope,
         gwp: props.gwp,
+        cityId: city.cityId,
       }));
       try {
         const createdInventories =
@@ -65,12 +73,54 @@ export default class AdminService {
       }
 
       for (const inventory of inventories) {
+        // query population data from OpenClimate and save in Population table
+        const populationData = await OpenClimateService.getPopulationData(
+          cityLocode,
+          inventory.year,
+        );
+        if (populationData.error) {
+          errors.push({ locode: cityLocode, error: populationData.error });
+        }
+        if (
+          !populationData.cityPopulation ||
+          !populationData.cityPopulationYear ||
+          !populationData.countryPopulation ||
+          !populationData.countryPopulationYear ||
+          !populationData.regionPopulation ||
+          !populationData.regionPopulationYear
+        ) {
+          errors.push({
+            locode: cityLocode,
+            error: `Population data incomplete for city ${cityLocode} and inventory year ${inventory.year}`,
+          });
+          continue;
+        }
+
+        // they might be for the same year, but that is not guaranteed (because of data availability)
+        await db.models.Population.create({
+          population: populationData.cityPopulation,
+          cityId: city.cityId,
+          year: populationData.cityPopulationYear,
+        });
+        await db.models.Population.upsert({
+          countryPopulation: populationData.countryPopulation,
+          cityId: city.cityId,
+          year: populationData.countryPopulationYear,
+        });
+        await db.models.Population.upsert({
+          regionPopulation: populationData.regionPopulation,
+          cityId: city.cityId,
+          year: populationData.regionPopulationYear,
+        });
+
         // Connect all data sources, rank them by priority, check if they connect
         const sourceErrors = await this.connectAllDataSources(
           inventory.inventoryId,
           cityLocode,
         );
         errors.push(...sourceErrors);
+
+        // TODO invite users to the inventory
       }
     }
 

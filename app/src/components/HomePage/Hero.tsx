@@ -39,11 +39,11 @@ export function Hero({
   t,
 }: HeroProps) {
   const { data: cityData } = useGetOCCityDataQuery(inventory.city?.locode!, {
-    skip: !inventory.city?.locode!,
+    skip: !inventory.city?.locode,
   });
   const popWithDS = cityData?.population?.find(
-    (p:any) => p.population == population?.population &&
-          p.year == population?.year
+    (p:any) => p.population === population?.population &&
+          p.year === population?.year
   );
   return (
     <Box bg="brand.primary" className="w-full h-[491px] pt-[150px]" px={8}>

@@ -95,18 +95,20 @@ const AddCollaboratorsDialog = ({
         <DialogBody>
           <TitleLarge>{t("select-cities-to-share")}</TitleLarge>
           <BodyLarge>{t("select-cities-to-share-description")}</BodyLarge>
-          <CheckboxGroup>
-            {citiesAndYears?.map(({ city }) => (
-              <Checkbox
-                key={city.cityId}
-                my={"24px"}
-                mx={"32px"}
-                checked={selectedCities.includes(city.cityId)}
-                onChange={() => handleCityChange(city.cityId)}
-              >
-                {city.name}
-              </Checkbox>
-            ))}
+          <CheckboxGroup unstyled my={"24px"} mx={"32px"}>
+            <HStack width="100%" flexWrap="wrap">
+              {citiesAndYears?.map(({ city }) => (
+                <Checkbox
+                  key={city.cityId}
+                  checked={selectedCities.includes(city.cityId)}
+                  onChange={() => handleCityChange(city.cityId)}
+                >
+                  <Text fontWeight="semibold" fontSize="body.lg">
+                    {city.name}
+                  </Text>
+                </Checkbox>
+              ))}
+            </HStack>
           </CheckboxGroup>
           <TitleLarge mt={"48px"}>{t("send-invites")}</TitleLarge>
           <Text>

@@ -13,16 +13,11 @@ import {
   GetUserCityInvitesResponseUserData,
 } from "@/util/types";
 import { MdChevronLeft, MdChevronRight, MdOutlineMode } from "react-icons/md";
-import {
-  HiMiniChevronDown,
-  HiMiniChevronRight,
-  HiMiniChevronLeft,
-} from "react-icons/hi2";
+import { HiMiniChevronDown, HiMiniChevronRight } from "react-icons/hi2";
 import { Button, IconButton, Icon } from "@chakra-ui/react";
 import ManageUsersSubTable from "./ManageUsersSubTable";
 import type { TFunction } from "i18next";
 import UpdateUserModal from "@/components/Modals/update-user-modal";
-import { Toaster } from "@chakra-ui/react";
 
 interface GroupedInvites {
   name: string;
@@ -61,6 +56,7 @@ const ManageUsersTable = ({
       setIsModalOpen(true);
     }
   };
+
   const data = useMemo(() => {
     const grouped = cityInvites.reduce(
       (acc, invite) => {

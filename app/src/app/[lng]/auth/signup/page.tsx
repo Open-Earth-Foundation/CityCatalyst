@@ -14,6 +14,7 @@ import { MdInfoOutline, MdWarning } from "react-icons/md";
 import { Button } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
 import { Checkbox } from "@/components/ui/checkbox";
+import { signIn } from "next-auth/react";
 
 type Inputs = {
   inventory?: string;
@@ -46,9 +47,9 @@ export default function Signup({
 
   const searchParams = useSearchParams();
   const queryParams = Object.fromEntries(searchParams.entries());
-  let callbackUrl = searchParams.get("callbackUrl");
+  let callbackUrl = searchParams.get("callbackUrl") ?? undefined;
   if (!callbackUrl || callbackUrl === "null" || callbackUrl === "undefined") {
-    callbackUrl = null;
+    callbackUrl = undefined;
   }
   const isUserInvite = !!callbackUrl?.includes("user/invite");
 
@@ -88,25 +89,27 @@ export default function Signup({
         setError(message);
         return;
       }
-      const queryParamsString = new URLSearchParams(queryParams).toString();
-      const callbackParam = callbackUrl ? "&" : "";
-      const nextCallbackUrl = `/auth/check-email?email_address=${data.email}${callbackParam}${queryParamsString}`;
-      router.push(nextCallbackUrl);
 
-      // TODO automatic login required?
-      // const loginResponse = await signIn("credentials", {
-      //   redirect: false,
-      //   email: data.email,
-      //   password: data.password,
-      //   callbackUrl,
-      // });
+      // can be re-enabled once the email verification required again
+      // const queryParamsString = new URLSearchParams(queryParams).toString();
+      // const callbackParam = callbackUrl ? "&" : "";
+      // const nextCallbackUrl = `/auth/check-email?email_address=${data.email}${callbackParam}${queryParamsString}`;
+      // router.push(nextCallbackUrl);
 
-      // if (!loginResponse?.error) {
-      //   router.push(callbackUrl);
-      // } else {
-      //   logger.error("Failed to login", loginResponse)
-      //   setError(t("invalid-email-password"));
-      // }
+      // automatic login after signup for simplified user flow
+      const loginResponse = await signIn("credentials", {
+        redirect: false,
+        email: data.email,
+        password: data.password,
+        callbackUrl: callbackUrl ?? undefined,
+      });
+
+      if (!loginResponse?.error) {
+        router.push(callbackUrl ?? "/");
+      } else {
+        logger.error("Failed to login", loginResponse);
+        setError(t("invalid-email-password"));
+      }
     } catch (error: any) {
       setError(error);
     }

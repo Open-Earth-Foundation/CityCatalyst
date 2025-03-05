@@ -33,19 +33,23 @@ export const POST = apiHandler(async (req: Request) => {
 
   // Send email to user
   const host = process.env.HOST ?? "http://localhost:3000";
-  const sendInvite = await sendEmail({
-    to: body.email!,
-    subject: "City Catalyst - User Registration",
-    html: render(
-      ConfirmRegistrationTemplate({
-        url: `${host}/dashboard`,
-        user: { name: body.name },
-      }),
-    ),
-  });
 
-  if (!sendInvite)
-    throw new createHttpError.BadRequest("Email could not be sent");
+  if (process.env.EMAIL_ENABLED === "true") {
+    try {
+      await sendEmail({
+        to: body.email,
+        subject: "City Catalyst - User Registration",
+        html: render(
+          ConfirmRegistrationTemplate({
+            url: `${host}/dashboard`,
+            user: { name: body.name },
+          }),
+        ),
+      });
+    } catch (error) {
+      throw new createHttpError.BadRequest("Email could not be sent");
+    }
+  }
 
   return NextResponse.json({
     user: {

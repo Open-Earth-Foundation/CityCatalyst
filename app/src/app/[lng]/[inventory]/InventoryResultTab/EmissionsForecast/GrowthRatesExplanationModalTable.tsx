@@ -17,6 +17,12 @@ export const GrowthRatesExplanationModalTable = ({
     return sector.name === "ippu" ? sector.name + "-short" : sector.name;
   }
 
+  // for emission growth rates, sector V is split between its subsectors
+  const emissionsSectors = [
+    ...SECTORS.slice(0, 4),
+    ...Object.values(SECTORS[4]!.subSectors!),
+  ];
+
   return (
     <Table.Root>
       <Table.Header>
@@ -40,7 +46,7 @@ export const GrowthRatesExplanationModalTable = ({
         </Table.Row>
       </Table.Header>
       <Table.Body>
-        {SECTORS.map((sector) => (
+        {emissionsSectors.map((sector) => (
           <Table.Row key={sector.name}>
             <Table.Cell>{t(getNameTranslationString(sector))}</Table.Cell>
             {Object.keys(growthRates)

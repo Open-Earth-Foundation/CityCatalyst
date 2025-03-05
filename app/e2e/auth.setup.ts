@@ -8,6 +8,8 @@ test.beforeEach(async ({ page }) => {});
 
 setup("authenticate", async ({ page, request }) => {
   // log the user in
+  // First set timeout to accommodate send email to finish process
+  test.setTimeout(60000);
   const email = `login-test+${randomUUID()}@openearth.org`;
   const password = "Test123!";
   await signup(request, email, password, password);

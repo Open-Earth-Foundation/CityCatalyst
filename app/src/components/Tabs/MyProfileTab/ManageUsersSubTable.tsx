@@ -109,7 +109,6 @@ const ManageUsersSubTable = React.memo(function SubTable({
         id: "status",
         Cell: ({ value }) => (
           <Badge
-            borderRadius="full"
             px="16px"
             paddingTop="4px"
             paddingBottom="4px"

@@ -372,7 +372,7 @@ export function EmissionPerSectors({
                 const lastYearDifference =
                   sectorAmount - BigInt(lastYearData.co2eq);
                 percentageChange = Number(
-                  (lastYearDifference * 100n) / sectorAmount,
+                  (lastYearDifference * 100n) / BigInt(lastYearData.co2eq),
                 );
               }
             }

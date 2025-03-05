@@ -94,6 +94,7 @@ const ManageCitiesTabPanel: FC<ManageCitiesProps> = ({ t }) => {
               <Table.ColumnHeader align="right">
                 {t("last-updated")}
               </Table.ColumnHeader>
+              <Table.ColumnHeader />
             </Table.Row>
           </Table.Header>
           <Table.Body fontFamily="heading">

@@ -217,7 +217,6 @@ const MyInventoriesTab: FC<MyInventoriesTabProps> = ({
                         variant="outline"
                         borderStyle="solid"
                         w="783px"
-                        borderWidth="1px"
                         borderColor="border.overlay"
                         borderRadius="12px"
                       >
@@ -233,6 +232,7 @@ const MyInventoriesTab: FC<MyInventoriesTabProps> = ({
                             <Table.ColumnHeader align="right">
                               {t("last-updated")}
                             </Table.ColumnHeader>
+                            <Table.ColumnHeader />
                           </Table.Row>
                         </Table.Header>
                         <Table.Body

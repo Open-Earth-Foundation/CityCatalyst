@@ -19,7 +19,7 @@ const ManageUsersSubTable = React.memo(function SubTable({
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedRowId, setSelectedRowId] = useState<string | null>(null);
-  const [resetUserInvite, { isLoading, error, isSuccess, isError }] =
+  const [resetUserInvite, { isLoading, error, isSuccess, isError, reset }] =
     api.useResetInviteMutation();
 
   const { showSuccessToast } = UseSuccessToast({
@@ -35,11 +35,13 @@ const ManageUsersSubTable = React.memo(function SubTable({
   useEffect(() => {
     if (isSuccess) {
       showSuccessToast();
+      reset();
     }
     if (isError) {
       showErrorToast();
+      reset();
     }
-  }, [isSuccess, isError, showSuccessToast, showErrorToast]);
+  }, [isSuccess, isError, showSuccessToast, showErrorToast, reset]);
 
   const handleDeleteClick = useCallback(
     (row: Row<GetUserCityInvitesResponse>) => {
@@ -68,7 +70,7 @@ const ManageUsersSubTable = React.memo(function SubTable({
     }
   }, []);
 
-  const getBackgroundColor = useCallback((value: CityInviteStatus) => {
+  const getBackgroundColor = (value: CityInviteStatus) => {
     switch (value) {
       case CityInviteStatus.ACCEPTED:
         return "sentiment.positiveOverlay";
@@ -77,7 +79,7 @@ const ManageUsersSubTable = React.memo(function SubTable({
       default:
         return "background.neutral";
     }
-  }, []);
+  };
 
   const subTableColumns: Column<GetUserCityInvitesResponse>[] = useMemo(() => {
     return [

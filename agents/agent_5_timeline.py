@@ -26,6 +26,7 @@ Follow these guidelines carefully to complete the task:
 4. Review the sub-actions for implementing the climate action that you are provided with.
 5. Review the milestones for the implementation of the climate action that you are provided with.
 6. Based on the main action, sub-actions, and the milestones for the implementation of the climate action for the given city, create a timeline for the implementation of the climate action.
+**Important:** The timeline should be a high level timeline for implementing the entire climate action. Do not create a detailed timeline on basis of each individual sub-action.
 </task>
 
 <output>

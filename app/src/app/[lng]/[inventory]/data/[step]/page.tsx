@@ -620,8 +620,8 @@ export default function AddDataSteps({
             display="flex"
             alignItems="center"
             gap="16px"
-            mb="28px"
-            className={` ${isExpanded ? "hidden" : "flex"} transition-all duration-50 ease-linear`}
+            mb="24px"
+            className={`${isExpanded ? "hidden" : "flex"} transition-all duration-50 ease-linear`}
           >
             <Button
               variant="ghost"
@@ -673,21 +673,6 @@ export default function AddDataSteps({
             border="none"
             px={0}
           >
-            {scrollPosition <= 0 ? (
-              ""
-            ) : (
-              <Box>
-                <Link href="#">
-                  <Icon
-                    as={MdArrowBack}
-                    h="24px"
-                    w="24px"
-                    mt="24px"
-                    color="content.link"
-                  />
-                </Link>
-              </Box>
-            )}
             <Flex direction="row" className="w-full">
               <Icon
                 as={currentStep.icon}

@@ -101,7 +101,7 @@ export default function Signup({
         redirect: false,
         email: data.email,
         password: data.password,
-        callbackUrl: callbackUrl ?? undefined,
+        callbackUrl,
       });
 
       if (!loginResponse?.error) {

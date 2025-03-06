@@ -7,12 +7,19 @@ from pathlib import Path
 root_path = Path(__file__).resolve().parent.parent.parent
 
 # Load the scaler from the saved file
-with open(Path(root_path / "data" / "ml" / "scaler" / "scaler.pkl"), "rb") as f:
+# with open(Path(root_path / "data" / "ml" / "scaler" / "scaler.pkl"), "rb") as f:
+#     scaler = pickle.load(f)
+with open(
+    Path(root_path / "data" / "ml" / "scaler" / "scaler_train_test_split.pkl"), "rb"
+) as f:
     scaler = pickle.load(f)
 
 loaded_model = xgb.XGBClassifier()
 # Load hyperparameters and trained weights
-loaded_model.load_model(root_path / "data" / "ml" / "model" / "xgb_model.json")
+# loaded_model.load_model(root_path / "data" / "ml" / "model" / "xgb_model.json")
+loaded_model.load_model(
+    root_path / "data" / "ml" / "model" / "xgb_model_train_test_split.json"
+)
 
 
 def ml_compare(city: dict, action_A: dict, action_B: dict) -> int:
@@ -76,34 +83,6 @@ def ml_compare(city: dict, action_A: dict, action_B: dict) -> int:
 
     # Build the DataFrame for comparison
     df = build_df(city, action_A, action_B)
-    # print(df)
-    # print(df.columns)
-
-    # print all the values for each column
-    # for col in df.columns:
-    #     print(f"{col}: {df[col].values[0]}")
-
-    # Converting the label is not needed here since we only do predictions
-    # def convert_preferred_action_to_binary_labels(df):
-    #     """
-    #     Converts the PreferredAction column into binary labels.
-    #     - 1 if PreferredAction is ActionA
-    #     - 0 if PreferredAction is ActionB
-    #     """
-    #     df_copy = df.copy()  # Avoid modifying the original dataframe
-    #     df_copy["y"] = df_copy.apply(
-    #         lambda row: (
-    #             1
-    #             if row["PreferredAction"] == row["ActionA"]
-    #             else -1 if row["PreferredAction"] == row["ActionB"] else None
-    #         ),  # 0 For small dataset 0 gives best restult with 83%
-    #         axis=1,
-    #     )
-
-    #     # Optional: Drop rows where PreferredAction is neither ActionA nor ActionB
-    #     df_copy = df_copy.drop(columns=["PreferredAction"])
-
-    #     return df_copy
 
     def prepare_emission_reduction_data(df: pd.DataFrame) -> pd.DataFrame:
         """
@@ -254,6 +233,11 @@ def ml_compare(city: dict, action_A: dict, action_B: dict) -> int:
             - df_copy["actionB_CostInvestmentNeeded"]
         )
 
+        # Set 0 where both values are NaN
+        df_copy["CostInvestmentNeeded_Diff"] = df_copy[
+            "CostInvestmentNeeded_Diff"
+        ].fillna(0)
+
         # Drop the original columns
         df_copy.drop(
             columns=["actionA_CostInvestmentNeeded", "actionB_CostInvestmentNeeded"],
@@ -283,6 +267,11 @@ def ml_compare(city: dict, action_A: dict, action_B: dict) -> int:
             df_copy["actionA_TimelineForImplementation"]
             - df_copy["actionB_TimelineForImplementation"]
         )
+
+        # Set 0 where both values are NaN
+        df_copy["TimelineForImplementation_Diff"] = df_copy[
+            "TimelineForImplementation_Diff"
+        ].fillna(0)
 
         # Drop old column
         df_copy.drop(

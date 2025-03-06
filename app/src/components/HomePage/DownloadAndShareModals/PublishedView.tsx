@@ -14,14 +14,7 @@ import { enUS, pt, de, es } from "date-fns/locale";
 import { formatDistance } from "date-fns";
 import { toZonedTime } from "date-fns-tz";
 import { BlueSubtitle } from "@/components/Texts/BlueSubtitle";
-import "dotenv/config";
 import { FiExternalLink } from "react-icons/fi";
-import {
-  DialogRoot,
-  DialogBody,
-  DialogContent,
-  DialogFooter,
-} from "@/components/ui/dialog";
 
 export function PublishedView({
   inventoryId,
@@ -56,15 +49,15 @@ export function PublishedView({
   const URL = `${window.location.protocol}//${window.location.host}/${lng}/public/${inventoryId}`;
 
   return (
-    <DialogBody>
-      <Text fontWeight="600" fontSize="title.lg">
+    <>
+      <Text fontWeight="600" fontSize="title.lg" mb={4}>
         {t("public-city-inventory")}
       </Text>
       <Text>{t("manage-public-inventory-description")}</Text>
       <Box divideX="2px" my="24px" />
       <HStack justify="space-between">
         <VStack align="left">
-          <Text fontWeight="600" fontSize="title.md">
+          <Text fontWeight="600" fontSize="title.md" mb={2}>
             {URL}
           </Text>
           <Text fontWeight="400" fontSize="body.md">
@@ -80,6 +73,6 @@ export function PublishedView({
           </Link>
         </Box>
       </HStack>
-    </DialogBody>
+    </>
   );
 }

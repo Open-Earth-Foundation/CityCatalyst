@@ -17,7 +17,6 @@ import {
 const ModalPublish = ({
   t,
   isPublishOpen,
-  //Todo: resolve close action
   onPublishClose,
   inventoryId,
   inventory,

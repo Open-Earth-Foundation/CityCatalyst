@@ -77,7 +77,7 @@ function FormattedNumberInput<TFieldValues extends FieldValues>({
     control,
     rules,
   );
-
+  const errorBgStyle = error ? "sentiment.negativeOverlay" : "inherit";
   return (
     <Field
       invalid={!!error}
@@ -96,12 +96,12 @@ function FormattedNumberInput<TFieldValues extends FieldValues>({
         value={value}
         ref={ref}
         type="text"
-        bg={error ? "sentiment.negativeOverlay" : "inherit"}
+        bg={errorBgStyle}
         _hover={{
-          bg: error ? "sentiment.negativeOverlay" : "inherit",
+          bg: errorBgStyle,
         }}
         _focus={{
-          bg: error ? "sentiment.negativeOverlay" : "inherit",
+          bg: errorBgStyle,
         }}
       />
     </Field>

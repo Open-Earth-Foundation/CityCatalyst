@@ -1,3 +1,4 @@
+import UserService from "@/backend/UserService";
 import { db } from "@/models";
 import type { InventoryValue } from "@/models/InventoryValue";
 import { apiHandler } from "@/util/api";
@@ -24,6 +25,9 @@ export const POST = apiHandler(async (req, { session, params }) => {
   const body = saveNotationKeysRequest.parse(await req.json());
   const inventoryId = z.string().uuid().parse(params.inventory);
   const result: InventoryValue[] = [];
+
+  // perform access control
+  await UserService.findUserInventory(inventoryId, session);
 
   for (const notationKey of body.notationKeys) {
     const existingInventoryValue = await db.models.InventoryValue.findOne({

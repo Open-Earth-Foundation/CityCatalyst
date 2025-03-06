@@ -125,6 +125,8 @@ const MethodologyCard: FC<MethodologyCardProps> = ({
         {t("input-required")}
       </Text>
       <Box
+        as="ul"
+        listStyleType="disc"
         pl="22px"
         letterSpacing="wide"
         fontSize="body.lg"

@@ -51,6 +51,12 @@ export const POST = apiHandler(async (req, { session, params }) => {
           { transaction },
         );
         result.push(inventoryValue);
+
+        // destroy existing activity values in this subsector, making sure no data is left behind
+        await db.models.ActivityValue.destroy({
+          where: { inventoryValueId: existingInventoryValue.id },
+          transaction,
+        });
       } else {
         const inventoryValue = await db.models.InventoryValue.create(
           {

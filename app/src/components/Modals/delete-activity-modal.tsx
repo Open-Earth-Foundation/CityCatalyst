@@ -24,7 +24,7 @@ interface DeleteAllActivitiesModalProps {
   isOpen: boolean;
   onClose: any;
   t: TFunction;
-  selectedActivityValue: ActivityValue;
+  selectedActivityValue: ActivityValue | undefined;
   resetSelectedActivityValue: () => void;
   inventoryId: string;
   setDeleteActivityDialogOpen: Function;
@@ -50,10 +50,15 @@ const DeleteActivityModal: FC<DeleteAllActivitiesModalProps> = ({
 
   // define the function to delete all activities
   const handleDeleteActivity = async () => {
+    if (!selectedActivityValue) {
+      console.error("Selected activity value missing when deleting activity!");
+      return;
+    }
+
     // call the delete all activities mutation
     const response = await deleteActivityValue({
       inventoryId,
-      activityValueId: selectedActivityValue.id,
+      activityValueId: selectedActivityValue?.id,
     });
     if (response.data?.success) {
       showSuccessToast();

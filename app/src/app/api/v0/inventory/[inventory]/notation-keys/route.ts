@@ -41,6 +41,7 @@ export const POST = apiHandler(async (req, { session, params }) => {
       });
 
       if (existingInventoryValue) {
+        // reset emissions values of inventory value as notation key was used for it
         const inventoryValue = await existingInventoryValue.update(
           {
             unavailableReason: notationKey.unavailableReason,

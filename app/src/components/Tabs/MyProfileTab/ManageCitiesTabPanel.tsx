@@ -148,6 +148,7 @@ const ManageCitiesTabPanel: FC<ManageCitiesProps> = ({ t }) => {
                       padding="10px"
                       px="0"
                       pos="absolute"
+                      right="0"
                     >
                       <PopoverArrow />
                       <PopoverBody padding="0">

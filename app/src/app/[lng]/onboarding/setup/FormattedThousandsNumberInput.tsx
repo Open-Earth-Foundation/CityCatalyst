@@ -1,13 +1,15 @@
 import React from "react";
 import { Input, InputProps } from "@chakra-ui/react";
 import {
-  RegisterOptions,
+  Control,
   FieldValues,
   Path,
+  RegisterOptions,
   useController,
-  Control,
 } from "react-hook-form";
 import { Field } from "@/components/ui/field";
+import { MdError } from "react-icons/md";
+import { BodyMedium } from "@/components/Texts/Body";
 
 function useFormattedNumber<TFieldValues extends FieldValues>(
   name: Path<TFieldValues>,
@@ -77,13 +79,30 @@ function FormattedNumberInput<TFieldValues extends FieldValues>({
   );
 
   return (
-    <Field invalid={!!error} errorText={error?.message}>
+    <Field
+      invalid={!!error}
+      errorText={
+        error?.message && (
+          <>
+            <MdError color="red" />
+            <BodyMedium>{error.message}</BodyMedium>
+          </>
+        )
+      }
+    >
       <Input
         {...rest}
         onChange={onChange}
         value={value}
         ref={ref}
         type="text"
+        bg={error ? "sentiment.negativeOverlay" : "inherit"}
+        _hover={{
+          bg: error ? "sentiment.negativeOverlay" : "inherit",
+        }}
+        _focus={{
+          bg: error ? "sentiment.negativeOverlay" : "inherit",
+        }}
       />
     </Field>
   );

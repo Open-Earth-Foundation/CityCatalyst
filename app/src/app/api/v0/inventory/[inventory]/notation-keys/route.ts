@@ -1,10 +1,36 @@
+import InventoryProgressService from "@/backend/InventoryProgressService";
 import UserService from "@/backend/UserService";
 import { db } from "@/models";
 import type { InventoryValue } from "@/models/InventoryValue";
 import { apiHandler } from "@/util/api";
-import { randomUUID } from "crypto";
+import { randomUUID } from "node:crypto";
 import { NextResponse } from "next/server";
 import { z } from "zod";
+
+// returns list of unfinished subsectors for given inventory
+// used to decide which subsectors to show on the notation key manager
+export const GET = apiHandler(async (_req, { session, params }) => {
+  const inventoryId = z.string().uuid().parse(params.inventory);
+
+  // perform access control, read only
+  const inventory = await UserService.findUserInventory(
+    inventoryId,
+    session,
+    [],
+    true,
+  );
+
+  const inventoryProgress =
+    await InventoryProgressService.getInventoryProgress(inventory);
+  const unfinishedSubSectors = inventoryProgress.sectorProgress.flatMap(
+    (sector) => sector.subSectors.filter((subsector) => !subsector.completed),
+  );
+
+  return NextResponse.json({
+    success: true,
+    result: unfinishedSubSectors,
+  });
+});
 
 const saveNotationKeysRequest = z.object({
   notationKeys: z.array(

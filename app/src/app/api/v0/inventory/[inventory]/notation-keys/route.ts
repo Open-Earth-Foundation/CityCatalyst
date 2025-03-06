@@ -24,36 +24,48 @@ const saveNotationKeysRequest = z.object({
 export const POST = apiHandler(async (req, { session, params }) => {
   const body = saveNotationKeysRequest.parse(await req.json());
   const inventoryId = z.string().uuid().parse(params.inventory);
-  const result: InventoryValue[] = [];
 
   // perform access control
   await UserService.findUserInventory(inventoryId, session);
 
-  for (const notationKey of body.notationKeys) {
-    const existingInventoryValue = await db.models.InventoryValue.findOne({
-      where: {
-        inventoryId,
-        subSectorId: notationKey.subSectorId,
-      },
-    });
+  const result = await db.sequelize!.transaction(async (transaction) => {
+    const result: InventoryValue[] = [];
+    for (const notationKey of body.notationKeys) {
+      const existingInventoryValue = await db.models.InventoryValue.findOne({
+        where: {
+          inventoryId,
+          subSectorId: notationKey.subSectorId,
+        },
+        transaction,
+        lock: true,
+      });
 
-    if (existingInventoryValue) {
-      const inventoryValue = await existingInventoryValue.update({
-        unavailableReason: notationKey.unavailableReason,
-        unavailableExplanation: notationKey.unavailableExplanation,
-        co2eq: undefined,
-        co2eqYears: undefined,
-      });
-      result.push(inventoryValue);
-    } else {
-      const inventoryValue = await db.models.InventoryValue.create({
-        ...notationKey,
-        id: randomUUID(),
-        inventoryId,
-      });
-      result.push(inventoryValue);
+      if (existingInventoryValue) {
+        const inventoryValue = await existingInventoryValue.update(
+          {
+            unavailableReason: notationKey.unavailableReason,
+            unavailableExplanation: notationKey.unavailableExplanation,
+            co2eq: undefined,
+            co2eqYears: undefined,
+          },
+          { transaction },
+        );
+        result.push(inventoryValue);
+      } else {
+        const inventoryValue = await db.models.InventoryValue.create(
+          {
+            ...notationKey,
+            id: randomUUID(),
+            inventoryId,
+          },
+          { transaction },
+        );
+        result.push(inventoryValue);
+      }
     }
-  }
+
+    return result;
+  });
 
   return NextResponse.json({
     success: true,

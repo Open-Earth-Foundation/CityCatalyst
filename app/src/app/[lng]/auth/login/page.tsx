@@ -5,7 +5,7 @@ import PasswordInput from "@/components/password-input";
 import { useTranslation } from "@/i18n/client";
 import { Box, Heading, Link, Text } from "@chakra-ui/react";
 import { TFunction } from "i18next";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
@@ -64,6 +64,14 @@ export default function Login({
       callbackUrl = "/";
     }
   }
+
+  // redirect to dashboard if user is already authenticated
+  const { data: _session, status } = useSession();
+  useEffect(() => {
+    if (status === "authenticated") {
+      router.push("/");
+    }
+  }, [status, router]);
 
   const { showSuccessToast: showLoginSuccessToast } = UseSuccessToast({
     title: t("verified-toast-title"),

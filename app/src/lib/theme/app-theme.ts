@@ -7,6 +7,9 @@ export const appTheme = createSystem(defaultConfig, {
     html: {
       colorPalette: "brand",
     },
+    body: {
+      bg: "background.backgroundLight",
+    },
     textarea: {
       bg: "base.light !important",
     },

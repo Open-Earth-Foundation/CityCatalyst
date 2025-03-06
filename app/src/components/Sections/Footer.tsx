@@ -110,6 +110,7 @@ const Footer = ({ lng }: { lng: string }) => {
               fontWeight="medium"
               letterSpacing="wide"
               textDecoration="underline"
+              display="inline"
             >
               {t("send-feedback")}
             </Link>

@@ -34,7 +34,7 @@ const ModalDownloadReport = ({
 }) => {
   return (
     <DialogRoot open={isDownloadShareOpen} onOpenChange={onDownloadShareClose}>
-      <DialogContent maxW="container.md">
+      <DialogContent minW="544px">
         <DialogHeader>
           <Center>
             <Text fontSize="headline.sm" mx="8px">
@@ -44,7 +44,7 @@ const ModalDownloadReport = ({
         </DialogHeader>
         <DialogCloseTrigger />
         <Box divideX="2px" my="24px" />
-        <DialogBody>
+        <DialogBody px={0}>
           <DownloadButtons
             t={t}
             lng={lng}

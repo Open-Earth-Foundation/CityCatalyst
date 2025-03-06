@@ -11,6 +11,8 @@ module.exports = {
         model: "Project",
         key: "project_id",
       },
+      onDelete: "SET NULL",
+      onUpdate: "CASCADE",
     });
   },
 

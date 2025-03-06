@@ -38,10 +38,10 @@ export const GrowthRatesExplanationModalTable = ({
               </Table.ColumnHeader>
             ))}
           <Table.ColumnHeader>
-            <ButtonSmall textTransform="uppercase">{"2030"}</ButtonSmall>
+            <ButtonSmall>2030</ButtonSmall>
           </Table.ColumnHeader>
           <Table.ColumnHeader>
-            <ButtonSmall textTransform="uppercase">{"2050"}</ButtonSmall>
+            <ButtonSmall>2050</ButtonSmall>
           </Table.ColumnHeader>
         </Table.Row>
       </Table.Header>

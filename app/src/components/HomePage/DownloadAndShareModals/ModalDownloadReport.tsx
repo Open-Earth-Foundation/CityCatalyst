@@ -33,7 +33,11 @@ const ModalDownloadReport = ({
   inventory: InventoryResponse;
 }) => {
   return (
-    <DialogRoot open={isDownloadShareOpen} onOpenChange={onDownloadShareClose}>
+    <DialogRoot
+      open={isDownloadShareOpen}
+      onOpenChange={onDownloadShareClose}
+      onInteractOutside={onDownloadShareClose}
+    >
       <DialogContent minW="544px">
         <DialogHeader>
           <Center>

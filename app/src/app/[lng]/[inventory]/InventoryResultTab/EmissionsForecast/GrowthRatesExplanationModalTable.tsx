@@ -24,7 +24,7 @@ export const GrowthRatesExplanationModalTable = ({
   ];
 
   return (
-    <Table.Root>
+    <Table.Root striped>
       <Table.Header>
         <Table.Row>
           <Table.ColumnHeader>

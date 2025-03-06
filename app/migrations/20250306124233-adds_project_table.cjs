@@ -12,11 +12,12 @@ module.exports = {
       organization_id: {
         type: Sequelize.UUID,
         allowNull: false,
-        foreignKey: true,
         references: {
           model: "Organization",
           key: "organization_id",
         },
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
       },
       city_count_limit: {
         type: Sequelize.INTEGER,

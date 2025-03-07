@@ -1,0 +1,201 @@
+import {
+  afterAll,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  jest,
+} from "@jest/globals";
+import {
+  DELETE as deleteOrganization,
+  GET as getOrganization,
+  PATCH as updateOrganization,
+} from "@/app/api/v0/organizations/[organizationId]/route";
+import { POST as createOrganization } from "@/app/api/v0/organizations/route";
+import { db } from "@/models";
+import { CreateOrganizationRequest } from "@/util/validation";
+import { mockRequest, setupTests, testUserID } from "../helpers";
+import { Organization } from "@/models/Organization";
+import { randomUUID } from "node:crypto";
+import { AppSession, Auth } from "@/lib/auth";
+import { Roles } from "@/util/types";
+
+const organizationData: CreateOrganizationRequest = {
+  name: "Test Organization",
+  contactEmail: "test@organization.com",
+  contactNumber: "1234567890",
+};
+
+const organization2: CreateOrganizationRequest = {
+  name: "Test Organization 2",
+  contactEmail: "test2@organization.com",
+  contactNumber: "0987654321",
+};
+
+const invalidOrganization = {
+  name: "",
+  contactEmail: "invalid-email",
+  contactNumber: "",
+};
+
+const mockAdminSession: AppSession = {
+  user: { id: testUserID, role: Roles.OefAdmin },
+  expires: "1h",
+};
+
+const mockUserSession: AppSession = {
+  user: { id: testUserID, role: Roles.Admin },
+  expires: "1h",
+};
+
+describe("Organization API", () => {
+  let organization: Organization;
+  let prevGetServerSession = Auth.getServerSession;
+
+  beforeAll(async () => {
+    setupTests();
+    await db.initialize();
+    Auth.getServerSession = jest.fn(() => Promise.resolve(mockAdminSession));
+  });
+
+  beforeEach(async () => {
+    await db.models.Organization.destroy({
+      where: { name: organizationData.name },
+    });
+    organization = await db.models.Organization.create({
+      ...organizationData,
+      organizationId: randomUUID(),
+    });
+  });
+
+  afterAll(async () => {
+    Auth.getServerSession = prevGetServerSession;
+    if (db.sequelize) await db.sequelize.close();
+  });
+
+  it("should create an organization", async () => {
+    await db.models.Organization.destroy({
+      where: { name: organizationData.name },
+    });
+
+    const req = mockRequest(organizationData);
+    const res = await createOrganization(req, { params: {} });
+    expect(res.status).toEqual(201);
+    const data = await res.json();
+    expect(data.name).toEqual(organizationData.name);
+    expect(data.contactEmail).toEqual(organizationData.contactEmail);
+    expect(data.contactNumber).toEqual(organizationData.contactNumber);
+  });
+
+  it("should not create an organization with invalid data", async () => {
+    const req = mockRequest(invalidOrganization);
+    const res = await createOrganization(req, { params: {} });
+    expect(res.status).toEqual(400);
+    const {
+      error: { issues },
+    } = await res.json();
+    expect(issues).toEqual([
+      {
+        validation: "email",
+        code: "invalid_string",
+        message: "Invalid email",
+        path: ["contactEmail"],
+      },
+    ]);
+  });
+
+  it("should find an organization", async () => {
+    const req = mockRequest();
+    const res = await getOrganization(req, {
+      params: { organizationId: organization.organizationId },
+    });
+    expect(res.status).toEqual(200);
+    const data = await res.json();
+    expect(data.name).toEqual(organizationData.name);
+    expect(data.contactEmail).toEqual(organizationData.contactEmail);
+    expect(data.contactNumber).toEqual(organizationData.contactNumber);
+  });
+
+  it("should not find a non-existing organization", async () => {
+    const req = mockRequest();
+    const res = await getOrganization(req, {
+      params: { organizationId: randomUUID() },
+    });
+    expect(res.status).toEqual(404);
+  });
+
+  it("should update an organization", async () => {
+    const req = mockRequest(organization2);
+    const res = await updateOrganization(req, {
+      params: { organizationId: organization.organizationId },
+    });
+    expect(res.status).toEqual(200);
+    const data = await res.json();
+    expect(data.name).toEqual(organization2.name);
+    expect(data.contactEmail).toEqual(organization2.contactEmail);
+    expect(data.contactNumber).toEqual(organization2.contactNumber);
+  });
+
+  it("should not update an organization with invalid values", async () => {
+    const req = mockRequest(invalidOrganization);
+    const res = await updateOrganization(req, {
+      params: { organizationId: organization.organizationId },
+    });
+    expect(res.status).toEqual(400);
+    const {
+      error: { issues },
+    } = await res.json();
+    expect(issues).toEqual([
+      {
+        validation: "email",
+        code: "invalid_string",
+        message: "Invalid email",
+        path: ["contactEmail"],
+      },
+    ]);
+  });
+
+  it("should delete an organization", async () => {
+    const req = mockRequest();
+    const res = await deleteOrganization(req, {
+      params: { organizationId: organization.organizationId },
+    });
+    expect(res.status).toEqual(200);
+    const { deleted } = await res.json();
+    expect(deleted).toBe(true);
+  });
+
+  it("should not delete a non-existing organization", async () => {
+    const req = mockRequest();
+    const res = await deleteOrganization(req, {
+      params: { organizationId: randomUUID() },
+    });
+    expect(res.status).toEqual(404);
+  });
+
+  it("should not allow non-admins to create an organization", async () => {
+    Auth.getServerSession = jest.fn(() => Promise.resolve(mockUserSession));
+    const req = mockRequest(organizationData);
+    const res = await createOrganization(req, { params: {} });
+    expect(res.status).toEqual(403);
+  });
+
+  it("should not allow non-admins to update an organization", async () => {
+    Auth.getServerSession = jest.fn(() => Promise.resolve(mockUserSession));
+    const req = mockRequest(organization2);
+    const res = await updateOrganization(req, {
+      params: { organizationId: organization.organizationId },
+    });
+    expect(res.status).toEqual(403);
+  });
+
+  it("should not allow non-admins to delete an organization", async () => {
+    Auth.getServerSession = jest.fn(() => Promise.resolve(mockUserSession));
+    const req = mockRequest();
+    const res = await deleteOrganization(req, {
+      params: { organizationId: organization.organizationId },
+    });
+    expect(res.status).toEqual(403);
+  });
+});

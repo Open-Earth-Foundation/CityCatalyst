@@ -217,4 +217,9 @@ export default class UserService {
     }
     return userFile;
   }
+
+  public static validateIsOefAdmin(session: AppSession | null) {
+    if (!session || session.user.role !== Roles.OefAdmin)
+      throw new createHttpError.Forbidden("Forbidden");
+  }
 }

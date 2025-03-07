@@ -150,6 +150,11 @@ import type {
   AssistantThreadCreationAttributes,
 } from "./AssistantThread";
 import { AssistantThread as _AssistantThread } from "./AssistantThread";
+import type {
+  OrganizationAttributes,
+  OrganizationCreationAttributes,
+} from "./Organization";
+import { Organization as _Organization } from "./Organization";
 
 export {
   _ActivityData as ActivityData,
@@ -173,6 +178,7 @@ export {
   _GHGs as GHGs,
   _Inventory as Inventory,
   _Methodology as Methodology,
+  _Organization as Organization,
   _Population as Population,
   _Publisher as Publisher,
   _ReportingLevel as ReportingLevel,
@@ -231,6 +237,8 @@ export type {
   InventoryCreationAttributes,
   MethodologyAttributes,
   MethodologyCreationAttributes,
+  OrganizationAttributes,
+  OrganizationCreationAttributes,
   PopulationAttributes,
   PopulationCreationAttributes,
   PublisherAttributes,
@@ -285,6 +293,7 @@ export function initModels(sequelize: Sequelize) {
   const GHGs = _GHGs.initModel(sequelize);
   const Inventory = _Inventory.initModel(sequelize);
   const Methodology = _Methodology.initModel(sequelize);
+  const Organization = _Organization.initModel(sequelize);
   const Population = _Population.initModel(sequelize);
   const Publisher = _Publisher.initModel(sequelize);
   const ReportingLevel = _ReportingLevel.initModel(sequelize);
@@ -300,6 +309,7 @@ export function initModels(sequelize: Sequelize) {
   const CityInvite = _CityInvite.initModel(sequelize);
   const AssistantMessage = _AssistantMessage.initModel(sequelize);
   const AssistantThread = _AssistantThread.initModel(sequelize);
+
   ActivityData.belongsToMany(DataSource, {
     as: "datasourceIdDataSources",
     through: DataSourceActivityData,
@@ -770,6 +780,7 @@ export function initModels(sequelize: Sequelize) {
     GHGs: GHGs,
     Inventory: Inventory,
     Methodology: Methodology,
+    Organization: Organization,
     Population: Population,
     Publisher: Publisher,
     ReportingLevel: ReportingLevel,

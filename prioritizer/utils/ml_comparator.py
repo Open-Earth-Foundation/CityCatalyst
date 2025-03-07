@@ -233,11 +233,6 @@ def ml_compare(city: dict, action_A: dict, action_B: dict) -> int:
             - df_copy["actionB_CostInvestmentNeeded"]
         )
 
-        # Set 0 where both values are NaN
-        df_copy["CostInvestmentNeeded_Diff"] = df_copy[
-            "CostInvestmentNeeded_Diff"
-        ].fillna(0)
-
         # Drop the original columns
         df_copy.drop(
             columns=["actionA_CostInvestmentNeeded", "actionB_CostInvestmentNeeded"],
@@ -267,11 +262,6 @@ def ml_compare(city: dict, action_A: dict, action_B: dict) -> int:
             df_copy["actionA_TimelineForImplementation"]
             - df_copy["actionB_TimelineForImplementation"]
         )
-
-        # Set 0 where both values are NaN
-        df_copy["TimelineForImplementation_Diff"] = df_copy[
-            "TimelineForImplementation_Diff"
-        ].fillna(0)
 
         # Drop old column
         df_copy.drop(
@@ -620,6 +610,17 @@ def ml_compare(city: dict, action_A: dict, action_B: dict) -> int:
 
     # Final feature cleanup
     df_transformed = prepare_final_features(df_transformed)
+
+    # Dropping empty rows
+    # If after transformation a row has missing values, it will be dropped
+    # Since we only pass in one pair at a time, the df will be empty if there are missing values
+    # We then raise an error that the data is not valid
+    df_transformed.dropna(inplace=True)
+
+    if df_transformed.empty:
+        raise ValueError(
+            "Empty DF because of missing values - no valid data to make a comparison."
+        )
 
     # Make a prediction with the model
     prediction = predict_xgb(df_transformed)

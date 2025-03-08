@@ -176,5 +176,6 @@
   "rate": "rate",
   "sector": "sector",
   "an-error-occurred": "An error occurred",
-  "error-fetching-sector-breakdown": "Error fetching sector breakdown"
+  "error-fetching-sector-breakdown": "Error fetching sector breakdown",
+  "source-open-climate": "Source: OpenClimate"
 }

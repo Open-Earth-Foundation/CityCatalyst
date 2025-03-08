@@ -3,7 +3,7 @@ name: Push Web app to GHCR and deploy to EKS
 on:
   workflow_dispatch:
   push:
-    branches: [ "develop" ]
+    branches: ["develop"]
     paths:
       - app/**
       - k8s/cc-migrate.yml
@@ -27,6 +27,7 @@ jobs:
       NEXTAUTH_URL: "http://localhost:3000"
       CDP_API_KEY: ${{ secrets.CDP_API_KEY_TEST }}
       CDP_MODE: "test"
+      EMAIL_ENABLED: "false"
     defaults:
       run:
         working-directory: ./app
@@ -170,6 +171,7 @@ jobs:
             "GLOBAL_API_URL=https://ccglobal.openearth.dev" \
             "NEXT_PUBLIC_OPENCLIMATE_API_URL=https://openclimate.openearth.dev" \
             "OPENCLIMATE_API_URL=https://openclimate.openearth.dev" \
+            EMAIL_ENABLED="true" \
             CDP_API_KEY=${{secrets.CDP_API_KEY_TEST}}
           kubectl apply -f k8s/cc-sync-catalogue.yml -n default # cronjob
           kubectl create -f k8s/cc-sync-catalogue-manual.yml -n default # on deployment

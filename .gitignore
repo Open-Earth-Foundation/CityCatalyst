@@ -6,6 +6,12 @@ __pycache__/
 cache/
 /cache/
 
+# Ignore the md_producer.py file
+md_producer.py
+
+# Ignore the implementation_plan.md file
+implementation_plan.md
+
 # C extensions
 *.so
 
@@ -193,3 +199,6 @@ temp/
 
 # Vector store
 vector_stores/*
+test_endpoint.py
+data/sample_action.json
+data/sample_city.json

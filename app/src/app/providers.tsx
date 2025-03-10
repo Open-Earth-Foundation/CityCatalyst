@@ -55,13 +55,11 @@ export function Providers({ children }: { children: React.ReactNode }) {
           }
         `}
       </style>
-      {/* <CacheProvider> */}
       <ChakraProvider value={appTheme}>
         <SessionProvider>
           <Provider store={store}>{children}</Provider>
         </SessionProvider>
       </ChakraProvider>
-      {/* </CacheProvider> */}
     </>
   );
 }

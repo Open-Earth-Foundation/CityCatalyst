@@ -86,6 +86,7 @@ export function NavigationBar({
   const dashboardPath = `/${lng}/${inventory ?? currentInventoryId}`;
 
   const [isUserMenuOpen, setUserMenuOpen] = useState(false);
+  const [isLanguageMenuOpen, setLanguageMenuOpen] = useState(false);
 
   return (
     <Box
@@ -138,7 +139,13 @@ export function NavigationBar({
       )}
       <Box display="flex">
         <Box display="flex">
-          <MenuRoot>
+          <MenuRoot
+            onOpenChange={(details) => {
+              setLanguageMenuOpen(details.open);
+            }}
+            open={isLanguageMenuOpen}
+            variant="subtle"
+          >
             <MenuTrigger asChild>
               <Button
                 color="base.light"
@@ -160,6 +167,11 @@ export function NavigationBar({
                   <Text fontSize="title.md" fontWeight="bold">
                     {i18next.language.toUpperCase()}
                   </Text>
+
+                  <Icon
+                    as={isLanguageMenuOpen ? MdArrowDropUp : MdArrowDropDown}
+                    boxSize={6}
+                  />
                 </Box>
               </Button>
             </MenuTrigger>

@@ -25,6 +25,7 @@ jobs:
       NEXTAUTH_URL: "http://localhost:3000"
       CDP_API_KEY: ${{ secrets.CDP_API_KEY_TEST }}
       CDP_MODE: "test"
+      EMAIL_DISABLED: "true"
     defaults:
       run:
         working-directory: ./app
@@ -154,7 +155,7 @@ jobs:
             "GLOBAL_API_URL=https://api.citycatalyst.io" \
             "NEXT_PUBLIC_OPENCLIMATE_API_URL=https://app.openclimate.network" \
             "OPENCLIMATE_API_URL=https://app.openclimate.network" \
-            EMAIL_ENABLED="true" \
+            EMAIL_DISABLED="false" \
             CDP_API_KEY=${{secrets.CDP_API_KEY_TEST}}
           kubectl create -f k8s/prod/cc-prod-create-admin.yml -n default
           kubectl rollout restart deployment cc-web-deploy -n default

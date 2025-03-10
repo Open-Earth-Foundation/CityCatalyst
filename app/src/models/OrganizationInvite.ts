@@ -1,5 +1,5 @@
 import * as Sequelize from "sequelize";
-import { DataTypes, Model, Optional } from "sequelize";
+import { Model, Optional } from "sequelize";
 import { Organization, OrganizationId } from "./Organization";
 import { User, UserId } from "./User";
 import { InviteStatus, OrganizationRole } from "@/util/types";

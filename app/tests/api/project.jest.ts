@@ -35,18 +35,16 @@ const organizationData: CreateOrganizationRequest = {
   contactNumber: "1234567890",
 };
 
-const projectData: CreateProjectRequest = {
+const projectData: Omit<CreateProjectRequest, "organizationId"> = {
   name: "Test Project",
-  city_limit: 10,
+  city_count_limit: 10,
   description: "Test Description",
-  organizationId: "ORG_ID_PLACEHOLDER",
 };
 
-const invalidProject = {
+const invalidProject: Omit<CreateProjectRequest, "organizationId"> = {
   name: "",
-  city_limit: -1,
+  city_count_limit: -1,
   description: "",
-  organizationId: "",
 };
 
 const mockUserSession: AppSession = {
@@ -86,7 +84,10 @@ describe("Project API", () => {
 
   describe("POST /api/v0/organizations/[organizationId]/projects", () => {
     it("should create a project", async () => {
-      const req = await mockRequest(projectData);
+      const req = await mockRequest({
+        ...projectData,
+        organizationId: organization.organizationId,
+      });
       const response = await createProject(req, {
         params: { organizationId: organization.organizationId },
       });
@@ -96,7 +97,10 @@ describe("Project API", () => {
     });
 
     it("should return 400 if invalid project data is provided", async () => {
-      const req = await mockRequest(invalidProject);
+      const req = await mockRequest({
+        ...invalidProject,
+        organizationId: organization.organizationId,
+      });
       const response = await createProject(req, {
         params: { organizationId: organization.organizationId },
       });
@@ -145,9 +149,10 @@ describe("Project API", () => {
 
     it("should return 404 if project does not exist", async () => {
       const req = await mockRequest();
-      const response = await getProjects(req, {
-        params: { organizationId: randomUUID() },
+      const response = await getProject(req, {
+        params: { projectId: randomUUID() },
       });
+      const data = await response.json();
       expect(response.status).toBe(404);
     });
   });

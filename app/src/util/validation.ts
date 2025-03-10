@@ -268,7 +268,7 @@ export type UpdateOrganizationRequest = z.infer<
 
 export const createProjectRequest = z.object({
   name: z.string().max(255),
-  city_limit: z.number().int().min(1),
+  city_count_limit: z.number().int().min(1),
   description: z.string().optional(),
   organizationId: z.string().uuid(),
 });
@@ -277,7 +277,7 @@ export type CreateProjectRequest = z.infer<typeof createProjectRequest>;
 
 export const updateProjectRequest = z.object({
   name: z.string().max(255).optional(),
-  city_limit: z.number().int().min(1).optional(),
+  city_count_limit: z.number().int().min(1).optional(),
   description: z.string().optional(),
 });
 

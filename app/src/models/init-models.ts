@@ -155,6 +155,8 @@ import type {
   OrganizationCreationAttributes,
 } from "./Organization";
 import { Organization as _Organization } from "./Organization";
+import type { ProjectAttributes, ProjectCreationAttributes } from "./Project";
+import { Project as _Project } from "./Project";
 
 export {
   _ActivityData as ActivityData,
@@ -179,6 +181,7 @@ export {
   _Inventory as Inventory,
   _Methodology as Methodology,
   _Organization as Organization,
+  _Project as Project,
   _Population as Population,
   _Publisher as Publisher,
   _ReportingLevel as ReportingLevel,
@@ -239,6 +242,8 @@ export type {
   MethodologyCreationAttributes,
   OrganizationAttributes,
   OrganizationCreationAttributes,
+  ProjectAttributes,
+  ProjectCreationAttributes,
   PopulationAttributes,
   PopulationCreationAttributes,
   PublisherAttributes,
@@ -294,6 +299,7 @@ export function initModels(sequelize: Sequelize) {
   const Inventory = _Inventory.initModel(sequelize);
   const Methodology = _Methodology.initModel(sequelize);
   const Organization = _Organization.initModel(sequelize);
+  const Project = _Project.initModel(sequelize);
   const Population = _Population.initModel(sequelize);
   const Publisher = _Publisher.initModel(sequelize);
   const ReportingLevel = _ReportingLevel.initModel(sequelize);
@@ -758,6 +764,12 @@ export function initModels(sequelize: Sequelize) {
     as: "assistantMessages",
     foreignKey: "threadId",
   });
+  Project.belongsTo(Organization, {
+    as: "organization",
+    foreignKey: "organizationId",
+  });
+  Project.hasMany(City, { as: "cities", foreignKey: "projectId" });
+  City.belongsTo(Project, { as: "project", foreignKey: "projectId" });
 
   return {
     ActivityData: ActivityData,
@@ -781,6 +793,7 @@ export function initModels(sequelize: Sequelize) {
     Inventory: Inventory,
     Methodology: Methodology,
     Organization: Organization,
+    Project: Project,
     Population: Population,
     Publisher: Publisher,
     ReportingLevel: ReportingLevel,

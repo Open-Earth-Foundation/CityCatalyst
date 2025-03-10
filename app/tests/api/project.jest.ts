@@ -1,0 +1,193 @@
+import {
+  afterAll,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  jest,
+} from "@jest/globals";
+import {
+  GET as getProjects,
+  POST as createProject,
+} from "@/app/api/v0/organizations/[organizationId]/projects/route";
+
+import {
+  DELETE as deleteProject,
+  GET as getProject,
+  PATCH as updateProject,
+} from "@/app/api/v0/projects/[projectId]/route";
+import { mockRequest, setupTests, testUserID } from "../helpers";
+
+import {
+  CreateOrganizationRequest,
+  CreateProjectRequest,
+} from "@/util/validation";
+import { AppSession, Auth } from "@/lib/auth";
+import { Roles } from "@/util/types";
+import { db } from "@/models";
+import { randomUUID } from "node:crypto";
+import { Organization } from "@/models/Organization";
+
+const organizationData: CreateOrganizationRequest = {
+  name: "Test Organization",
+  contactEmail: "test@organization.com",
+  contactNumber: "1234567890",
+};
+
+const projectData: CreateProjectRequest = {
+  name: "Test Project",
+  city_limit: 10,
+  description: "Test Description",
+  organizationId: "ORG_ID_PLACEHOLDER",
+};
+
+const invalidProject = {
+  name: "",
+  city_limit: -1,
+  description: "",
+  organizationId: "",
+};
+
+const mockUserSession: AppSession = {
+  user: { id: testUserID, role: Roles.User },
+  expires: "1h",
+};
+
+const mockAdminSession: AppSession = {
+  user: { id: testUserID, role: Roles.OefAdmin },
+  expires: "1h",
+};
+
+describe("Project API", () => {
+  let organization: Organization;
+  let prevGetServerSession = Auth.getServerSession;
+
+  beforeAll(async () => {
+    setupTests();
+    await db.initialize();
+    Auth.getServerSession = jest.fn(() => Promise.resolve(mockAdminSession));
+  });
+
+  beforeEach(async () => {
+    await db.models.Organization.destroy({
+      where: { name: organizationData.name },
+    });
+    organization = await db.models.Organization.create({
+      ...organizationData,
+      organizationId: randomUUID(),
+    });
+  });
+
+  afterAll(async () => {
+    Auth.getServerSession = prevGetServerSession;
+    if (db.sequelize) await db.sequelize.close();
+  });
+
+  describe("POST /api/v0/organizations/[organizationId]/projects", () => {
+    it("should create a project", async () => {
+      const req = await mockRequest(projectData);
+      const response = await createProject(req, {
+        params: { organizationId: organization.organizationId },
+      });
+      expect(response.status).toBe(200);
+      const data = await response.json();
+      expect(data.name).toBe(projectData.name);
+    });
+
+    it("should return 400 if invalid project data is provided", async () => {
+      const req = await mockRequest(invalidProject);
+      const response = await createProject(req, {
+        params: { organizationId: organization.organizationId },
+      });
+      expect(response.status).toBe(400);
+    });
+  });
+
+  describe("GET /api/v0/organizations/[organizationId]/projects", () => {
+    it("should return all projects belonging to an organization", async () => {
+      //   create a project in the organization
+      //     fetch all projects in the organization, should return an array with the created project
+      const project = await db.models.Project.create({
+        projectId: randomUUID(),
+        ...projectData,
+        organizationId: organization.organizationId,
+      });
+
+      const req = await mockRequest();
+      const response = await getProjects(req, {
+        params: { organizationId: organization.organizationId },
+      });
+      expect(response.status).toBe(200);
+      const data = await response.json();
+      expect(data.length).toBe(1);
+    });
+  });
+
+  describe("GET /api/v0/projects/[projectId]", () => {
+    it("should return a project", async () => {
+      //   create a project
+      //     fetch the project, should return the created project
+      const project = await db.models.Project.create({
+        projectId: randomUUID(),
+        ...projectData,
+        organizationId: organization.organizationId,
+      });
+
+      const req = await mockRequest();
+      const response = await getProject(req, {
+        params: { projectId: project.projectId },
+      });
+      expect(response.status).toBe(200);
+      const data = await response.json();
+      expect(data.name).toBe(projectData.name);
+    });
+
+    it("should return 404 if project does not exist", async () => {
+      const req = await mockRequest();
+      const response = await getProjects(req, {
+        params: { organizationId: randomUUID() },
+      });
+      expect(response.status).toBe(404);
+    });
+  });
+
+  describe("PATCH /api/v0/projects/[projectId]", () => {
+    it("should update a project", async () => {
+      const project = await db.models.Project.create({
+        projectId: randomUUID(),
+        ...projectData,
+        organizationId: organization.organizationId,
+      });
+
+      const updatedProject = {
+        ...projectData,
+        name: "Updated Project",
+      };
+
+      const req = await mockRequest(updatedProject);
+      const response = await updateProject(req, {
+        params: { projectId: project.projectId },
+      });
+      expect(response.status).toBe(200);
+      const data = await response.json();
+      expect(data.name).toBe(updatedProject.name);
+    });
+  });
+
+  describe("PATCH /api/v0/projects/[projectId]", () => {
+    it("should delete a project", async () => {
+      const project = await db.models.Project.create({
+        projectId: randomUUID(),
+        ...projectData,
+        organizationId: organization.organizationId,
+      });
+
+      const req = await mockRequest();
+      const response = await deleteProject(req, {
+        params: { projectId: project.projectId },
+      });
+      expect(response.status).toBe(200);
+    });
+  });
+});

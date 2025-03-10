@@ -26,7 +26,7 @@ test.describe("Login page", () => {
     // TODO how to ensure that session route was called?
     await page.waitForResponse("/api/auth/session");
 
-    await expect(page).not.toHaveURL("/en/auth/login/");
+    await expect(page).not.toHaveURL("/en/onboarding/");
   });
 
   test("shows errors when entering invalid data", async ({ page }) => {
@@ -36,7 +36,7 @@ test.describe("Login page", () => {
     await page.locator('input[name="password"]').fill("pas");
     await page.locator('button[type="submit"]').click();
 
-    await expect(page).toHaveURL("/en/auth/login/");
+    await expect(page).toHaveURL("/en/onboarding/");
     await expectText(page, "valid email address");
     await expectText(page, "Minimum length");
   });

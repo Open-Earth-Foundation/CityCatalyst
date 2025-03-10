@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { GlobalWarmingPotentialTypeEnum, InventoryTypeEnum } from "./enums";
+import { OrganizationRole } from "@/util/types";
 
 export const emailPattern =
   /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -262,4 +263,14 @@ export const updateOrganizationRequest = z.object({
 
 export type UpdateOrganizationRequest = z.infer<
   typeof updateOrganizationRequest
+>;
+
+export const createOrganizationInviteRequest = z.object({
+  organizationId: z.string().uuid(),
+  inviteeEmail: z.string().email(),
+  role: z.nativeEnum(OrganizationRole),
+});
+
+export type CreateOrganizationInviteRequest = z.infer<
+  typeof createOrganizationInviteRequest
 >;

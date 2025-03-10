@@ -31,7 +31,16 @@ def return_prompt(action, city):
             - Remember that data is provided in the order of importance and you should consider emissions and sectors first the 
             - Rank all 20 actions.
             - Provide a detailed explanation for why each action was prioritized.
-
+            ###Explanation:
+            - The explanation should not mention the quantitative score, but rather the qualitative reasoning.
+            - The explanation should mention both good and bad aspects of the action depending on which position it has in the ranking.
+            - The explanation should be concise and to the point
+            - Avoid decisive statements like "This action is the best" or "This action is the worst".
+            - you have to avoid mentoning any numbers in the explanation.
+            - The explanation is for the end costumer that is not a climate expert.
+            - The explanation should enable user to understand the action strong and week parts for this particular city and why it was prioritized.
+            - Focus on the city's context and how the action fits into that.
+            
             ### Action Data (Top 20 Actions):
             {action}
 
@@ -40,4 +49,5 @@ def return_prompt(action, city):
 
             RETURN ALL ACTIONS RANKED BY PRIORITY.
             """
+
     return prompt

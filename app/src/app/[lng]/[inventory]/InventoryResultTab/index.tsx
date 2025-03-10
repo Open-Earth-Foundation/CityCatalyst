@@ -367,9 +367,6 @@ export function EmissionPerSectors({
                 (sector) => sector.sectorName === sectorData.sectorName,
               );
 
-              console.log(yearlyMap);
-              console.log("lastYearData", lastYearData);
-
               if (lastYearData) {
                 if (BigInt(lastYearData.co2eq) === 0n) {
                   percentageChange = 100;

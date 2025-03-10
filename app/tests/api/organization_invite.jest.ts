@@ -19,6 +19,8 @@ import { randomUUID } from "node:crypto";
 import { AppSession, Auth } from "@/lib/auth";
 import { InviteStatus, OrganizationRole, Roles } from "@/util/types";
 import { CreateOrganizationInviteRequest } from "@/util/validation";
+import EmailService from "@/backend/EmailService";
+import { SentMessageInfo } from "nodemailer"; // Import the correct type
 
 const organizationData = {
   name: "Test Organization",
@@ -49,6 +51,8 @@ describe("Organization Invitations API", () => {
   beforeAll(async () => {
     setupTests();
     await db.initialize();
+    EmailService.sendOrganizationInvitationEmail =
+      jest.fn<() => Promise<SentMessageInfo>>();
   });
 
   beforeEach(async () => {

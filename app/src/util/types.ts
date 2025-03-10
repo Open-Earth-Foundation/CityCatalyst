@@ -216,6 +216,12 @@ export enum InviteStatus {
   EXPIRED = "expired",
 }
 
+export enum OrganizationRole {
+  COLLABORATOR = "collaborator",
+  ADMIN = "admin",
+  OEF_ADMIN = "oef_admin",
+}
+
 export interface GetUserCityInvitesResponse {
   id: string;
   email: string;

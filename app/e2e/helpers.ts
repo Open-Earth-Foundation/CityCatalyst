@@ -27,6 +27,17 @@ export async function signup(
   return await result.json();
 }
 
+export async function logOut(
+  request: APIRequestContext,
+  callbackUrl: string | undefined = undefined,
+) {
+  const suffix = callbackUrl ? `?callbackUrl=${callbackUrl}` : "";
+  const result = await request.post("/api/auth/signout" + suffix, {});
+  console.error(await result.text());
+  expect(result.ok()).toBeTruthy();
+  return await result.json();
+}
+
 export async function createInventory(
   request: APIRequestContext,
   name: string,

@@ -18,5 +18,5 @@ export const POST = apiHandler(async (req, { params, session }) => {
 export const GET = apiHandler(async (_req, { params, session }) => {
   UserService.validateIsOefAdmin(session);
   const organizations = await Organization.findAll();
-  return NextResponse.json({ organizations });
+  return NextResponse.json(organizations);
 });

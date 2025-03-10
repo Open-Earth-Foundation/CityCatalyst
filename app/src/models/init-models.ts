@@ -140,6 +140,10 @@ import type { VersionAttributes, VersionCreationAttributes } from "./Version";
 import { Version as _Version } from "./Version";
 import { UserFile as _UserFile } from "./UserFile";
 import { CityInvite as _CityInvite } from "./CityInvite";
+import {
+  OrganizationInvite as _OrganizationInvite,
+  OrganizationInviteCreationAttributes,
+} from "./OrganizationInvite";
 import type {
   AssistantMessageAttributes,
   AssistantMessageCreationAttributes,
@@ -194,7 +198,10 @@ export {
   _CityInvite as CityInvite,
   _AssistantMessage as AssistantMessage,
   _AssistantThread as AssistantThread,
+  _OrganizationInvite as OrganizationInvite,
 };
+
+class OrganizationInviteAttributes {}
 
 export type {
   ActivityDataAttributes,
@@ -239,6 +246,8 @@ export type {
   MethodologyCreationAttributes,
   OrganizationAttributes,
   OrganizationCreationAttributes,
+  OrganizationInviteAttributes,
+  OrganizationInviteCreationAttributes,
   PopulationAttributes,
   PopulationCreationAttributes,
   PublisherAttributes,
@@ -309,6 +318,7 @@ export function initModels(sequelize: Sequelize) {
   const CityInvite = _CityInvite.initModel(sequelize);
   const AssistantMessage = _AssistantMessage.initModel(sequelize);
   const AssistantThread = _AssistantThread.initModel(sequelize);
+  const OrganizationInvite = _OrganizationInvite.initModel(sequelize);
 
   ActivityData.belongsToMany(DataSource, {
     as: "datasourceIdDataSources",
@@ -475,6 +485,11 @@ export function initModels(sequelize: Sequelize) {
     foreignKey: "invitingUserId",
     as: "invitingUser",
   });
+  User.hasMany(OrganizationInvite, {
+    foreignKey: "userId",
+    as: "organizationInvites",
+  });
+  OrganizationInvite.belongsTo(User, { as: "user", foreignKey: "userId" });
   User.belongsTo(Inventory, {
     as: "defaultInventory",
     foreignKey: "defaultInventoryId",
@@ -794,6 +809,7 @@ export function initModels(sequelize: Sequelize) {
     Version: Version,
     UserFile: UserFile,
     CityInvite: CityInvite,
+    OrganizationInvite: OrganizationInvite,
     AssistantMessage: AssistantMessage,
     AssistantThread: AssistantThread,
     FormulaInput: FormulaInput,

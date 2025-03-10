@@ -127,7 +127,7 @@
     "@playwright/test": "^1.47.2",
     "@storybook/addon-essentials": "^8.2.6",
     "@storybook/addon-interactions": "^8.2.5",
-    "@storybook/addon-links": "^7.6.17",
+    "@storybook/addon-links": "^8.6.4",
     "@storybook/blocks": "^8.0.4",
     "@storybook/nextjs": "^8.0.8",
     "@testing-library/jest-dom": "^6.6.3",

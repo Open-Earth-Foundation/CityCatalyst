@@ -34,7 +34,7 @@ export const POST = apiHandler(async (req: Request) => {
   // Send email to user
   const host = process.env.HOST ?? "http://localhost:3000";
 
-  if (process.env.EMAIL_ENABLED === "true") {
+  if (process.env.EMAIL_DISABLED === "true") {
     try {
       await sendEmail({
         to: body.email,

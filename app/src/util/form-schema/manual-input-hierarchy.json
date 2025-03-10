@@ -906,8 +906,7 @@
             "energy-usage-steam",
             "energy-usage-steam-chp",
             "energy-usage-refrigeration",
-            "energy-usage-refrigeration-chp",
-            "type-food-beverages-tobacco"
+            "energy-usage-refrigeration-chp"
           ],
           "exclusive": "energy-usage-all"
         },
@@ -947,8 +946,7 @@
                   "type-heat-plants",
                   "type-pretroleum-refining",
                   "type-non-ferrous-manufacture-of-solid-fuels",
-                  "type-chemical-other-energy-industries",
-                  "type-other"
+                  "type-chemical-other-energy-industries"
                 ],
                 "exclusive": "type-all"
               },
@@ -2389,8 +2387,7 @@
             "vehicle-type-commercial-vehicles",
             "vehicle-type-public-transport-vehicles",
             "vehicle-type-emergency-vehicles",
-            "vehicle-type-service-vehicles",
-            "vehicle-type-other"
+            "vehicle-type-service-vehicles"
           ],
           "multiselect": true
         },
@@ -2776,8 +2773,7 @@
                   "vehicle-type-all",
                   "vehicle-type-ferries",
                   "vehicle-type-boats",
-                  "vehicle-type-marine-vessels",
-                  "vehicle-type-other"
+                  "vehicle-type-marine-vessels"
                 ],
                 "exclusive": "vehicle-type-all"
               },

@@ -34,7 +34,8 @@ export const POST = apiHandler(async (req: Request) => {
   // Send email to user
   const host = process.env.HOST ?? "http://localhost:3000";
 
-  if (process.env.EMAIL_DISABLED === "true") {
+  // makes sure the default is that emails are being sent (only disabled in CI)
+  if (process.env.EMAIL_DISABLED !== "false") {
     try {
       await sendEmail({
         to: body.email,

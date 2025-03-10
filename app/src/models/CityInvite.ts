@@ -2,7 +2,7 @@ import * as Sequelize from "sequelize";
 import { DataTypes, Model, Optional } from "sequelize";
 import { City, CityId } from "./City";
 import { User, UserId } from "./User";
-import { CityInviteStatus } from "@/util/types";
+import { InviteStatus } from "@/util/types";
 
 export interface CityInviteAttributes {
   id: string;
@@ -10,7 +10,7 @@ export interface CityInviteAttributes {
   userId?: string;
   email?: string;
   invitingUserId?: string;
-  status?: CityInviteStatus;
+  status?: InviteStatus;
   created?: Date;
   lastUpdated?: Date;
 }
@@ -39,7 +39,7 @@ export class CityInvite
   userId?: string | undefined;
   email?: string | undefined;
   invitingUserId?: string | undefined;
-  status?: CityInviteStatus | undefined;
+  status?: InviteStatus | undefined;
   created?: Date | undefined;
   lastUpdated?: Date | undefined;
 

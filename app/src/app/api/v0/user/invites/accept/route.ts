@@ -6,7 +6,7 @@ import createHttpError from "http-errors";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { Op } from "sequelize";
 import { logger } from "@/services/logger";
-import { CityInviteStatus } from "@/util/types";
+import { InviteStatus } from "@/util/types";
 import { NextResponse } from "next/server";
 
 export const PATCH = apiHandler(async (req, { params, session }) => {
@@ -38,7 +38,7 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
     where: {
       cityId: { [Op.in]: cityIds },
       email,
-      status: CityInviteStatus.PENDING,
+      status: InviteStatus.PENDING,
     },
   });
   const inviteCityIds = invites.map((i) => i.cityId!);
@@ -77,7 +77,7 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
         throw new createHttpError.BadRequest("Something went wrong");
       }
       await invite.update({
-        status: CityInviteStatus.ACCEPTED,
+        status: InviteStatus.ACCEPTED,
         userId: session.user.id,
       });
       return cityUser;

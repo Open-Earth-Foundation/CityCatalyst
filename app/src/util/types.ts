@@ -209,7 +209,7 @@ export interface GetUserCityInvitesResponseUserData {
   name: string;
 }
 
-export enum CityInviteStatus {
+export enum InviteStatus {
   PENDING = "pending",
   ACCEPTED = "accepted",
   CANCELED = "canceled",
@@ -222,7 +222,7 @@ export interface GetUserCityInvitesResponse {
   user?: GetUserCityInvitesResponseUserData;
   cityId: string;
   userId: string;
-  status: CityInviteStatus;
+  status: InviteStatus;
   cityInvites: Required<CityAttributes>;
 }
 

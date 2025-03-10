@@ -1185,5 +1185,15 @@
   "emissions-from-grid-supplied-energy-consumed-within-the-city-boundary-for-railways": "Emissions from grid-supplied energy consumed within the city boundary for railways",
   "total": "Total",
   "subsector": "Sub-sector",
-  "location": "Location"
+  "location": "Location",
+  "total-aggregate-activity": "Total aggregate activity",
+  "total-industrial-process-ouput": "Total industrial output",
+  "total-land-use-area": "Change in land use area",
+  "total-livestock": "Amount of livestock",
+  "clinical-waste-disposal": "Amount of clinical waste disposed",
+  "clinical-waste-incineration": "Amount of clinical waste incinerated",
+  "electricity-consumption": "Electricity consumption",
+  "type-food-beverages-tobacco": "Food, beverages and tobacco",
+  "type-other": "Other type",
+  "vehicle-type-other": "Other vehicle type"
 }

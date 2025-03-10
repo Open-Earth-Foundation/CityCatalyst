@@ -2,7 +2,9 @@ import { test, expect } from "@playwright/test";
 import { expectText, signup } from "./helpers";
 import { randomUUID } from "node:crypto";
 
-test.beforeEach(async ({ page }) => {
+test.beforeEach(async ({ page, context }) => {
+  // make sure user is logged out to prevent order of execution issues
+  await context.clearCookies();
   await page.goto("/en/auth/login");
 });
 
@@ -29,11 +31,7 @@ test.describe("Login page", () => {
     await expect(page).not.toHaveURL("/en/auth/login/");
   });
 
-  test("shows errors when entering invalid data", async ({ page, request }) => {
-    // make sure user is logged out to prevent order of execution issues
-    await page.goto("/api/auth/signout");
-
-    await page.goto("/en/auth/login");
+  test("shows errors when entering invalid data", async ({ page }) => {
     await expectText(page, "Log In to City Catalyst");
 
     await page.locator('input[name="email"]').fill("testopenearthorg");

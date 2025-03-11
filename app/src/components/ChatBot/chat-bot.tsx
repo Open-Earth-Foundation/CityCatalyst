@@ -93,13 +93,13 @@ export default function ChatBot({
   };
 
   // Automatically scroll to bottom of chat
-  const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  /* const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+  }, [messages]); */
 
   const initializeThread = async () => {
     try {
@@ -281,7 +281,7 @@ export default function ChatBot({
     ]);
     setUserInput("");
     setInputDisabled(true);
-    scrollToBottom();
+    // scrollToBottom();
   };
 
   const handleSuggestionClick = (message: string) => {
@@ -586,7 +586,7 @@ export default function ChatBot({
             </HStack>
           );
         })}
-        <div ref={messagesEndRef} />
+        {/* <div ref={messagesEndRef} /> */}
       </div>
 
       <Box divideX="2px" mt={2} mb={6} borderColor="border.neutral" />

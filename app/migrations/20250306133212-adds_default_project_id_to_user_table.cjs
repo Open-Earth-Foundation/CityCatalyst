@@ -27,7 +27,7 @@ module.exports = {
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.removeColumn("User", "default_project_id");
     await queryInterface.removeConstraint("User", "FK_user_default_project_id");
+    await queryInterface.removeColumn("User", "default_project_id");
   },
 };

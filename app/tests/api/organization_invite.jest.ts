@@ -51,8 +51,9 @@ describe("Organization Invitations API", () => {
   beforeAll(async () => {
     setupTests();
     await db.initialize();
-    EmailService.sendOrganizationInvitationEmail =
-      jest.fn<() => Promise<SentMessageInfo>>();
+    EmailService.sendOrganizationInvitationEmail = jest
+      .fn<() => Promise<SentMessageInfo>>()
+      .mockResolvedValue(true);
   });
 
   beforeEach(async () => {
@@ -78,7 +79,9 @@ describe("Organization Invitations API", () => {
     });
     expect(res.status).toEqual(200);
     const data = await res.json();
-    expect(data.message).toEqual(`invitation-sent-successfully`);
+    expect(data.organizationId).toEqual(inviteData.organizationId);
+    expect(data.email).toEqual(inviteData.inviteeEmail);
+    expect(data.role).toEqual(inviteData.role);
   });
 
   it("should reject non-admin from inviting a consultant", async () => {

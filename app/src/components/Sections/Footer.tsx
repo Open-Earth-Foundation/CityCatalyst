@@ -46,6 +46,10 @@ const Footer = ({ lng }: { lng: string }) => {
               title={t("read-the-docs")}
             />
             <FooterLink url="./cdp" title={t("submit-to-cdp")} />
+            <FooterLink
+              url="https://citycatalyst.openearth.org/privacy"
+              title={t("our-privacy-policy")}
+            />
           </Box>
           <Box>
             <Link href="mailto:info@openearth.org">

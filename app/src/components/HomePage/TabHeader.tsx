@@ -1,5 +1,5 @@
 import { TFunction } from "i18next";
-import { Badge, Box, Flex, Heading, Link, Text } from "@chakra-ui/react";
+import { Badge, Box, Flex, Heading, Icon, Link, Text } from "@chakra-ui/react";
 import { Trans } from "react-i18next/TransWithoutContext";
 import { MdOutlineAccountTree, MdOutlineCalendarToday } from "react-icons/md";
 import type { InventoryResponse } from "@/util/types";
@@ -8,6 +8,8 @@ import { Selector } from "@/components/selector";
 import React, { useMemo } from "react";
 import { api, useGetCitiesAndYearsQuery } from "@/services/api";
 import { useRouter } from "next/navigation";
+import { Button } from "../ui/button";
+import { DataAlertIcon } from "../icons";
 
 export function TabHeader({
   t,
@@ -58,6 +60,10 @@ export function TabHeader({
             >
               {t(title)}
             </Heading>
+            <Button>
+              <Icon as={DataAlertIcon} />
+              <Text>{t("manage-missing-subsectors")}</Text>
+            </Button>
           </Box>
           <Box className="flex items-center gap-3">
             <Badge>

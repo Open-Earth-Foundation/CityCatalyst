@@ -11,7 +11,7 @@ md_producer.py
 
 # Ignore the implementation_plan.md file
 implementation_plan.md
-
+test_output/*
 # C extensions
 *.so
 

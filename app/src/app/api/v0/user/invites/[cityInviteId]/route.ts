@@ -27,6 +27,7 @@ export const DELETE = apiHandler(async (req, { params, session }) => {
     );
     throw createHttpError.Unauthorized("Unauthorized");
   }
+
   await invite.update({ status: InviteStatus.CANCELED });
   const cityUser = await CityUser.findOne({
     where: { cityId: invite.cityId, userId: invite.userId },

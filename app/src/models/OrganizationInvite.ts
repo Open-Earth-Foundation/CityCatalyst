@@ -38,12 +38,12 @@ export class OrganizationInvite
   implements OrganizationInviteAttributes
 {
   id!: string;
-  organizationId?: string | undefined;
-  userId?: string | undefined;
-  email?: string | undefined;
-  status?: InviteStatus | undefined;
-  created?: Date | undefined;
-  lastUpdated?: Date | undefined;
+  organizationId?: string;
+  userId?: string;
+  email?: string;
+  status?: InviteStatus;
+  created?: Date;
+  lastUpdated?: Date;
   role?: OrganizationRole;
 
   //   OrganizationInvite belongs to Organization via organizationId
@@ -106,8 +106,8 @@ export class OrganizationInvite
         tableName: "OrganizationInvite",
         schema: "public",
         timestamps: true,
-        createdAt: "created_at",
-        updatedAt: "updated_at",
+        createdAt: "created",
+        updatedAt: "last_updated",
         indexes: [
           {
             name: "OrganizationInvite_pkey",

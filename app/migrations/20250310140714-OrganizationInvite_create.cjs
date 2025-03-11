@@ -38,12 +38,12 @@ module.exports = {
       role: {
         type: Sequelize.ENUM("admin", "collaborator"),
       },
-      created_at: {
+      created: {
         type: Sequelize.DATE,
         allowNull: false,
         defaultValue: Sequelize.fn("now"),
       },
-      updated_at: {
+      last_updated: {
         type: Sequelize.DATE,
         allowNull: false,
         defaultValue: Sequelize.fn("now"),

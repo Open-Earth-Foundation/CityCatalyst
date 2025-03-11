@@ -48,7 +48,7 @@ export default function InviteToOrganizationTemplate({
           <Text style={greeting}>Hi {user?.name},</Text>
           <Text style={paragraph}>
             You are invited to join CityCatalyst and contribute to the emission
-            inventory for the city.
+            inventory for the organization:
           </Text>
           <div style={organizationBox}>
             <div>

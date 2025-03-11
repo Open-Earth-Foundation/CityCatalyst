@@ -142,6 +142,7 @@ import { UserFile as _UserFile } from "./UserFile";
 import { CityInvite as _CityInvite } from "./CityInvite";
 import {
   OrganizationInvite as _OrganizationInvite,
+  OrganizationInviteAttributes,
   OrganizationInviteCreationAttributes,
 } from "./OrganizationInvite";
 import type {
@@ -200,8 +201,6 @@ export {
   _AssistantThread as AssistantThread,
   _OrganizationInvite as OrganizationInvite,
 };
-
-class OrganizationInviteAttributes {}
 
 export type {
   ActivityDataAttributes,
@@ -741,6 +740,14 @@ export function initModels(sequelize: Sequelize) {
   City.hasMany(UserFile, { foreignKey: "cityId", as: "userFiles" });
   City.hasMany(CityInvite, { as: "cityInvite", foreignKey: "cityId" });
   CityInvite.belongsTo(City, { as: "cityInvites", foreignKey: "cityId" });
+  Organization.hasMany(OrganizationInvite, {
+    as: "organizationInvite",
+    foreignKey: "organizationId",
+  });
+  OrganizationInvite.belongsTo(Organization, {
+    as: "organizationInvites",
+    foreignKey: "organizationId",
+  });
   GasValue.belongsTo(InventoryValue, {
     as: "inventoryValue",
     foreignKey: "inventoryValueId",

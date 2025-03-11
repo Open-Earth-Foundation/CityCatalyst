@@ -13,7 +13,6 @@ export default class EmailService {
     organization: Organization,
     user: User | null,
   ) {
-    console.log("EmailService:16"); // TODO NINA
     const { inviteeEmail: email, organizationId, role } = request;
 
     if (!process.env.VERIFICATION_TOKEN_SECRET) {
@@ -45,7 +44,7 @@ export default class EmailService {
 
     const url = `${host}/organization/invites?${params.toString()}`;
     return sendEmail({
-      to: email!,
+      to: email,
       subject: "City Catalyst - Organization Invitation",
       html: render(
         InviteToOrganizationTemplate({

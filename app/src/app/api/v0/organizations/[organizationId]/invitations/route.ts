@@ -25,7 +25,7 @@ export const GET = apiHandler(async (_req, { params, session }) => {
     where: { organizationId },
   });
 
-  if (!invitations) {
+  if (!invitations || invitations.length === 0) {
     throw new createHttpError.NotFound("invitations-not-found");
   }
 

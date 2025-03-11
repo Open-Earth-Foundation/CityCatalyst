@@ -12,6 +12,7 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { Toaster } from "@/components/ui/toaster";
 import { Button } from "@/components/ui/button";
 import { UseSuccessToast } from "@/hooks/Toasts";
+import { Trans } from "react-i18next/TransWithoutContext";
 
 export type LoginInputs = {
   email: string;
@@ -136,6 +137,19 @@ export default function Login({
           <Link href="/auth/forgot-password" className="underline">
             {t("forgot-password")}
           </Link>
+          <Text my={2}>
+            <Trans t={t} i18nKey="read-privacy-policy">
+              Read our{" "}
+              <Link
+                href="https://citycatalyst.openearth.org/privacy"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline"
+              >
+                Privacy Policy
+              </Link>
+            </Trans>
+          </Text>
         </div>
         <Button
           type="submit"

@@ -1,8 +1,8 @@
 import { Box } from "@chakra-ui/react";
 import React from "react";
 
-const MissingKeys = () => {
+const ManageSectors = () => {
   return <Box>MissingKeys</Box>;
 };
 
-export default MissingKeys;
+export default ManageSectors;

@@ -6,7 +6,7 @@ import createHttpError from "http-errors";
 import UserService from "@/backend/UserService";
 
 export const GET = apiHandler(async (_req, { params, session }) => {
-  UserService.validateIsOefAdmin(session);
+  UserService.validateIsAdmin(session);
   const { organizationId } = params;
   const org = await Organization.findByPk(organizationId as string);
   if (!org) {
@@ -16,7 +16,7 @@ export const GET = apiHandler(async (_req, { params, session }) => {
 });
 
 export const PATCH = apiHandler(async (req, { params, session }) => {
-  UserService.validateIsOefAdmin(session);
+  UserService.validateIsAdmin(session);
   const { organizationId } = params;
   const validatedData = updateOrganizationRequest.parse(await req.json());
   const org = await Organization.findByPk(organizationId as string);
@@ -30,7 +30,7 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
 });
 
 export const DELETE = apiHandler(async (req, { params, session }) => {
-  UserService.validateIsOefAdmin(session);
+  UserService.validateIsAdmin(session);
   const { organizationId } = params;
   const org = await Organization.findByPk(organizationId as string);
   if (!org) {

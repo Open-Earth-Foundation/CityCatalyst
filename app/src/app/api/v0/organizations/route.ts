@@ -6,7 +6,7 @@ import UserService from "@/backend/UserService";
 import { apiHandler } from "@/util/api";
 
 export const POST = apiHandler(async (req, { params, session }) => {
-  UserService.validateIsOefAdmin(session);
+  UserService.validateIsAdmin(session);
   const orgData = createOrganizationRequest.parse(await req.json());
   const newOrg = await Organization.create({
     organizationId: randomUUID(),
@@ -16,7 +16,7 @@ export const POST = apiHandler(async (req, { params, session }) => {
 });
 
 export const GET = apiHandler(async (_req, { params, session }) => {
-  UserService.validateIsOefAdmin(session);
+  UserService.validateIsAdmin(session);
   const organizations = await Organization.findAll();
   return NextResponse.json(organizations);
 });

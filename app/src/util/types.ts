@@ -199,7 +199,6 @@ export interface UserInviteResponse {
 export enum Roles {
   User = "user",
   Admin = "admin",
-  OefAdmin = "oef_admin",
 }
 
 export interface GetUserCityInvitesResponseUserData {

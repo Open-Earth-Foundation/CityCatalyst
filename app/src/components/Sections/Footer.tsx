@@ -3,7 +3,6 @@ import Image from "next/image";
 import { Link } from "@chakra-ui/react";
 import React from "react";
 import FooterLink from "../Navigation/FooterLink";
-import { TFunction } from "i18next";
 import { useTranslation } from "@/i18n/client";
 import { getCurrentVersion } from "@/util/helpers";
 
@@ -69,58 +68,58 @@ const Footer = ({ lng }: { lng: string }) => {
           </Box>
         </Box>
         <Box backgroundColor="body" className="h-[1px]" />
-        <Box className="pt-[48px] flex justify-between">
-          <Box className="flex gap-4">
+        <Box className="flex gap-4 align-middle" mt={12}>
+          <Box mt={-1.5}>
+            <Image
+              src="/assets/powered_by_logo.svg"
+              alt="openearth-logo"
+              width={142}
+              height={32}
+            />
+          </Box>
+          <Text
+            fontSize="title.sm"
+            color="base.light"
+            fontWeight="semibold"
+            letterSpacing="wide"
+          >
+            v{currentVersion}
+          </Text>
+          <Box
+            backgroundColor="border.neutral"
+            borderRadius={18}
+            className="h-[20px] w-[61px] flex items-center justify-center"
+          >
             <Text
-              fontSize="title.sm"
-              color="base.light"
-              fontWeight="semibold"
-              letterSpacing="wide"
-            >
-              v{currentVersion}
-            </Text>
-            <Box
-              backgroundColor="border.neutral"
-              borderRadius={18}
-              className="h-[20px] w-[61px] flex items-center justify-center"
-            >
-              <Text
-                fontFamily="heading"
-                fontSize="label.sm"
-                color="content.primary"
-                fontWeight="medium"
-                letterSpacing="wide"
-              >
-                BETA
-              </Text>
-            </Box>
-            <Text
-              color="base.light"
-              fontSize="body.md"
-              letterSpacing="wide"
-              lineHeight="20"
-              fontWeight="regular"
-            >
-              {t("beta-text")}
-            </Text>
-            <Link
-              href="/"
-              color="base.light"
-              fontSize="body.md"
+              fontFamily="heading"
+              fontSize="label.sm"
+              color="content.primary"
               fontWeight="medium"
               letterSpacing="wide"
-              textDecoration="underline"
-              display="inline"
             >
-              {t("send-feedback")}
-            </Link>
+              BETA
+            </Text>
           </Box>
-          <Image
-            src="/assets/powered_by_logo.svg"
-            alt="openearth-logo"
-            width={142}
-            height={32}
-          />
+          <Text
+            color="base.light"
+            fontSize="body.md"
+            letterSpacing="wide"
+            lineHeight="20"
+            fontWeight="regular"
+          >
+            {t("beta-text")}
+          </Text>
+          <Link
+            href="/"
+            color="base.light"
+            fontSize="body.md"
+            fontWeight="medium"
+            letterSpacing="wide"
+            textDecoration="underline"
+            display="inline"
+          >
+            {t("send-feedback")}
+          </Link>
         </Box>
       </Box>
     </footer>

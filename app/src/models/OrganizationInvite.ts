@@ -96,7 +96,7 @@ export class OrganizationInvite
           allowNull: false,
         },
         role: {
-          type: Sequelize.ENUM("admin", "collaborator", "oef_admin"),
+          type: Sequelize.ENUM("admin", "collaborator"),
           allowNull: false,
         },
       },

@@ -18,7 +18,7 @@ import { User } from "@/models/User";
 import EmailService from "@/backend/EmailService";
 
 export const GET = apiHandler(async (_req, { params, session }) => {
-  UserService.validateIsOefAdmin(session);
+  UserService.validateIsAdmin(session);
   const { organizationId } = params;
 
   const invitations = await OrganizationInvite.findAll({
@@ -33,7 +33,7 @@ export const GET = apiHandler(async (_req, { params, session }) => {
 });
 
 export const POST = apiHandler(async (req, { params, session }) => {
-  UserService.validateIsOefAdmin(session);
+  UserService.validateIsAdmin(session);
   const { organizationId } = params;
   const validatedData = createOrganizationInviteRequest.parse(await req.json());
   if (validatedData.organizationId !== organizationId) {

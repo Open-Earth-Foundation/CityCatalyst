@@ -5,12 +5,12 @@ import PasswordInput from "@/components/password-input";
 import { useTranslation } from "@/i18n/client";
 
 import { Box, Heading, Icon, Input, Link, Text } from "@chakra-ui/react";
-import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { Trans } from "react-i18next/TransWithoutContext";
 import { logger } from "@/services/logger";
-import { MdInfoOutline, MdWarning } from "react-icons/md";
+import { MdWarning } from "react-icons/md";
 import { Button } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -46,7 +46,6 @@ export default function Signup({
   const [error, setError] = useState("");
 
   const searchParams = useSearchParams();
-  const queryParams = Object.fromEntries(searchParams.entries());
   let callbackUrl = searchParams.get("callbackUrl") ?? undefined;
   if (!callbackUrl || callbackUrl === "null" || callbackUrl === "undefined") {
     callbackUrl = undefined;
@@ -238,18 +237,18 @@ export default function Signup({
             color="content.tertiary"
             size="md"
             {...register("acceptTerms", {
-              required: t("accept-terms-required"),
+              required: t("accept-policy-required"),
             })}
           >
-            <Trans i18nKey="accept-terms" t={t}>
-              Accept{" "}
+            <Trans i18nKey="accept-privacy-policy" t={t}>
+              Accept the{" "}
               <Link
                 href="https://citycatalyst.openearth.org/privacy"
                 className="underline"
                 rel="noopener noreferrer"
                 target="_blank"
               >
-                Terms and conditions
+                Privacy Policy
               </Link>
             </Trans>
           </Checkbox>

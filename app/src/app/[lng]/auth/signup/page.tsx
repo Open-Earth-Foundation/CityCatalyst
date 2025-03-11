@@ -243,7 +243,12 @@ export default function Signup({
           >
             <Trans i18nKey="accept-terms" t={t}>
               Accept{" "}
-              <Link href="/terms" className="underline">
+              <Link
+                href="https://citycatalyst.openearth.org/privacy"
+                className="underline"
+                rel="noopener noreferrer"
+                target="_blank"
+              >
                 Terms and conditions
               </Link>
             </Trans>

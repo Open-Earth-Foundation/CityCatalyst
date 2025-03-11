@@ -36,7 +36,7 @@ const invalidOrganization = {
 };
 
 const mockAdminSession: AppSession = {
-  user: { id: testUserID, role: Roles.OefAdmin },
+  user: { id: testUserID, role: Roles.Admin },
   expires: "1h",
 };
 

@@ -1,10 +1,10 @@
-import { Box, List, ListIndicator, Text } from "@chakra-ui/react";
-import { useState } from "react";
+import { Box, Icon, List, ListIndicator, Text } from "@chakra-ui/react";
 import { FieldError } from "react-hook-form";
 import { CheckListIcon, CloseListIcon } from "./icons";
 import { TFunction } from "i18next";
 import { Field } from "@/components/ui/field";
 import { PasswordInput as ChakraPasswordInput } from "@/components/ui/password-input";
+import { IoMdEye, IoMdEyeOff } from "react-icons/io";
 
 export default function PasswordInput({
   children,
@@ -55,6 +55,14 @@ export default function PasswordInput({
         shadow="2dp"
         placeholder={t("password")}
         background={error ? "sentiment.negativeOverlay" : "background.default"}
+        visibilityIcon={{
+          on: (
+            <Icon as={IoMdEyeOff} color="content.tertiary" boxSize={6} mr={2} />
+          ),
+          off: (
+            <Icon as={IoMdEye} color="content.tertiary" boxSize={6} mr={2} />
+          ),
+        }}
         {...register(id, {
           required: t("password-required"),
           minLength: { value: 4, message: t("min-length", { length: 4 }) },

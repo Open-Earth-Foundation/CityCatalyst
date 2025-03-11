@@ -4,6 +4,7 @@ import { Box } from "@chakra-ui/react";
 import React from "react";
 import Heading from "./Heading";
 import { useTranslation } from "@/i18n/client";
+import NotationsDefinitionAccordion from "./NotationsDefinitionAccordion";
 
 const ManageSubSectors = ({
   params: { lng, step, inventory },
@@ -15,6 +16,7 @@ const ManageSubSectors = ({
     <Box w="full" bg="background.backgroundLight">
       <Box maxW={1090} mx="auto" px={8}>
         <Heading t={t} />
+        <NotationsDefinitionAccordion t={t} />
       </Box>
     </Box>
   );

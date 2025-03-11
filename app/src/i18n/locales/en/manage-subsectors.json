@@ -1,4 +1,21 @@
 {
     "manage-missing-subsectors": "Manage missing sub-sectors",
-    "manage-missing-subsectors-description": "Please review the missing sub-sector and add any notation keys that may correspond."
+    "manage-missing-subsectors-description": "Please review the missing sub-sector and add any notation keys that may correspond.",
+    "notation-key-question": "What does \"Notation Key\" mean?",
+    "body-question": "What are notation keys?",
+    "notation-key-answer": "Notation keys are standardized symbols used in greenhouse gas (GHG) reporting to explain why emissions data for a specific sub-sector is missing or unavailable. These symbols help ensure transparency and consistency in climate reporting.",
+    "common-notation-keys": "Common Notation Keys and Thier Meanings",
+    "ne": "NE (Not Estimated)",
+    "ne-description": "Data has not been estimated due to a lack of information or resources",
+    "na": "NA (Not Applicable)",
+    "na-description": "The category does not apply in this context.",
+    "no": "NO (Not Occurring)",
+    "no-description": "This activity does not take place in the city (e.g., no maritime transport in a landlocked city).",
+    "ie": "IE (Included elsewhere)",
+    "ie-description": "The emissions are reported under a different category",
+    "c": "C (Confidential)",
+    "c-description": "Data exists but cannot be reported due to confidentiality restrictions.",
+    "how-to-use-notation-keys": "How to Use Notation Keys",
+    "how-to-use-notation-keys-description": "When reporting GHG emissions, you can assign a notation key to indicate the status of unavailable data. This helps reviewers and stakeholders understand gaps in reporting while maintaining consistency with the Global Protocol for Community-Scale Greenhouse Gas Emission Inventories (GPC) and IPCC guidelines.",
+    "learn-more-link": "learn more at global protocol for cities (GPC)"
 }

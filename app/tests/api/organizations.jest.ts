@@ -35,7 +35,7 @@ const mockAdminSession: AppSession = {
 };
 
 const mockUserSession: AppSession = {
-  user: { id: testUserID, role: Roles.Admin },
+  user: { id: testUserID, role: Roles.User },
   expires: "1h",
 };
 

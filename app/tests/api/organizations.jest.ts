@@ -8,11 +8,9 @@ import {
   jest,
 } from "@jest/globals";
 import {
-  DELETE as deleteOrganization,
-  GET as getOrganization,
-  PATCH as updateOrganization,
-} from "@/app/api/v0/organizations/[organizationId]/route";
-import { POST as createOrganization } from "@/app/api/v0/organizations/route";
+  POST as createOrganization,
+  GET as getOrganizations,
+} from "@/app/api/v0/organizations/route";
 import { db } from "@/models";
 import { CreateOrganizationRequest } from "@/util/validation";
 import { mockRequest, setupTests, testUserID } from "../helpers";
@@ -24,28 +22,20 @@ import { Roles } from "@/util/types";
 const organizationData: CreateOrganizationRequest = {
   name: "Test Organization",
   contactEmail: "test@organization.com",
-  contactNumber: "1234567890",
-};
-
-const organization2: CreateOrganizationRequest = {
-  name: "Test Organization 2",
-  contactEmail: "test2@organization.com",
-  contactNumber: "0987654321",
 };
 
 const invalidOrganization = {
   name: "",
   contactEmail: "invalid-email",
-  contactNumber: "",
 };
 
 const mockAdminSession: AppSession = {
-  user: { id: testUserID, role: Roles.OefAdmin },
+  user: { id: testUserID, role: Roles.Admin },
   expires: "1h",
 };
 
 const mockUserSession: AppSession = {
-  user: { id: testUserID, role: Roles.Admin },
+  user: { id: testUserID, role: Roles.User },
   expires: "1h",
 };
 
@@ -56,7 +46,6 @@ describe("Organization API", () => {
   beforeAll(async () => {
     setupTests();
     await db.initialize();
-    Auth.getServerSession = jest.fn(() => Promise.resolve(mockAdminSession));
   });
 
   beforeEach(async () => {
@@ -67,6 +56,7 @@ describe("Organization API", () => {
       ...organizationData,
       organizationId: randomUUID(),
     });
+    Auth.getServerSession = jest.fn(() => Promise.resolve(mockAdminSession));
   });
 
   afterAll(async () => {
@@ -85,7 +75,6 @@ describe("Organization API", () => {
     const data = await res.json();
     expect(data.name).toEqual(organizationData.name);
     expect(data.contactEmail).toEqual(organizationData.contactEmail);
-    expect(data.contactNumber).toEqual(organizationData.contactNumber);
   });
 
   it("should not create an organization with invalid data", async () => {
@@ -105,75 +94,6 @@ describe("Organization API", () => {
     ]);
   });
 
-  it("should find an organization", async () => {
-    const req = mockRequest();
-    const res = await getOrganization(req, {
-      params: { organizationId: organization.organizationId },
-    });
-    expect(res.status).toEqual(200);
-    const data = await res.json();
-    expect(data.name).toEqual(organizationData.name);
-    expect(data.contactEmail).toEqual(organizationData.contactEmail);
-    expect(data.contactNumber).toEqual(organizationData.contactNumber);
-  });
-
-  it("should not find a non-existing organization", async () => {
-    const req = mockRequest();
-    const res = await getOrganization(req, {
-      params: { organizationId: randomUUID() },
-    });
-    expect(res.status).toEqual(404);
-  });
-
-  it("should update an organization", async () => {
-    const req = mockRequest(organization2);
-    const res = await updateOrganization(req, {
-      params: { organizationId: organization.organizationId },
-    });
-    expect(res.status).toEqual(200);
-    const data = await res.json();
-    expect(data.name).toEqual(organization2.name);
-    expect(data.contactEmail).toEqual(organization2.contactEmail);
-    expect(data.contactNumber).toEqual(organization2.contactNumber);
-  });
-
-  it("should not update an organization with invalid values", async () => {
-    const req = mockRequest(invalidOrganization);
-    const res = await updateOrganization(req, {
-      params: { organizationId: organization.organizationId },
-    });
-    expect(res.status).toEqual(400);
-    const {
-      error: { issues },
-    } = await res.json();
-    expect(issues).toEqual([
-      {
-        validation: "email",
-        code: "invalid_string",
-        message: "Invalid email",
-        path: ["contactEmail"],
-      },
-    ]);
-  });
-
-  it("should delete an organization", async () => {
-    const req = mockRequest();
-    const res = await deleteOrganization(req, {
-      params: { organizationId: organization.organizationId },
-    });
-    expect(res.status).toEqual(200);
-    const { deleted } = await res.json();
-    expect(deleted).toBe(true);
-  });
-
-  it("should not delete a non-existing organization", async () => {
-    const req = mockRequest();
-    const res = await deleteOrganization(req, {
-      params: { organizationId: randomUUID() },
-    });
-    expect(res.status).toEqual(404);
-  });
-
   it("should not allow non-admins to create an organization", async () => {
     Auth.getServerSession = jest.fn(() => Promise.resolve(mockUserSession));
     const req = mockRequest(organizationData);
@@ -181,19 +101,22 @@ describe("Organization API", () => {
     expect(res.status).toEqual(403);
   });
 
-  it("should not allow non-admins to update an organization", async () => {
-    Auth.getServerSession = jest.fn(() => Promise.resolve(mockUserSession));
-    const req = mockRequest(organization2);
-    const res = await updateOrganization(req, {
+  it("should allow admin to query organizations", async () => {
+    const req = mockRequest();
+    const res = await getOrganizations(req, {
       params: { organizationId: organization.organizationId },
     });
-    expect(res.status).toEqual(403);
+    expect(res.status).toEqual(200);
+    const data = await res.json();
+    expect(data).toHaveLength(1);
+    expect(data[0].name).toEqual(organizationData.name);
+    expect(data[0].contactEmail).toEqual(organizationData.contactEmail);
   });
 
-  it("should not allow non-admins to delete an organization", async () => {
+  it("should reject non-admin from querying organizations", async () => {
     Auth.getServerSession = jest.fn(() => Promise.resolve(mockUserSession));
     const req = mockRequest();
-    const res = await deleteOrganization(req, {
+    const res = await getOrganizations(req, {
       params: { organizationId: organization.organizationId },
     });
     expect(res.status).toEqual(403);

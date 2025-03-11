@@ -200,7 +200,6 @@ export default function SetPopulationDataStep({
           <Box display="flex" gap="16px" alignItems="start">
             <HStack spaceX={6} spaceY={6} align="start">
               <Field
-                invalid={!!errors.countryPopulation}
                 errorText={
                   errors.countryPopulation?.message && (
                     <Text color="content.tertiary" letterSpacing="0.5px">
@@ -242,7 +241,7 @@ export default function SetPopulationDataStep({
                 </Box>
               </Field>
             </HStack>
-            <Field mt={-2} invalid={!!errors.countryPopulationYear}>
+            <Field mt={-2}>
               <InputGroup
                 endElement={
                   !!countryPopulationYear &&
@@ -318,7 +317,6 @@ export default function SetPopulationDataStep({
           <Box display="flex" gap="16px" alignItems="start">
             <HStack spaceX={6} spaceY={6} align="start">
               <Field
-                invalid={!!errors.regionPopulation}
                 errorText={
                   <Text color="content.tertiary" letterSpacing="0.5px">
                     <MdErrorOutline />
@@ -347,7 +345,7 @@ export default function SetPopulationDataStep({
                 />
               </Field>
             </HStack>
-            <Field mt={-2} invalid={!!errors.regionPopulationYear}>
+            <Field mt={-2}>
               <InputGroup
                 endElement={
                   !!regionPopulationYear &&
@@ -423,7 +421,6 @@ export default function SetPopulationDataStep({
           <Box display="flex" gap="16px" alignItems="start">
             <HStack spaceX={6} spaceY={6} align="start">
               <Field
-                invalid={!!errors.cityPopulation}
                 errorText={
                   errors.cityPopulation?.message && (
                     <Text color="content.tertiary" letterSpacing="0.5px">

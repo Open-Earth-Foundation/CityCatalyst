@@ -315,7 +315,6 @@ export function initModels(sequelize: Sequelize) {
   const CityInvite = _CityInvite.initModel(sequelize);
   const AssistantMessage = _AssistantMessage.initModel(sequelize);
   const AssistantThread = _AssistantThread.initModel(sequelize);
-
   ActivityData.belongsToMany(DataSource, {
     as: "datasourceIdDataSources",
     through: DataSourceActivityData,

@@ -23,23 +23,20 @@ import { Roles } from "@/util/types";
 const organizationData: CreateOrganizationRequest = {
   name: "Test Organization",
   contactEmail: "test@organization.com",
-  contactNumber: "1234567890",
 };
 
 const organization2: CreateOrganizationRequest = {
   name: "Test Organization 2",
   contactEmail: "test2@organization.com",
-  contactNumber: "0987654321",
 };
 
 const invalidOrganization = {
   name: "",
   contactEmail: 123,
-  contactNumber: "",
 };
 
 const mockAdminSession: AppSession = {
-  user: { id: testUserID, role: Roles.OefAdmin },
+  user: { id: testUserID, role: Roles.Admin },
   expires: "1h",
 };
 
@@ -82,7 +79,6 @@ describe("Organization API", () => {
     const data = await res.json();
     expect(data.name).toEqual(organizationData.name);
     expect(data.contactEmail).toEqual(organizationData.contactEmail);
-    expect(data.contactNumber).toEqual(organizationData.contactNumber);
   });
 
   it("should not find a non-existing organization", async () => {
@@ -102,7 +98,6 @@ describe("Organization API", () => {
     const data = await res.json();
     expect(data.name).toEqual(organization2.name);
     expect(data.contactEmail).toEqual(organization2.contactEmail);
-    expect(data.contactNumber).toEqual(organization2.contactNumber);
   });
 
   it("should not update an organization with invalid values", async () => {

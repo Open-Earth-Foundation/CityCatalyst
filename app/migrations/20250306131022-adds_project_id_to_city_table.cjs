@@ -6,17 +6,28 @@ module.exports = {
     await queryInterface.addColumn("City", "project_id", {
       type: Sequelize.UUID,
       allowNull: true, // allow true for now, but will be set to false in the future after backfilling
-      foreignKey: true,
       references: {
         model: "Project",
         key: "project_id",
       },
-      onDelete: "CASCADE",
       onUpdate: "CASCADE",
+      onDelete: "RESTRICT",
+    });
+    await queryInterface.addConstraint("City", {
+      fields: ["project_id"],
+      type: "foreign key",
+      name: "FK_city_project_id",
+      references: {
+        table: "Project",
+        field: "project_id",
+      },
+      onUpdate: "CASCADE",
+      onDelete: "RESTRICT",
     });
   },
 
   async down(queryInterface, Sequelize) {
+    await queryInterface.removeConstraint("City", "FK_city_project_id");
     await queryInterface.removeColumn("City", "project_id");
   },
 };

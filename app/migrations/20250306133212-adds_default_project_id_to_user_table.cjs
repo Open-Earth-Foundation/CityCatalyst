@@ -13,9 +13,21 @@ module.exports = {
       onDelete: "SET NULL",
       onUpdate: "CASCADE",
     });
+    await queryInterface.addConstraint("User", {
+      fields: ["default_project_id"],
+      type: "foreign key",
+      name: "FK_user_default_project_id",
+      references: {
+        table: "Project",
+        field: "project_id",
+      },
+      onUpdate: "CASCADE",
+      onDelete: "SET NULL",
+    });
   },
 
   async down(queryInterface, Sequelize) {
     await queryInterface.removeColumn("User", "default_project_id");
+    await queryInterface.removeConstraint("User", "FK_user_default_project_id");
   },
 };

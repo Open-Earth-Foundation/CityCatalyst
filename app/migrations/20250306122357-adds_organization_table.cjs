@@ -17,10 +17,6 @@ module.exports = {
         type: Sequelize.TEXT,
         allowNull: false,
       },
-      contact_number: {
-        type: Sequelize.TEXT,
-        allowNull: true,
-      },
       user_id: {
         type: Sequelize.UUID,
         allowNull: true,
@@ -30,11 +26,11 @@ module.exports = {
           key: "user_id",
         },
       },
-      createdAt: {
+      created: {
         allowNull: false,
         type: Sequelize.DATE,
       },
-      updatedAt: {
+      last_updated: {
         allowNull: false,
         type: Sequelize.DATE,
       },

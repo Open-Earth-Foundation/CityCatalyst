@@ -16,7 +16,7 @@ module.exports = {
           model: "Organization",
           key: "organization_id",
         },
-        onDelete: "SET NULL",
+        onDelete: "RESTRICT",
         onUpdate: "CASCADE",
       },
       city_count_limit: {
@@ -51,7 +51,7 @@ module.exports = {
         field: "organization_id",
       },
       onUpdate: "CASCADE",
-      onDelete: "SET NULL",
+      onDelete: "RESTRICT",
     });
   },
 

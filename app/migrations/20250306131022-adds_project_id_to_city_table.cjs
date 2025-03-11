@@ -11,6 +11,7 @@ module.exports = {
         key: "project_id",
       },
       onUpdate: "CASCADE",
+      onDelete: "RESTRICT",
     });
     await queryInterface.addConstraint("City", {
       fields: ["project_id"],
@@ -21,7 +22,7 @@ module.exports = {
         field: "project_id",
       },
       onUpdate: "CASCADE",
-      onDelete: "SET NULL",
+      onDelete: "RESTRICT",
     });
   },
 

@@ -249,7 +249,6 @@ export type UpdatePasswordRequest = z.infer<typeof updatePasswordRequest>;
 export const createOrganizationRequest = z.object({
   name: z.string().max(255),
   contactEmail: z.string().email().max(255),
-  contactNumber: z.string().max(20).optional(),
 });
 
 export type CreateOrganizationRequest = z.infer<
@@ -259,7 +258,6 @@ export type CreateOrganizationRequest = z.infer<
 export const updateOrganizationRequest = z.object({
   name: z.string().max(255).optional(),
   contactEmail: z.string().email().max(255).optional(),
-  contactNumber: z.string().max(20).optional(),
 });
 
 export type UpdateOrganizationRequest = z.infer<

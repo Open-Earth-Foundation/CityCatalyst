@@ -5,17 +5,13 @@ export interface OrganizationAttributes {
   organizationId: string;
   name?: string;
   contactEmail?: string;
-  contactNumber?: string;
-  createdAt?: Date;
-  updatedAt?: Date;
+  created?: Date;
+  lastUpdated?: Date;
 }
 
 export type OrganizationPk = "organizationId";
 export type OrganizationId = Organization[OrganizationPk];
-export type OrganizationOptionalAttributes =
-  | "contactNumber"
-  | "createdAt"
-  | "updatedAt";
+export type OrganizationOptionalAttributes = "created" | "lastUpdated";
 export type OrganizationCreationAttributes = Optional<
   OrganizationAttributes,
   OrganizationOptionalAttributes
@@ -28,9 +24,8 @@ export class Organization
   organizationId!: string;
   name?: string;
   contactEmail?: string;
-  contactNumber?: string;
-  createdAt?: Date;
-  updatedAt?: Date;
+  created?: Date;
+  lastUpdated?: Date;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof Organization {
     return Organization.init(
@@ -50,19 +45,14 @@ export class Organization
           allowNull: false,
           field: "contact_email",
         },
-        contactNumber: {
-          type: DataTypes.STRING(255),
-          allowNull: true,
-          field: "contact_number",
-        },
       },
       {
         sequelize,
         tableName: "Organization",
         schema: "public",
         timestamps: true,
-        createdAt: "createdAt",
-        updatedAt: "updatedAt",
+        createdAt: "created",
+        updatedAt: "last_updated",
         indexes: [
           {
             name: "Organization_pkey",

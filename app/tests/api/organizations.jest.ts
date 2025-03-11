@@ -22,13 +22,11 @@ import { Roles } from "@/util/types";
 const organizationData: CreateOrganizationRequest = {
   name: "Test Organization",
   contactEmail: "test@organization.com",
-  contactNumber: "1234567890",
 };
 
 const invalidOrganization = {
   name: "",
   contactEmail: "invalid-email",
-  contactNumber: "",
 };
 
 const mockAdminSession: AppSession = {
@@ -77,7 +75,6 @@ describe("Organization API", () => {
     const data = await res.json();
     expect(data.name).toEqual(organizationData.name);
     expect(data.contactEmail).toEqual(organizationData.contactEmail);
-    expect(data.contactNumber).toEqual(organizationData.contactNumber);
   });
 
   it("should not create an organization with invalid data", async () => {
@@ -111,11 +108,9 @@ describe("Organization API", () => {
     });
     expect(res.status).toEqual(200);
     const data = await res.json();
-    console.log("data", JSON.stringify(data, null, 2)); // TODO NINA
     expect(data).toHaveLength(1);
     expect(data[0].name).toEqual(organizationData.name);
     expect(data[0].contactEmail).toEqual(organizationData.contactEmail);
-    expect(data[0].contactNumber).toEqual(organizationData.contactNumber);
   });
 
   it("should reject non-admin from querying organizations", async () => {

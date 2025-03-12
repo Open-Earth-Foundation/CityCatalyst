@@ -4,7 +4,7 @@ metadata:
   name: cap-plan-output-pvc
 spec:
   accessModes:
-    - ReadWriteMany
+    - ReadWriteOnce
   resources:
     requests:
       storage: 1Gi

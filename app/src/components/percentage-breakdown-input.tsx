@@ -37,11 +37,11 @@ import { GoChevronDown, GoChevronUp } from "react-icons/go";
 import { InputGroup } from "./ui/input-group";
 
 const categoryIconMapping: Record<string, any> = {
-  "waste-type-municipal-solid-waste": MunicipalSolidWasteIcon,
-  "waste-type-industrial": IndustrialSolidWasteIcon,
-  "waste-type-hazardous": HazardousWasteIcon,
-  "waste-type-clinical": ClinicalWasteIcon,
-  "waste-type-sewage": SewageWasteIcon,
+  "waste-composition-municipal-solid-waste": MunicipalSolidWasteIcon,
+  "waste-composition-industrial-solid-waste": IndustrialSolidWasteIcon,
+  "waste-composition-hazardous-waste": HazardousWasteIcon,
+  "waste-composition-clinical-waste": ClinicalWasteIcon,
+  "waste-composition-sewage-sludge": SewageWasteIcon,
   "waste-composition-food": FoodIcon,
   "waste-composition-garden": GardenIcon,
   "waste-composition-paper": PaperIcon,
@@ -183,75 +183,77 @@ const PercentageBreakdownInput: FC<FormInputProps> = ({
             </Field>
           </Group>
         </PopoverTrigger>
-        <PopoverContent w="full" portalled={false}>
+        <PopoverContent w="full" className="overflow-scroll">
           <PopoverArrow />
           <PopoverBody
             w="full"
             className="space-y-6 py-6 !pointer-events-[all]"
           >
-            {breakdownCategories.map((category) => (
-              <HStack key={category} pointerEvents="all">
-                <Icon as={categoryIconMapping[category]} mr={4} />
-                <Text
-                  fontSize="14px"
-                  w="full"
-                  fontWeight="normal"
-                  letterSpacing="wide"
-                  flexGrow={1}
-                >
-                  {t(category)}
-                </Text>
-                <Group w="116px">
-                  <InputAddon>%</InputAddon>
-                  <Input
-                    type="text"
-                    value={getValues(`activity.${id}.${category}`)}
-                    onChange={(e) => {
-                      setValue(`activity.${id}.${category}`, e.target.value);
-                    }}
-                    shadow="1dp"
-                    name={id}
-                    borderRadius="4px"
-                    border="inputBox"
-                    background={background}
-                    color={
-                      isDisabled ? "content.tertiary" : "content.secondary"
-                    }
-                    placeholder="0"
-                    w="116px"
-                    px={4}
-                    py={3}
-                    min={0}
-                    max={100}
-                    defaultValue={0}
-                    borderWidth={error ? "1px" : 0}
-                    borderColor={error ? "sentiment.negativeDefault" : ""}
-                    bgColor="base.light"
-                    _focus={{
-                      borderWidth: "1px",
-                      shadow: "none",
-                      borderColor: "content.link",
-                    }}
-                  />
-                </Group>
-              </HStack>
-            ))}
-            <HStack
-              color={isValid ? "content.link" : "sentiment.negativeDefault"}
-              fontSize="22px"
-            >
-              <Text
-                flexGrow={1}
-                textTransform="uppercase"
-                fontWeight={600}
-                letterSpacing="wide"
+            <>
+              {breakdownCategories.map((category) => (
+                <HStack key={category} pointerEvents="all">
+                  <Icon as={categoryIconMapping[category]} mr={4} />
+                  <Text
+                    fontSize="14px"
+                    w="full"
+                    fontWeight="normal"
+                    letterSpacing="wide"
+                    flexGrow={1}
+                  >
+                    {t(category)}
+                  </Text>
+                  <Group w="116px">
+                    <InputAddon>%</InputAddon>
+                    <Input
+                      type="text"
+                      value={getValues(`activity.${id}.${category}`)}
+                      onChange={(e) => {
+                        setValue(`activity.${id}.${category}`, e.target.value);
+                      }}
+                      shadow="1dp"
+                      name={id}
+                      borderRadius="4px"
+                      border="inputBox"
+                      background={background}
+                      color={
+                        isDisabled ? "content.tertiary" : "content.secondary"
+                      }
+                      placeholder="0"
+                      w="116px"
+                      px={4}
+                      py={3}
+                      min={0}
+                      max={100}
+                      defaultValue={0}
+                      borderWidth={error ? "1px" : 0}
+                      borderColor={error ? "sentiment.negativeDefault" : ""}
+                      bgColor="base.light"
+                      _focus={{
+                        borderWidth: "1px",
+                        shadow: "none",
+                        borderColor: "content.link",
+                      }}
+                    />
+                  </Group>
+                </HStack>
+              ))}
+              <HStack
+                color={isValid ? "content.link" : "sentiment.negativeDefault"}
+                fontSize="22px"
               >
-                {t("total")}
-              </Text>
-              <Text fontWeight={600} w="116px" pl={4} letterSpacing="wide">
-                {totalPercent as number}%
-              </Text>
-            </HStack>
+                <Text
+                  flexGrow={1}
+                  textTransform="uppercase"
+                  fontWeight={600}
+                  letterSpacing="wide"
+                >
+                  {t("total")}
+                </Text>
+                <Text fontWeight={600} w="116px" pl={4} letterSpacing="wide">
+                  {totalPercent as number}%
+                </Text>
+              </HStack>
+            </>
           </PopoverBody>
         </PopoverContent>
       </PopoverRoot>

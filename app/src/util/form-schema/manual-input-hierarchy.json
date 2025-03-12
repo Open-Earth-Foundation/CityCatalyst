@@ -632,7 +632,8 @@
                   "type-wood-and-wood-products",
                   "type-construction",
                   "type-textiles-and-leather",
-                  "type-unspecified-industry"
+                  "type-unspecified-industry",
+                  "type-food-beverages-tobacco"
                 ],
                 "exclusive": "type-all"
               },
@@ -1015,7 +1016,8 @@
                   "type-heat-plants",
                   "type-pretroleum-refining",
                   "type-non-ferrous-manufacture-of-solid-fuels",
-                  "type-chemical-other-energy-industries"
+                  "type-chemical-other-energy-industries",
+                  "type-other"
                 ],
                 "exclusive": "type-all"
               },
@@ -2238,7 +2240,8 @@
                   "vehicle-type-commercial-vehicles",
                   "vehicle-type-public-transport-vehicles",
                   "vehicle-type-emergency-vehicles",
-                  "vehicle-type-service-vehicles"
+                  "vehicle-type-service-vehicles",
+                  "vehicle-type-other"
                 ],
                 "multiselect": true
               },
@@ -2943,7 +2946,8 @@
                   "vehicle-type-all",
                   "vehicle-type-ferries",
                   "vehicle-type-boats",
-                  "vehicle-type-marine-vessels"
+                  "vehicle-type-marine-vessels",
+                  "vehicle-type-other"
                 ],
                 "exclusive": "vehicle-type-all"
               },

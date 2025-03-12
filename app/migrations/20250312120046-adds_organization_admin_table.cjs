@@ -51,7 +51,7 @@ module.exports = {
       },
     });
 
-    queryInterface.addConstraint("OrganizationAdmin", {
+    await queryInterface.addConstraint("OrganizationAdmin", {
       fields: ["organization_id"],
       type: "foreign key",
       name: "FK_organization_admin_organization_id",
@@ -63,7 +63,7 @@ module.exports = {
       onDelete: "CASCADE",
     });
 
-    queryInterface.addConstraint("OrganizationAdmin", {
+    await queryInterface.addConstraint("OrganizationAdmin", {
       fields: ["user_id"],
       type: "foreign key",
       name: "FK_organization_admin_user_id",

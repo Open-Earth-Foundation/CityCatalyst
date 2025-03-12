@@ -4,7 +4,7 @@ import { DataTypes, Model, Optional } from "sequelize";
 export interface ProjectAttributes {
   projectId: string;
   name: string;
-  city_count_limit: Number;
+  cityCountLimit: Number;
   description?: string;
   organizationId: string;
   created?: Date;
@@ -27,7 +27,7 @@ export class Project
   implements ProjectAttributes
 {
   organizationId!: string;
-  city_count_limit!: Number;
+  cityCountLimit!: Number;
   projectId!: string;
   name!: string;
   description?: string;
@@ -47,7 +47,7 @@ export class Project
           type: DataTypes.STRING(255),
           allowNull: false,
         },
-        city_count_limit: {
+        cityCountLimit: {
           type: DataTypes.INTEGER,
           allowNull: false,
         },

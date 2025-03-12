@@ -22,3 +22,8 @@ E.g.: `python main.py --climate_action_id c40_0028 --city_data_loc brcxl`
 The example files are within `data/input/`.
 
 In a future version, these inputs will be passed in with the request body of an API call.
+
+#Deployment
+docker build -t cap-plan-creator .
+
+docker tag cap-plan-creator ghcr.io/open-earth-foundation/cap-plan-creator:latest

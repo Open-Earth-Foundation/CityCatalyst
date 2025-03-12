@@ -20,7 +20,7 @@ module.exports = {
         onUpdate: "CASCADE",
       },
       city_count_limit: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.BIGINT,
         allowNull: false,
         defaultValue: 0,
       },

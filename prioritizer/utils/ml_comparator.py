@@ -1,6 +1,5 @@
 import pickle
 import pandas as pd
-from sklearn.preprocessing import StandardScaler
 import xgboost as xgb
 from pathlib import Path
 
@@ -33,6 +32,10 @@ def ml_compare(city: dict, action_A: dict, action_B: dict) -> int:
 
     Returns:
     int: 1 for action_A is preferred, -1 for action_B is preferred.
+
+    Raises:
+        ValueError: If the transformed dataframe contains keys with missing values.
+        E.g. if fields like "CostInvestmentNeeded" are missing.
     """
 
     def build_df(city, action_A, action_B):
@@ -81,9 +84,6 @@ def ml_compare(city: dict, action_A: dict, action_B: dict) -> int:
 
         return df
 
-    # Build the DataFrame for comparison
-    df = build_df(city, action_A, action_B)
-
     def prepare_emission_reduction_data(df: pd.DataFrame) -> pd.DataFrame:
         """
         This function combines the city emissions per sector and the GHG emission reduction potential into one column
@@ -99,10 +99,6 @@ def ml_compare(city: dict, action_A: dict, action_B: dict) -> int:
         The difference is actionA - actionB = -100
         This will be in a dedicated column
         """
-
-        # Create a local copy
-        df_copy = df.copy()
-
         sector_mapping = {
             "stationary_energy": "city_stationaryEnergyEmissions",
             "transportation": "city_transportationEmissions",
@@ -135,33 +131,29 @@ def ml_compare(city: dict, action_A: dict, action_B: dict) -> int:
                 sector,
                 city_column,
             ) in sector_mapping.items():  # Map GHG sector names to city emission names
-                if (
-                    city_column in df_copy.columns
-                ):  # Ensure the city emissions column exists
+                if city_column in df.columns:  # Ensure the city emissions column exists
 
                     # Extract GHG reduction percentage
-                    df_copy[f"{action}_GHGReduction_{sector}"] = df_copy[
-                        ghg_column
-                    ].apply(lambda x: extract_ghg_value(x, sector))
+                    df[f"{action}_GHGReduction_{sector}"] = df[ghg_column].apply(
+                        lambda x: extract_ghg_value(x, sector)
+                    )
 
                     # Compute absolute reduction impact
-                    df_copy[f"{action}_EmissionReduction_{sector}"] = (
-                        df_copy[f"{action}_GHGReduction_{sector}"]
-                        * df_copy[city_column]
-                        / 100
+                    df[f"{action}_EmissionReduction_{sector}"] = (
+                        df[f"{action}_GHGReduction_{sector}"] * df[city_column] / 100
                     )
 
         # Compute differences in emission reductions between Action A and B
         # A positive value means that action A has higher emissions reduction
         # A negative value means that action B has higher emissions reduction
         for sector in sector_mapping.keys():
-            df_copy[f"EmissionReduction_Diff_{sector}"] = (
-                df_copy[f"actionA_EmissionReduction_{sector}"]
-                - df_copy[f"actionB_EmissionReduction_{sector}"]
+            df[f"EmissionReduction_Diff_{sector}"] = (
+                df[f"actionA_EmissionReduction_{sector}"]
+                - df[f"actionB_EmissionReduction_{sector}"]
             )
 
         # Drop the original GHG Reduction Potential columns (nested dictionaries)
-        df_copy.drop(
+        df.drop(
             columns=["actionA_GHGReductionPotential", "actionB_GHGReductionPotential"],
             inplace=True,
         )
@@ -172,24 +164,20 @@ def ml_compare(city: dict, action_A: dict, action_B: dict) -> int:
             for action in ["actionA", "actionB"]
             for sector in sector_mapping.keys()
         ]
-        df_copy.drop(columns=drop_columns, inplace=True)
+        df.drop(columns=drop_columns, inplace=True)
         drop_columns = [
             f"{action}_EmissionReduction_{sector}"
             for action in ["actionA", "actionB"]
             for sector in sector_mapping.keys()
         ]
-        df_copy.drop(columns=drop_columns, inplace=True)
+        df.drop(columns=drop_columns, inplace=True)
 
         # Drop the original emissions columns (if they are not needed anymore)
-        df_copy.drop(columns=list(sector_mapping.values()), inplace=True)
+        df.drop(columns=list(sector_mapping.values()), inplace=True)
 
-        return df_copy
+        return df
 
     def prepare_action_type_data(df) -> pd.DataFrame:
-
-        # Create local copy
-        df_copy = df.copy()
-
         # Function to one-hot encode ActionType lists
         def one_hot_encode_action_type(action_type_list, category):
             """Check if category exists in the list and return 1 or 0."""
@@ -199,72 +187,63 @@ def ml_compare(city: dict, action_A: dict, action_B: dict) -> int:
 
         # Apply encoding for both actions
         for action in ["actionA", "actionB"]:
-            df_copy[f"{action}_mitigation"] = df_copy[f"{action}_ActionType"].apply(
+            df[f"{action}_mitigation"] = df[f"{action}_ActionType"].apply(
                 lambda x: one_hot_encode_action_type(x, "mitigation")
             )
-            df_copy[f"{action}_adaptation"] = df_copy[f"{action}_ActionType"].apply(
+            df[f"{action}_adaptation"] = df[f"{action}_ActionType"].apply(
                 lambda x: one_hot_encode_action_type(x, "adaptation")
             )
 
         # Drop the original multi-label categorical columns
-        df_copy.drop(columns=["actionA_ActionType", "actionB_ActionType"], inplace=True)
+        df.drop(columns=["actionA_ActionType", "actionB_ActionType"], inplace=True)
 
-        return df_copy
+        return df
 
     def prepare_cost_investment_needed_data(df) -> pd.DataFrame:
-
-        # Create local copy
-        df_copy = df.copy()
-
         # Define cost ranking
         cost_mapping = {"low": 2, "medium": 1, "high": 0}
 
         # Apply mapping to both actionA and actionB
-        df_copy["actionA_CostInvestmentNeeded"] = df_copy[
-            "actionA_CostInvestmentNeeded"
-        ].map(cost_mapping)
-        df_copy["actionB_CostInvestmentNeeded"] = df_copy[
-            "actionB_CostInvestmentNeeded"
-        ].map(cost_mapping)
+        df["actionA_CostInvestmentNeeded"] = df["actionA_CostInvestmentNeeded"].map(
+            cost_mapping
+        )
+        df["actionB_CostInvestmentNeeded"] = df["actionB_CostInvestmentNeeded"].map(
+            cost_mapping
+        )
 
         # Compute difference between both actions
-        df_copy["CostInvestmentNeeded_Diff"] = (
-            df_copy["actionA_CostInvestmentNeeded"]
-            - df_copy["actionB_CostInvestmentNeeded"]
+        df["CostInvestmentNeeded_Diff"] = (
+            df["actionA_CostInvestmentNeeded"] - df["actionB_CostInvestmentNeeded"]
         )
 
         # Drop the original columns
-        df_copy.drop(
+        df.drop(
             columns=["actionA_CostInvestmentNeeded", "actionB_CostInvestmentNeeded"],
             inplace=True,
         )
 
-        return df_copy
+        return df
 
     def prepare_timeline_data(df) -> pd.DataFrame:
-
-        # Create local copy
-        df_copy = df.copy()
-
         # Define timeline ranking
         timeline_mapping = {"<5 years": 2, "5-10 years": 1, ">10 years": 0}
 
         # Apply mapping to both actionA and actionB
-        df_copy["actionA_TimelineForImplementation"] = df_copy[
+        df["actionA_TimelineForImplementation"] = df[
             "actionA_TimelineForImplementation"
         ].map(timeline_mapping)
-        df_copy["actionB_TimelineForImplementation"] = df_copy[
+        df["actionB_TimelineForImplementation"] = df[
             "actionB_TimelineForImplementation"
         ].map(timeline_mapping)
 
         # Calculate the difference
-        df_copy["TimelineForImplementation_Diff"] = (
-            df_copy["actionA_TimelineForImplementation"]
-            - df_copy["actionB_TimelineForImplementation"]
+        df["TimelineForImplementation_Diff"] = (
+            df["actionA_TimelineForImplementation"]
+            - df["actionB_TimelineForImplementation"]
         )
 
         # Drop old column
-        df_copy.drop(
+        df.drop(
             columns=[
                 "actionA_TimelineForImplementation",
                 "actionB_TimelineForImplementation",
@@ -272,21 +251,17 @@ def ml_compare(city: dict, action_A: dict, action_B: dict) -> int:
             inplace=True,
         )
 
-        return df_copy
+        return df
 
     def prepare_adaptation_effectiveness_data(df) -> pd.DataFrame:
-
-        # Create local copy
-        df_copy = df.copy()
-
         # Define adaptation effectiveness ranking
         adaptation_mapping = {"low": 1, "medium": 2, "high": 3}
 
         # Apply mapping with proper handling for None or missing keys by returning 0
-        df_copy["actionA_AdaptationEffectiveness"] = df_copy[
+        df["actionA_AdaptationEffectiveness"] = df[
             "actionA_AdaptationEffectiveness"
         ].map(lambda x: adaptation_mapping.get(x, 0))
-        df_copy["actionB_AdaptationEffectiveness"] = df_copy[
+        df["actionB_AdaptationEffectiveness"] = df[
             "actionB_AdaptationEffectiveness"
         ].map(lambda x: adaptation_mapping.get(x, 0))
 
@@ -298,14 +273,13 @@ def ml_compare(city: dict, action_A: dict, action_B: dict) -> int:
         # Drop old colums
         # df_cleaned.drop(columns=['actionA_AdaptationEffectiveness', 'actionB_AdaptationEffectiveness'], inplace=True)
 
-        return df_copy
+        return df
 
     def prepare_city_risk_profile(df: pd.DataFrame) -> pd.DataFrame:
         """
         Extracts a risk profile from the 'city_ccra' column and adds it as a new column 'city_risk_profile'.
         Each risk profile is a dictionary mapping hazards to the maximum normalized risk score.
         """
-        df_copy = df.copy()
 
         def extract_risk_profile(ccra_data):
             risk_profile = {}
@@ -321,14 +295,12 @@ def ml_compare(city: dict, action_A: dict, action_B: dict) -> int:
                     risk_profile[hazard] = max(risk_profile.get(hazard, 0), score)
             return risk_profile
 
-        if "city_ccra" in df_copy.columns:
-            df_copy["city_risk_profile"] = df_copy["city_ccra"].apply(
-                extract_risk_profile
-            )
+        if "city_ccra" in df.columns:
+            df["city_risk_profile"] = df["city_ccra"].apply(extract_risk_profile)
         else:
             print("Warning: 'city_ccra' column not found in DataFrame.")
 
-        return df_copy
+        return df
 
     def match_action_hazards_with_city_risks(df: pd.DataFrame) -> pd.DataFrame:
         """
@@ -337,7 +309,6 @@ def ml_compare(city: dict, action_A: dict, action_B: dict) -> int:
         - 'actionA_risk_scores': List of risk scores for hazards in 'actionA_Hazard' that are present in the city's risk profile.
         - 'actionB_risk_scores': List of risk scores for hazards in 'actionB_Hazard' that are present in the city's risk profile.
         """
-        df_copy = df.copy()
 
         def get_matching_risk_scores(action_hazards, city_risk_profile):
             # Validate that we have the correct types
@@ -352,8 +323,8 @@ def ml_compare(city: dict, action_A: dict, action_B: dict) -> int:
             ]
 
         # Process Action A hazards
-        if "actionA_Hazard" in df_copy.columns:
-            df_copy["actionA_risk_scores"] = df_copy.apply(
+        if "actionA_Hazard" in df.columns:
+            df["actionA_risk_scores"] = df.apply(
                 lambda row: get_matching_risk_scores(
                     row.get("actionA_Hazard", []), row.get("city_risk_profile", {})
                 ),
@@ -363,8 +334,8 @@ def ml_compare(city: dict, action_A: dict, action_B: dict) -> int:
             print("Warning: 'actionA_Hazard' column not found.")
 
         # Process Action B hazards
-        if "actionB_Hazard" in df_copy.columns:
-            df_copy["actionB_risk_scores"] = df_copy.apply(
+        if "actionB_Hazard" in df.columns:
+            df["actionB_risk_scores"] = df.apply(
                 lambda row: get_matching_risk_scores(
                     row.get("actionB_Hazard", []), row.get("city_risk_profile", {})
                 ),
@@ -373,7 +344,7 @@ def ml_compare(city: dict, action_A: dict, action_B: dict) -> int:
         else:
             print("Warning: 'actionB_Hazard' column not found.")
 
-        return df_copy
+        return df
 
     def create_weighted_comparative_feature(df: pd.DataFrame) -> pd.DataFrame:
         """
@@ -388,7 +359,6 @@ def ml_compare(city: dict, action_A: dict, action_B: dict) -> int:
 
         A positive 'weighted_risk_score_diff' indicates that Action A is better aligned with the city's risks.
         """
-        df_copy = df.copy()
 
         def sum_scores(scores):
             if isinstance(scores, list):
@@ -396,23 +366,21 @@ def ml_compare(city: dict, action_A: dict, action_B: dict) -> int:
             return 0
 
         # Calculate weighted risk total for Action A and Action B.
-        # The adaptation effectiveness columns are assumed to be numeric (values between 1 and 3).
-        df_copy["weighted_actionA_risk_total"] = (
-            df_copy["actionA_risk_scores"].apply(sum_scores)
-            * df_copy["actionA_AdaptationEffectiveness"]
+        df["weighted_actionA_risk_total"] = (
+            df["actionA_risk_scores"].apply(sum_scores)
+            * df["actionA_AdaptationEffectiveness"]
         )
-        df_copy["weighted_actionB_risk_total"] = (
-            df_copy["actionB_risk_scores"].apply(sum_scores)
-            * df_copy["actionB_AdaptationEffectiveness"]
+        df["weighted_actionB_risk_total"] = (
+            df["actionB_risk_scores"].apply(sum_scores)
+            * df["actionB_AdaptationEffectiveness"]
         )
 
         # Compute the comparative feature.
-        df_copy["weighted_risk_score_diff"] = (
-            df_copy["weighted_actionA_risk_total"]
-            - df_copy["weighted_actionB_risk_total"]
+        df["weighted_risk_score_diff"] = (
+            df["weighted_actionA_risk_total"] - df["weighted_actionB_risk_total"]
         )
 
-        return df_copy
+        return df
 
     def process_ccra_hazards_adaptation_effectiveness(df: pd.DataFrame) -> pd.DataFrame:
         """
@@ -423,10 +391,9 @@ def ml_compare(city: dict, action_A: dict, action_B: dict) -> int:
 
         Returns the modified DataFrame with new feature columns added.
         """
-        df_processed = df.copy()
-        df_processed = prepare_city_risk_profile(df_processed)
-        df_processed = match_action_hazards_with_city_risks(df_processed)
-        df_processed = create_weighted_comparative_feature(df_processed)
+        df = prepare_city_risk_profile(df)
+        df = match_action_hazards_with_city_risks(df)
+        df = create_weighted_comparative_feature(df)
 
         columns_to_drop = [
             "actionA_AdaptationEffectiveness",
@@ -440,13 +407,10 @@ def ml_compare(city: dict, action_A: dict, action_B: dict) -> int:
             "weighted_actionA_risk_total",
             "weighted_actionB_risk_total",
         ]
-        df_processed.drop(columns=columns_to_drop, inplace=True)
-        return df_processed
+        df.drop(columns=columns_to_drop, inplace=True)
+        return df
 
     def prepare_co_benefits_data(df) -> pd.DataFrame:
-
-        # Create local copy
-        df_copy = df.copy()
 
         # Extract all unique CoBenefits keys
         co_benefits_keys = [
@@ -461,7 +425,7 @@ def ml_compare(city: dict, action_A: dict, action_B: dict) -> int:
 
         # Compute differences between Action A and Action B directly
         for key in co_benefits_keys:
-            df_copy[f"CoBenefits_Diff_{key}"] = df_copy.apply(
+            df[f"CoBenefits_Diff_{key}"] = df.apply(
                 lambda row: (
                     (
                         row["actionA_CoBenefits"].get(key, 0)
@@ -475,14 +439,11 @@ def ml_compare(city: dict, action_A: dict, action_B: dict) -> int:
             )
 
         # Drop the original CoBenefits dictionary columns
-        df_copy.drop(columns=["actionA_CoBenefits", "actionB_CoBenefits"], inplace=True)
+        df.drop(columns=["actionA_CoBenefits", "actionB_CoBenefits"], inplace=True)
 
-        return df_copy
+        return df
 
     def prepare_biome_data(df) -> pd.DataFrame:
-
-        # Create local copy
-        df_copy = df.copy()
 
         # List of possible biome categories
         biome_categories = [
@@ -501,12 +462,12 @@ def ml_compare(city: dict, action_A: dict, action_B: dict) -> int:
         # We start with the second colum to skip the first category and to drop it
         # This is to avoid multicollinearity in mutually exclusive one-hot encoding
         for biome in biome_categories[1:]:
-            df_copy[f"biome_{biome}"] = (df_copy["city_biome"] == biome).astype(int)
+            df[f"biome_{biome}"] = (df["city_biome"] == biome).astype(int)
 
         # Drop the original categorical column
-        df_copy.drop(columns=["city_biome"], inplace=True)
+        df.drop(columns=["city_biome"], inplace=True)
 
-        return df_copy
+        return df
 
     def prepare_numerical_data(df: pd.DataFrame, cols_to_scale: list) -> pd.DataFrame:
         """
@@ -519,8 +480,6 @@ def ml_compare(city: dict, action_A: dict, action_B: dict) -> int:
         Returns:
             pd.DataFrame: The DataFrame with selected columns scaled.
         """
-        # Create a copy to avoid modifying the original DataFrame
-        df_transformed = df.copy()
 
         # Ensure all columns in cols_to_scale exist in the DataFrame
         valid_cols = [col for col in cols_to_scale if col in df.columns]
@@ -529,9 +488,9 @@ def ml_compare(city: dict, action_A: dict, action_B: dict) -> int:
             raise ValueError("None of the specified columns exist in the DataFrame.")
 
         # Scale the selected columns
-        df_transformed[valid_cols] = scaler.transform(df_transformed[valid_cols])
+        df[valid_cols] = scaler.transform(df[valid_cols])
 
-        return df_transformed
+        return df
 
     def prepare_final_features(df: pd.DataFrame) -> pd.DataFrame:
         """
@@ -543,13 +502,10 @@ def ml_compare(city: dict, action_A: dict, action_B: dict) -> int:
         Returns:
             pd.DataFrame: The DataFrame with final features.
         """
-        # Create local copy
-        df_copy = df.copy()
-
         # Remove columns ActionA and ActionB
-        df_copy.drop(columns=["ActionA", "ActionB"], inplace=True)
+        df.drop(columns=["ActionA", "ActionB"], inplace=True)
 
-        return df_copy
+        return df
 
     def predict_xgb(df: pd.DataFrame) -> int:
         """
@@ -572,8 +528,14 @@ def ml_compare(city: dict, action_A: dict, action_B: dict) -> int:
         else:
             return -1
 
+    # Build the DataFrame for comparison consisting of the city and the two actions
+    df = build_df(city, action_A, action_B)
+
+    # Create a copy of the DataFrame to avoid modifying the original
+    df_transformed = df.copy()
+
     # Prepare the data for ML comparison (feature engineering)
-    df_transformed = prepare_emission_reduction_data(df)
+    df_transformed = prepare_emission_reduction_data(df_transformed)
     df_transformed = prepare_action_type_data(df_transformed)
     df_transformed = prepare_cost_investment_needed_data(df_transformed)
     df_transformed = prepare_timeline_data(df_transformed)
@@ -606,21 +568,27 @@ def ml_compare(city: dict, action_A: dict, action_B: dict) -> int:
             "CoBenefits_Diff_stakeholder_engagement",
         ],
     )
-    # print(df_transformed.T)
 
     # Final feature cleanup
     df_transformed = prepare_final_features(df_transformed)
 
+    # Before dropping rows, check which columns have missing values
+    missing_columns = df_transformed.columns[df_transformed.isna().any()].tolist()
+
     # Dropping empty rows
     # If after transformation a row has missing values, it will be dropped
     # Since we only pass in one pair at a time, the df will be empty if there are missing values
-    # We then raise an error that the data is not valid
     df_transformed.dropna(inplace=True)
 
     if df_transformed.empty:
-        raise ValueError(
-            "Empty DF because of missing values - no valid data to make a comparison."
+        error_message = (
+            f"Empty dataframe due to missing values!\n"
+            f"City: {city['locode']}\n"
+            f"Action A: {action_A['ActionID']}\n"
+            f"Action B: {action_B['ActionID']}\n"
+            f"Columns with missing values: {missing_columns}"
         )
+        raise ValueError(error_message)
 
     # Make a prediction with the model
     prediction = predict_xgb(df_transformed)

@@ -12,11 +12,7 @@ import concurrent.futures
 from prioritizer.prioritizer import quantitative_score, qualitative_score
 from prioritizer.utils.reading_writing_data import read_city_inventory, read_actions
 from prioritizer.utils.ml_comparator import ml_compare
-
-# from prioritizer.utils.various_comparators import (
-#     consensus_compare,
-#     majority_vote_compare,
-# )
+import numpy as np
 from typing import Tuple
 import scipy.stats as stats
 
@@ -72,73 +68,6 @@ def get_action_by_id(actions, target_action_id):
     return None
 
 
-# def get_accuracy_expert_vs_quanti(df: pd.DataFrame, actions: list) -> float:
-
-#     skipped = []
-#     score = 0
-#     valid_comparisons = 0
-
-#     for _, row in df.iterrows():
-
-#         # Read the city data for the comparison
-#         city_data = read_city_inventory(row["CityLocode"])
-#         actionA = row["ActionA"]
-#         actionB = row["ActionB"]
-
-#         # Get the actual actions object from the actionsID (filling in the context)
-#         actionA_with_context = get_action_by_id(actions, actionA)
-#         actionB_with_context = get_action_by_id(actions, actionB)
-
-#         # Check if both actions were found
-#         if actionA_with_context and actionB_with_context:
-#             try:
-
-#                 # Calculate the scoring based on the linear ranking system
-#                 score_A = quantitative_score(city_data, actionA_with_context)
-#                 score_B = quantitative_score(city_data, actionB_with_context)
-
-#                 # Skip if scores are equal
-#                 if score_A == score_B:
-#                     print(
-#                         f"Skipping comparison: Scores are equal for {actionA} and {actionB}."
-#                     )
-#                     skipped.append((actionA, actionB))
-#                     continue
-
-#                 predicted_label = actionA if score_A > score_B else actionB
-
-#                 # Count this as a valid comparison
-#                 valid_comparisons += 1
-
-#                 # If prediction is correct, add 1 to the score
-#                 if predicted_label == row["PreferredAction"]:
-#                     score += 1
-#             except ValueError as e:
-#                 print(f"Skipping comparison due to error: {e}")
-#                 skipped.append((actionA, actionB))
-#         else:
-#             # Add the missing action to the skipped list to keep track of them
-#             if actionA_with_context is None:
-#                 skipped.append(actionA)
-#             elif actionB_with_context is None:
-#                 skipped.append(actionB)
-#             else:
-#                 skipped.append(actionA)
-#                 skipped.append(actionB)
-
-#             # print("Action not found. Probably removed from the action data.")
-#             # print("Skipping this comparison")
-#             continue
-
-#     print(f"\nSkipped {len(skipped)} comparisons due to missing actions.")
-#     print(f"Skipped actions: {set(skipped)}")
-#     print(f"Valid comparisons: {valid_comparisons}")
-
-#     # Calculate accuracy
-#     accuracy = score / valid_comparisons
-#     return accuracy
-
-
 # Initialize contingency table counts
 contingency_table = {
     "C_C": 0,  # Both correct
@@ -192,13 +121,17 @@ def get_accuracy_expert_vs_comparators(
     df: pd.DataFrame, actions: list
 ) -> Tuple[float, float, float, float, float]:
 
-    skipped = []
+    skipped_missing_actions = []
+    skipped_errors = []
     score_quanti = 0
     score_quali = 0
     score_ml = 0
     score_consensus = 0
     score_majority = 0
     valid_comparisons = 0
+
+    error_quanti = []  # List to store quantitative model errors
+    error_ml = []  # List to store ML model errors
 
     for _, row in df.iterrows():
 
@@ -232,20 +165,22 @@ def get_accuracy_expert_vs_comparators(
 
         # Read the city data for the comparison
         city_data = read_city_inventory(row["CityLocode"])
+        locode = row["CityLocode"]
         actionA = row["ActionA"]
         actionB = row["ActionB"]
+        preferred_action = row["PreferredAction"]
 
-        # print(f"\nCity: {row['CityLocode']}")
-        # print(f"Action A: {actionA}")
-        # print(f"Action B: {actionB}")
-        # print(f"Preferred action: {row['PreferredAction']}")
+        print(f"\nCity: {row['CityLocode']}")
+        print(f"Action A: {actionA}")
+        print(f"Action B: {actionB}")
+        print(f"Preferred action: {preferred_action}")
 
         # Get the actual actions object from the actionsID (filling in the context)
         actionA_with_context = get_action_by_id(actions, actionA)
         actionB_with_context = get_action_by_id(actions, actionB)
 
         # Check if both actions were found
-        # E.g. if comparisons were made an actions that were later deleted
+        # E.g. if comparisons were made from experts on actions that were later deleted
         if actionA_with_context and actionB_with_context:
             try:
 
@@ -253,7 +188,7 @@ def get_accuracy_expert_vs_comparators(
                 predicted_label_quanti = get_quantitative_label(
                     city_data, actionA_with_context, actionB_with_context
                 )
-                # print(f"Predicted label quanti: {predicted_label_quanti}")
+                print(f"Predicted label quanti: {predicted_label_quanti}")
 
                 ### QUALITATIVE
                 # predicted_label_quali = get_qualitative_label(
@@ -266,9 +201,9 @@ def get_accuracy_expert_vs_comparators(
                 predicted_label_ml = get_ml_label(
                     city_data, actionA_with_context, actionB_with_context
                 )
-                # print(f"Predicted label ML: {predicted_label_ml}")
+                print(f"Predicted label ML: {predicted_label_ml}")
 
-                # ### Consensus
+                # # ### Consensus
 
                 # # If winner_quant and ml_winner agree, return their decision
                 # if predicted_label_quanti == predicted_label_ml:
@@ -294,60 +229,88 @@ def get_accuracy_expert_vs_comparators(
 
                 # print(f"Predicted label majority: {predicted_label_majority}")
 
+                # Convert predictions into binary error vectors
+                # Record errors (1 = wrong, 0 = correct)
+                error_quanti.append(
+                    1 if row["PreferredAction"] != predicted_label_quanti else 0
+                )
+                error_ml.append(
+                    1 if row["PreferredAction"] != predicted_label_ml else 0
+                )
+
                 # Update contingency table for chi-square test
                 update_contincengy_table(
-                    predicted_label_quanti, predicted_label_ml, row["PreferredAction"]
+                    predicted_label_quanti, predicted_label_ml, preferred_action
                 )
 
                 ### Add up scores
                 # If prediction is correct, add 1 to the score
-                if predicted_label_quanti == row["PreferredAction"]:
+                if predicted_label_quanti == preferred_action:
                     score_quanti += 1
 
-                # if predicted_label_quali == row["PreferredAction"]:
+                # if predicted_label_quali == preferred_action:
                 #     score_quali += 1
 
                 # If prediction is correct, add 1 to the score
-                if predicted_label_ml == row["PreferredAction"]:
+                if predicted_label_ml == preferred_action:
                     score_ml += 1
 
-                # if predicted_label_consensus == row["PreferredAction"]:
+                # if predicted_label_consensus == preferred_action:
                 #     score_consensus += 1
 
-                # if predicted_label_majority == row["PreferredAction"]:
+                # if predicted_label_majority == preferred_action:
                 #     score_majority += 1
 
                 # Count this as a valid comparison
                 valid_comparisons += 1
 
-                # print("score_quanti", score_quanti)
-                # print("score_quali", score_quali)
-                # print("score_ml", score_ml)
-                # print("score_consensus", score_consensus)
-                # print("score_majority", score_majority)
-                # print("valid_comparisons", valid_comparisons)
+                print("score_quanti", score_quanti)
+                print("score_quali", score_quali)
+                print("score_ml", score_ml)
+                print("score_consensus", score_consensus)
+                print("score_majority", score_majority)
+                print("valid_comparisons", valid_comparisons)
 
             except ValueError as e:
                 print(f"Skipping comparison due to error: {e}")
-                skipped.append((actionA, actionB))
+                skipped_errors.append((locode, actionA, actionB))
         else:
             # Add the missing action to the skipped list to keep track of them
-            print("skipping")
+            print("Skipping comparison due to missing actions.")
             if actionA_with_context is None:
-                skipped.append(actionA)
+                skipped_missing_actions.append(actionA)
             elif actionB_with_context is None:
-                skipped.append(actionB)
+                skipped_missing_actions.append(actionB)
             else:
-                skipped.append(actionA)
-                skipped.append(actionB)
+                skipped_missing_actions.append(actionA)
+                skipped_missing_actions.append(actionB)
 
             continue
 
     # Make chi-square test and print results
     get_chi2_test_results()
 
-    print(f"\nSkipped {len(skipped)} comparisons due to missing actions.")
-    print(f"Skipped actions: {set(skipped)}")
+    # Convert lists to numpy arrays
+    error_quanti = np.array(error_quanti)
+    error_ml = np.array(error_ml)
+
+    # Check if there's enough data for correlation
+    if len(error_quanti) > 1 and len(error_ml) > 1:
+        correlation = np.corrcoef(error_quanti, error_ml)[0, 1]
+        print(f"Pearson Correlation of Errors: {correlation}")
+    else:
+        print("Not enough data points to compute correlation.")
+
+    print(
+        f"\nSkipped {len(skipped_missing_actions)} comparisons due to missing actions."
+    )
+    print(f"Skipped actions: {set(skipped_missing_actions)}")
+
+    print(
+        f"\nSkipped {len(skipped_errors)} comparisons due to errors, e.g. missing data."
+    )
+    print(f"Skipped actions: {set(skipped_errors)}")
+
     print(f"Valid comparisons: {valid_comparisons}")
 
     # Calculate accuracy
@@ -363,211 +326,6 @@ def get_accuracy_expert_vs_comparators(
         accuracy_consensus,
         accuracy_majority,
     )
-
-
-# def get_accuracy_expert_vs_ml(df: pd.DataFrame, actions: list) -> float:
-
-#     skipped = []
-#     score = 0
-#     valid_comparisons = 0
-#     for _, row in df.iterrows():
-
-#         # Read the city data for the comparison
-#         city_data = read_city_inventory(row["CityLocode"])
-#         actionA = row["ActionA"]
-#         actionB = row["ActionB"]
-#         preferred_action = row["PreferredAction"]
-
-#         # print(f"\nCity: {row['CityLocode']}")
-#         # print(f"Action A: {actionA}")
-#         # print(f"Action B: {actionB}")
-#         # print(f"Preferred action: {preferred_action}")
-
-#         # Determine if ActionA or ActionB is preferred
-#         if preferred_action == actionA:
-#             preferred_action = 1
-#         elif preferred_action == actionB:
-#             preferred_action = -1
-#         else:
-#             # Throw error if the preferred action is not found in the comparison
-#             # This should never happen and is an actual error, therefore we throw an error and stop execution
-#             raise ValueError("Preferred action not found in the comparison.")
-
-#         # Get the actual actions object from the actionsID (filling in the context)
-#         actionA_with_context = get_action_by_id(actions, actionA)
-#         actionB_with_context = get_action_by_id(actions, actionB)
-
-#         # Check if both actions were found
-#         if actionA_with_context and actionB_with_context:
-
-#             # Calculate the scoring based on the ML model
-#             predicted_action = ml_compare(
-#                 city_data, actionA_with_context, actionB_with_context
-#             )
-
-#             # Count this as a valid comparison
-#             valid_comparisons += 1
-
-#             # If prediction is correct, add 1 to the score
-#             if predicted_action == preferred_action:
-#                 score += 1
-
-#             # input("Press Enter to continue 2")
-#         else:
-#             # Add the missing action to the skipped list to keep track of them
-#             if actionA_with_context is None:
-#                 skipped.append(actionA)
-#             elif actionB_with_context is None:
-#                 skipped.append(actionB)
-#             else:
-#                 skipped.append(actionA)
-#                 skipped.append(actionB)
-
-#             # print("Action not found. Probably removed from the action data.")
-#             # print("Skipping this comparison")
-#             continue
-
-#     print(f"\nSkipped {len(skipped)} comparisons due to missing actions.")
-#     print(f"Skipped actions: {set(skipped)}")
-#     print(f"Valid comparisons: {valid_comparisons}")
-
-#     # Calculate accuracy
-#     accuracy = score / valid_comparisons
-#     return accuracy
-
-
-# def get_accuracy_expert_vs_consensus(df: pd.DataFrame, actions: list) -> float:
-#     skipped = []
-#     score = 0
-#     valid_comparisons = 0
-
-#     for _, row in df.iterrows():
-#         # Read city data for the comparison
-#         city_data = read_city_inventory(row["CityLocode"])
-#         actionA = row["ActionA"]
-#         actionB = row["ActionB"]
-#         preferred_action = row["PreferredAction"]
-
-#         # print(f"\nCity: {row['CityLocode']}")
-#         # print(f"Action A: {actionA}")
-#         # print(f"Action B: {actionB}")
-#         # print(f"Preferred action: {preferred_action}")
-
-#         # Determine if ActionA or ActionB is preferred
-#         if preferred_action == actionA:
-#             preferred_action = 1
-#         elif preferred_action == actionB:
-#             preferred_action = -1
-#         else:
-#             raise ValueError("Preferred action not found in the comparison.")
-
-#         # Get the actual action objects from the action IDs
-#         actionA_with_context = get_action_by_id(actions, actionA)
-#         actionB_with_context = get_action_by_id(actions, actionB)
-
-#         # Ensure both actions exist before proceeding
-#         if actionA_with_context and actionB_with_context:
-#             try:
-#                 # Use the majority vote method for comparison
-#                 predicted_action = consensus_compare(
-#                     city_data, actionA_with_context, actionB_with_context
-#                 )
-
-#                 # Count this as a valid comparison
-#                 valid_comparisons += 1
-
-#                 # If the prediction matches the preferred action, increase score
-#                 if predicted_action == preferred_action:
-#                     score += 1
-
-#             except ValueError as e:
-#                 print(f"Skipping comparison due to error: {e}")
-#                 skipped.append((actionA, actionB))
-
-#         else:
-#             # Track missing actions
-#             if actionA_with_context is None:
-#                 skipped.append(actionA)
-#             if actionB_with_context is None:
-#                 skipped.append(actionB)
-
-#             # print("Action not found. Skipping this comparison.")
-#             continue
-
-#     print(f"\nSkipped {len(skipped)} comparisons due to missing actions or errors.")
-#     print(f"Skipped actions: {set(skipped)}")
-#     print(f"Valid comparisons: {valid_comparisons}")
-
-#     # Compute accuracy (avoid division by zero)
-#     accuracy = score / valid_comparisons
-#     return accuracy
-
-
-# def get_accuracy_expert_vs_majority(df: pd.DataFrame, actions: list) -> float:
-#     skipped = []
-#     score = 0
-#     valid_comparisons = 0
-
-#     for _, row in df.iterrows():
-#         # Read city data for the comparison
-#         city_data = read_city_inventory(row["CityLocode"])
-#         actionA = row["ActionA"]
-#         actionB = row["ActionB"]
-#         preferred_action = row["PreferredAction"]
-
-#         # print(f"\nCity: {row['CityLocode']}")
-#         # print(f"Action A: {actionA}")
-#         # print(f"Action B: {actionB}")
-#         # print(f"Preferred action: {preferred_action}")
-
-#         # Determine if ActionA or ActionB is preferred
-#         if preferred_action == actionA:
-#             preferred_action = 1
-#         elif preferred_action == actionB:
-#             preferred_action = -1
-#         else:
-#             raise ValueError("Preferred action not found in the comparison.")
-
-#         # Get the actual action objects from the action IDs
-#         actionA_with_context = get_action_by_id(actions, actionA)
-#         actionB_with_context = get_action_by_id(actions, actionB)
-
-#         # Ensure both actions exist before proceeding
-#         if actionA_with_context and actionB_with_context:
-#             try:
-#                 # Use the majority vote method for comparison
-#                 predicted_action = majority_vote_compare(
-#                     city_data, actionA_with_context, actionB_with_context
-#                 )
-
-#                 # Count this as a valid comparison
-#                 valid_comparisons += 1
-
-#                 # If the prediction matches the preferred action, increase score
-#                 if predicted_action == preferred_action:
-#                     score += 1
-
-#             except ValueError as e:
-#                 print(f"Skipping comparison due to error: {e}")
-#                 skipped.append((actionA, actionB))
-
-#         else:
-#             # Track missing actions
-#             if actionA_with_context is None:
-#                 skipped.append(actionA)
-#             if actionB_with_context is None:
-#                 skipped.append(actionB)
-
-#             # print("Action not found. Skipping this comparison.")
-#             continue
-
-#     print(f"\nSkipped {len(skipped)} comparisons due to missing actions or errors.")
-#     print(f"Skipped actions: {set(skipped)}")
-#     print(f"Valid comparisons: {valid_comparisons}")
-
-#     # Compute accuracy (avoid division by zero)
-#     accuracy = score / valid_comparisons
-#     return accuracy
 
 
 # def process_row_quali(index, row, actions):
@@ -698,11 +456,6 @@ if __name__ == "__main__":
 
     # Final print out to not get lost in all the intermediate print statements
     print("Final result:\n")
-    # print(f"Accuracy for quantitative ranking is {accuracy_quanti}\n")
-    # print(f"Accuracy for ML ranking is {accuracy_ml}\n")
-    # # print(f"Accuracy for qualitative ranking is {accuracy_quali}\n")
-    # print(f"Accuracy for consensus is {accuracy_consensus}\n")
-    # print(f"Accuracy for majority vote is {accuracy_majority}\n")
 
     print(f"Accuracy for quantitative ranking is {accuracy_quanti}\n")
     print(f"Accuracy for qualitative ranking is {accuracy_quali}\n")

@@ -50,6 +50,7 @@ export class Project
         cityCountLimit: {
           type: DataTypes.INTEGER,
           allowNull: false,
+          field: "city_count_limit",
         },
         description: {
           type: DataTypes.STRING(255),

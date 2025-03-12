@@ -208,6 +208,7 @@ describe("Project API", () => {
       const project = await db.models.Project.create({
         projectId: randomUUID(),
         ...projectData,
+        cityCountLimit: 10,
         organizationId: organization.organizationId,
       });
 

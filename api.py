@@ -29,6 +29,10 @@ class PlanRequest(BaseModel):
     action: Dict[str, Any]
     city: Dict[str, Any]
 
+@app.get("/")
+async def root():
+    return {"message": "Hello World"}
+
 @app.post("/create_plan")
 async def create_plan(request: PlanRequest):
     try:

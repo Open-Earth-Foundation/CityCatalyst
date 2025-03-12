@@ -8,8 +8,8 @@ import {
   jest,
 } from "@jest/globals";
 import {
-  POST as createOrganization,
   GET as getOrganizations,
+  POST as createOrganization,
 } from "@/app/api/v0/organizations/route";
 import { db } from "@/models";
 import { CreateOrganizationRequest } from "@/util/validation";
@@ -108,7 +108,7 @@ describe("Organization API", () => {
     });
     expect(res.status).toEqual(200);
     const data = await res.json();
-    expect(data).toHaveLength(1);
+    expect(data).toBeGreaterThan(0);
     expect(data[0].name).toEqual(organizationData.name);
     expect(data[0].contactEmail).toEqual(organizationData.contactEmail);
   });

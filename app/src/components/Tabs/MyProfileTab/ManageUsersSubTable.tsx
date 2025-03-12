@@ -1,7 +1,7 @@
 import React, { useMemo, useState, useCallback, useEffect } from "react";
 import { ButtonSmall } from "@/components/Texts/Button";
 import { Column, Row, useTable } from "react-table";
-import { CityInviteStatus, GetUserCityInvitesResponse } from "@/util/types";
+import { InviteStatus, GetUserCityInvitesResponse } from "@/util/types";
 import { MdOutlineDelete, MdOutlineReplay } from "react-icons/md";
 import { HiMiniChevronDown } from "react-icons/hi2";
 import { Badge, IconButton, Icon } from "@chakra-ui/react";
@@ -59,22 +59,22 @@ const ManageUsersSubTable = React.memo(function SubTable({
     [resetUserInvite],
   );
 
-  const getTextAndBorderColor = useCallback((value: CityInviteStatus) => {
+  const getTextAndBorderColor = useCallback((value: InviteStatus) => {
     switch (value) {
-      case CityInviteStatus.ACCEPTED:
+      case InviteStatus.ACCEPTED:
         return "sentiment.positiveDefault";
-      case CityInviteStatus.PENDING:
+      case InviteStatus.PENDING:
         return "sentiment.warningDefault";
       default:
         return "interactive.control";
     }
   }, []);
 
-  const getBackgroundColor = (value: CityInviteStatus) => {
+  const getBackgroundColor = (value: InviteStatus) => {
     switch (value) {
-      case CityInviteStatus.ACCEPTED:
+      case InviteStatus.ACCEPTED:
         return "sentiment.positiveOverlay";
-      case CityInviteStatus.PENDING:
+      case InviteStatus.PENDING:
         return "sentiment.warningOverlay";
       default:
         return "background.neutral";
@@ -138,7 +138,7 @@ const ManageUsersSubTable = React.memo(function SubTable({
         id: "actions",
         width: "40px",
         Cell: ({ row }) =>
-          row.original.status === CityInviteStatus.EXPIRED ? (
+          row.original.status === InviteStatus.EXPIRED ? (
             <IconButton
               onClick={() => handleResetClick(row)}
               aria-label="edit"

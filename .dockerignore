@@ -1,1 +1,8 @@
- 
+ .git
+__pycache__
+*.pyc
+.env
+venv
+Dockerfile
+*.log
+data/output/*

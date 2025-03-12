@@ -10,7 +10,7 @@ import UserService from "@/backend/UserService";
 import { randomUUID } from "node:crypto";
 
 export const POST = apiHandler(async (req, { params, session }) => {
-  UserService.validateIsOefAdmin(session);
+  UserService.validateIsAdmin(session);
   const { organizationId } = params;
   const validatedData = createProjectRequest.parse(await req.json());
   const project = await Project.create({
@@ -22,7 +22,7 @@ export const POST = apiHandler(async (req, { params, session }) => {
 });
 
 export const GET = apiHandler(async (req, { params, session }) => {
-  UserService.validateIsOefAdmin(session);
+  UserService.validateIsAdmin(session);
   const { organizationId } = params;
   const projects = await Project.findAll({ where: { organizationId } });
   return NextResponse.json(projects);

@@ -7,16 +7,16 @@ export interface ProjectAttributes {
   city_count_limit: Number;
   description?: string;
   organizationId: string;
-  createdAt?: Date;
-  updatedAt?: Date;
+  created?: Date;
+  lastUpdated?: Date;
 }
 
 export type ProjectPk = "projectId";
 export type ProjectId = Project[ProjectPk];
 export type ProjectOptionalAttributes =
   | "description"
-  | "createdAt"
-  | "updatedAt";
+  | "created"
+  | "lastUpdated";
 export type ProjectCreationAttributes = Optional<
   ProjectAttributes,
   ProjectOptionalAttributes
@@ -31,8 +31,8 @@ export class Project
   projectId!: string;
   name!: string;
   description?: string;
-  createdAt?: Date;
-  updatedAt?: Date;
+  created?: Date;
+  lastUpdated?: Date;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof Project {
     return Project.init(
@@ -70,8 +70,8 @@ export class Project
         tableName: "Project",
         schema: "public",
         timestamps: true,
-        createdAt: "createdAt",
-        updatedAt: "updatedAt",
+        createdAt: "created",
+        updatedAt: "last_updated",
         indexes: [
           {
             name: "Project_pkey",

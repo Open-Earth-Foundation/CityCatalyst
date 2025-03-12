@@ -30,9 +30,8 @@ import { randomUUID } from "node:crypto";
 import { Organization } from "@/models/Organization";
 
 const organizationData: CreateOrganizationRequest = {
-  name: "Test Organization",
-  contactEmail: "test@organization.com",
-  contactNumber: "1234567890",
+  name: "Test Organization project",
+  contactEmail: "testproject@organization.com",
 };
 
 const projectData: Omit<CreateProjectRequest, "organizationId"> = {
@@ -53,7 +52,7 @@ const mockUserSession: AppSession = {
 };
 
 const mockAdminSession: AppSession = {
-  user: { id: testUserID, role: Roles.OefAdmin },
+  user: { id: testUserID, role: Roles.Admin },
   expires: "1h",
 };
 
@@ -65,6 +64,10 @@ describe("Project API", () => {
     setupTests();
     await db.initialize();
     Auth.getServerSession = jest.fn(() => Promise.resolve(mockAdminSession));
+    organization = await db.models.Organization.create({
+      ...organizationData,
+      organizationId: randomUUID(),
+    });
   });
 
   beforeEach(async () => {
@@ -84,7 +87,7 @@ describe("Project API", () => {
 
   describe("POST /api/v0/organizations/[organizationId]/projects", () => {
     it("should create a project", async () => {
-      const req = await mockRequest({
+      const req = mockRequest({
         ...projectData,
         organizationId: organization.organizationId,
       });
@@ -94,6 +97,11 @@ describe("Project API", () => {
       expect(response.status).toBe(200);
       const data = await response.json();
       expect(data.name).toBe(projectData.name);
+
+      // destroy the project
+      await db.models.Project.destroy({
+        where: { projectId: data.projectId },
+      });
     });
 
     it("should return 400 if invalid project data is provided", async () => {
@@ -125,6 +133,11 @@ describe("Project API", () => {
       expect(response.status).toBe(200);
       const data = await response.json();
       expect(data.length).toBe(1);
+
+      //  destroy the project
+      await db.models.Project.destroy({
+        where: { projectId: project.projectId },
+      });
     });
   });
 
@@ -145,6 +158,11 @@ describe("Project API", () => {
       expect(response.status).toBe(200);
       const data = await response.json();
       expect(data.name).toBe(projectData.name);
+
+      // destroy the project
+      await db.models.Project.destroy({
+        where: { projectId: project.projectId },
+      });
     });
 
     it("should return 404 if project does not exist", async () => {
@@ -177,6 +195,11 @@ describe("Project API", () => {
       expect(response.status).toBe(200);
       const data = await response.json();
       expect(data.name).toBe(updatedProject.name);
+
+      // destroy the project
+      await db.models.Project.destroy({
+        where: { projectId: project.projectId },
+      });
     });
   });
 

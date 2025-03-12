@@ -7,7 +7,7 @@ import { updateProjectRequest } from "@/util/validation";
 
 export const GET = apiHandler(async (req, { params, session }) => {
   // return a single project.
-  UserService.validateIsOefAdmin(session);
+  UserService.validateIsAdmin(session);
   const { projectId } = params;
   const project = await Project.findByPk(projectId as string);
   if (!project) {
@@ -18,7 +18,7 @@ export const GET = apiHandler(async (req, { params, session }) => {
 
 // update a project
 export const PATCH = apiHandler(async (req, { params, session }) => {
-  UserService.validateIsOefAdmin(session);
+  UserService.validateIsAdmin(session);
   const { projectId } = params;
   const validatedData = updateProjectRequest.parse(await req.json());
   const project = await Project.findByPk(projectId as string);
@@ -32,7 +32,7 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
 
 // delete a project
 export const DELETE = apiHandler(async (req, { params, session }) => {
-  UserService.validateIsOefAdmin(session);
+  UserService.validateIsAdmin(session);
   const { projectId } = params;
   const project = await Project.findByPk(projectId as string);
   if (!project) {

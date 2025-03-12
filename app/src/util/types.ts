@@ -199,7 +199,6 @@ export interface UserInviteResponse {
 export enum Roles {
   User = "user",
   Admin = "admin",
-  OefAdmin = "oef_admin",
 }
 
 export interface GetUserCityInvitesResponseUserData {
@@ -230,6 +229,7 @@ export interface AcceptInviteResponse {
   success: boolean;
   error?: string;
 }
+
 export interface AcceptInviteRequest {
   email: string;
   cityIds: string[];

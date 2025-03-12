@@ -763,6 +763,10 @@ export function initModels(sequelize: Sequelize) {
     as: "assistantMessages",
     foreignKey: "threadId",
   });
+  Organization.hasMany(Project, {
+    as: "projects",
+    foreignKey: "organizationId",
+  });
   Project.belongsTo(Organization, {
     as: "organization",
     foreignKey: "organizationId",

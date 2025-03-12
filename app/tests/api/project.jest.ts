@@ -36,13 +36,13 @@ const organizationData: CreateOrganizationRequest = {
 
 const projectData: Omit<CreateProjectRequest, "organizationId"> = {
   name: "Test Project",
-  city_count_limit: 10,
+  cityCountLimit: 10,
   description: "Test Description",
 };
 
 const invalidProject: Omit<CreateProjectRequest, "organizationId"> = {
   name: "",
-  city_count_limit: -1,
+  cityCountLimit: -1,
   description: "",
 };
 

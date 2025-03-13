@@ -15,7 +15,7 @@ const defaultProjectData = {
   name: "cc_project_default",
   organization_id: defaultOrgData.organization_id,
   description: "Default project for cities created in City Catalyst",
-  city_count_limit: Number.MAX_SAFE_INTEGER,
+  city_count_limit: 999999,
   created: new Date(),
   last_updated: new Date(),
 };
@@ -23,23 +23,15 @@ const defaultProjectData = {
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.bulkInsert("Organization", [
-      {
-        ...defaultOrgData,
-      },
-    ]);
+    await queryInterface.bulkInsert("Organization", [defaultOrgData]);
 
-    await queryInterface.bulkInsert("Project", [
-      {
-        ...defaultProjectData,
-      },
-    ]);
+    await queryInterface.bulkInsert("Project", [defaultProjectData]);
 
     await queryInterface.bulkUpdate(
       "City",
       {
         project_id: defaultProjectData.project_id,
-        last_updated: new Date(), // Update updated_at timestamp
+        last_updated: new Date(),
       },
       {
         project_id: null, // Assuming cities without projects have NULL project_id
@@ -52,7 +44,7 @@ module.exports = {
       "City",
       {
         project_id: null,
-        last_updated: new Date(), // Update updated_at timestamp
+        last_updated: new Date(),
       },
       {
         project_id: defaultProjectData.project_id,

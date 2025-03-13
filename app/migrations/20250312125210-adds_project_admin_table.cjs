@@ -35,10 +35,6 @@ module.exports = {
         onUpdate: "CASCADE",
         onDelete: "CASCADE",
       },
-      role: {
-        type: Sequelize.ENUM("ADMIN"),
-        allowNull: false,
-      },
       created: {
         allowNull: false,
         type: Sequelize.DATE,

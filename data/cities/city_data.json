@@ -29,12 +29,12 @@
             {
                 "keyimpact": "water resources",
                 "hazard": "droughts",
-                "normalised_risk_score": 0.78948079587706
+                "normalised_risk_score": 0.624058677904035
             },
             {
                 "keyimpact": "food security",
                 "hazard": "droughts",
-                "normalised_risk_score": 0.643439536329791
+                "normalised_risk_score": 0.44733182457456
             },
             {
                 "keyimpact": "energy security",
@@ -54,7 +54,7 @@
             {
                 "keyimpact": "infrastructure",
                 "hazard": "heatwaves",
-                "normalised_risk_score": 0.491661944517472
+                "normalised_risk_score": 0.491872866135278
             },
             {
                 "keyimpact": "biodiversity",
@@ -64,7 +64,7 @@
             {
                 "keyimpact": "energy security",
                 "hazard": "heatwaves",
-                "normalised_risk_score": 0.99
+                "normalised_risk_score": 0.74313174790041
             },
             {
                 "keyimpact": "public health",
@@ -74,17 +74,17 @@
             {
                 "keyimpact": "infrastructure",
                 "hazard": "landslides",
-                "normalised_risk_score": 0.795432095666753
+                "normalised_risk_score": 0.796423942420496
             },
             {
                 "keyimpact": "public health",
                 "hazard": "landslides",
-                "normalised_risk_score": 0.857344717661702
+                "normalised_risk_score": 0.930653278070978
             },
             {
                 "keyimpact": "infrastructure",
                 "hazard": "floods",
-                "normalised_risk_score": 0.887459043772656
+                "normalised_risk_score": 0.888305110922881
             },
             {
                 "keyimpact": "food security",
@@ -94,7 +94,7 @@
             {
                 "keyimpact": "public health",
                 "hazard": "floods",
-                "normalised_risk_score": 0.847723859391354
+                "normalised_risk_score": 0.862909098875509
             },
             {
                 "keyimpact": "infrastructure",
@@ -133,17 +133,17 @@
             {
                 "keyimpact": "water resources",
                 "hazard": "droughts",
-                "normalised_risk_score": 0.0125202672394724
+                "normalised_risk_score": 0.99
             },
             {
                 "keyimpact": "food security",
                 "hazard": "droughts",
-                "normalised_risk_score": 0.263048315372368
+                "normalised_risk_score": 0.99
             },
             {
                 "keyimpact": "energy security",
                 "hazard": "droughts",
-                "normalised_risk_score": 0.165690044591722
+                "normalised_risk_score": 0.430199417357975
             },
             {
                 "keyimpact": "biodiversity",
@@ -153,7 +153,7 @@
             {
                 "keyimpact": "public health",
                 "hazard": "heatwaves",
-                "normalised_risk_score": 0.0123054315111858
+                "normalised_risk_score": 0.99
             },
             {
                 "keyimpact": "infrastructure",
@@ -168,12 +168,12 @@
             {
                 "keyimpact": "energy security",
                 "hazard": "heatwaves",
-                "normalised_risk_score": 0.320307937346811
+                "normalised_risk_score": 0.809888895775302
             },
             {
                 "keyimpact": "public health",
                 "hazard": "diseases",
-                "normalised_risk_score": 0.01
+                "normalised_risk_score": 0.98265991077363
             },
             {
                 "keyimpact": "infrastructure",
@@ -183,7 +183,7 @@
             {
                 "keyimpact": "public health",
                 "hazard": "landslides",
-                "normalised_risk_score": 0.345960676455602
+                "normalised_risk_score": 0.385503308498384
             },
             {
                 "keyimpact": "infrastructure",
@@ -193,12 +193,12 @@
             {
                 "keyimpact": "food security",
                 "hazard": "floods",
-                "normalised_risk_score": 0.18894684790058
+                "normalised_risk_score": 0.99
             },
             {
                 "keyimpact": "public health",
                 "hazard": "floods",
-                "normalised_risk_score": 0.396260212182899
+                "normalised_risk_score": 0.373520436415122
             },
             {
                 "keyimpact": "infrastructure",
@@ -237,17 +237,17 @@
             {
                 "keyimpact": "water resources",
                 "hazard": "droughts",
-                "normalised_risk_score": 0.635763428448061
+                "normalised_risk_score": 0.510528369643004
             },
             {
                 "keyimpact": "food security",
                 "hazard": "droughts",
-                "normalised_risk_score": 0.476762554608953
+                "normalised_risk_score": 0.458632609619644
             },
             {
                 "keyimpact": "energy security",
                 "hazard": "droughts",
-                "normalised_risk_score": 0.0883544382094387
+                "normalised_risk_score": 0.0724515428343302
             },
             {
                 "keyimpact": "biodiversity",
@@ -257,12 +257,12 @@
             {
                 "keyimpact": "public health",
                 "hazard": "heatwaves",
-                "normalised_risk_score": 0.522999062915455
+                "normalised_risk_score": 0.299037399579896
             },
             {
                 "keyimpact": "infrastructure",
                 "hazard": "heatwaves",
-                "normalised_risk_score": 0.395583564514337
+                "normalised_risk_score": 0.395560152611115
             },
             {
                 "keyimpact": "biodiversity",
@@ -272,12 +272,12 @@
             {
                 "keyimpact": "energy security",
                 "hazard": "heatwaves",
-                "normalised_risk_score": 0.0467660723878086
+                "normalised_risk_score": 0.0398131590796516
             },
             {
                 "keyimpact": "public health",
                 "hazard": "diseases",
-                "normalised_risk_score": 0.99
+                "normalised_risk_score": 0.599359431398059
             },
             {
                 "keyimpact": "infrastructure",
@@ -297,7 +297,7 @@
             {
                 "keyimpact": "food security",
                 "hazard": "floods",
-                "normalised_risk_score": 0.864842454216736
+                "normalised_risk_score": 0.926525011340596
             },
             {
                 "keyimpact": "public health",
@@ -341,17 +341,17 @@
             {
                 "keyimpact": "water resources",
                 "hazard": "droughts",
-                "normalised_risk_score": 0.19616520162197
+                "normalised_risk_score": 0.99
             },
             {
                 "keyimpact": "food security",
                 "hazard": "droughts",
-                "normalised_risk_score": 0.202277824785127
+                "normalised_risk_score": 0.99
             },
             {
                 "keyimpact": "energy security",
                 "hazard": "droughts",
-                "normalised_risk_score": 0.549808534623997
+                "normalised_risk_score": 0.99
             },
             {
                 "keyimpact": "biodiversity",
@@ -361,7 +361,7 @@
             {
                 "keyimpact": "public health",
                 "hazard": "heatwaves",
-                "normalised_risk_score": 0.274892230414032
+                "normalised_risk_score": 0.99
             },
             {
                 "keyimpact": "infrastructure",
@@ -371,7 +371,7 @@
             {
                 "keyimpact": "biodiversity",
                 "hazard": "heatwaves",
-                "normalised_risk_score": 0.633398542794785
+                "normalised_risk_score": 0.633398542794786
             },
             {
                 "keyimpact": "energy security",
@@ -381,17 +381,17 @@
             {
                 "keyimpact": "public health",
                 "hazard": "diseases",
-                "normalised_risk_score": 0.165588646394839
+                "normalised_risk_score": 0.99
             },
             {
                 "keyimpact": "infrastructure",
                 "hazard": "landslides",
-                "normalised_risk_score": 0.8657971964234
+                "normalised_risk_score": 0.865820301058702
             },
             {
                 "keyimpact": "public health",
                 "hazard": "landslides",
-                "normalised_risk_score": 0.374576563919493
+                "normalised_risk_score": 0.382207316984375
             },
             {
                 "keyimpact": "infrastructure",
@@ -401,12 +401,12 @@
             {
                 "keyimpact": "food security",
                 "hazard": "floods",
-                "normalised_risk_score": 0.142479659068463
+                "normalised_risk_score": 0.97037408450992
             },
             {
                 "keyimpact": "public health",
                 "hazard": "floods",
-                "normalised_risk_score": 0.778496715324897
+                "normalised_risk_score": 0.630981079542015
             },
             {
                 "keyimpact": "infrastructure",
@@ -445,12 +445,12 @@
             {
                 "keyimpact": "water resources",
                 "hazard": "droughts",
-                "normalised_risk_score": 0.99
+                "normalised_risk_score": 0.801709672215476
             },
             {
                 "keyimpact": "food security",
                 "hazard": "droughts",
-                "normalised_risk_score": 0.99
+                "normalised_risk_score": 0.528515236234385
             },
             {
                 "keyimpact": "energy security",
@@ -465,7 +465,7 @@
             {
                 "keyimpact": "public health",
                 "hazard": "heatwaves",
-                "normalised_risk_score": 0.948576592601702
+                "normalised_risk_score": 0.597646078518954
             },
             {
                 "keyimpact": "infrastructure",
@@ -480,12 +480,12 @@
             {
                 "keyimpact": "energy security",
                 "hazard": "heatwaves",
-                "normalised_risk_score": 0.591639441259428
+                "normalised_risk_score": 0.441941580928501
             },
             {
                 "keyimpact": "public health",
                 "hazard": "diseases",
-                "normalised_risk_score": 0.99
+                "normalised_risk_score": 0.792751078091254
             },
             {
                 "keyimpact": "infrastructure",
@@ -574,7 +574,7 @@
             {
                 "keyimpact": "infrastructure",
                 "hazard": "heatwaves",
-                "normalised_risk_score": 0.331654708967046
+                "normalised_risk_score": 0.331733453994424
             },
             {
                 "keyimpact": "biodiversity",
@@ -584,37 +584,37 @@
             {
                 "keyimpact": "energy security",
                 "hazard": "heatwaves",
-                "normalised_risk_score": 0.647207463614007
+                "normalised_risk_score": 0.707596429811259
             },
             {
                 "keyimpact": "public health",
                 "hazard": "diseases",
-                "normalised_risk_score": 0.762470479764776
+                "normalised_risk_score": 0.99
             },
             {
                 "keyimpact": "infrastructure",
                 "hazard": "landslides",
-                "normalised_risk_score": 0.378082343950366
+                "normalised_risk_score": 0.378405049782624
             },
             {
                 "keyimpact": "public health",
                 "hazard": "landslides",
-                "normalised_risk_score": 0.653177946157221
+                "normalised_risk_score": 0.671199898083366
             },
             {
                 "keyimpact": "infrastructure",
                 "hazard": "floods",
-                "normalised_risk_score": 0.332245922467462
+                "normalised_risk_score": 0.332432449268308
             },
             {
                 "keyimpact": "food security",
                 "hazard": "floods",
-                "normalised_risk_score": 0.712787679009981
+                "normalised_risk_score": 0.655675697290852
             },
             {
                 "keyimpact": "public health",
                 "hazard": "floods",
-                "normalised_risk_score": 0.502285493284141
+                "normalised_risk_score": 0.301694165152786
             },
             {
                 "keyimpact": "infrastructure",

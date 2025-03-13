@@ -792,6 +792,13 @@ export const api = createApi({
           body: data,
         }),
       }),
+      getUnfinishedSubsectors: builder.query({
+        query: (data: { inventoryId: string }) => ({
+          url: `/inventory/${data.inventoryId}/notation-keys`,
+          method: "GET",
+        }),
+        transformResponse: (response: any) => response.data,
+      }),
     };
   },
 });
@@ -868,5 +875,6 @@ export const {
   useGetCityInvitesQuery,
   useUpdatePasswordMutation,
   useGetInventoryPopulationsQuery,
+  useGetUnfinishedSubsectorsQuery,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

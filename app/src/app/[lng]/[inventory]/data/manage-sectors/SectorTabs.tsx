@@ -3,7 +3,8 @@ import { Box, Tabs, Text } from "@chakra-ui/react";
 import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import { TFunction } from "i18next";
-import React, { FC } from "react";
+import React, { FC, useEffect } from "react";
+import { SubSectorWithRelations } from "../[step]/types";
 
 interface SectorTabsProps {
   t: TFunction;
@@ -18,6 +19,20 @@ const SectorTabs: FC<SectorTabsProps> = ({
   isInventoryDataLoading,
   t,
 }) => {
+  const [unfinishedSubsectorsData, setUnfinishedSubsectorsData] =
+    React.useState<SubSectorWithRelations[] | undefined>([]);
+
+  useEffect(() => {
+    if (!isInventoryDataLoading) {
+      const unfinishedSubSectors = inventoryData?.sectorProgress.flatMap(
+        (sector) =>
+          sector.subSectors.filter((subsector) => !subsector.completed),
+      );
+
+      setUnfinishedSubsectorsData(unfinishedSubSectors);
+    }
+  }, [inventoryData, isInventoryDataLoading, inventoryDataError]);
+  console.log(unfinishedSubsectorsData);
   if (isInventoryDataLoading) {
     return <Box>Loading...</Box>;
   }
@@ -43,13 +58,29 @@ const SectorTabs: FC<SectorTabsProps> = ({
   };
 
   const renderSectorTabContent = () =>
-    inventoryData?.sectorProgress.map(({ sector }) => {
+    inventoryData?.sectorProgress.map(({ sector, subSectors }) => {
+      // Filter to get only unfinished subsectors
+      const unfinishedSubsectors = subSectors.filter(
+        (subsector) => !subsector.completed,
+      );
       return (
         <Tabs.Content key={sector.sectorId} value={`tab-${sector.sectorId}`}>
-          {sector.sectorName}
+          <Text fontSize="title.md" mb={2}>
+            {sector.sectorName}
+          </Text>
+          {unfinishedSubsectors.length > 0 ? (
+            unfinishedSubsectors.map((subsector) => (
+              <Box key={subsector.subsectorId} mb={2}>
+                <Text>{subsector.subsectorName}</Text>
+              </Box>
+            ))
+          ) : (
+            <Text>No unfinished subsectors.</Text>
+          )}
         </Tabs.Content>
       );
     });
+
   console.log(inventoryData);
   return (
     <Tabs.Root

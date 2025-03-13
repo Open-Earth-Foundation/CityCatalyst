@@ -1,12 +1,14 @@
 "use client";
 
 import { Box } from "@chakra-ui/react";
-import React from "react";
+import React, { useEffect } from "react";
 import Heading from "./Heading";
 import { useTranslation } from "@/i18n/client";
 import NotationsDefinitionAccordion from "./NotationsDefinitionAccordion";
 import SectorTabs from "./SectorTabs";
 import { api } from "@/services/api";
+import { SubSectorWithRelations } from "../[step]/types";
+import { set } from "date-fns";
 
 const ManageSubSectors = ({
   params: { lng, step, inventory },
@@ -20,6 +22,7 @@ const ManageSubSectors = ({
     isLoading: isInventoryDataLoading,
     error: inventoryDataError,
   } = api.useGetInventoryProgressQuery(inventory);
+
   return (
     <Box w="full" bg="background.backgroundLight">
       <Box

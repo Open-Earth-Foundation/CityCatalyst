@@ -11,7 +11,7 @@ interface HeadingProps {
 
 const Heading: FC<HeadingProps> = ({ t }) => {
   return (
-    <Box py="48px" display="flex" flexDir="column" gap="64px">
+    <Box pt="48px" display="flex" flexDir="column" gap="64px">
       <Box display="flex" alignItems="center">
         <Button variant="ghost" color="content.link" px={1}>
           <Icon as={MdArrowBack} />

@@ -188,3 +188,7 @@ files/*xls
 files/*csv
 
 my_db.*
+
+# z_for_testing
+z_for_testing/*
+

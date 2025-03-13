@@ -198,122 +198,139 @@ const SectorTabs: FC<SectorTabsProps> = ({
 
           {/* unfinished subsectors cards */}
           {unfinishedSubsectors.length > 0 ? (
-            <Box
-              display="grid"
-              gridTemplateColumns="repeat(auto-fill, minmax(450px, 1fr))"
-              gap="48px"
-            >
-              {unfinishedSubsectors.map((subsector) => (
-                <CheckboxCard.Root width="497px" height="344px" p={0}>
-                  <CheckboxCard.HiddenInput />
-                  <CheckboxCard.Control>
-                    <CheckboxCard.Content>
-                      <CheckboxCard.Label my="24px">
-                        <Icon
-                          as={RiErrorWarningFill}
-                          boxSize={5}
-                          color="sentiment.warningDefault"
-                        />
-                        <Text
-                          fontSize="title.md"
-                          fontFamily="heading"
-                          fontWeight="bold"
-                        >
-                          {" "}
-                          {t(subsector.referenceNumber!)} {""}
-                          {t(subsector.subsectorName!)}
-                        </Text>
-                      </CheckboxCard.Label>
-                      <CheckboxCard.Description w="full">
-                        <Box
-                          mb="48px"
-                          display="flex"
-                          flexDirection="column"
-                          gap="32px"
-                          w="full"
-                        >
+            <>
+              <Box
+                display="grid"
+                gridTemplateColumns="repeat(auto-fill, minmax(450px, 1fr))"
+                gap="48px"
+              >
+                {unfinishedSubsectors.map((subsector) => (
+                  <CheckboxCard.Root width="497px" height="344px" p={0}>
+                    <CheckboxCard.HiddenInput />
+                    <CheckboxCard.Control>
+                      <CheckboxCard.Content>
+                        <CheckboxCard.Label my="24px">
+                          <Icon
+                            as={RiErrorWarningFill}
+                            boxSize={5}
+                            color="sentiment.warningDefault"
+                          />
+                          <Text
+                            fontSize="title.md"
+                            fontFamily="heading"
+                            fontWeight="bold"
+                          >
+                            {" "}
+                            {t(subsector.referenceNumber!)} {""}
+                            {t(subsector.subsectorName!)}
+                          </Text>
+                        </CheckboxCard.Label>
+                        <CheckboxCard.Description w="full">
                           <Box
+                            mb="48px"
                             display="flex"
-                            flexDir="column"
-                            gap="16px"
+                            flexDirection="column"
+                            gap="32px"
                             w="full"
                           >
-                            <Field.Root orientation="vertical" w="ull">
-                              <SelectRoot
-                                variant="outline"
-                                collection={notationKeys}
-                                w="full"
-                              >
-                                <SelectLabel
-                                  display="flex"
-                                  alignItems="center"
-                                  gap="8px"
+                            <Box
+                              display="flex"
+                              flexDir="column"
+                              gap="16px"
+                              w="full"
+                            >
+                              <Field.Root orientation="vertical" w="ull">
+                                <SelectRoot
+                                  variant="outline"
+                                  collection={notationKeys}
+                                  w="full"
                                 >
+                                  <SelectLabel
+                                    display="flex"
+                                    alignItems="center"
+                                    gap="8px"
+                                  >
+                                    <Text
+                                      fontFamily="heading"
+                                      color="content.secondary"
+                                    >
+                                      {t("notation-key")}
+                                    </Text>
+                                    <Icon
+                                      as={MdInfoOutline}
+                                      color="interactive.control"
+                                      boxSize={4}
+                                    />
+                                  </SelectLabel>
+                                  <SelectTrigger
+                                    borderWidth="1px"
+                                    borderColor="border.neutral"
+                                    borderRadius="md"
+                                  >
+                                    <SelectValueText
+                                      color="content.tertiary"
+                                      fontWeight="medium"
+                                      placeholder={t(
+                                        "notation-key-input-placeholder",
+                                      )}
+                                    />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    {notationKeys.items.map((key) => (
+                                      <SelectItem item={key} key={key.value}>
+                                        {key.label}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </SelectRoot>
+                              </Field.Root>
+                              <Field.Root orientation="vertical">
+                                <Field.Label>
                                   <Text
                                     fontFamily="heading"
                                     color="content.secondary"
                                   >
-                                    {t("notation-key")}
+                                    {t("explanation")}
                                   </Text>
-                                  <Icon
-                                    as={MdInfoOutline}
-                                    color="interactive.control"
-                                    boxSize={4}
-                                  />
-                                </SelectLabel>
-                                <SelectTrigger
+                                </Field.Label>
+
+                                <Textarea
+                                  placeholder={t(
+                                    "explanation-input-placeholder",
+                                  )}
                                   borderWidth="1px"
                                   borderColor="border.neutral"
                                   borderRadius="md"
-                                >
-                                  <SelectValueText
-                                    color="content.tertiary"
-                                    fontWeight="medium"
-                                    placeholder={t(
-                                      "notation-key-input-placeholder",
-                                    )}
-                                  />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {notationKeys.items.map((key) => (
-                                    <SelectItem item={key} key={key.value}>
-                                      {key.label}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </SelectRoot>
-                            </Field.Root>
-                            <Field.Root orientation="vertical">
-                              <Field.Label>
-                                <Text
-                                  fontFamily="heading"
-                                  color="content.secondary"
-                                >
-                                  {t("explanation")}
-                                </Text>
-                              </Field.Label>
-
-                              <Textarea
-                                placeholder={t("explanation-input-placeholder")}
-                                borderWidth="1px"
-                                borderColor="border.neutral"
-                                borderRadius="md"
-                                shadow="1dp"
-                                height="96px"
-                              />
-                              <Field.ErrorText>
-                                This is an error text
-                              </Field.ErrorText>
-                            </Field.Root>
+                                  shadow="1dp"
+                                  height="96px"
+                                />
+                                <Field.ErrorText>
+                                  This is an error text
+                                </Field.ErrorText>
+                              </Field.Root>
+                            </Box>
                           </Box>
-                        </Box>
-                      </CheckboxCard.Description>
-                    </CheckboxCard.Content>
-                    <CheckboxCard.Indicator />
-                  </CheckboxCard.Control>
-                </CheckboxCard.Root>
-              ))}
-            </Box>
+                        </CheckboxCard.Description>
+                      </CheckboxCard.Content>
+                      <CheckboxCard.Indicator />
+                    </CheckboxCard.Control>
+                  </CheckboxCard.Root>
+                ))}
+              </Box>
+              <Box
+                py="48px"
+                display="flex"
+                justifyContent="flex-end"
+                gap="16px"
+              >
+                <Button height="56px" width="150px" variant="outline">
+                  {t("cancel")}
+                </Button>
+                <Button height="56px" width="150px" variant="solid">
+                  {t("update")}
+                </Button>
+              </Box>
+            </>
           ) : (
             <Text>No unfinished subsectors.</Text>
           )}

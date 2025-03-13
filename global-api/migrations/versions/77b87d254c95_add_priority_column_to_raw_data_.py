@@ -1,4 +1,4 @@
-"""Add priority column to raw_data.datasource
+"""Add priority column to public.datasource
 
 Revision ID: 77b87d254c95
 Revises: 080e981ba25a
@@ -19,8 +19,8 @@ depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade():
-    op.add_column("datasource", sa.Column("priority", sa.Numeric(10, 3), nullable=True), schema="raw_data")
+    op.add_column("datasource", sa.Column("priority", sa.Numeric(10, 3), nullable=True), schema="public")
 
 
 def downgrade():
-    op.drop_column("datasource", "priority", schema="raw_data")
+    op.drop_column("datasource", "priority", schema="public")

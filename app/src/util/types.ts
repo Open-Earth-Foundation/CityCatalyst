@@ -234,6 +234,7 @@ export interface AcceptInviteResponse {
   success: boolean;
   error?: string;
 }
+
 export interface AcceptInviteRequest {
   email: string;
   cityIds: string[];

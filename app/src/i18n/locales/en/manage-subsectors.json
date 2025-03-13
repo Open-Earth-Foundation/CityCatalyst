@@ -17,5 +17,12 @@
     "c-description": "Data exists but cannot be reported due to confidentiality restrictions.",
     "how-to-use-notation-keys": "How to Use Notation Keys",
     "how-to-use-notation-keys-description": "When reporting GHG emissions, you can assign a notation key to indicate the status of unavailable data. This helps reviewers and stakeholders understand gaps in reporting while maintaining consistency with the Global Protocol for Community-Scale Greenhouse Gas Emission Inventories (GPC) and IPCC guidelines.",
-    "learn-more-link": "learn more at global protocol for cities (GPC)"
+    "learn-more-link": "learn more at global protocol for cities (GPC)",
+    "content-description": "Here are the sub-sectors that need to be completed for the stationary energy sector in compliance with the GPC Framework.",
+    "quick-actions": "Quick actions",
+    "notation-key": "Notation key",
+    "notation-key-input-placeholder": "Select which option suits best",
+    "explanation": "Explanation/ Justification",
+    "explanation-input-placeholder": "Write in detail why these scope are not included",
+    "apply-to-all": "Apply to all"
 }

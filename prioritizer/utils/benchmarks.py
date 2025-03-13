@@ -170,10 +170,10 @@ def get_accuracy_expert_vs_comparators(
         actionB = row["ActionB"]
         preferred_action = row["PreferredAction"]
 
-        print(f"\nCity: {row['CityLocode']}")
-        print(f"Action A: {actionA}")
-        print(f"Action B: {actionB}")
-        print(f"Preferred action: {preferred_action}")
+        # print(f"\nCity: {row['CityLocode']}")
+        # print(f"Action A: {actionA}")
+        # print(f"Action B: {actionB}")
+        # print(f"Preferred action: {preferred_action}")
 
         # Get the actual actions object from the actionsID (filling in the context)
         actionA_with_context = get_action_by_id(actions, actionA)
@@ -264,12 +264,12 @@ def get_accuracy_expert_vs_comparators(
                 # Count this as a valid comparison
                 valid_comparisons += 1
 
-                print("score_quanti", score_quanti)
-                print("score_quali", score_quali)
-                print("score_ml", score_ml)
-                print("score_consensus", score_consensus)
-                print("score_majority", score_majority)
-                print("valid_comparisons", valid_comparisons)
+                # print("score_quanti", score_quanti)
+                # print("score_quali", score_quali)
+                # print("score_ml", score_ml)
+                # print("score_consensus", score_consensus)
+                # print("score_majority", score_majority)
+                # print("valid_comparisons", valid_comparisons)
 
             except ValueError as e:
                 print(f"Skipping comparison due to error: {e}")

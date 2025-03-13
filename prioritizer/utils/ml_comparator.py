@@ -1,17 +1,80 @@
-import pickle
+"""
+The ml_comparator is a function that compares two actions based on the given city data and action details.
+
+Inputs:
+- city: dict
+- action_A: dict
+- action_B: dict
+
+Outputs:
+- int: 1 if action A is preferred, -1 if action B is preferred.
+
+The following fields are being used for the comparison:
+Actions:
+- ActionType
+- Hazard
+- CoBenefits
+- GHGReductionPotential
+- AdaptationEffectiveness
+- CostInvestmentNeeded
+- TimelineForImplementation
+- Biome
+
+City:
+- PopulationSize
+- PopulationDensity
+- Elevation
+- StationaryEnergyEmissions
+- TransportationEmissions
+- WasteEmissions
+- IndustrialProcessEmissions
+- LandUseEmissions
+- CCRA
+
+After the transformation, the following fields are being used for the comparison:
+- [GHGReductionPotential, StationaryEnergyEmissions] > EmissionReduction_Diff_stationary_energy
+- [GHGReductionPotential, TransportationEmissions] > EmissionReduction_Diff_transportation
+- [GHGReductionPotential, WasteEmissions] > EmissionReduction_Diff_waste
+- [GHGReductionPotential, IndustrialProcessEmissions] > EmissionReduction_Diff_ippu
+- [GHGReductionPotential, LandUseEmissions] > EmissionReduction_Diff_afolu
+- CostInvestmentNeeded > CostInvestmentNeeded_Diff
+- TimelineForImplementation > TimelineForImplementation_Diff
+- [Hazard,AdaptationEffectiveness, CCRA] > weighted_risk_score_diff
+- CoBenefits > CoBenefits_Diff_air_quality
+- CoBenefits > CoBenefits_Diff_water_quality
+- CoBenefits > CoBenefits_Diff_habitat
+- CoBenefits > CoBenefits_Diff_cost_of_living
+- CoBenefits > CoBenefits_Diff_housing
+- CoBenefits > CoBenefits_Diff_mobility
+- CoBenefits > CoBenefits_Diff_stakeholder_engagement
+- (biome_tropical_rainforest) >>> being skipped in one hot encoding to prevent multicollinearity
+- Biome > biome_temperate_forest
+- Biome > biome_desert
+- Biome > biome_grassland_savanna
+- Biome > biome_tundra
+- Biome > biome_wetlands
+- Biome > biome_mountains
+- Biome > biome_boreal_forest_taiga
+- Biome > biome_coastal_marine
+- ActionType > actionA_mitigation
+- ActionType > actionA_adaptation
+- ActionType > actionB_mitigation
+- ActionType > actionB_adaptation
+- PopulationSize > city_populationSize
+- PopulationDensity > city_populationDensity
+- Elevation > city_elevation
+
+Raises:
+    The function will raise an error if the dataframe is empty due to missing values.
+    The function will raise an error if the action types are not valid.
+"""
+
+# import pickle
 import pandas as pd
 import xgboost as xgb
 from pathlib import Path
 
 root_path = Path(__file__).resolve().parent.parent.parent
-
-# Load the scaler from the saved file
-# with open(Path(root_path / "data" / "ml" / "scaler" / "scaler.pkl"), "rb") as f:
-#     scaler = pickle.load(f)
-with open(
-    Path(root_path / "data" / "ml" / "scaler" / "scaler_train_test_split.pkl"), "rb"
-) as f:
-    scaler = pickle.load(f)
 
 loaded_model = xgb.XGBClassifier()
 # Load hyperparameters and trained weights
@@ -98,6 +161,8 @@ def ml_compare(city: dict, action_A: dict, action_B: dict) -> int:
         actionB reduces by 200 kg CO2
         The difference is actionA - actionB = -100
         This will be in a dedicated column
+
+        >>> If a field is missing, the initial reduction potential it will be set to 0 per default.
         """
         sector_mapping = {
             "stationary_energy": "city_stationaryEnergyEmissions",
@@ -142,7 +207,6 @@ def ml_compare(city: dict, action_A: dict, action_B: dict) -> int:
                     df[f"{action}_EmissionReduction_{sector}"] = (
                         df[f"{action}_GHGReduction_{sector}"] * df[city_column] / 100
                     )
-
         # Compute differences in emission reductions between Action A and B
         # A positive value means that action A has higher emissions reduction
         # A negative value means that action B has higher emissions reduction
@@ -177,29 +241,43 @@ def ml_compare(city: dict, action_A: dict, action_B: dict) -> int:
 
         return df
 
-    def prepare_action_type_data(df) -> pd.DataFrame:
-        # Function to one-hot encode ActionType lists
-        def one_hot_encode_action_type(action_type_list, category):
-            """Check if category exists in the list and return 1 or 0."""
-            if isinstance(action_type_list, list):  # Ensure it's a list
-                return 1 if category in action_type_list else 0
-            return 0  # Default to 0 if missing
+    def prepare_action_type_data(df: pd.DataFrame) -> pd.DataFrame:
+        """
+        This function one-hot encodes the action type column.
+        It allows as input a list of action types, e.g. ["mitigation", "adaptation"]
+        It will return a dataframe with two columns, one for each action type.
+        E.g. if the input is ["mitigation", "adaptation"], the output will be:
+        mitigation	adaptation
+        actionA	1	0
+        actionB	0	1
 
-        # Apply encoding for both actions
+        >>> If the input is not a list, or if it contains invalid action types, it will raise an error.
+        """
+        allowed_types = {"mitigation", "adaptation"}
+
+        def encode(action_list, category):
+            if not isinstance(action_list, list) or not action_list:
+                raise ValueError("ActionType must be a non-empty list")
+            if any(item not in allowed_types for item in action_list):
+                raise ValueError(f"Invalid action types: {action_list}")
+            return 1 if category in action_list else 0
+
         for action in ["actionA", "actionB"]:
             df[f"{action}_mitigation"] = df[f"{action}_ActionType"].apply(
-                lambda x: one_hot_encode_action_type(x, "mitigation")
+                lambda x: encode(x, "mitigation")
             )
             df[f"{action}_adaptation"] = df[f"{action}_ActionType"].apply(
-                lambda x: one_hot_encode_action_type(x, "adaptation")
+                lambda x: encode(x, "adaptation")
             )
-
-        # Drop the original multi-label categorical columns
-        df.drop(columns=["actionA_ActionType", "actionB_ActionType"], inplace=True)
+            df.drop(columns=[f"{action}_ActionType"], inplace=True)
 
         return df
 
     def prepare_cost_investment_needed_data(df) -> pd.DataFrame:
+        """
+        This function maps the cost investment needed to a ranking.
+        The higher the cost, the lower the ranking.
+        """
         # Define cost ranking
         cost_mapping = {"low": 2, "medium": 1, "high": 0}
 
@@ -264,14 +342,6 @@ def ml_compare(city: dict, action_A: dict, action_B: dict) -> int:
         df["actionB_AdaptationEffectiveness"] = df[
             "actionB_AdaptationEffectiveness"
         ].map(lambda x: adaptation_mapping.get(x, 0))
-
-        # Compute difference
-        # df_cleaned['AdaptationEffectiveness_Diff'] = (
-        #     df_cleaned['actionA_AdaptationEffectiveness'] - df_cleaned['actionB_AdaptationEffectiveness']
-        # )
-
-        # Drop old colums
-        # df_cleaned.drop(columns=['actionA_AdaptationEffectiveness', 'actionB_AdaptationEffectiveness'], inplace=True)
 
         return df
 
@@ -469,29 +539,6 @@ def ml_compare(city: dict, action_A: dict, action_B: dict) -> int:
 
         return df
 
-    def prepare_numerical_data(df: pd.DataFrame, cols_to_scale: list) -> pd.DataFrame:
-        """
-        Scales only the specified numerical columns in the DataFrame.
-
-        Parameters:
-            df (pd.DataFrame): The input DataFrame.
-            cols_to_scale (list): List of column names to scale.
-
-        Returns:
-            pd.DataFrame: The DataFrame with selected columns scaled.
-        """
-
-        # Ensure all columns in cols_to_scale exist in the DataFrame
-        valid_cols = [col for col in cols_to_scale if col in df.columns]
-
-        if not valid_cols:
-            raise ValueError("None of the specified columns exist in the DataFrame.")
-
-        # Scale the selected columns
-        df[valid_cols] = scaler.transform(df[valid_cols])
-
-        return df
-
     def prepare_final_features(df: pd.DataFrame) -> pd.DataFrame:
         """
         Prepare the final features for the ML model by applying all the necessary transformations.
@@ -543,31 +590,6 @@ def ml_compare(city: dict, action_A: dict, action_B: dict) -> int:
     df_transformed = process_ccra_hazards_adaptation_effectiveness(df_transformed)
     df_transformed = prepare_co_benefits_data(df_transformed)
     df_transformed = prepare_biome_data(df_transformed)
-
-    # Scale numerical columns
-    df_transformed = prepare_numerical_data(
-        df_transformed,
-        [
-            "city_populationSize",
-            "city_populationDensity",
-            "city_elevation",
-            "EmissionReduction_Diff_stationary_energy",
-            "EmissionReduction_Diff_transportation",
-            "EmissionReduction_Diff_waste",
-            "EmissionReduction_Diff_ippu",
-            "EmissionReduction_Diff_afolu",
-            "CostInvestmentNeeded_Diff",
-            "TimelineForImplementation_Diff",
-            "weighted_risk_score_diff",
-            "CoBenefits_Diff_air_quality",
-            "CoBenefits_Diff_water_quality",
-            "CoBenefits_Diff_habitat",
-            "CoBenefits_Diff_cost_of_living",
-            "CoBenefits_Diff_housing",
-            "CoBenefits_Diff_mobility",
-            "CoBenefits_Diff_stakeholder_engagement",
-        ],
-    )
 
     # Final feature cleanup
     df_transformed = prepare_final_features(df_transformed)

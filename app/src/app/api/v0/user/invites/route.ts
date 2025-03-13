@@ -10,7 +10,7 @@ import { render } from "@react-email/components";
 import { InviteUserToMultipleCitiesTemplate } from "@/lib/emails/InviteUserToMultipleCitiesTemplate";
 import { Op } from "sequelize";
 import { logger } from "@/services/logger";
-import { CityInviteStatus } from "@/util/types";
+import { InviteStatus } from "@/util/types";
 
 import { subDays } from "date-fns";
 
@@ -22,7 +22,7 @@ export const GET = apiHandler(async (req, { params, session }) => {
   const invites = await db.models.CityInvite.findAll({
     where: {
       invitingUserId: session?.user.id,
-      status: { [Op.ne]: CityInviteStatus.CANCELED },
+      status: { [Op.ne]: InviteStatus.CANCELED },
     },
     include: [
       {
@@ -43,10 +43,10 @@ export const GET = apiHandler(async (req, { params, session }) => {
 
   for (const invite of invites) {
     if (
-      invite.status === CityInviteStatus.PENDING &&
+      invite.status === InviteStatus.PENDING &&
       new Date(invite.lastUpdated!) < subDays(now, 30)
     ) {
-      invite.status = CityInviteStatus.EXPIRED;
+      invite.status = InviteStatus.EXPIRED;
       await invite.save();
     }
   }
@@ -97,9 +97,9 @@ export const POST = apiHandler(async (req, { params, session }) => {
             });
 
             if (existingInvite) {
-              if (existingInvite.status !== CityInviteStatus.ACCEPTED) {
+              if (existingInvite.status !== InviteStatus.ACCEPTED) {
                 await existingInvite.update({
-                  status: CityInviteStatus.PENDING,
+                  status: InviteStatus.PENDING,
                 });
               }
               return existingInvite;

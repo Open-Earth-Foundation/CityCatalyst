@@ -140,6 +140,11 @@ import type { VersionAttributes, VersionCreationAttributes } from "./Version";
 import { Version as _Version } from "./Version";
 import { UserFile as _UserFile } from "./UserFile";
 import { CityInvite as _CityInvite } from "./CityInvite";
+import {
+  OrganizationInvite as _OrganizationInvite,
+  OrganizationInviteAttributes,
+  OrganizationInviteCreationAttributes,
+} from "./OrganizationInvite";
 import type {
   AssistantMessageAttributes,
   AssistantMessageCreationAttributes,
@@ -150,6 +155,13 @@ import type {
   AssistantThreadCreationAttributes,
 } from "./AssistantThread";
 import { AssistantThread as _AssistantThread } from "./AssistantThread";
+import type {
+  OrganizationAttributes,
+  OrganizationCreationAttributes,
+} from "./Organization";
+import { Organization as _Organization } from "./Organization";
+import type { ProjectAttributes, ProjectCreationAttributes } from "./Project";
+import { Project as _Project } from "./Project";
 
 export {
   _ActivityData as ActivityData,
@@ -173,6 +185,8 @@ export {
   _GHGs as GHGs,
   _Inventory as Inventory,
   _Methodology as Methodology,
+  _Organization as Organization,
+  _Project as Project,
   _Population as Population,
   _Publisher as Publisher,
   _ReportingLevel as ReportingLevel,
@@ -188,6 +202,7 @@ export {
   _CityInvite as CityInvite,
   _AssistantMessage as AssistantMessage,
   _AssistantThread as AssistantThread,
+  _OrganizationInvite as OrganizationInvite,
 };
 
 export type {
@@ -231,6 +246,12 @@ export type {
   InventoryCreationAttributes,
   MethodologyAttributes,
   MethodologyCreationAttributes,
+  OrganizationAttributes,
+  OrganizationCreationAttributes,
+  OrganizationInviteAttributes,
+  OrganizationInviteCreationAttributes,
+  ProjectAttributes,
+  ProjectCreationAttributes,
   PopulationAttributes,
   PopulationCreationAttributes,
   PublisherAttributes,
@@ -285,6 +306,8 @@ export function initModels(sequelize: Sequelize) {
   const GHGs = _GHGs.initModel(sequelize);
   const Inventory = _Inventory.initModel(sequelize);
   const Methodology = _Methodology.initModel(sequelize);
+  const Organization = _Organization.initModel(sequelize);
+  const Project = _Project.initModel(sequelize);
   const Population = _Population.initModel(sequelize);
   const Publisher = _Publisher.initModel(sequelize);
   const ReportingLevel = _ReportingLevel.initModel(sequelize);
@@ -300,6 +323,8 @@ export function initModels(sequelize: Sequelize) {
   const CityInvite = _CityInvite.initModel(sequelize);
   const AssistantMessage = _AssistantMessage.initModel(sequelize);
   const AssistantThread = _AssistantThread.initModel(sequelize);
+  const OrganizationInvite = _OrganizationInvite.initModel(sequelize);
+
   ActivityData.belongsToMany(DataSource, {
     as: "datasourceIdDataSources",
     through: DataSourceActivityData,
@@ -465,6 +490,11 @@ export function initModels(sequelize: Sequelize) {
     foreignKey: "invitingUserId",
     as: "invitingUser",
   });
+  User.hasMany(OrganizationInvite, {
+    foreignKey: "userId",
+    as: "organizationInvites",
+  });
+  OrganizationInvite.belongsTo(User, { as: "user", foreignKey: "userId" });
   User.belongsTo(Inventory, {
     as: "defaultInventory",
     foreignKey: "defaultInventoryId",
@@ -716,6 +746,14 @@ export function initModels(sequelize: Sequelize) {
   City.hasMany(UserFile, { foreignKey: "cityId", as: "userFiles" });
   City.hasMany(CityInvite, { as: "cityInvite", foreignKey: "cityId" });
   CityInvite.belongsTo(City, { as: "cityInvites", foreignKey: "cityId" });
+  Organization.hasMany(OrganizationInvite, {
+    as: "organizationInvite",
+    foreignKey: "organizationId",
+  });
+  OrganizationInvite.belongsTo(Organization, {
+    as: "organizationInvites",
+    foreignKey: "organizationId",
+  });
   GasValue.belongsTo(InventoryValue, {
     as: "inventoryValue",
     foreignKey: "inventoryValueId",
@@ -748,6 +786,16 @@ export function initModels(sequelize: Sequelize) {
     as: "assistantMessages",
     foreignKey: "threadId",
   });
+  Organization.hasMany(Project, {
+    as: "projects",
+    foreignKey: "organizationId",
+  });
+  Project.belongsTo(Organization, {
+    as: "organization",
+    foreignKey: "organizationId",
+  });
+  Project.hasMany(City, { as: "cities", foreignKey: "projectId" });
+  City.belongsTo(Project, { as: "project", foreignKey: "projectId" });
 
   return {
     ActivityData: ActivityData,
@@ -770,6 +818,8 @@ export function initModels(sequelize: Sequelize) {
     GHGs: GHGs,
     Inventory: Inventory,
     Methodology: Methodology,
+    Organization: Organization,
+    Project: Project,
     Population: Population,
     Publisher: Publisher,
     ReportingLevel: ReportingLevel,
@@ -783,6 +833,7 @@ export function initModels(sequelize: Sequelize) {
     Version: Version,
     UserFile: UserFile,
     CityInvite: CityInvite,
+    OrganizationInvite: OrganizationInvite,
     AssistantMessage: AssistantMessage,
     AssistantThread: AssistantThread,
     FormulaInput: FormulaInput,

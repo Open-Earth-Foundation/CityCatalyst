@@ -11,6 +11,7 @@ import {
 import { MenuRoot, MenuContent, MenuItem, MenuTrigger } from "./ui/menu";
 import { Button } from "./ui/button";
 import type { TFunction } from "i18next";
+import { useState } from "react";
 
 export const InventorySelect = ({
   t,
@@ -35,8 +36,14 @@ export const InventorySelect = ({
     router.push(`/${targetInventory.inventoryId}`);
   };
 
+  const [menuHighlight, setMenuHighlight] = useState<string | null>(null);
+
   return (
-    <MenuRoot lazyMount>
+    <MenuRoot
+      lazyMount
+      variant="solid"
+      onHighlightChange={(value) => setMenuHighlight(value.highlightedValue)}
+    >
       <MenuTrigger asChild>
         <Button
           aria-label="Select inventory"
@@ -66,14 +73,22 @@ export const InventorySelect = ({
               value={city.cityId}
               onClick={() => !isCurrent && onSelect({ city, years })}
             >
-              <Text color="base.dark">
+              <Text>
                 {city.name}, {city.country}
               </Text>
             </MenuItem>
           );
         })}
-        <MenuItem value="" onClick={goToOnboarding}>
-          <Icon as={MdAdd} color="interactive.secondary" boxSize={6} />
+        <MenuItem value="add-city" onClick={goToOnboarding}>
+          <Icon
+            as={MdAdd}
+            color={
+              menuHighlight === "add-city"
+                ? "background.neutral"
+                : "interactive.secondary"
+            }
+            boxSize={6}
+          />
           {t("add-a-new-city")}
         </MenuItem>
       </MenuContent>

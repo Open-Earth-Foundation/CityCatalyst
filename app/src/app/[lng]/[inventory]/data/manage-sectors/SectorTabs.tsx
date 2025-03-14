@@ -7,6 +7,7 @@ import {
   Field,
   Icon,
   Input,
+  ProgressCircle,
   Tabs,
   Text,
   Textarea,
@@ -60,7 +61,22 @@ const SectorTabs: FC<SectorTabsProps> = ({
   }, [inventoryData, isInventoryDataLoading, inventoryDataError]);
   console.log(unfinishedSubsectorsData);
   if (isInventoryDataLoading) {
-    return <Box>Loading...</Box>;
+    return (
+      <Box
+        height="40vh"
+        w="100%"
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+      >
+        <ProgressCircle.Root value={null} size="sm">
+          <ProgressCircle.Circle>
+            <ProgressCircle.Track />
+            <ProgressCircle.Range />
+          </ProgressCircle.Circle>
+        </ProgressCircle.Root>
+      </Box>
+    );
   }
 
   const renderSectorTabList = () => {
@@ -120,6 +136,15 @@ const SectorTabs: FC<SectorTabsProps> = ({
           key={sector.sectorId}
           value={`tab-${sector.sectorId}`}
           pt="70px"
+          _open={{
+            animationName: "fade-in, scale-in",
+            animationDuration: "300ms",
+          }}
+          _closed={{
+            animationName: "fade-out, scale-out",
+            animationDuration: "120ms",
+          }}
+          inset="0"
         >
           {/* Heading */}
           <Box mb="48px" display="flex" flexDirection="column" gap="16px">
@@ -205,7 +230,12 @@ const SectorTabs: FC<SectorTabsProps> = ({
                 gap="48px"
               >
                 {unfinishedSubsectors.map((subsector) => (
-                  <CheckboxCard.Root width="497px" height="344px" p={0}>
+                  <CheckboxCard.Root
+                    width="497px"
+                    height="344px"
+                    p={0}
+                    borderCollapse="border.neutral"
+                  >
                     <CheckboxCard.HiddenInput />
                     <CheckboxCard.Control>
                       <CheckboxCard.Content>

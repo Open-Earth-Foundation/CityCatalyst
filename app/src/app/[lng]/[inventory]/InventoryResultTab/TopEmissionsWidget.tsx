@@ -109,36 +109,48 @@ const TopEmissionsWidget = ({
 
   if (isTopEmissionsResponseLoading) {
     return (
-      <HStack>
-        <Card.Root marginLeft={"4"} backgroundColor={"white"} p={4}>
-          <Center>
-            <ProgressCircleRoot value={null} size="sm">
+      <Card.Root
+        marginLeft={"4"}
+        backgroundColor={"white"}
+        p={4}
+        w="full"
+        h={450}
+      >
+        <Card.Body>
+          <Center w="full" h="full">
+            <ProgressCircleRoot value={null} size="md">
               <ProgressCircleRing cap="round" />
             </ProgressCircleRoot>
           </Center>
-        </Card.Root>
-      </HStack>
+        </Card.Body>
+      </Card.Root>
     );
   } else if (results!?.totalEmissions.total <= 0) {
     return (
       <Card.Root width={"713px"} height={"448px"}>
-        <Heading size="sm">{t("top-emissions")}</Heading>
-        <EmptyStateCardContent
-          width={"665px"}
-          height={"344px"}
-          t={t}
-          inventoryId={inventory?.inventoryId}
-          isPublic={isPublic}
-        />
+        <Card.Header>
+          <Heading size="sm">{t("top-emissions")}</Heading>
+        </Card.Header>
+        <Card.Body>
+          <EmptyStateCardContent
+            width={"665px"}
+            height={"344px"}
+            t={t}
+            inventoryId={inventory?.inventoryId}
+            isPublic={isPublic}
+          />
+        </Card.Body>
       </Card.Root>
     );
   } else {
     return (
-      <HStack>
-        <Card.Root marginLeft={"4"} backgroundColor={"white"} p={4}>
+      <Card.Root marginLeft={1} backgroundColor="white">
+        <Card.Header>
           <Heading size="sm" my={4}>
             {t("total-emissions")}
           </Heading>
+        </Card.Header>
+        <Card.Body>
           <SegmentedProgress
             values={getPercentagesForProgress()}
             total={results?.totalEmissions.total}
@@ -156,8 +168,8 @@ const TopEmissionsWidget = ({
             topEmissions={results?.topEmissions?.bySubSector?.slice(0, 3) ?? []}
             t={t}
           />
-        </Card.Root>
-      </HStack>
+        </Card.Body>
+      </Card.Root>
     );
   }
 };

@@ -278,6 +278,7 @@ export default class AdminService {
               source,
               inventory,
               populationScaleFactors,
+              true, // force replace existing InventoryValue entries
             );
             if (result.success) {
               isSuccessful = true;

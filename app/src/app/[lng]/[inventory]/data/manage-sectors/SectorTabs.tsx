@@ -48,6 +48,10 @@ const SectorTabs: FC<SectorTabsProps> = ({
 }) => {
   const [unfinishedSubsectorsData, setUnfinishedSubsectorsData] =
     React.useState<SubSectorWithRelations[] | undefined>([]);
+  // State to track selected subsector IDs per sector (keyed by sector ID)
+  const [selectedCardsBySector, setSelectedCardsBySector] = React.useState<
+    Record<string, string[]>
+  >({}); // State to track selected subsector IDs per sector (keyed by sector ID)
 
   useEffect(() => {
     if (!isInventoryDataLoading) {
@@ -131,6 +135,36 @@ const SectorTabs: FC<SectorTabsProps> = ({
       const unfinishedSubsectors = subSectors.filter(
         (subsector) => !subsector.completed,
       );
+
+      const selectedForThisSector =
+        selectedCardsBySector[sector.sectorId] || [];
+
+      const handleToggleCard = (subSectorId: string) => {
+        setSelectedCardsBySector((prev) => ({
+          ...prev,
+          [sector.sectorId]: prev[sector.sectorId]?.includes(subSectorId)
+            ? prev[sector.sectorId].filter((id) => id !== subSectorId)
+            : [...(prev[sector.sectorId] || []), subSectorId],
+        }));
+      };
+
+      // Toggle select all for the current sector
+      const handleSelectAll = () => {
+        if (selectedForThisSector.length === unfinishedSubsectors.length) {
+          // All are selected so unselect all
+          setSelectedCardsBySector((prev) => ({
+            ...prev,
+            [sector.sectorId]: [],
+          }));
+        } else {
+          // Select all unfinished subsectors
+          setSelectedCardsBySector((prev) => ({
+            ...prev,
+            [sector.sectorId]: unfinishedSubsectors.map((s) => s.subsectorId),
+          }));
+        }
+      };
+
       return (
         <Tabs.Content
           key={sector.sectorId}
@@ -161,10 +195,17 @@ const SectorTabs: FC<SectorTabsProps> = ({
           {/* Quick Action form */}
           <Box mb="48px" display="flex" flexDirection="column" gap="32px">
             <Box display="flex" alignItems="center" gap="8px">
-              <Icon as={BiSelectMultiple} color="content.link" boxSize={6} />
-              <Text fontWeight="bold" fontFamily="heading" color="content.link">
-                {t("quick-actions")}
-              </Text>
+              {/* Select All button */}
+              <Button variant="ghost" onClick={handleSelectAll}>
+                <Icon as={BiSelectMultiple} color="content.link" boxSize={6} />
+                <Text
+                  fontWeight="bold"
+                  fontFamily="heading"
+                  color="content.link"
+                >
+                  {t("quick-actions")}
+                </Text>
+              </Button>
             </Box>
             <Box display="flex" gap="16px" alignItems="end">
               <Field.Root orientation="vertical">
@@ -232,9 +273,16 @@ const SectorTabs: FC<SectorTabsProps> = ({
                 {unfinishedSubsectors.map((subsector) => (
                   <CheckboxCard.Root
                     width="497px"
+                    key={subsector.subsectorId}
                     height="344px"
                     p={0}
                     borderCollapse="border.neutral"
+                    checked={selectedForThisSector.includes(
+                      subsector.subsectorId,
+                    )}
+                    onCheckedChange={() =>
+                      handleToggleCard(subsector.subsectorId)
+                    }
                   >
                     <CheckboxCard.HiddenInput />
                     <CheckboxCard.Control>

@@ -120,7 +120,7 @@ export default class AdminService {
     const errors: { locode: string; error: string }[] = [];
 
     const inventories = await db.models.Inventory.findAll({
-      attributes: ["inventoryId", "cityLocode"],
+      attributes: ["inventoryId"],
       where: {
         year: { [Op.in]: props.years },
       },

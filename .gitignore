@@ -204,3 +204,4 @@ data/sample_action.json
 data/sample_city.json
 k8s/deployment.yml
 k8s/
+data/output/

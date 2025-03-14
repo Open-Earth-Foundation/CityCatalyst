@@ -19,6 +19,7 @@ export interface BulkInventoryProps {
 }
 
 export interface BulkConnectSourcesProps {
+  userEmail: string; // Email of the user whose inventories are to be connected
   cityLocodes: string[]; // List of city locodes
   years: number[]; // List of years to create inventories for
 }
@@ -129,6 +130,14 @@ export default class AdminService {
           as: "city",
           attributes: ["locode"],
           where: { locode: { [Op.in]: props.cityLocodes } },
+          include: [
+            {
+              model: db.models.User,
+              as: "users",
+              attributes: ["userId"],
+              where: { email: props.userEmail },
+            },
+          ],
         },
       ],
     });

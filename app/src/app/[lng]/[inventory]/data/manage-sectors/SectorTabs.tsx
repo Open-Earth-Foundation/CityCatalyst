@@ -41,6 +41,16 @@ interface SectorTabsProps {
   inventoryDataError: FetchBaseQueryError | SerializedError | undefined;
 }
 
+interface QuickActionInputs {
+  notationKey: string;
+  explanation: string;
+}
+
+interface CardInputs {
+  notationKey: string;
+  explanation: string;
+}
+
 const SectorTabs: FC<SectorTabsProps> = ({
   inventoryData,
   inventoryDataError,
@@ -53,6 +63,15 @@ const SectorTabs: FC<SectorTabsProps> = ({
   const [selectedCardsBySector, setSelectedCardsBySector] = React.useState<
     Record<string, string[]>
   >({}); // State to track selected subsector IDs per sector (keyed by sector ID)
+
+  // Quick action input values per sector
+  const [quickActionValues, setQuickActionValues] = React.useState<
+    Record<string, QuickActionInputs>
+  >({});
+  // Card-specific inputs keyed by subSectorId
+  const [cardInputs, setCardInputs] = React.useState<
+    Record<string, CardInputs>
+  >({});
 
   useEffect(() => {
     if (!isInventoryDataLoading) {
@@ -140,6 +159,12 @@ const SectorTabs: FC<SectorTabsProps> = ({
       const selectedForThisSector =
         selectedCardsBySector[sector.sectorId] || [];
 
+      // Get quick action values for this sector, defaulting to empty strings
+      const quickValues = quickActionValues[sector.sectorId] || {
+        notationKey: "",
+        explanation: "",
+      };
+
       const handleToggleCard = (subSectorId: string) => {
         setSelectedCardsBySector((prev) => ({
           ...prev,
@@ -165,7 +190,19 @@ const SectorTabs: FC<SectorTabsProps> = ({
           }));
         }
       };
-
+      // Apply quick action values to each selected card
+      const handleApplyToAll = () => {
+        setCardInputs((prev) => {
+          const newInputs = { ...prev };
+          selectedForThisSector.forEach((subSectorId) => {
+            newInputs[subSectorId] = {
+              notationKey: quickValues.notationKey,
+              explanation: quickValues.explanation,
+            };
+          });
+          return newInputs;
+        });
+      };
       return (
         <Tabs.Content
           key={sector.sectorId}
@@ -221,7 +258,21 @@ const SectorTabs: FC<SectorTabsProps> = ({
             </Box>
             <Box display="flex" gap="16px" alignItems="end">
               <Field.Root orientation="vertical">
-                <SelectRoot variant="outline" collection={notationKeys}>
+                <SelectRoot
+                  value={[quickValues.notationKey]}
+                  onValueChange={({ value: newValue }) =>
+                    setQuickActionValues((prev) => ({
+                      ...prev,
+                      [sector.sectorId]: {
+                        ...prev[sector.sectorId],
+                        notationKey: newValue.toString(),
+                        explanation: prev[sector.sectorId]?.explanation || "",
+                      },
+                    }))
+                  }
+                  variant="outline"
+                  collection={notationKeys}
+                >
                   <SelectLabel display="flex" alignItems="center" gap="8px">
                     <Text fontFamily="heading" color="content.secondary">
                       {t("notation-key")}
@@ -265,10 +316,25 @@ const SectorTabs: FC<SectorTabsProps> = ({
                   borderColor="border.neutral"
                   borderRadius="md"
                   shadow="1dp"
+                  value={quickValues.explanation}
+                  onChange={(e) =>
+                    setQuickActionValues((prev) => ({
+                      ...prev,
+                      [sector.sectorId]: {
+                        ...prev[sector.sectorId],
+                        explanation: e.target.value,
+                        notationKey: prev[sector.sectorId]?.notationKey || "",
+                      },
+                    }))
+                  }
                 />
                 <Field.ErrorText>This is an error text</Field.ErrorText>
               </Field.Root>
-              <Button variant="ghost" color="content.link">
+              <Button
+                variant="ghost"
+                color="content.link"
+                onClick={handleApplyToAll}
+              >
                 {t("apply-to-all")}
               </Button>
             </Box>
@@ -282,130 +348,162 @@ const SectorTabs: FC<SectorTabsProps> = ({
                 gridTemplateColumns="repeat(auto-fill, minmax(450px, 1fr))"
                 gap="48px"
               >
-                {unfinishedSubsectors.map((subsector) => (
-                  <CheckboxCard.Root
-                    width="497px"
-                    key={subsector.subsectorId}
-                    height="344px"
-                    p={0}
-                    borderCollapse="border.neutral"
-                    checked={selectedForThisSector.includes(
-                      subsector.subsectorId,
-                    )}
-                    onCheckedChange={() =>
-                      handleToggleCard(subsector.subsectorId)
-                    }
-                  >
-                    <CheckboxCard.HiddenInput />
-                    <CheckboxCard.Control>
-                      <CheckboxCard.Content>
-                        <CheckboxCard.Label my="24px">
-                          <Icon
-                            as={RiErrorWarningFill}
-                            boxSize={5}
-                            color="sentiment.warningDefault"
-                          />
-                          <Text
-                            fontSize="title.md"
-                            fontFamily="heading"
-                            fontWeight="bold"
-                          >
-                            {" "}
-                            {t(subsector.referenceNumber!)} {""}
-                            {t(subsector.subsectorName!)}
-                          </Text>
-                        </CheckboxCard.Label>
-                        <CheckboxCard.Description w="full">
-                          <Box
-                            mb="48px"
-                            display="flex"
-                            flexDirection="column"
-                            gap="32px"
-                            w="full"
-                          >
+                {unfinishedSubsectors.map((subsector) => {
+                  const cardValue = cardInputs[subsector.subsectorId] || {
+                    notationKey: "",
+                    explanation: "",
+                  };
+                  return (
+                    <CheckboxCard.Root
+                      width="497px"
+                      key={subsector.subsectorId}
+                      height="344px"
+                      p={0}
+                      borderCollapse="border.neutral"
+                      checked={selectedForThisSector.includes(
+                        subsector.subsectorId,
+                      )}
+                      onCheckedChange={() =>
+                        handleToggleCard(subsector.subsectorId)
+                      }
+                    >
+                      <CheckboxCard.HiddenInput />
+                      <CheckboxCard.Control>
+                        <CheckboxCard.Content>
+                          <CheckboxCard.Label my="24px">
+                            <Icon
+                              as={RiErrorWarningFill}
+                              boxSize={5}
+                              color="sentiment.warningDefault"
+                            />
+                            <Text
+                              fontSize="title.md"
+                              fontFamily="heading"
+                              fontWeight="bold"
+                            >
+                              {" "}
+                              {t(subsector.referenceNumber!)} {""}
+                              {t(subsector.subsectorName!)}
+                            </Text>
+                          </CheckboxCard.Label>
+                          <CheckboxCard.Description w="full">
                             <Box
+                              mb="48px"
                               display="flex"
-                              flexDir="column"
-                              gap="16px"
+                              flexDirection="column"
+                              gap="32px"
                               w="full"
                             >
-                              <Field.Root orientation="vertical" w="ull">
-                                <SelectRoot
-                                  variant="outline"
-                                  collection={notationKeys}
-                                  w="full"
-                                >
-                                  <SelectLabel
-                                    display="flex"
-                                    alignItems="center"
-                                    gap="8px"
+                              <Box
+                                display="flex"
+                                flexDir="column"
+                                gap="16px"
+                                w="full"
+                              >
+                                <Field.Root orientation="vertical" w="ull">
+                                  <SelectRoot
+                                    variant="outline"
+                                    collection={notationKeys}
+                                    w="full"
+                                    value={[cardValue.notationKey]}
+                                    onValueChange={(e) =>
+                                      setCardInputs((prev) => ({
+                                        ...prev,
+                                        [subsector.subsectorId]: {
+                                          ...prev[subsector.subsectorId],
+                                          notationKey: e.value.toString(),
+                                          explanation:
+                                            prev[subsector.subsectorId]
+                                              ?.explanation || "",
+                                        },
+                                      }))
+                                    }
                                   >
+                                    <SelectLabel
+                                      display="flex"
+                                      alignItems="center"
+                                      gap="8px"
+                                    >
+                                      <Text
+                                        fontFamily="heading"
+                                        color="content.secondary"
+                                      >
+                                        {t("notation-key")}
+                                      </Text>
+                                      <Icon
+                                        as={MdInfoOutline}
+                                        color="interactive.control"
+                                        boxSize={4}
+                                      />
+                                    </SelectLabel>
+                                    <SelectTrigger
+                                      borderWidth="1px"
+                                      borderColor="border.neutral"
+                                      borderRadius="md"
+                                    >
+                                      <SelectValueText
+                                        color="content.tertiary"
+                                        fontWeight="medium"
+                                        placeholder={t(
+                                          "notation-key-input-placeholder",
+                                        )}
+                                      />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      {notationKeys.items.map((key) => (
+                                        <SelectItem item={key} key={key.value}>
+                                          {key.label}
+                                        </SelectItem>
+                                      ))}
+                                    </SelectContent>
+                                  </SelectRoot>
+                                </Field.Root>
+                                <Field.Root orientation="vertical">
+                                  <Field.Label>
                                     <Text
                                       fontFamily="heading"
                                       color="content.secondary"
                                     >
-                                      {t("notation-key")}
+                                      {t("explanation")}
                                     </Text>
-                                    <Icon
-                                      as={MdInfoOutline}
-                                      color="interactive.control"
-                                      boxSize={4}
-                                    />
-                                  </SelectLabel>
-                                  <SelectTrigger
+                                  </Field.Label>
+
+                                  <Textarea
+                                    placeholder={t(
+                                      "explanation-input-placeholder",
+                                    )}
                                     borderWidth="1px"
                                     borderColor="border.neutral"
                                     borderRadius="md"
-                                  >
-                                    <SelectValueText
-                                      color="content.tertiary"
-                                      fontWeight="medium"
-                                      placeholder={t(
-                                        "notation-key-input-placeholder",
-                                      )}
-                                    />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    {notationKeys.items.map((key) => (
-                                      <SelectItem item={key} key={key.value}>
-                                        {key.label}
-                                      </SelectItem>
-                                    ))}
-                                  </SelectContent>
-                                </SelectRoot>
-                              </Field.Root>
-                              <Field.Root orientation="vertical">
-                                <Field.Label>
-                                  <Text
-                                    fontFamily="heading"
-                                    color="content.secondary"
-                                  >
-                                    {t("explanation")}
-                                  </Text>
-                                </Field.Label>
-
-                                <Textarea
-                                  placeholder={t(
-                                    "explanation-input-placeholder",
-                                  )}
-                                  borderWidth="1px"
-                                  borderColor="border.neutral"
-                                  borderRadius="md"
-                                  shadow="1dp"
-                                  height="96px"
-                                />
-                                <Field.ErrorText>
-                                  This is an error text
-                                </Field.ErrorText>
-                              </Field.Root>
+                                    shadow="1dp"
+                                    height="96px"
+                                    value={cardValue.explanation}
+                                    onChange={(e) =>
+                                      setCardInputs((prev) => ({
+                                        ...prev,
+                                        [subsector.subsectorId]: {
+                                          ...prev[subsector.subsectorId],
+                                          explanation: e.target.value,
+                                          notationKey:
+                                            prev[subsector.subsectorId]
+                                              ?.notationKey || "",
+                                        },
+                                      }))
+                                    }
+                                  />
+                                  <Field.ErrorText>
+                                    This is an error text
+                                  </Field.ErrorText>
+                                </Field.Root>
+                              </Box>
                             </Box>
-                          </Box>
-                        </CheckboxCard.Description>
-                      </CheckboxCard.Content>
-                      <CheckboxCard.Indicator />
-                    </CheckboxCard.Control>
-                  </CheckboxCard.Root>
-                ))}
+                          </CheckboxCard.Description>
+                        </CheckboxCard.Content>
+                        <CheckboxCard.Indicator />
+                      </CheckboxCard.Control>
+                    </CheckboxCard.Root>
+                  );
+                })}
               </Box>
               <Box
                 py="48px"

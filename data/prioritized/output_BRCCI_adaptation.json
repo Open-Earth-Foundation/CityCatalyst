@@ -4,80 +4,40 @@
         "cityName": "Cama\u00e7ari",
         "region": "BR-BA",
         "regionName": "Bahia",
-        "actionId": "ipcc_0087",
-        "actionName": "Infrastructure retrofitting",
+        "actionId": "icare_0169",
+        "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
         "actionPriority": 1,
-        "explanation": "Ranked #1 because it has the highest quantitative score and targets enhancing the resilience of existing built infrastructure. In a context where reducing risks from hazards (such as heatwaves and flooding) is crucial, retrofitting can indirectly contribute to emissions reduction and cut down on energy losses. This action aligns with multiple priorities: leveraging cost\u2010effectiveness, reducing dependency risks, and supporting long\u2010term sustainable urban capacity in Cama\u00e7ari."
+        "explanation": "Ranked #1 by tournament ranking algorithm"
     },
     {
         "locode": "BRCCI",
         "cityName": "Cama\u00e7ari",
         "region": "BR-BA",
         "regionName": "Bahia",
-        "actionId": "ipcc_0091",
-        "actionName": "Diversification of livelihoods ",
+        "actionId": "icare_0176",
+        "actionName": "Development of Climate Action Plan",
         "actionPriority": 2,
-        "explanation": "Ranked #2 because it not only has a very high quantitative score but also addresses socio-demographic challenges by improving income diversity in a city with a very high low-income segment. By reducing vulnerability and enhancing community resilience, it aligns with adaptation and risk-reduction priorities, making it effective and cost-conscious."
+        "explanation": "Ranked #2 by tournament ranking algorithm"
     },
     {
         "locode": "BRCCI",
         "cityName": "Cama\u00e7ari",
         "region": "BR-BA",
         "regionName": "Bahia",
-        "actionId": "ipcc_0095",
-        "actionName": "Disaster early warning",
+        "actionId": "icare_0150",
+        "actionName": "Implement Loss Reduction and Control Program promoting water security for the municipality",
         "actionPriority": 3,
-        "explanation": "Ranked #3 due to its strong potential to reduce risks associated with climate hazards such as flooding, landslides, and heatwaves, as evidenced by high normalized risk scores for infrastructure and public health in Cama\u00e7ari. Its quick implementation timeline and potential to save lives make it a top adaptation priority."
+        "explanation": "Ranked #3 by tournament ranking algorithm"
     },
     {
         "locode": "BRCCI",
         "cityName": "Cama\u00e7ari",
         "region": "BR-BA",
         "regionName": "Bahia",
-        "actionId": "c40_0053",
-        "actionName": "Water Savings",
+        "actionId": "icare_0149",
+        "actionName": "Encourage sustainable land use practices",
         "actionPriority": 4,
-        "explanation": "Ranked #4 because water management is critical in a tropical rainforest climate like Cama\u00e7ari and improves resilience against drought hazards. With a high quantitative score, this action is cost-effective, reduces water-related risks, and requires minimal dependencies making it highly attractive."
-    },
-    {
-        "locode": "BRCCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BR-BA",
-        "regionName": "Bahia",
-        "actionId": "c40_0054",
-        "actionName": "Water Recycling",
-        "actionPriority": 5,
-        "explanation": "Ranked #5 as it supports sustainable water management in an area where water resources need protection and efficient use is paramount. It contributes to adaptation by reducing water demand pressures and is aligned with cost-effectiveness and faster impact, making it important for Cama\u00e7ari."
-    },
-    {
-        "locode": "BRCCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BR-BA",
-        "regionName": "Bahia",
-        "actionId": "ipcc_0088",
-        "actionName": "Building codes",
-        "actionPriority": 6,
-        "explanation": "Ranked #6 because establishing strict building codes improves long-term resilience of new infrastructures. This directly supports risk reduction associated with extreme weather events and heatwaves, and helps in maintaining environmental compatibility with local urban development norms in Cama\u00e7ari."
-    },
-    {
-        "locode": "BRCCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BR-BA",
-        "regionName": "Bahia",
-        "actionId": "ipcc_0092",
-        "actionName": "Social safety nets",
-        "actionPriority": 7,
-        "explanation": "Ranked #7 due to its role in safeguarding vulnerable populations in a city with very high low-income rates. Social safety nets are critical for building adaptive capacity and reducing socio-economic risks, making it a vital complement to physical infrastructure investments."
-    },
-    {
-        "locode": "BRCCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BR-BA",
-        "regionName": "Bahia",
-        "actionId": "ipcc_0093",
-        "actionName": "Availability of health infrastructure",
-        "actionPriority": 8,
-        "explanation": "Ranked #8 as it addresses public health risks\u2014one of the major concerns in Cama\u00e7ari with very high risk scores for heatwaves and diseases. Strengthening health infrastructure helps mitigate long-term societal risks, ensuring rapid response to climate-induced crises."
+        "explanation": "Ranked #4 by tournament ranking algorithm"
     },
     {
         "locode": "BRCCI",
@@ -86,18 +46,28 @@
         "regionName": "Bahia",
         "actionId": "ipcc_0094",
         "actionName": "Access to health care",
-        "actionPriority": 9,
-        "explanation": "Ranked #9 because improved access to health care is essential for reducing vulnerability, especially in regions subject to public health hazards. It supports the adaptation strategy by enhancing community resilience and complements improvements in health infrastructure."
+        "actionPriority": 5,
+        "explanation": "Ranked #5 by tournament ranking algorithm"
     },
     {
         "locode": "BRCCI",
         "cityName": "Cama\u00e7ari",
         "region": "BR-BA",
         "regionName": "Bahia",
-        "actionId": "ipcc_0096",
-        "actionName": "Farm/fishery improvements",
-        "actionPriority": 10,
-        "explanation": "Ranked #10 since enhancing farm and fishery practices contributes to both food security and local economic resilience. This action is particularly relevant given the threat of climate hazards such as droughts and floods, and it promotes sectors that can indirectly reduce emissions through sustainable practices."
+        "actionId": "icare_0172",
+        "actionName": "Develop and implement the Municipal Risk Reduction Plan (PMRR) and identify population groups vulnerable to climate risks.",
+        "actionPriority": 6,
+        "explanation": "Ranked #6 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "icare_0164",
+        "actionName": "Hydrological Monitoring System with Telemetry Stations",
+        "actionPriority": 7,
+        "explanation": "Ranked #7 by tournament ranking algorithm"
     },
     {
         "locode": "BRCCI",
@@ -106,8 +76,38 @@
         "regionName": "Bahia",
         "actionId": "ipcc_0097",
         "actionName": "Food storage/distribution improvements",
+        "actionPriority": 8,
+        "explanation": "Ranked #8 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "icare_0145",
+        "actionName": "Strengthen the healthcare network to attend to climate victims",
+        "actionPriority": 9,
+        "explanation": "Ranked #9 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "icare_0148",
+        "actionName": "Create the Municipal Climate Change Forum",
+        "actionPriority": 10,
+        "explanation": "Ranked #10 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "ipcc_0087",
+        "actionName": "Infrastructure retrofitting",
         "actionPriority": 11,
-        "explanation": "Ranked #11 because strengthening food storage and distribution systems minimizes food security risks during extreme events. This action is vital in maintaining a stable supply chain, especially when facing hazards that can disrupt local markets in Cama\u00e7ari."
+        "explanation": "Ranked #11 by tournament ranking algorithm"
     },
     {
         "locode": "BRCCI",
@@ -117,86 +117,86 @@
         "actionId": "ipcc_0098",
         "actionName": "Behaviour change in diets and food waste",
         "actionPriority": 12,
-        "explanation": "Ranked #12 as it promotes sustainable consumption practices that can lead to reduced emissions indirectly and improve food security. Encouraging behaviour change is often a cost-effective method to strengthen community resilience and environmental compatibility."
+        "explanation": "Ranked #12 by tournament ranking algorithm"
     },
     {
         "locode": "BRCCI",
         "cityName": "Cama\u00e7ari",
         "region": "BR-BA",
         "regionName": "Bahia",
-        "actionId": "ipcc_0099",
-        "actionName": "Water capture/storage",
+        "actionId": "icare_0154",
+        "actionName": "Cleaning and Unclogging of Channels with Installation of Eco-barriers",
         "actionPriority": 13,
-        "explanation": "Ranked #13 due to its focus on enhancing local water resources management, a critical need in tropical environments. This action can mitigate drought impacts, is relatively low-cost, and is a straightforward intervention with minimal dependencies."
+        "explanation": "Ranked #13 by tournament ranking algorithm"
     },
     {
         "locode": "BRCCI",
         "cityName": "Cama\u00e7ari",
         "region": "BR-BA",
         "regionName": "Bahia",
-        "actionId": "ipcc_0100",
-        "actionName": "Efficient water use/demand",
+        "actionId": "ipcc_0096",
+        "actionName": "Farm/fishery improvements",
         "actionPriority": 14,
-        "explanation": "Ranked #14 because promoting efficient water use reduces future demand pressures and risks associated with water scarcity. It offers a quick turnaround in benefits and cost-effectiveness which suits Cama\u00e7ari\u2019s resource management needs."
+        "explanation": "Ranked #14 by tournament ranking algorithm"
     },
     {
         "locode": "BRCCI",
         "cityName": "Cama\u00e7ari",
         "region": "BR-BA",
         "regionName": "Bahia",
-        "actionId": "ipcc_0101",
-        "actionName": "Efficient water supply/distribution",
+        "actionId": "icare_0189",
+        "actionName": "Encourage the adoption of cool roofs",
         "actionPriority": 15,
-        "explanation": "Ranked #15 as ensuring efficient water supply and distribution helps in mitigating service disruptions during climate hazards. It improves the environmental and socio-economic resilience, fitting well with Cama\u00e7ari\u2019s adaptation strategy framework."
+        "explanation": "Ranked #15 by tournament ranking algorithm"
     },
     {
         "locode": "BRCCI",
         "cityName": "Cama\u00e7ari",
         "region": "BR-BA",
         "regionName": "Bahia",
-        "actionId": "ipcc_0102",
-        "actionName": "Seasonal/temporary mobility",
+        "actionId": "c40_0056",
+        "actionName": "Watershed Preservation",
         "actionPriority": 16,
-        "explanation": "Ranked #16 because flexible mobility solutions aid in quick adaptation to seasonal climatic variations and immediate disaster responses. This action is beneficial in reducing risk dependencies, especially in vulnerable urban settings."
+        "explanation": "Ranked #16 by tournament ranking algorithm"
     },
     {
         "locode": "BRCCI",
         "cityName": "Cama\u00e7ari",
         "region": "BR-BA",
         "regionName": "Bahia",
-        "actionId": "c40_0050",
-        "actionName": "White Roofs",
+        "actionId": "icare_0151",
+        "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
         "actionPriority": 17,
-        "explanation": "Ranked #17 as the white roofs intervention is a cost-effective method to reduce urban heat islands. It provides an environmental benefit by lowering energy demands and aligns with the city\u2019s need for fast, implementable adaptations to rising temperatures."
+        "explanation": "Ranked #17 by tournament ranking algorithm"
     },
     {
         "locode": "BRCCI",
         "cityName": "Cama\u00e7ari",
         "region": "BR-BA",
         "regionName": "Bahia",
-        "actionId": "c40_0051",
-        "actionName": "Public Shading",
+        "actionId": "icare_0162",
+        "actionName": "Strengthen programs for control and conservation of protected areas",
         "actionPriority": 18,
-        "explanation": "Ranked #18 because enhancing public shading is a low-cost, quick impact intervention that can improve outdoor thermal comfort and reduce heat-related risks. This measure is relatively easy to implement and supports overall community resilience."
+        "explanation": "Ranked #18 by tournament ranking algorithm"
     },
     {
         "locode": "BRCCI",
         "cityName": "Cama\u00e7ari",
         "region": "BR-BA",
         "regionName": "Bahia",
-        "actionId": "c40_0046",
-        "actionName": "Coastal Protection",
+        "actionId": "ipcc_0086",
+        "actionName": "Ecosystem-based adaptation",
         "actionPriority": 19,
-        "explanation": "Ranked #19 due to its role in safeguarding urban areas from coastal hazards. Even though its quantitative score is slightly lower, coastal protection is crucial given the potential high risk from sea level rise and other geo-hydrological hazards, protecting infrastructure and community safety."
+        "explanation": "Ranked #19 by tournament ranking algorithm"
     },
     {
         "locode": "BRCCI",
         "cityName": "Cama\u00e7ari",
         "region": "BR-BA",
         "regionName": "Bahia",
-        "actionId": "c40_0059",
-        "actionName": "Early Warning",
+        "actionId": "icare_0190",
+        "actionName": "Encourage agrosilvopastoral systems",
         "actionPriority": 20,
-        "explanation": "Ranked #20 as this additional early warning system complements the earlier disaster early warning strategy. While its quantitative score is lower, it reinforces preparedness and rapid response in reducing multiple climate hazards, ensuring layered risk management in Cama\u00e7ari."
+        "explanation": "Ranked #20 by tournament ranking algorithm"
     }
 ]

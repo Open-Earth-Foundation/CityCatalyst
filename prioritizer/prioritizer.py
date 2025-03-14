@@ -1,6 +1,7 @@
 import argparse
 import sys
 import os
+import random
 from dotenv import load_dotenv
 from openai import OpenAI
 import json
@@ -17,6 +18,7 @@ from prioritizer.utils.additional_scoring_functions import (
     find_highest_emission,
 )
 from prioritizer.utils.prompt import return_prompt
+from prioritizer.utils.ml_comparator import ml_compare
 
 load_dotenv()
 
@@ -306,9 +308,6 @@ def qualitative_prioritizer(top_quantitative, actions, city):
         return []
 
 
-##
-## NEW FUNCTION FOR BIOME FILTERING
-##
 def filter_actions_by_biome(actions, city):
     """
     Filter actions based on city's biome only if both city and action have biomes defined.
@@ -322,38 +321,215 @@ def filter_actions_by_biome(actions, city):
     # Keep actions that either:
     # 1. Don't have a biome field, or
     # 2. Have a biome that matches the city's biome
-    return [
-        action
-        for action in actions
-        if "biome" not in action or action["biome"] == city_biome
-    ]
+    return [action for action in actions if 
+            "Biome" not in action or action["Biome"] == city_biome]
+
+
+def ML_compare(actionA, actionB, city):
+    """
+    Uses the ML model to compare two actions in a given city context.
+    Returns:
+       1 if actionA is better
+      -1 if actionB is better
+    """
+    result = ml_compare(city, actionA, actionB)
+    return result
+
+def single_elimination_bracket(actions, city):
+    """
+    Performs a single-elimination bracket on the given list of actions,
+    with a wildcard if there's an odd number of participants.
+
+    Returns:
+      winner  - the single best from this bracket
+      losers  - all other participants (who lost at some stage)
+    """
+    if not actions:
+        return None, []
+
+    print(f"\n--- Starting bracket with {len(actions)} actions ---")
+    
+    # Shuffle to randomize the pairs
+    random.shuffle(actions)
+
+    # If odd number of actions, pick one as wildcard (auto-advance)
+    wildcard = None
+    if len(actions) % 2 == 1:
+        wildcard = actions.pop()
+        print(f"  Odd number of actions, wildcard: {wildcard.get('ActionID', 'Unknown')}")
+
+    winners = []
+    losers = []
+
+    # Pair up
+    for i in range(0, len(actions), 2):
+        if i + 1 < len(actions):  # Make sure we have a pair
+            actionA = actions[i]
+            actionB = actions[i + 1]
+            
+            
+            # Use your ML model to compare
+            result = ML_compare(actionA, actionB, city)
+            if result == 1:
+                winners.append(actionA)
+                losers.append(actionB)
+            else:
+                winners.append(actionB)
+                losers.append(actionA)
+
+    # If there was a wildcard, it automatically advances
+    if wildcard:
+        winners.append(wildcard)
+        print(f"  Wildcard {wildcard.get('ActionID', 'Unknown')} automatically advances")
+
+    print(f"  Round complete. {len(winners)} winners advancing to next round")
+    
+    # If exactly one winner, we found the bracket winner
+    if len(winners) == 1:
+        print(f"  Final winner of bracket: {winners[0].get('ActionID', 'Unknown')}")
+        return winners[0], losers
+    else:
+        # Otherwise, recursively determine a single winner
+        print(f"  Moving to next round with {len(winners)} actions")
+        #Recursive call to fihishn round
+        final_winner, final_losers = single_elimination_bracket(winners, city)
+        return final_winner, losers + final_losers
+
+def final_bracket_for_ranking(actions, city):
+    """
+    When we have fewer than 40 participants left, we do a final bracket
+    that fully orders them from best to worst.
+
+    This simply calls single_elimination_bracket repeatedly until no
+    participants remain, collecting winners in order.
+
+    Returns:
+      ranking (list): from best to worst among the given actions.
+    """
+    print(f"\n=== Starting final bracket for complete ranking with {len(actions)} actions ===")
+    participants = actions[:]
+    ranking = []
+    rank = 1
+
+    while participants:
+        print(f"\n--- Finding #{rank} ranked action from {len(participants)} remaining ---")
+        winner, losers = single_elimination_bracket(participants, city)
+        if not winner:
+            print("  No winner found, breaking")
+            break  # no more participants
+        
+        print(f"  Rank #{rank}: {winner.get('ActionID', 'Unknown')}")
+        ranking.append(winner)
+        participants = losers
+        rank += 1
+
+    print(f"=== Final bracket complete. Ranked {len(ranking)} actions ===")
+    return ranking
+
+def tournament_ranking(actions, city):
+    """
+    Repeatedly runs single elimination brackets, where losers compete in subsequent brackets
+    to determine the next ranks. Continues until we have top 20 ranked actions.
+
+    Returns:
+      A list of (action, rank_index).
+    """
+    print(f"\n\n========== STARTING TOURNAMENT RANKING WITH {len(actions)} ACTIONS ==========")
+    remaining = actions[:]
+    full_ranking = []
+    current_rank = 1
+
+    while remaining and current_rank <= 20:
+        print(f"\n--- Running bracket for rank #{current_rank} with {len(remaining)} actions ---")
+        winner, losers = single_elimination_bracket(remaining, city)
+        
+        if not winner:
+            #TODO is there a normal thing that this can happen ?or should this be error 
+            print("No winner found, breaking")
+            break
+
+        # Add the winner with their rank
+        print(f"Rank #{current_rank}: {winner.get('ActionID', 'Unknown')}")
+        full_ranking.append((winner, current_rank))
+        current_rank += 1
+
+        # Losers compete in the next bracket
+        remaining = losers
+        print(f"{len(remaining)} actions will compete for rank #{current_rank}")
+
+    print(f"\n========== TOURNAMENT RANKING COMPLETE. RANKED {len(full_ranking)} ACTIONS ==========")
+    
+    # Print final ranking summary
+    print("\nFinal Ranking Summary:")
+    for action, rank in full_ranking:
+        print(f"  #{rank}: {action.get('ActionID', 'Unknown')}")
+    
+    return full_ranking
 
 
 def main(locode: str):
     try:
-        cities = read_city_inventory(locode)
+        city = read_city_inventory(locode)
         actions = read_actions()
     except Exception as e:
         print("Error reading data:", e)
         sys.exit(1)
 
-    # 1) Filter the actions by the city's biome
-    filtered_actions = filter_actions_by_biome(actions, cities)
+    # Filter actions by biome if applicable
+    filtered_actions = filter_actions_by_biome(actions, city)
+    print(f"After biome filtering: {len(filtered_actions)} actions remain")
 
-    # 2) Quantitative prioritization
-    top_adaptation, top_mitigation = quantitative_prioritizer(cities, filtered_actions)
+    # Separate adaptation and mitigation actions
+    adaptation_actions = [
+        action for action in filtered_actions 
+        if action.get("ActionType") and "adaptation" in action.get("ActionType")
+    ]
+    mitigation_actions = [
+        action for action in filtered_actions 
+        if action.get("ActionType") and "mitigation" in action.get("ActionType")
+    ]
+    
+    print(f"Found {len(adaptation_actions)} adaptation actions and {len(mitigation_actions)} mitigation actions")
 
-    # 3) Qualitative prioritization
-    top_qualitative_adaptation = qualitative_prioritizer(
-        top_adaptation, filtered_actions, cities
-    )
-    top_qualitative_mitigation = qualitative_prioritizer(
-        top_mitigation, filtered_actions, cities
-    )
+    # Apply tournament ranking for adaptation actions
+    print("Starting tournament ranking for adaptation actions...")
+    adaptation_ranking = tournament_ranking(adaptation_actions, city)
+    
+    # Format adaptation results
+    top_ml_adaptation = []
+    for action, rank in adaptation_ranking:
+        top_ml_adaptation.append({
+            "locode": city.get("locode", "Unknown"),
+            "cityName": city.get("name", "Unknown City"),
+            "region": city.get("region", "Unknown"),
+            "regionName": city.get("regionName", "Unknown"),
+            "actionId": action.get("ActionID", "Unknown"),
+            "actionName": action.get("ActionName", "Unknown"),
+            "actionPriority": rank,
+            "explanation": f"Ranked #{rank} by tournament ranking algorithm"
+        })
+    
+    # Apply tournament ranking for mitigation actions
+    print("Starting tournament ranking for mitigation actions...")
+    mitigation_ranking = tournament_ranking(mitigation_actions, city)
+    
+    # Format mitigation results
+    top_ml_mitigation = []
+    for action, rank in mitigation_ranking:
+        top_ml_mitigation.append({
+            "locode": city.get("locode", "Unknown"),
+            "cityName": city.get("name", "Unknown City"),
+            "region": city.get("region", "Unknown"),
+            "regionName": city.get("regionName", "Unknown"),
+            "actionId": action.get("ActionID", "Unknown"),
+            "actionName": action.get("ActionName", "Unknown"),
+            "actionPriority": rank        
+            })
 
-    # 4) Save outputs to separate files
-    write_output(top_qualitative_adaptation, "output_" + locode + "_adaptation.json")
-    write_output(top_qualitative_mitigation, "output_" + locode + "_mitigation.json")
+    # Save outputs to separate files
+    write_output(top_ml_adaptation, f"output_{locode}_adaptation.json")
+    write_output(top_ml_mitigation, f"output_{locode}_mitigation.json")
+    print("Prioritization complete!")
 
 
 if __name__ == "__main__":

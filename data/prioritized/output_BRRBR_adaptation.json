@@ -4,70 +4,70 @@
         "cityName": "Rio Branco",
         "region": "BR-AC",
         "regionName": "Acre",
+        "actionId": "icare_0145",
+        "actionName": "Strengthen the healthcare network to attend to climate victims",
+        "actionPriority": 1,
+        "explanation": "Ranked #1 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BRRBR",
+        "cityName": "Rio Branco",
+        "region": "BR-AC",
+        "regionName": "Acre",
+        "actionId": "icare_0148",
+        "actionName": "Create the Municipal Climate Change Forum",
+        "actionPriority": 2,
+        "explanation": "Ranked #2 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BRRBR",
+        "cityName": "Rio Branco",
+        "region": "BR-AC",
+        "regionName": "Acre",
+        "actionId": "icare_0169",
+        "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
+        "actionPriority": 3,
+        "explanation": "Ranked #3 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BRRBR",
+        "cityName": "Rio Branco",
+        "region": "BR-AC",
+        "regionName": "Acre",
+        "actionId": "icare_0151",
+        "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
+        "actionPriority": 4,
+        "explanation": "Ranked #4 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BRRBR",
+        "cityName": "Rio Branco",
+        "region": "BR-AC",
+        "regionName": "Acre",
         "actionId": "ipcc_0087",
         "actionName": "Infrastructure retrofitting",
-        "actionPriority": 1,
-        "explanation": "This action ranks first due to its high quantitative score (1.6017) and its direct impact on strengthening the city's infrastructure against climate hazards such as heatwaves and landslides. Given Rio Branco's high risk related to infrastructure damage, retrofitting existing structures offers significant resilience benefits."
-    },
-    {
-        "locode": "BRRBR",
-        "cityName": "Rio Branco",
-        "region": "BR-AC",
-        "regionName": "Acre",
-        "actionId": "ipcc_0095",
-        "actionName": "Disaster early warning",
-        "actionPriority": 2,
-        "explanation": "Ranking second with a quantitative score of 1.5867, disaster early warning systems are crucial for reducing risks from climate hazards. This action enhances the city's capacity to prepare and respond quickly to extreme weather events, which is vital for a low-income population and for sectors facing high hazard risks."
-    },
-    {
-        "locode": "BRRBR",
-        "cityName": "Rio Branco",
-        "region": "BR-AC",
-        "regionName": "Acre",
-        "actionId": "ipcc_0091",
-        "actionName": "Diversification of livelihoods ",
-        "actionPriority": 3,
-        "explanation": "With a score of 1.52, this action is prioritized because it strengthens the socio-economic backbone of the city. Diversifying livelihoods helps build resilience among vulnerable communities, particularly important given Rio Branco's very high low-income rates and risk from climate-induced disruptions."
-    },
-    {
-        "locode": "BRRBR",
-        "cityName": "Rio Branco",
-        "region": "BR-AC",
-        "regionName": "Acre",
-        "actionId": "c40_0053",
-        "actionName": "Water Savings",
-        "actionPriority": 4,
-        "explanation": "Water Savings is ranked fourth with a quantitative score of 1.4850. In a tropical rainforest setting with identified water resource risks and challenges in water access, increasing water savings is cost-effective and reduces the impacts of drought conditions."
-    },
-    {
-        "locode": "BRRBR",
-        "cityName": "Rio Branco",
-        "region": "BR-AC",
-        "regionName": "Acre",
-        "actionId": "ipcc_0092",
-        "actionName": "Social safety nets",
         "actionPriority": 5,
-        "explanation": "Social safety nets score 1.4367 and rank fifth because they directly support vulnerable populations, reinforcing socio-demographic suitability. This is important for improving community resilience and mitigating the impacts of climate-induced disruptions on low-income groups."
+        "explanation": "Ranked #5 by tournament ranking algorithm"
     },
     {
         "locode": "BRRBR",
         "cityName": "Rio Branco",
         "region": "BR-AC",
         "regionName": "Acre",
-        "actionId": "c40_0054",
-        "actionName": "Water Recycling",
+        "actionId": "ipcc_0100",
+        "actionName": "Efficient water use/demand",
         "actionPriority": 6,
-        "explanation": "Ranked sixth with a score of 1.3850, water recycling is essential for effective water resource management, especially given the city's inadequate water access issues. This measure is both cost-effective and has a fast implementation timeline, helping to ensure sustainable water use."
+        "explanation": "Ranked #6 by tournament ranking algorithm"
     },
     {
         "locode": "BRRBR",
         "cityName": "Rio Branco",
         "region": "BR-AC",
         "regionName": "Acre",
-        "actionId": "ipcc_0088",
-        "actionName": "Building codes",
+        "actionId": "icare_0149",
+        "actionName": "Encourage sustainable land use practices",
         "actionPriority": 7,
-        "explanation": "With a quantitative score of 1.37, updating and enforcing building codes is crucial for ensuring structures are resilient and safe from climate hazards. This action reduces the risk to physical assets and is especially important in a region with high infrastructure vulnerability."
+        "explanation": "Ranked #7 by tournament ranking algorithm"
     },
     {
         "locode": "BRRBR",
@@ -77,17 +77,87 @@
         "actionId": "ipcc_0094",
         "actionName": "Access to health care",
         "actionPriority": 8,
-        "explanation": "Access to health care, with a score of 1.3367, is prioritized to improve public health outcomes during climate crises such as heatwaves and disease outbreaks. This action is critical for ensuring that the city\u2019s vulnerable groups have timely medical support during emergencies."
+        "explanation": "Ranked #8 by tournament ranking algorithm"
     },
     {
         "locode": "BRRBR",
         "cityName": "Rio Branco",
         "region": "BR-AC",
         "regionName": "Acre",
-        "actionId": "ipcc_0096",
-        "actionName": "Farm/fishery improvements",
+        "actionId": "icare_0176",
+        "actionName": "Development of Climate Action Plan",
         "actionPriority": 9,
-        "explanation": "Farm/fishery improvements also score 1.3367 and are ranked ninth. By enhancing agricultural practices, this action addresses food security concerns, an essential factor in a city facing drought risks and a predominantly low-income population."
+        "explanation": "Ranked #9 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BRRBR",
+        "cityName": "Rio Branco",
+        "region": "BR-AC",
+        "regionName": "Acre",
+        "actionId": "icare_0150",
+        "actionName": "Implement Loss Reduction and Control Program promoting water security for the municipality",
+        "actionPriority": 10,
+        "explanation": "Ranked #10 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BRRBR",
+        "cityName": "Rio Branco",
+        "region": "BR-AC",
+        "regionName": "Acre",
+        "actionId": "icare_0170",
+        "actionName": "Build safe housing and implement urban rehabilitation projects for populations living in high-risk areas",
+        "actionPriority": 11,
+        "explanation": "Ranked #11 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BRRBR",
+        "cityName": "Rio Branco",
+        "region": "BR-AC",
+        "regionName": "Acre",
+        "actionId": "icare_0180",
+        "actionName": "Implement permeable pavements and increase green areas in roadways",
+        "actionPriority": 12,
+        "explanation": "Ranked #12 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BRRBR",
+        "cityName": "Rio Branco",
+        "region": "BR-AC",
+        "regionName": "Acre",
+        "actionId": "icare_0144",
+        "actionName": "Creation of a Financial Support Program to Adress Extreme Weather Events",
+        "actionPriority": 13,
+        "explanation": "Ranked #13 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BRRBR",
+        "cityName": "Rio Branco",
+        "region": "BR-AC",
+        "regionName": "Acre",
+        "actionId": "icare_0156",
+        "actionName": "Implementation of urban gardens",
+        "actionPriority": 14,
+        "explanation": "Ranked #14 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BRRBR",
+        "cityName": "Rio Branco",
+        "region": "BR-AC",
+        "regionName": "Acre",
+        "actionId": "icare_0162",
+        "actionName": "Strengthen programs for control and conservation of protected areas",
+        "actionPriority": 15,
+        "explanation": "Ranked #15 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BRRBR",
+        "cityName": "Rio Branco",
+        "region": "BR-AC",
+        "regionName": "Acre",
+        "actionId": "icare_0155",
+        "actionName": "Preservation and Recovery of Water Bodies",
+        "actionPriority": 16,
+        "explanation": "Ranked #16 by tournament ranking algorithm"
     },
     {
         "locode": "BRRBR",
@@ -96,107 +166,37 @@
         "regionName": "Acre",
         "actionId": "ipcc_0097",
         "actionName": "Food storage/distribution improvements",
-        "actionPriority": 10,
-        "explanation": "This action, scoring 1.3367, is important for stabilizing food supplies during crisis periods. Enhancing storage and distribution networks helps mitigate the impacts of disruptions and ensures that food reaches those in need, aligning with adaptability and socio-demographic suitability."
-    },
-    {
-        "locode": "BRRBR",
-        "cityName": "Rio Branco",
-        "region": "BR-AC",
-        "regionName": "Acre",
-        "actionId": "ipcc_0098",
-        "actionName": "Behaviour change in diets and food waste",
-        "actionPriority": 11,
-        "explanation": "Ranking eleventh with a quantitative score of 1.3367, this action promotes sustainable consumption practices. It is a cost-effective measure that indirectly contributes to emissions reductions and resource efficiency by reducing food waste and supporting healthier diets."
-    },
-    {
-        "locode": "BRRBR",
-        "cityName": "Rio Branco",
-        "region": "BR-AC",
-        "regionName": "Acre",
-        "actionId": "ipcc_0100",
-        "actionName": "Efficient water use/demand",
-        "actionPriority": 12,
-        "explanation": "Also scoring 1.3367, ensuring efficient water use addresses the critical issue of water scarcity. This action is crucial for reducing wastage, managing available resources more effectively, and supporting adaptation in a city with notable water access challenges."
-    },
-    {
-        "locode": "BRRBR",
-        "cityName": "Rio Branco",
-        "region": "BR-AC",
-        "regionName": "Acre",
-        "actionId": "c40_0050",
-        "actionName": "White Roofs",
-        "actionPriority": 13,
-        "explanation": "White Roofs, with a quantitative score of 1.3217, is an effective adaptation measure to combat urban heat island effects. Although its direct emissions reduction is less pronounced, it helps mitigate heat stress in urban areas, making it relevant for a tropical climate city."
-    },
-    {
-        "locode": "BRRBR",
-        "cityName": "Rio Branco",
-        "region": "BR-AC",
-        "regionName": "Acre",
-        "actionId": "c40_0051",
-        "actionName": "Public Shading",
-        "actionPriority": 14,
-        "explanation": "With the same score as White Roofs (1.3217), Public Shading is ranked slightly lower due to its more localized impact. It still plays an important role in reducing heat exposure among vulnerable urban populations."
-    },
-    {
-        "locode": "BRRBR",
-        "cityName": "Rio Branco",
-        "region": "BR-AC",
-        "regionName": "Acre",
-        "actionId": "ipcc_0093",
-        "actionName": "Availability of health infrastructure",
-        "actionPriority": 15,
-        "explanation": "This action scores 1.27 and focuses on expanding and improving health infrastructure. While similar to access to health care, its emphasis on infrastructure highlights the need to have robust facilities in place before disasters, which is vital given the city's public health risks."
-    },
-    {
-        "locode": "BRRBR",
-        "cityName": "Rio Branco",
-        "region": "BR-AC",
-        "regionName": "Acre",
-        "actionId": "ipcc_0099",
-        "actionName": "Water capture/storage",
-        "actionPriority": 16,
-        "explanation": "At a score of 1.27, water capture and storage is critical for managing water resources in response to drought conditions. It assists in ensuring a reliable water supply during periods of scarcity, thereby enhancing the city\u2019s resilience."
-    },
-    {
-        "locode": "BRRBR",
-        "cityName": "Rio Branco",
-        "region": "BR-AC",
-        "regionName": "Acre",
-        "actionId": "ipcc_0101",
-        "actionName": "Efficient water supply/distribution",
         "actionPriority": 17,
-        "explanation": "With a quantitative score of 1.27, this action supports improvements in the water distribution network. It\u2019s essential for ensuring that water reaches consumers efficiently, reducing losses and enhancing overall water security."
+        "explanation": "Ranked #17 by tournament ranking algorithm"
     },
     {
         "locode": "BRRBR",
         "cityName": "Rio Branco",
         "region": "BR-AC",
         "regionName": "Acre",
-        "actionId": "ipcc_0102",
-        "actionName": "Seasonal/temporary mobility",
+        "actionId": "ipcc_0092",
+        "actionName": "Social safety nets",
         "actionPriority": 18,
-        "explanation": "Seasonal/temporary mobility, scoring 1.27, is aimed at facilitating relocation or movement during extreme weather events. This strategy minimizes risk exposure and ensures that populations can quickly adapt to changing conditions, though it has moderate direct emissions impact."
+        "explanation": "Ranked #18 by tournament ranking algorithm"
     },
     {
         "locode": "BRRBR",
         "cityName": "Rio Branco",
         "region": "BR-AC",
         "regionName": "Acre",
-        "actionId": "c40_0046",
-        "actionName": "Coastal Protection",
+        "actionId": "icare_0172",
+        "actionName": "Develop and implement the Municipal Risk Reduction Plan (PMRR) and identify population groups vulnerable to climate risks.",
         "actionPriority": 19,
-        "explanation": "Despite a score of 1.2350, Coastal Protection is ranked lower because Rio Branco is an inland city, making coastal measures less directly relevant. However, the measure could offer insights or spillover benefits for similar protective infrastructure in other contexts."
+        "explanation": "Ranked #19 by tournament ranking algorithm"
     },
     {
         "locode": "BRRBR",
         "cityName": "Rio Branco",
         "region": "BR-AC",
         "regionName": "Acre",
-        "actionId": "c40_0059",
-        "actionName": "Early Warning",
+        "actionId": "icare_0152",
+        "actionName": "Recovery of degraded areas",
         "actionPriority": 20,
-        "explanation": "Early Warning ranks last with a score of 1.2350. Although it is vital for risk reduction, its marginal quantitative score compared to other early warning systems and disaster preparedness actions positions it lower in the overall prioritization framework."
+        "explanation": "Ranked #20 by tournament ranking algorithm"
     }
 ]

@@ -4,60 +4,60 @@
         "cityName": "Corumb\u00e1",
         "region": "BR-MS",
         "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0087",
-        "actionName": "Infrastructure retrofitting",
-        "actionPriority": 1,
-        "explanation": "This action scores highest with a quantitative score of 1.6017 and directly addresses infrastructure vulnerabilities\u2014a key risk in Corumb\u00e1 given the high exposure to hazards like heatwaves and landslides. While emissions reduction is the top guideline, in the adaptation context for Corumb\u00e1, strengthening infrastructure is critical and offers broad risk mitigation."
-    },
-    {
-        "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0095",
-        "actionName": "Disaster early warning",
-        "actionPriority": 2,
-        "explanation": "Disaster early warning (score 1.5867) rapidly improves the city\u2019s ability to prepare for and respond to climate hazards. Given Corumb\u00e1\u2019s exposure to hazards that can damage infrastructure, this action is vital, even though it does not directly reduce emissions\u2014its role in risk reduction makes it high priority."
-    },
-    {
-        "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0091",
-        "actionName": "Diversification of livelihoods ",
-        "actionPriority": 3,
-        "explanation": "At a score of 1.52, diversifying livelihoods is essential for increasing resilience of local populations, especially in a city with high socio-economic vulnerability. It helps reduce dependence on climate\u2010sensitive sectors, providing robust socio-demographic suitability."
-    },
-    {
-        "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "c40_0053",
-        "actionName": "Water Savings",
-        "actionPriority": 4,
-        "explanation": "With a score of 1.485, Water Savings directly addresses water management challenges. Although not an emissions reduction measure per se, in Corumb\u00e1\u2019s climate context (where drought is a concern) it is both cost\u2010effective and sector relevant given water is a critical resource."
-    },
-    {
-        "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
         "actionId": "ipcc_0092",
         "actionName": "Social safety nets",
-        "actionPriority": 5,
-        "explanation": "Social safety nets (score 1.4367) are prioritized due to the city\u2019s very high low-income socio-economic factors. By cushioning vulnerable populations against climate impacts, this action aligns well with risk reduction and socio-demographic suitability."
+        "actionPriority": 1,
+        "explanation": "Ranked #1 by tournament ranking algorithm"
     },
     {
         "locode": "BRCMG",
         "cityName": "Corumb\u00e1",
         "region": "BR-MS",
         "regionName": "Mato Grosso do Sul",
-        "actionId": "c40_0054",
-        "actionName": "Water Recycling",
+        "actionId": "ipcc_0094",
+        "actionName": "Access to health care",
+        "actionPriority": 2,
+        "explanation": "Ranked #2 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0149",
+        "actionName": "Encourage sustainable land use practices",
+        "actionPriority": 3,
+        "explanation": "Ranked #3 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0176",
+        "actionName": "Development of Climate Action Plan",
+        "actionPriority": 4,
+        "explanation": "Ranked #4 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0152",
+        "actionName": "Recovery of degraded areas",
+        "actionPriority": 5,
+        "explanation": "Ranked #5 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0145",
+        "actionName": "Strengthen the healthcare network to attend to climate victims",
         "actionPriority": 6,
-        "explanation": "Water Recycling (score 1.385) enhances water security and is particularly relevant in addressing drought-related risks. Its cost-effectiveness and clear sector relevance for water management make it a high priority in Corumb\u00e1."
+        "explanation": "Ranked #6 by tournament ranking algorithm"
     },
     {
         "locode": "BRCMG",
@@ -67,27 +67,7 @@
         "actionId": "ipcc_0088",
         "actionName": "Building codes",
         "actionPriority": 7,
-        "explanation": "Building codes (score 1.37) help ensure that new constructions are resilient to climate hazards such as heatwaves and landslides. This action improves long-term infrastructure durability and risk reduction, making it a strategic priority."
-    },
-    {
-        "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0094",
-        "actionName": "Access to health care",
-        "actionPriority": 8,
-        "explanation": "Access to health care (score 1.3367) is vital in an adaptation strategy, particularly for a city with socio-economic vulnerabilities. It strengthens community resilience and reduces adverse public health impacts during climate events."
-    },
-    {
-        "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0096",
-        "actionName": "Farm/fishery improvements",
-        "actionPriority": 9,
-        "explanation": "Farm/fishery improvements (score 1.3367) directly target the agricultural sector, which is closely linked to land use\u2014the largest emission sector in Corumb\u00e1. This action not only aids adaptation but also holds the potential for indirect emissions reduction through more sustainable practices."
+        "explanation": "Ranked #7 by tournament ranking algorithm"
     },
     {
         "locode": "BRCMG",
@@ -96,107 +76,127 @@
         "regionName": "Mato Grosso do Sul",
         "actionId": "ipcc_0097",
         "actionName": "Food storage/distribution improvements",
+        "actionPriority": 8,
+        "explanation": "Ranked #8 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0086",
+        "actionName": "Ecosystem-based adaptation",
+        "actionPriority": 9,
+        "explanation": "Ranked #9 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0162",
+        "actionName": "Strengthen programs for control and conservation of protected areas",
         "actionPriority": 10,
-        "explanation": "At the same score (1.3367), this action boosts food security by ensuring efficiency in storage and distribution. In a city where food security risks are present due to drought and flooding, this measure is both relevant and timely."
+        "explanation": "Ranked #10 by tournament ranking algorithm"
     },
     {
         "locode": "BRCMG",
         "cityName": "Corumb\u00e1",
         "region": "BR-MS",
         "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0098",
-        "actionName": "Behaviour change in diets and food waste",
+        "actionId": "icare_0170",
+        "actionName": "Build safe housing and implement urban rehabilitation projects for populations living in high-risk areas",
         "actionPriority": 11,
-        "explanation": "This action (score 1.3367) promotes dietary shifts and reduces food waste, which can lead to indirect emissions reductions\u2014especially important given Corumb\u00e1\u2019s dominant land use emissions. Its socio-economic benefits further bolster its priority."
+        "explanation": "Ranked #11 by tournament ranking algorithm"
     },
     {
         "locode": "BRCMG",
         "cityName": "Corumb\u00e1",
         "region": "BR-MS",
         "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0100",
-        "actionName": "Efficient water use/demand",
+        "actionId": "icare_0151",
+        "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
         "actionPriority": 12,
-        "explanation": "Efficient water use/demand (score 1.3367) improves water management and can mitigate drought impacts. Although part of a cluster with equal quantitative scores, its focus on water demand management makes it slightly lower than some food-security-related actions given the overall risk profile."
+        "explanation": "Ranked #12 by tournament ranking algorithm"
     },
     {
         "locode": "BRCMG",
         "cityName": "Corumb\u00e1",
         "region": "BR-MS",
         "regionName": "Mato Grosso do Sul",
-        "actionId": "c40_0050",
-        "actionName": "White Roofs",
+        "actionId": "icare_0169",
+        "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
         "actionPriority": 13,
-        "explanation": "White Roofs (score 1.3217) provide urban heat mitigation benefits. By reducing urban heat island effects and lowering cooling energy requirements, this action indirectly contributes to emissions reduction and improved infrastructure resilience."
+        "explanation": "Ranked #13 by tournament ranking algorithm"
     },
     {
         "locode": "BRCMG",
         "cityName": "Corumb\u00e1",
         "region": "BR-MS",
         "regionName": "Mato Grosso do Sul",
-        "actionId": "c40_0051",
-        "actionName": "Public Shading",
+        "actionId": "icare_0144",
+        "actionName": "Creation of a Financial Support Program to Adress Extreme Weather Events",
         "actionPriority": 14,
-        "explanation": "Also scoring 1.3217, Public Shading helps alleviate urban heat stress. Its role in reducing building energy demand and improving outdoor comfort aligns with both climate adaptation and broader environmental compatibility goals."
+        "explanation": "Ranked #14 by tournament ranking algorithm"
     },
     {
         "locode": "BRCMG",
         "cityName": "Corumb\u00e1",
         "region": "BR-MS",
         "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0099",
-        "actionName": "Water capture/storage",
+        "actionId": "icare_0180",
+        "actionName": "Implement permeable pavements and increase green areas in roadways",
         "actionPriority": 15,
-        "explanation": "Among the actions with a score of 1.27, Water capture/storage is prioritized first because of its direct contribution to water resilience in the face of drought conditions. This makes it extremely relevant for risk reduction despite not directly addressing emissions."
+        "explanation": "Ranked #15 by tournament ranking algorithm"
     },
     {
         "locode": "BRCMG",
         "cityName": "Corumb\u00e1",
         "region": "BR-MS",
         "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0101",
-        "actionName": "Efficient water supply/distribution",
+        "actionId": "icare_0150",
+        "actionName": "Implement Loss Reduction and Control Program promoting water security for the municipality",
         "actionPriority": 16,
-        "explanation": "Efficient water supply/distribution (score 1.27) ensures the reliability of critical water infrastructure. Its importance in maintaining service levels during climate extremes boosts its ranking within the adaptation portfolio."
+        "explanation": "Ranked #16 by tournament ranking algorithm"
     },
     {
         "locode": "BRCMG",
         "cityName": "Corumb\u00e1",
         "region": "BR-MS",
         "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0093",
-        "actionName": "Availability of health infrastructure",
+        "actionId": "icare_0189",
+        "actionName": "Encourage the adoption of cool roofs",
         "actionPriority": 17,
-        "explanation": "Also with a score of 1.27, this action strengthens health infrastructure, a key component of community resilience. Although its immediate impact may be secondary to water or mobility actions, it addresses important aspects of public health risks."
+        "explanation": "Ranked #17 by tournament ranking algorithm"
     },
     {
         "locode": "BRCMG",
         "cityName": "Corumb\u00e1",
         "region": "BR-MS",
         "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0102",
-        "actionName": "Seasonal/temporary mobility",
+        "actionId": "c40_0056",
+        "actionName": "Watershed Preservation",
         "actionPriority": 18,
-        "explanation": "Seasonal/temporary mobility (score 1.27) deals with adaptive responses in transportation and movement during climate events. While important, it has more dependency factors and indirect benefits relative to other measures, positioning it lower among equal scorers."
+        "explanation": "Ranked #18 by tournament ranking algorithm"
     },
     {
         "locode": "BRCMG",
         "cityName": "Corumb\u00e1",
         "region": "BR-MS",
         "regionName": "Mato Grosso do Sul",
-        "actionId": "c40_0059",
-        "actionName": "Early Warning",
+        "actionId": "icare_0181",
+        "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
         "actionPriority": 19,
-        "explanation": "This Early Warning action (score 1.235) overlaps in purpose with Disaster Early Warning but is ranked lower due to its lower quantitative score and potential redundancy. Its benefits, while real, are slightly less distinct given the existence of a higher\u2010priority disaster early warning measure."
+        "explanation": "Ranked #19 by tournament ranking algorithm"
     },
     {
         "locode": "BRCMG",
         "cityName": "Corumb\u00e1",
         "region": "BR-MS",
         "regionName": "Mato Grosso do Sul",
-        "actionId": "c40_0046",
-        "actionName": "Coastal Protection",
+        "actionId": "ipcc_0087",
+        "actionName": "Infrastructure retrofitting",
         "actionPriority": 20,
-        "explanation": "Despite a score of 1.235, Coastal Protection is the lowest priority because Corumb\u00e1 is an inland city with no coastal exposure. Consequently, its sectoral relevance and effectiveness in addressing local climate hazards are minimal."
+        "explanation": "Ranked #20 by tournament ranking algorithm"
     }
 ]

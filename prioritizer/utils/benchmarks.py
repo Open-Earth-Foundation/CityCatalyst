@@ -77,7 +77,7 @@ contingency_table = {
 }
 
 
-def update_contincengy_table(
+def update_contingency_table(
     predicted_label_quanti: str, predicted_label_ml: str, preferred_action: str
 ) -> None:
     # Categorize errors into the contingency table
@@ -239,7 +239,7 @@ def get_accuracy_expert_vs_comparators(
                 )
 
                 # Update contingency table for chi-square test
-                update_contincengy_table(
+                update_contingency_table(
                     predicted_label_quanti, predicted_label_ml, preferred_action
                 )
 

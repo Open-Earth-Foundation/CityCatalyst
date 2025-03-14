@@ -314,18 +314,22 @@ def get_accuracy_expert_vs_comparators(
     print(f"Valid comparisons: {valid_comparisons}")
 
     # Calculate accuracy
-    accuracy_quanti = score_quanti / valid_comparisons
-    accuracy_quali = score_quali / valid_comparisons
-    accuracy_ml = score_ml / valid_comparisons
-    accuracy_consensus = score_consensus / valid_comparisons
-    accuracy_majority = score_majority / valid_comparisons
-    return (
-        accuracy_quanti,
-        accuracy_quali,
-        accuracy_ml,
-        accuracy_consensus,
-        accuracy_majority,
-    )
+    if valid_comparisons > 0:
+        accuracy_quanti = score_quanti / valid_comparisons
+        accuracy_quali = score_quali / valid_comparisons
+        accuracy_ml = score_ml / valid_comparisons
+        accuracy_consensus = score_consensus / valid_comparisons
+        accuracy_majority = score_majority / valid_comparisons
+        return (
+            accuracy_quanti,
+            accuracy_quali,
+            accuracy_ml,
+            accuracy_consensus,
+            accuracy_majority,
+        )
+    else:
+        print("No valid comparisons found. Returning 0 accuracy.")
+        return 0, 0, 0, 0, 0
 
 
 # def process_row_quali(index, row, actions):

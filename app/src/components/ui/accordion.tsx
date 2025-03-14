@@ -3,14 +3,14 @@ import * as React from "react";
 import { LuChevronDown } from "react-icons/lu";
 
 interface AccordionItemTriggerProps extends Accordion.ItemTriggerProps {
-  indicatorPlacement?: "start" | "end";
+  indicatorPlacement?: "start" | "center" | "end";
 }
 
 export const AccordionItemTrigger = React.forwardRef<
   HTMLButtonElement,
   AccordionItemTriggerProps
 >(function AccordionItemTrigger(props, ref) {
-  const { children, indicatorPlacement = "end", ...rest } = props;
+  const { children, indicatorPlacement = "center", ...rest } = props;
   return (
     <Accordion.ItemTrigger {...rest} ref={ref} pr="16px">
       {indicatorPlacement === "start" && (
@@ -18,8 +18,13 @@ export const AccordionItemTrigger = React.forwardRef<
           <LuChevronDown />
         </Accordion.ItemIndicator>
       )}
-      <HStack gap="4" flex="1" textAlign="start" width="full">
+      <HStack gap="4" flex="1" textAlign="center" justify="center" width="full">
         {children}
+        {indicatorPlacement === "center" && (
+          <Accordion.ItemIndicator>
+            <Icon as={LuChevronDown} size="2xl" />
+          </Accordion.ItemIndicator>
+        )}
       </HStack>
       {indicatorPlacement === "end" && (
         <Accordion.ItemIndicator>

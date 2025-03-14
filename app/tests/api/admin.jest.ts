@@ -1,5 +1,6 @@
 import { POST as changeRole } from "@/app/api/v0/auth/role/route";
 import { POST as createBulkInventories } from "@/app/api/v0/admin/bulk/route";
+import { POST as bulkConnectDataSources } from "@/app/api/v0/admin/connect-sources/route";
 import { db } from "@/models";
 import {
   beforeAll,
@@ -13,7 +14,10 @@ import {
 import { mockRequest, setupTests, testUserData, testUserID } from "../helpers";
 import { AppSession, Auth } from "@/lib/auth";
 import { Roles } from "@/util/types";
-import { BulkInventoryProps } from "@/backend/AdminService";
+import {
+  BulkConnectSourcesProps,
+  BulkInventoryProps,
+} from "@/backend/AdminService";
 import { Op } from "sequelize";
 import _ from "lodash";
 
@@ -36,6 +40,12 @@ const mockBulkInventoriesRequest: BulkInventoryProps = {
   years: [2022, 2023, 2024],
   scope: "gpc_basic_plus",
   gwp: "AR6",
+};
+
+const mockConnectSourcesRequest: BulkConnectSourcesProps = {
+  cityLocodes: ["US NYC"],
+  userEmail: testUserData.email,
+  years: [2022, 2023],
 };
 
 describe("Admin API", () => {
@@ -67,8 +77,7 @@ describe("Admin API", () => {
     const res = await createBulkInventories(req, { params: {} });
     expect(res.status).toBe(200);
     const body = await res.json();
-    console.dir(body.errors.slice(0, 10));
-    // expect(body.errors.length).toBe(0); // TODO ignore missing data from Global API in errors
+    expect(body.errors.length).toBe(0);
     expect(body.results.length).toBe(
       mockBulkInventoriesRequest.cityLocodes.length,
     );
@@ -128,6 +137,16 @@ describe("Admin API", () => {
 
       // TODO check all data sources for inventory are connected
     }
+  }, 30000);
+
+  it("should allow connecting bulk data sources for admin users", async () => {
+    const req = mockRequest(mockConnectSourcesRequest);
+    Auth.getServerSession = jest.fn(() => Promise.resolve(mockAdminSession));
+    const res = await bulkConnectDataSources(req, { params: {} });
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    // expect(body.errors.length).toBe(0);
+    console.error(body.errors.slice(0, 10));
   }, 60000);
 
   it("should change the user role when logged in as admin", async () => {

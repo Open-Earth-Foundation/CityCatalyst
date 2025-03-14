@@ -68,7 +68,7 @@ test.describe("Signup", () => {
     await expectText(page, "valid email address");
     await expectText(page, "Minimum length");
     await expectText(page, "Invalid invite code");
-    await expectText(page, "Please accept the terms");
+    await expectText(page, "Please accept the privacy policy");
   });
 
   test("should require matching passwords", async ({ page }) => {

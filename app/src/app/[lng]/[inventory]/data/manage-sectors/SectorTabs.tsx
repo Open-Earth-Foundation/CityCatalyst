@@ -20,8 +20,9 @@ import { SubSectorWithRelations } from "../[step]/types";
 import { StationaryEnergyIcon } from "@/components/icons";
 import { BiSelectMultiple } from "react-icons/bi";
 
-import { MdInfoOutline } from "react-icons/md";
+import { MdInfoOutline, MdRemoveFromQueue } from "react-icons/md";
 import { RiErrorWarningFill } from "react-icons/ri";
+import { CgRemoveR } from "react-icons/cg";
 
 import {
   SelectContent,
@@ -197,13 +198,24 @@ const SectorTabs: FC<SectorTabsProps> = ({
             <Box display="flex" alignItems="center" gap="8px">
               {/* Select All button */}
               <Button variant="ghost" onClick={handleSelectAll}>
-                <Icon as={BiSelectMultiple} color="content.link" boxSize={6} />
+                {selectedForThisSector.length ===
+                unfinishedSubsectors.length ? (
+                  <Icon as={CgRemoveR} color="content.link" boxSize={6} />
+                ) : (
+                  <Icon
+                    as={BiSelectMultiple}
+                    color="content.link"
+                    boxSize={6}
+                  />
+                )}
                 <Text
                   fontWeight="bold"
                   fontFamily="heading"
                   color="content.link"
                 >
-                  {t("quick-actions")}
+                  {selectedForThisSector.length === unfinishedSubsectors.length
+                    ? t("deselect-all")
+                    : t("quick-actions")}
                 </Text>
               </Button>
             </Box>

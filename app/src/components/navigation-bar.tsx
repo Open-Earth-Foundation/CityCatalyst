@@ -88,6 +88,8 @@ export function NavigationBar({
   const [isUserMenuOpen, setUserMenuOpen] = useState(false);
   const [isLanguageMenuOpen, setLanguageMenuOpen] = useState(false);
 
+  const [userMenuHighlight, setUserMenuHighlight] = useState<string | null>();
+
   return (
     <Box
       className="flex flex-row px-8 py-4 align-middle space-x-12 items-center relative z-50"
@@ -144,7 +146,7 @@ export function NavigationBar({
               setLanguageMenuOpen(details.open);
             }}
             open={isLanguageMenuOpen}
-            variant="subtle"
+            variant="solid"
           >
             <MenuTrigger asChild>
               <Button
@@ -206,7 +208,10 @@ export function NavigationBar({
                 setUserMenuOpen(details.open);
               }}
               open={isUserMenuOpen}
-              variant="subtle"
+              variant="solid"
+              onHighlightChange={(value) =>
+                setUserMenuHighlight(value.highlightedValue)
+              }
             >
               <MenuTrigger
                 asChild
@@ -265,7 +270,11 @@ export function NavigationBar({
                     <Icon
                       as={FiSettings}
                       boxSize={6}
-                      color="content.tertiary"
+                      color={
+                        userMenuHighlight === "settings"
+                          ? "background.neutral"
+                          : "content.tertiary"
+                      }
                       mr={4}
                     />
                     <Text fontSize="title.md">{t("settings")}</Text>
@@ -282,7 +291,11 @@ export function NavigationBar({
                     <Icon
                       as={MdLogout}
                       boxSize={6}
-                      color="sentiment.negativeDefault"
+                      color={
+                        userMenuHighlight === "log-out"
+                          ? "background.neutral"
+                          : "sentiment.negativeDefault"
+                      }
                       mr={4}
                     />
                     <Text fontSize="title.md">{t("log-out")}</Text>

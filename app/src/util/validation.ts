@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { GlobalWarmingPotentialTypeEnum, InventoryTypeEnum } from "./enums";
+import { OrganizationRole } from "@/util/types";
 
 export const emailPattern =
   /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -245,3 +246,48 @@ export const updatePasswordRequest = z.object({
 });
 
 export type UpdatePasswordRequest = z.infer<typeof updatePasswordRequest>;
+
+export const createOrganizationRequest = z.object({
+  name: z.string().max(255),
+  contactEmail: z.string().email().max(255),
+});
+
+export type CreateOrganizationRequest = z.infer<
+  typeof createOrganizationRequest
+>;
+
+export const updateOrganizationRequest = z.object({
+  name: z.string().max(255).optional(),
+  contactEmail: z.string().email().max(255).optional(),
+});
+
+export type UpdateOrganizationRequest = z.infer<
+  typeof updateOrganizationRequest
+>;
+
+export const createOrganizationInviteRequest = z.object({
+  organizationId: z.string().uuid(),
+  inviteeEmail: z.string().email(),
+  role: z.nativeEnum(OrganizationRole),
+});
+
+export type CreateOrganizationInviteRequest = z.infer<
+  typeof createOrganizationInviteRequest
+>;
+
+export const createProjectRequest = z.object({
+  name: z.string().max(255),
+  cityCountLimit: z.number().int().min(1),
+  description: z.string().optional(),
+  organizationId: z.string().uuid(),
+});
+
+export type CreateProjectRequest = z.infer<typeof createProjectRequest>;
+
+export const updateProjectRequest = z.object({
+  name: z.string().max(255).optional(),
+  cityCountLimit: z.number().int().min(1).optional(),
+  description: z.string().optional(),
+});
+
+export type UpdateProjectRequest = z.infer<typeof updateProjectRequest>;

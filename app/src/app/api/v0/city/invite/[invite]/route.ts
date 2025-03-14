@@ -3,7 +3,7 @@ import { apiHandler } from "@/util/api";
 import createHttpError from "http-errors";
 import { NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
-import { CityInviteStatus } from "@/util/types";
+import { InviteStatus } from "@/util/types";
 
 export const GET = apiHandler(async (req, { params, session }) => {
   const invite = await db.models.CityInvite.findOne({
@@ -27,7 +27,7 @@ export const GET = apiHandler(async (req, { params, session }) => {
   }
 
   await invite.update({
-    status: CityInviteStatus.ACCEPTED,
+    status: InviteStatus.ACCEPTED,
   });
 
   const user = await db.models.User.findOne({

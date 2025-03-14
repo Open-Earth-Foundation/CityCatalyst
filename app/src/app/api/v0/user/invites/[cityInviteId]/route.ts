@@ -2,7 +2,7 @@ import { db } from "@/models";
 import { apiHandler } from "@/util/api";
 import createHttpError from "http-errors";
 import { NextResponse } from "next/server";
-import { CityInviteStatus } from "@/util/types";
+import { InviteStatus } from "@/util/types";
 import { CityUser } from "@/models/CityUser";
 import { QueryTypes } from "sequelize";
 import UserService from "@/backend/UserService";
@@ -27,7 +27,8 @@ export const DELETE = apiHandler(async (req, { params, session }) => {
     );
     throw createHttpError.Unauthorized("Unauthorized");
   }
-  await invite.update({ status: CityInviteStatus.CANCELED });
+
+  await invite.update({ status: InviteStatus.CANCELED });
   const cityUser = await CityUser.findOne({
     where: { cityId: invite.cityId, userId: invite.userId },
   });
@@ -73,6 +74,6 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
     );
     throw createHttpError.Unauthorized("Unauthorized");
   }
-  await invite.update({ status: CityInviteStatus.PENDING });
+  await invite.update({ status: InviteStatus.PENDING });
   return NextResponse.json({ success: true });
 });

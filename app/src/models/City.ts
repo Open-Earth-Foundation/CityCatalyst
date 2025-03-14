@@ -17,6 +17,7 @@ export interface CityAttributes {
   area?: number;
   created?: Date;
   lastUpdated?: Date;
+  projectId?: string;
 }
 
 export type CityPk = "cityId";
@@ -30,6 +31,7 @@ export type CityOptionalAttributes =
   | "countryLocode"
   | "regionLocode"
   | "area"
+  | "projectId"
   | "created"
   | "lastUpdated";
 export type CityCreationAttributes = Optional<
@@ -52,6 +54,7 @@ export class City
   area?: number;
   created?: Date;
   lastUpdated?: Date;
+  projectId?: string;
 
   // City belongsToMany User via CityUser.cityId
   users!: User[];
@@ -181,6 +184,15 @@ export class City
         area: {
           type: DataTypes.BIGINT,
           allowNull: true,
+        },
+        projectId: {
+          type: DataTypes.UUID,
+          allowNull: true,
+          references: {
+            model: "Project",
+            key: "project_id",
+          },
+          field: "project_id",
         },
       },
       {

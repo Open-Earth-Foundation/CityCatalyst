@@ -119,7 +119,7 @@ def get_chi2_test_results() -> None:
 
 def get_accuracy_expert_vs_comparators(
     df: pd.DataFrame, actions: list
-) -> Tuple[float, float, float, float, float]:
+) -> Tuple[float, float, float, float]:
 
     skipped_missing_actions = []
     skipped_errors = []
@@ -291,18 +291,16 @@ def get_accuracy_expert_vs_comparators(
         accuracy_quanti = score_quanti / valid_comparisons
         accuracy_quali = score_quali / valid_comparisons
         accuracy_ml = score_ml / valid_comparisons
-        accuracy_consensus = score_consensus / valid_comparisons
         accuracy_majority = score_majority / valid_comparisons
         return (
             accuracy_quanti,
             accuracy_quali,
             accuracy_ml,
-            accuracy_consensus,
             accuracy_majority,
         )
     else:
         print("No valid comparisons found. Returning 0 accuracy.")
-        return 0, 0, 0, 0, 0
+        return 0, 0, 0, 0
 
 
 # def process_row_quali(index, row, actions):
@@ -408,7 +406,6 @@ if __name__ == "__main__":
         accuracy_quanti,
         accuracy_quali,
         accuracy_ml,
-        accuracy_consensus,
         accuracy_majority,
     ) = get_accuracy_expert_vs_comparators(df_all_comparisons_cleaned, actions)
 
@@ -418,5 +415,4 @@ if __name__ == "__main__":
     print(f"Accuracy for quantitative ranking is {accuracy_quanti}\n")
     print(f"Accuracy for qualitative ranking is {accuracy_quali}\n")
     print(f"Accuracy for ML ranking is {accuracy_ml}\n")
-    print(f"Accuracy for consensus is {accuracy_consensus}\n")
     print(f"Accuracy for majority vote is {accuracy_majority}\n")

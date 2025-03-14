@@ -807,7 +807,7 @@ export const api = createApi({
           inventoryId: string;
           subsectorId: string;
           unavailableReason: string;
-          explanation: string;
+          unavailableExplanation: string;
         }) => ({
           url: `/inventory/${data.inventoryId}/notation-keys`,
           method: "POST",

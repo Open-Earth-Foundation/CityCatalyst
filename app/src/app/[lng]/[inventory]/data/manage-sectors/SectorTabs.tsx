@@ -33,6 +33,7 @@ import {
   SelectValueText,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import { api } from "@/services/api";
 
 interface SectorTabsProps {
   t: TFunction;
@@ -72,6 +73,52 @@ const SectorTabs: FC<SectorTabsProps> = ({
   const [cardInputs, setCardInputs] = React.useState<
     Record<string, CardInputs>
   >({});
+
+  // update notation keys for subsectors from api service
+  const [createNotationKeys, { isLoading, isError, data }] =
+    api.useUpdateOrCreateNotationKeysMutation();
+  const handleUpdateNotationKeys = async (subsectorId?: string) => {
+    let notationKeysArray;
+    if (subsectorId) {
+      // Update a single card
+      const cardData = cardInputs[subsectorId];
+      if (!cardData) return;
+      notationKeysArray = [
+        {
+          subSectorId: subsectorId,
+          unavailableReason: cardData.notationKey,
+          unavailableExplanation: cardData.explanation,
+        },
+      ];
+    } else {
+      // Bulk update all cards that have been edited (or, if you prefer, all selected ones)
+      notationKeysArray = Object.entries(cardInputs).map(([id, value]) => ({
+        subSectorId: id,
+        unavailableReason: value.notationKey,
+        unavailableExplanation: value.explanation,
+      }));
+    }
+
+    // Build the payload according to the schema
+    const payload = { notationKeys: notationKeysArray };
+
+    try {
+      await createNotationKeys({
+        inventoryId: inventoryData?.inventory.inventoryId!,
+        ...payload,
+      }).unwrap();
+    } catch (error) {
+      console.error("Failed to update notation keys", error);
+    }
+  };
+
+  if (isError) {
+    console.error("Failed to update notation keys", isError);
+  } else if (isLoading) {
+    console.log("Loading...");
+  } else {
+    console.log(data);
+  }
 
   useEffect(() => {
     if (!isInventoryDataLoading) {
@@ -128,11 +175,11 @@ const SectorTabs: FC<SectorTabsProps> = ({
     items: [
       {
         label: t("ne"),
-        value: "ne",
+        value: "not-estimated",
       },
       {
         label: t("na"),
-        value: "notation-key-2",
+        value: "no-occurrance",
       },
       {
         label: t("no"),
@@ -144,7 +191,11 @@ const SectorTabs: FC<SectorTabsProps> = ({
       },
       {
         label: t("c"),
-        value: "c",
+        value: "confidential-information",
+      },
+      {
+        label: t("pe"),
+        value: "presented-elsewhere",
       },
     ],
   });
@@ -514,7 +565,13 @@ const SectorTabs: FC<SectorTabsProps> = ({
                 <Button height="56px" width="150px" variant="outline">
                   {t("cancel")}
                 </Button>
-                <Button height="56px" width="150px" variant="solid">
+                <Button
+                  height="56px"
+                  width="150px"
+                  variant="solid"
+                  onClick={() => handleUpdateNotationKeys()}
+                  loading={isLoading}
+                >
                   {t("update")}
                 </Button>
               </Box>

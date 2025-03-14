@@ -805,13 +805,15 @@ export const api = createApi({
       updateOrCreateNotationKeys: builder.mutation({
         query: (data: {
           inventoryId: string;
-          subsectorId: string;
-          unavailableReason: string;
-          unavailableExplanation: string;
+          notationKeys: {
+            subSectorId: string;
+            unavailableReason: string;
+            unavailableExplanation: string;
+          }[];
         }) => ({
           url: `/inventory/${data.inventoryId}/notation-keys`,
           method: "POST",
-          body: data,
+          body: { notationKeys: data.notationKeys },
         }),
         transformResponse: (response: any) => response.data,
       }),
@@ -892,5 +894,6 @@ export const {
   useUpdatePasswordMutation,
   useGetInventoryPopulationsQuery,
   useGetUnfinishedSubsectorsQuery,
+  useUpdateOrCreateNotationKeysMutation,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

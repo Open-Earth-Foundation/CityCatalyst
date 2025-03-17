@@ -183,7 +183,7 @@ const PercentageBreakdownInput: FC<FormInputProps> = ({
             </Field>
           </Group>
         </PopoverTrigger>
-        <PopoverContent w="full" className="overflow-scroll">
+        <PopoverContent w="full" className="overflow-scroll" portalled={false}>
           <PopoverArrow />
           <PopoverBody
             w="full"

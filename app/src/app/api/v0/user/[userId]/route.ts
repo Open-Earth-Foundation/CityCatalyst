@@ -3,11 +3,9 @@ import { apiHandler } from "@/util/api";
 import createHttpError from "http-errors";
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { Roles } from "@/util/types";
 
 const updateUserRequest = z.object({
   name: z.string(),
-  role: z.nativeEnum(Roles),
 });
 
 export const PATCH = apiHandler(async (_req, { params, session }) => {

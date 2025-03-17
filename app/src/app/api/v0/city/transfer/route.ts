@@ -14,21 +14,32 @@ export const PATCH = apiHandler(async (req, { session }) => {
 
   const body = transferCitiesRequest.parse(await req.json());
 
+  if (!db.sequelize) throw new Error("Database not initialized");
   //  set up a transaction to move the cities to the new project
-  await db.sequelize?.transaction(async (t) => {
-    for (const cityId of body.cityIds) {
-      const city = await db.models.City.findOne({
-        where: {
-          cityId,
-        },
-      });
+  await db.sequelize.transaction(async (t) => {
+    const cities = await db.models.City.findAll({
+      where: { cityId: body.cityIds },
+      transaction: t,
+    });
 
-      if (!city) {
-        throw new createHttpError.NotFound("City not found for id: " + cityId);
-      }
+    const foundCityIds = cities.map((city) => city.cityId);
+    const missingCityIds = body.cityIds.filter(
+      (id) => !foundCityIds.includes(id),
+    );
 
-      await city.update({ projectId: body.projectId }, { transaction: t });
+    if (missingCityIds.length > 0) {
+      throw new createHttpError.NotFound(
+        `Cities not found for IDs: ${missingCityIds.join(", ")}`,
+      );
     }
+
+    await db.models.City.update(
+      { projectId: body.projectId },
+      {
+        where: { cityId: body.cityIds },
+        transaction: t,
+      },
+    );
   });
 
   return NextResponse.json({ success: true });

@@ -293,7 +293,7 @@ export const updateProjectRequest = z.object({
 export type UpdateProjectRequest = z.infer<typeof updateProjectRequest>;
 
 export const transferCitiesRequest = z.object({
-  cityIds: z.array(z.string().uuid()),
+  cityIds: z.array(z.string().uuid()).nonempty(),
   projectId: z.string().uuid(),
 });
 

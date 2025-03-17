@@ -412,7 +412,6 @@ export const api = createApi({
         {
           name: string;
           email: string;
-          role: string;
           userId: string;
         }
       >({

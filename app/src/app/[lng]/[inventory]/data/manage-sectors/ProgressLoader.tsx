@@ -10,7 +10,7 @@ const ProgressLoader = () => {
       justifyContent="center"
       alignItems="center"
     >
-      <ProgressCircle.Root value={null} size="sm">
+      <ProgressCircle.Root value={null} size="md">
         <ProgressCircle.Circle>
           <ProgressCircle.Track />
           <ProgressCircle.Range />

@@ -24,7 +24,7 @@ export const PATCH = apiHandler(async (req, { session }) => {
       });
 
       if (!city) {
-        throw new createHttpError.NotFound("City not found");
+        throw new createHttpError.NotFound("City not found for id: " + cityId);
       }
 
       await city.update({ projectId: body.projectId }, { transaction: t });

@@ -27,23 +27,24 @@ def load_json_file(filepath: str) -> dict:
         print(f"Error loading {filepath}: {str(e)}")
         raise
 
-def test_async_plan_creation():
+def test_async_plan_creation(city_name="Camaçari"):
     """Test the asynchronous plan creation workflow."""
     try:
         print("Starting asynchronous plan creation test")
         
-        # Load JSON data
+        # Load action data
         action_data = load_json_file("data/sample_action.json")
-        city_data = load_json_file("data/sample_city.json")
         
-        # Prepare request data
+        # Prepare request data with city name
         request_data = {
             "action": action_data,
-            "city": city_data
+            "city_name": city_name
         }
         
         # Step 1: Start plan creation
         print(f"Step 1: Sending request to {START_PLAN_URL}")
+        print(f"Using city name: {city_name}")
+        
         start_response = requests.post(
             START_PLAN_URL, 
             json=request_data, 
@@ -135,7 +136,7 @@ def test_async_plan_creation():
             # Save with timestamp and action ID
             timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M")
             action_id = action_data.get("ActionID", "unknown")
-            filename = f"{timestamp}_{action_id}_async_test_response.md"
+            filename = f"{timestamp}_{action_id}_{city_name.replace(' ', '_')}_async_test_response.md"
             output_path = output_dir / filename
             
             with open(output_path, "wb") as f:
@@ -151,4 +152,7 @@ def test_async_plan_creation():
         raise
 
 if __name__ == "__main__":
-    test_async_plan_creation() 
+    # Get city name from command line argument or use default
+    import sys
+    city_name = sys.argv[1] if len(sys.argv) > 1 else "Camaçari"
+    test_async_plan_creation(city_name) 

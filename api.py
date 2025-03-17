@@ -42,12 +42,41 @@ app = FastAPI(
 output_dir = Path(__file__).parent / "data" / "output"
 logger.info(f"Output directory set to: {output_dir}")
 
+# Define city data path
+city_data_path = Path(__file__).parent / "data" / "city_data.json"
+logger.info(f"City data path set to: {city_data_path}")
+
 # Storage for task status and results
 task_storage = {}
 
 class PlanRequest(BaseModel):
     action: Dict[str, Any]
-    city: Dict[str, Any]
+    city_name: str
+
+def load_city_data():
+    """Load city data from JSON file."""
+    try:
+        logger.info(f"Loading city data from {city_data_path}")
+        with open(city_data_path, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception as e:
+        logger.error(f"Error loading city data: {str(e)}", exc_info=True)
+        raise
+
+def get_city_by_name(city_name: str) -> Dict[str, Any]:
+    """Get city data by name."""
+    city_data = load_city_data()
+    
+    # Case-insensitive search
+    city_name_lower = city_name.lower()
+    
+    for city in city_data:
+        if city["name"].lower() == city_name_lower:
+            logger.info(f"Found city data for: {city['name']}")
+            return city
+    
+    logger.error(f"City not found: {city_name}")
+    raise ValueError(f"City not found: {city_name}")
 
 @app.get("/")
 async def root():
@@ -60,8 +89,19 @@ def _execute_plan_creation(task_uuid: str, request: PlanRequest):
         # Update status to running
         task_storage[task_uuid]["status"] = "running"
         logger.info(f"Task {task_uuid}: Starting plan creation for action ID: {request.action.get('ActionID', 'unknown')}")
+        logger.info(f"Task {task_uuid}: City name: {request.city_name}")
         
         start_time = time.time()
+        
+        # Get city data
+        try:
+            city_data = get_city_by_name(request.city_name)
+            logger.info(f"Task {task_uuid}: Found city data for {request.city_name}")
+        except ValueError as e:
+            logger.error(f"Task {task_uuid}: {str(e)}")
+            task_storage[task_uuid]["status"] = "failed"
+            task_storage[task_uuid]["error"] = str(e)
+            return
         
         # 1. Initialize the graph and state
         logger.info(f"Task {task_uuid}: Creating computation graph")
@@ -71,7 +111,7 @@ def _execute_plan_creation(task_uuid: str, request: PlanRequest):
         logger.info(f"Task {task_uuid}: Initializing agent state")
         initial_state = AgentState(
             climate_action_data=request.action,
-            city_data=request.city,
+            city_data=city_data,
             response_agent_1=AIMessage(""),
             response_agent_2=AIMessage(""),
             response_agent_3=AIMessage(""),
@@ -128,12 +168,24 @@ async def start_plan_creation(request: PlanRequest):
     # Generate a unique task ID
     task_uuid = str(uuid.uuid4())
     logger.info(f"Received plan creation request, assigned task ID: {task_uuid}")
+    logger.info(f"City name: {request.city_name}")
+    
+    # Validate city name
+    try:
+        get_city_by_name(request.city_name)
+    except ValueError as e:
+        logger.error(f"Invalid city name: {request.city_name}")
+        raise HTTPException(
+            status_code=404,
+            detail=str(e)
+        )
     
     # Initialize task status
     task_storage[task_uuid] = {
         "status": "pending",
         "created_at": datetime.now().isoformat(),
-        "action_id": request.action.get('ActionID', 'unknown')
+        "action_id": request.action.get('ActionID', 'unknown'),
+        "city_name": request.city_name
     }
     
     # Start background thread for processing
@@ -164,7 +216,13 @@ async def check_progress(task_uuid: str):
     task_info = task_storage[task_uuid]
     logger.info(f"Task {task_uuid} status: {task_info['status']}")
     
-    return {"status": task_info["status"]}
+    response_data = {"status": task_info["status"]}
+    
+    # Include error message if status is failed
+    if task_info["status"] == "failed" and "error" in task_info:
+        response_data["error"] = task_info["error"]
+    
+    return response_data
 
 @app.get("/get_plan/{task_uuid}")
 async def get_plan(task_uuid: str):
@@ -209,8 +267,20 @@ async def create_plan(request: PlanRequest):
     start_time = time.time()
     action_id = request.action.get('ActionID', 'unknown')
     logger.info(f"Starting plan creation for action ID: {action_id}")
+    logger.info(f"City name: {request.city_name}")
 
     try:
+        # Get city data
+        try:
+            city_data = get_city_by_name(request.city_name)
+            logger.info(f"Found city data for {request.city_name}")
+        except ValueError as e:
+            logger.error(f"City not found: {request.city_name}")
+            raise HTTPException(
+                status_code=404,
+                detail=str(e)
+            )
+        
         # 1. Initialize the graph and state
         logger.info("Creating computation graph")
         graph = create_graph()
@@ -219,7 +289,7 @@ async def create_plan(request: PlanRequest):
         logger.info("Initializing agent state")
         initial_state = AgentState(
             climate_action_data=request.action,
-            city_data=request.city,
+            city_data=city_data,
             response_agent_1=AIMessage(""),
             response_agent_2=AIMessage(""),
             response_agent_3=AIMessage(""),
@@ -253,7 +323,7 @@ async def create_plan(request: PlanRequest):
             )
         # 3. Save the plan
         timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M")
-        filename = f"{timestamp}_{request.action.get('ActionID', 'unknown')}_climate_action_implementation_plan.md"
+        filename = f"{timestamp}_{action_id}_{request.city_name.replace(' ', '_')}_climate_action_implementation_plan.md"
         output_path = output_dir / filename
         
         output_dir.mkdir(parents=True, exist_ok=True)

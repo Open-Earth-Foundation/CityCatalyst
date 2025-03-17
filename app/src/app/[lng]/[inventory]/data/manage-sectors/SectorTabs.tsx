@@ -1,3 +1,4 @@
+"use client";
 import { InventoryProgressResponse } from "@/util/types";
 import {
   Box,
@@ -35,6 +36,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { api } from "@/services/api";
 import { toaster } from "@/components/ui/toaster";
+import RouteChangeDialog from "./RouteChangeDialog";
+import { usePathname, useRouter } from "next/navigation";
 
 interface SectorTabsProps {
   t: TFunction;
@@ -59,6 +62,8 @@ const SectorTabs: FC<SectorTabsProps> = ({
   isInventoryDataLoading,
   t,
 }) => {
+  const router = useRouter();
+
   const [unfinishedSubsectorsData, setUnfinishedSubsectorsData] =
     React.useState<SubSectorWithRelations[] | undefined>([]);
   // State to track selected subsector IDs per sector (keyed by sector ID)
@@ -74,6 +79,45 @@ const SectorTabs: FC<SectorTabsProps> = ({
   const [cardInputs, setCardInputs] = React.useState<
     Record<string, CardInputs>
   >({});
+  // State for unsaved changes detection dialog
+  const [isDirty, setIsDirty] = React.useState(false);
+  const [showDialog, setShowDialog] = React.useState(false);
+  const pathname = usePathname();
+  const [prevPathname, setPrevPathname] = React.useState(pathname);
+  const [nextRoute, setNextRoute] = React.useState<string | null>(null);
+
+  useEffect(() => {
+    // Adjust the dirty check as needed (e.g., also include quickActionValues)
+    setIsDirty(Object.keys(cardInputs).length > 0);
+  }, [cardInputs]);
+
+  // Listen to Next.js route changes for in-app navigation
+  useEffect(() => {
+    if (pathname !== prevPathname) {
+      if (isDirty) {
+        setNextRoute(pathname);
+        setShowDialog(true);
+        // Revert to previous path.
+        router.push(prevPathname);
+      } else {
+        setPrevPathname(pathname);
+      }
+    }
+  }, [pathname, prevPathname, isDirty, router]);
+
+  // beforeunload event for refresh/close scenarios
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (isDirty) {
+        e.preventDefault();
+        e.returnValue = "";
+        setShowDialog(true);
+        console.log(showDialog);
+      }
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [isDirty]);
 
   // update notation keys for subsectors from api service
   const [createNotationKeys, { isLoading, isError, data, status }] =
@@ -108,6 +152,9 @@ const SectorTabs: FC<SectorTabsProps> = ({
         inventoryId: inventoryData?.inventory.inventoryId!,
         ...payload,
       }).unwrap();
+      // clear dirty state on success
+      setCardInputs({});
+      setIsDirty(false);
       status === "fulfilled" &&
         toaster.success({
           title: t("success"),
@@ -125,6 +172,21 @@ const SectorTabs: FC<SectorTabsProps> = ({
   } else {
     console.log(data);
   }
+
+  // Modal handlers for unsaved changes
+  const confirmNavigation = () => {
+    setIsDirty(false);
+    if (nextRoute) {
+      setPrevPathname(nextRoute);
+      router.push(nextRoute);
+    }
+    setShowDialog(false);
+  };
+
+  const cancelNavigation = () => {
+    setNextRoute(null);
+    setShowDialog(false);
+  };
 
   useEffect(() => {
     if (!isInventoryDataLoading) {
@@ -588,14 +650,23 @@ const SectorTabs: FC<SectorTabsProps> = ({
 
   console.log(inventoryData);
   return (
-    <Tabs.Root
-      lazyMount
-      unmountOnExit
-      defaultValue={`tab-${inventoryData?.sectorProgress[0].sector.sectorId}`}
-    >
-      <Tabs.List>{renderSectorTabList()}</Tabs.List>
-      {renderSectorTabContent()}
-    </Tabs.Root>
+    <>
+      <Tabs.Root
+        lazyMount
+        unmountOnExit
+        defaultValue={`tab-${inventoryData?.sectorProgress[0].sector.sectorId}`}
+      >
+        <Tabs.List>{renderSectorTabList()}</Tabs.List>
+        {renderSectorTabContent()}
+      </Tabs.Root>
+      <RouteChangeDialog
+        t={t}
+        showDialog={showDialog}
+        setShowDialog={setShowDialog}
+        confirmNavigation={confirmNavigation}
+        cancelNavigation={cancelNavigation}
+      />
+    </>
   );
 };
 

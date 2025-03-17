@@ -1,182 +1,202 @@
 [
     {
         "locode": "BRCCI",
-        "cityName": "Cama\u00e7ari",
+        "cityName": "Camaçari",
         "region": "BR-BA",
         "regionName": "Bahia",
         "actionId": "c40_0035",
         "actionName": "Waste Efficiency",
-        "actionPriority": 1
+        "actionPriority": 1,
+        "explanation": "For the city of Camaçari, Waste Efficiency addresses the entire waste cycle from the outset, reducing emissions while conserving resources. By emphasizing minimal waste generation, it supports long-term environmental benefits and local sustainability goals. This holistic approach also helps the city adapt to growing waste volumes more effectively."
     },
     {
         "locode": "BRCCI",
-        "cityName": "Cama\u00e7ari",
+        "cityName": "Camaçari",
         "region": "BR-BA",
         "regionName": "Bahia",
         "actionId": "c40_0040",
         "actionName": "Volume-Based Collection",
-        "actionPriority": 2
+        "actionPriority": 2,
+        "explanation": "For the city of Camaçari, Volume-Based Collection incentivizes households and businesses to reduce waste by linking disposal costs to actual amounts. It can be implemented swiftly, promoting visible improvements in how waste is handled. This measure also eases landfill pressure and fosters a culture of responsible resource use."
     },
     {
         "locode": "BRCCI",
-        "cityName": "Cama\u00e7ari",
+        "cityName": "Camaçari",
         "region": "BR-BA",
         "regionName": "Bahia",
         "actionId": "icare_0090",
         "actionName": "Adoption of electric drones for last-mile deliveries.",
-        "actionPriority": 3
+        "actionPriority": 3,
+        "explanation": "For the city of Camaçari, adopting electric drones for last-mile deliveries reduces emissions from traditional vehicle-based transport and alleviates urban congestion. By enabling efficient and eco-friendly logistics, it benefits local businesses and residents alike. This innovation also supports improved air quality and faster service in dense areas."
     },
     {
         "locode": "BRCCI",
-        "cityName": "Cama\u00e7ari",
+        "cityName": "Camaçari",
         "region": "BR-BA",
         "regionName": "Bahia",
         "actionId": "icare_0052",
         "actionName": "Develop projects for renewable energy and waste reuse",
-        "actionPriority": 4
+        "actionPriority": 4,
+        "explanation": "For the city of Camaçari, developing projects for renewable energy and waste reuse addresses two core challenges: reducing emissions and extending the life cycle of materials. By advancing a circular economy mindset, the city can diminish reliance on fossil fuels while opening up new economic opportunities. This strategic approach also reinforces long-term sustainability and resilience."
     },
     {
         "locode": "BRCCI",
-        "cityName": "Cama\u00e7ari",
+        "cityName": "Camaçari",
         "region": "BR-BA",
         "regionName": "Bahia",
         "actionId": "c40_0039",
         "actionName": "Gas Management",
-        "actionPriority": 5
+        "actionPriority": 5,
+        "explanation": "For the city of Camaçari, Gas Management focuses on capturing and treating harmful emissions from existing waste and industrial systems. This reduces air pollution and helps safeguard public health. Managing these emissions early on also aligns with broader climate objectives and lowers the city’s carbon footprint."
     },
     {
         "locode": "BRCCI",
-        "cityName": "Cama\u00e7ari",
+        "cityName": "Camaçari",
         "region": "BR-BA",
         "regionName": "Bahia",
         "actionId": "c40_0036",
         "actionName": "Landfill Management",
-        "actionPriority": 6
+        "actionPriority": 6,
+        "explanation": "For the city of Camaçari, Landfill Management ensures safe and regulated disposal, minimizing hazards for nearby communities. By improving current landfill operations, the city can reduce contamination risks and potential health concerns. This initiative also paves the way for more effective, long-term waste strategies."
     },
     {
         "locode": "BRCCI",
-        "cityName": "Cama\u00e7ari",
+        "cityName": "Camaçari",
         "region": "BR-BA",
         "regionName": "Bahia",
         "actionId": "icare_0053",
         "actionName": "Implement a project to support cooperatives of recyclabe material collectors",
-        "actionPriority": 7
+        "actionPriority": 7,
+        "explanation": "For the city of Camaçari, supporting cooperatives of recyclable material collectors bolsters recycling rates and offers socioeconomic benefits. By strengthening cooperative networks, more materials are diverted from landfills, reducing pollution and boosting efficiency. This measure fosters inclusive waste management and empowers local communities."
     },
     {
         "locode": "BRCCI",
-        "cityName": "Cama\u00e7ari",
+        "cityName": "Camaçari",
         "region": "BR-BA",
         "regionName": "Bahia",
         "actionId": "icare_0119",
         "actionName": "Maximize composting processes.",
-        "actionPriority": 8
+        "actionPriority": 8,
+        "explanation": "For the city of Camaçari, maximizing composting processes tackles organic waste, a major fraction of municipal refuse. By converting organic material into compost, the city reduces landfill usage and mitigates emissions. This practice also supports local agriculture through enriched soil and sustainable farming."
     },
     {
         "locode": "BRCCI",
-        "cityName": "Cama\u00e7ari",
+        "cityName": "Camaçari",
         "region": "BR-BA",
         "regionName": "Bahia",
         "actionId": "ipcc_0080",
         "actionName": "Avoiding, Minimising, and Recycling Waste",
-        "actionPriority": 9
+        "actionPriority": 9,
+        "explanation": "For the city of Camaçari, the principle of avoiding, minimising, and recycling waste lays the groundwork for responsible consumption. It encourages individuals and businesses to adopt habits that lessen overall waste generation. Over time, this city-wide ethos conserves resources, saves landfill space, and promotes shared ecological stewardship."
     },
     {
         "locode": "BRCCI",
-        "cityName": "Cama\u00e7ari",
+        "cityName": "Camaçari",
         "region": "BR-BA",
         "regionName": "Bahia",
         "actionId": "icare_0109",
         "actionName": "Promote Energy Recovery from Biogas in Landfills",
-        "actionPriority": 10
+        "actionPriority": 10,
+        "explanation": "For the city of Camaçari, promoting energy recovery from landfill biogas transforms methane into a valuable energy source. By harnessing these emissions, the city cuts pollution and reduces reliance on fossil fuels. This strategy also enhances public health through better waste decomposition management."
     },
     {
         "locode": "BRCCI",
-        "cityName": "Cama\u00e7ari",
+        "cityName": "Camaçari",
         "region": "BR-BA",
         "regionName": "Bahia",
         "actionId": "icare_0110",
         "actionName": "Regulate the Construction Waste Management Plan",
-        "actionPriority": 11
+        "actionPriority": 11,
+        "explanation": "For the city of Camaçari, regulating construction waste ensures that building materials are handled and disposed of responsibly. This prevents debris buildup, soil contamination, and illegal dumping. Through clear guidelines, the city promotes eco-friendly innovation and safer construction practices for local residents."
     },
     {
         "locode": "BRCCI",
-        "cityName": "Cama\u00e7ari",
+        "cityName": "Camaçari",
         "region": "BR-BA",
         "regionName": "Bahia",
         "actionId": "c40_0028",
         "actionName": "Zero Emission Buses",
-        "actionPriority": 12
+        "actionPriority": 12,
+        "explanation": "For the city of Camaçari, Zero Emission Buses reduce greenhouse gas emissions tied to everyday commuting. By providing cleaner public transport, they also enhance local air quality and reduce traffic congestion. This inclusive solution benefits diverse populations and strengthens sustainable mobility options across the city."
     },
     {
         "locode": "BRCCI",
-        "cityName": "Cama\u00e7ari",
+        "cityName": "Camaçari",
         "region": "BR-BA",
         "regionName": "Bahia",
         "actionId": "icare_0139",
         "actionName": "Implementation of urban toll.",
-        "actionPriority": 13
+        "actionPriority": 13,
+        "explanation": "For the city of Camaçari, implementing an urban toll helps alleviate congestion and improve air quality by discouraging unnecessary driving. This measure can streamline traffic flow, leading to faster commutes and reduced emissions. The revenue generated may also bolster city infrastructure and public services."
     },
     {
         "locode": "BRCCI",
-        "cityName": "Cama\u00e7ari",
+        "cityName": "Camaçari",
         "region": "BR-BA",
         "regionName": "Bahia",
         "actionId": "icare_0017",
         "actionName": "Optimize the urban solid waste (USW) management system, aiming to expand collection and reduce illegal disposal.",
-        "actionPriority": 14
+        "actionPriority": 14,
+        "explanation": "For the city of Camaçari, optimizing the urban solid waste management system broadens collection coverage and curbs illegal dumping. This initiative safeguards both environmental quality and public health, ensuring cleaner and safer neighborhoods. Better waste oversight also strengthens the city’s long-term resilience to rising waste demands."
     },
     {
         "locode": "BRCCI",
-        "cityName": "Cama\u00e7ari",
+        "cityName": "Camaçari",
         "region": "BR-BA",
         "regionName": "Bahia",
         "actionId": "icare_0088",
         "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
-        "actionPriority": 15
+        "actionPriority": 15,
+        "explanation": "For the city of Camaçari, free public transportation during peak hours can swiftly shift commuter preferences away from personal cars. This helps lower congestion, reduce emissions, and offer more equitable access to mobility. By removing fare barriers, the city promotes a more inclusive approach to daily travel."
     },
     {
         "locode": "BRCCI",
-        "cityName": "Cama\u00e7ari",
+        "cityName": "Camaçari",
         "region": "BR-BA",
         "regionName": "Bahia",
         "actionId": "c40_0025",
         "actionName": "Truck Emissions",
-        "actionPriority": 16
+        "actionPriority": 16,
+        "explanation": "For the city of Camaçari, focusing on Truck Emissions is vital due to the high pollution levels produced by heavy-duty vehicles. By adopting cleaner technologies and operational standards, the city can protect public health and lower climate impacts. These improvements also align well with industrial and commercial transport demands."
     },
     {
         "locode": "BRCCI",
-        "cityName": "Cama\u00e7ari",
+        "cityName": "Camaçari",
         "region": "BR-BA",
         "regionName": "Bahia",
         "actionId": "c40_0026",
         "actionName": "Vehicle Emissions",
-        "actionPriority": 17
+        "actionPriority": 17,
+        "explanation": "For the city of Camaçari, addressing Vehicle Emissions helps reduce one of the largest sources of urban air pollution. By encouraging cleaner cars and better fuel standards, the city lowers health risks and improves traffic conditions. This broad measure also supports climate mitigation by reducing greenhouse gas output across the region."
     },
     {
         "locode": "BRCCI",
-        "cityName": "Cama\u00e7ari",
+        "cityName": "Camaçari",
         "region": "BR-BA",
         "regionName": "Bahia",
         "actionId": "icare_0093",
         "actionName": "Incentive the use of drones for monitoring large agricultural properties.",
-        "actionPriority": 18
+        "actionPriority": 18,
+        "explanation": "For the city of Camaçari, incentivizing drones in large-scale agriculture streamlines resource use and lowers the need for on-site vehicle inspections. Quick detection of crop issues reduces chemical inputs and water usage, benefiting both farmers and the environment. Embracing this technology promotes efficiency and supports regional agribusiness."
     },
     {
         "locode": "BRCCI",
-        "cityName": "Cama\u00e7ari",
+        "cityName": "Camaçari",
         "region": "BR-BA",
         "regionName": "Bahia",
         "actionId": "icare_0122",
         "actionName": "Establish eco-parks.",
-        "actionPriority": 19
+        "actionPriority": 19,
+        "explanation": "For the city of Camaçari, establishing eco-parks creates protected green spaces that safeguard local biodiversity and elevate recreational opportunities. These areas improve air quality, mitigate urban heat, and foster environmental stewardship among residents. Integrating nature into city planning also enhances resilience against climate stressors."
     },
     {
         "locode": "BRCCI",
-        "cityName": "Cama\u00e7ari",
+        "cityName": "Camaçari",
         "region": "BR-BA",
         "regionName": "Bahia",
         "actionId": "icare_0137",
         "actionName": "Replace Inefficient Lighting with LED Technology in Public Spaces",
-        "actionPriority": 20
+        "actionPriority": 20,
+        "explanation": "For the city of Camaçari, replacing outdated lighting with LED technology significantly reduces electricity consumption and maintenance costs. This upgrade lowers emissions linked to power generation, aligning with broader sustainability efforts. By adopting energy-efficient illumination, the city can also enhance public safety and visibility in shared spaces."
     }
 ]

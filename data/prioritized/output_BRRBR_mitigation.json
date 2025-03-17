@@ -6,7 +6,8 @@
         "regionName": "Acre",
         "actionId": "c40_0035",
         "actionName": "Waste Efficiency",
-        "actionPriority": 1
+        "actionPriority": 1,
+        "explanation": "For the city of Rio Branco, Waste Efficiency programs streamline collection and disposal processes to reduce emissions from landfill-bound materials. They focus on recycling and reusing resources, cutting costs and environmental impacts simultaneously. By curbing the flow of trash into dumpsites, the city lowers pollution risks and greenhouse gas output."
     },
     {
         "locode": "BRRBR",
@@ -15,7 +16,8 @@
         "regionName": "Acre",
         "actionId": "icare_0139",
         "actionName": "Implementation of urban toll.",
-        "actionPriority": 2
+        "actionPriority": 2,
+        "explanation": "For the city of Rio Branco, an urban toll helps reduce congestion and vehicle-related emissions by discouraging unnecessary car trips. This measure promotes alternative transportation modes and lowers overall pollution levels. It also aligns with cost-effectiveness by shifting some infrastructure burdens toward those who use the roads most frequently."
     },
     {
         "locode": "BRRBR",
@@ -24,7 +26,8 @@
         "regionName": "Acre",
         "actionId": "c40_0036",
         "actionName": "Landfill Management",
-        "actionPriority": 3
+        "actionPriority": 3,
+        "explanation": "For the city of Rio Branco, upgraded Landfill Management captures and treats harmful gases while protecting nearby soil and water sources. This approach reduces methane releases, a potent greenhouse gas, and improves overall environmental quality. By controlling landfill operations, the city also reduces long-term health and cleanup costs."
     },
     {
         "locode": "BRRBR",
@@ -33,7 +36,8 @@
         "regionName": "Acre",
         "actionId": "icare_0122",
         "actionName": "Establish eco-parks.",
-        "actionPriority": 4
+        "actionPriority": 4,
+        "explanation": "For the city of Rio Branco, eco-parks integrate waste management with green spaces, turning disposal sites into areas for recreation and education. This setup promotes resource recovery processes and community engagement. By combining environmental stewardship with public amenities, the city fosters a culture of sustainability and urban renewal."
     },
     {
         "locode": "BRRBR",
@@ -42,7 +46,8 @@
         "regionName": "Acre",
         "actionId": "icare_0133",
         "actionName": "Promote Urban Reforestation and Green Corridors",
-        "actionPriority": 5
+        "actionPriority": 5,
+        "explanation": "For the city of Rio Branco, planting trees and establishing connected green belts lower the urban heat effect and enhance local air quality. These corridors serve as buffers against heavy rainfall, reducing flood risks. At the same time, they support biodiversity and promote healthier, more pleasant communities."
     },
     {
         "locode": "BRRBR",
@@ -51,7 +56,8 @@
         "regionName": "Acre",
         "actionId": "icare_0100",
         "actionName": "Support Regenerative Agriculture Practices",
-        "actionPriority": 6
+        "actionPriority": 6,
+        "explanation": "For the city of Rio Branco, regenerative agriculture rebuilds soil fertility and captures more carbon on farms. Healthier soils also help crops handle extreme weather. By lowering reliance on chemical inputs and preserving water, this approach boosts rural livelihoods and aligns with broader climate goals."
     },
     {
         "locode": "BRRBR",
@@ -60,7 +66,8 @@
         "regionName": "Acre",
         "actionId": "icare_0057",
         "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
-        "actionPriority": 7
+        "actionPriority": 7,
+        "explanation": "For the city of Rio Branco, expanding rail-based mass transit eases road congestion and reduces transportation emissions. These systems carry more passengers efficiently, cutting down on fuel consumption and air pollution. It also fosters economic development through improved connectivity and reliable commuter services."
     },
     {
         "locode": "BRRBR",
@@ -69,7 +76,8 @@
         "regionName": "Acre",
         "actionId": "icare_0102",
         "actionName": "Promote Sustainable Agricultural Practices",
-        "actionPriority": 8
+        "actionPriority": 8,
+        "explanation": "For the city of Rio Branco, sustainable agriculture protects key resources like soil and water while reducing emissions from chemical-intensive methods. By rotating crops, conserving soil moisture, and minimizing fertilizers, farmers can adapt more easily to changing climate conditions. This strategy also supports local economies by maintaining productive, resilient farmland."
     },
     {
         "locode": "BRRBR",
@@ -78,7 +86,8 @@
         "regionName": "Acre",
         "actionId": "icare_0052",
         "actionName": "Develop projects for renewable energy and waste reuse",
-        "actionPriority": 9
+        "actionPriority": 9,
+        "explanation": "For the city of Rio Branco, merging waste reuse with renewable energy generation transforms discarded materials into valuable resources. This method cuts emissions from traditional disposal and fossil fuels at the same time. It also stimulates innovation and lowers waste management costs for local communities."
     },
     {
         "locode": "BRRBR",
@@ -87,7 +96,8 @@
         "regionName": "Acre",
         "actionId": "icare_0118",
         "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
-        "actionPriority": 10
+        "actionPriority": 10,
+        "explanation": "For the city of Rio Branco, encouraging bicycle use helps curb car dependency and reduce traffic emissions. By building safe bike lanes and running awareness campaigns, cycling becomes an attractive everyday choice. This measure also fosters healthy lifestyles and eases congestion on busy roads."
     },
     {
         "locode": "BRRBR",
@@ -96,7 +106,8 @@
         "regionName": "Acre",
         "actionId": "icare_0129",
         "actionName": "Facilitate Technology Transfer for Conservation Practices",
-        "actionPriority": 11
+        "actionPriority": 11,
+        "explanation": "For the city of Rio Branco, sharing efficient resource management methods empowers farmers, businesses, and local communities to adopt greener operations. By enabling easier access to new tools and knowledge, natural areas are better conserved, and emissions stay lower. This helps sustain long-term biodiversity and socio-economic well-being."
     },
     {
         "locode": "BRRBR",
@@ -105,7 +116,8 @@
         "regionName": "Acre",
         "actionId": "icare_0117",
         "actionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
-        "actionPriority": 12
+        "actionPriority": 12,
+        "explanation": "For the city of Rio Branco, enhancing the bus system’s reliability and comfort can make public transport more appealing than individual cars. By improving schedules, seating, and routes, emissions drop as more people opt for communal travel. A better bus network also lowers traffic congestion and noise pollution."
     },
     {
         "locode": "BRRBR",
@@ -114,7 +126,8 @@
         "regionName": "Acre",
         "actionId": "icare_0005",
         "actionName": "Create credit lines for residential and community wind energy projects",
-        "actionPriority": 13
+        "actionPriority": 13,
+        "explanation": "For the city of Rio Branco, financing wind energy installations helps diversify local power sources while lowering carbon footprints. Accessible loans make small-scale turbines feasible for homeowners and neighborhood groups. This approach also promotes energy independence, reducing dependence on fossil fuels."
     },
     {
         "locode": "BRRBR",
@@ -123,7 +136,8 @@
         "regionName": "Acre",
         "actionId": "icare_0053",
         "actionName": "Implement a project to support cooperatives of recyclabe material collectors",
-        "actionPriority": 14
+        "actionPriority": 14,
+        "explanation": "For the city of Rio Branco, backing recyclable material collectors fosters social inclusion and strengthens recycling programs. Organized cooperatives can gather and process more materials, reducing landfill strain. This initiative promotes circular economies, generating income while lowering environmental impacts."
     },
     {
         "locode": "BRRBR",
@@ -132,7 +146,8 @@
         "regionName": "Acre",
         "actionId": "icare_0130",
         "actionName": "Conduct Technical Assistance and Rural Extension (ATER) Actions",
-        "actionPriority": 15
+        "actionPriority": 15,
+        "explanation": "For the city of Rio Branco, providing hands-on guidance for farmers enhances productivity and resilience to extreme weather. Training programs share best practices that reduce emissions and protect local ecosystems. Such support also bolsters food security and economic stability in rural communities."
     },
     {
         "locode": "BRRBR",
@@ -141,7 +156,8 @@
         "regionName": "Acre",
         "actionId": "c40_0026",
         "actionName": "Vehicle Emissions",
-        "actionPriority": 16
+        "actionPriority": 16,
+        "explanation": "For the city of Rio Branco, cutting vehicle emissions lowers urban pollution and greenhouse gases. Targeted efforts like regular inspections and cleaner fuels help reduce traffic-related health issues. This action also supports progress toward sustainable transport, improving overall air quality for residents."
     },
     {
         "locode": "BRRBR",
@@ -150,7 +166,8 @@
         "regionName": "Acre",
         "actionId": "icare_0088",
         "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
-        "actionPriority": 17
+        "actionPriority": 17,
+        "explanation": "For the city of Rio Branco, offering no-cost rides at busy times eases road congestion and lowers emissions from personal cars. More accessible transit encourages broader participation across different income levels. This approach creates a healthier environment by reducing smog and traffic noise."
     },
     {
         "locode": "BRRBR",
@@ -159,7 +176,8 @@
         "regionName": "Acre",
         "actionId": "icare_0033",
         "actionName": "Install biodigesters in rural properties",
-        "actionPriority": 18
+        "actionPriority": 18,
+        "explanation": "For the city of Rio Branco, installing biodigesters converts organic farm waste into biogas, cutting methane emissions while generating clean energy. This innovation supports energy self-sufficiency in remote areas and lowers dependence on fossil fuels. It also promotes sustainable waste management, reducing odor and water contamination."
     },
     {
         "locode": "BRRBR",
@@ -168,7 +186,8 @@
         "regionName": "Acre",
         "actionId": "c40_0032",
         "actionName": "Transit Access",
-        "actionPriority": 19
+        "actionPriority": 19,
+        "explanation": "For the city of Rio Branco, improving Transit Access connects underserved neighborhoods to jobs, schools, and services while curbing private car use. This measure reduces overall emissions by encouraging more efficient transport patterns. It also drives social inclusion, providing equitable mobility options for all residents."
     },
     {
         "locode": "BRRBR",
@@ -177,6 +196,7 @@
         "regionName": "Acre",
         "actionId": "c40_0040",
         "actionName": "Volume-Based Collection",
-        "actionPriority": 20
+        "actionPriority": 20,
+        "explanation": "For the city of Rio Branco, billing waste pickup by volume nudges households and businesses to generate less trash. Reducing waste at the source lowers greenhouse gas emissions from disposal sites. It also aligns with broader sustainability goals, encouraging thoughtful consumption and recycling habits."
     }
 ]

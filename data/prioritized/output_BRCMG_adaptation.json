@@ -1,202 +1,202 @@
 [
     {
         "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
+        "cityName": "Corumbá",
         "region": "BR-MS",
         "regionName": "Mato Grosso do Sul",
         "actionId": "icare_0145",
         "actionName": "Strengthen the healthcare network to attend to climate victims",
         "actionPriority": 1,
-        "explanation": "Ranked #1 by tournament ranking algorithm"
+        "explanation": "For the city of Corumbá, strengthening the healthcare network equips medical facilities to handle rapid spikes in demand after extreme weather events. This measure focuses on safeguarding vulnerable residents by providing timely care during floods, heatwaves, or other climate-induced crises. It also aligns with the city’s capacity to adapt existing systems, reducing health risks and long-term recovery costs."
     },
     {
         "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
+        "cityName": "Corumbá",
         "region": "BR-MS",
         "regionName": "Mato Grosso do Sul",
         "actionId": "ipcc_0094",
         "actionName": "Access to health care",
         "actionPriority": 2,
-        "explanation": "Ranked #2 by tournament ranking algorithm"
+        "explanation": "For the city of Corumbá, enhancing access to health care ensures broader coverage and timely treatment for climate-related illnesses. This approach benefits all residents, particularly in remote or underserved areas, supporting stronger overall resilience. Improving service reach also helps mitigate health disparities that can worsen during heatwaves, floods, and other climate stressors."
     },
     {
         "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
+        "cityName": "Corumbá",
         "region": "BR-MS",
         "regionName": "Mato Grosso do Sul",
         "actionId": "icare_0181",
         "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
         "actionPriority": 3,
-        "explanation": "Ranked #3 by tournament ranking algorithm"
+        "explanation": "For the city of Corumbá, relocating communities from high-risk zones and restoring local ecosystems directly reduces exposure to floods and other hazards. By prioritizing safer locations, this measure lowers long-term risks and damages. Restoring natural habitats simultaneously revives ecological services crucial for flood control and soil stability."
     },
     {
         "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
+        "cityName": "Corumbá",
         "region": "BR-MS",
         "regionName": "Mato Grosso do Sul",
         "actionId": "icare_0173",
         "actionName": "Preventive maintenance of drainage systems",
         "actionPriority": 4,
-        "explanation": "Ranked #4 by tournament ranking algorithm"
+        "explanation": "For the city of Corumbá, preventive maintenance of drainage systems reduces flood hazards by keeping water channels clear and functional. It addresses the region’s seasonal heavy rains, minimizing waterlogging in urban and residential areas. Regular upkeep also helps preserve infrastructure, cutting long-term costs and health risks linked to stagnant water."
     },
     {
         "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
+        "cityName": "Corumbá",
         "region": "BR-MS",
         "regionName": "Mato Grosso do Sul",
         "actionId": "ipcc_0088",
         "actionName": "Building codes",
         "actionPriority": 5,
-        "explanation": "Ranked #5 by tournament ranking algorithm"
+        "explanation": "For the city of Corumbá, enforcing climate-aware building codes enhances resilience by ensuring new and renovated structures withstand extreme conditions. This proactive approach lowers damage risks from storms or extreme heat. Over time, it also reduces repair costs and supports safer urban growth, benefiting residents across income levels."
     },
     {
         "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
+        "cityName": "Corumbá",
         "region": "BR-MS",
         "regionName": "Mato Grosso do Sul",
         "actionId": "ipcc_0097",
         "actionName": "Food storage/distribution improvements",
         "actionPriority": 6,
-        "explanation": "Ranked #6 by tournament ranking algorithm"
+        "explanation": "For the city of Corumbá, improving food storage and distribution strengthens overall food security during climate disruptions. By creating more robust supply chains, communities can better withstand shortages caused by floods or extreme temperatures. Such measures also boost local economies and public health, fostering greater resilience citywide."
     },
     {
         "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
+        "cityName": "Corumbá",
         "region": "BR-MS",
         "regionName": "Mato Grosso do Sul",
         "actionId": "icare_0169",
         "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
         "actionPriority": 7,
-        "explanation": "Ranked #7 by tournament ranking algorithm"
+        "explanation": "For the city of Corumbá, establishing a formal emergency response plan ensures coordinated action when extreme weather strikes. This includes clear protocols for evacuation, resource allocation, and medical assistance. By unifying various sectors, the plan boosts overall readiness and mitigates chaos during climate-induced crises."
     },
     {
         "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
+        "cityName": "Corumbá",
         "region": "BR-MS",
         "regionName": "Mato Grosso do Sul",
         "actionId": "ipcc_0092",
         "actionName": "Social safety nets",
         "actionPriority": 8,
-        "explanation": "Ranked #8 by tournament ranking algorithm"
+        "explanation": "For the city of Corumbá, social safety nets provide ongoing support for populations most affected by climate events. These programs can address employment, healthcare, and nutrition gaps, which often worsen under stress from floods or heatwaves. By offering consistent assistance, they help reduce vulnerability and speed recovery."
     },
     {
         "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
+        "cityName": "Corumbá",
         "region": "BR-MS",
         "regionName": "Mato Grosso do Sul",
         "actionId": "icare_0151",
         "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
         "actionPriority": 9,
-        "explanation": "Ranked #9 by tournament ranking algorithm"
+        "explanation": "For the city of Corumbá, diagnosing and restoring ZEIS addresses critical housing and infrastructure issues faced by low-income communities. By identifying and upgrading risk-prone areas, the city can reduce the impacts of floods and heatwaves on vulnerable residents. This improvement process also strengthens overall urban resilience and equity."
     },
     {
         "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
+        "cityName": "Corumbá",
         "region": "BR-MS",
         "regionName": "Mato Grosso do Sul",
         "actionId": "ipcc_0096",
         "actionName": "Farm/fishery improvements",
         "actionPriority": 10,
-        "explanation": "Ranked #10 by tournament ranking algorithm"
+        "explanation": "For the city of Corumbá, advancing farm and fishery practices supports food security and local livelihoods in a region heavily influenced by seasonal shifts. Sustainable methods enhance productivity and reduce environmental harm, lowering risks of crop or stock losses. Empowering farmers and fishers also fosters economic resilience against climate extremes."
     },
     {
         "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
+        "cityName": "Corumbá",
         "region": "BR-MS",
         "regionName": "Mato Grosso do Sul",
         "actionId": "ipcc_0093",
         "actionName": "Availability of health infrastructure",
         "actionPriority": 11,
-        "explanation": "Ranked #11 by tournament ranking algorithm"
+        "explanation": "For the city of Corumbá, ensuring broad availability of health infrastructure is a cornerstone of adaptation to climate-induced challenges. Adequate clinics and hospitals save lives and limit long-term damages during severe weather events. This measure also supports everyday health needs, strengthening the community’s resilience year-round."
     },
     {
         "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
+        "cityName": "Corumbá",
         "region": "BR-MS",
         "regionName": "Mato Grosso do Sul",
         "actionId": "icare_0175",
         "actionName": "Recovery and preservation of green areas",
         "actionPriority": 12,
-        "explanation": "Ranked #12 by tournament ranking algorithm"
+        "explanation": "For the city of Corumbá, recovering and preserving green areas offers natural flood defenses, heat mitigation, and ecological benefits. Restoring habitats strengthens biodiversity while reducing soil erosion. These improvements create healthier surroundings, reinforcing the city’s overall capacity to handle extreme climatic conditions."
     },
     {
         "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
+        "cityName": "Corumbá",
         "region": "BR-MS",
         "regionName": "Mato Grosso do Sul",
         "actionId": "ipcc_0098",
         "actionName": "Behaviour change in diets and food waste",
         "actionPriority": 13,
-        "explanation": "Ranked #13 by tournament ranking algorithm"
+        "explanation": "For the city of Corumbá, promoting sustainable diets and reducing food waste lowers the strain on resources and cuts greenhouse gas emissions tied to production and disposal. These shifts can happen relatively quickly by encouraging community engagement and awareness. Small daily changes add up, contributing to both environmental health and household savings."
     },
     {
         "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
+        "cityName": "Corumbá",
         "region": "BR-MS",
         "regionName": "Mato Grosso do Sul",
         "actionId": "icare_0162",
         "actionName": "Strengthen programs for control and conservation of protected areas",
         "actionPriority": 14,
-        "explanation": "Ranked #14 by tournament ranking algorithm"
+        "explanation": "For the city of Corumbá, strengthening conservation programs shields critical ecosystems from deforestation and degradation. Preserved natural areas help regulate water cycles, store carbon, and protect biodiversity, all of which reinforce resilience against floods or droughts. Protecting these spaces also safeguards cultural values and long-term economic prospects, such as ecotourism."
     },
     {
         "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
+        "cityName": "Corumbá",
         "region": "BR-MS",
         "regionName": "Mato Grosso do Sul",
         "actionId": "icare_0166",
         "actionName": "Install meteorological stations and air quality and temperature monitoring systems in critical areas",
         "actionPriority": 15,
-        "explanation": "Ranked #15 by tournament ranking algorithm"
+        "explanation": "For the city of Corumbá, installing meteorological and air quality monitoring systems in critical areas provides real-time data to anticipate floods, heatwaves, and pollution spikes. This information allows more precise resource allocation and faster emergency responses. Access to accurate environmental insights also supports long-term planning and policy decisions."
     },
     {
         "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
+        "cityName": "Corumbá",
         "region": "BR-MS",
         "regionName": "Mato Grosso do Sul",
         "actionId": "icare_0150",
         "actionName": "Implement Loss Reduction and Control Program promoting water security for the municipality",
         "actionPriority": 16,
-        "explanation": "Ranked #16 by tournament ranking algorithm"
+        "explanation": "For the city of Corumbá, a water loss reduction and control program secures this vital resource against droughts or infrastructure failures. By minimizing leaks and wastage, the city can better manage supply, especially during extreme weather. Such a strategy also strengthens overall resilience, ensuring consistent water availability for residents and businesses."
     },
     {
         "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
+        "cityName": "Corumbá",
         "region": "BR-MS",
         "regionName": "Mato Grosso do Sul",
         "actionId": "ipcc_0087",
         "actionName": "Infrastructure retrofitting",
         "actionPriority": 17,
-        "explanation": "Ranked #17 by tournament ranking algorithm"
+        "explanation": "For the city of Corumbá, retrofitting infrastructure provides immediate physical upgrades to roads, bridges, and public facilities that face climate risks. Reinforcing these structures prevents costly breakdowns during floods or intense storms. It also ensures critical services can operate continuously, supporting public safety and economic stability."
     },
     {
         "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
+        "cityName": "Corumbá",
         "region": "BR-MS",
         "regionName": "Mato Grosso do Sul",
         "actionId": "icare_0176",
         "actionName": "Development of Climate Action Plan",
         "actionPriority": 18,
-        "explanation": "Ranked #18 by tournament ranking algorithm"
+        "explanation": "For the city of Corumbá, developing a Climate Action Plan sets a unified vision for reducing emissions and adapting to environmental changes. By outlining specific goals, sectors, and timelines, this plan ensures resources are used efficiently. The strategic approach also promotes collaboration among stakeholders, guiding comprehensive climate resilience initiatives."
     },
     {
         "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
+        "cityName": "Corumbá",
         "region": "BR-MS",
         "regionName": "Mato Grosso do Sul",
         "actionId": "icare_0164",
         "actionName": "Hydrological Monitoring System with Telemetry Stations",
         "actionPriority": 19,
-        "explanation": "Ranked #19 by tournament ranking algorithm"
+        "explanation": "For the city of Corumbá, a hydrological monitoring system equipped with telemetry stations delivers real-time water level and flow data. This proactive approach helps the city anticipate floods, enabling quicker warnings and effective resource deployment. It also supports long-term water management strategies, informing agricultural planning and infrastructure design."
     },
     {
         "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
+        "cityName": "Corumbá",
         "region": "BR-MS",
         "regionName": "Mato Grosso do Sul",
         "actionId": "icare_0170",
         "actionName": "Build safe housing and implement urban rehabilitation projects for populations living in high-risk areas",
         "actionPriority": 20,
-        "explanation": "Ranked #20 by tournament ranking algorithm"
+        "explanation": "For the city of Corumbá, building safe housing and undertaking urban rehabilitation in high-risk areas secures long-term protection for residents vulnerable to floods or landslides. Upgraded dwellings reduce immediate hazards, while complementary urban improvements enhance living conditions. This approach not only addresses safety but also fosters stable neighborhoods that can better withstand climate impacts."
     }
 ]

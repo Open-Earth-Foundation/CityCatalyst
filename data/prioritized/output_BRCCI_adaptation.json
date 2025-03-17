@@ -7,7 +7,7 @@
         "actionId": "c40_0049",
         "actionName": "Cyclone Shelters",
         "actionPriority": 1,
-        "explanation": "Ranked #1 by tournament ranking algorithm"
+        "explanation": "For the city of Camaçari, Cyclone Shelters help protect residents from severe storms by providing secure communal spaces. They address critical climate risks in this coastal region, reducing potential losses and property damage. This measure can be implemented at a feasible cost while offering immediate risk reduction benefits."
     },
     {
         "locode": "BRCCI",
@@ -17,7 +17,7 @@
         "actionId": "icare_0164",
         "actionName": "Hydrological Monitoring System with Telemetry Stations",
         "actionPriority": 2,
-        "explanation": "Ranked #2 by tournament ranking algorithm"
+        "explanation": "For the city of Camaçari, a Hydrological Monitoring System with Telemetry Stations enhances flood and water management by delivering real-time data. This system is well aligned with local climate patterns, enabling timely interventions that mitigate water-related disruptions. With minimal dependencies, it fosters cost-effective resilience and reduces environmental damage."
     },
     {
         "locode": "BRCCI",
@@ -27,7 +27,7 @@
         "actionId": "ipcc_0087",
         "actionName": "Infrastructure retrofitting",
         "actionPriority": 3,
-        "explanation": "Ranked #3 by tournament ranking algorithm"
+        "explanation": "For the city of Camaçari, Infrastructure retrofitting fortifies existing buildings and public facilities to withstand climate stresses. By focusing on upgrades in high-risk areas, it significantly reduces hazards like structural failure during extreme weather. Although it may require notable investment, these improvements offer long-term resilience and align with the city’s demographic needs."
     },
     {
         "locode": "BRCCI",
@@ -37,7 +37,7 @@
         "actionId": "icare_0169",
         "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
         "actionPriority": 4,
-        "explanation": "Ranked #4 by tournament ranking algorithm"
+        "explanation": "For the city of Camaçari, having a Plan for Preparation and Emergency Response Measures ensures coordinated action when storms or floods strike. It builds on existing community resources, lowering response time and overall risk. This approach has flexible implementation steps and aligns well with the city’s capacity."
     },
     {
         "locode": "BRCCI",
@@ -47,7 +47,7 @@
         "actionId": "icare_0173",
         "actionName": "Preventive maintenance of drainage systems",
         "actionPriority": 5,
-        "explanation": "Ranked #5 by tournament ranking algorithm"
+        "explanation": "For the city of Camaçari, Preventive maintenance of drainage systems reduces flood hazards by ensuring water can flow unobstructed. It addresses a key climate vulnerability in areas prone to intense rainfall. As a cost-effective strategy, regular upkeep extends the lifespan of public infrastructure and helps minimize health risks linked to standing water."
     },
     {
         "locode": "BRCCI",
@@ -57,7 +57,7 @@
         "actionId": "ipcc_0097",
         "actionName": "Food storage/distribution improvements",
         "actionPriority": 6,
-        "explanation": "Ranked #6 by tournament ranking algorithm"
+        "explanation": "For the city of Camaçari, Food storage and distribution improvements bolster community resilience by safeguarding supplies during extreme events. This adaptation strategy is crucial in coastal or flood-prone regions, ensuring that essential nutrition remains accessible. It aligns with the city’s socio-economic context, promoting stability and reducing vulnerability."
     },
     {
         "locode": "BRCCI",
@@ -67,7 +67,7 @@
         "actionId": "c40_0051",
         "actionName": "Public Shading",
         "actionPriority": 7,
-        "explanation": "Ranked #7 by tournament ranking algorithm"
+        "explanation": "For the city of Camaçari, Public Shading initiatives moderate urban heat and enhance pedestrian comfort. By prioritizing shaded walkways and public areas, this measure addresses rising temperatures that affect densely populated spaces. It can be implemented incrementally, offering tangible health and social benefits."
     },
     {
         "locode": "BRCCI",
@@ -77,7 +77,7 @@
         "actionId": "icare_0176",
         "actionName": "Development of Climate Action Plan",
         "actionPriority": 8,
-        "explanation": "Ranked #8 by tournament ranking algorithm"
+        "explanation": "For the city of Camaçari, Development of a Climate Action Plan sets a strategic roadmap for reducing greenhouse gas emissions and adapting to future climate conditions. This plan aligns with the city’s environmental profile, ensuring relevant sectors are targeted for efficient emissions reduction. By outlining practical steps and timelines, it supports coordinated implementation across different municipal departments."
     },
     {
         "locode": "BRCCI",
@@ -87,7 +87,7 @@
         "actionId": "c40_0058",
         "actionName": "Preparedness",
         "actionPriority": 9,
-        "explanation": "Ranked #9 by tournament ranking algorithm"
+        "explanation": "For the city of Camaçari, Preparedness efforts encompass a range of proactive measures to anticipate and cope with climate-related emergencies. This approach reinforces the city’s capacity by enhancing training, public awareness, and resource allocation. Its flexibility and low dependency on external factors enable broad adaptation to local hazards."
     },
     {
         "locode": "BRCCI",
@@ -97,7 +97,7 @@
         "actionId": "icare_0167",
         "actionName": "Create the Multisectoral Heatwave Response Plan and develop the measures for its implementation",
         "actionPriority": 10,
-        "explanation": "Ranked #10 by tournament ranking algorithm"
+        "explanation": "For the city of Camaçari, creating a Multisectoral Heatwave Response Plan helps protect vulnerable populations during extreme heat events. It coordinates resources across health, energy, and community services to mitigate risks and reduce discomfort. By focusing on timely interventions, this plan proves effective for the city’s growing population and intense climate patterns."
     },
     {
         "locode": "BRCCI",
@@ -107,7 +107,7 @@
         "actionId": "icare_0154",
         "actionName": "Cleaning and Unclogging of Channels with Installation of Eco-barriers",
         "actionPriority": 11,
-        "explanation": "Ranked #11 by tournament ranking algorithm"
+        "explanation": "For the city of Camaçari, Cleaning and Unclogging of Channels with Installation of Eco-barriers helps prevent flooding and water contamination. This measure is well-suited to the region’s seasonal heavy rainfall, reducing pollution in water bodies. Implemented regularly, it fosters a healthier environment and mitigates risk to nearby communities."
     },
     {
         "locode": "BRCCI",
@@ -117,7 +117,7 @@
         "actionId": "ipcc_0095",
         "actionName": "Disaster early warning",
         "actionPriority": 12,
-        "explanation": "Ranked #12 by tournament ranking algorithm"
+        "explanation": "For the city of Camaçari, Disaster early warning systems enhance emergency readiness by detecting threats and rapidly informing residents. This approach is especially crucial in areas susceptible to intense rainfall or storms, reducing potential damage. With minimal infrastructure requirements, it promotes quick decision-making and community safety."
     },
     {
         "locode": "BRCCI",
@@ -127,7 +127,7 @@
         "actionId": "icare_0145",
         "actionName": "Strengthen the healthcare network to attend to climate victims",
         "actionPriority": 13,
-        "explanation": "Ranked #13 by tournament ranking algorithm"
+        "explanation": "For the city of Camaçari, strengthening the healthcare network to attend to climate victims ensures that medical services can handle sudden surges in demand during extreme events. This support reduces mortality and long-term health impacts by providing timely care. Incorporating local population needs, it bolsters resilience and aligns with broader public health objectives."
     },
     {
         "locode": "BRCCI",
@@ -137,7 +137,7 @@
         "actionId": "c40_0054",
         "actionName": "Water Recycling",
         "actionPriority": 14,
-        "explanation": "Ranked #14 by tournament ranking algorithm"
+        "explanation": "For the city of Camaçari, Water Recycling initiatives curb water scarcity risks and reduce pressure on freshwater sources. This measure aligns with the local climate’s variability, enhancing sustainability and resource efficiency. Though it may require infrastructure investment, its long-term benefits include stable water supplies and environmental protection."
     },
     {
         "locode": "BRCCI",
@@ -147,7 +147,7 @@
         "actionId": "icare_0140",
         "actionName": "Landslide Risk Assessment and Management",
         "actionPriority": 15,
-        "explanation": "Ranked #15 by tournament ranking algorithm"
+        "explanation": "For the city of Camaçari, Landslide Risk Assessment and Management lowers potential damage in hilly or unstable areas by mapping hazards and guiding safer development. It addresses a key aspect of land-use planning, preventing accidents and costly repairs. This approach also protects natural ecosystems by steering construction away from high-risk zones."
     },
     {
         "locode": "BRCCI",
@@ -157,7 +157,7 @@
         "actionId": "icare_0149",
         "actionName": "Encourage sustainable land use practices",
         "actionPriority": 16,
-        "explanation": "Ranked #16 by tournament ranking algorithm"
+        "explanation": "For the city of Camaçari, encouraging sustainable land use practices helps preserve local ecosystems and reduces emissions linked to deforestation and urban sprawl. Such practices align with the region’s climate and demographic demands, ensuring balanced growth. They also generate co-benefits like improved soil health and resilience to weather extremes."
     },
     {
         "locode": "BRCCI",
@@ -167,7 +167,7 @@
         "actionId": "icare_0175",
         "actionName": "Recovery and preservation of green areas",
         "actionPriority": 17,
-        "explanation": "Ranked #17 by tournament ranking algorithm"
+        "explanation": "For the city of Camaçari, recovery and preservation of green areas assist in carbon sequestration, improve local air quality, and reduce heat island effects. Restoring habitats also safeguards biodiversity unique to the region. These initiatives have modest dependencies, allowing gradual expansion and broad community participation."
     },
     {
         "locode": "BRCCI",
@@ -177,7 +177,7 @@
         "actionId": "c40_0056",
         "actionName": "Watershed Preservation",
         "actionPriority": 18,
-        "explanation": "Ranked #18 by tournament ranking algorithm"
+        "explanation": "For the city of Camaçari, Watershed Preservation protects water sources from pollution and overuse, maintaining ecological balance and reducing flood risks. It aligns with local climatic patterns that can bring heavy rain and potential runoff issues. By safeguarding these ecosystems, the city benefits from cleaner water supplies and enhanced resilience."
     },
     {
         "locode": "BRCCI",
@@ -187,7 +187,7 @@
         "actionId": "icare_0148",
         "actionName": "Create the Municipal Climate Change Forum",
         "actionPriority": 19,
-        "explanation": "Ranked #19 by tournament ranking algorithm"
+        "explanation": "For the city of Camaçari, creating a Municipal Climate Change Forum promotes collaboration among residents, businesses, and policymakers. This inclusive platform fosters shared learning and collective decision-making that align with the city’s climate goals. Its flexible structure allows for iterative improvements and ongoing engagement with local needs."
     },
     {
         "locode": "BRCCI",
@@ -197,6 +197,6 @@
         "actionId": "icare_0179",
         "actionName": "Adopt the concept of green-blue infrastructure in city projects",
         "actionPriority": 20,
-        "explanation": "Ranked #20 by tournament ranking algorithm"
+        "explanation": "For the city of Camaçari, adopting the concept of green-blue infrastructure in city projects integrates natural systems into urban design. This approach mitigates flooding, improves air quality, and strengthens overall resilience to climate change. By leveraging the city’s ecosystems, it delivers cost-effective benefits through sustainable planning choices."
     }
 ]

@@ -170,5 +170,6 @@
   "invite-error-toast-text": "Beim Senden Ihrer Einladungen ist ein Fehler aufgetreten",
   "afolu-other-agriculture": "Andere Landwirtschaft",
   "afolu-livestock": "Vieh",
-  "afolu-land": "Land"
+  "afolu-land": "Land",
+  "manage-missing-subsectors": "Fehlende Teilsektoren verwalten"
 }

@@ -1,5 +1,5 @@
 import { TFunction } from "i18next";
-import { Badge, Box, Flex, Heading, Link, Text } from "@chakra-ui/react";
+import { Badge, Box, Flex, Heading, Icon, Link, Text } from "@chakra-ui/react";
 import { Trans } from "react-i18next/TransWithoutContext";
 import { MdOutlineAccountTree, MdOutlineCalendarToday } from "react-icons/md";
 import type { InventoryResponse } from "@/util/types";
@@ -8,6 +8,8 @@ import { Selector } from "@/components/selector";
 import React, { useMemo } from "react";
 import { api, useGetCitiesAndYearsQuery } from "@/services/api";
 import { useRouter } from "next/navigation";
+import { Button } from "../ui/button";
+import { DataAlertIcon } from "../icons";
 
 export function TabHeader({
   t,
@@ -48,8 +50,8 @@ export function TabHeader({
   return (
     <>
       <Box className="flex items-center justify-between">
-        <Box className="flex flex-col">
-          <Box className="flex items-center gap-3">
+        <Box className="flex flex-col w-full">
+          <Box className="flex items-center justify-between gap-3 w-full">
             <Heading
               fontSize="headline.sm"
               fontWeight="semibold"
@@ -58,6 +60,18 @@ export function TabHeader({
             >
               {t(title)}
             </Heading>
+            <Button
+              variant={"outline"}
+              p={6}
+              onClick={() =>
+                router.push(`/${inventory?.inventoryId}/data/manage-sectors`)
+              }
+              display="flex"
+              gap={0}
+            >
+              <Icon as={DataAlertIcon} boxSize={10} mt={3} />
+              <Text>{t("manage-missing-subsectors")}</Text>
+            </Button>
           </Box>
           <Box className="flex items-center gap-3">
             <Badge>

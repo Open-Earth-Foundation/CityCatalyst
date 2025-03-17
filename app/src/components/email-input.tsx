@@ -12,6 +12,7 @@ export default function EmailInput({
   name = t("email-address"),
   id = "email",
   disabled = false,
+  defaultValue = "",
 }: {
   children?: React.ReactNode;
   error: FieldError | undefined;
@@ -20,6 +21,7 @@ export default function EmailInput({
   name?: String;
   id?: String;
   disabled?: boolean;
+  defaultValue?: string;
 }) {
   return (
     <Field label={name} invalid={!!error} errorText={error?.message}>
@@ -27,6 +29,7 @@ export default function EmailInput({
         readOnly={disabled}
         type="email"
         placeholder={t("email-placeholder")}
+        defaultValue={defaultValue}
         size="lg"
         shadow="2dp"
         background={

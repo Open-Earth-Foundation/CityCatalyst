@@ -4,10 +4,10 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { ProfileInputs } from "@/app/[lng]/[inventory]/settings/page";
 import FormInput from "../../form-input";
 import EmailInput from "../../email-input";
-import FormSelectInput from "../../form-select-input";
 import { useSetCurrentUserDataMutation } from "@/services/api";
 import { TFunction } from "i18next";
 import { UseSuccessToast } from "@/hooks/Toasts";
+import Loading from "@/components/Loading";
 
 interface AccountDetailsFormProps {
   t: TFunction;
@@ -35,7 +35,6 @@ const AccountDetailsTabPanel: FC<AccountDetailsFormProps> = ({
     if (userInfo) {
       setValue("name", userInfo.name);
       setValue("email", userInfo.email);
-      setValue("role", userInfo.role);
     }
   }, [setValue, userInfo]);
 
@@ -44,7 +43,6 @@ const AccountDetailsTabPanel: FC<AccountDetailsFormProps> = ({
       userId: userInfo.userId,
       name: data.name,
       email: data.email,
-      role: data.role,
     }).then(() => showSuccessToast());
   };
 
@@ -54,49 +52,46 @@ const AccountDetailsTabPanel: FC<AccountDetailsFormProps> = ({
 
   return (
     <Box display="flex" flexDirection="column" gap="24px">
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="flex flex-col gap-[24px]"
-      >
-        <FormInput
-          label={t("full-name")}
-          register={register}
-          error={errors.name}
-          id="name"
-        />
-        <EmailInput
-          disabled
-          t={t}
-          register={register}
-          error={errors.email}
-          id="email"
-        />
-        <FormSelectInput
-          label={t("role")}
-          value={inputValue}
-          register={register}
-          error={errors.role}
-          id="role"
-          onInputChange={onInputChange}
-        />
-        <Box display="flex" w="100%" justifyContent="right" marginTop="12px">
-          <Button
-            type="submit"
-            loading={isSubmitting}
-            h="48px"
-            w="auto"
-            paddingTop="16px"
-            paddingBottom="16px"
-            px="24px"
-            letterSpacing="widest"
-            textTransform="uppercase"
-            fontWeight="semibold"
-            fontSize="button.md"
-          >
-            {t("save-changes")}
-          </Button>
-        </Box>
-      </form>
+      {!userInfo ? (
+        <Loading />
+      ) : (
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="flex flex-col gap-[24px]"
+        >
+          <FormInput
+            label={t("full-name")}
+            register={register}
+            error={errors.name}
+            id="name"
+          />
+          <EmailInput
+            defaultValue={userInfo.email}
+            disabled
+            t={t}
+            register={register}
+            error={errors.email}
+            id="email"
+          />
+          <Box display="flex" w="100%" justifyContent="right" marginTop="12px">
+            <Button
+              type="submit"
+              loading={isSubmitting}
+              h="48px"
+              w="auto"
+              paddingTop="16px"
+              paddingBottom="16px"
+              px="24px"
+              letterSpacing="widest"
+              textTransform="uppercase"
+              fontWeight="semibold"
+              fontSize="button.md"
+            >
+              {t("save-changes")}
+            </Button>
+          </Box>
+        </form>
+      )}
     </Box>
   );
 };

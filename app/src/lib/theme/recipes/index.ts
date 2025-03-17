@@ -141,13 +141,16 @@ export const tooltipRecipe = defineRecipe({
 
 // define a recipe for the tabs
 export const tabsRecipe = defineRecipe({
+  base: {
+    backgroundColor: "background.neutral",
+  },
   variants: {
     true: {
       line: {
         tab: {
           borderColor: "#E6E7FF",
           _selected: {
-            color: "interactive.secondary",
+            color: "content.link",
             borderColor: "interactive.secondary",
             fontWeight: "bold",
           },

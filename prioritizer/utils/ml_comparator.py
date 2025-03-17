@@ -78,10 +78,10 @@ root_path = Path(__file__).resolve().parent.parent.parent
 
 loaded_model = xgb.XGBClassifier()
 # Load hyperparameters and trained weights
-# loaded_model.load_model(root_path / "data" / "ml" / "model" / "xgb_model.json")
-loaded_model.load_model(
-    root_path / "data" / "ml" / "model" / "xgb_model_train_test_split.json"
-)
+loaded_model.load_model(root_path / "data" / "ml" / "model" / "xgb_model.json")
+# loaded_model.load_model(
+#     root_path / "data" / "ml" / "model" / "xgb_model_train_test_split.json"
+# )
 
 
 def ml_compare(city: dict, action_A: dict, action_B: dict) -> int:
@@ -604,6 +604,7 @@ def ml_compare(city: dict, action_A: dict, action_B: dict) -> int:
 
     if df_transformed.empty:
         error_message = (
+            f"ml_comparator.py:\n"
             f"Empty dataframe due to missing values!\n"
             f"City: {city['locode']}\n"
             f"Action A: {action_A['ActionID']}\n"

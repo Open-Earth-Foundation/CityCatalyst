@@ -16,7 +16,7 @@ import {
 import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import { TFunction } from "i18next";
-import React, { FC, useEffect } from "react";
+import React, { FC, useEffect, useState } from "react";
 import { SubSectorWithRelations } from "../[step]/types";
 import { StationaryEnergyIcon } from "@/components/icons";
 import { BiSelectMultiple } from "react-icons/bi";
@@ -65,27 +65,26 @@ const SectorTabs: FC<SectorTabsProps> = ({
 }) => {
   const router = useRouter();
 
-  const [unfinishedSubsectorsData, setUnfinishedSubsectorsData] =
-    React.useState<SubSectorWithRelations[] | undefined>([]);
+  const [unfinishedSubsectorsData, setUnfinishedSubsectorsData] = useState<
+    SubSectorWithRelations[] | undefined
+  >([]);
   // State to track selected subsector IDs per sector (keyed by sector ID)
-  const [selectedCardsBySector, setSelectedCardsBySector] = React.useState<
+  const [selectedCardsBySector, setSelectedCardsBySector] = useState<
     Record<string, string[]>
   >({}); // State to track selected subsector IDs per sector (keyed by sector ID)
 
   // Quick action input values per sector
-  const [quickActionValues, setQuickActionValues] = React.useState<
+  const [quickActionValues, setQuickActionValues] = useState<
     Record<string, QuickActionInputs>
   >({});
   // Card-specific inputs keyed by subSectorId
-  const [cardInputs, setCardInputs] = React.useState<
-    Record<string, CardInputs>
-  >({});
+  const [cardInputs, setCardInputs] = useState<Record<string, CardInputs>>({});
   // State for unsaved changes detection dialog
-  const [isDirty, setIsDirty] = React.useState(false);
-  const [showDialog, setShowDialog] = React.useState(false);
+  const [isDirty, setIsDirty] = useState(false);
+  const [showDialog, setShowDialog] = useState(false);
   const pathname = usePathname();
-  const [prevPathname, setPrevPathname] = React.useState(pathname);
-  const [nextRoute, setNextRoute] = React.useState<string | null>(null);
+  const [prevPathname, setPrevPathname] = useState(pathname);
+  const [nextRoute, setNextRoute] = useState<string | null>(null);
 
   useEffect(() => {
     // Adjust the dirty check as needed (e.g., also include quickActionValues)

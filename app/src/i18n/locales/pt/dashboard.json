@@ -171,5 +171,6 @@
   "invite-error-toast-text": "Houve um erro ao enviar seus convites",
   "afolu-other-agriculture": "Outra agricultura",
   "afolu-livestock": "Gado",
-  "afolu-land": "Terra"
+  "afolu-land": "Terra",
+  "manage-missing-subsectors": "Gerenciar subsetores ausentes"
 }

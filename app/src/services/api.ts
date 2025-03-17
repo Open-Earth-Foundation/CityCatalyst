@@ -38,6 +38,7 @@ import {
 } from "@/util/types";
 import type { GeoJSON } from "geojson";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { z } from "zod";
 
 export const api = createApi({
   reducerPath: "api",
@@ -792,6 +793,30 @@ export const api = createApi({
           body: data,
         }),
       }),
+      // Get unfinished subsectors
+      getUnfinishedSubsectors: builder.query({
+        query: (data: { inventoryId: string }) => ({
+          url: `/inventory/${data.inventoryId}/notation-keys`,
+          method: "GET",
+        }),
+        transformResponse: (response: any) => response.data,
+      }),
+      // Add notation keys to subsectors with missing data missing
+      updateOrCreateNotationKeys: builder.mutation({
+        query: (data: {
+          inventoryId: string;
+          notationKeys: {
+            subSectorId: string;
+            unavailableReason: string;
+            unavailableExplanation: string;
+          }[];
+        }) => ({
+          url: `/inventory/${data.inventoryId}/notation-keys`,
+          method: "POST",
+          body: { notationKeys: data.notationKeys },
+        }),
+        transformResponse: (response: any) => response.data,
+      }),
     };
   },
 });
@@ -868,5 +893,7 @@ export const {
   useGetCityInvitesQuery,
   useUpdatePasswordMutation,
   useGetInventoryPopulationsQuery,
+  useGetUnfinishedSubsectorsQuery,
+  useUpdateOrCreateNotationKeysMutation,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

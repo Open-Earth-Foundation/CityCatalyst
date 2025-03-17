@@ -7,7 +7,7 @@ import EmailInput from "../../email-input";
 import { useSetCurrentUserDataMutation } from "@/services/api";
 import { TFunction } from "i18next";
 import { UseSuccessToast } from "@/hooks/Toasts";
-import Loading from "@/components/Loading";
+import ProgressLoader from "@/components/ProgressLoader";
 
 interface AccountDetailsFormProps {
   t: TFunction;
@@ -53,7 +53,7 @@ const AccountDetailsTabPanel: FC<AccountDetailsFormProps> = ({
   return (
     <Box display="flex" flexDirection="column" gap="24px">
       {!userInfo ? (
-        <Loading />
+        <ProgressLoader />
       ) : (
         <form
           onSubmit={handleSubmit(onSubmit)}

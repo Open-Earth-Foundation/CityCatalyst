@@ -183,19 +183,19 @@ def get_accuracy_expert_vs_comparators(
                 predicted_label_quanti = get_quantitative_label(
                     city_data, actionA_with_context, actionB_with_context
                 )
-                print(f"Predicted label quanti: {predicted_label_quanti}")
+                # print(f"Predicted label quanti: {predicted_label_quanti}")
 
                 ### QUALITATIVE
                 predicted_label_quali = get_qualitative_label(
                     city_data, actionA_with_context, actionB_with_context
                 )
-                print(f"Predicted label quali: {predicted_label_quali}")
+                # print(f"Predicted label quali: {predicted_label_quali}")
 
                 ### ML
                 predicted_label_ml = get_ml_label(
                     city_data, actionA_with_context, actionB_with_context
                 )
-                print(f"Predicted label ML: {predicted_label_ml}")
+                # print(f"Predicted label ML: {predicted_label_ml}")
 
                 # ### Majority vote
                 votes = [
@@ -208,8 +208,7 @@ def get_accuracy_expert_vs_comparators(
                     predicted_label_majority = actionA
                 else:
                     predicted_label_majority = actionB
-
-                print(f"Predicted label majority: {predicted_label_majority}")
+                # print(f"Predicted label majority: {predicted_label_majority}")
 
                 # For Pearson correlation
                 # Convert predictions into binary error vectors
@@ -368,7 +367,7 @@ if __name__ == "__main__":
 
     # Setting this flag to True will use the full dataset for the benchmarking from the folder 'data/expert_labeled_actions'
     # Otherwise it will load the test split from the data folder 'ml/df_test_split.csv'
-    use_full_dataset = False
+    use_full_dataset = True
 
     parent_dir = Path(__file__).parent.parent.parent
 

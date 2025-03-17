@@ -38,6 +38,7 @@ import { api } from "@/services/api";
 import { toaster } from "@/components/ui/toaster";
 import RouteChangeDialog from "./RouteChangeDialog";
 import { usePathname, useRouter } from "next/navigation";
+import ProgressLoader from "./ProgressLoader";
 
 interface SectorTabsProps {
   t: TFunction;
@@ -112,7 +113,6 @@ const SectorTabs: FC<SectorTabsProps> = ({
         e.preventDefault();
         e.returnValue = "";
         setShowDialog(true);
-        console.log(showDialog);
       }
     };
     window.addEventListener("beforeunload", handleBeforeUnload);
@@ -167,10 +167,6 @@ const SectorTabs: FC<SectorTabsProps> = ({
 
   if (isError) {
     console.error("Failed to update notation keys", isError);
-  } else if (isLoading) {
-    console.log("Loading...");
-  } else {
-    console.log(data);
   }
 
   // Modal handlers for unsaved changes
@@ -198,24 +194,8 @@ const SectorTabs: FC<SectorTabsProps> = ({
       setUnfinishedSubsectorsData(unfinishedSubSectors);
     }
   }, [inventoryData, isInventoryDataLoading, inventoryDataError]);
-  console.log(unfinishedSubsectorsData);
   if (isInventoryDataLoading) {
-    return (
-      <Box
-        height="40vh"
-        w="100%"
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-      >
-        <ProgressCircle.Root value={null} size="sm">
-          <ProgressCircle.Circle>
-            <ProgressCircle.Track />
-            <ProgressCircle.Range />
-          </ProgressCircle.Circle>
-        </ProgressCircle.Root>
-      </Box>
-    );
+    return <ProgressLoader />;
   }
 
   const renderSectorTabList = () => {
@@ -648,7 +628,6 @@ const SectorTabs: FC<SectorTabsProps> = ({
       );
     });
 
-  console.log(inventoryData);
   return (
     <>
       <Tabs.Root

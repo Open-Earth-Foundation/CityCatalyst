@@ -23,7 +23,7 @@ const Heading: FC<HeadingProps> = ({ t, inventoryParam }) => {
           onClick={() => router.push(`/${inventoryParam}`)}
         >
           <Icon as={MdArrowBack} />
-          GO BACK
+          {t("go-back")}
         </Button>
         <Box
           h="24px"

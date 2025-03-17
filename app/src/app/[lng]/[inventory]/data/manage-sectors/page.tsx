@@ -7,8 +7,6 @@ import { useTranslation } from "@/i18n/client";
 import NotationsDefinitionAccordion from "./NotationsDefinitionAccordion";
 import SectorTabs from "./SectorTabs";
 import { api } from "@/services/api";
-import { SubSectorWithRelations } from "../[step]/types";
-import { set } from "date-fns";
 import { Toaster } from "@/components/ui/toaster";
 
 const ManageSubSectors = ({

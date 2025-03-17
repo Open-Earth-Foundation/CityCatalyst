@@ -162,6 +162,7 @@ export default class DataSourceService {
     source: DataSource,
     inventory: Inventory,
     populationScaleFactors: PopulationScaleFactorResponse, // obtained from findPopulationScaleFactors
+    forceReplace: boolean = false,
   ): Promise<ApplySourceResult> {
     const result: ApplySourceResult = {
       id: source.datasourceId,
@@ -179,6 +180,8 @@ export default class DataSourceService {
       const sourceStatus = await DataSourceService.applyGlobalAPISource(
         source,
         inventory,
+        1.0,
+        forceReplace,
       );
       if (typeof sourceStatus === "string") {
         result.issue = sourceStatus;
@@ -202,6 +205,7 @@ export default class DataSourceService {
         source,
         inventory,
         scaleFactor,
+        forceReplace,
       );
       if (typeof sourceStatus === "string") {
         result.issue = sourceStatus;
@@ -327,6 +331,7 @@ export default class DataSourceService {
     source: DataSource,
     inventory: Inventory,
     scaleFactor: number = 1.0,
+    forceReplace: boolean = false,
   ): Promise<string | boolean> {
     // TODO adjust into if/ else statement once global_api_activity_data is implemented (then we will need to check for an ActivityValue with a connected source as well for collisions)
     if (source.retrievalMethod === "global_api_activity_data") {
@@ -376,10 +381,14 @@ export default class DataSourceService {
       },
     });
     if (existingInventoryValue) {
-      // TODO do we need a "force" parameter that overrides this check and deletes the existing value?
-      throw new createHttpError.BadRequest(
-        "Inventory already has a value for GPC refno " + gpcReferenceNumber,
-      );
+      // forceReplace parameter overrides existing value check and deletes it
+      if (forceReplace) {
+        await existingInventoryValue.destroy();
+      } else {
+        throw new createHttpError.BadRequest(
+          "Inventory already has a value for GPC refno " + gpcReferenceNumber,
+        );
+      }
     }
 
     const data = await DataSourceService.retrieveGlobalAPISource(

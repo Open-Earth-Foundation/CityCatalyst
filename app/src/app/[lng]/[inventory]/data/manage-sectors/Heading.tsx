@@ -2,18 +2,26 @@ import { ManageDataIcon } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { Box, Icon, Separator, Text } from "@chakra-ui/react";
 import { TFunction } from "i18next";
+import { useRouter } from "next/navigation";
 import React, { FC } from "react";
 import { MdArrowBack } from "react-icons/md";
 
 interface HeadingProps {
   t: TFunction;
+  inventoryParam: string;
 }
 
-const Heading: FC<HeadingProps> = ({ t }) => {
+const Heading: FC<HeadingProps> = ({ t, inventoryParam }) => {
+  const router = useRouter();
   return (
     <Box pt="48px" display="flex" flexDir="column" gap="64px">
       <Box display="flex" alignItems="center">
-        <Button variant="ghost" color="content.link" px={1}>
+        <Button
+          variant="ghost"
+          color="content.link"
+          px={1}
+          onClick={() => router.push(`/${inventoryParam}`)}
+        >
           <Icon as={MdArrowBack} />
           GO BACK
         </Button>

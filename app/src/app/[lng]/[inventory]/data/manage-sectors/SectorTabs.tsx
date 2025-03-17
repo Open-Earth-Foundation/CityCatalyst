@@ -34,6 +34,7 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { api } from "@/services/api";
+import { toaster } from "@/components/ui/toaster";
 
 interface SectorTabsProps {
   t: TFunction;
@@ -75,7 +76,7 @@ const SectorTabs: FC<SectorTabsProps> = ({
   >({});
 
   // update notation keys for subsectors from api service
-  const [createNotationKeys, { isLoading, isError, data }] =
+  const [createNotationKeys, { isLoading, isError, data, status }] =
     api.useUpdateOrCreateNotationKeysMutation();
   const handleUpdateNotationKeys = async (subsectorId?: string) => {
     let notationKeysArray;
@@ -99,7 +100,7 @@ const SectorTabs: FC<SectorTabsProps> = ({
       }));
     }
 
-    // Build the payload according to the schema
+    // payload according to the schema
     const payload = { notationKeys: notationKeysArray };
 
     try {
@@ -107,6 +108,11 @@ const SectorTabs: FC<SectorTabsProps> = ({
         inventoryId: inventoryData?.inventory.inventoryId!,
         ...payload,
       }).unwrap();
+      status === "fulfilled" &&
+        toaster.success({
+          title: t("success"),
+          description: t("notation-keys-updated"),
+        });
     } catch (error) {
       console.error("Failed to update notation keys", error);
     }
@@ -178,16 +184,8 @@ const SectorTabs: FC<SectorTabsProps> = ({
         value: "not-estimated",
       },
       {
-        label: t("na"),
-        value: "no-occurrance",
-      },
-      {
         label: t("no"),
-        value: "notation-key-3",
-      },
-      {
-        label: t("ie"),
-        value: "ie",
+        value: "no-occurrance",
       },
       {
         label: t("c"),
@@ -252,6 +250,11 @@ const SectorTabs: FC<SectorTabsProps> = ({
             };
           });
           return newInputs;
+        });
+        toaster.create({
+          title: t("success"),
+          description: t("quick-action-applied"),
+          type: "info",
         });
       };
       return (

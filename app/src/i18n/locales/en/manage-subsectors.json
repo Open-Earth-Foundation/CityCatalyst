@@ -13,7 +13,7 @@
   "no-description": "This activity does not take place in the city (e.g., no maritime transport in a landlocked city).",
   "ie": "IE (Included elsewhere)",
   "ie-description": "The emissions are reported under a different category",
-  "c": "C (Confidential)",
+  "c": "CI (Confidential Information)",
   "c-description": "Data exists but cannot be reported due to confidentiality restrictions.",
   "how-to-use-notation-keys": "How to Use Notation Keys",
   "how-to-use-notation-keys-description": "When reporting GHG emissions, you can assign a notation key to indicate the status of unavailable data. This helps reviewers and stakeholders understand gaps in reporting while maintaining consistency with the Global Protocol for Community-Scale Greenhouse Gas Emission Inventories (GPC) and IPCC guidelines.",
@@ -1207,5 +1207,9 @@
   "emissions-from-solid-waste-generated-within-the-city-boundary-and-disposed-in-landfills-or-open-dumps-within-the-city-boundary": "Emissions from solid waste generated within the city boundary and disposed in landfills or open dumps within the city boundary",
   "emissions-from-grid-supplied-energy-consumed-in-power-plant-auxiliary-operations-within-the-city-boundary": "Emissions from grid-supplied energy consumed in power plant auxiliary operations within the city boundary",
   "emissions-from-grid-supplied-energy-consumed-within-the-city-boundary-for-railways": "Emissions from grid-supplied energy consumed within the city boundary for railways",
-  "deselect-all": "Deselect all"
+  "deselect-all": "Deselect all",
+  "pe": "PE (Presented elsewhere)",
+  "success": "Success",
+  "notation-keys-updated": "Notation keys updated",
+  "quick-action-applied": "Quick action applied"
 }

@@ -22,8 +22,8 @@
         "cityName": "Caxias do Sul",
         "region": "BR-RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0052",
-        "actionName": "Develop projects for renewable energy and waste reuse",
+        "actionId": "c40_0036",
+        "actionName": "Landfill Management",
         "actionPriority": 3
     },
     {
@@ -31,27 +31,9 @@
         "cityName": "Caxias do Sul",
         "region": "BR-RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "c40_0036",
-        "actionName": "Landfill Management",
+        "actionId": "icare_0052",
+        "actionName": "Develop projects for renewable energy and waste reuse",
         "actionPriority": 4
-    },
-    {
-        "locode": "BRCXL",
-        "cityName": "Caxias do Sul",
-        "region": "BR-RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "c40_0038",
-        "actionName": "Sanitary Landfills",
-        "actionPriority": 5
-    },
-    {
-        "locode": "BRCXL",
-        "cityName": "Caxias do Sul",
-        "region": "BR-RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "c40_0039",
-        "actionName": "Gas Management",
-        "actionPriority": 6
     },
     {
         "locode": "BRCXL",
@@ -60,52 +42,7 @@
         "regionName": "Rio Grande do Sul",
         "actionId": "ipcc_0080",
         "actionName": "Avoiding, Minimising, and Recycling Waste",
-        "actionPriority": 7
-    },
-    {
-        "locode": "BRCXL",
-        "cityName": "Caxias do Sul",
-        "region": "BR-RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0018",
-        "actionName": "Implement the Sustainable Logistics Plan in all public administration bodies",
-        "actionPriority": 8
-    },
-    {
-        "locode": "BRCXL",
-        "cityName": "Caxias do Sul",
-        "region": "BR-RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0110",
-        "actionName": "Regulate the Construction Waste Management Plan",
-        "actionPriority": 9
-    },
-    {
-        "locode": "BRCXL",
-        "cityName": "Caxias do Sul",
-        "region": "BR-RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0119",
-        "actionName": "Maximize composting processes.",
-        "actionPriority": 10
-    },
-    {
-        "locode": "BRCXL",
-        "cityName": "Caxias do Sul",
-        "region": "BR-RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0112",
-        "actionName": "Universalize sewage collection and treatment",
-        "actionPriority": 11
-    },
-    {
-        "locode": "BRCXL",
-        "cityName": "Caxias do Sul",
-        "region": "BR-RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0122",
-        "actionName": "Establish eco-parks.",
-        "actionPriority": 12
+        "actionPriority": 5
     },
     {
         "locode": "BRCXL",
@@ -114,6 +51,69 @@
         "regionName": "Rio Grande do Sul",
         "actionId": "icare_0109",
         "actionName": "Promote Energy Recovery from Biogas in Landfills",
+        "actionPriority": 6
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "c40_0039",
+        "actionName": "Gas Management",
+        "actionPriority": 7
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0122",
+        "actionName": "Establish eco-parks.",
+        "actionPriority": 8
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0119",
+        "actionName": "Maximize composting processes.",
+        "actionPriority": 9
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0064",
+        "actionName": "Implement technologies for the treatment of wet waste.",
+        "actionPriority": 10
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0110",
+        "actionName": "Regulate the Construction Waste Management Plan",
+        "actionPriority": 11
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0123",
+        "actionName": "Adopt Centralized Biological Treatment Technologies",
+        "actionPriority": 12
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0107",
+        "actionName": "Expand Wastewater Treatment Services",
         "actionPriority": 13
     },
     {
@@ -130,8 +130,8 @@
         "cityName": "Caxias do Sul",
         "region": "BR-RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0017",
-        "actionName": "Optimize the urban solid waste (USW) management system, aiming to expand collection and reduce illegal disposal.",
+        "actionId": "c40_0033",
+        "actionName": "15/30-Minute Areas",
         "actionPriority": 15
     },
     {
@@ -139,36 +139,9 @@
         "cityName": "Caxias do Sul",
         "region": "BR-RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0111",
-        "actionName": "Strengthen the reverse logistics system.",
+        "actionId": "icare_0017",
+        "actionName": "Optimize the urban solid waste (USW) management system, aiming to expand collection and reduce illegal disposal.",
         "actionPriority": 16
-    },
-    {
-        "locode": "BRCXL",
-        "cityName": "Caxias do Sul",
-        "region": "BR-RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0107",
-        "actionName": "Expand Wastewater Treatment Services",
-        "actionPriority": 17
-    },
-    {
-        "locode": "BRCXL",
-        "cityName": "Caxias do Sul",
-        "region": "BR-RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0123",
-        "actionName": "Adopt Centralized Biological Treatment Technologies",
-        "actionPriority": 18
-    },
-    {
-        "locode": "BRCXL",
-        "cityName": "Caxias do Sul",
-        "region": "BR-RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0066",
-        "actionName": "Expand the coverage of the public selective waste collection network",
-        "actionPriority": 19
     },
     {
         "locode": "BRCXL",
@@ -177,6 +150,33 @@
         "regionName": "Rio Grande do Sul",
         "actionId": "icare_0113",
         "actionName": "Universalize the coverage of the selective waste collection service for dry materials",
+        "actionPriority": 17
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0066",
+        "actionName": "Expand the coverage of the public selective waste collection network",
+        "actionPriority": 18
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0018",
+        "actionName": "Implement the Sustainable Logistics Plan in all public administration bodies",
+        "actionPriority": 19
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0112",
+        "actionName": "Universalize sewage collection and treatment",
         "actionPriority": 20
     }
 ]

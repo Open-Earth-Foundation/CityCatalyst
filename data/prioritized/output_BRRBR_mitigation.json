@@ -4,72 +4,9 @@
         "cityName": "Rio Branco",
         "region": "BR-AC",
         "regionName": "Acre",
-        "actionId": "icare_0101",
-        "actionName": "Encourage the Use of Low-Emission Agricultural Machinery",
+        "actionId": "c40_0035",
+        "actionName": "Waste Efficiency",
         "actionPriority": 1
-    },
-    {
-        "locode": "BRRBR",
-        "cityName": "Rio Branco",
-        "region": "BR-AC",
-        "regionName": "Acre",
-        "actionId": "icare_0057",
-        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
-        "actionPriority": 2
-    },
-    {
-        "locode": "BRRBR",
-        "cityName": "Rio Branco",
-        "region": "BR-AC",
-        "regionName": "Acre",
-        "actionId": "icare_0134",
-        "actionName": "Strengthen Mechanisms for Deforestation Control",
-        "actionPriority": 3
-    },
-    {
-        "locode": "BRRBR",
-        "cityName": "Rio Branco",
-        "region": "BR-AC",
-        "regionName": "Acre",
-        "actionId": "icare_0068",
-        "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
-        "actionPriority": 4
-    },
-    {
-        "locode": "BRRBR",
-        "cityName": "Rio Branco",
-        "region": "BR-AC",
-        "regionName": "Acre",
-        "actionId": "icare_0130",
-        "actionName": "Conduct Technical Assistance and Rural Extension (ATER) Actions",
-        "actionPriority": 5
-    },
-    {
-        "locode": "BRRBR",
-        "cityName": "Rio Branco",
-        "region": "BR-AC",
-        "regionName": "Acre",
-        "actionId": "icare_0096",
-        "actionName": "Promote Organic Farming",
-        "actionPriority": 6
-    },
-    {
-        "locode": "BRRBR",
-        "cityName": "Rio Branco",
-        "region": "BR-AC",
-        "regionName": "Acre",
-        "actionId": "icare_0088",
-        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
-        "actionPriority": 7
-    },
-    {
-        "locode": "BRRBR",
-        "cityName": "Rio Branco",
-        "region": "BR-AC",
-        "regionName": "Acre",
-        "actionId": "icare_0098",
-        "actionName": "Strengthen Forest Conservation and Restoration Initiatives",
-        "actionPriority": 8
     },
     {
         "locode": "BRRBR",
@@ -78,88 +15,25 @@
         "regionName": "Acre",
         "actionId": "icare_0139",
         "actionName": "Implementation of urban toll.",
-        "actionPriority": 9
+        "actionPriority": 2
     },
     {
         "locode": "BRRBR",
         "cityName": "Rio Branco",
         "region": "BR-AC",
         "regionName": "Acre",
-        "actionId": "ipcc_0073",
-        "actionName": "Co-located Housing and Jobs, Mixed Land Use, and High Street Connectivity",
-        "actionPriority": 10
+        "actionId": "c40_0036",
+        "actionName": "Landfill Management",
+        "actionPriority": 3
     },
     {
         "locode": "BRRBR",
         "cityName": "Rio Branco",
         "region": "BR-AC",
         "regionName": "Acre",
-        "actionId": "icare_0052",
-        "actionName": "Develop projects for renewable energy and waste reuse",
-        "actionPriority": 11
-    },
-    {
-        "locode": "BRRBR",
-        "cityName": "Rio Branco",
-        "region": "BR-AC",
-        "regionName": "Acre",
-        "actionId": "icare_0060",
-        "actionName": "Introduction of modular and automated collective transport systems.",
-        "actionPriority": 12
-    },
-    {
-        "locode": "BRRBR",
-        "cityName": "Rio Branco",
-        "region": "BR-AC",
-        "regionName": "Acre",
-        "actionId": "icare_0121",
-        "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
-        "actionPriority": 13
-    },
-    {
-        "locode": "BRRBR",
-        "cityName": "Rio Branco",
-        "region": "BR-AC",
-        "regionName": "Acre",
-        "actionId": "c40_0032",
-        "actionName": "Transit Access",
-        "actionPriority": 14
-    },
-    {
-        "locode": "BRRBR",
-        "cityName": "Rio Branco",
-        "region": "BR-AC",
-        "regionName": "Acre",
-        "actionId": "icare_0129",
-        "actionName": "Facilitate Technology Transfer for Conservation Practices",
-        "actionPriority": 15
-    },
-    {
-        "locode": "BRRBR",
-        "cityName": "Rio Branco",
-        "region": "BR-AC",
-        "regionName": "Acre",
-        "actionId": "icare_0091",
-        "actionName": "Implementation of prioritized routes for sustainable vehicles.",
-        "actionPriority": 16
-    },
-    {
-        "locode": "BRRBR",
-        "cityName": "Rio Branco",
-        "region": "BR-AC",
-        "regionName": "Acre",
-        "actionId": "icare_0092",
-        "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
-        "actionPriority": 17
-    },
-    {
-        "locode": "BRRBR",
-        "cityName": "Rio Branco",
-        "region": "BR-AC",
-        "regionName": "Acre",
-        "actionId": "icare_0118",
-        "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
-        "actionPriority": 18
+        "actionId": "icare_0122",
+        "actionName": "Establish eco-parks.",
+        "actionPriority": 4
     },
     {
         "locode": "BRRBR",
@@ -168,7 +42,61 @@
         "regionName": "Acre",
         "actionId": "icare_0133",
         "actionName": "Promote Urban Reforestation and Green Corridors",
-        "actionPriority": 19
+        "actionPriority": 5
+    },
+    {
+        "locode": "BRRBR",
+        "cityName": "Rio Branco",
+        "region": "BR-AC",
+        "regionName": "Acre",
+        "actionId": "icare_0100",
+        "actionName": "Support Regenerative Agriculture Practices",
+        "actionPriority": 6
+    },
+    {
+        "locode": "BRRBR",
+        "cityName": "Rio Branco",
+        "region": "BR-AC",
+        "regionName": "Acre",
+        "actionId": "icare_0057",
+        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
+        "actionPriority": 7
+    },
+    {
+        "locode": "BRRBR",
+        "cityName": "Rio Branco",
+        "region": "BR-AC",
+        "regionName": "Acre",
+        "actionId": "icare_0102",
+        "actionName": "Promote Sustainable Agricultural Practices",
+        "actionPriority": 8
+    },
+    {
+        "locode": "BRRBR",
+        "cityName": "Rio Branco",
+        "region": "BR-AC",
+        "regionName": "Acre",
+        "actionId": "icare_0052",
+        "actionName": "Develop projects for renewable energy and waste reuse",
+        "actionPriority": 9
+    },
+    {
+        "locode": "BRRBR",
+        "cityName": "Rio Branco",
+        "region": "BR-AC",
+        "regionName": "Acre",
+        "actionId": "icare_0118",
+        "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
+        "actionPriority": 10
+    },
+    {
+        "locode": "BRRBR",
+        "cityName": "Rio Branco",
+        "region": "BR-AC",
+        "regionName": "Acre",
+        "actionId": "icare_0129",
+        "actionName": "Facilitate Technology Transfer for Conservation Practices",
+        "actionPriority": 11
     },
     {
         "locode": "BRRBR",
@@ -177,6 +105,78 @@
         "regionName": "Acre",
         "actionId": "icare_0117",
         "actionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
+        "actionPriority": 12
+    },
+    {
+        "locode": "BRRBR",
+        "cityName": "Rio Branco",
+        "region": "BR-AC",
+        "regionName": "Acre",
+        "actionId": "icare_0005",
+        "actionName": "Create credit lines for residential and community wind energy projects",
+        "actionPriority": 13
+    },
+    {
+        "locode": "BRRBR",
+        "cityName": "Rio Branco",
+        "region": "BR-AC",
+        "regionName": "Acre",
+        "actionId": "icare_0053",
+        "actionName": "Implement a project to support cooperatives of recyclabe material collectors",
+        "actionPriority": 14
+    },
+    {
+        "locode": "BRRBR",
+        "cityName": "Rio Branco",
+        "region": "BR-AC",
+        "regionName": "Acre",
+        "actionId": "icare_0130",
+        "actionName": "Conduct Technical Assistance and Rural Extension (ATER) Actions",
+        "actionPriority": 15
+    },
+    {
+        "locode": "BRRBR",
+        "cityName": "Rio Branco",
+        "region": "BR-AC",
+        "regionName": "Acre",
+        "actionId": "c40_0026",
+        "actionName": "Vehicle Emissions",
+        "actionPriority": 16
+    },
+    {
+        "locode": "BRRBR",
+        "cityName": "Rio Branco",
+        "region": "BR-AC",
+        "regionName": "Acre",
+        "actionId": "icare_0088",
+        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
+        "actionPriority": 17
+    },
+    {
+        "locode": "BRRBR",
+        "cityName": "Rio Branco",
+        "region": "BR-AC",
+        "regionName": "Acre",
+        "actionId": "icare_0033",
+        "actionName": "Install biodigesters in rural properties",
+        "actionPriority": 18
+    },
+    {
+        "locode": "BRRBR",
+        "cityName": "Rio Branco",
+        "region": "BR-AC",
+        "regionName": "Acre",
+        "actionId": "c40_0032",
+        "actionName": "Transit Access",
+        "actionPriority": 19
+    },
+    {
+        "locode": "BRRBR",
+        "cityName": "Rio Branco",
+        "region": "BR-AC",
+        "regionName": "Acre",
+        "actionId": "c40_0040",
+        "actionName": "Volume-Based Collection",
         "actionPriority": 20
     }
 ]

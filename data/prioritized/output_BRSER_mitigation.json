@@ -22,27 +22,9 @@
         "cityName": "Serra",
         "region": "BR-ES",
         "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0052",
-        "actionName": "Develop projects for renewable energy and waste reuse",
-        "actionPriority": 3
-    },
-    {
-        "locode": "BRSER",
-        "cityName": "Serra",
-        "region": "BR-ES",
-        "regionName": "Esp\u00edrito Santo",
         "actionId": "c40_0036",
         "actionName": "Landfill Management",
-        "actionPriority": 4
-    },
-    {
-        "locode": "BRSER",
-        "cityName": "Serra",
-        "region": "BR-ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "c40_0038",
-        "actionName": "Sanitary Landfills",
-        "actionPriority": 5
+        "actionPriority": 3
     },
     {
         "locode": "BRSER",
@@ -51,7 +33,16 @@
         "regionName": "Esp\u00edrito Santo",
         "actionId": "c40_0039",
         "actionName": "Gas Management",
-        "actionPriority": 6
+        "actionPriority": 4
+    },
+    {
+        "locode": "BRSER",
+        "cityName": "Serra",
+        "region": "BR-ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0052",
+        "actionName": "Develop projects for renewable energy and waste reuse",
+        "actionPriority": 5
     },
     {
         "locode": "BRSER",
@@ -60,7 +51,7 @@
         "regionName": "Esp\u00edrito Santo",
         "actionId": "icare_0053",
         "actionName": "Implement a project to support cooperatives of recyclabe material collectors",
-        "actionPriority": 7
+        "actionPriority": 6
     },
     {
         "locode": "BRSER",
@@ -69,16 +60,7 @@
         "regionName": "Esp\u00edrito Santo",
         "actionId": "ipcc_0080",
         "actionName": "Avoiding, Minimising, and Recycling Waste",
-        "actionPriority": 8
-    },
-    {
-        "locode": "BRSER",
-        "cityName": "Serra",
-        "region": "BR-ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0109",
-        "actionName": "Promote Energy Recovery from Biogas in Landfills",
-        "actionPriority": 9
+        "actionPriority": 7
     },
     {
         "locode": "BRSER",
@@ -87,25 +69,7 @@
         "regionName": "Esp\u00edrito Santo",
         "actionId": "icare_0122",
         "actionName": "Establish eco-parks.",
-        "actionPriority": 10
-    },
-    {
-        "locode": "BRSER",
-        "cityName": "Serra",
-        "region": "BR-ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0111",
-        "actionName": "Strengthen the reverse logistics system.",
-        "actionPriority": 11
-    },
-    {
-        "locode": "BRSER",
-        "cityName": "Serra",
-        "region": "BR-ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0110",
-        "actionName": "Regulate the Construction Waste Management Plan",
-        "actionPriority": 12
+        "actionPriority": 8
     },
     {
         "locode": "BRSER",
@@ -114,7 +78,25 @@
         "regionName": "Esp\u00edrito Santo",
         "actionId": "icare_0018",
         "actionName": "Implement the Sustainable Logistics Plan in all public administration bodies",
-        "actionPriority": 13
+        "actionPriority": 9
+    },
+    {
+        "locode": "BRSER",
+        "cityName": "Serra",
+        "region": "BR-ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0139",
+        "actionName": "Implementation of urban toll.",
+        "actionPriority": 10
+    },
+    {
+        "locode": "BRSER",
+        "cityName": "Serra",
+        "region": "BR-ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0109",
+        "actionName": "Promote Energy Recovery from Biogas in Landfills",
+        "actionPriority": 11
     },
     {
         "locode": "BRSER",
@@ -123,34 +105,16 @@
         "regionName": "Esp\u00edrito Santo",
         "actionId": "icare_0017",
         "actionName": "Optimize the urban solid waste (USW) management system, aiming to expand collection and reduce illegal disposal.",
-        "actionPriority": 14
+        "actionPriority": 12
     },
     {
         "locode": "BRSER",
         "cityName": "Serra",
         "region": "BR-ES",
         "regionName": "Esp\u00edrito Santo",
-        "actionId": "c40_0012",
-        "actionName": "New Building Standards",
-        "actionPriority": 15
-    },
-    {
-        "locode": "BRSER",
-        "cityName": "Serra",
-        "region": "BR-ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0123",
-        "actionName": "Adopt Centralized Biological Treatment Technologies",
-        "actionPriority": 16
-    },
-    {
-        "locode": "BRSER",
-        "cityName": "Serra",
-        "region": "BR-ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0107",
-        "actionName": "Expand Wastewater Treatment Services",
-        "actionPriority": 17
+        "actionId": "icare_0110",
+        "actionName": "Regulate the Construction Waste Management Plan",
+        "actionPriority": 13
     },
     {
         "locode": "BRSER",
@@ -159,7 +123,7 @@
         "regionName": "Esp\u00edrito Santo",
         "actionId": "icare_0064",
         "actionName": "Implement technologies for the treatment of wet waste.",
-        "actionPriority": 18
+        "actionPriority": 14
     },
     {
         "locode": "BRSER",
@@ -168,6 +132,42 @@
         "regionName": "Esp\u00edrito Santo",
         "actionId": "icare_0112",
         "actionName": "Universalize sewage collection and treatment",
+        "actionPriority": 15
+    },
+    {
+        "locode": "BRSER",
+        "cityName": "Serra",
+        "region": "BR-ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0107",
+        "actionName": "Expand Wastewater Treatment Services",
+        "actionPriority": 16
+    },
+    {
+        "locode": "BRSER",
+        "cityName": "Serra",
+        "region": "BR-ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0123",
+        "actionName": "Adopt Centralized Biological Treatment Technologies",
+        "actionPriority": 17
+    },
+    {
+        "locode": "BRSER",
+        "cityName": "Serra",
+        "region": "BR-ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0119",
+        "actionName": "Maximize composting processes.",
+        "actionPriority": 18
+    },
+    {
+        "locode": "BRSER",
+        "cityName": "Serra",
+        "region": "BR-ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "c40_0010",
+        "actionName": "New Building Standards",
         "actionPriority": 19
     },
     {
@@ -175,8 +175,8 @@
         "cityName": "Serra",
         "region": "BR-ES",
         "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0113",
-        "actionName": "Universalize the coverage of the selective waste collection service for dry materials",
+        "actionId": "icare_0066",
+        "actionName": "Expand the coverage of the public selective waste collection network",
         "actionPriority": 20
     }
 ]

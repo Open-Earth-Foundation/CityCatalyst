@@ -22,8 +22,8 @@
         "cityName": "Cama\u00e7ari",
         "region": "BR-BA",
         "regionName": "Bahia",
-        "actionId": "icare_0052",
-        "actionName": "Develop projects for renewable energy and waste reuse",
+        "actionId": "icare_0090",
+        "actionName": "Adoption of electric drones for last-mile deliveries.",
         "actionPriority": 3
     },
     {
@@ -31,8 +31,8 @@
         "cityName": "Cama\u00e7ari",
         "region": "BR-BA",
         "regionName": "Bahia",
-        "actionId": "c40_0036",
-        "actionName": "Landfill Management",
+        "actionId": "icare_0052",
+        "actionName": "Develop projects for renewable energy and waste reuse",
         "actionPriority": 4
     },
     {
@@ -49,8 +49,8 @@
         "cityName": "Cama\u00e7ari",
         "region": "BR-BA",
         "regionName": "Bahia",
-        "actionId": "c40_0038",
-        "actionName": "Sanitary Landfills",
+        "actionId": "c40_0036",
+        "actionName": "Landfill Management",
         "actionPriority": 6
     },
     {
@@ -58,8 +58,8 @@
         "cityName": "Cama\u00e7ari",
         "region": "BR-BA",
         "regionName": "Bahia",
-        "actionId": "icare_0107",
-        "actionName": "Expand Wastewater Treatment Services",
+        "actionId": "icare_0053",
+        "actionName": "Implement a project to support cooperatives of recyclabe material collectors",
         "actionPriority": 7
     },
     {
@@ -67,63 +67,9 @@
         "cityName": "Cama\u00e7ari",
         "region": "BR-BA",
         "regionName": "Bahia",
-        "actionId": "icare_0011",
-        "actionName": "Provide tax incentives for renewable energy in residential projects",
+        "actionId": "icare_0119",
+        "actionName": "Maximize composting processes.",
         "actionPriority": 8
-    },
-    {
-        "locode": "BRCCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BR-BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0092",
-        "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
-        "actionPriority": 9
-    },
-    {
-        "locode": "BRCCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BR-BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0105",
-        "actionName": "Reduce technical losses in energy distribution networks",
-        "actionPriority": 10
-    },
-    {
-        "locode": "BRCCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BR-BA",
-        "regionName": "Bahia",
-        "actionId": "c40_0015",
-        "actionName": "Existing Building Standards",
-        "actionPriority": 11
-    },
-    {
-        "locode": "BRCCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BR-BA",
-        "regionName": "Bahia",
-        "actionId": "c40_0018",
-        "actionName": "Existing Building Standards",
-        "actionPriority": 12
-    },
-    {
-        "locode": "BRCCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BR-BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0018",
-        "actionName": "Implement the Sustainable Logistics Plan in all public administration bodies",
-        "actionPriority": 13
-    },
-    {
-        "locode": "BRCCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BR-BA",
-        "regionName": "Bahia",
-        "actionId": "c40_0017",
-        "actionName": "Existing Building Standards",
-        "actionPriority": 14
     },
     {
         "locode": "BRCCI",
@@ -132,7 +78,97 @@
         "regionName": "Bahia",
         "actionId": "ipcc_0080",
         "actionName": "Avoiding, Minimising, and Recycling Waste",
+        "actionPriority": 9
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "icare_0109",
+        "actionName": "Promote Energy Recovery from Biogas in Landfills",
+        "actionPriority": 10
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "icare_0110",
+        "actionName": "Regulate the Construction Waste Management Plan",
+        "actionPriority": 11
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "c40_0028",
+        "actionName": "Zero Emission Buses",
+        "actionPriority": 12
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "icare_0139",
+        "actionName": "Implementation of urban toll.",
+        "actionPriority": 13
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "icare_0017",
+        "actionName": "Optimize the urban solid waste (USW) management system, aiming to expand collection and reduce illegal disposal.",
+        "actionPriority": 14
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "icare_0088",
+        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
         "actionPriority": 15
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "c40_0025",
+        "actionName": "Truck Emissions",
+        "actionPriority": 16
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "c40_0026",
+        "actionName": "Vehicle Emissions",
+        "actionPriority": 17
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "icare_0093",
+        "actionName": "Incentive the use of drones for monitoring large agricultural properties.",
+        "actionPriority": 18
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "icare_0122",
+        "actionName": "Establish eco-parks.",
+        "actionPriority": 19
     },
     {
         "locode": "BRCCI",
@@ -141,42 +177,6 @@
         "regionName": "Bahia",
         "actionId": "icare_0137",
         "actionName": "Replace Inefficient Lighting with LED Technology in Public Spaces",
-        "actionPriority": 16
-    },
-    {
-        "locode": "BRCCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BR-BA",
-        "regionName": "Bahia",
-        "actionId": "c40_0010",
-        "actionName": "New Building Standards",
-        "actionPriority": 17
-    },
-    {
-        "locode": "BRCCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BR-BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0111",
-        "actionName": "Strengthen the reverse logistics system.",
-        "actionPriority": 18
-    },
-    {
-        "locode": "BRCCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BR-BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0121",
-        "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
-        "actionPriority": 19
-    },
-    {
-        "locode": "BRCCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BR-BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0113",
-        "actionName": "Universalize the coverage of the selective waste collection service for dry materials",
         "actionPriority": 20
     }
 ]

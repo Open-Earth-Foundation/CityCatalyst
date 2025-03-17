@@ -158,6 +158,6 @@ describe("City Transfer API", () => {
     const res = await transferCity(req, { params: {} });
 
     expect(res.status).toBe(401);
-    expect(res.body).toEqual({ message: "Unauthorized" });
+    expect(res.body).toEqual({ message: "Forbidden" });
   });
 });

@@ -1,7 +1,7 @@
 import { db } from "@/models";
 import { User } from "@/models/User";
 import bcrypt from "bcrypt";
-import { DefaultSession, NextAuthOptions, getServerSession } from "next-auth";
+import { DefaultSession, getServerSession, NextAuthOptions } from "next-auth";
 import {
   CredentialInput,
   CredentialsConfig,

@@ -20,7 +20,7 @@ const Heading: FC<HeadingProps> = ({ t, inventoryParam }) => {
           variant="ghost"
           color="content.link"
           px={1}
-          onClick={() => router.push(`/${inventoryParam}`)}
+          onClick={() => router.push(`/`)}
         >
           <Icon as={MdArrowBack} />
           {t("go-back")}

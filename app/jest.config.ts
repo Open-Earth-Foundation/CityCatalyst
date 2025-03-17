@@ -8,21 +8,33 @@ import preset from "ts-jest/presets/index.js";
 
 const config: JestConfigWithTsJest = {
   ...preset.defaultsESM,
+
+  // Empty string means process all node_modules
+  // Only process TypeScript files with ts-jest
   transform: {
     "^.+\\.tsx?$": [
       "ts-jest",
       {
-        tsconfig: "tsconfig.json",
+        tsconfig: "tests/tsconfig.json",
         useESM: true,
       },
     ],
   },
-  testEnvironment: "node",
-  roots: ["<rootDir>"],
-  modulePaths: ["<rootDir>"],
+
+  // The critical part - transform all ESM modules in node_modules
+  transformIgnorePatterns: [
+    "/node_modules/(?!(.+\\.mjs$|fetch-blob|formdata-polyfill|node-fetch|data-uri-to-buffer|web-streams-polyfill))",
+  ],
+
+  extensionsToTreatAsEsm: [".ts", ".tsx"],
+
   moduleNameMapper: {
     "^@/(.*)$": "<rootDir>/src/$1",
   },
+
+  testEnvironment: "node",
+  roots: ["<rootDir>"],
+  modulePaths: ["<rootDir>"],
   setupFiles: ["<rootDir>/jest.setup.ts"],
 
   // enable worker threads feature to fix BigInt serialization issue

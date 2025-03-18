@@ -34,13 +34,13 @@ const organizationData: CreateOrganizationRequest = {
   contactEmail: "testproject@organization.com",
 };
 
-const projectData: Omit<CreateProjectRequest, "organizationId"> = {
+const projectData: CreateProjectRequest = {
   name: "Test Project",
   cityCountLimit: 10,
   description: "Test Description",
 };
 
-const invalidProject: Omit<CreateProjectRequest, "organizationId"> = {
+const invalidProject: CreateProjectRequest = {
   name: "",
   cityCountLimit: -1,
   description: "",

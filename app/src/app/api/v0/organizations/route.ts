@@ -4,9 +4,9 @@ import { createOrganizationRequest } from "@/util/validation";
 import { NextResponse } from "next/server";
 import UserService from "@/backend/UserService";
 import { apiHandler } from "@/util/api";
+import { OrganizationInvite } from "@/models/OrganizationInvite";
 
 export const POST = apiHandler(async (req, { params, session }) => {
-  console.log(session, "session data");
   UserService.validateIsAdmin(session);
   const orgData = createOrganizationRequest.parse(await req.json());
   const newOrg = await Organization.create({
@@ -18,6 +18,18 @@ export const POST = apiHandler(async (req, { params, session }) => {
 
 export const GET = apiHandler(async (_req, { params, session }) => {
   UserService.validateIsAdmin(session);
-  const organizations = await Organization.findAll(); // join the organization invite table searching for the invite status of the org owner
-  return NextResponse.json(organizations);
+
+  const organizations = await Organization.findAll({
+    include: [
+      {
+        model: OrganizationInvite,
+        as: "organizationInvite",
+        attributes: ["status", "email", "role"],
+        where: { role: "org_admin" },
+        required: false,
+      },
+    ],
+  });
+
+  return NextResponse.json(organizations, { status: 200 });
 });

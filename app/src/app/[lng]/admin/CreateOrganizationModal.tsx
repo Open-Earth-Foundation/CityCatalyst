@@ -101,8 +101,6 @@ const CreateOrganizationModal: FC<CreateOrganizationModalProps> = ({
       contactEmail: email,
     });
 
-    console.log(response, "response");
-
     if (response.data) {
       const orgId = response.data.organizationId;
       const projectResponse = await createProject({

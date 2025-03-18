@@ -26,6 +26,8 @@ import {
   InventoryValueResponse,
   InventoryValueUpdateQuery,
   InventoryWithCity,
+  InviteStatus,
+  ListOrganizationsResponse,
   OrganizationResponse,
   OrganizationRole,
   ProjectResponse,
@@ -867,6 +869,22 @@ export const api = createApi({
         transformResponse: (response: any) => response,
         invalidatesTags: ["OrganizationInvite", "Organizations"],
       }),
+      getOrganizations: builder.query({
+        query: () => ({
+          method: "GET",
+          url: `/organizations`,
+        }),
+        transformResponse: (response: ListOrganizationsResponse) =>
+          response.map((org) => ({
+            ...org,
+            status: org.organizationInvite.find(
+              (invite) => invite.status === InviteStatus.ACCEPTED,
+            )
+              ? "accepted"
+              : "invite sent",
+          })),
+        providesTags: ["Organizations"],
+      }),
     };
   },
 });
@@ -948,5 +966,6 @@ export const {
   useCreateOrganizationMutation,
   useCreateProjectMutation,
   useCreateOrganizationInviteMutation,
+  useGetOrganizationsQuery,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

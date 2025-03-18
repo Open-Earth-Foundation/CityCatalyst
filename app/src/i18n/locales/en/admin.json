@@ -20,5 +20,7 @@
   "cancel": "Cancel",
   "back": "Back",
   "error-message": "An error occurred. Please try again.",
-  "organization-added": "Organization added successfully"
+  "organization-added": "Organization added successfully",
+  "account-details": "Account details",
+  "resend-invite": "Resend invite"
 }

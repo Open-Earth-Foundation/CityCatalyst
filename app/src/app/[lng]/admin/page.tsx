@@ -1,14 +1,51 @@
 "use client";
 
-import { Box, Button, Heading, Icon, Link, Text } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Heading,
+  Icon,
+  IconButton,
+  Link,
+  Table,
+  Text,
+} from "@chakra-ui/react";
 import { useTranslation } from "@/i18n/client";
 import { BsPlus } from "react-icons/bs";
 import React, { useState } from "react";
 import CreateOrganizationModal from "@/app/[lng]/admin/CreateOrganizationModal";
+import { api } from "@/services/api";
+import {
+  ProgressCircleRing,
+  ProgressCircleRoot,
+} from "@/components/ui/progress-circle";
+import DataTable from "@/components/ui/data-table";
+import { Tag } from "@/components/ui/tag";
+import {
+  MenuContent,
+  MenuItem,
+  MenuRoot,
+  MenuTrigger,
+} from "@/components/ui/menu";
+import { MdForwardToInbox, MdMoreVert, MdOutlineGroup } from "react-icons/md";
+
+interface OrgData {
+  contactEmail: string;
+  created: string;
+  last_updated: string;
+  name: string;
+  organizationId: string;
+  status: "accepted" | "invite sent";
+}
 
 const AdminPage = ({ params: { lng } }: { params: { lng: string } }) => {
   const { t } = useTranslation(lng, "admin");
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const { data: organizationData, isLoading: isOrgDataLoading } =
+    api.useGetOrganizationsQuery({});
+
+  const orgData = organizationData as OrgData[];
 
   return (
     <Box className="pt-16 pb-16  w-[1090px] mx-auto px-4">
@@ -67,6 +104,138 @@ const AdminPage = ({ params: { lng } }: { params: { lng: string } }) => {
           <Icon as={BsPlus} h={8} w={8} />
           {t("add-organization")}
         </Button>
+      </Box>
+      <Box>
+        {isOrgDataLoading && (
+          <div className="flex items-center justify-center w-full">
+            <Box className="w-full py-12 flex items-center justify-center">
+              <ProgressCircleRoot value={null}>
+                <ProgressCircleRing cap="round" />
+              </ProgressCircleRoot>
+            </Box>
+          </div>
+        )}
+        {!isOrgDataLoading && orgData.length === 0 && (
+          <Text color="content.tertiary" fontSize="body.lg">
+            {t("no-organizations")}
+          </Text>
+        )}
+
+        {!isOrgDataLoading && orgData && orgData.length > 0 && (
+          <DataTable
+            searchable={true}
+            pagination={true}
+            filterProperty={"status"}
+            filterOptions={["accepted", "invite sent", "all"]}
+            data={[...orgData].reverse()}
+            title={t("manage-oef-clients")}
+            columns={[
+              { header: t("organization"), accessor: "name" },
+              {
+                header: t("email"),
+                accessor: "contactEmail",
+              },
+              { header: t("status"), accessor: "status" },
+              { header: "", accessor: null },
+            ]}
+            renderRow={(item, idx) => (
+              <Table.Row key={idx}>
+                <Table.Cell>{item.name}</Table.Cell>
+                <Table.Cell>{item.contactEmail}</Table.Cell>
+                <Table.Cell>
+                  {" "}
+                  {item.status === "accepted" ? (
+                    <Tag size="lg" rounded="full" colorPalette="green">
+                      {" "}
+                      Accepted{" "}
+                    </Tag>
+                  ) : (
+                    <Tag size="lg" colorPalette="yellow">
+                      Invite Sent
+                    </Tag>
+                  )}{" "}
+                </Table.Cell>
+                <Table.Cell>
+                  <MenuRoot>
+                    <MenuTrigger>
+                      <IconButton
+                        data-testid="activity-more-icon"
+                        aria-label="more-icon"
+                        variant="ghost"
+                        color="content.tertiary"
+                      >
+                        <Icon as={MdMoreVert} size="lg" />
+                      </IconButton>
+                    </MenuTrigger>
+                    <MenuContent
+                      w="auto"
+                      borderRadius="8px"
+                      shadow="2dp"
+                      px="0"
+                    >
+                      <MenuItem
+                        value={t("resend-invite")}
+                        valueText={t("resend-invite")}
+                        p="16px"
+                        display="flex"
+                        alignItems="center"
+                        gap="16px"
+                        _hover={{
+                          bg: "content.link",
+                          cursor: "pointer",
+                        }}
+                        className="group"
+                        onClick={() => {}}
+                      >
+                        <Icon
+                          className="group-hover:text-white"
+                          color="interactive.control"
+                          as={MdForwardToInbox}
+                          h="24px"
+                          w="24px"
+                        />
+                        <Text
+                          className="group-hover:text-white"
+                          color="content.primary"
+                        >
+                          {t("resend-invite")}
+                        </Text>
+                      </MenuItem>
+                      <MenuItem
+                        value={t("account-details")}
+                        valueText={t("account-details")}
+                        p="16px"
+                        display="flex"
+                        alignItems="center"
+                        gap="16px"
+                        _hover={{
+                          bg: "content.link",
+                          cursor: "pointer",
+                        }}
+                        className="group"
+                        onClick={() => {}}
+                      >
+                        <Icon
+                          className="group-hover:text-white"
+                          color="interactive.control"
+                          as={MdOutlineGroup}
+                          h="24px"
+                          w="24px"
+                        />
+                        <Text
+                          className="group-hover:text-white"
+                          color="content.primary"
+                        >
+                          {t("account-details")}
+                        </Text>
+                      </MenuItem>
+                    </MenuContent>
+                  </MenuRoot>
+                </Table.Cell>
+              </Table.Row>
+            )}
+          />
+        )}
       </Box>
       <CreateOrganizationModal
         isOpen={isModalOpen}

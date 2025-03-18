@@ -379,3 +379,18 @@ export type ProjectResponse = {
   organizationId: string;
   projectId: string;
 };
+
+export type ListOrganizationsResponse = {
+  contactEmail: string;
+  created: string;
+  last_updated: string;
+  name: string;
+  organizationId: string;
+  organizationInvite: [
+    {
+      status: InviteStatus;
+      email: string;
+      role: OrganizationRole;
+    },
+  ];
+}[];

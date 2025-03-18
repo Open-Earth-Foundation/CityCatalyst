@@ -1,10 +1,24 @@
 import React, { useMemo, useState } from "react";
-import { Box, Button, Flex, Input, Table } from "@chakra-ui/react";
+import {
+  Box,
+  Flex,
+  Icon,
+  IconButton,
+  Input,
+  Table,
+  Text,
+} from "@chakra-ui/react";
+import {
+  NativeSelectField,
+  NativeSelectRoot,
+} from "@/components/ui/native-select";
+
+import { IoIosArrowBack } from "react-icons/io";
 
 type DataTableProps<T> = {
   data: T[];
   title: string;
-  columns: { header: string; accessor: keyof T }[];
+  columns: { header: string; accessor: keyof T | null }[];
   searchable?: boolean;
   pagination?: boolean;
   itemsPerPage?: number;
@@ -29,6 +43,7 @@ function DataTable<T extends Record<string, any>>({
   const [filterValue, setFilterValue] = useState<string | number>("");
 
   const filteredData = useMemo(() => {
+    if (filterValue === "all") return data;
     return data.filter((item) => {
       const matchesSearch = searchable
         ? Object.values(item).some((val) =>
@@ -55,32 +70,89 @@ function DataTable<T extends Record<string, any>>({
     filteredData.length > 0 ? Math.ceil(filteredData.length / itemsPerPage) : 1;
 
   return (
-    <Box>
-      <Flex mb={4} gap={2}>
-        {searchable && (
-          <Input
-            placeholder="Search..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-        )}
+    <Box className="bg-white" p={6} rounded={2} mt={12}>
+      <Text fontWeight="bold" fontSize="title.md" mb={6}>
+        {title}
+      </Text>
+      <Flex mb={4} justifyContent="space-between">
+        <Flex mb={4} gap={2}>
+          {searchable && (
+            <Input
+              minWidth="350px"
+              placeholder="Search by name or email address"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          )}
 
-        {/*{filterProperty && filterOptions.length > 0 && (*/}
-        {/*  <Select*/}
-        {/*    placeholder="Filter"*/}
-        {/*    value={filterValue}*/}
-        {/*    onChange={(e) => setFilterValue(e.target.value)}*/}
-        {/*  >*/}
-        {/*    {filterOptions.map((option, idx) => (*/}
-        {/*      <option key={idx} value={String(option)}>*/}
-        {/*        {String(option)}*/}
-        {/*      </option>*/}
-        {/*    ))}*/}
-        {/*  </Select>*/}
-        {/*)}*/}
+          {filterProperty && filterOptions.length > 0 && (
+            <NativeSelectRoot
+              shadow="1dp"
+              borderRadius="4px"
+              border="inpu/tBox"
+              fontSize="body.lg"
+              h="full"
+              w="full"
+              _focus={{
+                borderWidth: "1px",
+                borderColor: "content.link",
+                shadow: "none",
+              }}
+            >
+              <NativeSelectField
+                placeholder="Filter"
+                value={filterValue}
+                onChange={(e) => setFilterValue(e.target.value)}
+              >
+                {filterOptions.map((option, idx) => (
+                  <option
+                    className="!capitalize"
+                    key={idx}
+                    value={String(option)}
+                  >
+                    {String(option)}
+                  </option>
+                ))}
+              </NativeSelectField>
+            </NativeSelectRoot>
+          )}
+        </Flex>
+        {pagination && (
+          <Flex mt={4} gap={2} justify="space-between" align="center">
+            <Text fontSize="body.md" color="content.tertiary">
+              {(currentPage - 1) * itemsPerPage + 1} -{" "}
+              {Math.min(filteredData.length, currentPage * itemsPerPage)} of{" "}
+              {filteredData.length}
+            </Text>
+            <IconButton
+              color="interactive.control"
+              variant="plain"
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            >
+              <Icon as={IoIosArrowBack} />
+            </IconButton>
+            <IconButton
+              color="interactive.control"
+              variant="plain"
+              disabled={currentPage === totalPages}
+              onClick={() =>
+                setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+              }
+            >
+              <Icon as={IoIosArrowBack} rotate="180deg" />
+            </IconButton>
+          </Flex>
+        )}
       </Flex>
 
-      <Table.Root variant="outline" overflowX="scroll" borderWidth="1px">
+      <Table.Root
+        px={0}
+        variant="line"
+        overflowX="hidden"
+        rounded="20px"
+        borderWidth="1px"
+      >
         <Table.Header bg="background.backgroundLight">
           <Table.Row>
             {columns.map((col) => (
@@ -99,31 +171,18 @@ function DataTable<T extends Record<string, any>>({
           </Table.Row>
         </Table.Header>
         <Table.Body>
+          {filteredData.length === 0 && (
+            <Table.Row>
+              <Table.Cell colSpan={columns.length}>
+                <Text fontSize="body.md" color="content.tertiary">
+                  No data available
+                </Text>
+              </Table.Cell>
+            </Table.Row>
+          )}
           {paginatedData.map((item, idx) => renderRow(item, idx))}
         </Table.Body>
       </Table.Root>
-
-      {pagination && (
-        <Flex mt={4} justify="space-between" align="center">
-          <Button
-            disabled={currentPage === 1}
-            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-          >
-            Previous
-          </Button>
-          <Box>
-            Page {currentPage} of {totalPages}
-          </Box>
-          <Button
-            disabled={currentPage === totalPages}
-            onClick={() =>
-              setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-            }
-          >
-            Next
-          </Button>
-        </Flex>
-      )}
     </Box>
   );
 }

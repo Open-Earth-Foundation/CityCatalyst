@@ -4,146 +4,124 @@
         "cityName": "Maranguape",
         "region": "BR-CE",
         "regionName": "Cear\u00e1",
-        "actionId": "ipcc_0053",
-        "actionName": "Afforestation, Reforestation and Forest Ecosystem Restoration",
+        "actionId": "icare_0050",
+        "actionName": "Implement Agroforestry Systems",
         "actionPriority": 1,
-        "explanation": "This action attains the highest quantitative score, indicating strong potential for GHG emissions reduction primarily in the land use sector, which is the most emission intensive in Maranguape. Despite desert conditions potentially complicating large-scale forestry, the mitigation benefits remain critical, making it the top priority.",
-        "action": {
-            "ActionID": "ipcc_0053",
-            "ActionName": "Afforestation, Reforestation and Forest Ecosystem Restoration",
-            "ActionType": [
-                "mitigation"
-            ],
-            "AdaptationCategory": null,
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "land"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "InterventionType": [
-                "programs_and_initiatives",
-                "infrastructure_investments",
-                "incentives_and_subsidies"
-            ],
-            "Description": "Activities focused on converting land to forests, restoring degraded forests, and prioritizing ecological integrity. Afforestation targets historically non-forested land, while reforestation targets previously forested areas. Efforts include enhancing biodiversity, improving ecosystem services, and increasing carbon sequestration.",
-            "BehavioralChangeTargeted": "Encourages sustainable land management, restoration of degraded ecosystems, and adoption of forest-friendly agricultural practices.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "Supports local livelihoods, promotes land-use equity, and ensures inclusive stakeholder participation in afforestation and restoration programs.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "60-79"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Requires funding for land restoration",
-                "access to suitable species for planting",
-                "local community engagement",
-                "monitoring systems for ecosystem integrity and carbon sequestration"
-            ],
-            "KeyPerformanceIndicators": [
-                "Area of land reforested or afforested",
-                "carbon sequestration rates",
-                "improvement in biodiversity indices",
-                "ecosystem service metrics such as water regulation and soil quality"
-            ],
-            "Impacts": [
-                "Increased carbon sequestration",
-                "improved biodiversity",
-                "enhanced ecosystem resilience",
-                "better water regulation",
-                "soil stabilization",
-                "support for local communities through sustainable resource use"
-            ]
-        }
+        "explanation": "For the city of Maranguape, implementing agroforestry merges tree cultivation with crop or livestock operations. This approach enhances soil fertility, boosts carbon capture, and moderates local temperatures. By diversifying farm landscapes, it also increases resilience to climate fluctuations and supports sustainable livelihoods.",
+        "action": null
     },
     {
         "locode": "BRMGE",
         "cityName": "Maranguape",
         "region": "BR-CE",
         "regionName": "Cear\u00e1",
-        "actionId": "ipcc_0052",
-        "actionName": "Reduce Deforestation and Degradation",
+        "actionId": "icare_0092",
+        "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
         "actionPriority": 2,
-        "explanation": "Targeting the same high-emission land use sector as the first action, reducing deforestation and degradation offers substantial emissions cuts. Its direct relevance to Maranguape\u2019s large land use footprint places it as the second priority.",
+        "explanation": "For the city of Maranguape, creating micro-logistics hubs can shift short-distance deliveries from gas-powered trucks to electric cargo bikes. This reduces emissions and traffic congestion in busy areas. It also offers a cost-effective distribution method that aligns with the city\u2019s capacity for cleaner transportation.",
+        "action": null
+    },
+    {
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0057",
+        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
+        "actionPriority": 3,
+        "explanation": "For the city of Maranguape, expanding rail-based mass transit can significantly reduce reliance on cars and cut emissions. Rail systems move large groups quickly, lowering congestion and pollution. This measure also fosters economic growth by improving commuter convenience and regional connectivity.",
+        "action": null
+    },
+    {
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0127",
+        "actionName": "Accelerate Environmental Regularization of Rural Properties",
+        "actionPriority": 4,
+        "explanation": "For the city of Maranguape, accelerating environmental regularization clarifies land ownership and usage, reducing illegal clearing and habitat loss. This action lays the groundwork for sustainable farming and conservation practices. By enforcing clear boundaries and rules, the city preserves natural resources and prevents soil degradation.",
+        "action": null
+    },
+    {
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "c40_0015",
+        "actionName": "Existing Building Standards",
+        "actionPriority": 5,
+        "explanation": "For the city of Maranguape, upgrading existing building standards improves structures so they use less energy and withstand local climate stresses. This action lowers operating costs and reduces greenhouse gas emissions from older buildings. It also enhances comfort for occupants by addressing insulation, ventilation, and efficiency improvements.",
         "action": {
-            "ActionID": "ipcc_0052",
-            "ActionName": "Reduce Deforestation and Degradation",
+            "ActionID": "c40_0015",
+            "ActionName": "Existing Building Standards",
             "ActionType": [
                 "mitigation"
             ],
             "AdaptationCategory": null,
             "Hazard": null,
             "Sector": [
-                "afolu"
+                "stationary_energy"
             ],
             "Subsector": [
-                "land"
+                "residential_buildings"
             ],
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
             "InterventionType": [
                 "regulations_and_laws",
-                "programs_and_initiatives",
-                "infrastructure_investments"
+                "programs_and_initiatives"
             ],
-            "Description": "Reducing deforestation and forest degradation conserves carbon pools in forest vegetation and soil by avoiding tree cover loss and disturbance. This involves controlling drivers of deforestation, improving forest governance, and supporting community forest management.",
-            "BehavioralChangeTargeted": "Encourages sustainable land management practices, community engagement in conservation, and improved governance to reduce activities driving deforestation and degradation.",
+            "Description": "\"Existing Building Standards, Residential buildings\" involve interventions to improve the environmental performance of current structures, aiming to boost energy efficiency, decrease emissions, and enhance overall sustainability within a city.",
+            "BehavioralChangeTargeted": "The targeted behavioral change that the climate action \"Existing Building Standards, Residential buildings\" aims to achieve is the increased adoption of energy-efficient practices among homeowners and property managers. This includes behaviors such as retrofitting existing buildings with energy-efficient appliances, improving insulation, and utilizing sustainable materials in renovations. By implementing regulations and laws alongside programs and initiatives, the intervention seeks to shift perceptions about the importance and feasibility of energy efficiency, ultimately leading to a significant reduction in greenhouse gas emissions from residential buildings.",
             "CoBenefits": {
                 "air_quality": 1,
-                "water_quality": 1,
+                "water_quality": 0,
                 "habitat": 0,
                 "cost_of_living": 0,
-                "housing": 0,
+                "housing": -1,
                 "mobility": 0,
                 "stakeholder_engagement": 0
             },
-            "EquityAndInclusionConsiderations": "Promotes secure land tenure, supports community-based forest management, and ensures participation of marginalized and indigenous groups in decision-making processes.",
+            "EquityAndInclusionConsiderations": "The \"Existing Building Standards, Residential buildings\" climate action promotes equity and inclusion in several ways:\n\n1. **Targeting Vulnerable Communities**: By focusing on improving the environmental performance of existing residential buildings, the action addresses the needs of low-income and underserved communities that often reside in older, less efficient housing. These populations typically face higher energy costs and may lack the resources to make improvements on their own.\n\n2. **Energy Efficiency Benefits**: Enhancing energy efficiency in residential buildings can lead to lower utility bills, which directly benefits low-income households. This financial relief can help alleviate economic burdens and improve overall quality of life.\n\n3. **Health Improvements**: Upgrading building standards can lead to better indoor air quality and reduced exposure to environmental hazards, which disproportionately affect vulnerable populations. This contributes to improved health outcomes for these communities.\n\n4. **Job Creation and Economic Opportunities**: Implementing building standards often involves retrofitting and renovation work, which can create job opportunities in local communities, particularly for those who may face barriers to employment. This can help stimulate local economies and provide pathways for economic advancement.\n\n5. **Community Engagement**: The development and implementation of building standards can involve community input, ensuring that the voices of underserved populations are heard and considered in decision-making processes. This fosters a sense of ownership and inclusion in climate action efforts.\n\n6. **Long-term Sustainability**: By improving the sustainability of residential buildings, the action contributes to the resilience of communities that are often the most vulnerable to climate impacts, ensuring that they are better equipped to withstand environmental changes.\n\nOverall, the action integrates equity and inclusion by addressing the specific needs of underserved communities, promoting health and economic benefits, and ensuring community participation in the process.",
             "GHGReductionPotential": {
-                "stationary_energy": null,
+                "stationary_energy": "20-39",
                 "transportation": null,
                 "waste": null,
                 "ippu": null,
-                "afolu": "60-79"
+                "afolu": null
             },
             "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
             "Dependencies": [
-                "Requires improved governance",
-                "clear land tenure policies",
-                "funding for protected areas",
-                "community participation in forest conservation efforts"
+                "Availability of funding for retrofitting and upgrades",
+                "Access to skilled labor for implementing building improvements",
+                "Compliance with local building codes and regulations",
+                "Availability of energy-efficient technologies and materials",
+                "Support from local government and stakeholders for policy implementation",
+                "Public awareness and acceptance of sustainability practices"
             ],
             "KeyPerformanceIndicators": [
-                "Reduction in deforestation rates",
-                "increased forest cover",
-                "the amount of GHG emissions avoided per year"
+                "Energy consumption reduction",
+                "Greenhouse gas emissions reduction",
+                "Percentage of buildings meeting new standards",
+                "Cost savings from energy efficiency improvements",
+                "Increase in renewable energy usage",
+                "Occupant satisfaction and comfort levels",
+                "Reduction in water usage",
+                "Improvement in indoor air quality",
+                "Rate of retrofitted buildings",
+                "Time taken for compliance with standards"
             ],
             "Impacts": [
-                "Preserves biodiversity",
-                "enhances ecosystem services",
-                "improves air and water quality",
-                "contributes to climate stabilization",
-                "sustainable development"
+                "Reduction in greenhouse gas emissions from residential buildings by 20-39%",
+                "Improved indoor air quality leading to better health outcomes for vulnerable communities",
+                "Lower utility bills for low-income households, alleviating economic burdens",
+                "Job creation and economic opportunities through retrofitting and renovation work",
+                "Enhanced community engagement and participation in climate action efforts",
+                "Increased adoption of energy-efficient practices among homeowners and property managers"
             ]
         }
     },
@@ -152,72 +130,75 @@
         "cityName": "Maranguape",
         "region": "BR-CE",
         "regionName": "Cear\u00e1",
-        "actionId": "ipcc_0061",
-        "actionName": "Soil Carbon Management in Croplands and Grasslands",
-        "actionPriority": 3,
-        "explanation": "This action directly addresses emissions from agricultural lands through improved soil carbon sequestration. Given its high quantitative score and its relevance for soils and croplands that may exist on the urban fringe or rural areas, it is appropriately ranked third.",
+        "actionId": "c40_0009",
+        "actionName": "New Building Standards",
+        "actionPriority": 6,
+        "explanation": "For the city of Maranguape, implementing new building standards ensures that future constructions meet higher energy efficiency and resilience criteria. This forward-thinking strategy reduces emissions from the start of each project. It also helps owners save on utility costs and provides safer, healthier living and working spaces.",
         "action": {
-            "ActionID": "ipcc_0061",
-            "ActionName": "Soil Carbon Management in Croplands and Grasslands",
+            "ActionID": "c40_0009",
+            "ActionName": "New Building Standards",
             "ActionType": [
                 "mitigation"
             ],
             "AdaptationCategory": null,
             "Hazard": null,
             "Sector": [
-                "afolu"
+                "stationary_energy"
             ],
             "Subsector": [
-                "land"
+                "all"
             ],
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
             "InterventionType": [
-                "programs_and_initiatives",
-                "incentives_and_subsidies",
                 "regulations_and_laws"
             ],
-            "Description": "Implementation of sustainable soil management practices in croplands and grasslands to enhance soil organic carbon. Practices include improved crop and nutrient management, reduced tillage, residue retention, water and rice management, biochar application, improved grass varieties, livestock stocking management, and fire management. These activities aim to increase soil organic matter, mitigate GHG emissions, and provide co-benefits for biodiversity, water provision, and food security.",
-            "BehavioralChangeTargeted": "Encourages adoption of sustainable soil management practices to increase soil organic carbon, optimize water and nutrient use, and reduce emissions.",
+            "Description": "\"New Building Standards\" set guidelines for environmentally responsible construction, ensuring that new structures adhere to energy-efficient practices, thereby reducing carbon emissions and promoting sustainable urban development.",
+            "BehavioralChangeTargeted": "The targeted behavioral change aimed by the \"New Building Standards\" climate action is to encourage builders, developers, and property owners to adopt energy-efficient construction practices. This shift is intended to promote the construction of environmentally responsible buildings that minimize carbon emissions, thereby fostering a culture of sustainability in urban development. By mandating adherence to these standards through regulations and laws, the intervention seeks to alter perceptions about the importance of energy efficiency in construction, ultimately leading to a broader acceptance and implementation of sustainable building practices.",
             "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 1,
+                "air_quality": 1,
+                "water_quality": 0,
                 "habitat": 0,
                 "cost_of_living": 0,
-                "housing": 0,
+                "housing": -1,
                 "mobility": 0,
                 "stakeholder_engagement": 0
             },
-            "EquityAndInclusionConsiderations": "Promotes inclusion of smallholder farmers and resource-limited communities by providing cost-effective and regionally adaptable practices that improve agricultural productivity and resilience to climate change.",
+            "EquityAndInclusionConsiderations": "The \"New Building Standards\" promote equity and inclusion by ensuring that all new constructions, including those in vulnerable or underserved communities, adhere to energy-efficient practices. This helps to reduce energy costs for residents, making housing more affordable and accessible. Additionally, by prioritizing sustainable urban development, these standards can lead to improved living conditions and health outcomes in these communities, which often face disproportionate environmental burdens. Furthermore, the implementation of these standards can create job opportunities in green construction, benefiting local workers and fostering economic empowerment in underserved areas. Overall, the action considers the needs of vulnerable populations by promoting sustainable practices that enhance their quality of life and economic stability.",
             "GHGReductionPotential": {
-                "stationary_energy": null,
+                "stationary_energy": "0-19",
                 "transportation": null,
                 "waste": null,
                 "ippu": null,
-                "afolu": "60-79"
+                "afolu": null
             },
             "AdaptationEffectiveness": null,
             "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "5-10 years",
+            "TimelineForImplementation": "<5 years",
             "Dependencies": [
-                "Success depends on the availability of resources for monitoring and verification",
-                "regional adaptation of practices",
-                "addressing barriers such as soil saturation and permanence issues"
+                "Regulatory framework to enforce building standards",
+                "Availability of sustainable construction materials",
+                "Training and education for builders and architects on energy-efficient practices",
+                "Monitoring and evaluation systems to assess compliance with standards",
+                "Public awareness and support for sustainable building practices"
             ],
             "KeyPerformanceIndicators": [
-                "Increase in soil organic carbon",
-                "reduction in GHG emissions",
-                "improvement in agricultural productivity",
-                "biodiversity enhancements"
+                "Reduction in carbon emissions from new buildings",
+                "Percentage of new buildings meeting energy efficiency standards",
+                "Increase in the use of sustainable materials in construction",
+                "Number of buildings certified under green building standards",
+                "Energy consumption reduction in new constructions",
+                "Percentage of urban development projects incorporating green spaces"
             ],
             "Impacts": [
-                "Enhanced soil health",
-                "improved water retention",
-                "increased crop yields",
-                "greater biodiversity",
-                "reduced erosion",
-                "resilience to climate change in agricultural and grassland ecosystems"
+                "Reduction in carbon emissions from new buildings",
+                "Improvement in air quality",
+                "Enhanced energy efficiency in construction",
+                "Promotion of sustainable urban development",
+                "Increased affordability of housing for residents",
+                "Creation of job opportunities in green construction",
+                "Support for vulnerable communities through equitable practices"
             ]
         }
     },
@@ -228,8 +209,8 @@
         "regionName": "Cear\u00e1",
         "actionId": "ipcc_0068",
         "actionName": "Bioenergy and BECCS(Bioenergy with Carbon Capture and Storage)",
-        "actionPriority": 4,
-        "explanation": "Bioenergy coupled with CCS represents a modern, technology-driven mitigation measure with a strong emissions reduction potential. It also offers the benefit of energy transition, which is critical for addressing both stationary energy and transportation emissions, making it the fourth priority.",
+        "actionPriority": 7,
+        "explanation": "For the city of Maranguape, investing in bioenergy combined with carbon capture turns organic materials into low-carbon fuel while reducing overall emissions. Capturing and storing carbon helps lower the atmospheric impact of energy production. This dual approach supports energy needs while working toward climate goals.",
         "action": {
             "ActionID": "ipcc_0068",
             "ActionName": "Bioenergy and BECCS(Bioenergy with Carbon Capture and Storage)",
@@ -300,981 +281,46 @@
         "cityName": "Maranguape",
         "region": "BR-CE",
         "regionName": "Cear\u00e1",
-        "actionId": "ipcc_0058",
-        "actionName": "Peatland Restoration",
-        "actionPriority": 5,
-        "explanation": "Despite having a high quantitative score, peatland restoration may be less compatible with Maranguape's desert biome. Nevertheless, its significant reduction potential in applicable contexts earns it a high ranking, albeit slightly lower than similar high-impact actions.",
-        "action": {
-            "ActionID": "ipcc_0058",
-            "ActionName": "Peatland Restoration",
-            "ActionType": [
-                "mitigation"
-            ],
-            "AdaptationCategory": null,
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "land"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "InterventionType": [
-                "programs_and_initiatives",
-                "infrastructure_investments",
-                "incentives_and_subsidies"
-            ],
-            "Description": "Peatland restoration involves rewetting and revegetating degraded peatlands to increase carbon accumulation in vegetation and soils, while avoiding ongoing CO2 emissions. This includes restoring hydrology, reducing fire risk, and maintaining ecosystem services like water regulation and flood prevention. It also addresses biodiversity conservation and paludiculture.",
-            "BehavioralChangeTargeted": "Encourages sustainable land management practices, collaboration among stakeholders, and the prioritization of ecosystem restoration over competing land uses.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": "Promotes the inclusion of local communities in planning and implementation, ensures alternative livelihoods are maintained, and addresses potential conflicts over land use.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "60-79"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": ">10 years",
-            "Dependencies": [
-                "Availability of funding",
-                "collaboration among local and national stakeholders",
-                "scientific research on optimal restoration practices",
-                "policies to incentivize restoration efforts"
-            ],
-            "KeyPerformanceIndicators": [
-                "Availability of funding",
-                "collaboration among local and national stakeholders",
-                "scientific research on optimal restoration practices",
-                "policies to incentivize restoration efforts"
-            ],
-            "Impacts": [
-                "Significant reductions in CO2 emissions",
-                "improved biodiversity",
-                "enhanced water regulation",
-                "reduced flooding risks",
-                "increased resilience to climate change"
-            ]
-        }
-    },
-    {
-        "locode": "BRMGE",
-        "cityName": "Maranguape",
-        "region": "BR-CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "ipcc_0059",
-        "actionName": "Reduce Conversion of Coastal Wetlands",
-        "actionPriority": 6,
-        "explanation": "This action focuses on preventing the loss of coastal wetlands. Although Maranguape has a desert context and the direct presence of coastal wetlands may be uncertain, the emission reduction potential and co-benefits to local ecosystem integrity still provide value.",
-        "action": {
-            "ActionID": "ipcc_0059",
-            "ActionName": "Reduce Conversion of Coastal Wetlands",
-            "ActionType": [
-                "mitigation"
-            ],
-            "AdaptationCategory": null,
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "land"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "InterventionType": [
-                "regulations_and_laws",
-                "incentives_and_subsidies",
-                "programs_and_initiatives",
-                "infrastructure_investments"
-            ],
-            "Description": "This action involves reducing the conversion of coastal wetlands such as mangroves, marshes, and seagrass ecosystems to avoid emissions from biomass and soil carbon loss. It also supports biodiversity conservation, fisheries production, soil stabilization, water quality regulation, flood prevention, and resilience against cyclones.",
-            "BehavioralChangeTargeted": "Promotes sustainable land-use practices and prioritizes wetland preservation over aquaculture, agriculture, and urban development.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "Supports coastal communities by preserving livelihoods linked to wetlands, enhancing resilience to climate change, and ensuring fair distribution of benefits from ecosystem services.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "40-59"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Effective integration of coastal climate mitigation policies",
-                "marine spatial planning",
-                "economic incentives to prioritize wetland conservation"
-            ],
-            "KeyPerformanceIndicators": [
-                "Area of coastal wetlands preserved",
-                "GHG emissions avoided from biomass and soil carbon loss",
-                "improvements in biodiversity metrics",
-                "ecosystem resilience"
-            ],
-            "Impacts": [
-                "Increased carbon sequestration",
-                "enhanced resilience to climate impacts",
-                "improved biodiversity",
-                "better water quality",
-                "greater protection against flooding and storm surges"
-            ]
-        }
-    },
-    {
-        "locode": "BRMGE",
-        "cityName": "Maranguape",
-        "region": "BR-CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "ipcc_0012",
-        "actionName": "Electric Technologies",
-        "actionPriority": 7,
-        "explanation": "Electric Technologies target reductions in industrial and possibly transportation emissions. Their potential to overhaul energy use through electrification is important, and a relatively high quantitative score supports a high ranking.",
-        "action": {
-            "ActionID": "ipcc_0012",
-            "ActionName": "Electric Technologies",
-            "ActionType": [
-                "mitigation"
-            ],
-            "AdaptationCategory": null,
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "InterventionType": [
-                "programs_and_initiatives",
-                "infrastructure_investments",
-                "incentives_and_subsidies",
-                "regulations_and_laws"
-            ],
-            "Description": "Adoption of electric vehicle technologies, including Battery Electric Vehicles (BEVs), Hybrid Electric Vehicles (HEVs), and Plug-in Hybrid Electric Vehicles (PHEVs), to reduce GHG emissions and dependence on fossil fuels. BEVs operate on electricity alone, producing zero emissions; HEVs combine an internal combustion engine with an electric motor; PHEVs allow extended electric-only driving.",
-            "BehavioralChangeTargeted": "Encourages a shift from internal combustion engine vehicles to electric vehicles and adoption of renewable energy for charging.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 1,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "Reduces reliance on fossil fuels, improves air quality, and provides cleaner transport options that can benefit underserved communities.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "80-100",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Dependence on advancements in battery technologies",
-                "development of charging infrastructure",
-                "policies for subsidies and incentives",
-                "integration with renewable energy sources for electricity generation"
-            ],
-            "KeyPerformanceIndicators": [
-                "Percentage of electric vehicles in the vehicle fleet",
-                "reduction in GHG emissions per kilometer traveled",
-                "availability of charging infrastructure"
-            ],
-            "Impacts": [
-                "Reduced GHG emissions",
-                "improved urban air quality",
-                "decreased reliance on fossil fuels",
-                "greater energy security"
-            ]
-        }
-    },
-    {
-        "locode": "BRMGE",
-        "cityName": "Maranguape",
-        "region": "BR-CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "c40_0026",
-        "actionName": "Vehicle Emissions",
+        "actionId": "icare_0133",
+        "actionName": "Promote Urban Reforestation and Green Corridors",
         "actionPriority": 8,
-        "explanation": "Focusing on one of the major emission sectors \u2013 transportation \u2013 this action is vital for a city whose transportation emissions are substantial. Its strong score makes it an effective intervention, placing it 8th.",
-        "action": {
-            "ActionID": "c40_0026",
-            "ActionName": "Vehicle Emissions",
-            "ActionType": [
-                "mitigation"
-            ],
-            "AdaptationCategory": null,
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "InterventionType": [
-                "incentives_and_subsidies",
-                "regulations_and_laws",
-                "programs_and_initiatives"
-            ],
-            "Description": "\"Vehicle Emissions\" reduction strategies focus on minimizing the environmental impact of all types of vehicles. Implementing cleaner technologies and promoting alternative fuels contribute to lower emissions, fostering sustainable and eco-friendly transportation.",
-            "BehavioralChangeTargeted": "The targeted behavioral shift that the \"Vehicle Emissions\" reduction strategies aim to achieve is the increased adoption of cleaner transportation options, such as electric vehicles and alternative fuel vehicles, as well as a greater reliance on public transportation, biking, and walking. This shift is encouraged through financial incentives, regulations mandating lower emissions, and programs promoting sustainable transportation practices, ultimately leading to a significant reduction in greenhouse gas emissions from the transportation sector.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "The \"Vehicle Emissions\" reduction strategies inherently promote equity and inclusion by addressing the environmental impacts that disproportionately affect vulnerable and underserved communities. These communities often experience higher levels of air pollution and related health issues due to proximity to high-traffic areas and industrial zones. By implementing cleaner technologies and promoting alternative fuels, the action directly benefits these populations by improving air quality and reducing health risks.\n\nAdditionally, the focus on sustainable and eco-friendly transportation can enhance access to affordable and efficient transportation options for underserved communities, which may lack reliable public transit. This inclusivity ensures that all community members, regardless of socioeconomic status, can benefit from cleaner air and improved public health outcomes. Overall, the action recognizes and addresses the specific needs of vulnerable populations, fostering a more equitable approach to climate action.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "80-100",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Development and availability of cleaner vehicle technologies",
-                "Infrastructure for alternative fuel distribution",
-                "Government policies and regulations supporting emissions reduction",
-                "Public awareness and acceptance of eco-friendly transportation options",
-                "Investment in research and development for sustainable transportation solutions"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in vehicle emissions (CO2, NOx, PM)",
-                "Percentage of vehicles using alternative fuels",
-                "Number of electric vehicles on the road",
-                "Fuel efficiency improvements (miles per gallon)",
-                "Adoption rate of cleaner technologies",
-                "Reduction in fossil fuel consumption",
-                "Public transportation usage rates",
-                "Air quality index improvements",
-                "Percentage of low-emission zones established",
-                "Investment in sustainable transportation infrastructure"
-            ],
-            "Impacts": [
-                "Significant reduction in greenhouse gas emissions from the transportation sector",
-                "Improved air quality benefiting vulnerable and underserved communities",
-                "Increased adoption of cleaner transportation options",
-                "Enhanced access to affordable and efficient transportation for underserved populations"
-            ]
-        }
+        "explanation": "For the city of Maranguape, establishing green corridors and planting trees in urban zones mitigates the heat island effect and improves air quality. These pockets of greenery also help manage stormwater and reduce flood risks. By enhancing local biodiversity, they create healthier, more livable neighborhoods.",
+        "action": null
     },
     {
         "locode": "BRMGE",
         "cityName": "Maranguape",
         "region": "BR-CE",
         "regionName": "Cear\u00e1",
-        "actionId": "ipcc_0077",
-        "actionName": "Urban Tree Planting and Management",
+        "actionId": "icare_0102",
+        "actionName": "Promote Sustainable Agricultural Practices",
         "actionPriority": 9,
-        "explanation": "Urban tree planting helps reduce urban heat island effects and sequester carbon, which is valuable despite potential water scarcity in a desert biome. The moderate emissions reduction impact and socio-environmental benefits justify a mid-level ranking.",
-        "action": {
-            "ActionID": "ipcc_0077",
-            "ActionName": "Urban Tree Planting and Management",
-            "ActionType": [
-                "mitigation"
-            ],
-            "AdaptationCategory": null,
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "land"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "InterventionType": [
-                "programs_and_initiatives",
-                "infrastructure_investments",
-                "incentives_and_subsidies"
-            ],
-            "Description": "Implementation and management of urban tree planting to enhance carbon sequestration, reduce energy use, mitigate the urban heat island (UHI) effect, improve air quality, and provide co-benefits such as reduced stormwater runoff and increased public health and well-being.",
-            "BehavioralChangeTargeted": "Encourages community engagement in tree planting and preservation, promoting urban sustainability and increased appreciation for green spaces.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": "Promotes equitable distribution of green spaces, ensuring access to urban forests for underserved and vulnerable communities to improve health, well-being, and quality of life.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "40-59"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Availability of land for planting",
-                "community participation",
-                "funding for maintenance",
-                "policies supporting urban greening initiatives"
-            ],
-            "KeyPerformanceIndicators": [
-                "Increase in urban tree cover percentage",
-                "reduction in urban heat island effect",
-                "amount of carbon sequestered",
-                "reduction in building energy use",
-                "improvement in air quality metrics"
-            ],
-            "Impacts": [
-                "Enhanced urban livability",
-                "improved public health",
-                "reduced energy consumption",
-                "increased biodiversity",
-                "greater resilience to climate change impacts"
-            ]
-        }
+        "explanation": "For the city of Maranguape, sustainable agricultural practices reduce environmental damage and improve food security. Approaches like soil conservation and minimal pesticide use keep farmlands productive while cutting emissions. This measure also boosts rural resilience against shifting climate patterns and extreme weather.",
+        "action": null
     },
     {
         "locode": "BRMGE",
         "cityName": "Maranguape",
         "region": "BR-CE",
         "regionName": "Cear\u00e1",
-        "actionId": "ipcc_0011",
-        "actionName": "Alternative Fuels for Vehicles",
+        "actionId": "icare_0084",
+        "actionName": "Create Incentives for Agroforestry Practices in Livestock Systems",
         "actionPriority": 10,
-        "explanation": "Shifting vehicle energy sources to alternative fuels targets transportation emissions. Given the importance of this sector and a solid quantitative score, it ranks tenth, supporting a cleaner transport sector.",
-        "action": {
-            "ActionID": "ipcc_0011",
-            "ActionName": "Alternative Fuels for Vehicles",
-            "ActionType": [
-                "mitigation"
-            ],
-            "AdaptationCategory": null,
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "InterventionType": [
-                "programs_and_initiatives",
-                "infrastructure_investments",
-                "regulations_and_laws"
-            ],
-            "Description": "Utilizes low-carbon or zero-carbon fuels, including natural gas, biofuels, ammonia, and synthetic fuels, to replace conventional petrol and diesel in internal combustion engines (ICE). These fuels offer pathways to reduce greenhouse gas emissions and diversify energy sources, though challenges remain in production costs, lifecycle emissions, and infrastructure.",
-            "BehavioralChangeTargeted": "Encourages adoption of low-carbon fuel alternatives and a shift from conventional petrol and diesel to more sustainable fuel sources.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 1,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "Provides a pathway to reduce energy dependency and enhance energy equity by enabling access to alternative fuels that support local and regional energy needs.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "80-100",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": ">10 years",
-            "Dependencies": [
-                "Development of low-cost and sustainable production technologies",
-                "supportive policy measures (e.g., fuel standards, blending mandates)",
-                "investment in distribution and storage infrastructure"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in GHG emissions from fuel lifecycle",
-                "percentage of vehicle fleet using alternative fuels",
-                "infrastructure deployment metrics"
-            ],
-            "Impacts": [
-                "Reduced GHG emissions",
-                "improved air quality",
-                "energy diversification",
-                "increased resilience in transportation systems"
-            ]
-        }
+        "explanation": "For the city of Maranguape, introducing incentives for agroforestry in livestock systems merges trees with grazing land, enhancing carbon storage and biodiversity. This integration diversifies farm income streams and bolsters resilience to climate extremes. It also contributes to healthier soils, cutting reliance on external feed and fertilizers.",
+        "action": null
     },
     {
         "locode": "BRMGE",
         "cityName": "Maranguape",
         "region": "BR-CE",
         "regionName": "Cear\u00e1",
-        "actionId": "ipcc_0054",
-        "actionName": "Improved Forest Management",
+        "actionId": "ipcc_0080",
+        "actionName": "Avoiding, Minimising, and Recycling Waste",
         "actionPriority": 11,
-        "explanation": "Improved forest management practices enhance the sustainability of existing forest areas. While related to higher priority forestry actions, its slightly lower quantitative score places it at rank 11.",
+        "explanation": "For the city of Maranguape, avoiding, minimizing, and recycling waste addresses a core climate challenge: excessive landfill disposal. Cutting down on discarded materials curbs methane emissions, a potent greenhouse gas. Reusing and recycling also extends the life of local resources, bringing economic and environmental benefits.",
         "action": {
-            "ActionID": "ipcc_0054",
-            "ActionName": "Improved Forest Management",
-            "ActionType": [
-                "mitigation"
-            ],
-            "AdaptationCategory": null,
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "land"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "InterventionType": [
-                "incentives_and_subsidies",
-                "programs_and_initiatives",
-                "regulations_and_laws"
-            ],
-            "Description": "Sustainable forest management of already managed forests to increase carbon stocks, improve wood quality, mitigate disturbances, and provide co-benefits like biodiversity conservation, water regulation, and soil protection. Includes longer rotations, reduced harvesting, mixed stands, and climate-smart forestry.",
-            "BehavioralChangeTargeted": "Encourages forest owners and managers to adopt sustainable practices, prioritize biodiversity, and reduce harvesting impacts while maintaining productivity.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "Promotes inclusive participation in forest management and provides support for smallholders and local communities, especially in tropical regions where sustainable practices can enhance livelihoods and mitigate climate change.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "40-59"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Requires expertise in sustainable forestry",
-                "investment in nurseries with adapted species",
-                "supportive policies",
-                "incentives to overcome economic barriers",
-                "ensure accessibility for local stakeholders"
-            ],
-            "KeyPerformanceIndicators": [
-                "Increase in forest carbon stocks",
-                "reduction in GHG emissions",
-                "improvements in biodiversity indicators",
-                "reduction in soil erosion and water-related issues"
-            ],
-            "Impacts": [
-                "Improved forest health and resilience",
-                "enhanced carbon sequestration",
-                "biodiversity conservation",
-                "increased ecosystem services like water and soil regulation"
-            ]
-        }
-    },
-    {
-        "locode": "BRMGE",
-        "cityName": "Maranguape",
-        "region": "BR-CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "ipcc_0069",
-        "actionName": "Shift to sustainable healthy diets",
-        "actionPriority": 12,
-        "explanation": "Though not directly linked to major emission sectors like land use or transportation, promoting sustainable diets helps reduce emissions indirectly through changes in food production systems. Its societal and co-benefit aspects are valued though its direct emission mitigation is lower, leading to a 12th rank.",
-        "action": {
-            "ActionID": "ipcc_0069",
-            "ActionName": "Shift to sustainable healthy diets",
-            "ActionType": [
-                "mitigation"
-            ],
-            "AdaptationCategory": null,
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "livestock"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "InterventionType": [
-                "programs_and_initiatives",
-                "incentives_and_subsidies",
-                "regulations_and_laws"
-            ],
-            "Description": "Transitioning dietary patterns to promote individual health and well-being while minimizing environmental impacts. Focuses on reducing animal-based food consumption, particularly from ruminant animals, and increasing plant-based food consumption to reduce GHG emissions and preserve biodiversity.",
-            "BehavioralChangeTargeted": "Encourages a shift in consumer behavior towards adopting plant-rich diets, reducing red meat consumption, and increasing awareness of the environmental and health benefits of sustainable diets.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 1,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "Promotes access to affordable, culturally acceptable diets that meet nutritional needs, particularly in underserved and vulnerable communities. Policies address equity in food access and mitigate adverse economic impacts on agricultural sectors.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "40-59"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Implementation of integrated food-system policies",
-                "financial incentives for sustainable agriculture",
-                "awareness campaigns",
-                "the development of local food systems to support dietary transitions"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in GHG emissions from food production",
-                "reduction in land use for livestock",
-                "increase in plant-based food consumption",
-                "improvement in public health metrics related to diet-related diseases"
-            ],
-            "Impacts": [
-                "Improved public health outcomes",
-                "reduced environmental pressures (e.g., deforestation, biodiversity loss)",
-                "strengthened food security through sustainable practices"
-            ]
-        }
-    },
-    {
-        "locode": "BRMGE",
-        "cityName": "Maranguape",
-        "region": "BR-CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "ipcc_0071",
-        "actionName": "Improved and enhanced use of wood products",
-        "actionPriority": 13,
-        "explanation": "This action leverages wood products to extend the carbon storage potential of biomass, indirectly supporting emissions reduction. However, its impact is relatively lower compared to direct interventions in sectors with higher emissions, hence ranking 13.",
-        "action": {
-            "ActionID": "ipcc_0071",
-            "ActionName": "Improved and enhanced use of wood products",
-            "ActionType": [
-                "mitigation"
-            ],
-            "AdaptationCategory": null,
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "land"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "InterventionType": [
-                "programs_and_initiatives",
-                "infrastructure_investments",
-                "incentives_and_subsidies"
-            ],
-            "Description": "Promotes the use of sustainably harvested wood for material substitution (e.g., replacing concrete or steel) and increasing carbon storage in wood products. Includes strategies like increasing recycling, extending product lifetimes, and shifting to long-lived wood products.",
-            "BehavioralChangeTargeted": "Encourages the adoption of wood-based materials in construction and other industries while promoting sustainable forest management.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 0,
-                "habitat": 1,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "Supports local and indigenous communities by creating sustainable livelihoods, promoting equitable forest resource management, and enhancing access to long-term benefits.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "40-59"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Requires sustainable forest management practices",
-                "advanced wood processing technologies",
-                "market demand for wood substitutes",
-                "global cooperation to prevent resource exploitation"
-            ],
-            "KeyPerformanceIndicators": [
-                "Increased use of wood products in construction",
-                "reduction in GHG emissions from material substitution",
-                "increase in recycled wood product utilization rates"
-            ],
-            "Impacts": [
-                "Reduces emissions from traditional material production",
-                "enhances carbon sequestration",
-                "supports sustainable forest industries",
-                "provides economic opportunities in rural and forested areas"
-            ]
-        }
-    },
-    {
-        "locode": "BRMGE",
-        "cityName": "Maranguape",
-        "region": "BR-CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "ipcc_0057",
-        "actionName": "Reduce Degradation and Conversion of Peatlands Activities, Co-benefits, Risks and Implementation Barriers",
-        "actionPriority": 14,
-        "explanation": "Similar to peatland restoration, this action addresses emissions from peatlands with additional focus on overcoming barriers. The higher dependency and implementation challenges place it below other forestry and land use actions, earning it the 14th rank.",
-        "action": {
-            "ActionID": "ipcc_0057",
-            "ActionName": "Reduce Degradation and Conversion of Peatlands Activities, Co-benefits, Risks and Implementation Barriers",
-            "ActionType": [
-                "mitigation"
-            ],
-            "AdaptationCategory": null,
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "land"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "InterventionType": [
-                "regulations_and_laws",
-                "programs_and_initiatives",
-                "incentives_and_subsidies"
-            ],
-            "Description": "Prevent conversion and degradation of peatlands to avoid emissions from vegetation clearing, fires, and peat decomposition. Includes improving governance and management to preserve carbon-rich ecosystems critical for biodiversity and carbon storage.",
-            "BehavioralChangeTargeted": "Encourages sustainable land management practices and prioritization of conservation over land conversion for agriculture, mining, or urban expansion.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "Promotes equitable access to preserved peatland resources while reducing health risks caused by fire-related pollutants, especially for vulnerable and rural communities.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "40-59"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Requires strong governance",
-                "financial support",
-                "international cooperation",
-                "policies to control land conversion drivers",
-                "such as agriculture",
-                "mining",
-                "urban development"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in peatland conversion rates",
-                "avoided emissions per hectare",
-                "improvements in biodiversity and water quality metrics"
-            ],
-            "Impacts": [
-                "Reduced GHG emissions",
-                "enhanced biodiversity",
-                "improved water regulation",
-                "decreased fire-related health hazards"
-            ]
-        }
-    },
-    {
-        "locode": "BRMGE",
-        "cityName": "Maranguape",
-        "region": "BR-CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "ipcc_0063",
-        "actionName": "Agroforesry",
-        "actionPriority": 15,
-        "explanation": "Agroforestry combines agricultural production with forestry practices, offering moderate emissions reduction potential and additional socio-economic benefits. Its comparatively lower quantitative score positions it midway in the ranking.",
-        "action": {
-            "ActionID": "ipcc_0063",
-            "ActionName": "Agroforesry",
-            "ActionType": [
-                "mitigation"
-            ],
-            "AdaptationCategory": null,
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "land"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "InterventionType": [
-                "programs_and_initiatives",
-                "regulations_and_laws",
-                "incentives_and_subsidies"
-            ],
-            "Description": "Agroforestry integrates trees and shrubs with crops and/or livestock to sequester carbon, enhance soil health, reduce soil erosion, improve water quality, and diversify livelihoods. It also offers co-benefits like mitigating regional climates and increasing land productivity while addressing risks like biodiversity and hydrology impacts.",
-            "BehavioralChangeTargeted": "Encourages farmers to adopt sustainable land management practices by integrating trees, crops, and livestock to improve productivity, carbon sequestration, and resilience.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": "Supports smallholder farmers by providing access to tools, market opportunities, and information while addressing barriers like land tenure, credit access, and species selection suitable for local contexts.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "40-59"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Requires access to appropriate germplasm",
-                "supportive policies",
-                "extension systems",
-                "credit access",
-                "reforms in land tenure systems",
-                "Adoption depends on aligning agroforestry practices to biophysical and socio-economic contexts"
-            ],
-            "KeyPerformanceIndicators": [
-                "Carbon sequestration rates (above and below ground)",
-                "improved soil health metrics",
-                "increase in farmer income",
-                "reduction in soil erosion",
-                "adoption rates of agroforestry systems"
-            ],
-            "Impacts": [
-                "Enhanced land productivity",
-                "improved livelihoods",
-                "increased carbon storage",
-                "better water quality",
-                "resilience to climate change"
-            ]
-        }
-    },
-    {
-        "locode": "BRMGE",
-        "cityName": "Maranguape",
-        "region": "BR-CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "ipcc_0019",
-        "actionName": "Modal Shift from Aircraft to Train",
-        "actionPriority": 16,
-        "explanation": "While a modal shift in transportation can yield emissions benefits, this action is less relevant for a city of Maranguape\u2019s size where air travel is likely less frequent. Consequently, despite a decent score, it is ranked lower.",
-        "action": {
-            "ActionID": "ipcc_0019",
-            "ActionName": "Modal Shift from Aircraft to Train",
-            "ActionType": [
-                "mitigation"
-            ],
-            "AdaptationCategory": null,
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "aviation"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "InterventionType": [
-                "infrastructure_investments",
-                "regulations_and_laws",
-                "incentives_and_subsidies",
-                "programs_and_initiatives"
-            ],
-            "Description": "Promoting a shift from regional and medium-haul flights to high-speed rail (HSR) as a low-carbon alternative. HSR can serve distances of 400\u20131000 km effectively, reducing demand for air travel and associated emissions. Infrastructure improvements, supportive policies, and enhanced HSR networks are critical for this transition.",
-            "BehavioralChangeTargeted": "Encourages a shift in consumer travel preferences from air travel to high-speed rail, fostering acceptance of HSR as a primary mode for regional trips.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 1,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "Provides affordable and accessible regional travel options, particularly benefiting communities with limited access to air travel and reducing transportation inequities.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "40-59",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Requires significant investments in HSR infrastructure",
-                "policy support to limit competing air travel options",
-                "integration of rail networks with existing transportation systems"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in domestic and regional air travel demand",
-                "increase in HSR ridership",
-                "measurable reductions in transportation sector GHG emissions"
-            ],
-            "Impacts": [
-                "Reduces aviation emissions",
-                "improves regional connectivity",
-                "decreases transportation-related air pollution",
-                "enhances public transportation networks"
-            ]
-        }
-    },
-    {
-        "locode": "BRMGE",
-        "cityName": "Maranguape",
-        "region": "BR-CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "c40_0042",
-        "actionName": "Biodiversity Expansion",
-        "actionPriority": 17,
-        "explanation": "This action promotes ecological benefits and biodiversity enhancement. Although it supports environmental compatibility and has co-benefits for ecosystem resilience, its direct emissions reduction impact is lower, resulting in the 17th rank.",
-        "action": {
-            "ActionID": "c40_0042",
-            "ActionName": "Biodiversity Expansion",
-            "ActionType": [
-                "mitigation"
-            ],
-            "AdaptationCategory": null,
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "InterventionType": [
-                "programs_and_initiatives"
-            ],
-            "Description": "\"Biodiversity Expansion\" initiatives aim to preserve and expand green spaces, promoting biodiversity within urban areas. By preserving natural habitats, cities enhance ecosystem services and create resilient environments that support diverse flora and fauna.",
-            "BehavioralChangeTargeted": "The targeted behavioral shift that the \"Biodiversity Expansion\" initiatives aim to achieve is an increased public engagement in the preservation and creation of green spaces within urban areas. This includes encouraging individuals and communities to actively participate in activities such as planting trees, maintaining parks, and supporting local biodiversity efforts. By fostering a greater appreciation for natural habitats and their benefits, the initiative seeks to change perceptions about the importance of green spaces, ultimately leading to more sustainable urban living practices and a collective commitment to enhancing biodiversity in cities.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "The \"Biodiversity Expansion\" initiatives promote equity and inclusion by ensuring that underserved communities have access to preserved green spaces, which are often lacking in urban areas. By focusing on enhancing biodiversity in these neighborhoods, the action addresses environmental justice by improving the quality of life for vulnerable populations who may face higher exposure to pollution and limited access to nature. Additionally, the creation of resilient environments supports diverse flora and fauna, which can enhance local ecosystems that these communities rely on for recreational, cultural, and economic benefits. Overall, the initiative fosters a sense of community ownership and involvement in the preservation of natural habitats, ensuring that the voices of marginalized groups are included in urban planning and environmental stewardship.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "40-59"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Availability of funding for green space projects",
-                "Community engagement and support for biodiversity initiatives",
-                "Collaboration with local governments and environmental organizations",
-                "Access to scientific research on local ecosystems",
-                "Regulatory frameworks that support land conservation and urban planning"
-            ],
-            "KeyPerformanceIndicators": [
-                "Increase in green space area (hectares)",
-                "Number of native species introduced",
-                "Biodiversity index improvement",
-                "Percentage of urban areas with accessible green spaces",
-                "Community engagement in biodiversity programs",
-                "Reduction in urban heat island effect",
-                "Increase in pollinator populations",
-                "Improvement in air quality metrics",
-                "Number of partnerships with local conservation organizations",
-                "Public awareness and education outreach metrics"
-            ],
-            "Impacts": [
-                "Enhances urban biodiversity",
-                "Improves air quality",
-                "Improves water quality",
-                "Supports habitat preservation",
-                "Promotes equity and inclusion in green space access",
-                "Encourages community engagement in environmental stewardship",
-                "Potential GHG reduction of 40-59% in AFOLU sector"
-            ]
-        }
-    },
-    {
-        "locode": "BRMGE",
-        "cityName": "Maranguape",
-        "region": "BR-CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "c40_0038",
-        "actionName": "Sanitary Landfills",
-        "actionPriority": 18,
-        "explanation": "Sanitary Landfills tackle waste-related emissions, an important but relatively smaller contribution compared to sectors like land use and transportation. Their moderate quantitative score and focus on waste emissions justify a ranking of 18.",
-        "action": {
-            "ActionID": "c40_0038",
-            "ActionName": "Sanitary Landfills",
+            "ActionID": "ipcc_0080",
+            "ActionName": "Avoiding, Minimising, and Recycling Waste",
             "ActionType": [
                 "mitigation"
             ],
@@ -1284,64 +330,57 @@
                 "waste"
             ],
             "Subsector": [
-                "all"
+                "disposal_of_solid_waste_generated_in_the_city"
             ],
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
             "InterventionType": [
-                "infrastructure_investments",
-                "programs_and_initiatives"
+                "regulations_and_laws",
+                "programs_and_initiatives",
+                "infrastructure_investments"
             ],
-            "Description": "\"Sanitary Landfills\" ensure proper disposal of residual waste in engineered facilities, minimizing environmental impact. This mitigation strategy involves utilizing advanced technological solutions to manage waste effectively, promoting sustainable waste disposal practices within a city.",
-            "BehavioralChangeTargeted": "The targeted behavioral change that the climate action of implementing \"Sanitary Landfills\" aims to achieve is the increased adoption of sustainable waste disposal practices among residents and businesses. This includes encouraging individuals to properly separate and dispose of their waste, reduce overall waste generation, and support the use of engineered facilities for waste management. By improving perceptions of waste disposal safety, convenience, and environmental responsibility, the intervention seeks to shift behaviors towards more environmentally friendly waste management practices, ultimately leading to a reduction in greenhouse gas emissions associated with improper waste disposal.",
+            "Description": "Implementation of waste hierarchy principles to reduce waste generation, improve source separation, and increase recycling and composting. Promotes decentralized waste management, home composting, and circular economy approaches to transform waste into energy or by-products while minimizing transport-related emissions.",
+            "BehavioralChangeTargeted": "Encourages waste separation at source, adoption of recycling and composting behaviors, and increased public participation in waste management programs.",
             "CoBenefits": {
                 "air_quality": 1,
-                "water_quality": 1,
+                "water_quality": 0,
                 "habitat": 0,
-                "cost_of_living": 0,
+                "cost_of_living": 1,
                 "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
+                "mobility": 1,
+                "stakeholder_engagement": 1
             },
-            "EquityAndInclusionConsiderations": "The implementation of sanitary landfills as a climate action promotes equity and inclusion in several ways:\n\n1. **Access to Clean Environments**: By ensuring proper disposal of residual waste, sanitary landfills help reduce pollution and environmental hazards in underserved communities, which are often disproportionately affected by waste mismanagement.\n\n2. **Health Benefits**: Proper waste management minimizes health risks associated with improper disposal, such as contamination and disease, thereby protecting vulnerable populations who may have limited access to healthcare.\n\n3. **Job Creation**: The establishment and maintenance of sanitary landfills can create job opportunities for local residents, particularly in underserved areas, contributing to economic equity.\n\n4. **Community Engagement**: The planning and operation of sanitary landfills can involve local communities, ensuring that their voices are heard and their needs are considered, fostering a sense of inclusion.\n\n5. **Sustainable Practices**: By promoting sustainable waste disposal practices, the action supports long-term environmental justice, benefiting all community members, especially those in vulnerable situations who may rely more heavily on local natural resources. \n\nOverall, the action of implementing sanitary landfills addresses the needs of underserved communities by prioritizing their health, economic opportunities, and environmental safety.",
+            "EquityAndInclusionConsiderations": "Supports informal workers in waste management, provides employment opportunities, and reduces inequalities by integrating informal sectors into formal systems. Ensures cost-sharing and benefit distribution among stakeholders.",
             "GHGReductionPotential": {
                 "stationary_energy": null,
                 "transportation": null,
-                "waste": "60-79",
+                "waste": "40-59",
                 "ippu": null,
                 "afolu": null
             },
             "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "<5 years",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
             "Dependencies": [
-                "Availability of engineered landfill sites designed to minimize environmental impact",
-                "Implementation of advanced waste management technologies",
-                "Regulatory frameworks and policies supporting sustainable waste disposal",
-                "Public awareness and community engagement in waste management practices",
-                "Funding and investment for infrastructure development and maintenance"
+                "Requires institutional capacity",
+                "governance",
+                "cross-sectoral coordination",
+                "public awareness campaigns",
+                "needs infrastructure for decentralized waste treatment",
+                "policies to promote circular economy practices"
             ],
             "KeyPerformanceIndicators": [
-                "Waste diversion rate",
-                "Landfill gas emissions reduction",
-                "Leachate management efficiency",
-                "Volume of waste processed",
-                "Recycling rate",
-                "Public awareness and participation",
-                "Cost-effectiveness of waste management",
-                "Compliance with environmental regulations",
-                "Reduction in illegal dumping incidents",
-                "Sustainability of landfill operations"
+                "Reduction in waste generation per capita",
+                "increase in recycling and composting rates",
+                "reduction in CH4 emissions from waste",
+                "employment opportunities created in waste management"
             ],
             "Impacts": [
-                "Reduction of greenhouse gas emissions by 60-79% in the waste sector",
-                "Improved air quality due to reduced pollution from waste mismanagement",
-                "Enhanced water quality through proper waste disposal practices",
-                "Increased job opportunities in local communities",
-                "Promotion of sustainable waste disposal practices among residents and businesses",
-                "Health benefits for vulnerable populations through reduced environmental hazards",
-                "Community engagement in waste management planning and operations"
+                "Improved urban livability",
+                "reduction in landfill emissions",
+                "enhanced resource efficiency",
+                "economic growth through job creation in the waste management sector"
             ]
         }
     },
@@ -1350,72 +389,134 @@
         "cityName": "Maranguape",
         "region": "BR-CE",
         "regionName": "Cear\u00e1",
-        "actionId": "ipcc_0013",
-        "actionName": "Fuel Cell Technologies",
-        "actionPriority": 19,
-        "explanation": "Fuel cell technologies represent an innovative solution for reducing emissions in energy systems. However, high costs, longer implementation timelines, and dependency on advanced infrastructure reduce its immediate practicality for Maranguape, leading to a 19th rank.",
+        "actionId": "icare_0100",
+        "actionName": "Support Regenerative Agriculture Practices",
+        "actionPriority": 12,
+        "explanation": "For the city of Maranguape, regenerative agriculture restores soil health by increasing organic matter and water retention. These techniques foster productive fields that adapt better to weather changes. They also reduce chemical runoff, preserving local ecosystems and improving the profitability of farming operations.",
+        "action": null
+    },
+    {
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0134",
+        "actionName": "Strengthen Mechanisms for Deforestation Control",
+        "actionPriority": 13,
+        "explanation": "For the city of Maranguape, stronger deforestation control prevents habitat destruction and helps maintain carbon-rich forests. This step lowers erosion risks, protects watersheds, and supports biodiversity crucial to local livelihoods. Enforcing these measures aligns resource management with environmental conservation and climate goals.",
+        "action": null
+    },
+    {
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0130",
+        "actionName": "Conduct Technical Assistance and Rural Extension (ATER) Actions",
+        "actionPriority": 14,
+        "explanation": "For the city of Maranguape, providing technical assistance and rural extension services empowers farmers with climate-smart techniques. These programs offer on-the-ground training to boost yields while minimizing environmental impacts. By bridging knowledge gaps, the city fosters sustainable livelihoods and greater resilience to climate variability.",
+        "action": null
+    },
+    {
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0129",
+        "actionName": "Facilitate Technology Transfer for Conservation Practices",
+        "actionPriority": 15,
+        "explanation": "For the city of Maranguape, transferring technology for conservation introduces modern, efficient methods to preserve water, soil, and forests. This approach eases adoption barriers for small and large landholders alike. With better tools and shared expertise, local communities can protect natural resources while maintaining productivity.",
+        "action": null
+    },
+    {
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0101",
+        "actionName": "Encourage the Use of Low-Emission Agricultural Machinery",
+        "actionPriority": 16,
+        "explanation": "For the city of Maranguape, adopting low-emission machinery in agriculture cuts fossil fuel consumption and lowers greenhouse gas output. Modernized equipment can also improve productivity and reduce operational costs. This supports local farms in a region that relies heavily on agriculture, boosting both economic and environmental well-being.",
+        "action": null
+    },
+    {
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "c40_0012",
+        "actionName": "New Building Standards",
+        "actionPriority": 17,
+        "explanation": "For the city of Maranguape, establishing new building standards ensures future developments meet stricter environmental and safety criteria. This action significantly cuts long-term energy demand and operational costs. It also improves comfort and durability, aligning development with local climate conditions.",
         "action": {
-            "ActionID": "ipcc_0013",
-            "ActionName": "Fuel Cell Technologies",
+            "ActionID": "c40_0012",
+            "ActionName": "New Building Standards",
             "ActionType": [
                 "mitigation"
             ],
             "AdaptationCategory": null,
             "Hazard": null,
             "Sector": [
-                "transportation"
+                "stationary_energy"
             ],
             "Subsector": [
-                "on-road"
+                "commercial_and_institutional_buildings_and_facilities"
             ],
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
             "InterventionType": [
-                "programs_and_initiatives",
-                "infrastructure_investments",
-                "incentives_and_subsidies",
                 "regulations_and_laws"
             ],
-            "Description": "Use of fuel cell technology to power vehicles by converting hydrogen into electricity through an electrochemical reaction. Produces zero emissions at the point of use and water as a by-product. Hydrogen fuel cells are highly efficient, particularly when hydrogen is produced from renewable sources.",
-            "BehavioralChangeTargeted": "Encourages a shift from internal combustion engine vehicles to hydrogen-powered fuel cell vehicles, promoting cleaner transport options.",
+            "Description": "\"New Building Standards, Institutional buidlings\" set guidelines for environmentally responsible construction, ensuring that new structures adhere to energy-efficient practices, thereby reducing carbon emissions and promoting sustainable urban development.",
+            "BehavioralChangeTargeted": "The targeted behavioral change aimed at by the \"New Building Standards, Institutional buildings\" climate action is to encourage architects, builders, and developers to adopt energy-efficient construction practices. This shift is intended to lead to a broader acceptance and implementation of sustainable building methods, ultimately resulting in a significant reduction in carbon emissions associated with new institutional buildings. By mandating environmentally responsible construction through regulations and laws, the action seeks to foster a culture of sustainability within the construction industry and among stakeholders, promoting long-term commitment to energy efficiency and sustainable urban development.",
             "CoBenefits": {
                 "air_quality": 1,
                 "water_quality": 0,
                 "habitat": 0,
                 "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 1,
+                "housing": -1,
+                "mobility": 0,
                 "stakeholder_engagement": 0
             },
-            "EquityAndInclusionConsiderations": "Reduces emissions in underserved and urban areas, offering cleaner air and sustainable mobility solutions for all communities.",
+            "EquityAndInclusionConsiderations": "The \"New Building Standards, Institutional buildings\" action promotes equity and inclusion in several ways:\n\n1. **Access to Healthy Environments**: By ensuring that new institutional buildings are constructed with energy-efficient practices, the action contributes to healthier living and working environments for all community members, particularly benefiting vulnerable populations who may be more susceptible to environmental hazards.\n\n2. **Job Creation and Economic Opportunities**: The implementation of these building standards can create job opportunities in construction and related fields, particularly for underserved communities. This can help to uplift local economies and provide pathways to stable employment.\n\n3. **Community Engagement**: The development of new building standards often involves community input, ensuring that the voices of underserved populations are heard and considered in the decision-making process, fostering a sense of ownership and inclusion.\n\n4. **Long-term Cost Savings**: Energy-efficient buildings can lead to lower utility costs, which is particularly beneficial for low-income families and communities. This financial relief can help reduce economic disparities and improve overall quality of life.\n\n5. **Resilience to Climate Impacts**: By promoting sustainable urban development, the action helps build resilience in communities that are often the most affected by climate change, ensuring that vulnerable populations are better equipped to handle environmental challenges.\n\nOverall, the action integrates equity and inclusion by addressing the needs of underserved communities, promoting economic opportunities, and fostering healthier environments.",
             "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
+                "stationary_energy": "20-39",
+                "transportation": null,
                 "waste": null,
                 "ippu": null,
                 "afolu": null
             },
             "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": ">10 years",
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
             "Dependencies": [
-                "Hydrogen production infrastructure",
-                "availability of low-carbon hydrogen",
-                "cost reductions in fuel cell systems",
-                "durable policies to support adoption"
+                "Compliance from construction companies with the new standards",
+                "Support from government agencies for enforcement and monitoring",
+                "Availability of training programs for builders and architects on energy-efficient practices",
+                "Public awareness and acceptance of sustainable building practices",
+                "Access to funding or incentives for implementing energy-efficient technologies"
             ],
             "KeyPerformanceIndicators": [
-                "Share of fuel cell vehicles in the vehicle fleet",
-                "reduction in GHG emissions per kilometer",
-                "deployment of hydrogen refueling stations",
-                "cost parity with diesel vehicles"
+                "Energy consumption reduction",
+                "Carbon emissions reduction",
+                "Percentage of buildings meeting new standards",
+                "Cost savings from energy efficiency",
+                "Water usage reduction",
+                "Sustainable materials usage",
+                "Building occupancy rates",
+                "Compliance rate with building codes",
+                "Reduction in urban heat island effect",
+                "Feedback from building occupants on comfort and sustainability"
             ],
             "Impacts": [
-                "Reduced GHG emissions",
-                "improved air quality",
-                "energy diversification",
-                "advancement of clean technologies for transportation"
+                "Reduction in carbon emissions from new institutional buildings",
+                "Improvement in air quality due to energy-efficient practices",
+                "Creation of job opportunities in construction for underserved communities",
+                "Enhanced access to healthy environments for vulnerable populations",
+                "Long-term cost savings on utility bills for low-income families",
+                "Increased community engagement in building standards development",
+                "Improved resilience of communities to climate impacts"
             ]
         }
     },
@@ -1424,13 +525,35 @@
         "cityName": "Maranguape",
         "region": "BR-CE",
         "regionName": "Cear\u00e1",
-        "actionId": "ipcc_0062",
-        "actionName": "Biochar",
+        "actionId": "icare_0096",
+        "actionName": "Promote Organic Farming",
+        "actionPriority": 18,
+        "explanation": "For the city of Maranguape, promoting organic farming eliminates synthetic pesticides and fertilizers, reducing pollution and greenhouse gas emissions. Healthier soils also become more resilient to droughts or heavy rains. This approach aligns with consumer demand for safer, sustainably produced food.",
+        "action": null
+    },
+    {
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0088",
+        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
+        "actionPriority": 19,
+        "explanation": "For the city of Maranguape, offering free public transit at peak times encourages residents to opt for shared travel. This reduces both road congestion and emissions tied to individual car use. By easing access to transportation, it also fosters inclusivity and better air quality across the city.",
+        "action": null
+    },
+    {
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "ipcc_0052",
+        "actionName": "Reduce Deforestation and Degradation",
         "actionPriority": 20,
-        "explanation": "Biochar is a promising approach to sequester carbon in soils, yet it tends to have lower immediate emissions reduction and faces several implementation challenges. Its lower quantitative score compared to other actions places it at the lowest priority in this ranking.",
+        "explanation": "For the city of Maranguape, limiting deforestation and land degradation keeps ecosystems intact and supports carbon storage. Preserving forest cover helps regulate water cycles, curb erosion, and maintain local biodiversity. This measure also protects agricultural productivity and stabilizes regional climates.",
         "action": {
-            "ActionID": "ipcc_0062",
-            "ActionName": "Biochar",
+            "ActionID": "ipcc_0052",
+            "ActionName": "Reduce Deforestation and Degradation",
             "ActionType": [
                 "mitigation"
             ],
@@ -1446,50 +569,49 @@
                 "ghg_reduction"
             ],
             "InterventionType": [
-                "incentives_and_subsidies",
+                "regulations_and_laws",
                 "programs_and_initiatives",
                 "infrastructure_investments"
             ],
-            "Description": "Biochar is produced by heating organic matter (e.g., forestry residues, straw, manure) in oxygen-limited environments. It has significant mitigation potential through carbon dioxide removal (CDR), reduced greenhouse gas emissions, and soil application benefits like improved fertility and reduced N2O emissions.",
-            "BehavioralChangeTargeted": "Encourages adoption of sustainable practices, use of biochar in agriculture, and increased awareness of its long-term soil and climate benefits.",
+            "Description": "Reducing deforestation and forest degradation conserves carbon pools in forest vegetation and soil by avoiding tree cover loss and disturbance. This involves controlling drivers of deforestation, improving forest governance, and supporting community forest management.",
+            "BehavioralChangeTargeted": "Encourages sustainable land management practices, community engagement in conservation, and improved governance to reduce activities driving deforestation and degradation.",
             "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 0,
+                "air_quality": 1,
+                "water_quality": 1,
                 "habitat": 0,
                 "cost_of_living": 0,
                 "housing": 0,
                 "mobility": 0,
                 "stakeholder_engagement": 0
             },
-            "EquityAndInclusionConsiderations": "Promotes access to sustainable biochar technologies for smallholder farmers and developing regions, improving food security and livelihoods.",
+            "EquityAndInclusionConsiderations": "Promotes secure land tenure, supports community-based forest management, and ensures participation of marginalized and indigenous groups in decision-making processes.",
             "GHGReductionPotential": {
                 "stationary_energy": null,
                 "transportation": null,
                 "waste": null,
                 "ippu": null,
-                "afolu": "20-39"
+                "afolu": "60-79"
             },
             "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
+            "CostInvestmentNeeded": "medium",
             "TimelineForImplementation": "5-10 years",
             "Dependencies": [
-                "Availability of sustainably sourced biomass",
-                "standardization of production methods",
-                "monitoring systems",
-                "incentives for scaling up biochar production and application"
+                "Requires improved governance",
+                "clear land tenure policies",
+                "funding for protected areas",
+                "community participation in forest conservation efforts"
             ],
             "KeyPerformanceIndicators": [
-                "Carbon sequestration rates",
-                "reduction in soil N2O emissions",
-                "crop yield improvements",
-                "displacement of fossil fuel use through pyrolysis gases"
+                "Reduction in deforestation rates",
+                "increased forest cover",
+                "the amount of GHG emissions avoided per year"
             ],
             "Impacts": [
-                "Improved agricultural productivity",
-                "enhanced soil resilience to climate change",
-                "reduced pollution",
-                "long-term carbon storage in soils",
-                "contributing to global climate goals"
+                "Preserves biodiversity",
+                "enhances ecosystem services",
+                "improves air and water quality",
+                "contributes to climate stabilization",
+                "sustainable development"
             ]
         }
     }

@@ -4,60 +4,81 @@
         "cityName": "Caxias do Sul",
         "region": "BR-RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0091",
-        "actionName": "Diversification of livelihoods ",
+        "actionId": "icare_0169",
+        "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
         "actionPriority": 1,
-        "explanation": "This action has the highest quantitative score (1.52) and is prioritized because it enhances community resilience and economic versatility, indirectly reducing emissions by reducing vulnerability in the most emission-intensive and at-risk socio-economic sectors.",
+        "explanation": "Establishing a comprehensive emergency response plan was placed ahead of developing the Municipal Risk Reduction Plan because it delivers immediate strategies for multiple hazards. This approach ensures coordinated actions and resource allocation during floods, heatwaves, or storms. By preparing first for acute climate threats, the city can protect vulnerable communities more effectively, allowing broader risk-reduction measures to follow.",
+        "action": null
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0172",
+        "actionName": "Develop and implement the Municipal Risk Reduction Plan (PMRR) and identify population groups vulnerable to climate risks.",
+        "actionPriority": 2,
+        "explanation": "Developing and implementing the Municipal Risk Reduction Plan is ranked above updating building codes because it systematically addresses how different population groups are exposed to hazards. By identifying the most at-risk residents, the city can craft targeted strategies to minimize climate impacts. Once key vulnerabilities are understood, subsequent measures like updated construction standards can be tailored for more resilient outcomes.",
+        "action": null
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "ipcc_0088",
+        "actionName": "Building codes",
+        "actionPriority": 3,
+        "explanation": "Adapting building codes is prioritized over strengthening the healthcare network because it helps ensure that future and renovated structures are designed to withstand local climate challenges. This preventive measure can mitigate damage from storms or extreme temperatures, reducing the burden on healthcare services. By creating safer buildings first, Caxias do Sul can limit the severity of potential health crises related to climate impacts.",
         "action": {
-            "ActionID": "ipcc_0091",
-            "ActionName": "Diversification of livelihoods ",
+            "ActionID": "ipcc_0088",
+            "ActionName": "Building codes",
             "ActionType": [
                 "adaptation"
             ],
-            "AdaptationCategory": "Livelihood Adaptation",
+            "AdaptationCategory": "Climate-Resilient Urban Planning",
             "Hazard": [
-                "storms",
-                "sea-level-rise"
+                "floods",
+                "landslides"
             ],
             "Sector": [
-                "food_security",
-                "biodiversity"
+                "road_infrastructure",
+                "geo-hydrological_disasters"
             ],
             "Subsector": null,
             "PrimaryPurpose": [
                 "climate_resilience"
             ],
             "InterventionType": null,
-            "Description": "Diversifying income-generating activities within fisheries and mariculture sectors to mitigate the economic impacts of climate change. This includes shifting target species, adapting harvest tactics, and transitioning to mariculture and ecotourism. Technology and infrastructure upgrades improve marine harvest efficiency and promote sustainable resource management. These adaptations aim to stabilize fisheries, enhance sustainability, and protect livelihoods under shifting marine species distributions and climate variability.",
+            "Description": "The development and implementation of building codes and architectural design regulations aimed at integrating climate adaptation parameters. These codes are focused on reducing risks from climate-induced hazards like floods and landslides. They also support climate-resilient urban development by guiding land use, construction practices, and infrastructure standards. The initiative fosters strategic long-term urban planning to coordinate public and private investments in adaptation, including the creation of safe zones and the transformation of precarious settlements. It ensures that new infrastructure is resilient to climate risks and that urban spaces are safe and sustainable for current and future populations.",
             "BehavioralChangeTargeted": null,
             "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 1,
-                "habitat": 2,
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 1,
                 "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
+                "housing": 2,
+                "mobility": 1,
+                "stakeholder_engagement": 1
             },
-            "EquityAndInclusionConsiderations": "Promotes equitable opportunities for vulnerable fishing communities by supporting transitions to alternative employment sectors like ecotourism and mariculture.",
+            "EquityAndInclusionConsiderations": "Promotes inclusive urban planning by addressing risks in informal and precarious settlements and integrating eco-parks and eco-gardens for vulnerable populations.",
             "GHGReductionPotential": null,
             "AdaptationEffectiveness": "high",
             "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
+            "TimelineForImplementation": "5-10 years",
             "Dependencies": [
-                "Investment in education",
-                "infrastructure",
-                "technology to support the transition to diversified livelihoods"
+                "Integration with local climate risk assessments",
+                "Strategic collaboration between urban planners and municipal authorities"
             ],
             "KeyPerformanceIndicators": [
-                "Increase in income diversity",
-                "employment rates in alternative sectors",
-                "reduction in overexploitation of marine species"
+                "Reduction in urban flood incidents",
+                "Increased availability of safe housing in risk areas",
+                "Implementation rate of eco-parks and eco-gardens in vulnerable areas"
             ],
             "Impacts": [
-                "Improved livelihood stability",
-                "economic resilience",
-                "enhanced resource sustainability"
+                "Improved public health",
+                "Increased urban livability",
+                "Reduced disaster-related costs"
             ]
         }
     },
@@ -66,88 +87,76 @@
         "cityName": "Caxias do Sul",
         "region": "BR-RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "c40_0053",
-        "actionName": "Water Savings",
-        "actionPriority": 2,
-        "explanation": "With a score of 1.485, Water Savings is key given the city\u2019s need to safeguard water resources. It addresses critical adaptation needs that complement efficient emissions management in sectors indirectly affecting water use and scarcity.",
-        "action": {
-            "ActionID": "c40_0053",
-            "ActionName": "Water Savings",
-            "ActionType": [
-                "adaptation"
-            ],
-            "AdaptationCategory": "Technological\u00a0actions",
-            "Hazard": [
-                "droughts"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "InterventionType": null,
-            "Description": "\"Water Savings\" technologies, including rainwater harvesting, aim to conserve water resources. This adaptation measure involves technological actions to enhance eco-engineering efforts, ensuring sustainable water use in the face of changing climate conditions.",
-            "BehavioralChangeTargeted": null,
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 1,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "The \"Water Savings\" technologies, such as rainwater harvesting, promote equity and inclusion by directly addressing the needs of vulnerable and underserved communities that often face water scarcity and limited access to clean water resources. By implementing these technologies, the action ensures that marginalized populations can benefit from sustainable water use practices, which are crucial for their health and livelihoods.\n\nAdditionally, the focus on eco-engineering efforts in the adaptation measure highlights a commitment to environmentally sustainable solutions that can be accessible to all community members, regardless of socioeconomic status. This approach fosters community engagement and empowerment, allowing underserved groups to participate in the decision-making processes related to water management.\n\nFurthermore, by enhancing water conservation in the face of climate change, the action helps to mitigate the disproportionate impacts of climate-related water shortages on vulnerable populations, thereby promoting resilience and equity in resource distribution. Overall, the initiative recognizes and addresses the specific challenges faced by underserved communities, ensuring that they are included in the benefits of climate adaptation strategies.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Availability of suitable technology for rainwater harvesting",
-                "Access to funding and financial resources for implementation",
-                "Community awareness and education on water conservation practices",
-                "Supportive government policies and regulations promoting water-saving technologies",
-                "Collaboration with local stakeholders and organizations for effective implementation"
-            ],
-            "KeyPerformanceIndicators": [
-                "Volume of water saved (liters)",
-                "Number of rainwater harvesting systems installed",
-                "Percentage reduction in water consumption",
-                "Cost savings from reduced water usage",
-                "Community engagement and participation rate",
-                "Increase in groundwater levels",
-                "Frequency of maintenance and operational efficiency of systems"
-            ],
-            "Impacts": [
-                "Enhances water conservation and resilience against droughts",
-                "Improves water quality for underserved communities",
-                "Promotes equity and inclusion in water resource management",
-                "Empowers marginalized populations through community engagement",
-                "Mitigates climate-related water shortages for vulnerable groups"
-            ]
-        }
+        "actionId": "icare_0145",
+        "actionName": "Strengthen the healthcare network to attend to climate victims",
+        "actionPriority": 4,
+        "explanation": "Strengthening the healthcare network is ranked above developing a Climate Action Plan because it provides immediate capacity to treat those affected by heatwaves, floods, or other climate-driven events. A robust medical response reduces casualties and long-term health consequences, especially important in densely populated areas. This ensures that the city can handle emergencies more effectively before broader climate strategies are fully in place.",
+        "action": null
     },
     {
         "locode": "BRCXL",
         "cityName": "Caxias do Sul",
         "region": "BR-RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0093",
-        "actionName": "Availability of health infrastructure",
-        "actionPriority": 3,
-        "explanation": "Scoring 1.4367, this action is prioritized because it bolsters public health \u2013 a critical concern for a city facing hazards such as heatwaves and diseases. It also aligns well with socio-demographic needs of a population with high low-income rates.",
+        "actionId": "icare_0176",
+        "actionName": "Development of Climate Action Plan",
+        "actionPriority": 5,
+        "explanation": "Developing a Climate Action Plan is prioritized over installing a Hydrological Monitoring System because it provides a unifying roadmap for both adaptation and emissions reduction efforts. This strategy aligns all sectors\u2014transport, infrastructure, healthcare\u2014under clear climate goals. After establishing an overarching plan, more specialized measures like monitoring stations can be deployed with greater coordination.",
+        "action": null
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0164",
+        "actionName": "Hydrological Monitoring System with Telemetry Stations",
+        "actionPriority": 6,
+        "explanation": "A Hydrological Monitoring System with telemetry is ranked above creating the Municipal Climate Change Forum because real-time data on water flows can prevent severe flood damage and inform immediate policy decisions. By detecting abnormal patterns early, the city can coordinate evacuations or protective measures in high-risk zones. While a forum fosters dialogue and collaboration, comprehensive water monitoring offers direct and actionable insights.",
+        "action": null
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0148",
+        "actionName": "Create the Municipal Climate Change Forum",
+        "actionPriority": 7,
+        "explanation": "Creating a Municipal Climate Change Forum is prioritized over diagnostics in Special Social Interest Zones because it brings diverse stakeholders together to share knowledge and craft climate initiatives across the entire city. This collaboration shapes policies and encourages broad community engagement. Once the forum is established and stakeholder input is consolidated, targeted diagnostics and restoration efforts in priority zones can follow more effectively.",
+        "action": null
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0151",
+        "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
+        "actionPriority": 8,
+        "explanation": "Developing diagnostics and restoring Special Social Interest Zones ranks higher than improving overall access to health care because it addresses critical housing and infrastructure vulnerabilities first. By identifying specific needs in low-income or hazard-prone areas, the city can reduce flood risks and other potential dangers at their source. This focused approach helps preserve community well-being before more generalized healthcare measures are expanded.",
+        "action": null
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "ipcc_0094",
+        "actionName": "Access to health care",
+        "actionPriority": 9,
+        "explanation": "Expanding access to health care is prioritized over implementing urban gardens because it ensures that residents have the medical support they need during climate-related health emergencies. Timely treatment is crucial when extreme weather events can exacerbate respiratory issues or heat-related illnesses. While urban gardens also improve local resilience, immediate health services form a more direct line of defense for vulnerable populations.",
         "action": {
-            "ActionID": "ipcc_0093",
-            "ActionName": "Availability of health infrastructure",
+            "ActionID": "ipcc_0094",
+            "ActionName": "Access to health care",
             "ActionType": [
                 "adaptation"
             ],
-            "AdaptationCategory": "Infrastructure Adaptation",
+            "AdaptationCategory": "Health Systems Strengthening",
             "Hazard": [
-                "droughts",
+                "heatwaves",
                 "floods",
-                "sea-level-rise",
-                "diseases"
+                "droughts"
             ],
             "Sector": [
                 "public_health",
@@ -158,36 +167,39 @@
                 "climate_resilience"
             ],
             "InterventionType": null,
-            "Description": "Ensuring access to safe drinking water infrastructure, protecting health services, and improving sanitation systems to mitigate climate impacts. This includes developing adaptive measures for water security against droughts, floods, and sea-level rise. Strengthening infrastructure resilience ensures equitable access to health services, reduces contamination risks, and addresses the impacts of climate-induced hazards.",
+            "Description": "Enhancing access to health care services, including health and nutrition services, clean water, sanitation, and culturally appropriate mental health resources. Expanding telemedicine capabilities enables efficient health service delivery, particularly for remote and underserved populations. Strengthening basic public health systems and disaster preparedness can rapidly reduce vulnerability to climate-related health risks.",
             "BehavioralChangeTargeted": null,
             "CoBenefits": {
-                "air_quality": 0,
+                "air_quality": 1,
                 "water_quality": 2,
-                "habitat": 1,
+                "habitat": 0,
                 "cost_of_living": 1,
-                "housing": 0,
+                "housing": 1,
                 "mobility": 0,
                 "stakeholder_engagement": 2
             },
-            "EquityAndInclusionConsiderations": "Enhances access to critical health and water resources for vulnerable and underserved communities, mitigating inequities caused by climate impacts.",
+            "EquityAndInclusionConsiderations": "Promotes equitable access to health care for marginalized and vulnerable groups, including homeless populations, remote communities, and those affected by housing inequities.",
             "GHGReductionPotential": null,
             "AdaptationEffectiveness": "high",
             "CostInvestmentNeeded": "medium",
             "TimelineForImplementation": "5-10 years",
             "Dependencies": [
-                "Adequate funding",
-                "technological investments in health and water infrastructure",
-                "effective governance and cross-sector coordination"
+                "Investment in telemedicine technologies",
+                "Strengthened governance of public health systems",
+                "Capacity building for health workers",
+                "Infrastructure upgrades for health facilities"
             ],
             "KeyPerformanceIndicators": [
-                "Reduction in waterborne diseases",
-                "improved access to potable water",
-                "number of resilient health facilities developed"
+                "Reduction in climate-related mortality",
+                "Increased access to telemedicine",
+                "Number of culturally tailored health programs implemented",
+                "Improved water and sanitation access metrics"
             ],
             "Impacts": [
                 "Improved public health",
-                "enhanced water security",
-                "resilience against climate-induced hazards"
+                "Reduced health inequities",
+                "Enhanced disaster preparedness",
+                "Stronger health system resilience"
             ]
         }
     },
@@ -196,10 +208,32 @@
         "cityName": "Caxias do Sul",
         "region": "BR-RS",
         "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0156",
+        "actionName": "Implementation of urban gardens",
+        "actionPriority": 10,
+        "explanation": "Implementing urban gardens is placed above building safe housing for high-risk populations because it can be initiated quickly on unused land, helping improve local food security and reduce emissions from food transport. These gardens also foster community engagement and green space in densely populated areas. While secure housing is crucial, introducing urban agriculture first provides more immediate socio-environmental benefits and fosters better dietary habits.",
+        "action": null
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0170",
+        "actionName": "Build safe housing and implement urban rehabilitation projects for populations living in high-risk areas",
+        "actionPriority": 11,
+        "explanation": "Building safe housing in high-risk zones is ranked over retrofitting existing infrastructure because it relocates families away from imminent dangers such as landslides or flooding. By constructing sturdy homes and upgrading neighborhoods, the city reduces potential evacuation costs and long-term damage. Though reinforcing infrastructure is also vital, providing secure and well-planned communities directly addresses the most at-risk populations.",
+        "action": null
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
         "actionId": "ipcc_0087",
         "actionName": "Infrastructure retrofitting",
-        "actionPriority": 4,
-        "explanation": "With a score of 1.435, retrofitting infrastructure is crucial to mitigate disaster risks (e.g., landslides, flooding) and safeguard key urban services. Its benefits are seen in reduced vulnerability and potential indirect emissions benefits from avoided reconstruction.",
+        "actionPriority": 12,
+        "explanation": "Retrofitting critical infrastructure is prioritized over implementing water recycling because it offers immediate protection against structural failures during extreme weather events. By reinforcing existing buildings and public facilities, Caxias do Sul can reduce disruptions to essential services. While water recycling benefits the city\u2019s long-term sustainability, ensuring the resilience of core infrastructure first mitigates the most urgent climate risks.",
         "action": {
             "ActionID": "ipcc_0087",
             "ActionName": "Infrastructure retrofitting",
@@ -259,77 +293,10 @@
         "cityName": "Caxias do Sul",
         "region": "BR-RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0095",
-        "actionName": "Disaster early warning",
-        "actionPriority": 5,
-        "explanation": "At 1.42, this action offers rapid impact in risk reduction by enabling timely responses to climatic hazards. Early warning systems are cost-effective and critical for protecting lives and reducing downstream emissions from disaster recovery efforts.",
-        "action": {
-            "ActionID": "ipcc_0095",
-            "ActionName": "Disaster early warning",
-            "ActionType": [
-                "adaptation"
-            ],
-            "AdaptationCategory": "Risk Reduction and Preparedness",
-            "Hazard": [
-                "heatwaves",
-                "droughts",
-                "storms"
-            ],
-            "Sector": [
-                "public_health",
-                "biodiversity",
-                "geo-hydrological_disasters"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "InterventionType": null,
-            "Description": "Establishing and maintaining early warning systems for disasters, including marine heatwaves, pest outbreaks, and heatwaves. These systems involve timely information dissemination to individuals, communities, and emergency services, enabling proactive measures to mitigate risks. Heat Action Plans (HAPs) are part of these systems and include detailed strategies like urban planning with nature-based solutions (e.g., green-blue spaces, cool materials), public awareness campaigns, and targeted measures for vulnerable groups (e.g., elderly, children, outdoor workers). Critical actions also include evaluation of system effectiveness post-disaster, lessons sharing, and improvements for better preparedness in future events.",
-            "BehavioralChangeTargeted": null,
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 1,
-                "habitat": 2,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 1,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": "Focuses on addressing vulnerabilities among low-income groups, elderly, pregnant women, children, and outdoor workers by incorporating targeted communication, access to cool areas, and specific health interventions. Promotes equity by engaging marginalized communities in planning and ensuring access to necessary resources.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Coordination among emergency services and health agencies",
-                "Investment in urban planning and nature-based solutions",
-                "Community education and public awareness campaigns",
-                "Technological infrastructure for early warning systems"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in heatwave-related mortality rates",
-                "Timeliness of warnings",
-                "Public awareness levels",
-                "Community adoption of protective measures"
-            ],
-            "Impacts": [
-                "Improved public health and safety",
-                "Enhanced community resilience to disasters",
-                "Reduced economic losses from heat-related productivity impacts",
-                "Broader ecosystem benefits through urban nature-based solutions"
-            ]
-        }
-    },
-    {
-        "locode": "BRCXL",
-        "cityName": "Caxias do Sul",
-        "region": "BR-RS",
-        "regionName": "Rio Grande do Sul",
         "actionId": "c40_0054",
         "actionName": "Water Recycling",
-        "actionPriority": 6,
-        "explanation": "Water Recycling, with a score of 1.385, supports efficient water management in the face of drought risks. While its direct emissions reduction impact is secondary, it is well aligned with sector relevance in water resource management.",
+        "actionPriority": 13,
+        "explanation": "Water recycling outranks preventive drainage maintenance because it tackles both resource scarcity and conservation, crucial for a city experiencing varied rainfall patterns. By reusing water, Caxias do Sul reduces its dependence on freshwater sources and can better handle droughts. Although drainage upkeep is essential, optimizing water use provides broader, longer-term environmental benefits.",
         "action": {
             "ActionID": "c40_0054",
             "ActionName": "Water Recycling",
@@ -396,330 +363,46 @@
         "cityName": "Caxias do Sul",
         "region": "BR-RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0088",
-        "actionName": "Building codes",
-        "actionPriority": 7,
-        "explanation": "Scoring 1.37, strengthening building codes enhances safety and resilience of the built environment. It reduces risk exposure (especially in hazardous events) and requires relatively low cost, making it a sound adaptation investment.",
-        "action": {
-            "ActionID": "ipcc_0088",
-            "ActionName": "Building codes",
-            "ActionType": [
-                "adaptation"
-            ],
-            "AdaptationCategory": "Climate-Resilient Urban Planning",
-            "Hazard": [
-                "floods",
-                "landslides"
-            ],
-            "Sector": [
-                "road_infrastructure",
-                "geo-hydrological_disasters"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "InterventionType": null,
-            "Description": "The development and implementation of building codes and architectural design regulations aimed at integrating climate adaptation parameters. These codes are focused on reducing risks from climate-induced hazards like floods and landslides. They also support climate-resilient urban development by guiding land use, construction practices, and infrastructure standards. The initiative fosters strategic long-term urban planning to coordinate public and private investments in adaptation, including the creation of safe zones and the transformation of precarious settlements. It ensures that new infrastructure is resilient to climate risks and that urban spaces are safe and sustainable for current and future populations.",
-            "BehavioralChangeTargeted": null,
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 2,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": "Promotes inclusive urban planning by addressing risks in informal and precarious settlements and integrating eco-parks and eco-gardens for vulnerable populations.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Integration with local climate risk assessments",
-                "Strategic collaboration between urban planners and municipal authorities"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in urban flood incidents",
-                "Increased availability of safe housing in risk areas",
-                "Implementation rate of eco-parks and eco-gardens in vulnerable areas"
-            ],
-            "Impacts": [
-                "Improved public health",
-                "Increased urban livability",
-                "Reduced disaster-related costs"
-            ]
-        }
+        "actionId": "icare_0173",
+        "actionName": "Preventive maintenance of drainage systems",
+        "actionPriority": 14,
+        "explanation": "Preventive drainage maintenance ranks above channel cleaning with eco-barriers because it involves regular, proactive checks and repairs that reduce the risk of blockages. By consistently keeping drains clear, the city mitigates flood damage and maintains safer roads. Although channel cleaning is also vital, setting up a maintenance schedule addresses problems before they escalate, ensuring smoother water flow during heavy rains.",
+        "action": null
     },
     {
         "locode": "BRCXL",
         "cityName": "Caxias do Sul",
         "region": "BR-RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0092",
-        "actionName": "Social safety nets",
-        "actionPriority": 8,
-        "explanation": "This action (score 1.27) is essential for supporting vulnerable communities and reinforces socio-demographic suitability. It ensures that high-risk groups receive necessary aid, indirectly contributing to sustainable, lower-emission practices by reducing forced risky behaviors.",
-        "action": {
-            "ActionID": "ipcc_0092",
-            "ActionName": "Social safety nets",
-            "ActionType": [
-                "adaptation"
-            ],
-            "AdaptationCategory": "Social Protection and Risk Reduction",
-            "Hazard": [
-                "droughts",
-                "heatwaves",
-                "floods",
-                "storms"
-            ],
-            "Sector": [
-                "food_security",
-                "public_health"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "InterventionType": null,
-            "Description": "Social safety nets encompass adaptive social protection mechanisms to reduce food insecurity and malnutrition, especially for vulnerable populations. These include cash transfers, school feeding programs, public work initiatives, unemployment compensation, land reforms, credit and insurance schemes. Integrated approaches combine climate risk assessments with disaster risk reduction, education, and social equity to enhance resilience to climate stresses.",
-            "BehavioralChangeTargeted": null,
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 2,
-                "housing": 1,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": "Enhances the social status and rights of marginalized groups, protects vulnerable populations, reduces inequalities, and promotes education and gender equity.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Integration of climate and disaster risk into social protection",
-                "education programs",
-                "coordination with sustainable livelihoods and financial inclusion initiatives"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in malnutrition rates",
-                "Increase in education access for vulnerable groups",
-                "Participation in social protection programs"
-            ],
-            "Impacts": [
-                "Improved public health",
-                "Reduced poverty and inequality",
-                "Strengthened resilience and social empowerment"
-            ]
-        }
+        "actionId": "icare_0154",
+        "actionName": "Cleaning and Unclogging of Channels with Installation of Eco-barriers",
+        "actionPriority": 15,
+        "explanation": "Cleaning and unclogging channels with eco-barriers is prioritized over promoting sustainable land use practices because it delivers immediate flood prevention benefits. By removing debris and installing barriers, water flow is managed more effectively, reducing the likelihood of overflow and related health hazards. While guiding land use is essential for long-term resilience, preventing waterway blockages first offers quicker results for at-risk neighborhoods.",
+        "action": null
     },
     {
         "locode": "BRCXL",
         "cityName": "Caxias do Sul",
         "region": "BR-RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0099",
-        "actionName": "Water capture/storage",
-        "actionPriority": 9,
-        "explanation": "Equally scoring 1.27, water capture and storage is vital for managing water resources, ensuring reliable supply during droughts and aligning with cost-effective measures that offer timely benefits and risk reduction.",
-        "action": {
-            "ActionID": "ipcc_0099",
-            "ActionName": "Water capture/storage",
-            "ActionType": [
-                "adaptation"
-            ],
-            "AdaptationCategory": "Infrastructure-Based Adaptation",
-            "Hazard": [
-                "droughts",
-                "floods",
-                "storms"
-            ],
-            "Sector": [
-                "water_resources",
-                "food_security",
-                "energy_security",
-                "geo-hydrological_disasters"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "InterventionType": null,
-            "Description": "Implementing water capture and storage solutions such as farm ponds, revival of water bodies, rain gardens, bioswales, retention ponds, and water storage tanks. These measures aim to mitigate climate-induced impacts by improving water management, reducing stormwater runoff, enhancing water quality, and supporting agriculture and energy production under changing climate scenarios. Multi-purpose water reservoirs and dams provide additional benefits by addressing water shortages and managing risks associated with natural hazards.",
-            "BehavioralChangeTargeted": null,
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 1,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": "Ensures access to water for underserved communities, supports sustainable livelihoods in water-scarce regions, and promotes equitable resource distribution through inclusive decision-making processes.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Investment in green infrastructure",
-                "community engagement",
-                "policy support for water resource management"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in stormwater runoff",
-                "increase in water storage capacity",
-                "improvement in water quality",
-                "stability in agricultural yields"
-            ],
-            "Impacts": [
-                "Improved water availability",
-                "enhanced climate resilience",
-                "sustainable agriculture and energy production",
-                "reduced risk of flooding and drought"
-            ]
-        }
+        "actionId": "icare_0149",
+        "actionName": "Encourage sustainable land use practices",
+        "actionPriority": 16,
+        "explanation": "Encouraging sustainable land use practices ranks higher than building Cyclone Shelters because it addresses broader planning issues that can reduce multiple climate impacts, from soil erosion to local flooding. By regulating zoning and agricultural methods, Caxias do Sul can prevent hazards before they materialize. Although cyclone shelters protect communities during storms, refining land use reduces vulnerabilities across diverse weather events.",
+        "action": null
     },
     {
         "locode": "BRCXL",
         "cityName": "Caxias do Sul",
         "region": "BR-RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0101",
-        "actionName": "Efficient water supply/distribution",
-        "actionPriority": 10,
-        "explanation": "With a score of 1.27, this action improves the reliability and efficiency of water distribution networks. Its quick implementation and direct improvement in water management are crucial for cities facing water resource management challenges.",
+        "actionId": "c40_0049",
+        "actionName": "Cyclone Shelters",
+        "actionPriority": 17,
+        "explanation": "Cyclone Shelters are placed above slope stabilization and drainage measures because they provide immediate refuge during severe wind events or storms. This form of direct protection is especially important for residents in poorly constructed homes. While slope stabilization also guards against landslides, having a dedicated safe haven addresses urgent threats to human life when extreme weather strikes.",
         "action": {
-            "ActionID": "ipcc_0101",
-            "ActionName": "Efficient water supply/distribution",
-            "ActionType": [
-                "adaptation"
-            ],
-            "AdaptationCategory": "Sustainable Resource Management",
-            "Hazard": [
-                "droughts",
-                "floods",
-                "storms"
-            ],
-            "Sector": [
-                "water_resources"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "InterventionType": null,
-            "Description": "Implementing sustainable water supply systems by constructing irrigation infrastructure, promoting inter-basin water transfers, utilizing nature-based solutions (NBS) such as rain gardens, bioswales, and wetlands, and integrating advanced techniques like water reuse and water upgrading. Water reuse involves treating and recycling wastewater for non-potable or potable purposes, while water upgrading focuses on improving the quality of available water for diverse uses. These approaches enhance stormwater infiltration, improve urban water management, increase drought resilience, and support groundwater recharge. They provide energy-efficient and economical water solutions while maintaining sustainable urban development.",
-            "BehavioralChangeTargeted": null,
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": "Promotes equitable access to water resources, particularly in underserved urban areas, by integrating natural and engineered water management systems to benefit all communities, including low-income groups.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Adequate funding for infrastructure development",
-                "Community engagement for NBS implementation",
-                "Integration of urban planning with water management"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in water scarcity incidents",
-                "Increase in groundwater recharge rates",
-                "Enhanced urban water infiltration capacity"
-            ],
-            "Impacts": [
-                "Improved water security",
-                "Enhanced urban livability",
-                "Increased resilience to climate-related water risks"
-            ]
-        }
-    },
-    {
-        "locode": "BRCXL",
-        "cityName": "Caxias do Sul",
-        "region": "BR-RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0102",
-        "actionName": "Seasonal/temporary mobility",
-        "actionPriority": 11,
-        "explanation": "Also scoring 1.27, seasonal/temporary mobility measures enhance adaptability during climate events. The action is considered cost-effective and with fast implementation, aiding the community resilience during temporary disruptions.",
-        "action": {
-            "ActionID": "ipcc_0102",
-            "ActionName": "Seasonal/temporary mobility",
-            "ActionType": [
-                "adaptation"
-            ],
-            "AdaptationCategory": "Livelihood Adaptation",
-            "Hazard": [
-                "sea-level-rise",
-                "storms",
-                "droughts"
-            ],
-            "Sector": [
-                "food_security",
-                "biodiversity"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "InterventionType": null,
-            "Description": "Facilitating mobility of fishing fleets and workers to adapt to shifting marine species distributions caused by climate change. This includes enabling seasonal or temporary migration to align with the availability of resources, improving infrastructure and technology to support mobility, and fostering flexible governance to manage transboundary resources sustainably. These actions aim to maintain livelihoods and reduce economic impacts of climate variability.",
-            "BehavioralChangeTargeted": null,
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 1,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": "Ensures equitable access to resources for vulnerable communities, including small-scale fishers and those dependent on seasonal income, by promoting inclusive governance structures and reducing barriers to mobility.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Infrastructure and technology investments",
-                "Transboundary agreements",
-                "Capacity-building initiatives to support mobility"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in resource overexploitation",
-                "Increase in seasonal employment opportunities",
-                "Enhanced management of transboundary fisheries"
-            ],
-            "Impacts": [
-                "Improved economic resilience",
-                "Stabilized food security",
-                "Sustainable management of marine biodiversity"
-            ]
-        }
-    },
-    {
-        "locode": "BRCXL",
-        "cityName": "Caxias do Sul",
-        "region": "BR-RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "c40_0046",
-        "actionName": "Coastal Protection",
-        "actionPriority": 12,
-        "explanation": "Despite a score of 1.235, Coastal Protection is ranked lower due to the city\u2019s inland nature. However, it still retains some priority for broader regional planning and potential indirect benefits if future expansion or associated vulnerabilities emerge.",
-        "action": {
-            "ActionID": "c40_0046",
-            "ActionName": "Coastal Protection",
+            "ActionID": "c40_0049",
+            "ActionName": "Cyclone Shelters",
             "ActionType": [
                 "adaptation"
             ],
@@ -733,74 +416,7 @@
                 "climate_resilience"
             ],
             "InterventionType": null,
-            "Description": "\"Coastal Protection\" strategies include the construction of sea walls and protective structures to mitigate the impact of rising sea levels and coastal erosion. This adaptation measure enhances the resilience of coastal areas and protects communities from the impacts of climate change.",
-            "BehavioralChangeTargeted": null,
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 0,
-                "habitat": 1,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "The \"Coastal Protection\" strategies inherently promote equity and inclusion by focusing on the protection of vulnerable coastal communities that are often the most affected by climate change impacts, such as rising sea levels and erosion. These communities frequently include low-income populations, marginalized groups, and those with limited resources to adapt to environmental changes. \n\nBy constructing sea walls and protective structures, the action directly addresses the needs of these underserved populations, ensuring their safety and stability in the face of climate threats. Additionally, the implementation of such strategies often involves community engagement and input, allowing affected residents to have a voice in the decision-making process, which fosters a sense of ownership and inclusion. \n\nFurthermore, the focus on enhancing resilience in these areas helps to safeguard not only the physical infrastructure but also the social and economic well-being of the communities, thereby promoting equitable access to resources and opportunities in the context of climate adaptation.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Availability of funding and resources for construction and maintenance of protective structures",
-                "Access to engineering expertise for designing effective sea walls and coastal defenses",
-                "Collaboration with local communities and stakeholders for planning and implementation",
-                "Regulatory approvals and compliance with environmental laws and policies",
-                "Research and data on coastal erosion patterns and sea level rise projections"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in coastal erosion rate",
-                "Increase in coastal property value",
-                "Number of communities protected",
-                "Extent of area protected by sea walls",
-                "Frequency of flooding events",
-                "Community awareness and preparedness levels",
-                "Cost-effectiveness of protective measures",
-                "Biodiversity health in coastal areas"
-            ],
-            "Impacts": [
-                "Enhances resilience of vulnerable coastal communities",
-                "Protects against flooding and coastal erosion",
-                "Promotes equity and inclusion for marginalized groups",
-                "Fosters community engagement in decision-making",
-                "Safeguards social and economic well-being of communities"
-            ]
-        }
-    },
-    {
-        "locode": "BRCXL",
-        "cityName": "Caxias do Sul",
-        "region": "BR-RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "c40_0059",
-        "actionName": "Early Warning",
-        "actionPriority": 13,
-        "explanation": "This additional early warning system (score 1.235) reinforces multi-hazard preparedness. Although similar to the earlier disaster early warning action, its slight differentiation in focus places it just one rank lower.",
-        "action": {
-            "ActionID": "c40_0059",
-            "ActionName": "Early Warning",
-            "ActionType": [
-                "adaptation"
-            ],
-            "AdaptationCategory": "Educational/Informational\u00a0actions",
-            "Hazard": [
-                "storms"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "InterventionType": null,
-            "Description": "\"Early Warning\" systems involve the timely detection and communication of potential climate-related hazards, enabling proactive responses to mitigate risks. This initiative enhances community preparedness and reduces the impact of adverse events.",
+            "Description": "\"Cyclone Shelters\" provide safe havens during flood and cyclone events, enhancing community resilience. This eco-engineering adaptation ensures the safety of residents in vulnerable areas during extreme weather conditions.",
             "BehavioralChangeTargeted": null,
             "CoBenefits": {
                 "air_quality": 0,
@@ -811,98 +427,35 @@
                 "mobility": 0,
                 "stakeholder_engagement": 0
             },
-            "EquityAndInclusionConsiderations": "The \"Early Warning\" systems initiative promotes equity and inclusion by ensuring that vulnerable or underserved communities receive timely and accessible information about climate-related hazards. By focusing on proactive communication, the action helps to empower these communities, which often lack the resources to prepare for and respond to climate threats. \n\nAdditionally, the initiative can be designed to reach diverse populations, including those with language barriers or disabilities, ensuring that all community members can understand and act on the warnings. This inclusivity helps to reduce disparities in risk and enhances overall community resilience, as everyone is better equipped to respond to potential hazards. \n\nOverall, the action recognizes the unique challenges faced by underserved communities and aims to provide them with the necessary tools and information to protect themselves from climate impacts, thereby fostering a more equitable approach to climate resilience.",
+            "EquityAndInclusionConsiderations": "The \"Cyclone Shelters\" initiative promotes equity and inclusion by specifically targeting vulnerable communities that are most at risk during extreme weather events. By providing safe havens, the action ensures that marginalized populations, who often lack the resources to evacuate or protect themselves during cyclones and floods, have access to a secure refuge. This initiative acknowledges the unique challenges faced by underserved communities, such as limited mobility, economic constraints, and inadequate housing, thereby prioritizing their safety and resilience. Additionally, the eco-engineering aspect of the shelters may incorporate local materials and labor, fostering community involvement and economic opportunities for residents. Overall, the action is designed to enhance the safety and well-being of those who are disproportionately affected by climate change, thereby promoting social equity and inclusion.",
             "GHGReductionPotential": null,
             "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Access to reliable climate data and forecasting models",
-                "Effective communication infrastructure for disseminating warnings",
-                "Community engagement and education on climate risks",
-                "Collaboration with local and national emergency response agencies",
-                "Funding and resources for technology and system maintenance"
-            ],
-            "KeyPerformanceIndicators": [
-                "Number of early warnings issued",
-                "Response time to warnings",
-                "Community awareness and preparedness levels",
-                "Reduction in disaster-related damages",
-                "Number of training sessions conducted",
-                "Stakeholder engagement and participation rates",
-                "Feedback from community on warning effectiveness",
-                "Frequency of drills and simulations conducted"
-            ],
-            "Impacts": [
-                "Enhanced community preparedness for storms",
-                "Reduced impact of climate-related hazards",
-                "Empowerment of vulnerable communities",
-                "Improved equity and inclusion in climate resilience efforts",
-                "Increased accessibility of information for diverse populations"
-            ]
-        }
-    },
-    {
-        "locode": "BRCXL",
-        "cityName": "Caxias do Sul",
-        "region": "BR-RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0090",
-        "actionName": "Insurance",
-        "actionPriority": 14,
-        "explanation": "With a score of 1.19, insurance provides a financial safety net against losses from climate hazards. It\u2019s particularly valuable for risk reduction and builds capacity for recovery, even though it may require more financial resources.",
-        "action": {
-            "ActionID": "ipcc_0090",
-            "ActionName": "Insurance",
-            "ActionType": [
-                "adaptation"
-            ],
-            "AdaptationCategory": "Financial adaptation strategy",
-            "Hazard": [
-                "droughts",
-                "floods",
-                "storms"
-            ],
-            "Sector": [
-                "food_security",
-                "water_resources",
-                "energy_security"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "InterventionType": null,
-            "Description": "nsurance provides financial risk management tools tailored to climate-induced challenges. This includes traditional agricultural insurance to protect farmers from weather-related losses and innovative index-based insurance solutions. Index-based insurance leverages measurable weather indices, such as rainfall or temperature, to trigger payouts automatically when thresholds are reached, bypassing the need for loss verification. These tools help stabilize incomes, encourage investment in climate-resilient practices, and reduce the economic vulnerability of stakeholders in agriculture, aquaculture, and energy sectors. Furthermore, bundled insurance products with additional services like fertilizer or seed access enhance overall resilience, particularly in underserved and rural communities. By mitigating risks associated with droughts, floods, and storms, insurance supports sustainable development and adaptation goals",
-            "BehavioralChangeTargeted": null,
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 1,
-                "habitat": 0,
-                "cost_of_living": -1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": "Supports small-scale farmers, marginalized communities, and those in vulnerable areas by improving access to financial resilience tools and mitigating climate-related risks",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "medium",
-            "CostInvestmentNeeded": "medium",
+            "CostInvestmentNeeded": "low",
             "TimelineForImplementation": "<5 years",
             "Dependencies": [
-                "Availability of climate data",
-                "Regulatory frameworks",
-                "Collaboration among financial institutions and governments"
+                "Availability of suitable land for constructing cyclone shelters",
+                "Funding and financial resources for building and maintaining shelters",
+                "Community engagement and support for the initiative",
+                "Access to materials and technology for eco-engineering solutions",
+                "Collaboration with local government and disaster management agencies",
+                "Training and preparedness programs for residents on using the shelters"
             ],
             "KeyPerformanceIndicators": [
-                "Increase in number of insurance beneficiaries",
-                "Reduction in economic losses from extreme events",
-                "Adoption of index-based insurance products"
+                "Number of cyclone shelters constructed",
+                "Capacity of shelters (number of people accommodated)",
+                "Frequency of use during extreme weather events",
+                "Community awareness and preparedness training sessions conducted",
+                "Reduction in casualties during cyclone events",
+                "Feedback from shelter users on safety and accessibility",
+                "Maintenance and operational status of shelters",
+                "Partnerships with local organizations for shelter management"
             ],
             "Impacts": [
-                "Enhanced financial resilience",
-                "Decreased vulnerability to climate-induced hazards",
-                "Strengthened adaptive capacity in food and water systems"
+                "Enhances community resilience during extreme weather events",
+                "Provides safe havens for vulnerable populations",
+                "Promotes social equity and inclusion",
+                "Fosters community involvement and economic opportunities",
+                "Addresses the unique challenges faced by underserved communities"
             ]
         }
     },
@@ -911,400 +464,32 @@
         "cityName": "Caxias do Sul",
         "region": "BR-RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0082",
-        "actionName": "Coastal Infrastructure",
-        "actionPriority": 15,
-        "explanation": "At 1.185, Coastal Infrastructure is less directly relevant for an inland city like Caxias do Sul. However, it is included for comprehensive planning and regional adaptation strategies, albeit with lower priority.",
-        "action": {
-            "ActionID": "ipcc_0082",
-            "ActionName": "Coastal Infrastructure",
-            "ActionType": [
-                "adaptation"
-            ],
-            "AdaptationCategory": "Physical coastal management infrastructure",
-            "Hazard": [
-                "floods",
-                "sea-level-rise",
-                "storms"
-            ],
-            "Sector": [
-                "road_infrastructure",
-                "port_infrastructure",
-                "geo-hydrological_disasters"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "InterventionType": null,
-            "Description": "Construction and maintenance of physical structures like seawalls, dykes, revetments, breakwaters, and tidal barriers to protect against flooding, erosion, and other coastal hazards.",
-            "BehavioralChangeTargeted": null,
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 1,
-                "habitat": -1,
-                "cost_of_living": -1,
-                "housing": 1,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "Hard-engineered structures may be inaccessible to poorer communities, necessitating inclusive planning to ensure equitable protection and benefits.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": ">10 years",
-            "Dependencies": [
-                "Sufficient funding",
-                "Appropriate engineering expertise",
-                "Regular maintenance"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in flooding incidents",
-                "Stability and durability of infrastructure",
-                "Community resilience improvement"
-            ],
-            "Impacts": [
-                "Increased protection of coastal areas",
-                "Reduced economic losses from hazards",
-                "Potential ecological disruptions and increased erosion elsewhere"
-            ]
-        }
-    },
-    {
-        "locode": "BRCXL",
-        "cityName": "Caxias do Sul",
-        "region": "BR-RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0084",
-        "actionName": "Restore/create natural areas",
-        "actionPriority": 16,
-        "explanation": "Scoring 1.17, restoring or creating natural areas contributes to environmental compatibility and ecosystem services. It supports biodiversity and can lead to longer-term resilience, despite a lower direct impact on emissions.",
-        "action": {
-            "ActionID": "ipcc_0084",
-            "ActionName": "Restore/create natural areas",
-            "ActionType": [
-                "adaptation"
-            ],
-            "AdaptationCategory": "Nature-Based Solutions",
-            "Hazard": [
-                "sea-level-rise",
-                "floods",
-                "storms",
-                "droughts"
-            ],
-            "Sector": [
-                "biodiversity",
-                "water_resources",
-                "geo-hydrological_disasters"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "InterventionType": null,
-            "Description": "Restoration and conservation of marine and coastal habitats, such as mangroves, vegetated dunes, seagrasses, coral reefs, and kelp forests, to protect coastal communities, support biodiversity, sequester carbon, and mitigate climate change. Efforts include creating marine protected areas, active restoration of coral reefs, ridge-to-reef management, restoring\ndunes, planting salinity-tolerant trees, increasing forest cover, detect and manage forest pests. ",
-            "BehavioralChangeTargeted": null,
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": "Promotes inclusion by protecting ecosystems that support vulnerable coastal communities and enhances livelihoods through sustainable fisheries and recreation opportunities.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Community engagement",
-                "Funding for restoration projects",
-                "Integration of local knowledge",
-                "Sustainable management of marine resources"
-            ],
-            "KeyPerformanceIndicators": [
-                "Area of habitats restored",
-                "Reduction in coastal flooding incidents",
-                "Improvement in biodiversity indices",
-                "Carbon sequestration capacity"
-            ],
-            "Impacts": [
-                "Reduced coastal vulnerability",
-                "Enhanced ecosystem resilience",
-                "Improved fishery productivity",
-                "Increased carbon storage",
-                "Improved public health and recreation opportunities"
-            ]
-        }
-    },
-    {
-        "locode": "BRCXL",
-        "cityName": "Caxias do Sul",
-        "region": "BR-RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0094",
-        "actionName": "Access to health care",
-        "actionPriority": 17,
-        "explanation": "Also scoring 1.17, improving access to health care supports community resilience. Although similar to enhancing health infrastructure, its focus is more on service delivery than structural improvement, which places it slightly lower in priority.",
-        "action": {
-            "ActionID": "ipcc_0094",
-            "ActionName": "Access to health care",
-            "ActionType": [
-                "adaptation"
-            ],
-            "AdaptationCategory": "Health Systems Strengthening",
-            "Hazard": [
-                "heatwaves",
-                "floods",
-                "droughts"
-            ],
-            "Sector": [
-                "public_health",
-                "water_resources"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "InterventionType": null,
-            "Description": "Enhancing access to health care services, including health and nutrition services, clean water, sanitation, and culturally appropriate mental health resources. Expanding telemedicine capabilities enables efficient health service delivery, particularly for remote and underserved populations. Strengthening basic public health systems and disaster preparedness can rapidly reduce vulnerability to climate-related health risks.",
-            "BehavioralChangeTargeted": null,
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": "Promotes equitable access to health care for marginalized and vulnerable groups, including homeless populations, remote communities, and those affected by housing inequities.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Investment in telemedicine technologies",
-                "Strengthened governance of public health systems",
-                "Capacity building for health workers",
-                "Infrastructure upgrades for health facilities"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in climate-related mortality",
-                "Increased access to telemedicine",
-                "Number of culturally tailored health programs implemented",
-                "Improved water and sanitation access metrics"
-            ],
-            "Impacts": [
-                "Improved public health",
-                "Reduced health inequities",
-                "Enhanced disaster preparedness",
-                "Stronger health system resilience"
-            ]
-        }
-    },
-    {
-        "locode": "BRCXL",
-        "cityName": "Caxias do Sul",
-        "region": "BR-RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0096",
-        "actionName": "Farm/fishery improvements",
+        "actionId": "icare_0184",
+        "actionName": "Slope Stabilization and Drainage",
         "actionPriority": 18,
-        "explanation": "This action, with a score of 1.17, targets improvements in food production sectors. In an urban context like Caxias do Sul, its relevance is moderated by limited local agriculture but remains important for food security and rural-urban linkages.",
-        "action": {
-            "ActionID": "ipcc_0096",
-            "ActionName": "Farm/fishery improvements",
-            "ActionType": [
-                "adaptation"
-            ],
-            "AdaptationCategory": "Integrated Farm and Fishery Adaptation",
-            "Hazard": [
-                "droughts",
-                "heatwaves",
-                "floods",
-                "wildfires",
-                "storms"
-            ],
-            "Sector": [
-                "food_security",
-                "biodiversity",
-                "water_resources"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "InterventionType": null,
-            "Description": "Implementing a range of strategies to adapt farms and fisheries to climate impacts. This includes changing fishing gear or vessel power, adopting new crop varieties or adjusting planting schedules, improving irrigation schemes, integrating crop and livestock systems, relocating livestock with improved pasture management, and adopting agroecological and agroforestry systems. Technological innovations like smart farming and financial measures such as subsidies support these adaptations.",
-            "BehavioralChangeTargeted": null,
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": "Ensures access to resources for marginalized farmers and fishers, promotes diverse livelihood options, and builds resilience in underserved communities.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Policy support for climate-resilient agriculture and fisheries",
-                "Access to finance and subsidies",
-                "Training for adopting new practices",
-                "Improved market infrastructure"
-            ],
-            "KeyPerformanceIndicators": [
-                "Increase in agricultural and fishery productivity",
-                "Adoption rate of integrated systems",
-                "Reduction in climate-related yield losses"
-            ],
-            "Impacts": [
-                "Improved food security",
-                "Enhanced ecosystem health",
-                "Increased resilience of agricultural and fishery systems"
-            ]
-        }
+        "explanation": "Slope stabilization and drainage are prioritized over creating a financial support program because they prevent immediate dangers like landslides and water damage. By fortifying at-risk slopes, Caxias do Sul safeguards essential roads and residential areas. Although financial mechanisms are crucial for recovery, proactively stabilizing the terrain reduces the likelihood and cost of disasters.",
+        "action": null
     },
     {
         "locode": "BRCXL",
         "cityName": "Caxias do Sul",
         "region": "BR-RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0097",
-        "actionName": "Food storage/distribution improvements",
+        "actionId": "icare_0144",
+        "actionName": "Creation of a Financial Support Program to Adress Extreme Weather Events",
         "actionPriority": 19,
-        "explanation": "Also scoring 1.17, enhancing food storage and distribution is key for maintaining food security during climate shocks. Its cost-effectiveness and potential to reduce risks in supply chain disruptions justify its ranking.",
-        "action": {
-            "ActionID": "ipcc_0097",
-            "ActionName": "Food storage/distribution improvements",
-            "ActionType": [
-                "adaptation"
-            ],
-            "AdaptationCategory": "Infrastructure Improvement",
-            "Hazard": [
-                "droughts",
-                "floods",
-                "storms",
-                "heatwaves"
-            ],
-            "Sector": [
-                "food_security",
-                "road_infrastructure"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "InterventionType": null,
-            "Description": "Enhancing food storage and distribution systems by improving transportation infrastructure, optimizing trade networks, and shortening supply chains to ensure local food availability and resilience to climate impacts. This action also includes increasing the capacity of local food storage facilities to reduce post-harvest losses, addressing inefficiencies in logistics, and bolstering infrastructure for perishable goods. It aims to improve food security and reduce vulnerability to extreme events, disruptions, and cascading impacts, especially during pandemics and other crises.",
-            "BehavioralChangeTargeted": null,
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": "Supports equitable access to food for marginalized and vulnerable populations by prioritizing local food production and improving distribution systems that reach underserved areas.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Investment in infrastructure",
-                "Policy incentives for local food production",
-                "Collaboration with logistics and trade sectors",
-                "Technology for supply chain optimization"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in post-harvest losses",
-                "Increased local food availability",
-                "Improved transportation efficiency for food distribution",
-                "Shortened supply chains"
-            ],
-            "Impacts": [
-                "Improved food security",
-                "Resilience to climate-induced disruptions",
-                "Reduced greenhouse gas emissions from supply chains",
-                "Enhanced local economic growth"
-            ]
-        }
+        "explanation": "For Caxias do Sul, creating a financial support program for extreme weather events ranks above adopting green-blue infrastructure because it provides immediate economic relief to those hit hardest by storms or floods. This assistance can help residents rebuild quickly and mitigate further losses. While green-blue infrastructure is a long-term adaptation strategy, offering timely funding helps communities recover faster from climate shocks.",
+        "action": null
     },
     {
         "locode": "BRCXL",
         "cityName": "Caxias do Sul",
         "region": "BR-RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0098",
-        "actionName": "Behaviour change in diets and food waste",
+        "actionId": "icare_0179",
+        "actionName": "Adopt the concept of green-blue infrastructure in city projects",
         "actionPriority": 20,
-        "explanation": "With a score of 1.17, this action plays a dual role by promoting sustainable consumption patterns and reducing food waste. It indirectly contributes to emissions reduction in the waste sector, although its immediate impact may be slower compared to other interventions.",
-        "action": {
-            "ActionID": "ipcc_0098",
-            "ActionName": "Behaviour change in diets and food waste",
-            "ActionType": [
-                "adaptation"
-            ],
-            "AdaptationCategory": "Food System Transformation",
-            "Hazard": [
-                "droughts",
-                "heatwaves",
-                "floods",
-                "wildfires"
-            ],
-            "Sector": [
-                "food_security",
-                "biodiversity"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "InterventionType": null,
-            "Description": "Reducing food loss and waste through improved food production, distribution, and consumption practices. Actions include enhancing agricultural techniques, adopting water-saving technologies, implementing low-cost storage solutions, and promoting plant-based diets. Policymakers can encourage these behaviors with appropriate pricing policies, sustainable agriculture initiatives, and support for disadvantaged groups. The action emphasizes shifting to healthier diets, reducing overconsumption, and supporting local food systems to mitigate greenhouse gas emissions and ensure food security under climate change.",
-            "BehavioralChangeTargeted": null,
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": "Promotes access to affordable, healthy food for vulnerable communities, empowering women, youth, and socially disadvantaged groups. Encourages equitable participation in sustainable agricultural practices and local food networks.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Education and training for farmers",
-                "Access to sustainable agricultural inputs",
-                "Policy support for sustainable practices",
-                "Technological infrastructure for storage and processing"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in food loss and waste percentages",
-                "Increase in adoption of plant-based diets",
-                "Improved food security indicators",
-                "Reduction in GHG emissions from food systems"
-            ],
-            "Impacts": [
-                "Improved food security",
-                "Enhanced health outcomes",
-                "Reduced greenhouse gas emissions",
-                "Strengthened local food systems",
-                "Greater resilience to climate variability"
-            ]
-        }
+        "explanation": "Adopting green-blue infrastructure is ranked after the other measures because it requires significant planning and inter-agency cooperation before widespread implementation can begin. Although integrating natural and built environments is vital for long-term resilience, Caxias do Sul first addresses more immediate challenges like emergency planning, healthcare capacity, and water management. Once these foundations are set, green-blue solutions can significantly enhance urban ecosystems and reduce future climate risks.",
+        "action": null
     }
 ]

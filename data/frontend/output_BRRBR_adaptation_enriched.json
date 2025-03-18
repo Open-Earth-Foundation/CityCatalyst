@@ -4,453 +4,11 @@
         "cityName": "Rio Branco",
         "region": "BR-AC",
         "regionName": "Acre",
-        "actionId": "ipcc_0087",
-        "actionName": "Infrastructure retrofitting",
+        "actionId": "icare_0145",
+        "actionName": "Strengthen the healthcare network to attend to climate victims",
         "actionPriority": 1,
-        "explanation": "This action ranks first due to its high quantitative score (1.6017) and its direct impact on strengthening the city's infrastructure against climate hazards such as heatwaves and landslides. Given Rio Branco's high risk related to infrastructure damage, retrofitting existing structures offers significant resilience benefits.",
-        "action": {
-            "ActionID": "ipcc_0087",
-            "ActionName": "Infrastructure retrofitting",
-            "ActionType": [
-                "adaptation"
-            ],
-            "AdaptationCategory": "Infrastructural Adaptation",
-            "Hazard": [
-                "floods",
-                "droughts",
-                "heatwaves"
-            ],
-            "Sector": [
-                "road_infrastructure",
-                "public_health",
-                "energy_security"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "InterventionType": null,
-            "Description": "Strengthening and upgrading existing infrastructure, including roads, housing, and energy systems, to improve resilience against climate risks such as floods, droughts, and heatwaves. Efforts include Air conditioning, using thermosiphons for permafrost degradation, increasing rooftop albedo (for reflectivity) and shading",
-            "BehavioralChangeTargeted": null,
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
-                "habitat": 0,
-                "cost_of_living": -1,
-                "housing": 1,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": "Improves resilience for vulnerable communities, especially in low-income regions, by reducing risks from extreme climate events.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Policy alignment",
-                "Funding availability",
-                "Engineering and construction expertise"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduced infrastructure failure during hazards",
-                "Increased capacity for housing and energy systems"
-            ],
-            "Impacts": [
-                "Enhanced urban resilience",
-                "Safer housing",
-                "Reduced economic losses due to climate impacts"
-            ]
-        }
-    },
-    {
-        "locode": "BRRBR",
-        "cityName": "Rio Branco",
-        "region": "BR-AC",
-        "regionName": "Acre",
-        "actionId": "ipcc_0095",
-        "actionName": "Disaster early warning",
-        "actionPriority": 2,
-        "explanation": "Ranking second with a quantitative score of 1.5867, disaster early warning systems are crucial for reducing risks from climate hazards. This action enhances the city's capacity to prepare and respond quickly to extreme weather events, which is vital for a low-income population and for sectors facing high hazard risks.",
-        "action": {
-            "ActionID": "ipcc_0095",
-            "ActionName": "Disaster early warning",
-            "ActionType": [
-                "adaptation"
-            ],
-            "AdaptationCategory": "Risk Reduction and Preparedness",
-            "Hazard": [
-                "heatwaves",
-                "droughts",
-                "storms"
-            ],
-            "Sector": [
-                "public_health",
-                "biodiversity",
-                "geo-hydrological_disasters"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "InterventionType": null,
-            "Description": "Establishing and maintaining early warning systems for disasters, including marine heatwaves, pest outbreaks, and heatwaves. These systems involve timely information dissemination to individuals, communities, and emergency services, enabling proactive measures to mitigate risks. Heat Action Plans (HAPs) are part of these systems and include detailed strategies like urban planning with nature-based solutions (e.g., green-blue spaces, cool materials), public awareness campaigns, and targeted measures for vulnerable groups (e.g., elderly, children, outdoor workers). Critical actions also include evaluation of system effectiveness post-disaster, lessons sharing, and improvements for better preparedness in future events.",
-            "BehavioralChangeTargeted": null,
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 1,
-                "habitat": 2,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 1,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": "Focuses on addressing vulnerabilities among low-income groups, elderly, pregnant women, children, and outdoor workers by incorporating targeted communication, access to cool areas, and specific health interventions. Promotes equity by engaging marginalized communities in planning and ensuring access to necessary resources.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Coordination among emergency services and health agencies",
-                "Investment in urban planning and nature-based solutions",
-                "Community education and public awareness campaigns",
-                "Technological infrastructure for early warning systems"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in heatwave-related mortality rates",
-                "Timeliness of warnings",
-                "Public awareness levels",
-                "Community adoption of protective measures"
-            ],
-            "Impacts": [
-                "Improved public health and safety",
-                "Enhanced community resilience to disasters",
-                "Reduced economic losses from heat-related productivity impacts",
-                "Broader ecosystem benefits through urban nature-based solutions"
-            ]
-        }
-    },
-    {
-        "locode": "BRRBR",
-        "cityName": "Rio Branco",
-        "region": "BR-AC",
-        "regionName": "Acre",
-        "actionId": "ipcc_0091",
-        "actionName": "Diversification of livelihoods ",
-        "actionPriority": 3,
-        "explanation": "With a score of 1.52, this action is prioritized because it strengthens the socio-economic backbone of the city. Diversifying livelihoods helps build resilience among vulnerable communities, particularly important given Rio Branco's very high low-income rates and risk from climate-induced disruptions.",
-        "action": {
-            "ActionID": "ipcc_0091",
-            "ActionName": "Diversification of livelihoods ",
-            "ActionType": [
-                "adaptation"
-            ],
-            "AdaptationCategory": "Livelihood Adaptation",
-            "Hazard": [
-                "storms",
-                "sea-level-rise"
-            ],
-            "Sector": [
-                "food_security",
-                "biodiversity"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "InterventionType": null,
-            "Description": "Diversifying income-generating activities within fisheries and mariculture sectors to mitigate the economic impacts of climate change. This includes shifting target species, adapting harvest tactics, and transitioning to mariculture and ecotourism. Technology and infrastructure upgrades improve marine harvest efficiency and promote sustainable resource management. These adaptations aim to stabilize fisheries, enhance sustainability, and protect livelihoods under shifting marine species distributions and climate variability.",
-            "BehavioralChangeTargeted": null,
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 1,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": "Promotes equitable opportunities for vulnerable fishing communities by supporting transitions to alternative employment sectors like ecotourism and mariculture.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Investment in education",
-                "infrastructure",
-                "technology to support the transition to diversified livelihoods"
-            ],
-            "KeyPerformanceIndicators": [
-                "Increase in income diversity",
-                "employment rates in alternative sectors",
-                "reduction in overexploitation of marine species"
-            ],
-            "Impacts": [
-                "Improved livelihood stability",
-                "economic resilience",
-                "enhanced resource sustainability"
-            ]
-        }
-    },
-    {
-        "locode": "BRRBR",
-        "cityName": "Rio Branco",
-        "region": "BR-AC",
-        "regionName": "Acre",
-        "actionId": "c40_0053",
-        "actionName": "Water Savings",
-        "actionPriority": 4,
-        "explanation": "Water Savings is ranked fourth with a quantitative score of 1.4850. In a tropical rainforest setting with identified water resource risks and challenges in water access, increasing water savings is cost-effective and reduces the impacts of drought conditions.",
-        "action": {
-            "ActionID": "c40_0053",
-            "ActionName": "Water Savings",
-            "ActionType": [
-                "adaptation"
-            ],
-            "AdaptationCategory": "Technological\u00a0actions",
-            "Hazard": [
-                "droughts"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "InterventionType": null,
-            "Description": "\"Water Savings\" technologies, including rainwater harvesting, aim to conserve water resources. This adaptation measure involves technological actions to enhance eco-engineering efforts, ensuring sustainable water use in the face of changing climate conditions.",
-            "BehavioralChangeTargeted": null,
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 1,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "The \"Water Savings\" technologies, such as rainwater harvesting, promote equity and inclusion by directly addressing the needs of vulnerable and underserved communities that often face water scarcity and limited access to clean water resources. By implementing these technologies, the action ensures that marginalized populations can benefit from sustainable water use practices, which are crucial for their health and livelihoods.\n\nAdditionally, the focus on eco-engineering efforts in the adaptation measure highlights a commitment to environmentally sustainable solutions that can be accessible to all community members, regardless of socioeconomic status. This approach fosters community engagement and empowerment, allowing underserved groups to participate in the decision-making processes related to water management.\n\nFurthermore, by enhancing water conservation in the face of climate change, the action helps to mitigate the disproportionate impacts of climate-related water shortages on vulnerable populations, thereby promoting resilience and equity in resource distribution. Overall, the initiative recognizes and addresses the specific challenges faced by underserved communities, ensuring that they are included in the benefits of climate adaptation strategies.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Availability of suitable technology for rainwater harvesting",
-                "Access to funding and financial resources for implementation",
-                "Community awareness and education on water conservation practices",
-                "Supportive government policies and regulations promoting water-saving technologies",
-                "Collaboration with local stakeholders and organizations for effective implementation"
-            ],
-            "KeyPerformanceIndicators": [
-                "Volume of water saved (liters)",
-                "Number of rainwater harvesting systems installed",
-                "Percentage reduction in water consumption",
-                "Cost savings from reduced water usage",
-                "Community engagement and participation rate",
-                "Increase in groundwater levels",
-                "Frequency of maintenance and operational efficiency of systems"
-            ],
-            "Impacts": [
-                "Enhances water conservation and resilience against droughts",
-                "Improves water quality for underserved communities",
-                "Promotes equity and inclusion in water resource management",
-                "Empowers marginalized populations through community engagement",
-                "Mitigates climate-related water shortages for vulnerable groups"
-            ]
-        }
-    },
-    {
-        "locode": "BRRBR",
-        "cityName": "Rio Branco",
-        "region": "BR-AC",
-        "regionName": "Acre",
-        "actionId": "ipcc_0092",
-        "actionName": "Social safety nets",
-        "actionPriority": 5,
-        "explanation": "Social safety nets score 1.4367 and rank fifth because they directly support vulnerable populations, reinforcing socio-demographic suitability. This is important for improving community resilience and mitigating the impacts of climate-induced disruptions on low-income groups.",
-        "action": {
-            "ActionID": "ipcc_0092",
-            "ActionName": "Social safety nets",
-            "ActionType": [
-                "adaptation"
-            ],
-            "AdaptationCategory": "Social Protection and Risk Reduction",
-            "Hazard": [
-                "droughts",
-                "heatwaves",
-                "floods",
-                "storms"
-            ],
-            "Sector": [
-                "food_security",
-                "public_health"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "InterventionType": null,
-            "Description": "Social safety nets encompass adaptive social protection mechanisms to reduce food insecurity and malnutrition, especially for vulnerable populations. These include cash transfers, school feeding programs, public work initiatives, unemployment compensation, land reforms, credit and insurance schemes. Integrated approaches combine climate risk assessments with disaster risk reduction, education, and social equity to enhance resilience to climate stresses.",
-            "BehavioralChangeTargeted": null,
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 2,
-                "housing": 1,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": "Enhances the social status and rights of marginalized groups, protects vulnerable populations, reduces inequalities, and promotes education and gender equity.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Integration of climate and disaster risk into social protection",
-                "education programs",
-                "coordination with sustainable livelihoods and financial inclusion initiatives"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in malnutrition rates",
-                "Increase in education access for vulnerable groups",
-                "Participation in social protection programs"
-            ],
-            "Impacts": [
-                "Improved public health",
-                "Reduced poverty and inequality",
-                "Strengthened resilience and social empowerment"
-            ]
-        }
-    },
-    {
-        "locode": "BRRBR",
-        "cityName": "Rio Branco",
-        "region": "BR-AC",
-        "regionName": "Acre",
-        "actionId": "c40_0054",
-        "actionName": "Water Recycling",
-        "actionPriority": 6,
-        "explanation": "Ranked sixth with a score of 1.3850, water recycling is essential for effective water resource management, especially given the city's inadequate water access issues. This measure is both cost-effective and has a fast implementation timeline, helping to ensure sustainable water use.",
-        "action": {
-            "ActionID": "c40_0054",
-            "ActionName": "Water Recycling",
-            "ActionType": [
-                "adaptation"
-            ],
-            "AdaptationCategory": "Technological\u00a0actions",
-            "Hazard": [
-                "droughts"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "InterventionType": null,
-            "Description": "\"Water Recycling\" or reclamation involves technological actions to treat and reuse water resources. This adaptation measure contributes to water resource sustainability and resilience, particularly in the context of changing climate patterns.",
-            "BehavioralChangeTargeted": null,
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 1,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "The \"Water Recycling\" action promotes equity and inclusion by ensuring that vulnerable or underserved communities have access to sustainable water resources. By treating and reusing water, this initiative addresses the needs of populations that may face water scarcity or contamination, which often disproportionately affects low-income and marginalized groups. \n\nAdditionally, the implementation of water recycling technologies can create job opportunities and skills training for local residents, particularly in underserved areas, fostering economic empowerment. The action also considers the equitable distribution of water resources, ensuring that all community members, regardless of socioeconomic status, benefit from improved water availability and quality. \n\nOverall, this climate action actively supports the resilience of vulnerable communities by prioritizing their specific needs in the face of climate change impacts.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Access to advanced water treatment technologies",
-                "Availability of infrastructure for water collection and distribution",
-                "Regulatory frameworks supporting water recycling initiatives",
-                "Public awareness and acceptance of water reuse practices",
-                "Funding and investment for water recycling projects",
-                "Collaboration between governmental and non-governmental organizations"
-            ],
-            "KeyPerformanceIndicators": [
-                "Volume of water recycled",
-                "Percentage reduction in freshwater consumption",
-                "Cost savings from water reuse",
-                "Number of facilities implementing water recycling",
-                "Reduction in wastewater discharge",
-                "Improvement in water quality standards",
-                "Public awareness and engagement levels",
-                "Compliance with regulatory standards",
-                "Impact on local ecosystems",
-                "Reduction in water scarcity incidents"
-            ],
-            "Impacts": [
-                "Enhances water resource sustainability",
-                "Improves water quality",
-                "Increases climate resilience for vulnerable communities",
-                "Creates job opportunities and skills training",
-                "Promotes equitable access to water resources"
-            ]
-        }
-    },
-    {
-        "locode": "BRRBR",
-        "cityName": "Rio Branco",
-        "region": "BR-AC",
-        "regionName": "Acre",
-        "actionId": "ipcc_0088",
-        "actionName": "Building codes",
-        "actionPriority": 7,
-        "explanation": "With a quantitative score of 1.37, updating and enforcing building codes is crucial for ensuring structures are resilient and safe from climate hazards. This action reduces the risk to physical assets and is especially important in a region with high infrastructure vulnerability.",
-        "action": {
-            "ActionID": "ipcc_0088",
-            "ActionName": "Building codes",
-            "ActionType": [
-                "adaptation"
-            ],
-            "AdaptationCategory": "Climate-Resilient Urban Planning",
-            "Hazard": [
-                "floods",
-                "landslides"
-            ],
-            "Sector": [
-                "road_infrastructure",
-                "geo-hydrological_disasters"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "InterventionType": null,
-            "Description": "The development and implementation of building codes and architectural design regulations aimed at integrating climate adaptation parameters. These codes are focused on reducing risks from climate-induced hazards like floods and landslides. They also support climate-resilient urban development by guiding land use, construction practices, and infrastructure standards. The initiative fosters strategic long-term urban planning to coordinate public and private investments in adaptation, including the creation of safe zones and the transformation of precarious settlements. It ensures that new infrastructure is resilient to climate risks and that urban spaces are safe and sustainable for current and future populations.",
-            "BehavioralChangeTargeted": null,
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 2,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": "Promotes inclusive urban planning by addressing risks in informal and precarious settlements and integrating eco-parks and eco-gardens for vulnerable populations.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Integration with local climate risk assessments",
-                "Strategic collaboration between urban planners and municipal authorities"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in urban flood incidents",
-                "Increased availability of safe housing in risk areas",
-                "Implementation rate of eco-parks and eco-gardens in vulnerable areas"
-            ],
-            "Impacts": [
-                "Improved public health",
-                "Increased urban livability",
-                "Reduced disaster-related costs"
-            ]
-        }
+        "explanation": "For the city of Rio Branco, bolstering the healthcare network ensures quick, efficient treatment during floods, heatwaves, or disease outbreaks. This measure invests in facilities, staff training, and vital equipment, reducing casualties when extreme events occur. By providing robust health services, the city builds resilience and keeps communities safer.",
+        "action": null
     },
     {
         "locode": "BRRBR",
@@ -459,8 +17,8 @@
         "regionName": "Acre",
         "actionId": "ipcc_0094",
         "actionName": "Access to health care",
-        "actionPriority": 8,
-        "explanation": "Access to health care, with a score of 1.3367, is prioritized to improve public health outcomes during climate crises such as heatwaves and disease outbreaks. This action is critical for ensuring that the city\u2019s vulnerable groups have timely medical support during emergencies.",
+        "actionPriority": 2,
+        "explanation": "For the city of Rio Branco, improving access to health care safeguards residents from climate-related health risks, such as respiratory issues or heat stress. A broader medical network delivers timely care to vulnerable groups, reducing complications during emergencies. This approach also strengthens the foundation for citywide climate adaptation efforts.",
         "action": {
             "ActionID": "ipcc_0094",
             "ActionName": "Access to health care",
@@ -523,67 +81,11 @@
         "cityName": "Rio Branco",
         "region": "BR-AC",
         "regionName": "Acre",
-        "actionId": "ipcc_0096",
-        "actionName": "Farm/fishery improvements",
-        "actionPriority": 9,
-        "explanation": "Farm/fishery improvements also score 1.3367 and are ranked ninth. By enhancing agricultural practices, this action addresses food security concerns, an essential factor in a city facing drought risks and a predominantly low-income population.",
-        "action": {
-            "ActionID": "ipcc_0096",
-            "ActionName": "Farm/fishery improvements",
-            "ActionType": [
-                "adaptation"
-            ],
-            "AdaptationCategory": "Integrated Farm and Fishery Adaptation",
-            "Hazard": [
-                "droughts",
-                "heatwaves",
-                "floods",
-                "wildfires",
-                "storms"
-            ],
-            "Sector": [
-                "food_security",
-                "biodiversity",
-                "water_resources"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "InterventionType": null,
-            "Description": "Implementing a range of strategies to adapt farms and fisheries to climate impacts. This includes changing fishing gear or vessel power, adopting new crop varieties or adjusting planting schedules, improving irrigation schemes, integrating crop and livestock systems, relocating livestock with improved pasture management, and adopting agroecological and agroforestry systems. Technological innovations like smart farming and financial measures such as subsidies support these adaptations.",
-            "BehavioralChangeTargeted": null,
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": "Ensures access to resources for marginalized farmers and fishers, promotes diverse livelihood options, and builds resilience in underserved communities.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Policy support for climate-resilient agriculture and fisheries",
-                "Access to finance and subsidies",
-                "Training for adopting new practices",
-                "Improved market infrastructure"
-            ],
-            "KeyPerformanceIndicators": [
-                "Increase in agricultural and fishery productivity",
-                "Adoption rate of integrated systems",
-                "Reduction in climate-related yield losses"
-            ],
-            "Impacts": [
-                "Improved food security",
-                "Enhanced ecosystem health",
-                "Increased resilience of agricultural and fishery systems"
-            ]
-        }
+        "actionId": "icare_0169",
+        "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
+        "actionPriority": 3,
+        "explanation": "For the city of Rio Branco, a dedicated emergency response plan streamlines actions when severe weather events strike. Clear protocols and trained personnel reduce chaos, ensuring vital services like shelters and medical aid are deployed efficiently. This readiness helps protect lives, property, and the city\u2019s overall stability.",
+        "action": null
     },
     {
         "locode": "BRRBR",
@@ -592,8 +94,8 @@
         "regionName": "Acre",
         "actionId": "ipcc_0097",
         "actionName": "Food storage/distribution improvements",
-        "actionPriority": 10,
-        "explanation": "This action, scoring 1.3367, is important for stabilizing food supplies during crisis periods. Enhancing storage and distribution networks helps mitigate the impacts of disruptions and ensures that food reaches those in need, aligning with adaptability and socio-demographic suitability.",
+        "actionPriority": 4,
+        "explanation": "For the city of Rio Branco, bolstering food storage and distribution ensures communities maintain nutritious supplies when flooding or extreme temperatures disrupt supply chains. This measure cuts waste by preserving perishables longer and streamlining logistics. Reliable access to food also stabilizes local markets, supporting both farmers and consumers.",
         "action": {
             "ActionID": "ipcc_0097",
             "ActionName": "Food storage/distribution improvements",
@@ -657,10 +159,88 @@
         "cityName": "Rio Branco",
         "region": "BR-AC",
         "regionName": "Acre",
+        "actionId": "ipcc_0099",
+        "actionName": "Water capture/storage",
+        "actionPriority": 5,
+        "explanation": "For the city of Rio Branco, water capture and storage solutions address fluctuating precipitation patterns, ensuring consistent supply during dry spells. Retaining water in safe reservoirs curbs reliance on fragile sources and reduces strain on utilities. This step also supports agriculture, industry, and daily household needs.",
+        "action": {
+            "ActionID": "ipcc_0099",
+            "ActionName": "Water capture/storage",
+            "ActionType": [
+                "adaptation"
+            ],
+            "AdaptationCategory": "Infrastructure-Based Adaptation",
+            "Hazard": [
+                "droughts",
+                "floods",
+                "storms"
+            ],
+            "Sector": [
+                "water_resources",
+                "food_security",
+                "energy_security",
+                "geo-hydrological_disasters"
+            ],
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "InterventionType": null,
+            "Description": "Implementing water capture and storage solutions such as farm ponds, revival of water bodies, rain gardens, bioswales, retention ponds, and water storage tanks. These measures aim to mitigate climate-induced impacts by improving water management, reducing stormwater runoff, enhancing water quality, and supporting agriculture and energy production under changing climate scenarios. Multi-purpose water reservoirs and dams provide additional benefits by addressing water shortages and managing risks associated with natural hazards.",
+            "BehavioralChangeTargeted": null,
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 1,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": "Ensures access to water for underserved communities, supports sustainable livelihoods in water-scarce regions, and promotes equitable resource distribution through inclusive decision-making processes.",
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Investment in green infrastructure",
+                "community engagement",
+                "policy support for water resource management"
+            ],
+            "KeyPerformanceIndicators": [
+                "Reduction in stormwater runoff",
+                "increase in water storage capacity",
+                "improvement in water quality",
+                "stability in agricultural yields"
+            ],
+            "Impacts": [
+                "Improved water availability",
+                "enhanced climate resilience",
+                "sustainable agriculture and energy production",
+                "reduced risk of flooding and drought"
+            ]
+        }
+    },
+    {
+        "locode": "BRRBR",
+        "cityName": "Rio Branco",
+        "region": "BR-AC",
+        "regionName": "Acre",
+        "actionId": "icare_0148",
+        "actionName": "Create the Municipal Climate Change Forum",
+        "actionPriority": 6,
+        "explanation": "For the city of Rio Branco, a Municipal Climate Change Forum unites government, citizens, and local enterprises to collaborate on adaptation and mitigation strategies. By sharing knowledge and resources, stakeholders develop targeted, inclusive solutions. Ongoing dialogue within this forum fosters trust, engagement, and effective climate responses.",
+        "action": null
+    },
+    {
+        "locode": "BRRBR",
+        "cityName": "Rio Branco",
+        "region": "BR-AC",
+        "regionName": "Acre",
         "actionId": "ipcc_0098",
         "actionName": "Behaviour change in diets and food waste",
-        "actionPriority": 11,
-        "explanation": "Ranking eleventh with a quantitative score of 1.3367, this action promotes sustainable consumption practices. It is a cost-effective measure that indirectly contributes to emissions reductions and resource efficiency by reducing food waste and supporting healthier diets.",
+        "actionPriority": 7,
+        "explanation": "For the city of Rio Branco, shifting dietary habits and reducing food waste helps lower greenhouse gas emissions and pressure on local resources. More sustainable food choices lead to healthier lifestyles and fewer landfill-bound leftovers. This shift also supports local producers, encouraging diverse and climate-resilient agriculture.",
         "action": {
             "ActionID": "ipcc_0098",
             "ActionName": "Behaviour change in diets and food waste",
@@ -725,64 +305,94 @@
         "cityName": "Rio Branco",
         "region": "BR-AC",
         "regionName": "Acre",
-        "actionId": "ipcc_0100",
-        "actionName": "Efficient water use/demand",
-        "actionPriority": 12,
-        "explanation": "Also scoring 1.3367, ensuring efficient water use addresses the critical issue of water scarcity. This action is crucial for reducing wastage, managing available resources more effectively, and supporting adaptation in a city with notable water access challenges.",
+        "actionId": "icare_0151",
+        "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
+        "actionPriority": 8,
+        "explanation": "For the city of Rio Branco, identifying weaknesses in Special Social Interest Zones directs resources to where they are needed most. Restoring these areas bolsters housing and infrastructure against flood risks, storms, or heatwaves. By focusing on at-risk communities, the city promotes equitable climate resilience for all residents.",
+        "action": null
+    },
+    {
+        "locode": "BRRBR",
+        "cityName": "Rio Branco",
+        "region": "BR-AC",
+        "regionName": "Acre",
+        "actionId": "icare_0181",
+        "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
+        "actionPriority": 9,
+        "explanation": "For the city of Rio Branco, relocating residents from high-risk zones prevents future losses due to floods or erosion. Restoring local ecosystems following relocation further stabilizes the land, protecting communities from recurring hazards. This twofold strategy reduces long-term costs and fosters safer, healthier living conditions.",
+        "action": null
+    },
+    {
+        "locode": "BRRBR",
+        "cityName": "Rio Branco",
+        "region": "BR-AC",
+        "regionName": "Acre",
+        "actionId": "icare_0176",
+        "actionName": "Development of Climate Action Plan",
+        "actionPriority": 10,
+        "explanation": "For the city of Rio Branco, establishing a Climate Action Plan coordinates efforts across energy, transportation, and public health sectors. A unified vision helps allocate resources effectively and avoid overlap in adaptation measures. This forward-looking approach also secures stakeholder buy-in, propelling citywide resilience and reduced emissions.",
+        "action": null
+    },
+    {
+        "locode": "BRRBR",
+        "cityName": "Rio Branco",
+        "region": "BR-AC",
+        "regionName": "Acre",
+        "actionId": "ipcc_0087",
+        "actionName": "Infrastructure retrofitting",
+        "actionPriority": 11,
+        "explanation": "For the city of Rio Branco, upgrading roads, bridges, and critical facilities safeguards against climate-induced damage. Reinforced structures minimize service interruptions during storms or extreme heat. By protecting daily operations and public safety, this measure also reduces long-term repair expenses.",
         "action": {
-            "ActionID": "ipcc_0100",
-            "ActionName": "Efficient water use/demand",
+            "ActionID": "ipcc_0087",
+            "ActionName": "Infrastructure retrofitting",
             "ActionType": [
                 "adaptation"
             ],
-            "AdaptationCategory": "Integrated Water Management",
+            "AdaptationCategory": "Infrastructural Adaptation",
             "Hazard": [
+                "floods",
                 "droughts",
                 "heatwaves"
             ],
             "Sector": [
-                "water_resources",
-                "food_security"
+                "road_infrastructure",
+                "public_health",
+                "energy_security"
             ],
             "Subsector": null,
             "PrimaryPurpose": [
                 "climate_resilience"
             ],
             "InterventionType": null,
-            "Description": "Implementing advanced irrigation techniques such as precision and drip irrigation to enhance water use efficiency in agriculture. Managed Aquifer Recharge (MAR) is applied to replenish groundwater supplies using stormwater, treated wastewater, or other sources. These actions are complemented by cooperative policies across multiple sectors to ensure sustainable water resource management, equitable access, and regional collaboration. Additionally, promoting changes in water consumption patterns, such as reducing waste and improving efficiency in urban and agricultural water use, supports resilience against water scarcity and enhances adaptive capacity in vulnerable regions. These efforts collectively aim to address the growing demand for freshwater in the face of climate change and ensure long-term sustainability.",
+            "Description": "Strengthening and upgrading existing infrastructure, including roads, housing, and energy systems, to improve resilience against climate risks such as floods, droughts, and heatwaves. Efforts include Air conditioning, using thermosiphons for permafrost degradation, increasing rooftop albedo (for reflectivity) and shading",
             "BehavioralChangeTargeted": null,
             "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 2,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
+                "air_quality": 1,
+                "water_quality": 1,
+                "habitat": 0,
+                "cost_of_living": -1,
+                "housing": 1,
+                "mobility": 1,
+                "stakeholder_engagement": 1
             },
-            "EquityAndInclusionConsiderations": "Supports vulnerable farming and urban communities by ensuring equitable access to water resources, promoting sustainable consumption patterns, and addressing persistent water stress in underserved areas.",
+            "EquityAndInclusionConsiderations": "Improves resilience for vulnerable communities, especially in low-income regions, by reducing risks from extreme climate events.",
             "GHGReductionPotential": null,
             "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
+            "CostInvestmentNeeded": "high",
             "TimelineForImplementation": "5-10 years",
             "Dependencies": [
-                "Infrastructure for water reuse and MAR",
-                "Regulatory frameworks for water management",
-                "Education and training on irrigation techniques",
-                "Regional and cross-sector policy coordination"
+                "Policy alignment",
+                "Funding availability",
+                "Engineering and construction expertise"
             ],
             "KeyPerformanceIndicators": [
-                "Reduction in agricultural water usage",
-                "Increase in groundwater recharge rates",
-                "Improved crop yields",
-                "Adoption of sustainable water consumption patterns",
-                "Regional collaboration metrics"
+                "Reduced infrastructure failure during hazards",
+                "Increased capacity for housing and energy systems"
             ],
             "Impacts": [
-                "Enhanced water resource sustainability",
-                "Improved food security",
-                "Increased resilience against water scarcity",
-                "Strengthened regional and cross-sector collaboration"
+                "Enhanced urban resilience",
+                "Safer housing",
+                "Reduced economic losses due to climate impacts"
             ]
         }
     },
@@ -791,67 +401,22 @@
         "cityName": "Rio Branco",
         "region": "BR-AC",
         "regionName": "Acre",
-        "actionId": "c40_0050",
-        "actionName": "White Roofs",
+        "actionId": "icare_0152",
+        "actionName": "Recovery of degraded areas",
+        "actionPriority": 12,
+        "explanation": "For the city of Rio Branco, restoring degraded lands revives natural vegetation that can stabilize soil and curb erosion. Revitalized habitats also enhance biodiversity and carbon sequestration, helping the city adapt to shifting weather patterns. This effort sustains local ecosystems that support agriculture and community livelihoods.",
+        "action": null
+    },
+    {
+        "locode": "BRRBR",
+        "cityName": "Rio Branco",
+        "region": "BR-AC",
+        "regionName": "Acre",
+        "actionId": "icare_0144",
+        "actionName": "Creation of a Financial Support Program to Adress Extreme Weather Events",
         "actionPriority": 13,
-        "explanation": "White Roofs, with a quantitative score of 1.3217, is an effective adaptation measure to combat urban heat island effects. Although its direct emissions reduction is less pronounced, it helps mitigate heat stress in urban areas, making it relevant for a tropical climate city.",
-        "action": {
-            "ActionID": "c40_0050",
-            "ActionName": "White Roofs",
-            "ActionType": [
-                "adaptation"
-            ],
-            "AdaptationCategory": "Eco-engineering",
-            "Hazard": [
-                "heatwaves"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "InterventionType": null,
-            "Description": "\"White Roofs\" utilize eco-engineering by adopting reflective roofing materials to reduce heat absorption. This adaptation strategy helps mitigate the urban heat island effect, contributing to more sustainable and climate-resilient buildings.",
-            "BehavioralChangeTargeted": null,
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "The \"White Roofs\" climate action promotes equity and inclusion by specifically targeting urban areas, which often house vulnerable and underserved communities that are disproportionately affected by the urban heat island effect. By implementing reflective roofing materials, this action directly benefits low-income neighborhoods that may lack access to adequate cooling resources, thereby reducing energy costs and improving indoor comfort. Additionally, the initiative can create job opportunities in the installation and maintenance of these roofs, providing economic benefits to local residents. Overall, the action addresses environmental justice by focusing on areas that face the greatest climate-related challenges, ensuring that marginalized communities receive the support needed to enhance their resilience to heat and climate change.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Availability of reflective roofing materials",
-                "Awareness and acceptance of eco-engineering practices among builders and homeowners",
-                "Regulatory support or incentives for implementing white roofs",
-                "Access to funding or financial resources for installation",
-                "Collaboration between urban planners and environmental organizations"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in surface temperature",
-                "Percentage of buildings with white roofs",
-                "Energy savings in cooling costs",
-                "Reduction in urban heat island effect",
-                "Increase in albedo values",
-                "Improvement in air quality",
-                "Community engagement and participation rate",
-                "Reduction in greenhouse gas emissions"
-            ],
-            "Impacts": [
-                "Mitigates urban heat island effect",
-                "Enhances climate resilience for vulnerable communities",
-                "Reduces energy costs for low-income households",
-                "Creates job opportunities in installation and maintenance",
-                "Promotes environmental justice"
-            ]
-        }
+        "explanation": "For the city of Rio Branco, a dedicated financial support program helps residents recover from floods, storms, or heatwaves more swiftly. Quick funding for repairs, relocation, or lost income eases socioeconomic strain and reduces prolonged disruption. This measure also highlights the city\u2019s commitment to community resilience.",
+        "action": null
     },
     {
         "locode": "BRRBR",
@@ -861,7 +426,7 @@
         "actionId": "c40_0051",
         "actionName": "Public Shading",
         "actionPriority": 14,
-        "explanation": "With the same score as White Roofs (1.3217), Public Shading is ranked slightly lower due to its more localized impact. It still plays an important role in reducing heat exposure among vulnerable urban populations.",
+        "explanation": "For the city of Rio Branco, providing public shading in plazas and transit stops reduces heat exposure and enhances comfort. This amenity lowers health risks tied to high temperatures while encouraging outdoor activities. It further supports commercial areas by attracting foot traffic and promoting a pleasant urban environment.",
         "action": {
             "ActionID": "c40_0051",
             "ActionName": "Public Shading",
@@ -925,254 +490,106 @@
         "cityName": "Rio Branco",
         "region": "BR-AC",
         "regionName": "Acre",
-        "actionId": "ipcc_0093",
-        "actionName": "Availability of health infrastructure",
+        "actionId": "icare_0170",
+        "actionName": "Build safe housing and implement urban rehabilitation projects for populations living in high-risk areas",
         "actionPriority": 15,
-        "explanation": "This action scores 1.27 and focuses on expanding and improving health infrastructure. While similar to access to health care, its emphasis on infrastructure highlights the need to have robust facilities in place before disasters, which is vital given the city's public health risks.",
-        "action": {
-            "ActionID": "ipcc_0093",
-            "ActionName": "Availability of health infrastructure",
-            "ActionType": [
-                "adaptation"
-            ],
-            "AdaptationCategory": "Infrastructure Adaptation",
-            "Hazard": [
-                "droughts",
-                "floods",
-                "sea-level-rise",
-                "diseases"
-            ],
-            "Sector": [
-                "public_health",
-                "water_resources"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "InterventionType": null,
-            "Description": "Ensuring access to safe drinking water infrastructure, protecting health services, and improving sanitation systems to mitigate climate impacts. This includes developing adaptive measures for water security against droughts, floods, and sea-level rise. Strengthening infrastructure resilience ensures equitable access to health services, reduces contamination risks, and addresses the impacts of climate-induced hazards.",
-            "BehavioralChangeTargeted": null,
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 2,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": "Enhances access to critical health and water resources for vulnerable and underserved communities, mitigating inequities caused by climate impacts.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Adequate funding",
-                "technological investments in health and water infrastructure",
-                "effective governance and cross-sector coordination"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in waterborne diseases",
-                "improved access to potable water",
-                "number of resilient health facilities developed"
-            ],
-            "Impacts": [
-                "Improved public health",
-                "enhanced water security",
-                "resilience against climate-induced hazards"
-            ]
-        }
+        "explanation": "For the city of Rio Branco, constructing secure homes in vulnerable zones prevents loss of life and property damage when disasters hit. Strengthening neighborhoods also lessens reliance on emergency measures, easing the burden on municipal services. This approach fosters lasting safety and community well-being.",
+        "action": null
     },
     {
         "locode": "BRRBR",
         "cityName": "Rio Branco",
         "region": "BR-AC",
         "regionName": "Acre",
-        "actionId": "ipcc_0099",
-        "actionName": "Water capture/storage",
+        "actionId": "icare_0155",
+        "actionName": "Preservation and Recovery of Water Bodies",
         "actionPriority": 16,
-        "explanation": "At a score of 1.27, water capture and storage is critical for managing water resources in response to drought conditions. It assists in ensuring a reliable water supply during periods of scarcity, thereby enhancing the city\u2019s resilience.",
-        "action": {
-            "ActionID": "ipcc_0099",
-            "ActionName": "Water capture/storage",
-            "ActionType": [
-                "adaptation"
-            ],
-            "AdaptationCategory": "Infrastructure-Based Adaptation",
-            "Hazard": [
-                "droughts",
-                "floods",
-                "storms"
-            ],
-            "Sector": [
-                "water_resources",
-                "food_security",
-                "energy_security",
-                "geo-hydrological_disasters"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "InterventionType": null,
-            "Description": "Implementing water capture and storage solutions such as farm ponds, revival of water bodies, rain gardens, bioswales, retention ponds, and water storage tanks. These measures aim to mitigate climate-induced impacts by improving water management, reducing stormwater runoff, enhancing water quality, and supporting agriculture and energy production under changing climate scenarios. Multi-purpose water reservoirs and dams provide additional benefits by addressing water shortages and managing risks associated with natural hazards.",
-            "BehavioralChangeTargeted": null,
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 1,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": "Ensures access to water for underserved communities, supports sustainable livelihoods in water-scarce regions, and promotes equitable resource distribution through inclusive decision-making processes.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Investment in green infrastructure",
-                "community engagement",
-                "policy support for water resource management"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in stormwater runoff",
-                "increase in water storage capacity",
-                "improvement in water quality",
-                "stability in agricultural yields"
-            ],
-            "Impacts": [
-                "Improved water availability",
-                "enhanced climate resilience",
-                "sustainable agriculture and energy production",
-                "reduced risk of flooding and drought"
-            ]
-        }
+        "explanation": "For the city of Rio Branco, preserving and revitalizing water bodies safeguards essential habitats and sustains freshwater supplies. Healthy rivers and wetlands mitigate floods, store carbon, and bolster biodiversity. This measure also supports local fisheries, agriculture, and drinking water sources, strengthening overall resilience.",
+        "action": null
     },
     {
         "locode": "BRRBR",
         "cityName": "Rio Branco",
         "region": "BR-AC",
         "regionName": "Acre",
-        "actionId": "ipcc_0101",
-        "actionName": "Efficient water supply/distribution",
+        "actionId": "icare_0162",
+        "actionName": "Strengthen programs for control and conservation of protected areas",
         "actionPriority": 17,
-        "explanation": "With a quantitative score of 1.27, this action supports improvements in the water distribution network. It\u2019s essential for ensuring that water reaches consumers efficiently, reducing losses and enhancing overall water security.",
-        "action": {
-            "ActionID": "ipcc_0101",
-            "ActionName": "Efficient water supply/distribution",
-            "ActionType": [
-                "adaptation"
-            ],
-            "AdaptationCategory": "Sustainable Resource Management",
-            "Hazard": [
-                "droughts",
-                "floods",
-                "storms"
-            ],
-            "Sector": [
-                "water_resources"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "InterventionType": null,
-            "Description": "Implementing sustainable water supply systems by constructing irrigation infrastructure, promoting inter-basin water transfers, utilizing nature-based solutions (NBS) such as rain gardens, bioswales, and wetlands, and integrating advanced techniques like water reuse and water upgrading. Water reuse involves treating and recycling wastewater for non-potable or potable purposes, while water upgrading focuses on improving the quality of available water for diverse uses. These approaches enhance stormwater infiltration, improve urban water management, increase drought resilience, and support groundwater recharge. They provide energy-efficient and economical water solutions while maintaining sustainable urban development.",
-            "BehavioralChangeTargeted": null,
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": "Promotes equitable access to water resources, particularly in underserved urban areas, by integrating natural and engineered water management systems to benefit all communities, including low-income groups.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Adequate funding for infrastructure development",
-                "Community engagement for NBS implementation",
-                "Integration of urban planning with water management"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in water scarcity incidents",
-                "Increase in groundwater recharge rates",
-                "Enhanced urban water infiltration capacity"
-            ],
-            "Impacts": [
-                "Improved water security",
-                "Enhanced urban livability",
-                "Increased resilience to climate-related water risks"
-            ]
-        }
+        "explanation": "For the city of Rio Branco, reinforcing conservation programs safeguards forests and critical habitats that act as natural defenses against extreme events. Preserved ecosystems regulate water cycles, filter pollutants, and maintain soil stability. This measure also supports Indigenous and local communities relying on forest resources for their livelihoods.",
+        "action": null
     },
     {
         "locode": "BRRBR",
         "cityName": "Rio Branco",
         "region": "BR-AC",
         "regionName": "Acre",
-        "actionId": "ipcc_0102",
-        "actionName": "Seasonal/temporary mobility",
+        "actionId": "icare_0154",
+        "actionName": "Cleaning and Unclogging of Channels with Installation of Eco-barriers",
         "actionPriority": 18,
-        "explanation": "Seasonal/temporary mobility, scoring 1.27, is aimed at facilitating relocation or movement during extreme weather events. This strategy minimizes risk exposure and ensures that populations can quickly adapt to changing conditions, though it has moderate direct emissions impact.",
+        "explanation": "For the city of Rio Branco, regularly clearing channels and installing eco-barriers prevents flooding by keeping waterways unobstructed. This proactive measure reduces damage to homes and infrastructure during heavy rains. Eco-barriers also filter out debris, lowering pollution and health hazards associated with stagnant water.",
+        "action": null
+    },
+    {
+        "locode": "BRRBR",
+        "cityName": "Rio Branco",
+        "region": "BR-AC",
+        "regionName": "Acre",
+        "actionId": "ipcc_0092",
+        "actionName": "Social safety nets",
+        "actionPriority": 19,
+        "explanation": "For the city of Rio Branco, social safety nets offer continuous aid for vulnerable populations facing climate-related adversities. By ensuring support like food, health services, and temporary shelter, the city reduces the severity of crises. These programs also foster a sense of community and quick recovery when disasters strike.",
         "action": {
-            "ActionID": "ipcc_0102",
-            "ActionName": "Seasonal/temporary mobility",
+            "ActionID": "ipcc_0092",
+            "ActionName": "Social safety nets",
             "ActionType": [
                 "adaptation"
             ],
-            "AdaptationCategory": "Livelihood Adaptation",
+            "AdaptationCategory": "Social Protection and Risk Reduction",
             "Hazard": [
-                "sea-level-rise",
-                "storms",
-                "droughts"
+                "droughts",
+                "heatwaves",
+                "floods",
+                "storms"
             ],
             "Sector": [
                 "food_security",
-                "biodiversity"
+                "public_health"
             ],
             "Subsector": null,
             "PrimaryPurpose": [
                 "climate_resilience"
             ],
             "InterventionType": null,
-            "Description": "Facilitating mobility of fishing fleets and workers to adapt to shifting marine species distributions caused by climate change. This includes enabling seasonal or temporary migration to align with the availability of resources, improving infrastructure and technology to support mobility, and fostering flexible governance to manage transboundary resources sustainably. These actions aim to maintain livelihoods and reduce economic impacts of climate variability.",
+            "Description": "Social safety nets encompass adaptive social protection mechanisms to reduce food insecurity and malnutrition, especially for vulnerable populations. These include cash transfers, school feeding programs, public work initiatives, unemployment compensation, land reforms, credit and insurance schemes. Integrated approaches combine climate risk assessments with disaster risk reduction, education, and social equity to enhance resilience to climate stresses.",
             "BehavioralChangeTargeted": null,
             "CoBenefits": {
                 "air_quality": 0,
                 "water_quality": 1,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 1
+                "habitat": 1,
+                "cost_of_living": 2,
+                "housing": 1,
+                "mobility": 0,
+                "stakeholder_engagement": 2
             },
-            "EquityAndInclusionConsiderations": "Ensures equitable access to resources for vulnerable communities, including small-scale fishers and those dependent on seasonal income, by promoting inclusive governance structures and reducing barriers to mobility.",
+            "EquityAndInclusionConsiderations": "Enhances the social status and rights of marginalized groups, protects vulnerable populations, reduces inequalities, and promotes education and gender equity.",
             "GHGReductionPotential": null,
             "AdaptationEffectiveness": "high",
             "CostInvestmentNeeded": "medium",
             "TimelineForImplementation": "5-10 years",
             "Dependencies": [
-                "Infrastructure and technology investments",
-                "Transboundary agreements",
-                "Capacity-building initiatives to support mobility"
+                "Integration of climate and disaster risk into social protection",
+                "education programs",
+                "coordination with sustainable livelihoods and financial inclusion initiatives"
             ],
             "KeyPerformanceIndicators": [
-                "Reduction in resource overexploitation",
-                "Increase in seasonal employment opportunities",
-                "Enhanced management of transboundary fisheries"
+                "Reduction in malnutrition rates",
+                "Increase in education access for vulnerable groups",
+                "Participation in social protection programs"
             ],
             "Impacts": [
-                "Improved economic resilience",
-                "Stabilized food security",
-                "Sustainable management of marine biodiversity"
+                "Improved public health",
+                "Reduced poverty and inequality",
+                "Strengthened resilience and social empowerment"
             ]
         }
     },
@@ -1181,133 +598,10 @@
         "cityName": "Rio Branco",
         "region": "BR-AC",
         "regionName": "Acre",
-        "actionId": "c40_0046",
-        "actionName": "Coastal Protection",
-        "actionPriority": 19,
-        "explanation": "Despite a score of 1.2350, Coastal Protection is ranked lower because Rio Branco is an inland city, making coastal measures less directly relevant. However, the measure could offer insights or spillover benefits for similar protective infrastructure in other contexts.",
-        "action": {
-            "ActionID": "c40_0046",
-            "ActionName": "Coastal Protection",
-            "ActionType": [
-                "adaptation"
-            ],
-            "AdaptationCategory": "Eco-engineering",
-            "Hazard": [
-                "floods"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "InterventionType": null,
-            "Description": "\"Coastal Protection\" strategies include the construction of sea walls and protective structures to mitigate the impact of rising sea levels and coastal erosion. This adaptation measure enhances the resilience of coastal areas and protects communities from the impacts of climate change.",
-            "BehavioralChangeTargeted": null,
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 0,
-                "habitat": 1,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "The \"Coastal Protection\" strategies inherently promote equity and inclusion by focusing on the protection of vulnerable coastal communities that are often the most affected by climate change impacts, such as rising sea levels and erosion. These communities frequently include low-income populations, marginalized groups, and those with limited resources to adapt to environmental changes. \n\nBy constructing sea walls and protective structures, the action directly addresses the needs of these underserved populations, ensuring their safety and stability in the face of climate threats. Additionally, the implementation of such strategies often involves community engagement and input, allowing affected residents to have a voice in the decision-making process, which fosters a sense of ownership and inclusion. \n\nFurthermore, the focus on enhancing resilience in these areas helps to safeguard not only the physical infrastructure but also the social and economic well-being of the communities, thereby promoting equitable access to resources and opportunities in the context of climate adaptation.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Availability of funding and resources for construction and maintenance of protective structures",
-                "Access to engineering expertise for designing effective sea walls and coastal defenses",
-                "Collaboration with local communities and stakeholders for planning and implementation",
-                "Regulatory approvals and compliance with environmental laws and policies",
-                "Research and data on coastal erosion patterns and sea level rise projections"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in coastal erosion rate",
-                "Increase in coastal property value",
-                "Number of communities protected",
-                "Extent of area protected by sea walls",
-                "Frequency of flooding events",
-                "Community awareness and preparedness levels",
-                "Cost-effectiveness of protective measures",
-                "Biodiversity health in coastal areas"
-            ],
-            "Impacts": [
-                "Enhances resilience of vulnerable coastal communities",
-                "Protects against flooding and coastal erosion",
-                "Promotes equity and inclusion for marginalized groups",
-                "Fosters community engagement in decision-making",
-                "Safeguards social and economic well-being of communities"
-            ]
-        }
-    },
-    {
-        "locode": "BRRBR",
-        "cityName": "Rio Branco",
-        "region": "BR-AC",
-        "regionName": "Acre",
-        "actionId": "c40_0059",
-        "actionName": "Early Warning",
+        "actionId": "icare_0164",
+        "actionName": "Hydrological Monitoring System with Telemetry Stations",
         "actionPriority": 20,
-        "explanation": "Early Warning ranks last with a score of 1.2350. Although it is vital for risk reduction, its marginal quantitative score compared to other early warning systems and disaster preparedness actions positions it lower in the overall prioritization framework.",
-        "action": {
-            "ActionID": "c40_0059",
-            "ActionName": "Early Warning",
-            "ActionType": [
-                "adaptation"
-            ],
-            "AdaptationCategory": "Educational/Informational\u00a0actions",
-            "Hazard": [
-                "storms"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "InterventionType": null,
-            "Description": "\"Early Warning\" systems involve the timely detection and communication of potential climate-related hazards, enabling proactive responses to mitigate risks. This initiative enhances community preparedness and reduces the impact of adverse events.",
-            "BehavioralChangeTargeted": null,
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "The \"Early Warning\" systems initiative promotes equity and inclusion by ensuring that vulnerable or underserved communities receive timely and accessible information about climate-related hazards. By focusing on proactive communication, the action helps to empower these communities, which often lack the resources to prepare for and respond to climate threats. \n\nAdditionally, the initiative can be designed to reach diverse populations, including those with language barriers or disabilities, ensuring that all community members can understand and act on the warnings. This inclusivity helps to reduce disparities in risk and enhances overall community resilience, as everyone is better equipped to respond to potential hazards. \n\nOverall, the action recognizes the unique challenges faced by underserved communities and aims to provide them with the necessary tools and information to protect themselves from climate impacts, thereby fostering a more equitable approach to climate resilience.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Access to reliable climate data and forecasting models",
-                "Effective communication infrastructure for disseminating warnings",
-                "Community engagement and education on climate risks",
-                "Collaboration with local and national emergency response agencies",
-                "Funding and resources for technology and system maintenance"
-            ],
-            "KeyPerformanceIndicators": [
-                "Number of early warnings issued",
-                "Response time to warnings",
-                "Community awareness and preparedness levels",
-                "Reduction in disaster-related damages",
-                "Number of training sessions conducted",
-                "Stakeholder engagement and participation rates",
-                "Feedback from community on warning effectiveness",
-                "Frequency of drills and simulations conducted"
-            ],
-            "Impacts": [
-                "Enhanced community preparedness for storms",
-                "Reduced impact of climate-related hazards",
-                "Empowerment of vulnerable communities",
-                "Improved equity and inclusion in climate resilience efforts",
-                "Increased accessibility of information for diverse populations"
-            ]
-        }
+        "explanation": "For the city of Rio Branco, deploying telemetry stations for hydrological monitoring provides real-time data on water levels and flow. This early-warning system helps forecast flooding and alerts authorities to take preventive measures. By relying on accurate information, the city can safeguard infrastructure and reduce flood-related disruptions.",
+        "action": null
     }
 ]

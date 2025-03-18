@@ -4,223 +4,10 @@
         "cityName": "Cama\u00e7ari",
         "region": "BR-BA",
         "regionName": "Bahia",
-        "actionId": "ipcc_0039",
-        "actionName": "Carbon Capture and Storage (CCS)",
-        "actionPriority": 1,
-        "explanation": "This action has the highest quantitative score (2.379) and directly targets industrial process emissions, which are the most emission-intensive in Cama\u00e7ari. It offers significant GHG reductions and aligns closely with emission reduction priorities.",
-        "action": {
-            "ActionID": "ipcc_0039",
-            "ActionName": "Carbon Capture and Storage (CCS)",
-            "ActionType": [
-                "mitigation"
-            ],
-            "AdaptationCategory": null,
-            "Hazard": null,
-            "Sector": [
-                "ippu"
-            ],
-            "Subsector": [
-                "product_use"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "InterventionType": [
-                "infrastructure_investments",
-                "programs_and_initiatives",
-                "regulations_and_laws"
-            ],
-            "Description": "Carbon Capture and Storage (CCS) involves capturing CO2 from industrial processes, energy generation, or the atmosphere and storing it in geological formations for millennia to prevent its release into the atmosphere. CCS technologies can also enable near-zero or negative emissions when combined with sustainably sourced biofuels or direct air capture, supporting decarbonization of hard-to-abate sectors.",
-            "BehavioralChangeTargeted": "Encourages industries to adopt CCS technologies for emission reduction, contributing to compliance with climate targets and fostering sustainable innovation.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "Supports equitable transition by providing decarbonization pathways for energy-intensive and hard-to-abate industries, ensuring jobs and economic stability in regions dependent on these sectors.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": "80-100",
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": ">10 years",
-            "Dependencies": [
-                "Requires the development of CO2 transport and storage infrastructure",
-                "supportive policy frameworks",
-                "sufficient clean energy for capture processes",
-                "incentives for adoption"
-            ],
-            "KeyPerformanceIndicators": [
-                "Amount of CO2 captured and stored annually",
-                "percentage reduction in industrial emissions",
-                "operational capacity of CCS projects globally"
-            ],
-            "Impacts": [
-                "Significant reductions in GHG emissions",
-                "mitigation of climate change effects",
-                "increased energy security through sustainable industrial practices"
-            ]
-        }
-    },
-    {
-        "locode": "BRCCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BR-BA",
-        "regionName": "Bahia",
-        "actionId": "ipcc_0033",
-        "actionName": "Electrification of Processes",
-        "actionPriority": 2,
-        "explanation": "With a high score of 2.221, this action is highly effective in reducing emissions in industrial processes. It is highly relevant to the city's largest emission sector and promises rapid and cost-effective benefits.",
-        "action": {
-            "ActionID": "ipcc_0033",
-            "ActionName": "Electrification of Processes",
-            "ActionType": [
-                "mitigation"
-            ],
-            "AdaptationCategory": null,
-            "Hazard": null,
-            "Sector": [
-                "ippu"
-            ],
-            "Subsector": [
-                "industrial_processes"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "InterventionType": [
-                "infrastructure_investments",
-                "programs_and_initiatives",
-                "regulations_and_laws"
-            ],
-            "Description": "Transitioning steel production processes to electrified methods such as molten oxide electrolysis, advanced direct reduction, and other methods powered by low-carbon electricity to reduce emissions and improve energy efficiency.",
-            "BehavioralChangeTargeted": "Encourages adoption of electrified processes and transition to low-carbon energy sources in steel production.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "Promotes equitable access to advanced electrification technologies and training for workforce, ensuring participation from underserved industrial sectors.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": "60-79",
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Availability of low-carbon electricity",
-                "development of suitable anode materials",
-                "infrastructure for large-scale electrification in steel production"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in emissions per ton of steel produced",
-                "increase in the share of electrified processes",
-                "energy savings in production stages"
-            ],
-            "Impacts": [
-                "Reduced reliance on fossil fuels",
-                "improved air quality",
-                "enhanced global competitiveness of steel manufacturers"
-            ]
-        }
-    },
-    {
-        "locode": "BRCCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BR-BA",
-        "regionName": "Bahia",
-        "actionId": "ipcc_0037",
-        "actionName": "Feedstock Decarbonisation",
-        "actionPriority": 3,
-        "explanation": "Scoring 1.971, this action focuses on decarbonising the feedstocks used in industrial processes. It directly tackles high-emission sources and supports sectoral relevance, making it a top priority.",
-        "action": {
-            "ActionID": "ipcc_0037",
-            "ActionName": "Feedstock Decarbonisation",
-            "ActionType": [
-                "mitigation"
-            ],
-            "AdaptationCategory": null,
-            "Hazard": null,
-            "Sector": [
-                "ippu"
-            ],
-            "Subsector": [
-                "product_use"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "InterventionType": [
-                "infrastructure_investments",
-                "programs_and_initiatives",
-                "incentives_and_subsidies",
-                "regulations_and_laws"
-            ],
-            "Description": "Decarbonising feedstocks for industrial processes through Carbon Capture and Storage (CCS), Carbon Capture and Utilisation (CCU), and integration with low-carbon energy sources. This includes capturing carbon from various industrial emissions and reusing or storing it to reduce greenhouse gas emissions. Applications include creating synthetic fuels, chemicals, and materials while using renewable energy or biogenic carbon sources.",
-            "BehavioralChangeTargeted": "Encourages industrial stakeholders to adopt CCS and CCU technologies, shifting towards low-carbon and circular economy feedstocks.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "Supports equitable industrial development by promoting access to cleaner technologies, especially for industries in developing regions, to reduce emissions without compromising economic growth.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": "60-79",
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": ">10 years",
-            "Dependencies": [
-                "Requires advancements in CCS and CCU technologies",
-                "availability of low-GHG electricity",
-                "supportive policies to incentivize industrial decarbonization"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in GHG emissions from industrial processes",
-                "increase in the use of low-carbon feedstocks",
-                "the number of CCS/CCU projects implemented"
-            ],
-            "Impacts": [
-                "Enhanced industrial sustainability",
-                "reduced dependence on fossil fuels",
-                "advancement of circular economy principles",
-                "mitigation of climate change impacts"
-            ]
-        }
-    },
-    {
-        "locode": "BRCCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BR-BA",
-        "regionName": "Bahia",
         "actionId": "c40_0035",
         "actionName": "Waste Efficiency",
-        "actionPriority": 4,
-        "explanation": "With a score of 1.823, Waste Efficiency targets the waste management sector\u2014a significant contributor to city emissions. It also complements circular economy principles and offers a substantial mitigation potential.",
+        "actionPriority": 1,
+        "explanation": "For the city of Cama\u00e7ari, Waste Efficiency addresses the entire waste cycle from the outset, reducing emissions while conserving resources. By emphasizing minimal waste generation, it supports long-term environmental benefits and local sustainability goals. This holistic approach also helps the city adapt to growing waste volumes more effectively.",
         "action": {
             "ActionID": "c40_0035",
             "ActionName": "Waste Efficiency",
@@ -294,514 +81,13 @@
         "cityName": "Cama\u00e7ari",
         "region": "BR-BA",
         "regionName": "Bahia",
-        "actionId": "ipcc_0076",
-        "actionName": "Switching to Net-zero-emissions Materials and Supply Chains",
-        "actionPriority": 5,
-        "explanation": "This action (score 1.771) focuses on transforming supply chains and material usage in industrial processes. It aligns with emissions reduction and sector relevance, making it a critical next step.",
+        "actionId": "c40_0040",
+        "actionName": "Volume-Based Collection",
+        "actionPriority": 2,
+        "explanation": "For the city of Cama\u00e7ari, Volume-Based Collection incentivizes households and businesses to reduce waste by linking disposal costs to actual amounts. It can be implemented swiftly, promoting visible improvements in how waste is handled. This measure also eases landfill pressure and fosters a culture of responsible resource use.",
         "action": {
-            "ActionID": "ipcc_0076",
-            "ActionName": "Switching to Net-zero-emissions Materials and Supply Chains",
-            "ActionType": [
-                "mitigation"
-            ],
-            "AdaptationCategory": null,
-            "Hazard": null,
-            "Sector": [
-                "ippu"
-            ],
-            "Subsector": [
-                "industrial_processes"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "InterventionType": [
-                "regulations_and_laws",
-                "infrastructure_investments",
-                "programs_and_initiatives"
-            ],
-            "Description": "Transition to net-zero embodied carbon in construction materials and supply chains by substituting emissions-intensive materials like steel and concrete with engineered timber systems. This includes mass timber technologies for mid-rise urban buildings, integrating sustainable forestry, recycling, and reuse.",
-            "BehavioralChangeTargeted": "Encourages adoption of low-carbon building materials and design practices, and promotes sustainable consumption patterns in construction sectors.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "Supports regions with low forest cover through sustainable timber trade and agroforestry practices to reduce land-use conflicts. Promotes job creation in sustainable forestry and timber industries.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": "60-79",
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": ">10 years",
-            "Dependencies": [
-                "Sustainable forestry management",
-                "international carbon accounting standards",
-                "development of mass timber technologies",
-                "robust forest and urban land governance policies",
-                "incentivized afforestation practices"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in embodied carbon in construction",
-                "number of mid-rise urban buildings using engineered timber",
-                "carbon sequestration capacity of urban timber infrastructure",
-                "improvement in sustainable forestry practices"
-            ],
-            "Impacts": [
-                "Reduced GHG emissions from construction",
-                "enhanced carbon storage in urban environments",
-                "sustainable urbanization",
-                "improved resource efficiency",
-                "reduced pressure on natural ecosystems"
-            ]
-        }
-    },
-    {
-        "locode": "BRCCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BR-BA",
-        "regionName": "Bahia",
-        "actionId": "ipcc_0026",
-        "actionName": "Heat Recovery and Reuse through Heat Exchanger Networks or Heat Pumps",
-        "actionPriority": 6,
-        "explanation": "With a score of 1.714, this action enhances energy efficiency in industrial operations. It has clear cost-effectiveness and rapid implementation potential, reducing emissions through improved thermal management.",
-        "action": {
-            "ActionID": "ipcc_0026",
-            "ActionName": "Heat Recovery and Reuse through Heat Exchanger Networks or Heat Pumps",
-            "ActionType": [
-                "mitigation"
-            ],
-            "AdaptationCategory": null,
-            "Hazard": null,
-            "Sector": [
-                "ippu"
-            ],
-            "Subsector": [
-                "industrial_processes"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "InterventionType": [
-                "infrastructure_investments",
-                "programs_and_initiatives",
-                "incentives_and_subsidies"
-            ],
-            "Description": "This action involves improving heat-use energy efficiency by utilizing heat exchanger networks and high-temperature heat pumps to recover and reuse waste heat in industrial processes. Techniques include reducing heat needs via thermal insulation, reusing waste heat at various temperature grades, and recycling waste heat for power generation through technologies such as mechanical vapor recompression and thermoelectric conversion.",
-            "BehavioralChangeTargeted": "Encourages industries to adopt energy-efficient technologies for heat recovery and reuse, reducing reliance on high-emission heat production methods.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "Ensures that advanced heat recovery technologies are accessible to small and medium industries, particularly in developing regions, helping them reduce energy costs and emissions.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": "40-59",
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Availability of advanced heat recovery and pump technologies",
-                "skilled workforce for installation and maintenance",
-                "policy support for adoption of waste heat recovery systems"
-            ],
-            "KeyPerformanceIndicators": [
-                "Increase in waste heat recovery rate",
-                "reduction in energy intensity",
-                "percentage of heat reused through high-efficiency systems"
-            ],
-            "Impacts": [
-                "Significant reductions in industrial energy consumption and GHG emissions",
-                "enhanced energy security",
-                "cost savings for manufacturers",
-                "reduced environmental waste"
-            ]
-        }
-    },
-    {
-        "locode": "BRCCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BR-BA",
-        "regionName": "Bahia",
-        "actionId": "ipcc_0027",
-        "actionName": "Process Coupling and Improvements",
-        "actionPriority": 7,
-        "explanation": "Also scoring 1.714, this action optimizes industrial processes by reducing waste and energy losses. It has high relevance for emissions reduction and aligns well with cost-effective industrial improvements.",
-        "action": {
-            "ActionID": "ipcc_0027",
-            "ActionName": "Process Coupling and Improvements",
-            "ActionType": [
-                "mitigation"
-            ],
-            "AdaptationCategory": null,
-            "Hazard": null,
-            "Sector": [
-                "ippu"
-            ],
-            "Subsector": [
-                "industrial_processes"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "InterventionType": [
-                "infrastructure_investments",
-                "programs_and_initiatives",
-                "incentives_and_subsidies"
-            ],
-            "Description": "This action focuses on reducing energy and emissions intensity in the steel production process by improving coupling between processes, such as Endless Strip Production (ESP). Techniques include reducing the number of temperature cycles, integrating process stages, and adopting energy-efficient technologies.",
-            "BehavioralChangeTargeted": "Encourages manufacturers to optimize production stages, adopt efficient technologies, and reduce waste to improve overall energy efficiency and reduce emissions.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "Promotes access to advanced manufacturing technologies for small and medium-sized enterprises, ensuring broader participation in decarbonization efforts.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": "40-59",
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Development and deployment of advanced process integration technologies",
-                "skilled workforce training",
-                "supportive policies to incentivize adoption"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in energy consumption per unit of steel",
-                "increase in process coupling efficiency",
-                "reduction in GHG emissions per ton of steel produced"
-            ],
-            "Impacts": [
-                "Improved energy efficiency",
-                "reduced emissions",
-                "cost savings for manufacturers",
-                "enhanced competitiveness of the steel industry in global markets"
-            ]
-        }
-    },
-    {
-        "locode": "BRCCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BR-BA",
-        "regionName": "Bahia",
-        "actionId": "ipcc_0032",
-        "actionName": "Fuel Switching to Renewable Fuels",
-        "actionPriority": 8,
-        "explanation": "With a score of 1.714, switching to renewable fuels directly replaces high-emission energy sources in industrial settings. This action supports the transition to lower carbon operations in the city.",
-        "action": {
-            "ActionID": "ipcc_0032",
-            "ActionName": "Fuel Switching to Renewable Fuels",
-            "ActionType": [
-                "mitigation"
-            ],
-            "AdaptationCategory": null,
-            "Hazard": null,
-            "Sector": [
-                "ippu"
-            ],
-            "Subsector": [
-                "industrial_processes"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "InterventionType": [
-                "infrastructure_investments",
-                "programs_and_initiatives",
-                "incentives_and_subsidies"
-            ],
-            "Description": "Transitioning from fossil fuels like coal to renewable energy sources (e.g., biomass, natural gas, and waste-derived fuels) in industrial processes to reduce emissions. This includes the use of renewable substitutes such as biomass and waste plastics to displace coal in sectors like steel and cement.",
-            "BehavioralChangeTargeted": "Encourages industries to adopt renewable fuel sources and replace traditional fossil fuels to align with climate goals.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "Promotes renewable fuel technologies accessible to developing economies to ensure widespread adoption and equitable benefits.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": "40-59",
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Availability of renewable fuel infrastructure",
-                "technology development for alternative fuel production",
-                "supportive policies"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in CO2 emissions",
-                "increased adoption rate of renewable fuels",
-                "reduction in the carbon intensity of industrial processes"
-            ],
-            "Impacts": [
-                "Reduced dependence on fossil fuels",
-                "improved energy security",
-                "mitigation of air pollution",
-                "contributing to global emission reduction targets"
-            ]
-        }
-    },
-    {
-        "locode": "BRCCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BR-BA",
-        "regionName": "Bahia",
-        "actionId": "ipcc_0034",
-        "actionName": "Energy Recycling in Furnaces and Kilns",
-        "actionPriority": 9,
-        "explanation": "Also at 1.714, this action improves energy efficiency in high-temperature industrial processes. Its implementation can rapidly reduce emissions from energy-intensive operations.",
-        "action": {
-            "ActionID": "ipcc_0034",
-            "ActionName": "Energy Recycling in Furnaces and Kilns",
-            "ActionType": [
-                "mitigation"
-            ],
-            "AdaptationCategory": null,
-            "Hazard": null,
-            "Sector": [
-                "ippu"
-            ],
-            "Subsector": [
-                "industrial_processes"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "InterventionType": [
-                "infrastructure_investments",
-                "programs_and_initiatives",
-                "incentives_and_subsidies"
-            ],
-            "Description": "Recycling energy from furnaces and kilns through technologies like heat recovery systems, including advanced heat exchangers and top pressure recovery turbines, to enhance energy efficiency and reduce emissions in steel production.",
-            "BehavioralChangeTargeted": "Encourages adoption of advanced energy recovery technologies in industrial processes to reduce energy waste and emissions.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "Ensures access to energy recovery technologies for smaller manufacturers, promoting wider adoption across industries and geographies.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": "40-59",
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Availability of advanced heat recovery technologies",
-                "skilled workforce for installation and operation",
-                "supportive policies and funding incentives"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in energy consumption per ton of product",
-                "increase in waste energy recovery rates",
-                "decrease in GHG emissions intensity in industrial processes"
-            ],
-            "Impacts": [
-                "Enhances energy efficiency",
-                "reduces emissions",
-                "lowers operational costs",
-                "improves competitiveness of the industrial sector in global markets"
-            ]
-        }
-    },
-    {
-        "locode": "BRCCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BR-BA",
-        "regionName": "Bahia",
-        "actionId": "ipcc_0042",
-        "actionName": "Design for Recovery, Reuse, or Repurposing",
-        "actionPriority": 10,
-        "explanation": "Scoring 1.714, this action embeds circular economy principles into industrial and urban systems. It reduces waste and promotes resource efficiency, contributing effectively to emissions reduction.",
-        "action": {
-            "ActionID": "ipcc_0042",
-            "ActionName": "Design for Recovery, Reuse, or Repurposing",
-            "ActionType": [
-                "mitigation"
-            ],
-            "AdaptationCategory": null,
-            "Hazard": null,
-            "Sector": [
-                "ippu"
-            ],
-            "Subsector": [
-                "industrial_processes"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "InterventionType": [
-                "programs_and_initiatives",
-                "infrastructure_investments",
-                "regulations_and_laws"
-            ],
-            "Description": "This action involves designing products to enable circular principles such as extended product life, reusability, repairability, and ease of recycling. It emphasizes lightweighting, material optimization, and improved recovery of materials at the end of their lifecycle through reuse, remanufacturing, or recycling.",
-            "BehavioralChangeTargeted": "Encourages stakeholders to adopt circular economy principles, reduce waste, and prioritize designing products for longevity and efficient material recovery.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "Ensures equitable access to advanced recycling and repurposing technologies, creating opportunities for underserved communities to participate in sustainable material management initiatives.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": "40-59",
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Collaboration across supply chains",
-                "advances in recycling and remanufacturing technologies",
-                "supportive policy frameworks to incentivize adoption"
-            ],
-            "KeyPerformanceIndicators": [
-                "Percentage of materials recovered and reused",
-                "reduction in production waste",
-                "decrease in GHG emissions per unit of product lifecycle"
-            ],
-            "Impacts": [
-                "Reduction in raw material demand",
-                "improved environmental sustainability",
-                "decreased emissions",
-                "enhanced industrial efficiency"
-            ]
-        }
-    },
-    {
-        "locode": "BRCCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BR-BA",
-        "regionName": "Bahia",
-        "actionId": "ipcc_0044",
-        "actionName": "Alternative feedstocks (e.g. in cement)",
-        "actionPriority": 11,
-        "explanation": "With the same score of 1.714, targeting alternative feedstocks\u2014especially within high-emission sectors like cement\u2014directly addresses significant industrial emissions and aligns with the city's needs.",
-        "action": {
-            "ActionID": "ipcc_0044",
-            "ActionName": "Alternative feedstocks (e.g. in cement)",
-            "ActionType": [
-                "mitigation"
-            ],
-            "AdaptationCategory": null,
-            "Hazard": null,
-            "Sector": [
-                "ippu"
-            ],
-            "Subsector": [
-                "industrial_processes"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "InterventionType": [
-                "programs_and_initiatives",
-                "infrastructure_investments",
-                "incentives_and_subsidies"
-            ],
-            "Description": "Utilizing alternative feedstocks, such as blast furnace slag, fly ash, and pozzolans, to reduce the clinker-to-cement ratio in cement production. These alternatives lower emissions associated with calcination and energy-intensive processes. Improved material efficiency through high-strength concretes and innovative placement methods further reduces material usage.",
-            "BehavioralChangeTargeted": "Encourages the adoption of alternative materials and innovative construction practices to reduce reliance on traditional clinker-intensive cement production.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "Promotes equitable access to innovative cement technologies and ensures benefits are shared across both developed and developing nations, fostering inclusive construction practices.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": "40-59",
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Development and availability of alternative feedstocks",
-                "regulatory support for material substitution",
-                "investment in research and development for innovative concrete applications"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in clinker-to-cement ratio",
-                "lower CO2 emissions per tonne of cement",
-                "increased adoption of alternative materials in cement production"
-            ],
-            "Impacts": [
-                "Reduced GHG emissions",
-                "enhanced resource efficiency",
-                "lower energy consumption in cement production",
-                "improved environmental quality in cement manufacturing regions"
-            ]
-        }
-    },
-    {
-        "locode": "BRCCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BR-BA",
-        "regionName": "Bahia",
-        "actionId": "c40_0038",
-        "actionName": "Sanitary Landfills",
-        "actionPriority": 12,
-        "explanation": "Scoring 1.656, Sanitary Landfills improve waste management by reducing methane emissions and protecting public health, a key consideration given the city\u2019s waste emission footprint.",
-        "action": {
-            "ActionID": "c40_0038",
-            "ActionName": "Sanitary Landfills",
+            "ActionID": "c40_0040",
+            "ActionName": "Volume-Based Collection",
             "ActionType": [
                 "mitigation"
             ],
@@ -817,21 +103,120 @@
                 "ghg_reduction"
             ],
             "InterventionType": [
-                "infrastructure_investments",
-                "programs_and_initiatives"
+                "taxes_and_fees",
+                "incentives_and_subsidies"
             ],
-            "Description": "\"Sanitary Landfills\" ensure proper disposal of residual waste in engineered facilities, minimizing environmental impact. This mitigation strategy involves utilizing advanced technological solutions to manage waste effectively, promoting sustainable waste disposal practices within a city.",
-            "BehavioralChangeTargeted": "The targeted behavioral change that the climate action of implementing \"Sanitary Landfills\" aims to achieve is the increased adoption of sustainable waste disposal practices among residents and businesses. This includes encouraging individuals to properly separate and dispose of their waste, reduce overall waste generation, and support the use of engineered facilities for waste management. By improving perceptions of waste disposal safety, convenience, and environmental responsibility, the intervention seeks to shift behaviors towards more environmentally friendly waste management practices, ultimately leading to a reduction in greenhouse gas emissions associated with improper waste disposal.",
+            "Description": "\"Volume-Based Collection\" policies incentivize waste reduction by implementing fees or incentives based on the amount of waste generated. This approach encourages residents to minimize waste production, contributing to overall waste reduction goals.",
+            "BehavioralChangeTargeted": "The targeted behavioral shift that the \"Volume-Based Collection\" climate action aims to achieve is a reduction in waste generation among residents. By implementing fees or incentives based on the amount of waste produced, the intervention encourages individuals to minimize their waste output. This shift is expected to lead to more sustainable waste management practices, as residents become more conscious of their consumption habits and actively seek to reduce the volume of waste they generate, ultimately contributing to broader waste reduction goals and lower greenhouse gas emissions.",
             "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
+                "air_quality": 0,
+                "water_quality": 0,
                 "habitat": 0,
                 "cost_of_living": 0,
                 "housing": 0,
                 "mobility": 0,
                 "stakeholder_engagement": 0
             },
-            "EquityAndInclusionConsiderations": "The implementation of sanitary landfills as a climate action promotes equity and inclusion in several ways:\n\n1. **Access to Clean Environments**: By ensuring proper disposal of residual waste, sanitary landfills help reduce pollution and environmental hazards in underserved communities, which are often disproportionately affected by waste mismanagement.\n\n2. **Health Benefits**: Proper waste management minimizes health risks associated with improper disposal, such as contamination and disease, thereby protecting vulnerable populations who may have limited access to healthcare.\n\n3. **Job Creation**: The establishment and maintenance of sanitary landfills can create job opportunities for local residents, particularly in underserved areas, contributing to economic equity.\n\n4. **Community Engagement**: The planning and operation of sanitary landfills can involve local communities, ensuring that their voices are heard and their needs are considered, fostering a sense of inclusion.\n\n5. **Sustainable Practices**: By promoting sustainable waste disposal practices, the action supports long-term environmental justice, benefiting all community members, especially those in vulnerable situations who may rely more heavily on local natural resources. \n\nOverall, the action of implementing sanitary landfills addresses the needs of underserved communities by prioritizing their health, economic opportunities, and environmental safety.",
+            "EquityAndInclusionConsiderations": "The \"Volume-Based Collection\" policies promote equity and inclusion by:\n\n1. **Incentivizing Participation**: By linking fees or incentives to the amount of waste generated, the policy encourages all residents, including those from vulnerable or underserved communities, to actively participate in waste reduction efforts. This can empower these communities to take ownership of their waste management practices.\n\n2. **Financial Relief for Low-Volume Generators**: Households that produce less waste, often found in underserved communities, may benefit from lower fees, providing them with financial relief and encouraging sustainable practices without imposing a disproportionate burden.\n\n3. **Awareness and Education**: The implementation of volume-based policies often includes educational components that inform residents about waste reduction strategies. This can particularly benefit underserved communities by providing them with knowledge and resources to reduce waste effectively.\n\n4. **Community Engagement**: The policy can foster community engagement by involving residents in discussions about waste management and reduction strategies, ensuring that the voices of vulnerable populations are heard and considered in the decision-making process.\n\n5. **Equitable Resource Allocation**: By focusing on waste reduction, the policy can lead to more equitable allocation of resources for waste management services, ensuring that underserved communities receive adequate support and infrastructure to manage their waste effectively.",
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": "80-100",
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Effective communication and education programs to inform residents about the benefits of waste reduction",
+                "A reliable waste measurement system to accurately track the volume of waste generated",
+                "Support from local government and policymakers to implement and enforce the volume-based collection policies",
+                "Availability of alternative waste management options, such as recycling and composting facilities",
+                "Community engagement and participation to foster a culture of sustainability and waste reduction"
+            ],
+            "KeyPerformanceIndicators": [
+                "Reduction in total waste generated",
+                "Increase in recycling rates",
+                "Participation rate in volume-based collection program",
+                "Average waste per household",
+                "Cost savings from reduced waste disposal",
+                "Public awareness and engagement levels",
+                "Change in composting rates"
+            ],
+            "Impacts": [
+                "Encourages waste reduction among residents",
+                "Promotes equity and inclusion in waste management",
+                "Provides financial relief for low-waste households",
+                "Fosters community engagement and education",
+                "Contributes to significant GHG reduction in the waste sector"
+            ]
+        }
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "icare_0090",
+        "actionName": "Adoption of electric drones for last-mile deliveries.",
+        "actionPriority": 3,
+        "explanation": "For the city of Cama\u00e7ari, adopting electric drones for last-mile deliveries reduces emissions from traditional vehicle-based transport and alleviates urban congestion. By enabling efficient and eco-friendly logistics, it benefits local businesses and residents alike. This innovation also supports improved air quality and faster service in dense areas.",
+        "action": null
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "icare_0052",
+        "actionName": "Develop projects for renewable energy and waste reuse",
+        "actionPriority": 4,
+        "explanation": "For the city of Cama\u00e7ari, developing projects for renewable energy and waste reuse addresses two core challenges: reducing emissions and extending the life cycle of materials. By advancing a circular economy mindset, the city can diminish reliance on fossil fuels while opening up new economic opportunities. This strategic approach also reinforces long-term sustainability and resilience.",
+        "action": null
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "c40_0039",
+        "actionName": "Gas Management",
+        "actionPriority": 5,
+        "explanation": "For the city of Cama\u00e7ari, Gas Management focuses on capturing and treating harmful emissions from existing waste and industrial systems. This reduces air pollution and helps safeguard public health. Managing these emissions early on also aligns with broader climate objectives and lowers the city\u2019s carbon footprint.",
+        "action": {
+            "ActionID": "c40_0039",
+            "ActionName": "Gas Management",
+            "ActionType": [
+                "mitigation"
+            ],
+            "AdaptationCategory": null,
+            "Hazard": null,
+            "Sector": [
+                "waste"
+            ],
+            "Subsector": [
+                "all"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "InterventionType": [
+                "programs_and_initiatives",
+                "infrastructure_investments"
+            ],
+            "Description": "\"Gas Management\" in sanitary landfills involves capturing leachate and managing landfill gas to mitigate environmental hazards. Implementing effective gas management systems contributes to reducing greenhouse gas emissions and enhances overall waste management sustainability.",
+            "BehavioralChangeTargeted": "The targeted behavioral change that the \"Gas Management\" climate action aims to achieve is the increased adoption of sustainable waste management practices among individuals and organizations. This includes actively participating in and supporting initiatives that capture leachate and manage landfill gas, thereby reducing greenhouse gas emissions. By fostering a perception of the importance and effectiveness of these practices, the intervention seeks to encourage people to prioritize waste reduction, recycling, and proper disposal methods, ultimately leading to a broader cultural shift towards sustainability in waste management.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": "The \"Gas Management\" action in sanitary landfills promotes equity and inclusion by addressing environmental hazards that disproportionately affect vulnerable or underserved communities. By capturing leachate and managing landfill gas, this action reduces harmful emissions that can lead to health issues, particularly in low-income neighborhoods often located near landfills. \n\nAdditionally, effective gas management systems contribute to improved air quality and public health, benefiting all community members, especially those who may lack access to healthcare resources. The implementation of these systems can also create job opportunities in the local area, providing economic benefits to underserved populations. Overall, this climate action recognizes and addresses the specific needs of vulnerable communities, ensuring they receive the environmental and health protections necessary for equitable living conditions.",
             "GHGReductionPotential": {
                 "stationary_energy": null,
                 "transportation": null,
@@ -841,34 +226,30 @@
             },
             "AdaptationEffectiveness": null,
             "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "<5 years",
+            "TimelineForImplementation": "5-10 years",
             "Dependencies": [
-                "Availability of engineered landfill sites designed to minimize environmental impact",
-                "Implementation of advanced waste management technologies",
-                "Regulatory frameworks and policies supporting sustainable waste disposal",
-                "Public awareness and community engagement in waste management practices",
-                "Funding and investment for infrastructure development and maintenance"
+                "Availability of technology for gas capture and leachate management",
+                "Regulatory frameworks supporting landfill gas management practices",
+                "Investment in infrastructure for effective gas management systems",
+                "Training and expertise of personnel in landfill operations",
+                "Public awareness and community support for landfill management initiatives"
             ],
             "KeyPerformanceIndicators": [
-                "Waste diversion rate",
-                "Landfill gas emissions reduction",
-                "Leachate management efficiency",
-                "Volume of waste processed",
-                "Recycling rate",
-                "Public awareness and participation",
-                "Cost-effectiveness of waste management",
-                "Compliance with environmental regulations",
-                "Reduction in illegal dumping incidents",
-                "Sustainability of landfill operations"
+                "Reduction in greenhouse gas emissions (CO2 equivalent)",
+                "Volume of landfill gas captured",
+                "Percentage of leachate treated",
+                "Energy generated from captured landfill gas",
+                "Cost savings from gas management systems",
+                "Compliance rate with environmental regulations",
+                "Reduction in odor complaints",
+                "Increase in landfill lifespan"
             ],
             "Impacts": [
                 "Reduction of greenhouse gas emissions by 60-79% in the waste sector",
-                "Improved air quality due to reduced pollution from waste mismanagement",
-                "Enhanced water quality through proper waste disposal practices",
-                "Increased job opportunities in local communities",
-                "Promotion of sustainable waste disposal practices among residents and businesses",
-                "Health benefits for vulnerable populations through reduced environmental hazards",
-                "Community engagement in waste management planning and operations"
+                "Improvement in air quality",
+                "Promotion of sustainable waste management practices",
+                "Enhanced public health in vulnerable communities",
+                "Creation of job opportunities in local areas"
             ]
         }
     },
@@ -877,13 +258,13 @@
         "cityName": "Cama\u00e7ari",
         "region": "BR-BA",
         "regionName": "Bahia",
-        "actionId": "c40_0041",
-        "actionName": "Waste Collection",
-        "actionPriority": 13,
-        "explanation": "With a score of 1.638, effective waste collection ensures timely and efficient handling of waste, reducing environmental impacts and contributing to improved urban emissions profiles.",
+        "actionId": "c40_0036",
+        "actionName": "Landfill Management",
+        "actionPriority": 6,
+        "explanation": "For the city of Cama\u00e7ari, Landfill Management ensures safe and regulated disposal, minimizing hazards for nearby communities. By improving current landfill operations, the city can reduce contamination risks and potential health concerns. This initiative also paves the way for more effective, long-term waste strategies.",
         "action": {
-            "ActionID": "c40_0041",
-            "ActionName": "Waste Collection",
+            "ActionID": "c40_0036",
+            "ActionName": "Landfill Management",
             "ActionType": [
                 "mitigation"
             ],
@@ -900,10 +281,10 @@
             ],
             "InterventionType": [
                 "programs_and_initiatives",
-                "infrastructure_investments"
+                "regulations_and_laws"
             ],
-            "Description": "\"Waste Collection\" initiatives focus on achieving universal waste collection, ensuring that all residents have access to proper waste disposal services. This contributes to a cleaner and healthier urban environment while promoting sustainable waste management practices.",
-            "BehavioralChangeTargeted": "The targeted behavioral change that the \"Waste Collection\" initiative aims to achieve is increased participation in proper waste disposal practices among residents. By ensuring universal access to waste collection services, the initiative encourages individuals to dispose of their waste responsibly, reducing littering and promoting recycling and composting behaviors. This shift in behavior contributes to a cleaner urban environment and supports sustainable waste management practices, ultimately leading to a reduction in greenhouse gas emissions associated with improper waste disposal.",
+            "Description": "\"Landfill Management\" strategies focus on responsible and sustainable landfill practices to minimize environmental degradation. By adopting effective management techniques, cities aim to reduce the ecological footprint associated with landfill sites and encourage waste reduction.",
+            "BehavioralChangeTargeted": "The targeted behavioral change that the \"Landfill Management\" climate action aims to achieve is a reduction in waste generation and an increase in responsible waste disposal practices among individuals and communities. This includes encouraging people to adopt habits such as recycling, composting, and minimizing single-use items, ultimately leading to a shift towards more sustainable consumption patterns and a decreased ecological footprint associated with landfill sites.",
             "CoBenefits": {
                 "air_quality": 1,
                 "water_quality": 1,
@@ -913,42 +294,40 @@
                 "mobility": 0,
                 "stakeholder_engagement": 0
             },
-            "EquityAndInclusionConsiderations": "The \"Waste Collection\" initiatives promote equity and inclusion by ensuring that all residents, particularly those in vulnerable or underserved communities, have access to proper waste disposal services. This universal access helps to address disparities in waste management, which often disproportionately affect low-income neighborhoods. By providing equitable waste collection services, the initiative contributes to a cleaner and healthier urban environment for all, reducing health risks associated with improper waste disposal. Additionally, the focus on sustainable waste management practices encourages community engagement and awareness, fostering a sense of ownership and responsibility among residents, including those from marginalized backgrounds. Overall, the initiative actively works to uplift underserved communities by prioritizing their needs in waste management.",
+            "EquityAndInclusionConsiderations": "The \"Landfill Management\" strategies promote equity and inclusion by addressing the environmental impacts of landfill sites, which often disproportionately affect vulnerable and underserved communities. These communities frequently reside near landfills and are more susceptible to health risks associated with pollution and environmental degradation. By implementing responsible and sustainable landfill practices, the action aims to reduce these negative impacts, thereby improving the quality of life for residents in these areas.\n\nAdditionally, effective waste reduction techniques can create opportunities for community engagement and participation, allowing underserved populations to have a voice in local environmental decisions. This inclusion fosters a sense of ownership and empowerment among community members, ensuring that their needs and concerns are considered in the management of landfill sites. Overall, the action acknowledges and seeks to mitigate the inequities faced by marginalized communities in relation to waste management and environmental health.",
             "GHGReductionPotential": {
                 "stationary_energy": null,
                 "transportation": null,
-                "waste": "80-100",
+                "waste": "60-79",
                 "ippu": null,
                 "afolu": null
             },
             "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "5-10 years",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
             "Dependencies": [
-                "Availability of waste collection infrastructure and vehicles",
-                "Training and capacity building for waste management personnel",
-                "Public awareness and education programs on waste disposal",
-                "Collaboration with local governments and communities",
-                "Sufficient funding and resources for waste management initiatives",
-                "Regulatory frameworks supporting waste collection services"
+                "Effective waste segregation practices to ensure proper disposal and recycling",
+                "Investment in technology for waste treatment and landfill monitoring",
+                "Community engagement and education on waste reduction and recycling",
+                "Regulatory frameworks and policies supporting sustainable landfill practices",
+                "Collaboration with local governments and organizations for resource sharing and best practices"
             ],
             "KeyPerformanceIndicators": [
-                "Percentage of residents with access to waste collection services",
-                "Volume of waste collected per capita",
-                "Percentage reduction in illegal dumping incidents",
-                "Recycling rate of collected waste",
-                "Customer satisfaction rate with waste collection services",
-                "Frequency of waste collection services",
-                "Cost-effectiveness of waste collection operations",
-                "Reduction in landfill waste",
-                "Number of public awareness campaigns conducted"
+                "Reduction in landfill waste volume",
+                "Percentage of waste diverted from landfills",
+                "Rate of landfill gas capture",
+                "Soil and water quality around landfill sites",
+                "Frequency of landfill inspections",
+                "Public awareness and engagement levels",
+                "Cost savings from improved landfill management practices",
+                "Compliance with environmental regulations"
             ],
             "Impacts": [
-                "Reduction in greenhouse gas emissions from improved waste disposal practices",
-                "Improvement in air quality due to reduced littering and waste accumulation",
-                "Enhancement of water quality by preventing waste contamination",
-                "Promotion of equity and inclusion in waste management services",
-                "Increased community engagement and awareness regarding sustainable waste practices"
+                "Reduction in greenhouse gas emissions from waste management",
+                "Improvement in air quality due to reduced landfill emissions",
+                "Enhancement of water quality by minimizing leachate from landfills",
+                "Promotion of equity and inclusion for underserved communities",
+                "Encouragement of sustainable waste disposal practices among individuals and communities"
             ]
         }
     },
@@ -957,254 +336,58 @@
         "cityName": "Cama\u00e7ari",
         "region": "BR-BA",
         "regionName": "Bahia",
-        "actionId": "ipcc_0035",
-        "actionName": "Technology Improvements of Processes",
-        "actionPriority": 14,
-        "explanation": "Scoring 1.614, this action focuses on upgrading industrial technologies for better efficiency and lower emissions. It is strategically important for long-term industrial competitiveness and risk reduction.",
-        "action": {
-            "ActionID": "ipcc_0035",
-            "ActionName": "Technology Improvements of Processes",
-            "ActionType": [
-                "mitigation"
-            ],
-            "AdaptationCategory": null,
-            "Hazard": null,
-            "Sector": [
-                "ippu"
-            ],
-            "Subsector": [
-                "industrial_processes"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "InterventionType": [
-                "infrastructure_investments",
-                "programs_and_initiatives",
-                "regulations_and_laws"
-            ],
-            "Description": "Implementation of advanced technologies to optimize production processes across various industries, including iron and steel, cement, and aluminum. Examples include enhanced heat recovery, energy-efficient equipment, advanced material handling, and integration of renewable energy sources. Efforts aim to reduce energy consumption and emissions while improving production efficiency.",
-            "BehavioralChangeTargeted": "Encourages industries to adopt state-of-the-art technologies and optimize operational processes to reduce energy use and emissions while maintaining productivity.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "Promotes equitable access to advanced technologies for industries of all sizes and supports workforce training programs to ensure widespread adoption, particularly for small and medium enterprises.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": "40-59",
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Development of advanced process technologies",
-                "regulatory support for adoption",
-                "workforce training",
-                "sufficient financial incentives or subsidies to offset high initial costs"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in energy use per unit of production",
-                "lower emissions per ton of material produced",
-                "increased adoption rate of advanced technologies",
-                "improved process efficiency metrics"
-            ],
-            "Impacts": [
-                "Enhanced energy efficiency",
-                "significant emissions reductions",
-                "cost savings for industries",
-                "increased competitiveness in global markets",
-                "improved environmental sustainability"
-            ]
-        }
+        "actionId": "icare_0053",
+        "actionName": "Implement a project to support cooperatives of recyclabe material collectors",
+        "actionPriority": 7,
+        "explanation": "For the city of Cama\u00e7ari, supporting cooperatives of recyclable material collectors bolsters recycling rates and offers socioeconomic benefits. By strengthening cooperative networks, more materials are diverted from landfills, reducing pollution and boosting efficiency. This measure fosters inclusive waste management and empowers local communities.",
+        "action": null
     },
     {
         "locode": "BRCCI",
         "cityName": "Cama\u00e7ari",
         "region": "BR-BA",
         "regionName": "Bahia",
-        "actionId": "ipcc_0043",
-        "actionName": "Circular Economy Policies",
-        "actionPriority": 15,
-        "explanation": "Also at 1.614, Circular Economy Policies institutionalize practices that promote resource efficiency and waste minimization across sectors, delivering cumulative emissions reduction benefits.",
+        "actionId": "icare_0119",
+        "actionName": "Maximize composting processes.",
+        "actionPriority": 8,
+        "explanation": "For the city of Cama\u00e7ari, maximizing composting processes tackles organic waste, a major fraction of municipal refuse. By converting organic material into compost, the city reduces landfill usage and mitigates emissions. This practice also supports local agriculture through enriched soil and sustainable farming.",
+        "action": null
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "ipcc_0080",
+        "actionName": "Avoiding, Minimising, and Recycling Waste",
+        "actionPriority": 9,
+        "explanation": "For the city of Cama\u00e7ari, the principle of avoiding, minimising, and recycling waste lays the groundwork for responsible consumption. It encourages individuals and businesses to adopt habits that lessen overall waste generation. Over time, this city-wide ethos conserves resources, saves landfill space, and promotes shared ecological stewardship.",
         "action": {
-            "ActionID": "ipcc_0043",
-            "ActionName": "Circular Economy Policies",
+            "ActionID": "ipcc_0080",
+            "ActionName": "Avoiding, Minimising, and Recycling Waste",
             "ActionType": [
                 "mitigation"
             ],
             "AdaptationCategory": null,
             "Hazard": null,
             "Sector": [
-                "ippu"
+                "waste"
             ],
             "Subsector": [
-                "industrial_processes"
+                "disposal_of_solid_waste_generated_in_the_city"
             ],
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
             "InterventionType": [
                 "regulations_and_laws",
-                "incentives_and_subsidies",
                 "programs_and_initiatives",
                 "infrastructure_investments"
             ],
-            "Description": "Circular Economy (CE) policies aim to close the loop for materials and energy flows by reducing, reusing, and recycling resources. These policies promote durable goods, reuse and remanufacturing, industrial symbiosis, and urban symbiosis to minimize waste and reduce GHG emissions. CE policies operate at micro, meso, and macro levels to integrate strategies like eco-design, sustainable supply chains, and urban energy symbiosis.",
-            "BehavioralChangeTargeted": "Encourages adoption of sustainable production practices, consumer participation in recycling, and cross-sectoral collaboration to reduce resource extraction and waste generation.",
+            "Description": "Implementation of waste hierarchy principles to reduce waste generation, improve source separation, and increase recycling and composting. Promotes decentralized waste management, home composting, and circular economy approaches to transform waste into energy or by-products while minimizing transport-related emissions.",
+            "BehavioralChangeTargeted": "Encourages waste separation at source, adoption of recycling and composting behaviors, and increased public participation in waste management programs.",
             "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "Promotes access to CE practices for small and medium-sized enterprises (SMEs), ensures equitable participation in industrial symbiosis networks, and supports underserved regions by creating economic opportunities through resource-efficient policies.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": "40-59",
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Effective coordination between industries, governments, and communities",
-                "supportive policies and regulations",
-                "development of recycling infrastructure",
-                "data sharing platforms for material and energy flows"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in virgin material use",
-                "GHG emissions avoided through CE practices",
-                "increase in recycling rates",
-                "number of industrial symbiosis networks implemented",
-                "resource recovery metrics"
-            ],
-            "Impacts": [
-                "Significant reductions in resource extraction, energy use, and emissions",
-                "enhanced regional development through eco-industrial parks",
-                "broader adoption of sustainable practices across industries and urban areas"
-            ]
-        }
-    },
-    {
-        "locode": "BRCCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BR-BA",
-        "regionName": "Bahia",
-        "actionId": "ipcc_0030",
-        "actionName": "Material Recycling",
-        "actionPriority": 16,
-        "explanation": "With a score of 1.549, Material Recycling plays a key role in reducing the demand for virgin materials, lowering emissions and supporting a circular economic framework in the city.",
-        "action": {
-            "ActionID": "ipcc_0030",
-            "ActionName": "Material Recycling",
-            "ActionType": [
-                "mitigation"
-            ],
-            "AdaptationCategory": null,
-            "Hazard": null,
-            "Sector": [
-                "ippu"
-            ],
-            "Subsector": [
-                "industrial_processes"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "InterventionType": [
-                "programs_and_initiatives",
-                "infrastructure_investments",
-                "incentives_and_subsidies"
-            ],
-            "Description": "Material recycling involves recovering and reprocessing materials such as paper, aluminium, and other metals to reduce energy consumption, lower emissions, and conserve resources. It includes techniques like paper recycling, aluminium reuse, and increased recovery of valuable metals from industrial waste.",
-            "BehavioralChangeTargeted": "Promotes increased adoption of recycling practices, reducing waste generation and encouraging efficient material use across industries.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "Ensures access to recycling programs and technologies for small businesses and underserved communities, fostering inclusive participation in waste reduction efforts.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": "40-59",
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Availability of recycling infrastructure",
-                "advanced technologies for material separation and recovery",
-                "supportive policies for incentivizing recycling practices"
-            ],
-            "KeyPerformanceIndicators": [
-                "Recycling rates by material type",
-                "reduction in energy consumption for material production",
-                "decrease in landfill waste volumes"
-            ],
-            "Impacts": [
-                "Reduces reliance on virgin material extraction",
-                "lowers industrial energy demand",
-                "mitigates GHG emissions",
-                "supports sustainable production practices"
-            ]
-        }
-    },
-    {
-        "locode": "BRCCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BR-BA",
-        "regionName": "Bahia",
-        "actionId": "ipcc_0047",
-        "actionName": "Enhanced product service levels per product (e.g. product sharing)",
-        "actionPriority": 17,
-        "explanation": "Scoring 1.549, this approach encourages product sharing models that reduce overall consumption and emissions. It is particularly suited to urban settings with socio-economic challenges.",
-        "action": {
-            "ActionID": "ipcc_0047",
-            "ActionName": "Enhanced product service levels per product (e.g. product sharing)",
-            "ActionType": [
-                "mitigation"
-            ],
-            "AdaptationCategory": null,
-            "Hazard": null,
-            "Sector": [
-                "ippu"
-            ],
-            "Subsector": [
-                "industrial_processes"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "InterventionType": [
-                "programs_and_initiatives",
-                "incentives_and_subsidies"
-            ],
-            "Description": "Promotes more intensive use of durable products by encouraging product sharing, which reduces the demand for new products and the associated GHG emissions from their manufacturing and supply chain.",
-            "BehavioralChangeTargeted": "Encourages users to share durable products and adopt product-service systems that emphasize using goods more efficiently rather than owning them individually.",
-            "CoBenefits": {
-                "air_quality": 0,
+                "air_quality": 1,
                 "water_quality": 0,
                 "habitat": 0,
                 "cost_of_living": 1,
@@ -1212,32 +395,36 @@
                 "mobility": 1,
                 "stakeholder_engagement": 1
             },
-            "EquityAndInclusionConsiderations": "Supports equitable access to goods and services by reducing ownership costs, enabling underserved communities to participate in product-sharing initiatives.",
+            "EquityAndInclusionConsiderations": "Supports informal workers in waste management, provides employment opportunities, and reduces inequalities by integrating informal sectors into formal systems. Ensures cost-sharing and benefit distribution among stakeholders.",
             "GHGReductionPotential": {
                 "stationary_energy": null,
                 "transportation": null,
-                "waste": null,
-                "ippu": "40-59",
+                "waste": "40-59",
+                "ippu": null,
                 "afolu": null
             },
             "AdaptationEffectiveness": null,
             "CostInvestmentNeeded": "medium",
             "TimelineForImplementation": "5-10 years",
             "Dependencies": [
-                "Development of platforms and systems to facilitate product sharing",
-                "stakeholder collaboration",
-                "supportive policies to incentivize shared usage models"
+                "Requires institutional capacity",
+                "governance",
+                "cross-sectoral coordination",
+                "public awareness campaigns",
+                "needs infrastructure for decentralized waste treatment",
+                "policies to promote circular economy practices"
             ],
             "KeyPerformanceIndicators": [
-                "Number of shared product-service systems implemented",
-                "reduction in material demand per capita",
-                "decrease in GHG emissions from product manufacturing"
+                "Reduction in waste generation per capita",
+                "increase in recycling and composting rates",
+                "reduction in CH4 emissions from waste",
+                "employment opportunities created in waste management"
             ],
             "Impacts": [
-                "Reduction in resource use and emissions",
-                "cost savings for consumers",
-                "increased accessibility to products",
-                "fostering a circular economy through more efficient use of materials"
+                "Improved urban livability",
+                "reduction in landfill emissions",
+                "enhanced resource efficiency",
+                "economic growth through job creation in the waste management sector"
             ]
         }
     },
@@ -1246,107 +433,57 @@
         "cityName": "Cama\u00e7ari",
         "region": "BR-BA",
         "regionName": "Bahia",
-        "actionId": "ipcc_0048",
-        "actionName": "Design for extended product life-time",
-        "actionPriority": 18,
-        "explanation": "Also at 1.549, extending product life-times minimizes waste and resource use. This action supports long-term sustainability by reducing the frequency of product turnover and associated emissions.",
+        "actionId": "icare_0109",
+        "actionName": "Promote Energy Recovery from Biogas in Landfills",
+        "actionPriority": 10,
+        "explanation": "For the city of Cama\u00e7ari, promoting energy recovery from landfill biogas transforms methane into a valuable energy source. By harnessing these emissions, the city cuts pollution and reduces reliance on fossil fuels. This strategy also enhances public health through better waste decomposition management.",
+        "action": null
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "icare_0110",
+        "actionName": "Regulate the Construction Waste Management Plan",
+        "actionPriority": 11,
+        "explanation": "For the city of Cama\u00e7ari, regulating construction waste ensures that building materials are handled and disposed of responsibly. This prevents debris buildup, soil contamination, and illegal dumping. Through clear guidelines, the city promotes eco-friendly innovation and safer construction practices for local residents.",
+        "action": null
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "c40_0028",
+        "actionName": "Zero Emission Buses",
+        "actionPriority": 12,
+        "explanation": "For the city of Cama\u00e7ari, Zero Emission Buses reduce greenhouse gas emissions tied to everyday commuting. By providing cleaner public transport, they also enhance local air quality and reduce traffic congestion. This inclusive solution benefits diverse populations and strengthens sustainable mobility options across the city.",
         "action": {
-            "ActionID": "ipcc_0048",
-            "ActionName": "Design for extended product life-time",
+            "ActionID": "c40_0028",
+            "ActionName": "Zero Emission Buses",
             "ActionType": [
                 "mitigation"
             ],
             "AdaptationCategory": null,
             "Hazard": null,
             "Sector": [
-                "ippu"
+                "transportation"
             ],
             "Subsector": [
-                "product_use"
+                "on-road"
             ],
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
             "InterventionType": [
                 "programs_and_initiatives",
-                "infrastructure_investments",
-                "regulations_and_laws"
+                "infrastructure_investments"
             ],
-            "Description": "Designing products with longer lifespans, increased reusability, repairability, and recyclability to reduce material use and improve resource efficiency. This includes optimizing product designs to minimize material consumption and emissions, supporting a circular economy.",
-            "BehavioralChangeTargeted": "Encourages manufacturers and consumers to prioritize durability, reuse, and efficient use of materials to reduce waste and emissions.",
+            "Description": "\"Zero Emission Buses\" initiatives focus on integrating electric or other zero-emission technologies into public transportation fleets. This strategy aims to eliminate traditional bus emissions, contributing to cleaner air and a more sustainable urban transit system.",
+            "BehavioralChangeTargeted": "The targeted behavioral shift that the \"Zero Emission Buses\" initiative aims to achieve is an increased reliance on public transportation, specifically the use of electric or zero-emission buses, over personal vehicles. This shift is intended to encourage individuals to choose cleaner, more sustainable transit options, thereby reducing greenhouse gas emissions and contributing to improved air quality in urban areas. By enhancing the perception of public transportation as a convenient, safe, and environmentally friendly alternative, the initiative seeks to foster a cultural norm that prioritizes sustainable commuting practices.",
             "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": "Promotes affordability of durable and reusable products, ensuring low-income populations have access to long-lasting, high-quality goods.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": "40-59",
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Requires collaboration across material supply chains",
-                "advancements in product design",
-                "supportive policy frameworks to incentivize circular economy practices"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in material use per product",
-                "increase in product lifespan",
-                "rate of reuse and repair",
-                "reduction in GHG emissions from material production and waste"
-            ],
-            "Impacts": [
-                "Significant emissions reductions",
-                "resource conservation",
-                "cost savings for consumers",
-                "strengthened circular economy practices"
-            ]
-        }
-    },
-    {
-        "locode": "BRCCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BR-BA",
-        "regionName": "Bahia",
-        "actionId": "ipcc_0049",
-        "actionName": "Improved product stock maintenance to extend life-time",
-        "actionPriority": 19,
-        "explanation": "With the same score of 1.549, this action improves maintenance practices to prolong product lifespans, effectively lowering resource consumption and overall emissions.",
-        "action": {
-            "ActionID": "ipcc_0049",
-            "ActionName": "Improved product stock maintenance to extend life-time",
-            "ActionType": [
-                "mitigation"
-            ],
-            "AdaptationCategory": null,
-            "Hazard": null,
-            "Sector": [
-                "ippu"
-            ],
-            "Subsector": [
-                "industrial_processes"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "InterventionType": [
-                "infrastructure_investments",
-                "programs_and_initiatives"
-            ],
-            "Description": "Extending the lifespan of buildings and infrastructure by maintaining their structural integrity through improved product stock maintenance. This involves ensuring concrete structures remain functional for over 200 years.",
-            "BehavioralChangeTargeted": "Encourages extending the lifetime of concrete structures and promoting more sustainable construction and maintenance practices.",
-            "CoBenefits": {
-                "air_quality": 0,
+                "air_quality": 2,
                 "water_quality": 0,
                 "habitat": 0,
                 "cost_of_living": 0,
@@ -1354,32 +491,43 @@
                 "mobility": 0,
                 "stakeholder_engagement": 0
             },
-            "EquityAndInclusionConsiderations": "Supports affordable infrastructure by reducing the need for frequent rebuilding, benefiting underserved and resource-limited communities.",
+            "EquityAndInclusionConsiderations": "The \"Zero Emission Buses\" initiative promotes equity and inclusion by prioritizing cleaner air in urban areas, which often include vulnerable or underserved communities that are disproportionately affected by air pollution. By transitioning to electric or zero-emission buses, the initiative directly addresses health disparities faced by these populations, improving their overall quality of life.\n\nAdditionally, the integration of zero-emission technologies into public transportation enhances accessibility to reliable and sustainable transit options for low-income individuals who may rely on public transport for their daily commutes. This ensures that all community members, regardless of socioeconomic status, have equitable access to clean transportation.\n\nFurthermore, the initiative may create job opportunities in the maintenance and operation of zero-emission buses, particularly in communities that have historically faced economic disadvantages. This can help foster economic inclusion and support local workforce development.\n\nOverall, the initiative's focus on reducing emissions and improving public transportation aligns with the needs of underserved communities, promoting environmental justice and equitable access to clean transit solutions.",
             "GHGReductionPotential": {
                 "stationary_energy": null,
-                "transportation": null,
+                "transportation": "20-39",
                 "waste": null,
-                "ippu": "40-59",
+                "ippu": null,
                 "afolu": null
             },
             "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
+            "CostInvestmentNeeded": "high",
+            "TimelineForImplementation": "<5 years",
             "Dependencies": [
-                "Development of advanced maintenance techniques",
-                "effective policies to promote longer building lifespans",
-                "education for construction professionals on durable practices"
+                "Availability of electric or zero-emission bus technology",
+                "Investment in charging infrastructure for electric buses",
+                "Supportive government policies and regulations promoting zero-emission transportation",
+                "Public funding or financial incentives for transit agencies",
+                "Training and workforce development for maintenance and operation of new technologies",
+                "Public acceptance and demand for cleaner public transportation options"
             ],
             "KeyPerformanceIndicators": [
-                "Increase in the average lifespan of buildings and infrastructure",
-                "reduction in cement demand per capita",
-                "overall CO2 emissions reductions in cement production"
+                "Number of zero-emission buses deployed",
+                "Reduction in greenhouse gas emissions",
+                "Percentage of public transportation fleet that is zero-emission",
+                "Air quality improvement metrics",
+                "Operational cost savings from zero-emission buses",
+                "Public ridership levels",
+                "Energy consumption per mile",
+                "Maintenance costs of zero-emission buses",
+                "User satisfaction ratings",
+                "Reduction in noise pollution"
             ],
             "Impacts": [
-                "Reduction in demand for new concrete and cement production",
-                "reduced emissions",
-                "enhanced resource efficiency",
-                "increased affordability and sustainability of infrastructure"
+                "Reduction of greenhouse gas emissions in the transportation sector by 20-39%",
+                "Improvement of air quality in urban areas",
+                "Promotion of equity and inclusion for underserved communities",
+                "Enhanced accessibility to public transportation for low-income individuals",
+                "Creation of job opportunities in the maintenance and operation of zero-emission buses"
             ]
         }
     },
@@ -1388,70 +536,223 @@
         "cityName": "Cama\u00e7ari",
         "region": "BR-BA",
         "regionName": "Bahia",
-        "actionId": "ipcc_0051",
-        "actionName": "Reducing overall demand for product services",
-        "actionPriority": 20,
-        "explanation": "Scoring 1.549, this action directly targets the reduction in consumption demand, leading to a decrease in associated emissions. It complements other circular strategies by addressing the demand side of emissions.",
+        "actionId": "icare_0139",
+        "actionName": "Implementation of urban toll.",
+        "actionPriority": 13,
+        "explanation": "For the city of Cama\u00e7ari, implementing an urban toll helps alleviate congestion and improve air quality by discouraging unnecessary driving. This measure can streamline traffic flow, leading to faster commutes and reduced emissions. The revenue generated may also bolster city infrastructure and public services.",
+        "action": null
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "icare_0017",
+        "actionName": "Optimize the urban solid waste (USW) management system, aiming to expand collection and reduce illegal disposal.",
+        "actionPriority": 14,
+        "explanation": "For the city of Cama\u00e7ari, optimizing the urban solid waste management system broadens collection coverage and curbs illegal dumping. This initiative safeguards both environmental quality and public health, ensuring cleaner and safer neighborhoods. Better waste oversight also strengthens the city\u2019s long-term resilience to rising waste demands.",
+        "action": null
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "icare_0088",
+        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
+        "actionPriority": 15,
+        "explanation": "For the city of Cama\u00e7ari, free public transportation during peak hours can swiftly shift commuter preferences away from personal cars. This helps lower congestion, reduce emissions, and offer more equitable access to mobility. By removing fare barriers, the city promotes a more inclusive approach to daily travel.",
+        "action": null
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "c40_0025",
+        "actionName": "Truck Emissions",
+        "actionPriority": 16,
+        "explanation": "For the city of Cama\u00e7ari, focusing on Truck Emissions is vital due to the high pollution levels produced by heavy-duty vehicles. By adopting cleaner technologies and operational standards, the city can protect public health and lower climate impacts. These improvements also align well with industrial and commercial transport demands.",
         "action": {
-            "ActionID": "ipcc_0051",
-            "ActionName": "Reducing overall demand for product services",
+            "ActionID": "c40_0025",
+            "ActionName": "Truck Emissions",
             "ActionType": [
                 "mitigation"
             ],
             "AdaptationCategory": null,
             "Hazard": null,
             "Sector": [
-                "ippu"
+                "transportation"
             ],
             "Subsector": [
-                "product_use"
+                "on-road"
             ],
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
             "InterventionType": [
                 "programs_and_initiatives",
-                "incentives_and_subsidies",
-                "regulations_and_laws"
+                "incentives_and_subsidies"
             ],
-            "Description": "This action focuses on mitigating climate change by reducing the demand for industrial products and services, particularly in sectors such as clothing and tourism. It emphasizes behavioral and lifestyle changes, such as sustainable consumption patterns, reduced long-haul travel, and lower demand for products linked to excessive material production and emissions.",
-            "BehavioralChangeTargeted": "Promotes sustainable consumption and lifestyle changes, such as reduced reliance on fast fashion, decreased long-haul travel, and responsible use of industrial products to limit resource consumption and emissions.",
+            "Description": "\"Truck Emissions\" mitigation involves adopting cleaner fuels and technologies to reduce the environmental impact of freight transportation. This initiative aims to decrease air pollution, promote sustainability, and improve the overall efficiency of urban logistics.",
+            "BehavioralChangeTargeted": "The targeted behavioral change that the \"Truck Emissions\" mitigation initiative aims to achieve is the adoption of cleaner fuels and technologies by freight transportation companies. This shift encourages these companies to prioritize sustainability and efficiency in their logistics operations, ultimately leading to a reduction in air pollution and greenhouse gas emissions associated with freight transport. By implementing financial incentives and supportive programs, the initiative seeks to influence the perceptions of these companies regarding the benefits of cleaner technologies, fostering a broader transition towards environmentally friendly practices in urban logistics.",
             "CoBenefits": {
                 "air_quality": 1,
                 "water_quality": 0,
                 "habitat": 0,
                 "cost_of_living": 0,
                 "housing": 0,
-                "mobility": 1,
-                "stakeholder_engagement": 1
+                "mobility": 0,
+                "stakeholder_engagement": 0
             },
-            "EquityAndInclusionConsiderations": "Encourages equitable access to sustainable alternatives, particularly for underserved communities, ensuring reduced environmental impacts without excluding vulnerable populations.",
+            "EquityAndInclusionConsiderations": "The \"Truck Emissions\" mitigation initiative promotes equity and inclusion by addressing the disproportionate impact of air pollution on vulnerable and underserved communities, often located near freight corridors. By adopting cleaner fuels and technologies, the action directly benefits these communities by improving air quality, which is crucial for public health, particularly for low-income populations and communities of color that may have limited access to healthcare resources. \n\nAdditionally, the initiative enhances sustainability and urban logistics efficiency, which can lead to economic opportunities and job creation in these underserved areas. By prioritizing cleaner transportation methods, the action supports a more equitable distribution of environmental benefits, ensuring that marginalized communities are not left behind in the transition to a greener economy. Overall, the focus on reducing emissions aligns with the goal of fostering healthier, more resilient communities that are often the most affected by environmental degradation.",
             "GHGReductionPotential": {
                 "stationary_energy": null,
-                "transportation": null,
+                "transportation": "20-39",
                 "waste": null,
-                "ippu": "40-59",
+                "ippu": null,
                 "afolu": null
             },
             "AdaptationEffectiveness": null,
             "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
+            "TimelineForImplementation": "<5 years",
             "Dependencies": [
-                "Implementation of policies and programs promoting sustainable consumption",
-                "availability of alternatives to high-emission activities",
-                "societal support for behavioral and lifestyle changes"
+                "Availability of cleaner fuel alternatives",
+                "Development and adoption of advanced emission-reducing technologies",
+                "Supportive regulatory frameworks and policies",
+                "Investment in infrastructure for cleaner freight options",
+                "Collaboration between stakeholders in the logistics and transportation sectors"
             ],
             "KeyPerformanceIndicators": [
-                "Reduction in demand for high-emission products and services",
-                "decreased industrial emissions linked to product use",
-                "increased adoption of sustainable consumption practices"
+                "Reduction in CO2 emissions (tons)",
+                "Percentage of trucks using cleaner fuels",
+                "Improvement in fuel efficiency (miles per gallon)",
+                "Reduction in particulate matter emissions (PM2.5)",
+                "Increase in the number of electric or hybrid trucks",
+                "Cost savings from fuel efficiency improvements",
+                "Percentage decrease in urban air pollution levels",
+                "Number of logistics companies adopting sustainable practices"
             ],
             "Impacts": [
-                "Reduction in global GHG emissions",
-                "improved resource efficiency",
-                "enhanced sustainability in consumption patterns",
-                "reduced strain on environmental resources"
+                "Reduction in greenhouse gas emissions by 20-39% in the transportation sector",
+                "Improvement in air quality benefiting vulnerable communities",
+                "Promotion of cleaner fuels and technologies in freight transportation",
+                "Encouragement of sustainable practices in urban logistics",
+                "Potential economic opportunities and job creation in underserved areas"
             ]
         }
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "c40_0026",
+        "actionName": "Vehicle Emissions",
+        "actionPriority": 17,
+        "explanation": "For the city of Cama\u00e7ari, addressing Vehicle Emissions helps reduce one of the largest sources of urban air pollution. By encouraging cleaner cars and better fuel standards, the city lowers health risks and improves traffic conditions. This broad measure also supports climate mitigation by reducing greenhouse gas output across the region.",
+        "action": {
+            "ActionID": "c40_0026",
+            "ActionName": "Vehicle Emissions",
+            "ActionType": [
+                "mitigation"
+            ],
+            "AdaptationCategory": null,
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "on-road"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "InterventionType": [
+                "incentives_and_subsidies",
+                "regulations_and_laws",
+                "programs_and_initiatives"
+            ],
+            "Description": "\"Vehicle Emissions\" reduction strategies focus on minimizing the environmental impact of all types of vehicles. Implementing cleaner technologies and promoting alternative fuels contribute to lower emissions, fostering sustainable and eco-friendly transportation.",
+            "BehavioralChangeTargeted": "The targeted behavioral shift that the \"Vehicle Emissions\" reduction strategies aim to achieve is the increased adoption of cleaner transportation options, such as electric vehicles and alternative fuel vehicles, as well as a greater reliance on public transportation, biking, and walking. This shift is encouraged through financial incentives, regulations mandating lower emissions, and programs promoting sustainable transportation practices, ultimately leading to a significant reduction in greenhouse gas emissions from the transportation sector.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": "The \"Vehicle Emissions\" reduction strategies inherently promote equity and inclusion by addressing the environmental impacts that disproportionately affect vulnerable and underserved communities. These communities often experience higher levels of air pollution and related health issues due to proximity to high-traffic areas and industrial zones. By implementing cleaner technologies and promoting alternative fuels, the action directly benefits these populations by improving air quality and reducing health risks.\n\nAdditionally, the focus on sustainable and eco-friendly transportation can enhance access to affordable and efficient transportation options for underserved communities, which may lack reliable public transit. This inclusivity ensures that all community members, regardless of socioeconomic status, can benefit from cleaner air and improved public health outcomes. Overall, the action recognizes and addresses the specific needs of vulnerable populations, fostering a more equitable approach to climate action.",
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "80-100",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Development and availability of cleaner vehicle technologies",
+                "Infrastructure for alternative fuel distribution",
+                "Government policies and regulations supporting emissions reduction",
+                "Public awareness and acceptance of eco-friendly transportation options",
+                "Investment in research and development for sustainable transportation solutions"
+            ],
+            "KeyPerformanceIndicators": [
+                "Reduction in vehicle emissions (CO2, NOx, PM)",
+                "Percentage of vehicles using alternative fuels",
+                "Number of electric vehicles on the road",
+                "Fuel efficiency improvements (miles per gallon)",
+                "Adoption rate of cleaner technologies",
+                "Reduction in fossil fuel consumption",
+                "Public transportation usage rates",
+                "Air quality index improvements",
+                "Percentage of low-emission zones established",
+                "Investment in sustainable transportation infrastructure"
+            ],
+            "Impacts": [
+                "Significant reduction in greenhouse gas emissions from the transportation sector",
+                "Improved air quality benefiting vulnerable and underserved communities",
+                "Increased adoption of cleaner transportation options",
+                "Enhanced access to affordable and efficient transportation for underserved populations"
+            ]
+        }
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "icare_0093",
+        "actionName": "Incentive the use of drones for monitoring large agricultural properties.",
+        "actionPriority": 18,
+        "explanation": "For the city of Cama\u00e7ari, incentivizing drones in large-scale agriculture streamlines resource use and lowers the need for on-site vehicle inspections. Quick detection of crop issues reduces chemical inputs and water usage, benefiting both farmers and the environment. Embracing this technology promotes efficiency and supports regional agribusiness.",
+        "action": null
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "icare_0122",
+        "actionName": "Establish eco-parks.",
+        "actionPriority": 19,
+        "explanation": "For the city of Cama\u00e7ari, establishing eco-parks creates protected green spaces that safeguard local biodiversity and elevate recreational opportunities. These areas improve air quality, mitigate urban heat, and foster environmental stewardship among residents. Integrating nature into city planning also enhances resilience against climate stressors.",
+        "action": null
+    },
+    {
+        "locode": "BRCCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BR-BA",
+        "regionName": "Bahia",
+        "actionId": "icare_0137",
+        "actionName": "Replace Inefficient Lighting with LED Technology in Public Spaces",
+        "actionPriority": 20,
+        "explanation": "For the city of Cama\u00e7ari, replacing outdated lighting with LED technology significantly reduces electricity consumption and maintenance costs. This upgrade lowers emissions linked to power generation, aligning with broader sustainability efforts. By adopting energy-efficient illumination, the city can also enhance public safety and visibility in shared spaces.",
+        "action": null
     }
 ]

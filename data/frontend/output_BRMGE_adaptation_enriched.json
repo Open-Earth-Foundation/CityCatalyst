@@ -4,10 +4,21 @@
         "cityName": "Maranguape",
         "region": "BR-CE",
         "regionName": "Cear\u00e1",
+        "actionId": "icare_0176",
+        "actionName": "Development of Climate Action Plan",
+        "actionPriority": 1,
+        "explanation": "For the city of Maranguape, creating a Climate Action Plan sets a clear roadmap for reducing emissions and preparing for changing weather patterns. By coordinating different sectors, it ensures that municipal resources are used efficiently. This approach fosters long-term resilience and aligns local goals with broader sustainability measures.",
+        "action": null
+    },
+    {
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
         "actionId": "ipcc_0087",
         "actionName": "Infrastructure retrofitting",
-        "actionPriority": 1,
-        "explanation": "Ranked first due to its high quantitative score and its role in strengthening critical infrastructure. By retrofitting buildings and transportation networks, the action reduces risk from hazards (such as heatwaves and drought\u2010induced stress) which is vital in a low\u2010income desert city. Although adaptation in nature, improving resilience can indirectly contribute to lower operational emissions by preventing repeated damage and reconstruction.",
+        "actionPriority": 2,
+        "explanation": "For the city of Maranguape, upgrading and reinforcing existing structures protects residents from extreme weather events. This measure reduces damage costs and service disruptions when climate stresses occur. Strengthened infrastructure also supports ongoing economic activity by minimizing interruptions in critical facilities.",
         "action": {
             "ActionID": "ipcc_0087",
             "ActionName": "Infrastructure retrofitting",
@@ -67,139 +78,10 @@
         "cityName": "Maranguape",
         "region": "BR-CE",
         "regionName": "Cear\u00e1",
-        "actionId": "ipcc_0091",
-        "actionName": "Diversification of livelihoods ",
-        "actionPriority": 2,
-        "explanation": "This action scores highly and is essential for socio-demographic suitability, especially given the city's very high low-income population. It helps communities adapt to climate shocks by providing alternative income sources and reducing vulnerability, which is critical in a context with significant risks to food and energy security.",
-        "action": {
-            "ActionID": "ipcc_0091",
-            "ActionName": "Diversification of livelihoods ",
-            "ActionType": [
-                "adaptation"
-            ],
-            "AdaptationCategory": "Livelihood Adaptation",
-            "Hazard": [
-                "storms",
-                "sea-level-rise"
-            ],
-            "Sector": [
-                "food_security",
-                "biodiversity"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "InterventionType": null,
-            "Description": "Diversifying income-generating activities within fisheries and mariculture sectors to mitigate the economic impacts of climate change. This includes shifting target species, adapting harvest tactics, and transitioning to mariculture and ecotourism. Technology and infrastructure upgrades improve marine harvest efficiency and promote sustainable resource management. These adaptations aim to stabilize fisheries, enhance sustainability, and protect livelihoods under shifting marine species distributions and climate variability.",
-            "BehavioralChangeTargeted": null,
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 1,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": "Promotes equitable opportunities for vulnerable fishing communities by supporting transitions to alternative employment sectors like ecotourism and mariculture.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Investment in education",
-                "infrastructure",
-                "technology to support the transition to diversified livelihoods"
-            ],
-            "KeyPerformanceIndicators": [
-                "Increase in income diversity",
-                "employment rates in alternative sectors",
-                "reduction in overexploitation of marine species"
-            ],
-            "Impacts": [
-                "Improved livelihood stability",
-                "economic resilience",
-                "enhanced resource sustainability"
-            ]
-        }
-    },
-    {
-        "locode": "BRMGE",
-        "cityName": "Maranguape",
-        "region": "BR-CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "ipcc_0095",
-        "actionName": "Disaster early warning",
-        "actionPriority": 3,
-        "explanation": "With a strong quantitative score and a primary role in risk reduction, this early warning system can alert residents to impending hazards such as droughts and heatwaves. Effective early warning can reduce damage across multiple sectors, thereby protecting both lives and critical assets.",
-        "action": {
-            "ActionID": "ipcc_0095",
-            "ActionName": "Disaster early warning",
-            "ActionType": [
-                "adaptation"
-            ],
-            "AdaptationCategory": "Risk Reduction and Preparedness",
-            "Hazard": [
-                "heatwaves",
-                "droughts",
-                "storms"
-            ],
-            "Sector": [
-                "public_health",
-                "biodiversity",
-                "geo-hydrological_disasters"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "InterventionType": null,
-            "Description": "Establishing and maintaining early warning systems for disasters, including marine heatwaves, pest outbreaks, and heatwaves. These systems involve timely information dissemination to individuals, communities, and emergency services, enabling proactive measures to mitigate risks. Heat Action Plans (HAPs) are part of these systems and include detailed strategies like urban planning with nature-based solutions (e.g., green-blue spaces, cool materials), public awareness campaigns, and targeted measures for vulnerable groups (e.g., elderly, children, outdoor workers). Critical actions also include evaluation of system effectiveness post-disaster, lessons sharing, and improvements for better preparedness in future events.",
-            "BehavioralChangeTargeted": null,
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 1,
-                "habitat": 2,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 1,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": "Focuses on addressing vulnerabilities among low-income groups, elderly, pregnant women, children, and outdoor workers by incorporating targeted communication, access to cool areas, and specific health interventions. Promotes equity by engaging marginalized communities in planning and ensuring access to necessary resources.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Coordination among emergency services and health agencies",
-                "Investment in urban planning and nature-based solutions",
-                "Community education and public awareness campaigns",
-                "Technological infrastructure for early warning systems"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in heatwave-related mortality rates",
-                "Timeliness of warnings",
-                "Public awareness levels",
-                "Community adoption of protective measures"
-            ],
-            "Impacts": [
-                "Improved public health and safety",
-                "Enhanced community resilience to disasters",
-                "Reduced economic losses from heat-related productivity impacts",
-                "Broader ecosystem benefits through urban nature-based solutions"
-            ]
-        }
-    },
-    {
-        "locode": "BRMGE",
-        "cityName": "Maranguape",
-        "region": "BR-CE",
-        "regionName": "Cear\u00e1",
         "actionId": "c40_0053",
         "actionName": "Water Savings",
-        "actionPriority": 4,
-        "explanation": "Water scarcity is a major issue in a desert biome and high risk is noted for water resources. This action not only conserves water but also mitigates the impacts of drought. It is highly relevant to the city\u2019s most pressing water challenges, aligning with both sector relevance and risk reduction.",
+        "actionPriority": 3,
+        "explanation": "For the city of Maranguape, promoting Water Savings measures reduces strain on local freshwater sources in a region prone to fluctuations in rainfall. Encouraging careful water usage helps adapt to periods of drought and supports long-term resource security. This strategy also lowers utility costs and fosters responsible consumption patterns.",
         "action": {
             "ActionID": "c40_0053",
             "ActionName": "Water Savings",
@@ -262,10 +144,288 @@
         "cityName": "Maranguape",
         "region": "BR-CE",
         "regionName": "Cear\u00e1",
+        "actionId": "c40_0060",
+        "actionName": "Managed Retreat",
+        "actionPriority": 4,
+        "explanation": "For the city of Maranguape, Managed Retreat plans guide the gradual relocation of communities away from areas threatened by floods or erosion. This proactive approach reduces future losses and improves safety for vulnerable populations. It balances community needs with the realities of a shifting environment, ensuring more secure living conditions.",
+        "action": {
+            "ActionID": "c40_0060",
+            "ActionName": "Managed Retreat",
+            "ActionType": [
+                "adaptation"
+            ],
+            "AdaptationCategory": "Behavioural\u00a0actions",
+            "Hazard": [
+                "storms"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "InterventionType": null,
+            "Description": "\"Managed Retreat\" strategies involve planned relocation away from high-risk areas vulnerable to climate change impacts. This adaptation measure aims to protect communities from sea-level rise, flooding, and other environmental risks.",
+            "BehavioralChangeTargeted": null,
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": "The \"Managed Retreat\" strategies inherently promote equity and inclusion by prioritizing the safety and well-being of vulnerable or underserved communities that are most at risk from climate change impacts. By focusing on planned relocation, these strategies aim to protect marginalized populations who often lack the resources to adapt to environmental changes on their own. \n\nAdditionally, the implementation of managed retreat involves engaging affected communities in the decision-making process, ensuring that their voices and needs are considered. This participatory approach helps to address historical inequities and empowers residents to have a say in their future. \n\nFurthermore, managed retreat can provide opportunities for equitable access to safer housing and infrastructure, reducing the disproportionate burden of climate risks faced by low-income and marginalized groups. Overall, this climate action recognizes and addresses the unique challenges faced by underserved communities, fostering a more inclusive approach to climate adaptation.",
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "medium",
+            "CostInvestmentNeeded": "high",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Assessment of high-risk areas to identify communities that need relocation",
+                "Availability of funding and resources to support relocation efforts",
+                "Community engagement and support for relocation plans",
+                "Development of new infrastructure in safer areas",
+                "Policy and regulatory frameworks that facilitate managed retreat",
+                "Coordination among government agencies and stakeholders involved in the relocation process"
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of communities successfully relocated",
+                "Reduction in population exposure to high-risk areas",
+                "Percentage of affected residents engaged in the planning process",
+                "Cost-effectiveness of relocation strategies",
+                "Improvement in community resilience metrics",
+                "Time taken to implement relocation plans",
+                "Satisfaction levels of relocated residents",
+                "Environmental impact assessments post-relocation"
+            ],
+            "Impacts": [
+                "Enhances climate resilience for vulnerable communities",
+                "Promotes equity and inclusion through community engagement",
+                "Addresses historical inequities in climate adaptation",
+                "Provides safer housing and infrastructure options",
+                "Reduces risks associated with storms for marginalized populations"
+            ]
+        }
+    },
+    {
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0170",
+        "actionName": "Build safe housing and implement urban rehabilitation projects for populations living in high-risk areas",
+        "actionPriority": 5,
+        "explanation": "For the city of Maranguape, building safe housing in high-risk zones reduces exposure to climate hazards like flooding or landslides. These improvements directly protect families and stabilize entire neighborhoods. By investing in urban rehabilitation, the city fosters healthier communities and lowers reconstruction costs after severe events.",
+        "action": null
+    },
+    {
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0160",
+        "actionName": "Consolidate spaces for intersectoral coordination and public participation in climate policy",
+        "actionPriority": 6,
+        "explanation": "For the city of Maranguape, fostering intersectoral coordination and public engagement ensures inclusive decision-making on climate issues. Bringing diverse stakeholders together improves policy alignment and resource sharing. This approach strengthens local commitment and promotes innovative solutions tailored to community needs.",
+        "action": null
+    },
+    {
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "ipcc_0094",
+        "actionName": "Access to health care",
+        "actionPriority": 7,
+        "explanation": "For the city of Maranguape, expanding access to health care addresses climate-related health risks, such as heatstroke or vector-borne diseases. This measure saves lives by ensuring timely treatment and medical resources. A resilient health system also minimizes disruptions during disasters, improving overall well-being.",
+        "action": {
+            "ActionID": "ipcc_0094",
+            "ActionName": "Access to health care",
+            "ActionType": [
+                "adaptation"
+            ],
+            "AdaptationCategory": "Health Systems Strengthening",
+            "Hazard": [
+                "heatwaves",
+                "floods",
+                "droughts"
+            ],
+            "Sector": [
+                "public_health",
+                "water_resources"
+            ],
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "InterventionType": null,
+            "Description": "Enhancing access to health care services, including health and nutrition services, clean water, sanitation, and culturally appropriate mental health resources. Expanding telemedicine capabilities enables efficient health service delivery, particularly for remote and underserved populations. Strengthening basic public health systems and disaster preparedness can rapidly reduce vulnerability to climate-related health risks.",
+            "BehavioralChangeTargeted": null,
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 2,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 1,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": "Promotes equitable access to health care for marginalized and vulnerable groups, including homeless populations, remote communities, and those affected by housing inequities.",
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Investment in telemedicine technologies",
+                "Strengthened governance of public health systems",
+                "Capacity building for health workers",
+                "Infrastructure upgrades for health facilities"
+            ],
+            "KeyPerformanceIndicators": [
+                "Reduction in climate-related mortality",
+                "Increased access to telemedicine",
+                "Number of culturally tailored health programs implemented",
+                "Improved water and sanitation access metrics"
+            ],
+            "Impacts": [
+                "Improved public health",
+                "Reduced health inequities",
+                "Enhanced disaster preparedness",
+                "Stronger health system resilience"
+            ]
+        }
+    },
+    {
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0169",
+        "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
+        "actionPriority": 8,
+        "explanation": "For the city of Maranguape, having a dedicated emergency response plan allows rapid coordination and clear protocols when severe weather strikes. This readiness reduces confusion, streamlines rescue efforts, and protects human life. By prioritizing preparedness, the city can lessen storm damage and recovery costs.",
+        "action": null
+    },
+    {
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0164",
+        "actionName": "Hydrological Monitoring System with Telemetry Stations",
+        "actionPriority": 9,
+        "explanation": "For the city of Maranguape, installing a hydrological monitoring system provides real-time insight into water levels and flows. This technology helps predict floods, improving early warning and evacuation plans. By tracking conditions, officials can make better decisions that safeguard residents and infrastructure.",
+        "action": null
+    },
+    {
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0151",
+        "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
+        "actionPriority": 10,
+        "explanation": "For the city of Maranguape, diagnosing vulnerabilities in Special Social Interest Zones enables targeted improvements where risks are highest. By restoring infrastructure and housing, residents face fewer hazards from storms or heatwaves. This focused approach builds community resilience and promotes equitable urban development.",
+        "action": null
+    },
+    {
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0145",
+        "actionName": "Strengthen the healthcare network to attend to climate victims",
+        "actionPriority": 11,
+        "explanation": "For the city of Maranguape, bolstering the healthcare network ensures faster responses to injuries and illnesses caused by extreme weather. Enhanced facilities and trained staff minimize fatalities when floods or heatwaves occur. This action also supports the broader population by maintaining quality care year-round.",
+        "action": null
+    },
+    {
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0144",
+        "actionName": "Creation of a Financial Support Program to Adress Extreme Weather Events",
+        "actionPriority": 12,
+        "explanation": "For the city of Maranguape, a financial support program helps communities recover swiftly from disasters like storms or droughts. Quick funding reduces prolonged disruptions by assisting families and businesses with immediate reconstruction. This relief approach also promotes social stability and sustains local economies during crises.",
+        "action": null
+    },
+    {
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "c40_0062",
+        "actionName": "Water Tariffs",
+        "actionPriority": 13,
+        "explanation": "For the city of Maranguape, adjusting Water Tariffs encourages judicious water consumption and investment in efficient systems. Pricing structures can help curb overuse, especially in regions susceptible to drought. By promoting responsible usage, the city eases pressure on limited resources and secures long-term water availability.",
+        "action": {
+            "ActionID": "c40_0062",
+            "ActionName": "Water Tariffs",
+            "ActionType": [
+                "adaptation"
+            ],
+            "AdaptationCategory": "Economic\u00a0actions",
+            "Hazard": [
+                "droughts"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "InterventionType": null,
+            "Description": "\"Water Tariffs\" involve pricing structures for water use, encouraging conservation and efficient use of water resources. This initiative aims to promote responsible water consumption and contribute to sustainable water management.",
+            "BehavioralChangeTargeted": null,
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 1,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": "The \"Water Tariffs\" initiative promotes equity and inclusion by implementing pricing structures that can be designed to protect vulnerable and underserved communities. By encouraging responsible water consumption, the initiative can help ensure that all community members, regardless of their economic status, have access to essential water resources. \n\nAdditionally, tiered pricing models can be established, where lower rates are applied to basic water needs, ensuring that low-income households are not disproportionately burdened by costs. This approach can help prevent water insecurity among underserved populations, fostering a more equitable distribution of water resources.\n\nFurthermore, the initiative can include educational components aimed at raising awareness in vulnerable communities about water conservation practices, empowering them to make informed decisions about their water use. Overall, the \"Water Tariffs\" action considers the needs of underserved communities by promoting sustainable water management while ensuring access and affordability.",
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Effective monitoring and measurement of water usage to inform tariff structures",
+                "Public awareness and education on the importance of water conservation",
+                "Support from local governments and regulatory bodies to implement and enforce tariffs",
+                "Availability of alternative water sources to reduce dependency on traditional supply",
+                "Technological infrastructure for billing and tracking water consumption"
+            ],
+            "KeyPerformanceIndicators": [
+                "Water consumption reduction percentage",
+                "Percentage of users adopting conservation practices",
+                "Revenue generated from water tariffs",
+                "Change in water usage per capita",
+                "Customer satisfaction with water pricing",
+                "Rate of water loss in distribution system",
+                "Percentage of households using water-efficient appliances",
+                "Impact on local water resources sustainability"
+            ],
+            "Impacts": [
+                "Promotes responsible water consumption",
+                "Enhances climate resilience against droughts",
+                "Improves water quality",
+                "Supports equity and inclusion for vulnerable communities",
+                "Encourages sustainable water management practices"
+            ]
+        }
+    },
+    {
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
         "actionId": "c40_0054",
         "actionName": "Water Recycling",
-        "actionPriority": 5,
-        "explanation": "Water recycling directly addresses water scarcity by improving water reuse, making it both cost-effective and highly applicable to the city\u2019s environmental context. This adaptation measure enhances water security and helps manage available water resources efficiently.",
+        "actionPriority": 14,
+        "explanation": "For the city of Maranguape, recycling water reduces reliance on scarce freshwater supplies. Treated water can serve irrigation or industrial needs, cutting demand on main reservoirs. This practice also supports economic growth by diversifying sources and ensuring more stable water availability during dry spells.",
         "action": {
             "ActionID": "c40_0054",
             "ActionName": "Water Recycling",
@@ -332,128 +492,11 @@
         "cityName": "Maranguape",
         "region": "BR-CE",
         "regionName": "Cear\u00e1",
-        "actionId": "ipcc_0093",
-        "actionName": "Availability of health infrastructure",
-        "actionPriority": 6,
-        "explanation": "By ensuring improved health infrastructure, the city can better cope with public health risks, including heatwaves and disease outbreaks. Given the very high normalized risk scores related to public health, this action is prioritized among the groups with equal quantitative scores.",
-        "action": {
-            "ActionID": "ipcc_0093",
-            "ActionName": "Availability of health infrastructure",
-            "ActionType": [
-                "adaptation"
-            ],
-            "AdaptationCategory": "Infrastructure Adaptation",
-            "Hazard": [
-                "droughts",
-                "floods",
-                "sea-level-rise",
-                "diseases"
-            ],
-            "Sector": [
-                "public_health",
-                "water_resources"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "InterventionType": null,
-            "Description": "Ensuring access to safe drinking water infrastructure, protecting health services, and improving sanitation systems to mitigate climate impacts. This includes developing adaptive measures for water security against droughts, floods, and sea-level rise. Strengthening infrastructure resilience ensures equitable access to health services, reduces contamination risks, and addresses the impacts of climate-induced hazards.",
-            "BehavioralChangeTargeted": null,
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 2,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": "Enhances access to critical health and water resources for vulnerable and underserved communities, mitigating inequities caused by climate impacts.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Adequate funding",
-                "technological investments in health and water infrastructure",
-                "effective governance and cross-sector coordination"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in waterborne diseases",
-                "improved access to potable water",
-                "number of resilient health facilities developed"
-            ],
-            "Impacts": [
-                "Improved public health",
-                "enhanced water security",
-                "resilience against climate-induced hazards"
-            ]
-        }
-    },
-    {
-        "locode": "BRMGE",
-        "cityName": "Maranguape",
-        "region": "BR-CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "ipcc_0092",
-        "actionName": "Social safety nets",
-        "actionPriority": 7,
-        "explanation": "This action is crucial for protecting the vulnerable population. Strong social safety nets help mitigate economic shocks due to climate hazards, aligning well with the socio-demographic context in Maranguape, where low income is very high.",
-        "action": {
-            "ActionID": "ipcc_0092",
-            "ActionName": "Social safety nets",
-            "ActionType": [
-                "adaptation"
-            ],
-            "AdaptationCategory": "Social Protection and Risk Reduction",
-            "Hazard": [
-                "droughts",
-                "heatwaves",
-                "floods",
-                "storms"
-            ],
-            "Sector": [
-                "food_security",
-                "public_health"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "InterventionType": null,
-            "Description": "Social safety nets encompass adaptive social protection mechanisms to reduce food insecurity and malnutrition, especially for vulnerable populations. These include cash transfers, school feeding programs, public work initiatives, unemployment compensation, land reforms, credit and insurance schemes. Integrated approaches combine climate risk assessments with disaster risk reduction, education, and social equity to enhance resilience to climate stresses.",
-            "BehavioralChangeTargeted": null,
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 2,
-                "housing": 1,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": "Enhances the social status and rights of marginalized groups, protects vulnerable populations, reduces inequalities, and promotes education and gender equity.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Integration of climate and disaster risk into social protection",
-                "education programs",
-                "coordination with sustainable livelihoods and financial inclusion initiatives"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in malnutrition rates",
-                "Increase in education access for vulnerable groups",
-                "Participation in social protection programs"
-            ],
-            "Impacts": [
-                "Improved public health",
-                "Reduced poverty and inequality",
-                "Strengthened resilience and social empowerment"
-            ]
-        }
+        "actionId": "icare_0150",
+        "actionName": "Implement Loss Reduction and Control Program promoting water security for the municipality",
+        "actionPriority": 15,
+        "explanation": "For the city of Maranguape, reducing water losses in supply networks ensures stable access to this vital resource. By minimizing leaks, officials can maintain pressure during droughts and lower operational costs. This improved efficiency also benefits residents, who face fewer disruptions and see healthier ecosystems.",
+        "action": null
     },
     {
         "locode": "BRMGE",
@@ -462,8 +505,8 @@
         "regionName": "Cear\u00e1",
         "actionId": "ipcc_0088",
         "actionName": "Building codes",
-        "actionPriority": 8,
-        "explanation": "Updating building codes ensures that new constructions are climate-resilient. While the quantitative score is on the lower end of this subset, enforcing robust building standards is essential to reduce risks from hazards and indirectly contributes to energy efficiency and emissions reduction over time.",
+        "actionPriority": 16,
+        "explanation": "For the city of Maranguape, adopting climate-conscious building codes strengthens new and renovated structures against regional hazards. This reduces damage from storms or extreme heat, protecting families and reducing repair costs. Safe, sustainable buildings also enhance property values and local quality of life.",
         "action": {
             "ActionID": "ipcc_0088",
             "ActionName": "Building codes",
@@ -521,272 +564,10 @@
         "cityName": "Maranguape",
         "region": "BR-CE",
         "regionName": "Cear\u00e1",
-        "actionId": "ipcc_0101",
-        "actionName": "Efficient water supply/distribution",
-        "actionPriority": 9,
-        "explanation": "In a desert city facing water scarcity and high water resource risks, ensuring efficient water distribution is of paramount importance. This action can quickly improve water access and reduce losses, directly addressing critical resource challenges.",
-        "action": {
-            "ActionID": "ipcc_0101",
-            "ActionName": "Efficient water supply/distribution",
-            "ActionType": [
-                "adaptation"
-            ],
-            "AdaptationCategory": "Sustainable Resource Management",
-            "Hazard": [
-                "droughts",
-                "floods",
-                "storms"
-            ],
-            "Sector": [
-                "water_resources"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "InterventionType": null,
-            "Description": "Implementing sustainable water supply systems by constructing irrigation infrastructure, promoting inter-basin water transfers, utilizing nature-based solutions (NBS) such as rain gardens, bioswales, and wetlands, and integrating advanced techniques like water reuse and water upgrading. Water reuse involves treating and recycling wastewater for non-potable or potable purposes, while water upgrading focuses on improving the quality of available water for diverse uses. These approaches enhance stormwater infiltration, improve urban water management, increase drought resilience, and support groundwater recharge. They provide energy-efficient and economical water solutions while maintaining sustainable urban development.",
-            "BehavioralChangeTargeted": null,
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": "Promotes equitable access to water resources, particularly in underserved urban areas, by integrating natural and engineered water management systems to benefit all communities, including low-income groups.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Adequate funding for infrastructure development",
-                "Community engagement for NBS implementation",
-                "Integration of urban planning with water management"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in water scarcity incidents",
-                "Increase in groundwater recharge rates",
-                "Enhanced urban water infiltration capacity"
-            ],
-            "Impacts": [
-                "Improved water security",
-                "Enhanced urban livability",
-                "Increased resilience to climate-related water risks"
-            ]
-        }
-    },
-    {
-        "locode": "BRMGE",
-        "cityName": "Maranguape",
-        "region": "BR-CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "ipcc_0100",
-        "actionName": "Efficient water use/demand",
-        "actionPriority": 10,
-        "explanation": "Optimizing water use is vital in a water-scarce environment. This action enhances cost-effectiveness and rapid implementation by encouraging conservation measures that lessen the burden on limited water supplies.",
-        "action": {
-            "ActionID": "ipcc_0100",
-            "ActionName": "Efficient water use/demand",
-            "ActionType": [
-                "adaptation"
-            ],
-            "AdaptationCategory": "Integrated Water Management",
-            "Hazard": [
-                "droughts",
-                "heatwaves"
-            ],
-            "Sector": [
-                "water_resources",
-                "food_security"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "InterventionType": null,
-            "Description": "Implementing advanced irrigation techniques such as precision and drip irrigation to enhance water use efficiency in agriculture. Managed Aquifer Recharge (MAR) is applied to replenish groundwater supplies using stormwater, treated wastewater, or other sources. These actions are complemented by cooperative policies across multiple sectors to ensure sustainable water resource management, equitable access, and regional collaboration. Additionally, promoting changes in water consumption patterns, such as reducing waste and improving efficiency in urban and agricultural water use, supports resilience against water scarcity and enhances adaptive capacity in vulnerable regions. These efforts collectively aim to address the growing demand for freshwater in the face of climate change and ensure long-term sustainability.",
-            "BehavioralChangeTargeted": null,
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 2,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": "Supports vulnerable farming and urban communities by ensuring equitable access to water resources, promoting sustainable consumption patterns, and addressing persistent water stress in underserved areas.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Infrastructure for water reuse and MAR",
-                "Regulatory frameworks for water management",
-                "Education and training on irrigation techniques",
-                "Regional and cross-sector policy coordination"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in agricultural water usage",
-                "Increase in groundwater recharge rates",
-                "Improved crop yields",
-                "Adoption of sustainable water consumption patterns",
-                "Regional collaboration metrics"
-            ],
-            "Impacts": [
-                "Enhanced water resource sustainability",
-                "Improved food security",
-                "Increased resilience against water scarcity",
-                "Strengthened regional and cross-sector collaboration"
-            ]
-        }
-    },
-    {
-        "locode": "BRMGE",
-        "cityName": "Maranguape",
-        "region": "BR-CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "ipcc_0099",
-        "actionName": "Water capture/storage",
-        "actionPriority": 11,
-        "explanation": "By maximizing water capture and storage capacity, the city can safeguard against drought conditions. This measure is crucial for adapting to a desert climate and ensuring a steady water supply during periods of scarcity.",
-        "action": {
-            "ActionID": "ipcc_0099",
-            "ActionName": "Water capture/storage",
-            "ActionType": [
-                "adaptation"
-            ],
-            "AdaptationCategory": "Infrastructure-Based Adaptation",
-            "Hazard": [
-                "droughts",
-                "floods",
-                "storms"
-            ],
-            "Sector": [
-                "water_resources",
-                "food_security",
-                "energy_security",
-                "geo-hydrological_disasters"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "InterventionType": null,
-            "Description": "Implementing water capture and storage solutions such as farm ponds, revival of water bodies, rain gardens, bioswales, retention ponds, and water storage tanks. These measures aim to mitigate climate-induced impacts by improving water management, reducing stormwater runoff, enhancing water quality, and supporting agriculture and energy production under changing climate scenarios. Multi-purpose water reservoirs and dams provide additional benefits by addressing water shortages and managing risks associated with natural hazards.",
-            "BehavioralChangeTargeted": null,
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 1,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": "Ensures access to water for underserved communities, supports sustainable livelihoods in water-scarce regions, and promotes equitable resource distribution through inclusive decision-making processes.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Investment in green infrastructure",
-                "community engagement",
-                "policy support for water resource management"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in stormwater runoff",
-                "increase in water storage capacity",
-                "improvement in water quality",
-                "stability in agricultural yields"
-            ],
-            "Impacts": [
-                "Improved water availability",
-                "enhanced climate resilience",
-                "sustainable agriculture and energy production",
-                "reduced risk of flooding and drought"
-            ]
-        }
-    },
-    {
-        "locode": "BRMGE",
-        "cityName": "Maranguape",
-        "region": "BR-CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "ipcc_0096",
-        "actionName": "Farm/fishery improvements",
-        "actionPriority": 12,
-        "explanation": "Improving local food production systems enhances food security, a critical need given the near-unity risk scores related to drought impacts on food security. This action fosters sustainable livelihoods while indirectly contributing to decreased dependence on imported goods and associated emissions.",
-        "action": {
-            "ActionID": "ipcc_0096",
-            "ActionName": "Farm/fishery improvements",
-            "ActionType": [
-                "adaptation"
-            ],
-            "AdaptationCategory": "Integrated Farm and Fishery Adaptation",
-            "Hazard": [
-                "droughts",
-                "heatwaves",
-                "floods",
-                "wildfires",
-                "storms"
-            ],
-            "Sector": [
-                "food_security",
-                "biodiversity",
-                "water_resources"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "InterventionType": null,
-            "Description": "Implementing a range of strategies to adapt farms and fisheries to climate impacts. This includes changing fishing gear or vessel power, adopting new crop varieties or adjusting planting schedules, improving irrigation schemes, integrating crop and livestock systems, relocating livestock with improved pasture management, and adopting agroecological and agroforestry systems. Technological innovations like smart farming and financial measures such as subsidies support these adaptations.",
-            "BehavioralChangeTargeted": null,
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": "Ensures access to resources for marginalized farmers and fishers, promotes diverse livelihood options, and builds resilience in underserved communities.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Policy support for climate-resilient agriculture and fisheries",
-                "Access to finance and subsidies",
-                "Training for adopting new practices",
-                "Improved market infrastructure"
-            ],
-            "KeyPerformanceIndicators": [
-                "Increase in agricultural and fishery productivity",
-                "Adoption rate of integrated systems",
-                "Reduction in climate-related yield losses"
-            ],
-            "Impacts": [
-                "Improved food security",
-                "Enhanced ecosystem health",
-                "Increased resilience of agricultural and fishery systems"
-            ]
-        }
-    },
-    {
-        "locode": "BRMGE",
-        "cityName": "Maranguape",
-        "region": "BR-CE",
-        "regionName": "Cear\u00e1",
         "actionId": "ipcc_0097",
         "actionName": "Food storage/distribution improvements",
-        "actionPriority": 13,
-        "explanation": "Better food storage and distribution systems can considerably reduce losses during climate shocks, ensuring community resilience by maintaining food security under adverse conditions.",
+        "actionPriority": 17,
+        "explanation": "For the city of Maranguape, improving food storage and distribution reduces waste during extreme climate events. Secure facilities help protect perishable items from heat and flooding, maintaining essential supplies. This measure also supports local farmers and merchants by reducing losses and stabilizing food access.",
         "action": {
             "ActionID": "ipcc_0097",
             "ActionName": "Food storage/distribution improvements",
@@ -850,464 +631,32 @@
         "cityName": "Maranguape",
         "region": "BR-CE",
         "regionName": "Cear\u00e1",
-        "actionId": "ipcc_0098",
-        "actionName": "Behaviour change in diets and food waste",
-        "actionPriority": 14,
-        "explanation": "Encouraging behavioural change can lead to significant reductions in food waste, indirectly enhancing food security. While its immediate impact might be less than infrastructural improvements, it supports long-term adaptation and cost-effectiveness within the community.",
-        "action": {
-            "ActionID": "ipcc_0098",
-            "ActionName": "Behaviour change in diets and food waste",
-            "ActionType": [
-                "adaptation"
-            ],
-            "AdaptationCategory": "Food System Transformation",
-            "Hazard": [
-                "droughts",
-                "heatwaves",
-                "floods",
-                "wildfires"
-            ],
-            "Sector": [
-                "food_security",
-                "biodiversity"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "InterventionType": null,
-            "Description": "Reducing food loss and waste through improved food production, distribution, and consumption practices. Actions include enhancing agricultural techniques, adopting water-saving technologies, implementing low-cost storage solutions, and promoting plant-based diets. Policymakers can encourage these behaviors with appropriate pricing policies, sustainable agriculture initiatives, and support for disadvantaged groups. The action emphasizes shifting to healthier diets, reducing overconsumption, and supporting local food systems to mitigate greenhouse gas emissions and ensure food security under climate change.",
-            "BehavioralChangeTargeted": null,
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": "Promotes access to affordable, healthy food for vulnerable communities, empowering women, youth, and socially disadvantaged groups. Encourages equitable participation in sustainable agricultural practices and local food networks.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Education and training for farmers",
-                "Access to sustainable agricultural inputs",
-                "Policy support for sustainable practices",
-                "Technological infrastructure for storage and processing"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in food loss and waste percentages",
-                "Increase in adoption of plant-based diets",
-                "Improved food security indicators",
-                "Reduction in GHG emissions from food systems"
-            ],
-            "Impacts": [
-                "Improved food security",
-                "Enhanced health outcomes",
-                "Reduced greenhouse gas emissions",
-                "Strengthened local food systems",
-                "Greater resilience to climate variability"
-            ]
-        }
-    },
-    {
-        "locode": "BRMGE",
-        "cityName": "Maranguape",
-        "region": "BR-CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "ipcc_0094",
-        "actionName": "Access to health care",
-        "actionPriority": 15,
-        "explanation": "Expanding access to health care is essential in a city with high exposure to heatwaves and other health-related risks. Though it falls within the 1.27 quantitative group, its critical role in protecting public health merits a high priority.",
-        "action": {
-            "ActionID": "ipcc_0094",
-            "ActionName": "Access to health care",
-            "ActionType": [
-                "adaptation"
-            ],
-            "AdaptationCategory": "Health Systems Strengthening",
-            "Hazard": [
-                "heatwaves",
-                "floods",
-                "droughts"
-            ],
-            "Sector": [
-                "public_health",
-                "water_resources"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "InterventionType": null,
-            "Description": "Enhancing access to health care services, including health and nutrition services, clean water, sanitation, and culturally appropriate mental health resources. Expanding telemedicine capabilities enables efficient health service delivery, particularly for remote and underserved populations. Strengthening basic public health systems and disaster preparedness can rapidly reduce vulnerability to climate-related health risks.",
-            "BehavioralChangeTargeted": null,
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": "Promotes equitable access to health care for marginalized and vulnerable groups, including homeless populations, remote communities, and those affected by housing inequities.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Investment in telemedicine technologies",
-                "Strengthened governance of public health systems",
-                "Capacity building for health workers",
-                "Infrastructure upgrades for health facilities"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in climate-related mortality",
-                "Increased access to telemedicine",
-                "Number of culturally tailored health programs implemented",
-                "Improved water and sanitation access metrics"
-            ],
-            "Impacts": [
-                "Improved public health",
-                "Reduced health inequities",
-                "Enhanced disaster preparedness",
-                "Stronger health system resilience"
-            ]
-        }
-    },
-    {
-        "locode": "BRMGE",
-        "cityName": "Maranguape",
-        "region": "BR-CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "ipcc_0102",
-        "actionName": "Seasonal/temporary mobility",
-        "actionPriority": 16,
-        "explanation": "While not as directly impactful as water or health interventions, facilitating seasonal or temporary mobility ensures that populations can relocate or access services during extreme events. This action, with an adaptation focus, aids in risk reduction albeit with longer-term benefits.",
-        "action": {
-            "ActionID": "ipcc_0102",
-            "ActionName": "Seasonal/temporary mobility",
-            "ActionType": [
-                "adaptation"
-            ],
-            "AdaptationCategory": "Livelihood Adaptation",
-            "Hazard": [
-                "sea-level-rise",
-                "storms",
-                "droughts"
-            ],
-            "Sector": [
-                "food_security",
-                "biodiversity"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "InterventionType": null,
-            "Description": "Facilitating mobility of fishing fleets and workers to adapt to shifting marine species distributions caused by climate change. This includes enabling seasonal or temporary migration to align with the availability of resources, improving infrastructure and technology to support mobility, and fostering flexible governance to manage transboundary resources sustainably. These actions aim to maintain livelihoods and reduce economic impacts of climate variability.",
-            "BehavioralChangeTargeted": null,
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 1,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": "Ensures equitable access to resources for vulnerable communities, including small-scale fishers and those dependent on seasonal income, by promoting inclusive governance structures and reducing barriers to mobility.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Infrastructure and technology investments",
-                "Transboundary agreements",
-                "Capacity-building initiatives to support mobility"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in resource overexploitation",
-                "Increase in seasonal employment opportunities",
-                "Enhanced management of transboundary fisheries"
-            ],
-            "Impacts": [
-                "Improved economic resilience",
-                "Stabilized food security",
-                "Sustainable management of marine biodiversity"
-            ]
-        }
-    },
-    {
-        "locode": "BRMGE",
-        "cityName": "Maranguape",
-        "region": "BR-CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "c40_0050",
-        "actionName": "White Roofs",
-        "actionPriority": 17,
-        "explanation": "White roofs help reduce urban heat island effects by reflecting solar radiation. This measure is cost-effective and offers quick implementation benefits, contributing modestly to risk reduction and improved environmental compatibility in urban settings.",
-        "action": {
-            "ActionID": "c40_0050",
-            "ActionName": "White Roofs",
-            "ActionType": [
-                "adaptation"
-            ],
-            "AdaptationCategory": "Eco-engineering",
-            "Hazard": [
-                "heatwaves"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "InterventionType": null,
-            "Description": "\"White Roofs\" utilize eco-engineering by adopting reflective roofing materials to reduce heat absorption. This adaptation strategy helps mitigate the urban heat island effect, contributing to more sustainable and climate-resilient buildings.",
-            "BehavioralChangeTargeted": null,
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "The \"White Roofs\" climate action promotes equity and inclusion by specifically targeting urban areas, which often house vulnerable and underserved communities that are disproportionately affected by the urban heat island effect. By implementing reflective roofing materials, this action directly benefits low-income neighborhoods that may lack access to adequate cooling resources, thereby reducing energy costs and improving indoor comfort. Additionally, the initiative can create job opportunities in the installation and maintenance of these roofs, providing economic benefits to local residents. Overall, the action addresses environmental justice by focusing on areas that face the greatest climate-related challenges, ensuring that marginalized communities receive the support needed to enhance their resilience to heat and climate change.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Availability of reflective roofing materials",
-                "Awareness and acceptance of eco-engineering practices among builders and homeowners",
-                "Regulatory support or incentives for implementing white roofs",
-                "Access to funding or financial resources for installation",
-                "Collaboration between urban planners and environmental organizations"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in surface temperature",
-                "Percentage of buildings with white roofs",
-                "Energy savings in cooling costs",
-                "Reduction in urban heat island effect",
-                "Increase in albedo values",
-                "Improvement in air quality",
-                "Community engagement and participation rate",
-                "Reduction in greenhouse gas emissions"
-            ],
-            "Impacts": [
-                "Mitigates urban heat island effect",
-                "Enhances climate resilience for vulnerable communities",
-                "Reduces energy costs for low-income households",
-                "Creates job opportunities in installation and maintenance",
-                "Promotes environmental justice"
-            ]
-        }
-    },
-    {
-        "locode": "BRMGE",
-        "cityName": "Maranguape",
-        "region": "BR-CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "c40_0051",
-        "actionName": "Public Shading",
+        "actionId": "icare_0149",
+        "actionName": "Encourage sustainable land use practices",
         "actionPriority": 18,
-        "explanation": "Public shading reduces outdoor temperatures and offers immediate relief during heatwaves. Although its direct emissions reduction impact may be limited, it plays a valuable role in enhancing public comfort and reducing climate-related health risks.",
-        "action": {
-            "ActionID": "c40_0051",
-            "ActionName": "Public Shading",
-            "ActionType": [
-                "adaptation"
-            ],
-            "AdaptationCategory": "Eco-engineering",
-            "Hazard": [
-                "heatwaves"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "InterventionType": null,
-            "Description": "\"Public Shading\" involves the implementation of shade structures in public spaces, contributing to eco-engineering efforts. This adaptation measure enhances outdoor comfort, reduces heat stress, and promotes sustainable urban design.",
-            "BehavioralChangeTargeted": null,
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "The \"Public Shading\" climate action promotes equity and inclusion by:\n\n1. **Accessibility for Vulnerable Populations**: By providing shade in public spaces, the action directly benefits vulnerable communities, including low-income individuals, the elderly, and those with health conditions that make them more susceptible to heat stress.\n\n2. **Enhanced Outdoor Comfort**: The implementation of shade structures improves outdoor comfort for all community members, encouraging greater use of public spaces by underserved populations who may otherwise avoid them due to extreme heat.\n\n3. **Sustainable Urban Design**: The focus on eco-engineering and sustainable design ensures that the benefits of climate action are integrated into the urban environment, fostering inclusive spaces that serve diverse community needs.\n\n4. **Community Engagement**: The development of public shading initiatives often involves community input, ensuring that the voices of underserved populations are heard and considered in the planning process.\n\n5. **Health Benefits**: By reducing heat stress, the action contributes to better health outcomes for marginalized groups who may lack access to air conditioning or other cooling resources, thereby promoting health equity.\n\nOverall, the \"Public Shading\" initiative addresses the needs of vulnerable communities, ensuring that climate adaptation measures are inclusive and equitable.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Availability of funding for the construction and maintenance of shade structures",
-                "Collaboration with urban planners and architects for design integration",
-                "Community engagement to ensure public support and usage",
-                "Assessment of local climate conditions to determine optimal shading solutions",
-                "Compliance with local regulations and zoning laws regarding public space modifications"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in average surface temperature in shaded areas",
-                "Increase in public space usage during peak heat hours",
-                "Number of shade structures installed",
-                "User satisfaction ratings of shaded areas",
-                "Decrease in heat-related health incidents",
-                "Increase in biodiversity in shaded areas",
-                "Energy savings in nearby buildings due to reduced heat",
-                "Community engagement and participation in shading initiatives"
-            ],
-            "Impacts": [
-                "Enhances outdoor comfort for all community members",
-                "Reduces heat stress, particularly benefiting vulnerable populations",
-                "Promotes health equity by improving health outcomes for marginalized groups",
-                "Encourages greater use of public spaces by underserved populations",
-                "Integrates community input in planning, fostering inclusivity"
-            ]
-        }
+        "explanation": "For the city of Maranguape, sustainable land use lowers environmental risks like soil erosion and habitat loss. By guiding urban growth and agricultural methods, local resources remain more resilient to floods or droughts. This proactive approach preserves green areas and safeguards future development.",
+        "action": null
     },
     {
         "locode": "BRMGE",
         "cityName": "Maranguape",
         "region": "BR-CE",
         "regionName": "Cear\u00e1",
-        "actionId": "c40_0059",
-        "actionName": "Early Warning",
+        "actionId": "icare_0173",
+        "actionName": "Preventive maintenance of drainage systems",
         "actionPriority": 19,
-        "explanation": "This additional early warning action supports broader disaster preparedness, complementing the main 'Disaster early warning' action. While it has a slightly lower quantitative score, it contributes to timely risk reduction across various hazards.",
-        "action": {
-            "ActionID": "c40_0059",
-            "ActionName": "Early Warning",
-            "ActionType": [
-                "adaptation"
-            ],
-            "AdaptationCategory": "Educational/Informational\u00a0actions",
-            "Hazard": [
-                "storms"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "InterventionType": null,
-            "Description": "\"Early Warning\" systems involve the timely detection and communication of potential climate-related hazards, enabling proactive responses to mitigate risks. This initiative enhances community preparedness and reduces the impact of adverse events.",
-            "BehavioralChangeTargeted": null,
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "The \"Early Warning\" systems initiative promotes equity and inclusion by ensuring that vulnerable or underserved communities receive timely and accessible information about climate-related hazards. By focusing on proactive communication, the action helps to empower these communities, which often lack the resources to prepare for and respond to climate threats. \n\nAdditionally, the initiative can be designed to reach diverse populations, including those with language barriers or disabilities, ensuring that all community members can understand and act on the warnings. This inclusivity helps to reduce disparities in risk and enhances overall community resilience, as everyone is better equipped to respond to potential hazards. \n\nOverall, the action recognizes the unique challenges faced by underserved communities and aims to provide them with the necessary tools and information to protect themselves from climate impacts, thereby fostering a more equitable approach to climate resilience.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Access to reliable climate data and forecasting models",
-                "Effective communication infrastructure for disseminating warnings",
-                "Community engagement and education on climate risks",
-                "Collaboration with local and national emergency response agencies",
-                "Funding and resources for technology and system maintenance"
-            ],
-            "KeyPerformanceIndicators": [
-                "Number of early warnings issued",
-                "Response time to warnings",
-                "Community awareness and preparedness levels",
-                "Reduction in disaster-related damages",
-                "Number of training sessions conducted",
-                "Stakeholder engagement and participation rates",
-                "Feedback from community on warning effectiveness",
-                "Frequency of drills and simulations conducted"
-            ],
-            "Impacts": [
-                "Enhanced community preparedness for storms",
-                "Reduced impact of climate-related hazards",
-                "Empowerment of vulnerable communities",
-                "Improved equity and inclusion in climate resilience efforts",
-                "Increased accessibility of information for diverse populations"
-            ]
-        }
+        "explanation": "For the city of Maranguape, regularly maintaining drainage systems prevents blockages that lead to flooding and infrastructure damage. This upkeep ensures safer roads and public spaces, especially during heavy rains. By reducing water accumulation, the city limits repair costs and health concerns linked to standing water.",
+        "action": null
     },
     {
         "locode": "BRMGE",
         "cityName": "Maranguape",
         "region": "BR-CE",
         "regionName": "Cear\u00e1",
-        "actionId": "c40_0046",
-        "actionName": "Coastal Protection",
+        "actionId": "icare_0184",
+        "actionName": "Slope Stabilization and Drainage",
         "actionPriority": 20,
-        "explanation": "Although coastal protection is critical in many contexts, for Maranguape\u2014a city in a desert biome and inland setting\u2014this action is less relevant. It is therefore ranked last despite its technical merits, as its environmental compatibility with the local context is limited.",
-        "action": {
-            "ActionID": "c40_0046",
-            "ActionName": "Coastal Protection",
-            "ActionType": [
-                "adaptation"
-            ],
-            "AdaptationCategory": "Eco-engineering",
-            "Hazard": [
-                "floods"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "InterventionType": null,
-            "Description": "\"Coastal Protection\" strategies include the construction of sea walls and protective structures to mitigate the impact of rising sea levels and coastal erosion. This adaptation measure enhances the resilience of coastal areas and protects communities from the impacts of climate change.",
-            "BehavioralChangeTargeted": null,
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 0,
-                "habitat": 1,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "The \"Coastal Protection\" strategies inherently promote equity and inclusion by focusing on the protection of vulnerable coastal communities that are often the most affected by climate change impacts, such as rising sea levels and erosion. These communities frequently include low-income populations, marginalized groups, and those with limited resources to adapt to environmental changes. \n\nBy constructing sea walls and protective structures, the action directly addresses the needs of these underserved populations, ensuring their safety and stability in the face of climate threats. Additionally, the implementation of such strategies often involves community engagement and input, allowing affected residents to have a voice in the decision-making process, which fosters a sense of ownership and inclusion. \n\nFurthermore, the focus on enhancing resilience in these areas helps to safeguard not only the physical infrastructure but also the social and economic well-being of the communities, thereby promoting equitable access to resources and opportunities in the context of climate adaptation.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Availability of funding and resources for construction and maintenance of protective structures",
-                "Access to engineering expertise for designing effective sea walls and coastal defenses",
-                "Collaboration with local communities and stakeholders for planning and implementation",
-                "Regulatory approvals and compliance with environmental laws and policies",
-                "Research and data on coastal erosion patterns and sea level rise projections"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in coastal erosion rate",
-                "Increase in coastal property value",
-                "Number of communities protected",
-                "Extent of area protected by sea walls",
-                "Frequency of flooding events",
-                "Community awareness and preparedness levels",
-                "Cost-effectiveness of protective measures",
-                "Biodiversity health in coastal areas"
-            ],
-            "Impacts": [
-                "Enhances resilience of vulnerable coastal communities",
-                "Protects against flooding and coastal erosion",
-                "Promotes equity and inclusion for marginalized groups",
-                "Fosters community engagement in decision-making",
-                "Safeguards social and economic well-being of communities"
-            ]
-        }
+        "explanation": "For the city of Maranguape, stabilizing slopes and improving drainage avert landslides and erosion that jeopardize public safety. Reinforced embankments ensure critical infrastructure remains intact during intense rains. By reducing collapse risks, the city lowers recovery expenses and maintains essential transportation routes.",
+        "action": null
     }
 ]

@@ -4,889 +4,176 @@
         "cityName": "Corumb\u00e1",
         "region": "BR-MS",
         "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0053",
-        "actionName": "Afforestation, Reforestation and Forest Ecosystem Restoration",
+        "actionId": "icare_0101",
+        "actionName": "Encourage the Use of Low-Emission Agricultural Machinery",
         "actionPriority": 1,
-        "explanation": "This action achieved the highest quantitative score and directly targets land use management\u2014the city's largest emission source. By enhancing forest cover, it promises significant GHG emission reductions and aligns perfectly with Corumb\u00e1\u2019s need to curb deforestation-related emissions.",
-        "action": {
-            "ActionID": "ipcc_0053",
-            "ActionName": "Afforestation, Reforestation and Forest Ecosystem Restoration",
-            "ActionType": [
-                "mitigation"
-            ],
-            "AdaptationCategory": null,
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "land"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "InterventionType": [
-                "programs_and_initiatives",
-                "infrastructure_investments",
-                "incentives_and_subsidies"
-            ],
-            "Description": "Activities focused on converting land to forests, restoring degraded forests, and prioritizing ecological integrity. Afforestation targets historically non-forested land, while reforestation targets previously forested areas. Efforts include enhancing biodiversity, improving ecosystem services, and increasing carbon sequestration.",
-            "BehavioralChangeTargeted": "Encourages sustainable land management, restoration of degraded ecosystems, and adoption of forest-friendly agricultural practices.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "Supports local livelihoods, promotes land-use equity, and ensures inclusive stakeholder participation in afforestation and restoration programs.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "60-79"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Requires funding for land restoration",
-                "access to suitable species for planting",
-                "local community engagement",
-                "monitoring systems for ecosystem integrity and carbon sequestration"
-            ],
-            "KeyPerformanceIndicators": [
-                "Area of land reforested or afforested",
-                "carbon sequestration rates",
-                "improvement in biodiversity indices",
-                "ecosystem service metrics such as water regulation and soil quality"
-            ],
-            "Impacts": [
-                "Increased carbon sequestration",
-                "improved biodiversity",
-                "enhanced ecosystem resilience",
-                "better water regulation",
-                "soil stabilization",
-                "support for local communities through sustainable resource use"
-            ]
-        }
+        "explanation": "For the city of Corumb\u00e1, encouraging low-emission agricultural machinery directly tackles a major source of greenhouse gases in local farming. It modernizes equipment and operations, reducing fuel consumption and maintenance costs. This approach aligns with local soil and climate conditions, enhancing efficiency while benefiting air quality.",
+        "action": null
     },
     {
         "locode": "BRCMG",
         "cityName": "Corumb\u00e1",
         "region": "BR-MS",
         "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0052",
-        "actionName": "Reduce Deforestation and Degradation",
+        "actionId": "icare_0102",
+        "actionName": "Promote Sustainable Agricultural Practices",
         "actionPriority": 2,
-        "explanation": "Focusing on preventing deforestation, this action is critical for reducing emissions stemming from land use changes. Its high relevance to the largest emission sector makes it a top priority despite having a slightly lower score than the first action.",
-        "action": {
-            "ActionID": "ipcc_0052",
-            "ActionName": "Reduce Deforestation and Degradation",
-            "ActionType": [
-                "mitigation"
-            ],
-            "AdaptationCategory": null,
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "land"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "InterventionType": [
-                "regulations_and_laws",
-                "programs_and_initiatives",
-                "infrastructure_investments"
-            ],
-            "Description": "Reducing deforestation and forest degradation conserves carbon pools in forest vegetation and soil by avoiding tree cover loss and disturbance. This involves controlling drivers of deforestation, improving forest governance, and supporting community forest management.",
-            "BehavioralChangeTargeted": "Encourages sustainable land management practices, community engagement in conservation, and improved governance to reduce activities driving deforestation and degradation.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "Promotes secure land tenure, supports community-based forest management, and ensures participation of marginalized and indigenous groups in decision-making processes.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "60-79"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Requires improved governance",
-                "clear land tenure policies",
-                "funding for protected areas",
-                "community participation in forest conservation efforts"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in deforestation rates",
-                "increased forest cover",
-                "the amount of GHG emissions avoided per year"
-            ],
-            "Impacts": [
-                "Preserves biodiversity",
-                "enhances ecosystem services",
-                "improves air and water quality",
-                "contributes to climate stabilization",
-                "sustainable development"
-            ]
-        }
+        "explanation": "For the city of Corumb\u00e1, promoting sustainable agricultural practices helps reshape land use and crop management in ways that cut emissions at their source. Techniques like soil conservation and reduced chemical inputs also boost climate resilience for local farms. These steps foster healthier ecosystems, benefiting both the community and the environment.",
+        "action": null
     },
     {
         "locode": "BRCMG",
         "cityName": "Corumb\u00e1",
         "region": "BR-MS",
         "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0061",
-        "actionName": "Soil Carbon Management in Croplands and Grasslands",
+        "actionId": "icare_0068",
+        "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
         "actionPriority": 3,
-        "explanation": "Given Corumb\u00e1's extensive grassland ecosystems, this action helps boost soil carbon sequestration in agricultural areas. It provides substantial mitigation benefits by targeting a significant emission pathway in croplands and grasslands.",
-        "action": {
-            "ActionID": "ipcc_0061",
-            "ActionName": "Soil Carbon Management in Croplands and Grasslands",
-            "ActionType": [
-                "mitigation"
-            ],
-            "AdaptationCategory": null,
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "land"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "InterventionType": [
-                "programs_and_initiatives",
-                "incentives_and_subsidies",
-                "regulations_and_laws"
-            ],
-            "Description": "Implementation of sustainable soil management practices in croplands and grasslands to enhance soil organic carbon. Practices include improved crop and nutrient management, reduced tillage, residue retention, water and rice management, biochar application, improved grass varieties, livestock stocking management, and fire management. These activities aim to increase soil organic matter, mitigate GHG emissions, and provide co-benefits for biodiversity, water provision, and food security.",
-            "BehavioralChangeTargeted": "Encourages adoption of sustainable soil management practices to increase soil organic carbon, optimize water and nutrient use, and reduce emissions.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 1,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "Promotes inclusion of smallholder farmers and resource-limited communities by providing cost-effective and regionally adaptable practices that improve agricultural productivity and resilience to climate change.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "60-79"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Success depends on the availability of resources for monitoring and verification",
-                "regional adaptation of practices",
-                "addressing barriers such as soil saturation and permanence issues"
-            ],
-            "KeyPerformanceIndicators": [
-                "Increase in soil organic carbon",
-                "reduction in GHG emissions",
-                "improvement in agricultural productivity",
-                "biodiversity enhancements"
-            ],
-            "Impacts": [
-                "Enhanced soil health",
-                "improved water retention",
-                "increased crop yields",
-                "greater biodiversity",
-                "reduced erosion",
-                "resilience to climate change in agricultural and grassland ecosystems"
-            ]
-        }
+        "explanation": "For the city of Corumb\u00e1, on-demand electric transport systems lower urban emissions by replacing conventional vehicles with cleaner alternatives. They provide flexible mobility while reducing air pollution and noise. This measure can be implemented relatively quickly, bringing immediate public health benefits and supporting a more sustainable transportation network.",
+        "action": null
     },
     {
         "locode": "BRCMG",
         "cityName": "Corumb\u00e1",
         "region": "BR-MS",
         "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0058",
-        "actionName": "Peatland Restoration",
+        "actionId": "icare_0044",
+        "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
         "actionPriority": 4,
-        "explanation": "This action offers strong emission reduction potential by restoring natural carbon sinks. Although Corumb\u00e1 is primarily grassland-savanna where peatlands might be less common, the overall benefits justify its high ranking among mitigation actions.",
-        "action": {
-            "ActionID": "ipcc_0058",
-            "ActionName": "Peatland Restoration",
-            "ActionType": [
-                "mitigation"
-            ],
-            "AdaptationCategory": null,
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "land"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "InterventionType": [
-                "programs_and_initiatives",
-                "infrastructure_investments",
-                "incentives_and_subsidies"
-            ],
-            "Description": "Peatland restoration involves rewetting and revegetating degraded peatlands to increase carbon accumulation in vegetation and soils, while avoiding ongoing CO2 emissions. This includes restoring hydrology, reducing fire risk, and maintaining ecosystem services like water regulation and flood prevention. It also addresses biodiversity conservation and paludiculture.",
-            "BehavioralChangeTargeted": "Encourages sustainable land management practices, collaboration among stakeholders, and the prioritization of ecosystem restoration over competing land uses.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": "Promotes the inclusion of local communities in planning and implementation, ensures alternative livelihoods are maintained, and addresses potential conflicts over land use.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "60-79"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": ">10 years",
-            "Dependencies": [
-                "Availability of funding",
-                "collaboration among local and national stakeholders",
-                "scientific research on optimal restoration practices",
-                "policies to incentivize restoration efforts"
-            ],
-            "KeyPerformanceIndicators": [
-                "Availability of funding",
-                "collaboration among local and national stakeholders",
-                "scientific research on optimal restoration practices",
-                "policies to incentivize restoration efforts"
-            ],
-            "Impacts": [
-                "Significant reductions in CO2 emissions",
-                "improved biodiversity",
-                "enhanced water regulation",
-                "reduced flooding risks",
-                "increased resilience to climate change"
-            ]
-        }
+        "explanation": "For the city of Corumb\u00e1, expanding cycling infrastructure and developing resilient pedestrian walkways encourages active mobility that cuts transportation emissions. Well-designed pathways can handle heavy rainfall and extreme heat, improving safety for everyone. This approach offers cost-effective, inclusive transport options with positive impacts on public health.",
+        "action": null
     },
     {
         "locode": "BRCMG",
         "cityName": "Corumb\u00e1",
         "region": "BR-MS",
         "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0068",
-        "actionName": "Bioenergy and BECCS(Bioenergy with Carbon Capture and Storage)",
+        "actionId": "icare_0057",
+        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
         "actionPriority": 5,
-        "explanation": "With a high quantitative score and capability to reduce emissions through technological innovation, Bioenergy and BECCS represents a promising pathway. It targets energy-related emissions, albeit with higher capital requirements than forest-based strategies.",
-        "action": {
-            "ActionID": "ipcc_0068",
-            "ActionName": "Bioenergy and BECCS(Bioenergy with Carbon Capture and Storage)",
-            "ActionType": [
-                "mitigation"
-            ],
-            "AdaptationCategory": null,
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "land"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "InterventionType": [
-                "infrastructure_investments",
-                "programs_and_initiatives",
-                "regulations_and_laws"
-            ],
-            "Description": "Bioenergy involves producing energy from organic sources like biomass, organic waste, and harvest residues, displacing fossil fuels in heat, electricity, and fuel production. When combined with carbon capture and storage (BECCS), it stores biogenic carbon in geological or terrestrial reservoirs, achieving negative emissions. BECCS can also integrate with agriculture and forestry for co-benefits like land restoration and biogas production.",
-            "BehavioralChangeTargeted": "Promotes the adoption of sustainable land-use practices, integration of biomass production with agriculture, and support for renewable energy adoption.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": "Focuses on sustainable land-use practices, including degraded land restoration, while ensuring energy access and food security for vulnerable communities.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "60-79"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": ">10 years",
-            "Dependencies": [
-                "Requires sustainable land management",
-                "advanced bioenergy technology development",
-                "infrastructure for carbon capture and storage",
-                "global governance for trade and supply chains"
-            ],
-            "KeyPerformanceIndicators": [
-                "Amount of carbon removed through BECCS (in GtCO2 per year)",
-                "total energy produced from bioenergy",
-                "land restored for biomass production",
-                "GHG emissions reduction from displaced fossil fuel use"
-            ],
-            "Impacts": [
-                "Enhanced energy security",
-                "reduced GHG emissions",
-                "restored degraded lands",
-                "improved air and water quality",
-                "biodiversity conservation"
-            ]
-        }
+        "explanation": "For the city of Corumb\u00e1, expanding rail-based mass transit can significantly lower emissions by moving large numbers of passengers more efficiently. This infrastructure cuts traffic congestion and improves travel times for daily commuters. Although it requires substantial investment, a well-designed rail network aligns with long-term sustainable growth.",
+        "action": null
     },
     {
         "locode": "BRCMG",
         "cityName": "Corumb\u00e1",
         "region": "BR-MS",
         "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0059",
-        "actionName": "Reduce Conversion of Coastal Wetlands",
+        "actionId": "icare_0133",
+        "actionName": "Promote Urban Reforestation and Green Corridors",
         "actionPriority": 6,
-        "explanation": "Although the score is moderately high, its focus on coastal wetlands is less aligned with Corumb\u00e1's grassland savanna biome. Nevertheless, it remains important for ecosystem protection and potential localized emission savings if applicable.",
-        "action": {
-            "ActionID": "ipcc_0059",
-            "ActionName": "Reduce Conversion of Coastal Wetlands",
-            "ActionType": [
-                "mitigation"
-            ],
-            "AdaptationCategory": null,
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "land"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "InterventionType": [
-                "regulations_and_laws",
-                "incentives_and_subsidies",
-                "programs_and_initiatives",
-                "infrastructure_investments"
-            ],
-            "Description": "This action involves reducing the conversion of coastal wetlands such as mangroves, marshes, and seagrass ecosystems to avoid emissions from biomass and soil carbon loss. It also supports biodiversity conservation, fisheries production, soil stabilization, water quality regulation, flood prevention, and resilience against cyclones.",
-            "BehavioralChangeTargeted": "Promotes sustainable land-use practices and prioritizes wetland preservation over aquaculture, agriculture, and urban development.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "Supports coastal communities by preserving livelihoods linked to wetlands, enhancing resilience to climate change, and ensuring fair distribution of benefits from ecosystem services.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "40-59"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Effective integration of coastal climate mitigation policies",
-                "marine spatial planning",
-                "economic incentives to prioritize wetland conservation"
-            ],
-            "KeyPerformanceIndicators": [
-                "Area of coastal wetlands preserved",
-                "GHG emissions avoided from biomass and soil carbon loss",
-                "improvements in biodiversity metrics",
-                "ecosystem resilience"
-            ],
-            "Impacts": [
-                "Increased carbon sequestration",
-                "enhanced resilience to climate impacts",
-                "improved biodiversity",
-                "better water quality",
-                "greater protection against flooding and storm surges"
-            ]
-        }
+        "explanation": "For the city of Corumb\u00e1, urban reforestation and green corridors enhance local air quality, offer shading, and cool densely developed areas. These green spaces also help manage stormwater, easing flood risks during heavy rains. By prioritizing trees and green belts, the city supports public well-being and biodiversity in a single step.",
+        "action": null
     },
     {
         "locode": "BRCMG",
         "cityName": "Corumb\u00e1",
         "region": "BR-MS",
         "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0077",
-        "actionName": "Urban Tree Planting and Management",
+        "actionId": "icare_0050",
+        "actionName": "Implement Agroforestry Systems",
         "actionPriority": 7,
-        "explanation": "This action contributes to urban greening and helps absorb CO2, while also addressing urban heat island effects. With moderate emissions reduction impact, it aligns well with local urban environmental needs.",
-        "action": {
-            "ActionID": "ipcc_0077",
-            "ActionName": "Urban Tree Planting and Management",
-            "ActionType": [
-                "mitigation"
-            ],
-            "AdaptationCategory": null,
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "land"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "InterventionType": [
-                "programs_and_initiatives",
-                "infrastructure_investments",
-                "incentives_and_subsidies"
-            ],
-            "Description": "Implementation and management of urban tree planting to enhance carbon sequestration, reduce energy use, mitigate the urban heat island (UHI) effect, improve air quality, and provide co-benefits such as reduced stormwater runoff and increased public health and well-being.",
-            "BehavioralChangeTargeted": "Encourages community engagement in tree planting and preservation, promoting urban sustainability and increased appreciation for green spaces.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": "Promotes equitable distribution of green spaces, ensuring access to urban forests for underserved and vulnerable communities to improve health, well-being, and quality of life.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "40-59"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Availability of land for planting",
-                "community participation",
-                "funding for maintenance",
-                "policies supporting urban greening initiatives"
-            ],
-            "KeyPerformanceIndicators": [
-                "Increase in urban tree cover percentage",
-                "reduction in urban heat island effect",
-                "amount of carbon sequestered",
-                "reduction in building energy use",
-                "improvement in air quality metrics"
-            ],
-            "Impacts": [
-                "Enhanced urban livability",
-                "improved public health",
-                "reduced energy consumption",
-                "increased biodiversity",
-                "greater resilience to climate change impacts"
-            ]
-        }
+        "explanation": "For the city of Corumb\u00e1, implementing agroforestry combines tree cultivation with traditional farming or livestock, boosting carbon absorption and soil fertility. The presence of woody perennials helps stabilize microclimates and reduces erosion. This approach can lead to higher yields and resilience against climate extremes.",
+        "action": null
     },
     {
         "locode": "BRCMG",
         "cityName": "Corumb\u00e1",
         "region": "BR-MS",
         "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0054",
-        "actionName": "Improved Forest Management",
+        "actionId": "icare_0100",
+        "actionName": "Support Regenerative Agriculture Practices",
         "actionPriority": 8,
-        "explanation": "Enhancing sustainable forest use, this action reduces emissions from mismanaged forest resources. Its relevance to land use efficiency and carbon sequestration supports its priority ranking.",
-        "action": {
-            "ActionID": "ipcc_0054",
-            "ActionName": "Improved Forest Management",
-            "ActionType": [
-                "mitigation"
-            ],
-            "AdaptationCategory": null,
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "land"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "InterventionType": [
-                "incentives_and_subsidies",
-                "programs_and_initiatives",
-                "regulations_and_laws"
-            ],
-            "Description": "Sustainable forest management of already managed forests to increase carbon stocks, improve wood quality, mitigate disturbances, and provide co-benefits like biodiversity conservation, water regulation, and soil protection. Includes longer rotations, reduced harvesting, mixed stands, and climate-smart forestry.",
-            "BehavioralChangeTargeted": "Encourages forest owners and managers to adopt sustainable practices, prioritize biodiversity, and reduce harvesting impacts while maintaining productivity.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "Promotes inclusive participation in forest management and provides support for smallholders and local communities, especially in tropical regions where sustainable practices can enhance livelihoods and mitigate climate change.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "40-59"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Requires expertise in sustainable forestry",
-                "investment in nurseries with adapted species",
-                "supportive policies",
-                "incentives to overcome economic barriers",
-                "ensure accessibility for local stakeholders"
-            ],
-            "KeyPerformanceIndicators": [
-                "Increase in forest carbon stocks",
-                "reduction in GHG emissions",
-                "improvements in biodiversity indicators",
-                "reduction in soil erosion and water-related issues"
-            ],
-            "Impacts": [
-                "Improved forest health and resilience",
-                "enhanced carbon sequestration",
-                "biodiversity conservation",
-                "increased ecosystem services like water and soil regulation"
-            ]
-        }
+        "explanation": "For the city of Corumb\u00e1, regenerative agriculture revitalizes soil health by emphasizing techniques that increase organic matter and enhance water retention. Healthier soils improve crop performance and resilience to drought or flooding. This strengthens food security and reduces long-term emissions from the agricultural sector.",
+        "action": null
     },
     {
         "locode": "BRCMG",
         "cityName": "Corumb\u00e1",
         "region": "BR-MS",
         "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0069",
-        "actionName": "Shift to sustainable healthy diets",
+        "actionId": "icare_0021",
+        "actionName": "Encourage and promote measures for the sustainable and rational use of individual motorized transportation",
         "actionPriority": 9,
-        "explanation": "While not directly targeting a single emission source, promoting sustainable diets can lead to reduced demand pressures on land use and agriculture, indirectly contributing to emission reductions and public health benefits.",
-        "action": {
-            "ActionID": "ipcc_0069",
-            "ActionName": "Shift to sustainable healthy diets",
-            "ActionType": [
-                "mitigation"
-            ],
-            "AdaptationCategory": null,
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "livestock"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "InterventionType": [
-                "programs_and_initiatives",
-                "incentives_and_subsidies",
-                "regulations_and_laws"
-            ],
-            "Description": "Transitioning dietary patterns to promote individual health and well-being while minimizing environmental impacts. Focuses on reducing animal-based food consumption, particularly from ruminant animals, and increasing plant-based food consumption to reduce GHG emissions and preserve biodiversity.",
-            "BehavioralChangeTargeted": "Encourages a shift in consumer behavior towards adopting plant-rich diets, reducing red meat consumption, and increasing awareness of the environmental and health benefits of sustainable diets.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 1,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "Promotes access to affordable, culturally acceptable diets that meet nutritional needs, particularly in underserved and vulnerable communities. Policies address equity in food access and mitigate adverse economic impacts on agricultural sectors.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "40-59"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Implementation of integrated food-system policies",
-                "financial incentives for sustainable agriculture",
-                "awareness campaigns",
-                "the development of local food systems to support dietary transitions"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in GHG emissions from food production",
-                "reduction in land use for livestock",
-                "increase in plant-based food consumption",
-                "improvement in public health metrics related to diet-related diseases"
-            ],
-            "Impacts": [
-                "Improved public health outcomes",
-                "reduced environmental pressures (e.g., deforestation, biodiversity loss)",
-                "strengthened food security through sustainable practices"
-            ]
-        }
+        "explanation": "For the city of Corumb\u00e1, promoting the rational use of personal vehicles directly tackles traffic-related emissions. Measures like carpooling, shared mobility, and eco-driving can rapidly reduce congestion and pollution. By improving daily commuting habits, the city lowers fuel dependency and fosters healthier urban living.",
+        "action": null
     },
     {
         "locode": "BRCMG",
         "cityName": "Corumb\u00e1",
         "region": "BR-MS",
         "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0071",
-        "actionName": "Improved and enhanced use of wood products",
+        "actionId": "icare_0134",
+        "actionName": "Strengthen Mechanisms for Deforestation Control",
         "actionPriority": 10,
-        "explanation": "This action supports more efficient use of wood, helping reduce deforestation pressures by promoting sustainable practices. Although its quantitative score mirrors similar actions, it offers additional benefits in resource circularity.",
-        "action": {
-            "ActionID": "ipcc_0071",
-            "ActionName": "Improved and enhanced use of wood products",
-            "ActionType": [
-                "mitigation"
-            ],
-            "AdaptationCategory": null,
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "land"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "InterventionType": [
-                "programs_and_initiatives",
-                "infrastructure_investments",
-                "incentives_and_subsidies"
-            ],
-            "Description": "Promotes the use of sustainably harvested wood for material substitution (e.g., replacing concrete or steel) and increasing carbon storage in wood products. Includes strategies like increasing recycling, extending product lifetimes, and shifting to long-lived wood products.",
-            "BehavioralChangeTargeted": "Encourages the adoption of wood-based materials in construction and other industries while promoting sustainable forest management.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 0,
-                "habitat": 1,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "Supports local and indigenous communities by creating sustainable livelihoods, promoting equitable forest resource management, and enhancing access to long-term benefits.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "40-59"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Requires sustainable forest management practices",
-                "advanced wood processing technologies",
-                "market demand for wood substitutes",
-                "global cooperation to prevent resource exploitation"
-            ],
-            "KeyPerformanceIndicators": [
-                "Increased use of wood products in construction",
-                "reduction in GHG emissions from material substitution",
-                "increase in recycled wood product utilization rates"
-            ],
-            "Impacts": [
-                "Reduces emissions from traditional material production",
-                "enhances carbon sequestration",
-                "supports sustainable forest industries",
-                "provides economic opportunities in rural and forested areas"
-            ]
-        }
+        "explanation": "For the city of Corumb\u00e1, strengthening deforestation control is critical to preserving forests that act as carbon sinks and protect biodiversity. Limiting illegal land clearing safeguards water resources and reduces the severity of climate extremes like droughts or floods. This protective approach also maintains ecological balance necessary for local agriculture.",
+        "action": null
     },
     {
         "locode": "BRCMG",
         "cityName": "Corumb\u00e1",
         "region": "BR-MS",
         "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0057",
-        "actionName": "Reduce Degradation and Conversion of Peatlands Activities, Co-benefits, Risks and Implementation Barriers",
+        "actionId": "icare_0084",
+        "actionName": "Create Incentives for Agroforestry Practices in Livestock Systems",
         "actionPriority": 11,
-        "explanation": "Addressing the complex challenges in peatland management, this action offers notable emission reductions and co-benefits. However, its dependence on overcoming implementation barriers places it slightly lower in priority.",
-        "action": {
-            "ActionID": "ipcc_0057",
-            "ActionName": "Reduce Degradation and Conversion of Peatlands Activities, Co-benefits, Risks and Implementation Barriers",
-            "ActionType": [
-                "mitigation"
-            ],
-            "AdaptationCategory": null,
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "land"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "InterventionType": [
-                "regulations_and_laws",
-                "programs_and_initiatives",
-                "incentives_and_subsidies"
-            ],
-            "Description": "Prevent conversion and degradation of peatlands to avoid emissions from vegetation clearing, fires, and peat decomposition. Includes improving governance and management to preserve carbon-rich ecosystems critical for biodiversity and carbon storage.",
-            "BehavioralChangeTargeted": "Encourages sustainable land management practices and prioritization of conservation over land conversion for agriculture, mining, or urban expansion.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "Promotes equitable access to preserved peatland resources while reducing health risks caused by fire-related pollutants, especially for vulnerable and rural communities.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "40-59"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Requires strong governance",
-                "financial support",
-                "international cooperation",
-                "policies to control land conversion drivers",
-                "such as agriculture",
-                "mining",
-                "urban development"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in peatland conversion rates",
-                "avoided emissions per hectare",
-                "improvements in biodiversity and water quality metrics"
-            ],
-            "Impacts": [
-                "Reduced GHG emissions",
-                "enhanced biodiversity",
-                "improved water regulation",
-                "decreased fire-related health hazards"
-            ]
-        }
+        "explanation": "For the city of Corumb\u00e1, providing incentives for agroforestry in livestock systems allows farmers to integrate trees with grazing activities. This fosters richer habitats, boosts forage quality, and enhances carbon sequestration on farmland. Such mixed-use landscapes can improve rural livelihoods and environmental resilience simultaneously.",
+        "action": null
     },
     {
         "locode": "BRCMG",
         "cityName": "Corumb\u00e1",
         "region": "BR-MS",
         "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0063",
-        "actionName": "Agroforesry",
+        "actionId": "icare_0096",
+        "actionName": "Promote Organic Farming",
         "actionPriority": 12,
-        "explanation": "Agroforestry blends agricultural productivity with tree cultivation, enhancing carbon sequestration and providing local environmental benefits. Its balanced approach to emissions reduction and ecosystem resilience earns it a mid-level ranking.",
-        "action": {
-            "ActionID": "ipcc_0063",
-            "ActionName": "Agroforesry",
-            "ActionType": [
-                "mitigation"
-            ],
-            "AdaptationCategory": null,
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "land"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "InterventionType": [
-                "programs_and_initiatives",
-                "regulations_and_laws",
-                "incentives_and_subsidies"
-            ],
-            "Description": "Agroforestry integrates trees and shrubs with crops and/or livestock to sequester carbon, enhance soil health, reduce soil erosion, improve water quality, and diversify livelihoods. It also offers co-benefits like mitigating regional climates and increasing land productivity while addressing risks like biodiversity and hydrology impacts.",
-            "BehavioralChangeTargeted": "Encourages farmers to adopt sustainable land management practices by integrating trees, crops, and livestock to improve productivity, carbon sequestration, and resilience.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": "Supports smallholder farmers by providing access to tools, market opportunities, and information while addressing barriers like land tenure, credit access, and species selection suitable for local contexts.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "40-59"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Requires access to appropriate germplasm",
-                "supportive policies",
-                "extension systems",
-                "credit access",
-                "reforms in land tenure systems",
-                "Adoption depends on aligning agroforestry practices to biophysical and socio-economic contexts"
-            ],
-            "KeyPerformanceIndicators": [
-                "Carbon sequestration rates (above and below ground)",
-                "improved soil health metrics",
-                "increase in farmer income",
-                "reduction in soil erosion",
-                "adoption rates of agroforestry systems"
-            ],
-            "Impacts": [
-                "Enhanced land productivity",
-                "improved livelihoods",
-                "increased carbon storage",
-                "better water quality",
-                "resilience to climate change"
-            ]
-        }
+        "explanation": "For the city of Corumb\u00e1, promoting organic farming eliminates synthetic fertilizers and pesticides that contribute to greenhouse gas emissions and water contamination. Healthier soils become more drought-resistant and produce higher-quality crops. This approach also lessens public health risks, creating safer communities and ecosystems.",
+        "action": null
+    },
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0139",
+        "actionName": "Implementation of urban toll.",
+        "actionPriority": 13,
+        "explanation": "For the city of Corumb\u00e1, implementing an urban toll reduces non-essential car travel and encourages commuters to choose alternatives like public transit or carpooling. By easing congestion, the city lowers traffic emissions and improves air quality in heavily traveled zones. This measure also promotes more efficient land use and mobility habits.",
+        "action": null
+    },
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0005",
+        "actionName": "Create credit lines for residential and community wind energy projects",
+        "actionPriority": 14,
+        "explanation": "For the city of Corumb\u00e1, offering credit lines for wind energy projects encourages the adoption of clean power, cutting reliance on fossil fuels. By easing financial barriers, more households and communities can install turbines that reduce both emissions and electricity costs. This decentralized approach strengthens the city\u2019s overall energy resilience.",
+        "action": null
+    },
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0127",
+        "actionName": "Accelerate Environmental Regularization of Rural Properties",
+        "actionPriority": 15,
+        "explanation": "For the city of Corumb\u00e1, accelerating environmental regularization clarifies property boundaries and enforces sustainable land-use practices. This prevents unlawful deforestation and aligns agricultural expansion with conservation goals. Well-defined rules also streamline compliance, ensuring long-term protection of local ecosystems.",
+        "action": null
+    },
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0006",
+        "actionName": "Expand rural electrification with renewable energy",
+        "actionPriority": 16,
+        "explanation": "For the city of Corumb\u00e1, expanding rural electrification with renewable energy ensures reliable power in remote communities while reducing greenhouse gas emissions. Solar or wind solutions help replace diesel generators and create lower-cost electricity. This initiative also boosts social equity by granting modern services to underrepresented regions.",
+        "action": null
     },
     {
         "locode": "BRCMG",
@@ -895,8 +182,8 @@
         "regionName": "Mato Grosso do Sul",
         "actionId": "c40_0042",
         "actionName": "Biodiversity Expansion",
-        "actionPriority": 13,
-        "explanation": "This action, while indirectly contributing to emissions reduction via ecosystem health, primarily enhances biodiversity. Its benefits support long-term environmental compatibility, though the direct GHG mitigation impact is more modest.",
+        "actionPriority": 17,
+        "explanation": "For the city of Corumb\u00e1, biodiversity expansion reinforces habitats that offer essential services like pollination, pest control, and water regulation. Healthy ecosystems buffer extreme weather impacts, stabilizing the local climate over time. These efforts help sustain key agricultural and fishing activities, supporting the city\u2019s economy and food security.",
         "action": {
             "ActionID": "c40_0042",
             "ActionName": "Biodiversity Expansion",
@@ -972,404 +259,56 @@
         "cityName": "Corumb\u00e1",
         "region": "BR-MS",
         "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0060",
-        "actionName": "Coastal Wetland Restoration",
-        "actionPriority": 14,
-        "explanation": "Similar to action ipcc_0059, restoration of coastal wetlands can be impactful. However, given Corumb\u00e1\u2019s predominantly grassland savanna context, this action is slightly lower on relevance compared to other land use measures.",
-        "action": {
-            "ActionID": "ipcc_0060",
-            "ActionName": "Coastal Wetland Restoration",
-            "ActionType": [
-                "mitigation"
-            ],
-            "AdaptationCategory": null,
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "land"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "InterventionType": [
-                "programs_and_initiatives",
-                "infrastructure_investments",
-                "regulations_and_laws"
-            ],
-            "Description": "Coastal wetland restoration involves restoring degraded or damaged coastal ecosystems, including mangroves, salt marshes, and seagrass beds, to sequester \"blue carbon\" in vegetation and soils. Restoration includes passive (removal of degradation drivers) and active (environmental manipulation) approaches to reinstate ecosystem functions and carbon sequestration potential.",
-            "BehavioralChangeTargeted": "Encourages the prevention of wetland degradation, active participation of local communities in restoration efforts, and sustainable management of coastal ecosystems.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "Involves local communities in decision-making, implementation, and monitoring stages to ensure equitable access to ecosystem benefits and protection of vulnerable coastal populations.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "40-59"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": ">10 years",
-            "Dependencies": [
-                "Requires long-term commitments",
-                "supportive policies",
-                "funding",
-                "monitoring frameworks",
-                "technical capacity",
-                "to address drivers of degradation",
-                "ensure restoration success"
-            ],
-            "KeyPerformanceIndicators": [
-                "Area of wetlands restored",
-                "carbon sequestration rates",
-                "biodiversity recovery metrics",
-                "reduction in storm damage costs",
-                "water quality improvements"
-            ],
-            "Impacts": [
-                "Enhanced ecosystem resilience",
-                "improved carbon sequestration",
-                "protection against sea-level rise and storms",
-                "increased biodiversity",
-                "strengthened coastal livelihoods",
-                "food security"
-            ]
-        }
+        "actionId": "icare_0130",
+        "actionName": "Conduct Technical Assistance and Rural Extension (ATER) Actions",
+        "actionPriority": 18,
+        "explanation": "For the city of Corumb\u00e1, providing technical assistance and rural extension services empowers farmers with new methods to handle climate variability. Training in water management, sustainable livestock practices, and efficient crop rotation boosts productivity while curbing emissions. These knowledge-driven improvements help rural communities remain viable and adapt to changing environmental conditions.",
+        "action": null
     },
     {
         "locode": "BRCMG",
         "cityName": "Corumb\u00e1",
         "region": "BR-MS",
         "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0062",
-        "actionName": "Biochar",
-        "actionPriority": 15,
-        "explanation": "Biochar can improve soil fertility and sequester carbon in soils. Despite its lower quantitative score, it is cost-effective and useful in agricultural contexts, hence its placement in the mid-to-lower priority group.",
+        "actionId": "icare_0040",
+        "actionName": "Adopt solar-powered street lighting in rural areas",
+        "actionPriority": 19,
+        "explanation": "For the city of Corumb\u00e1, solar-powered street lighting in rural areas brings safer, more reliable illumination without draining the electric grid. This clean energy solution enhances nighttime visibility, fostering community well-being and reducing reliance on fossil fuels. By showcasing tangible renewable applications, it helps build public support for broader sustainability measures.",
+        "action": null
+    },
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "c40_0026",
+        "actionName": "Vehicle Emissions",
+        "actionPriority": 20,
+        "explanation": "For the city of Corumb\u00e1, addressing vehicle emissions remains an important goal for improving air quality and reducing climate impacts. Measures to curb exhaust pollutants can follow infrastructure upgrades and transformations in agriculture or energy sectors. By tackling transportation pollution strategically, the city ensures a comprehensive approach to lowering greenhouse gases.",
         "action": {
-            "ActionID": "ipcc_0062",
-            "ActionName": "Biochar",
+            "ActionID": "c40_0026",
+            "ActionName": "Vehicle Emissions",
             "ActionType": [
                 "mitigation"
             ],
             "AdaptationCategory": null,
             "Hazard": null,
             "Sector": [
-                "afolu"
+                "transportation"
             ],
             "Subsector": [
-                "land"
+                "on-road"
             ],
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
             "InterventionType": [
                 "incentives_and_subsidies",
-                "programs_and_initiatives",
-                "infrastructure_investments"
-            ],
-            "Description": "Biochar is produced by heating organic matter (e.g., forestry residues, straw, manure) in oxygen-limited environments. It has significant mitigation potential through carbon dioxide removal (CDR), reduced greenhouse gas emissions, and soil application benefits like improved fertility and reduced N2O emissions.",
-            "BehavioralChangeTargeted": "Encourages adoption of sustainable practices, use of biochar in agriculture, and increased awareness of its long-term soil and climate benefits.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "Promotes access to sustainable biochar technologies for smallholder farmers and developing regions, improving food security and livelihoods.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "20-39"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Availability of sustainably sourced biomass",
-                "standardization of production methods",
-                "monitoring systems",
-                "incentives for scaling up biochar production and application"
-            ],
-            "KeyPerformanceIndicators": [
-                "Carbon sequestration rates",
-                "reduction in soil N2O emissions",
-                "crop yield improvements",
-                "displacement of fossil fuel use through pyrolysis gases"
-            ],
-            "Impacts": [
-                "Improved agricultural productivity",
-                "enhanced soil resilience to climate change",
-                "reduced pollution",
-                "long-term carbon storage in soils",
-                "contributing to global climate goals"
-            ]
-        }
-    },
-    {
-        "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0067",
-        "actionName": "Manure management",
-        "actionPriority": 16,
-        "explanation": "Targeting agricultural emissions (particularly methane), manure management offers a moderate impact on overall emissions. Its benefits are clear but the absolute reduction potential is less when compared to top land use actions.",
-        "action": {
-            "ActionID": "ipcc_0067",
-            "ActionName": "Manure management",
-            "ActionType": [
-                "mitigation"
-            ],
-            "AdaptationCategory": null,
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "livestock"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "InterventionType": [
-                "programs_and_initiatives",
-                "infrastructure_investments",
-                "incentives_and_subsidies"
-            ],
-            "Description": "Manure management measures aim to mitigate CH4 and N2O emissions from manure storage and deposition through techniques such as anaerobic digestion, nitrification inhibitors, composting, improved storage and application practices, grazing practices, and livestock diet alteration. Co-benefits include improved nutrient recovery, fertiliser value, and biogas production.",
-            "BehavioralChangeTargeted": "Encourages adoption of sustainable manure management practices, including reducing nitrogen excretion, improving application timing, and adopting biogas production methods.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "Supports small-scale anaerobic digestion technologies and regionally applicable measures in developing countries, providing economic opportunities and improving resilience for underserved farming communities.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "20-39"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Development of cost-effective anaerobic digestion systems",
-                "supportive policies for nitrification inhibitors",
-                "region-specific training programs",
-                "accessible financing for farmers"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in CH4 and N2O emissions from manure storage",
-                "increased adoption of anaerobic digestion systems",
-                "improved nitrogen use efficiency",
-                "enhanced biogas production"
-            ],
-            "Impacts": [
-                "Reduces greenhouse gas emissions",
-                "improves local water and air quality",
-                "enhances soil health",
-                "supports food security",
-                "provides renewable energy through biogas production"
-            ]
-        }
-    },
-    {
-        "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0064",
-        "actionName": "Enteric fermentation",
-        "actionPriority": 17,
-        "explanation": "This action addresses methane emissions from livestock. While important for the agriculture sector, its overall quantitative impact is lower, placing it in the later part of the priority ranking.",
-        "action": {
-            "ActionID": "ipcc_0064",
-            "ActionName": "Enteric fermentation",
-            "ActionType": [
-                "mitigation"
-            ],
-            "AdaptationCategory": null,
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "livestock"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "InterventionType": [
                 "regulations_and_laws",
-                "incentives_and_subsidies",
                 "programs_and_initiatives"
             ],
-            "Description": "This action targets methane (CH4) emissions from enteric fermentation in livestock through direct interventions like feed additives, inhibitors, or vaccines, and indirect measures like improving production efficiency through better breeding and husbandry practices. It also includes early-life manipulation of the ruminal biome.",
-            "BehavioralChangeTargeted": "Encourages adoption of advanced feeding practices, use of additives or vaccines, and selection of low-emission livestock breeds to reduce methane emissions while improving productivity.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "Supports small-scale farmers in accessing advanced technologies and breeding programs, with special focus on developing countries where feed quality improvement can enhance livestock productivity.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "20-39"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Development and regulatory approval of feed additives, vaccines, and inhibitors",
-                "regional adaptation of mitigation strategies",
-                "overcoming barriers like costs, infrastructure, and public acceptance"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in CH4 emissions per animal",
-                "adoption rates of improved feeding practices",
-                "increase in production efficiency per unit of livestock product"
-            ],
-            "Impacts": [
-                "Reduction in global agricultural methane emissions",
-                "improved livestock productivity",
-                "enhanced food security",
-                "particularly in regions with high agricultural dependence"
-            ]
-        }
-    },
-    {
-        "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0066",
-        "actionName": "Crop nutrient management",
-        "actionPriority": 18,
-        "explanation": "Focused on reducing emissions related to fertilizer use, this action offers incremental benefits in emission control. Its moderate score and niche impact in agricultural practices support its lower ranking.",
-        "action": {
-            "ActionID": "ipcc_0066",
-            "ActionName": "Crop nutrient management",
-            "ActionType": [
-                "mitigation"
-            ],
-            "AdaptationCategory": null,
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "land"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "InterventionType": [
-                "programs_and_initiatives",
-                "incentives_and_subsidies",
-                "regulations_and_laws"
-            ],
-            "Description": "Implementation of improved crop nutrient management practices to reduce N2O emissions from cropland soils. Practices include optimizing fertilizer application rates, timing, and types; using nitrification inhibitors and slow-release fertilizers; and integrating nutrient management techniques such as crop rotations, cover crops, and bio-fertilizer application.",
-            "BehavioralChangeTargeted": "Encourages farmers to adopt precision fertilization, use organic and synthetic fertilizers efficiently, and employ sustainable agricultural practices for reduced emissions and enhanced productivity.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "Promotes sustainable agricultural practices that can be adapted for smallholder and large-scale farms, addressing regional imbalances in fertilizer access and ensuring inclusivity in adoption of new technologies.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "20-39"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Availability of training and technical support for farmers",
-                "development of regional nutrient management roadmaps",
-                "access to affordable fertilizers and inhibitors"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in N2O emissions",
-                "improvement in crop yields",
-                "increase in soil carbon sequestration",
-                "reduction in fertilizer use per hectare"
-            ],
-            "Impacts": [
-                "Contributes to climate mitigation",
-                "improves food and nutrition security",
-                "enhances environmental sustainability",
-                "supports long-term agricultural productivity"
-            ]
-        }
-    },
-    {
-        "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0055",
-        "actionName": "Fire Management (Forest and Grassland / Savanna Fires)",
-        "actionPriority": 19,
-        "explanation": "Fire management is crucial for controlling emissions in savanna ecosystems. Despite the city's grassland context where fire risks are significant, its lower quantitative score and implementation dependencies position it as a lower priority action.",
-        "action": {
-            "ActionID": "ipcc_0055",
-            "ActionName": "Fire Management (Forest and Grassland / Savanna Fires)",
-            "ActionType": [
-                "mitigation"
-            ],
-            "AdaptationCategory": null,
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "land"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "InterventionType": [
-                "programs_and_initiatives",
-                "infrastructure_investments",
-                "regulations_and_laws"
-            ],
-            "Description": "Implementation of fire management practices, including prescribed burning and natural resource management, to reduce uncontrolled wildfires in forests and savannas. Focuses on safeguarding life, property, and resources while mitigating GHG emissions and maintaining carbon stocks.",
-            "BehavioralChangeTargeted": "Encourages adoption of prescribed burning and sustainable fire management practices among communities and land managers to reduce uncontrolled wildfires and their associated GHG emissions.",
+            "Description": "\"Vehicle Emissions\" reduction strategies focus on minimizing the environmental impact of all types of vehicles. Implementing cleaner technologies and promoting alternative fuels contribute to lower emissions, fostering sustainable and eco-friendly transportation.",
+            "BehavioralChangeTargeted": "The targeted behavioral shift that the \"Vehicle Emissions\" reduction strategies aim to achieve is the increased adoption of cleaner transportation options, such as electric vehicles and alternative fuel vehicles, as well as a greater reliance on public transportation, biking, and walking. This shift is encouraged through financial incentives, regulations mandating lower emissions, and programs promoting sustainable transportation practices, ultimately leading to a significant reduction in greenhouse gas emissions from the transportation sector.",
             "CoBenefits": {
                 "air_quality": 1,
                 "water_quality": 0,
@@ -1379,110 +318,41 @@
                 "mobility": 0,
                 "stakeholder_engagement": 0
             },
-            "EquityAndInclusionConsiderations": "Promotes equitable access to fire management resources, focusing on capacity building and governance in vulnerable or underserved regions such as least developed countries in Africa.",
+            "EquityAndInclusionConsiderations": "The \"Vehicle Emissions\" reduction strategies inherently promote equity and inclusion by addressing the environmental impacts that disproportionately affect vulnerable and underserved communities. These communities often experience higher levels of air pollution and related health issues due to proximity to high-traffic areas and industrial zones. By implementing cleaner technologies and promoting alternative fuels, the action directly benefits these populations by improving air quality and reducing health risks.\n\nAdditionally, the focus on sustainable and eco-friendly transportation can enhance access to affordable and efficient transportation options for underserved communities, which may lack reliable public transit. This inclusivity ensures that all community members, regardless of socioeconomic status, can benefit from cleaner air and improved public health outcomes. Overall, the action recognizes and addresses the specific needs of vulnerable populations, fostering a more equitable approach to climate action.",
             "GHGReductionPotential": {
                 "stationary_energy": null,
-                "transportation": null,
+                "transportation": "80-100",
                 "waste": null,
                 "ippu": null,
-                "afolu": "20-39"
+                "afolu": null
             },
             "AdaptationEffectiveness": null,
             "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
+            "TimelineForImplementation": "<5 years",
             "Dependencies": [
-                "Effective governance frameworks",
-                "access to research and technology for fire management",
-                "community engagement",
-                "alignment with regional legal and policy frameworks"
+                "Development and availability of cleaner vehicle technologies",
+                "Infrastructure for alternative fuel distribution",
+                "Government policies and regulations supporting emissions reduction",
+                "Public awareness and acceptance of eco-friendly transportation options",
+                "Investment in research and development for sustainable transportation solutions"
             ],
             "KeyPerformanceIndicators": [
-                "Reduction in frequency and intensity of uncontrolled wildfires",
-                "Area managed with prescribed burns",
-                "Reduction in GHG emissions from fires",
-                "Improvement in biodiversity and soil health metrics"
+                "Reduction in vehicle emissions (CO2, NOx, PM)",
+                "Percentage of vehicles using alternative fuels",
+                "Number of electric vehicles on the road",
+                "Fuel efficiency improvements (miles per gallon)",
+                "Adoption rate of cleaner technologies",
+                "Reduction in fossil fuel consumption",
+                "Public transportation usage rates",
+                "Air quality index improvements",
+                "Percentage of low-emission zones established",
+                "Investment in sustainable transportation infrastructure"
             ],
             "Impacts": [
-                "Reduced GHG emissions",
-                "improved biodiversity conservation",
-                "prevention of soil erosion",
-                "enhanced land productivity",
-                "reduced risks to life and property from uncontrolled wildfires"
-            ]
-        }
-    },
-    {
-        "locode": "BRCMG",
-        "cityName": "Corumb\u00e1",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0065",
-        "actionName": "Improve rice management",
-        "actionPriority": 20,
-        "explanation": "This action targets rice management practices, which are less relevant in Corumb\u00e1\u2019s predominantly grassland and savanna environment. Given the limited scope of rice production and a lower quantitative score, it ranks last in the priority order.",
-        "action": {
-            "ActionID": "ipcc_0065",
-            "ActionName": "Improve rice management",
-            "ActionType": [
-                "mitigation"
-            ],
-            "AdaptationCategory": null,
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "land"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "InterventionType": [
-                "programs_and_initiatives",
-                "incentives_and_subsidies",
-                "regulations_and_laws"
-            ],
-            "Description": "Implementation of improved water management practices (e.g., single and multiple drainage systems), residue management, better fertiliser application (e.g., slow-release fertilisers), and soil amendments (e.g., biochar) to reduce CH4 and N2O emissions while enhancing sustainability and system resilience.",
-            "BehavioralChangeTargeted": "Encourages adoption of sustainable cultivation practices, such as reducing water waste, improving fertiliser use efficiency, and adopting innovative drainage and residue management techniques.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 1,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "Supports small-scale farmers by reducing input costs (e.g., seeds, labour, and water), increasing income through higher yields, and providing tools and knowledge for sustainable rice farming.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "20-39"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Adequate irrigation infrastructure",
-                "training for farmers on advanced techniques",
-                "access to slow-release fertilisers and biochar",
-                "coordinated water management practices among neighboring farmers and regions"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in CH4 and N2O emissions per hectare",
-                "increased water use efficiency",
-                "yield stability during droughts",
-                "adoption rate of improved rice cultivation techniques"
-            ],
-            "Impacts": [
-                "Reduced greenhouse gas emissions",
-                "improved water use efficiency",
-                "enhanced drought resilience",
-                "increased farm income",
-                "more sustainable agricultural practices",
-                "contributing to food security"
+                "Significant reduction in greenhouse gas emissions from the transportation sector",
+                "Improved air quality benefiting vulnerable and underserved communities",
+                "Increased adoption of cleaner transportation options",
+                "Enhanced access to affordable and efficient transportation for underserved populations"
             ]
         }
     }

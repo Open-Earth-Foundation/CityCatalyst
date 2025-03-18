@@ -123,6 +123,7 @@ const AdminPage = ({ params: { lng } }: { params: { lng: string } }) => {
 
         {!isOrgDataLoading && orgData && orgData.length > 0 && (
           <DataTable
+            t={t}
             searchable={true}
             pagination={true}
             filterProperty={"status"}
@@ -147,11 +148,11 @@ const AdminPage = ({ params: { lng } }: { params: { lng: string } }) => {
                   {item.status === "accepted" ? (
                     <Tag size="lg" rounded="full" colorPalette="green">
                       {" "}
-                      Accepted{" "}
+                      {t("accepted")}
                     </Tag>
                   ) : (
                     <Tag size="lg" colorPalette="yellow">
-                      Invite Sent
+                      {t("invite-sent")}
                     </Tag>
                   )}{" "}
                 </Table.Cell>

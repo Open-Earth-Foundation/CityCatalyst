@@ -12,6 +12,7 @@ import {
   ProgressCircleRing,
   ProgressCircleRoot,
 } from "@/components/ui/progress-circle";
+import { useTranslation } from "@/i18n/client";
 
 export default function AdminLayout({
   children,
@@ -22,13 +23,14 @@ export default function AdminLayout({
 }) {
   const router = useRouter();
 
+  const { t } = useTranslation(lng, "admin");
   const { data: userInfo, isLoading: isUserInfoLoading } =
     api.useGetUserInfoQuery();
 
   useEffect(() => {
     if (!isUserInfoLoading && userInfo?.role !== Roles.Admin) {
       toaster.error({
-        title: "You are not authorized",
+        title: t("not-authorized"),
       });
       const REDIRECT_DELAY_MS = 2000;
       setTimeout(() => {

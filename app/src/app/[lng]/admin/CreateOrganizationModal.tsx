@@ -29,9 +29,9 @@ interface CreateOrganizationModalProps {
 
 const schema = z.object({
   email: z.string().email("invalid-email").min(1, "required"),
-  name: z.string().min(1, "required"),
-  projectName: z.string().min(1, "required"),
-  description: z.string().min(1, "required"),
+  name: z.string().min(3, "required"),
+  projectName: z.string().min(3, "required"),
+  description: z.string().min(3, "required"),
   cityCountLimit: z.number().min(1, "required"),
 });
 

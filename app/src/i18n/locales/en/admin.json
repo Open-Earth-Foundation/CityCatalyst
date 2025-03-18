@@ -22,5 +22,9 @@
   "error-message": "An error occurred. Please try again.",
   "organization-added": "Organization added successfully",
   "account-details": "Account details",
-  "resend-invite": "Resend invite"
+  "resend-invite": "Resend invite",
+  "not-authorized": "You are not authorized",
+  "accepted": "Accepted",
+  "invite-sent": "Invite sent",
+  "no-data": "No data available"
 }

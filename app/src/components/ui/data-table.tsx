@@ -17,6 +17,7 @@ import { IoIosArrowBack } from "react-icons/io";
 
 type DataTableProps<T> = {
   data: T[];
+  t: Function;
   title: string;
   columns: { header: string; accessor: keyof T | null }[];
   searchable?: boolean;
@@ -30,6 +31,7 @@ type DataTableProps<T> = {
 function DataTable<T extends Record<string, any>>({
   data,
   title,
+  t,
   columns,
   searchable = false,
   pagination = false,
@@ -176,7 +178,7 @@ function DataTable<T extends Record<string, any>>({
             <Table.Row>
               <Table.Cell colSpan={columns.length}>
                 <Text fontSize="body.md" color="content.tertiary">
-                  No data available
+                  {t("no-data")}
                 </Text>
               </Table.Cell>
             </Table.Row>

@@ -94,6 +94,7 @@ const ManageCitiesTabPanel: FC<ManageCitiesProps> = ({ t }) => {
               <Table.ColumnHeader align="right">
                 {t("last-updated")}
               </Table.ColumnHeader>
+              <Table.ColumnHeader />
             </Table.Row>
           </Table.Header>
           <Table.Body fontFamily="heading">
@@ -147,6 +148,7 @@ const ManageCitiesTabPanel: FC<ManageCitiesProps> = ({ t }) => {
                       padding="10px"
                       px="0"
                       pos="absolute"
+                      right="0"
                     >
                       <PopoverArrow />
                       <PopoverBody padding="0">

@@ -17,7 +17,6 @@ import {
 const ModalPublish = ({
   t,
   isPublishOpen,
-  //Todo: resolve close action
   onPublishClose,
   inventoryId,
   inventory,
@@ -42,7 +41,11 @@ const ModalPublish = ({
   };
 
   return (
-    <DialogRoot open={isPublishOpen} onOpenChange={(e) => setModalOpen(e.open)}>
+    <DialogRoot
+      open={isPublishOpen}
+      onOpenChange={(e) => setModalOpen(e.open)}
+      onInteractOutside={onPublishClose}
+    >
       <DialogContent maxW="container.md">
         <DialogHeader>
           <HStack>

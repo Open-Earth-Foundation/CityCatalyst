@@ -1,7 +1,7 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useCallback, useEffect } from "react";
 import { ButtonSmall } from "@/components/Texts/Button";
 import { Column, Row, useTable } from "react-table";
-import { CityInviteStatus, GetUserCityInvitesResponse } from "@/util/types";
+import { InviteStatus, GetUserCityInvitesResponse } from "@/util/types";
 import { MdOutlineDelete, MdOutlineReplay } from "react-icons/md";
 import { HiMiniChevronDown } from "react-icons/hi2";
 import { Badge, IconButton, Icon } from "@chakra-ui/react";
@@ -19,7 +19,8 @@ const ManageUsersSubTable = React.memo(function SubTable({
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedRowId, setSelectedRowId] = useState<string | null>(null);
-  const [resetUserInvite, { isLoading, error }] = api.useResetInviteMutation();
+  const [resetUserInvite, { isLoading, error, isSuccess, isError, reset }] =
+    api.useResetInviteMutation();
 
   const { showSuccessToast } = UseSuccessToast({
     description: t("invite-sent"),
@@ -31,43 +32,56 @@ const ManageUsersSubTable = React.memo(function SubTable({
     title: t("invite-send-fail"),
   });
 
-  const subTableColumns: Column<GetUserCityInvitesResponse>[] = useMemo(() => {
-    const handleDeleteClick = (row: Row<GetUserCityInvitesResponse>) => {
+  useEffect(() => {
+    if (isSuccess) {
+      showSuccessToast();
+      reset();
+    }
+    if (isError) {
+      showErrorToast();
+      reset();
+    }
+  }, [isSuccess, isError, showSuccessToast, showErrorToast, reset]);
+
+  const handleDeleteClick = useCallback(
+    (row: Row<GetUserCityInvitesResponse>) => {
       setSelectedRowId(row.original.id);
       setIsModalOpen(true);
-    };
+    },
+    [],
+  );
 
-    const handleResetClick = (row: Row<GetUserCityInvitesResponse>) => {
+  const handleResetClick = useCallback(
+    (row: Row<GetUserCityInvitesResponse>) => {
       setSelectedRowId(row.original.id);
       resetUserInvite({ cityInviteId: row.original.id });
-      if (error) {
-        showErrorToast();
-      } else {
-        showSuccessToast();
-      }
-    };
+    },
+    [resetUserInvite],
+  );
 
-    const getTextAndBorderColor = (value: CityInviteStatus) => {
-      switch (value) {
-        case CityInviteStatus.ACCEPTED:
-          return "sentiment.positiveDefault";
-        case CityInviteStatus.PENDING:
-          return "sentiment.warningDefault";
-        default:
-          return "interactive.control";
-      }
-    };
+  const getTextAndBorderColor = useCallback((value: InviteStatus) => {
+    switch (value) {
+      case InviteStatus.ACCEPTED:
+        return "sentiment.positiveDefault";
+      case InviteStatus.PENDING:
+        return "sentiment.warningDefault";
+      default:
+        return "interactive.control";
+    }
+  }, []);
 
-    const getBackgroundColor = (value: CityInviteStatus) => {
-      switch (value) {
-        case CityInviteStatus.ACCEPTED:
-          return "sentiment.positiveOverlay";
-        case CityInviteStatus.PENDING:
-          return "sentiment.warningOverlay";
-        default:
-          return "background.neutral";
-      }
-    };
+  const getBackgroundColor = (value: InviteStatus) => {
+    switch (value) {
+      case InviteStatus.ACCEPTED:
+        return "sentiment.positiveOverlay";
+      case InviteStatus.PENDING:
+        return "sentiment.warningOverlay";
+      default:
+        return "background.neutral";
+    }
+  };
+
+  const subTableColumns: Column<GetUserCityInvitesResponse>[] = useMemo(() => {
     return [
       {
         Header: () => (
@@ -97,7 +111,6 @@ const ManageUsersSubTable = React.memo(function SubTable({
         id: "status",
         Cell: ({ value }) => (
           <Badge
-            borderRadius="full"
             px="16px"
             paddingTop="4px"
             paddingBottom="4px"
@@ -125,7 +138,7 @@ const ManageUsersSubTable = React.memo(function SubTable({
         id: "actions",
         width: "40px",
         Cell: ({ row }) =>
-          row.original.status === CityInviteStatus.EXPIRED ? (
+          row.original.status === InviteStatus.EXPIRED ? (
             <IconButton
               onClick={() => handleResetClick(row)}
               aria-label="edit"
@@ -154,7 +167,12 @@ const ManageUsersSubTable = React.memo(function SubTable({
           ),
       },
     ];
-  }, [error, resetUserInvite, showErrorToast, showSuccessToast]);
+  }, [
+    getTextAndBorderColor,
+    getBackgroundColor,
+    handleDeleteClick,
+    handleResetClick,
+  ]);
 
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
     useTable({

@@ -8,6 +8,8 @@ test.beforeEach(async ({ page }) => {
   await page.goto("/en/auth/signup");
 });
 
+test.setTimeout(60000);
+
 test.describe("Signup", () => {
   test.skip("should navigate to signup from login", async ({ page }) => {
     await page.goto("/");
@@ -30,16 +32,21 @@ test.describe("Signup", () => {
 
     await page.getByPlaceholder("Your full name").fill("Test User");
     await page.getByPlaceholder("e.g. youremail@domain.com").fill(email);
-    await page.getByLabel("Password", { exact: true }).fill("Test123");
-    await page.getByLabel("Confirm Password").fill("Test123");
+    await page.getByLabel("Password", { exact: true }).fill("Test123!");
+    await page.getByLabel("Confirm Password").fill("Test123!");
     await page.getByPlaceholder("Enter the code you received").fill("123456");
     await page
       .locator('input[name="acceptTerms"] + .chakra-checkbox__control')
       .click();
     await page.getByRole("button", { name: "Create Account" }).click();
 
+    await page.waitForLoadState("load");
+
     await expect(page).toHaveURL(
       `/en/auth/check-email/?email=${email.replace("@", "%40")}`,
+      {
+        timeout: 30000,
+      },
     );
   });
 
@@ -61,7 +68,7 @@ test.describe("Signup", () => {
     await expectText(page, "valid email address");
     await expectText(page, "Minimum length");
     await expectText(page, "Invalid invite code");
-    await expectText(page, "Please accept the terms");
+    await expectText(page, "Please accept the privacy policy");
   });
 
   test("should require matching passwords", async ({ page }) => {

@@ -42,10 +42,12 @@ const PublishButtons = ({
       {PUBLISH_BUTTONS.map(({ title, src, isAvailable, onClick }) => (
         <Button
           key={title}
-          my="24px"
-          mx="24px"
+          my="16px"
+          mx="16px"
           variant="ghost"
           disabled={!isAvailable}
+          minHeight="100px"
+          py={4}
           style={{
             backgroundColor: "white",
             color: "black",
@@ -57,7 +59,7 @@ const PublishButtons = ({
           onClick={onClick}
         >
           <Image src={src} alt={title} width="32px" height="32px" />
-          <VStack align="flex-start" w="full" mx="16px">
+          <VStack align="flex-start" w="full" ml="12px">
             <HStack w="full" justify="flex-start">
               <Text
                 fontSize="body.lg"
@@ -68,12 +70,12 @@ const PublishButtons = ({
               </Text>
               {!isAvailable && (
                 <Badge
-                  mx="16px"
+                  ml="8px"
                   borderWidth="1px"
                   borderColor="border.neutral"
                   py="4px"
                   px="8px"
-                  borderRadius="full"
+                  borderRadius="16px"
                   color="content.secondary"
                   fontSize="body.sm"
                   bg="base.light"
@@ -95,7 +97,7 @@ const PublishButtons = ({
               {t(`${title}-description`)}
             </Text>
           </VStack>
-          <Icon as={BsChevronRight} width="24px" height="24px" mx="16px" />
+          <Icon as={BsChevronRight} width="24px" height="24px" mr="16px" />
         </Button>
       ))}
     </>

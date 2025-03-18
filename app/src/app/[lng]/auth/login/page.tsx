@@ -5,13 +5,14 @@ import PasswordInput from "@/components/password-input";
 import { useTranslation } from "@/i18n/client";
 import { Box, Heading, Link, Text } from "@chakra-ui/react";
 import { TFunction } from "i18next";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { Toaster } from "@/components/ui/toaster";
 import { Button } from "@/components/ui/button";
 import { UseSuccessToast } from "@/hooks/Toasts";
+import { Trans } from "react-i18next/TransWithoutContext";
 
 export type LoginInputs = {
   email: string;
@@ -64,6 +65,14 @@ export default function Login({
       callbackUrl = "/";
     }
   }
+
+  // redirect to dashboard if user is already authenticated
+  const { data: _session, status } = useSession();
+  useEffect(() => {
+    if (status === "authenticated") {
+      router.push("/");
+    }
+  }, [status, router]);
 
   const { showSuccessToast: showLoginSuccessToast } = UseSuccessToast({
     title: t("verified-toast-title"),
@@ -128,6 +137,19 @@ export default function Login({
           <Link href="/auth/forgot-password" className="underline">
             {t("forgot-password")}
           </Link>
+          <Text my={2}>
+            <Trans t={t} i18nKey="read-privacy-policy">
+              Read our{" "}
+              <Link
+                href="https://citycatalyst.openearth.org/privacy"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline"
+              >
+                Privacy Policy
+              </Link>
+            </Trans>
+          </Text>
         </div>
         <Button
           type="submit"

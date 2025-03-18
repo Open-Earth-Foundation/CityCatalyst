@@ -1,25 +1,20 @@
 "use client";
 
 import { useTranslation } from "@/i18n/client";
-import { useAppSelector } from "@/lib/hooks";
 import { MdArrowForward } from "react-icons/md";
 import { Box, Button, Heading, Text } from "@chakra-ui/react";
 import NextLink from "next/link";
 import { Trans } from "react-i18next/TransWithoutContext";
-import { logger } from "@/services/logger";
 
 export default function OnboardingDone({
   params: { lng, year, inventory },
 }: {
   params: { lng: string; year: number; inventory: string };
 }) {
-  const data = useAppSelector((state) => state.openClimateCity.city);
   const { t } = useTranslation(lng, "onboarding");
 
-  logger.debug(data);
-
   return (
-    <div className="pt-[148px] w-[1024px] h-[100vh] max-w-full mx-auto px-4 pb-12 flex flex-col items-center">
+    <div className="pt-[148px] w-[1024px] h-[100vh] max-w-full mx-auto px-4 pb-12 flex flex-col items-center bg-city bg-no-repeat bg-top">
       <Heading
         mt={12}
         mb="24px"

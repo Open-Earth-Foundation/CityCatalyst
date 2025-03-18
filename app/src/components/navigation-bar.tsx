@@ -10,7 +10,12 @@ import Image from "next/image";
 
 import { CircleFlag } from "react-circle-flags";
 import { FiSettings } from "react-icons/fi";
-import { MdArrowDropUp, MdArrowDropDown, MdLogout } from "react-icons/md";
+import {
+  MdArrowDropDown,
+  MdArrowDropUp,
+  MdAspectRatio,
+  MdLogout,
+} from "react-icons/md";
 import Cookies from "js-cookie";
 import { useParams, useRouter } from "next/navigation";
 import { api } from "@/services/api";
@@ -86,6 +91,9 @@ export function NavigationBar({
   const dashboardPath = `/${lng}/${inventory ?? currentInventoryId}`;
 
   const [isUserMenuOpen, setUserMenuOpen] = useState(false);
+  const [isLanguageMenuOpen, setLanguageMenuOpen] = useState(false);
+
+  const [userMenuHighlight, setUserMenuHighlight] = useState<string | null>();
 
   return (
     <Box
@@ -138,7 +146,13 @@ export function NavigationBar({
       )}
       <Box display="flex">
         <Box display="flex">
-          <MenuRoot>
+          <MenuRoot
+            onOpenChange={(details) => {
+              setLanguageMenuOpen(details.open);
+            }}
+            open={isLanguageMenuOpen}
+            variant="solid"
+          >
             <MenuTrigger asChild>
               <Button
                 color="base.light"
@@ -160,6 +174,11 @@ export function NavigationBar({
                   <Text fontSize="title.md" fontWeight="bold">
                     {i18next.language.toUpperCase()}
                   </Text>
+
+                  <Icon
+                    as={isLanguageMenuOpen ? MdArrowDropUp : MdArrowDropDown}
+                    boxSize={6}
+                  />
                 </Box>
               </Button>
             </MenuTrigger>
@@ -194,7 +213,10 @@ export function NavigationBar({
                 setUserMenuOpen(details.open);
               }}
               open={isUserMenuOpen}
-              variant="subtle"
+              variant="solid"
+              onHighlightChange={(value) =>
+                setUserMenuHighlight(value.highlightedValue)
+              }
             >
               <MenuTrigger
                 asChild
@@ -234,9 +256,31 @@ export function NavigationBar({
                 display="flex"
                 flexDirection="column"
                 justifyContent="space-around"
-                height="128px"
+                minH="128px"
                 zIndex={2000}
               >
+                <MenuItem
+                  value="admin"
+                  paddingTop="12px"
+                  paddingBottom="12px"
+                  px="16px"
+                  onClick={() => router.push(`/admin`)}
+                >
+                  <Box display="flex" alignItems="center">
+                    {" "}
+                    <Icon
+                      as={MdAspectRatio}
+                      boxSize={6}
+                      color={
+                        userMenuHighlight === "admin"
+                          ? "background.neutral"
+                          : "content.tertiary"
+                      }
+                      mr={4}
+                    />
+                    <Text fontSize="title.md">{t("admin")}</Text>
+                  </Box>
+                </MenuItem>
                 <MenuItem
                   value="settings"
                   paddingTop="12px"
@@ -253,7 +297,11 @@ export function NavigationBar({
                     <Icon
                       as={FiSettings}
                       boxSize={6}
-                      color="content.tertiary"
+                      color={
+                        userMenuHighlight === "settings"
+                          ? "background.neutral"
+                          : "content.tertiary"
+                      }
                       mr={4}
                     />
                     <Text fontSize="title.md">{t("settings")}</Text>
@@ -270,7 +318,11 @@ export function NavigationBar({
                     <Icon
                       as={MdLogout}
                       boxSize={6}
-                      color="sentiment.negativeDefault"
+                      color={
+                        userMenuHighlight === "log-out"
+                          ? "background.neutral"
+                          : "sentiment.negativeDefault"
+                      }
                       mr={4}
                     />
                     <Text fontSize="title.md">{t("log-out")}</Text>

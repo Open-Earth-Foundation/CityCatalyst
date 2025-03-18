@@ -1,8 +1,10 @@
-import { test, expect, APIRequestContext } from "@playwright/test";
+import { test, expect } from "@playwright/test";
 import { expectText, signup } from "./helpers";
 import { randomUUID } from "node:crypto";
 
-test.beforeEach(async ({ page }) => {
+test.beforeEach(async ({ page, context }) => {
+  // make sure user is logged out to prevent order of execution issues
+  await context.clearCookies();
   await page.goto("/en/auth/login");
 });
 

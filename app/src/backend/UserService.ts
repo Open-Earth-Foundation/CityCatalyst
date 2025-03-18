@@ -6,9 +6,8 @@ import { type AppSession } from "@/lib/auth";
 import type { City } from "@/models/City";
 import type { Inventory } from "@/models/Inventory";
 import type { User } from "@/models/User";
-import { Includeable } from "sequelize";
+import { Includeable, QueryTypes } from "sequelize";
 import { UserFile } from "@/models/UserFile";
-import { QueryTypes } from "sequelize";
 
 export default class UserService {
   public static async findUser(
@@ -216,5 +215,10 @@ export default class UserService {
       );
     }
     return userFile;
+  }
+
+  public static validateIsAdmin(session: AppSession | null) {
+    if (!session || session.user.role !== Roles.Admin)
+      throw new createHttpError.Forbidden("Forbidden");
   }
 }

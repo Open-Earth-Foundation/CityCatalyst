@@ -75,6 +75,7 @@ export interface UserInfoResponse {
   userId: string;
   name: string;
   defaultInventoryId: string | null;
+  role: Roles;
 }
 
 export type DataSource = DataSourceAttributes & {
@@ -208,11 +209,17 @@ export interface GetUserCityInvitesResponseUserData {
   name: string;
 }
 
-export enum CityInviteStatus {
+export enum InviteStatus {
   PENDING = "pending",
   ACCEPTED = "accepted",
   CANCELED = "canceled",
   EXPIRED = "expired",
+}
+
+export enum OrganizationRole {
+  COLLABORATOR = "collaborator",
+  ADMIN = "admin",
+  ORG_ADMIN = "org_admin",
 }
 
 export interface GetUserCityInvitesResponse {
@@ -221,7 +228,7 @@ export interface GetUserCityInvitesResponse {
   user?: GetUserCityInvitesResponseUserData;
   cityId: string;
   userId: string;
-  status: CityInviteStatus;
+  status: InviteStatus;
   cityInvites: Required<CityAttributes>;
 }
 
@@ -229,6 +236,7 @@ export interface AcceptInviteResponse {
   success: boolean;
   error?: string;
 }
+
 export interface AcceptInviteRequest {
   email: string;
   cityIds: string[];
@@ -353,3 +361,34 @@ export type InventoryWithInventoryValuesAndActivityValues =
   InventoryResponse & {
     inventoryValues: InventoryValueWithActivityValues[];
   };
+
+export type OrganizationResponse = {
+  contactEmail: string;
+  created: string;
+  last_updated: string;
+  name: string;
+  organizationId: string;
+};
+
+export type ProjectResponse = {
+  cityCountLimit: number;
+  created: string;
+  description: string;
+  last_updated: string;
+  name: string;
+  organizationId: string;
+  projectId: string;
+};
+
+export type ListOrganizationsResponse = {
+  contactEmail: string;
+  created: string;
+  last_updated: string;
+  name: string;
+  organizationId: string;
+  organizationInvite: {
+    status: InviteStatus;
+    email: string;
+    role: OrganizationRole;
+  }[];
+}[];

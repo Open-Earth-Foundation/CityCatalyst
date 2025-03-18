@@ -18,6 +18,12 @@ export interface BulkInventoryProps {
   gwp: "AR5" | "AR6"; // GWP selection (AR5 or AR6)
 }
 
+export interface BulkConnectSourcesProps {
+  userEmail: string; // Email of the user whose inventories are to be connected
+  cityLocodes: string[]; // List of city locodes
+  years: number[]; // List of years to create inventories for
+}
+
 export interface CreateBulkInventoriesResponse {
   errors: { locode: string; error: any }[];
   results: { locode: string; result: string[] }[];
@@ -30,11 +36,7 @@ export default class AdminService {
     props: BulkInventoryProps,
     session: AppSession | null,
   ): Promise<CreateBulkInventoriesResponse> {
-    // Ensure user has admin role
-    const isAdmin = session?.user?.role === Roles.Admin;
-    if (!isAdmin) {
-      throw new createHttpError.Unauthorized("Not signed in as an admin");
-    }
+    this.ensureIsAdmin(session);
 
     const errors: { locode: string; error: any }[] = [];
     const results: { locode: string; result: string[] }[] = [];
@@ -103,17 +105,75 @@ export default class AdminService {
           city.cityId,
         );
         errors.push(...populationErrors);
-
-        // Connect all data sources, rank them by priority, check if they connect
-        const sourceErrors = await this.connectAllDataSources(
-          inventory.inventoryId,
-          cityLocode,
-        );
-        errors.push(...sourceErrors);
       }
     }
 
     return { errors, results };
+  }
+
+  public static async bulkConnectDataSources(
+    props: BulkConnectSourcesProps,
+    session: AppSession | null,
+  ): Promise<{ errors: { locode: string; error: string }[] }> {
+    this.ensureIsAdmin(session);
+
+    const errors: { locode: string; error: string }[] = [];
+
+    const inventories = await db.models.Inventory.findAll({
+      attributes: ["inventoryId"],
+      where: {
+        year: { [Op.in]: props.years },
+      },
+      include: [
+        {
+          model: City,
+          as: "city",
+          attributes: ["locode"],
+          where: { locode: { [Op.in]: props.cityLocodes } },
+          include: [
+            {
+              model: db.models.User,
+              as: "users",
+              attributes: ["userId"],
+              where: { email: props.userEmail },
+            },
+          ],
+        },
+      ],
+    });
+
+    for (const inventory of inventories) {
+      if (!inventory.city?.locode) {
+        throw new createHttpError.NotFound(
+          "City or locode not found for inventory " + inventory.inventoryId,
+        );
+      }
+
+      // Connect all data sources, rank them by priority, check if they connect
+      const sourceErrors = await this.connectAllDataSources(
+        inventory.inventoryId,
+        inventory.city.locode,
+      );
+      errors.push(...sourceErrors);
+    }
+
+    return { errors };
+  }
+
+  private static ensureIsAdmin(session: AppSession | null) {
+    // Ensure user is signed in
+    const isSignedIn = !!session?.user;
+    if (!isSignedIn) {
+      throw new createHttpError.Unauthorized("Not signed in");
+    }
+
+    // Ensure user has admin role
+    const isAdmin = session?.user?.role === Roles.Admin;
+    if (!isAdmin) {
+      throw new createHttpError.Unauthorized(
+        "Not signed in as an admin: " + session?.user?.role,
+      );
+    }
   }
 
   private static async createPopulationEntries(
@@ -226,6 +286,7 @@ export default class AdminService {
               source,
               inventory,
               populationScaleFactors,
+              true, // force replace existing InventoryValue entries
             );
             if (result.success) {
               isSuccessful = true;

@@ -55,8 +55,9 @@ const EmissionDataSection = ({
   changeMethodology,
   inventoryValue,
 }: EmissionDataSectionProps) => {
-  const [selectedActivityValue, setSelectedActivityValue] =
-    useState<ActivityValue>();
+  const [selectedActivityValue, setSelectedActivityValue] = useState<
+    ActivityValue | undefined
+  >();
   const [selectedActivity, setSelectedActivity] = useState<
     SuggestedActivity | undefined
   >();
@@ -80,7 +81,8 @@ const EmissionDataSection = ({
   // Delete Activity Dialog
   const [openActivityDeleteDialog, setActivityDeleteDataDialogOpen] =
     useState(false);
-  const handleDeleteActivityDataDialog = () => {
+  const handleDeleteActivityDataDialog = (activity: ActivityValue) => {
+    setSelectedActivityValue(activity);
     setActivityDeleteDataDialogOpen(true);
   };
 

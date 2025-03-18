@@ -2,6 +2,7 @@ import { Table } from "@chakra-ui/react";
 import { ISector, SECTORS } from "@/util/constants";
 import { TFunction } from "i18next";
 import { ProjectionData } from "@/util/types";
+import { ButtonSmall } from "@/components/Texts/Button";
 
 export const GrowthRatesExplanationModalTable = ({
   growthRates,
@@ -16,22 +17,36 @@ export const GrowthRatesExplanationModalTable = ({
     return sector.name === "ippu" ? sector.name + "-short" : sector.name;
   }
 
+  // for emission growth rates, sector V is split between its subsectors
+  const emissionsSectors = [
+    ...SECTORS.slice(0, 4),
+    ...Object.values(SECTORS[4]!.subSectors!),
+  ];
+
   return (
-    <Table.Root unstyled>
+    <Table.Root striped>
       <Table.Header>
         <Table.Row>
-          <Table.ColumnHeader>{t("sector")}</Table.ColumnHeader>
+          <Table.ColumnHeader>
+            <ButtonSmall textTransform="uppercase">{t("sector")}</ButtonSmall>
+          </Table.ColumnHeader>
           {Object.keys(growthRates)
             .slice(0, 4)
             .map((year) => (
-              <Table.ColumnHeader key={year}>{year}</Table.ColumnHeader>
+              <Table.ColumnHeader key={year}>
+                <ButtonSmall textTransform="uppercase">{year}</ButtonSmall>
+              </Table.ColumnHeader>
             ))}
-          <Table.ColumnHeader>{"2030"}</Table.ColumnHeader>
-          <Table.ColumnHeader>{"2050"}</Table.ColumnHeader>
+          <Table.ColumnHeader>
+            <ButtonSmall>2030</ButtonSmall>
+          </Table.ColumnHeader>
+          <Table.ColumnHeader>
+            <ButtonSmall>2050</ButtonSmall>
+          </Table.ColumnHeader>
         </Table.Row>
       </Table.Header>
       <Table.Body>
-        {SECTORS.map((sector) => (
+        {emissionsSectors.map((sector) => (
           <Table.Row key={sector.name}>
             <Table.Cell>{t(getNameTranslationString(sector))}</Table.Cell>
             {Object.keys(growthRates)

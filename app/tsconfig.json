@@ -1,12 +1,8 @@
 {
   "compilerOptions": {
     "target": "ES2020",
-     
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -25,9 +21,7 @@
       }
     ],
     "paths": {
-      "@/*": [
-        "./src/*"
-      ]
+      "@/*": ["./src/*"]
     },
     "baseUrl": "."
   },
@@ -39,5 +33,4 @@
     "cypress/**/*",
     "cypress.config.ts"
   ]
-
 }

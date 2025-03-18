@@ -66,8 +66,8 @@
   "downloading-data": "Downloading your data",
   "download-failed": "Download failed",
   "download-error": "There was an error during download",
-  "tab-emission-inventory-calculation-title": "Inventory Calculation",
-  "emission-inventory-calculation-title": "Emission Inventory Calculation",
+  "tab-emission-inventory-calculation-title": "Inventory calculation",
+  "emission-inventory-calculation-title": "Emission inventory calculation",
   "tab-emission-inventory-results-title": "Emission inventory results",
   "inventory-format-basic": "Inventory format: GPC BASIC",
   "inventory-format-basic+": "Inventory format: GPC BASIC+",
@@ -151,7 +151,6 @@
   "description": "Description",
   "methodology-and-assumptions": "Methodology and assumptions",
   "methodology-and-assumptions-description": "The no-action emissions forecast model for Brazil assumes a strong, direct correlation between emissions and economic growth, reflecting Brazil's current state where economic expansion and emissions have not yet decoupled.",
-  "download-and-report": "Download & report",
   "invite-collaborators": "Invite collaborators",
   "invite-your-colleagues": "Invite your colleagues",
   "select-cities-to-share": "Select which cities you want to share",
@@ -176,5 +175,8 @@
   "rate": "rate",
   "sector": "sector",
   "an-error-occurred": "An error occurred",
-  "error-fetching-sector-breakdown": "Error fetching sector breakdown"
+  "error-fetching-sector-breakdown": "Error fetching sector breakdown",
+  "manage-missing-subsectors": "Manage missing sub-sectors",
+  "source-open-climate": "Source: OpenClimate"
+
 }

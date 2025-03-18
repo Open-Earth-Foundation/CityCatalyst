@@ -18,7 +18,13 @@ export const AccordionItemTrigger = React.forwardRef<
           <LuChevronDown />
         </Accordion.ItemIndicator>
       )}
-      <HStack gap="4" flex="1" textAlign="center" justify="center" width="full">
+      <HStack
+        gap="4"
+        flex="1"
+        width="full"
+        textAlign={indicatorPlacement === "center" ? "center" : "start"}
+        justify={indicatorPlacement === "center" ? "center" : "flex-start"}
+      >
         {children}
         {indicatorPlacement === "center" && (
           <Accordion.ItemIndicator>

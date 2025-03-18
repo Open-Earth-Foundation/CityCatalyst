@@ -8,9 +8,7 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 BASE_DIR = SCRIPT_DIR.parent  # Go one level up from the script's directory
 
 # Load paths dynamically relative to the base directory
-PATH_ACTIONSLIST = (
-    BASE_DIR / "data" / "climate_actions" / "output" / "combined_output.json"
-)
+PATH_ACTIONSLIST = BASE_DIR / "data" / "climate_actions" / "output" / "merged.json"
 BASE_PATH_PRIORITIZED_ACTIONS = BASE_DIR / "data" / "prioritized"
 BASE_PATH_OUTPUT = BASE_DIR / "data" / "frontend"
 

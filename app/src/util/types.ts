@@ -75,6 +75,7 @@ export interface UserInfoResponse {
   userId: string;
   name: string;
   defaultInventoryId: string | null;
+  role: Roles;
 }
 
 export type DataSource = DataSourceAttributes & {
@@ -218,6 +219,7 @@ export enum InviteStatus {
 export enum OrganizationRole {
   COLLABORATOR = "collaborator",
   ADMIN = "admin",
+  ORG_ADMIN = "org_admin",
 }
 
 export interface GetUserCityInvitesResponse {
@@ -359,3 +361,21 @@ export type InventoryWithInventoryValuesAndActivityValues =
   InventoryResponse & {
     inventoryValues: InventoryValueWithActivityValues[];
   };
+
+export type OrganizationResponse = {
+  contactEmail: string;
+  created: string;
+  last_updated: string;
+  name: string;
+  organizationId: string;
+};
+
+export type ProjectResponse = {
+  cityCountLimit: number;
+  created: string;
+  description: string;
+  last_updated: string;
+  name: string;
+  organizationId: string;
+  projectId: string;
+};

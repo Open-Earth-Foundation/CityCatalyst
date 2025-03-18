@@ -7,13 +7,17 @@ import {
 } from "@/models/init-models";
 import type { BoundingBox } from "@/util/geojson";
 import {
+  AcceptInviteRequest,
+  AcceptInviteResponse,
   CityAndYearsResponse,
   ConnectDataSourceQuery,
   ConnectDataSourceResponse,
-  EmissionsForecastData,
   EmissionsFactorResponse,
+  EmissionsForecastData,
   GetDataSourcesResult,
+  GetUserCityInvitesResponse,
   InventoryDeleteQuery,
+  InventoryPopulationsResponse,
   InventoryProgressResponse,
   InventoryResponse,
   InventoryUpdateQuery,
@@ -22,23 +26,21 @@ import {
   InventoryValueResponse,
   InventoryValueUpdateQuery,
   InventoryWithCity,
+  OrganizationResponse,
+  OrganizationRole,
+  ProjectResponse,
   RequiredScopesResponse,
   ResultsResponse,
   SectorBreakdownResponse,
   UserFileResponse,
   UserInfoResponse,
   UserInviteResponse,
-  YearOverYearResultsResponse,
   UsersInvitesRequest,
-  AcceptInviteResponse,
-  AcceptInviteRequest,
   UsersInvitesResponse,
-  GetUserCityInvitesResponse,
-  InventoryPopulationsResponse,
+  YearOverYearResultsResponse,
 } from "@/util/types";
 import type { GeoJSON } from "geojson";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { z } from "zod";
 
 export const api = createApi({
   reducerPath: "api",
@@ -59,6 +61,9 @@ export const api = createApi({
     "CitiesAndInventories",
     "Inventories",
     "Invites",
+    "Organizations",
+    "OrganizationInvite",
+    "Projects",
   ],
   baseQuery: fetchBaseQuery({ baseUrl: "/api/v0/", credentials: "include" }),
   endpoints: (builder) => {
@@ -816,6 +821,52 @@ export const api = createApi({
         }),
         transformResponse: (response: any) => response.data,
       }),
+      createOrganization: builder.mutation({
+        query: (data: { name: string; contactEmail: string }) => ({
+          url: `/organizations`,
+          method: "POST",
+          body: { ...data },
+        }),
+        transformResponse: (response: OrganizationResponse) => {
+          return response;
+        },
+        invalidatesTags: ["Organizations"],
+      }),
+      createProject: builder.mutation({
+        query: (data: {
+          organizationId: string;
+          name: string;
+          cityCountLimit: number;
+          description: string;
+        }) => ({
+          url: `/organizations/${data.organizationId}/projects`,
+          method: "POST",
+          body: {
+            name: data.name,
+            cityCountLimit: data.cityCountLimit,
+            description: data.description,
+          },
+        }),
+        transformResponse: (response: ProjectResponse) => response,
+        invalidatesTags: ["Projects"],
+      }),
+      createOrganizationInvite: builder.mutation({
+        query: (data: {
+          organizationId: string;
+          inviteeEmail: string;
+          role: OrganizationRole;
+        }) => ({
+          url: `/organizations/${data.organizationId}/invitations`,
+          method: "POST",
+          body: {
+            inviteeEmail: data.inviteeEmail,
+            role: data.role,
+            organizationId: data.organizationId,
+          },
+        }),
+        transformResponse: (response: any) => response,
+        invalidatesTags: ["OrganizationInvite", "Organizations"],
+      }),
     };
   },
 });
@@ -894,5 +945,8 @@ export const {
   useGetInventoryPopulationsQuery,
   useGetUnfinishedSubsectorsQuery,
   useUpdateOrCreateNotationKeysMutation,
+  useCreateOrganizationMutation,
+  useCreateProjectMutation,
+  useCreateOrganizationInviteMutation,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

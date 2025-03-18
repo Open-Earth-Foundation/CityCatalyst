@@ -10,7 +10,12 @@ import Image from "next/image";
 
 import { CircleFlag } from "react-circle-flags";
 import { FiSettings } from "react-icons/fi";
-import { MdArrowDropUp, MdArrowDropDown, MdLogout } from "react-icons/md";
+import {
+  MdArrowDropDown,
+  MdArrowDropUp,
+  MdAspectRatio,
+  MdLogout,
+} from "react-icons/md";
 import Cookies from "js-cookie";
 import { useParams, useRouter } from "next/navigation";
 import { api } from "@/services/api";
@@ -251,9 +256,31 @@ export function NavigationBar({
                 display="flex"
                 flexDirection="column"
                 justifyContent="space-around"
-                height="128px"
+                minH="128px"
                 zIndex={2000}
               >
+                <MenuItem
+                  value="admin"
+                  paddingTop="12px"
+                  paddingBottom="12px"
+                  px="16px"
+                  onClick={() => router.push(`/admin`)}
+                >
+                  <Box display="flex" alignItems="center">
+                    {" "}
+                    <Icon
+                      as={MdAspectRatio}
+                      boxSize={6}
+                      color={
+                        userMenuHighlight === "admin"
+                          ? "background.neutral"
+                          : "content.tertiary"
+                      }
+                      mr={4}
+                    />
+                    <Text fontSize="title.md">{t("admin")}</Text>
+                  </Box>
+                </MenuItem>
                 <MenuItem
                   value="settings"
                   paddingTop="12px"

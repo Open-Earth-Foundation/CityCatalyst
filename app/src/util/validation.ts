@@ -279,7 +279,6 @@ export const createProjectRequest = z.object({
   name: z.string().max(255),
   cityCountLimit: z.number().int().min(1),
   description: z.string().optional(),
-  organizationId: z.string().uuid(),
 });
 
 export type CreateProjectRequest = z.infer<typeof createProjectRequest>;

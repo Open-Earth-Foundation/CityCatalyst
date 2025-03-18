@@ -386,11 +386,9 @@ export type ListOrganizationsResponse = {
   last_updated: string;
   name: string;
   organizationId: string;
-  organizationInvite: [
-    {
-      status: InviteStatus;
-      email: string;
-      role: OrganizationRole;
-    },
-  ];
+  organizationInvite: {
+    status: InviteStatus;
+    email: string;
+    role: OrganizationRole;
+  }[];
 }[];

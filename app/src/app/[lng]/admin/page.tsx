@@ -126,7 +126,7 @@ const AdminPage = ({ params: { lng } }: { params: { lng: string } }) => {
             searchable={true}
             pagination={true}
             filterProperty={"status"}
-            filterOptions={["accepted", "invite sent", "all"]}
+            filterOptions={["accepted", "invite sent"]}
             data={[...orgData].reverse()}
             title={t("manage-oef-clients")}
             columns={[

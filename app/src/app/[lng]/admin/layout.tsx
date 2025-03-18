@@ -12,7 +12,6 @@ import {
   ProgressCircleRing,
   ProgressCircleRoot,
 } from "@/components/ui/progress-circle";
-import { useSession } from "next-auth/react";
 
 export default function AdminLayout({
   children,
@@ -23,19 +22,21 @@ export default function AdminLayout({
 }) {
   const router = useRouter();
 
-  const { data } = useSession();
-
   const { data: userInfo, isLoading: isUserInfoLoading } =
     api.useGetUserInfoQuery();
 
   useEffect(() => {
-    if (!isUserInfoLoading && !(userInfo?.role === Roles.Admin)) {
+    if (!isUserInfoLoading && userInfo?.role !== Roles.Admin) {
       toaster.error({
         title: "You are not authorized",
       });
+      const REDIRECT_DELAY_MS = 2000;
       setTimeout(() => {
-        router.push(`/${lng}/${userInfo?.defaultInventoryId}`);
-      }, 2000);
+        const fallbackPath = userInfo?.defaultInventoryId
+          ? `/${lng}/${userInfo.defaultInventoryId}`
+          : `/${lng}`;
+        router.push(fallbackPath);
+      }, REDIRECT_DELAY_MS);
     }
   }, [isUserInfoLoading, userInfo, router, lng]);
 

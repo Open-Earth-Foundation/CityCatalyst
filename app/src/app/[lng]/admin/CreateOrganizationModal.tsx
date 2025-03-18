@@ -133,12 +133,7 @@ const CreateOrganizationModal: FC<CreateOrganizationModalProps> = ({
       onExitComplete={closeFunction}
     >
       <DialogBackdrop />
-      <DialogContent
-        data-testid="add-emission-modal"
-        minH="300px"
-        minW="600px"
-        marginTop="2%"
-      >
+      <DialogContent minH="300px" minW="600px" marginTop="2%">
         <DialogHeader
           display="flex"
           justifyContent="start"

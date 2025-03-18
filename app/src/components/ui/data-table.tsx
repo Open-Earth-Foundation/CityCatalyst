@@ -104,6 +104,7 @@ function DataTable<T extends Record<string, any>>({
                 value={filterValue}
                 onChange={(e) => setFilterValue(e.target.value)}
               >
+                <option value="all">All</option>
                 {filterOptions.map((option, idx) => (
                   <option
                     className="!capitalize"

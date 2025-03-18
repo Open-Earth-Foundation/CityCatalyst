@@ -1,3 +1,12 @@
+"""
+Use this script to convert an Excel file to a JSON file.
+E.g. for creating an excel list out of our actions json file
+
+Example:
+python json2xlsx_csv.py --json_file ../data/climate_actions/output/merged.json --output_file merged.xlsx
+
+"""
+
 import argparse
 import pandas as pd
 from pathlib import Path

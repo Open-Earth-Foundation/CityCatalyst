@@ -14,7 +14,6 @@
             "ActionType": [
                 "adaptation"
             ],
-            "AdaptationCategory": "Infrastructural Adaptation",
             "Hazard": [
                 "floods",
                 "droughts",
@@ -29,9 +28,7 @@
             "PrimaryPurpose": [
                 "climate_resilience"
             ],
-            "InterventionType": null,
             "Description": "Strengthening and upgrading existing infrastructure, including roads, housing, and energy systems, to improve resilience against climate risks such as floods, droughts, and heatwaves. Efforts include Air conditioning, using thermosiphons for permafrost degradation, increasing rooftop albedo (for reflectivity) and shading",
-            "BehavioralChangeTargeted": null,
             "CoBenefits": {
                 "air_quality": 1,
                 "water_quality": 1,
@@ -55,11 +52,7 @@
                 "Reduced infrastructure failure during hazards",
                 "Increased capacity for housing and energy systems"
             ],
-            "Impacts": [
-                "Enhanced urban resilience",
-                "Safer housing",
-                "Reduced economic losses due to climate impacts"
-            ]
+            "PowersAndMandates": null
         }
     },
     {
@@ -71,7 +64,56 @@
         "actionName": "Development of Climate Action Plan",
         "actionPriority": 2,
         "explanation": "For the city of Serra, creating a Climate Action Plan aligns multiple sectors\u2014energy, transport, and public health\u2014under a shared climate vision. This coordination ensures efficient use of municipal resources and collaborative policymaking. Establishing clear goals also builds momentum for longer-term mitigation and adaptation measures.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0176",
+            "ActionName": "Development of Climate Action Plan",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "storms",
+                "sea-level-rise",
+                "wildfires",
+                "floods",
+                "landslides",
+                "diseases",
+                "heatwaves",
+                "droughts"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "A comprehensive plan outlining a city's strategies and actions to mitigate greenhouse gas emissions and adapt to the impacts of climate change which typically includes an assessment of the city's climate risks and vulnerabilities, setting emission reduction targets, and implementation of actions across various sectors such as energy, transportation, waste management, and urban planning.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 0,
+                "housing": 1,
+                "mobility": 1,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "medium",
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Political will and commitment from government",
+                "Stakeholder engagement and collaboration",
+                "Funding and resources for implementation"
+            ],
+            "KeyPerformanceIndicators": [
+                "Greenhouse gas emission reduction targets.",
+                "Number of climate adaptation actions implemented.",
+                "Investment in climate mitigation and adaptation projects."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRSER",
@@ -82,7 +124,51 @@
         "actionName": "Implement permeable pavements and increase green areas in roadways",
         "actionPriority": 3,
         "explanation": "For the city of Serra, installing permeable pavements and introducing greenery along roads reduces flood risks and cools hot urban surfaces. By allowing rainwater to infiltrate the ground naturally, this measure mitigates drainage overload. It also improves air quality and promotes a more pleasant environment for pedestrians.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0180",
+            "ActionName": "Implement permeable pavements and increase green areas in roadways",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "floods",
+                "landslides",
+                "heatwaves"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Increase the permeable and semi-permeable areas in buildings and public spaces under the administration of the City, with the adoption of nature-based solutions (NbS). In areas with space limitations, the action includes feasibility analyses for implementing permeable pavements and increasing green areas in roadways. Among traditional construction solutions, there are features such as curbs and gutters with stormwater drains, as well as larger-scale solutions like retention ponds. Nature-based solutions include urban tree planting, green roofs, rainwater cisterns, bio-swales, and more.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 0,
+                "housing": 1,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "medium",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Expansion of permeable and semi-permeable areas in City-administered buildings and public spaces.",
+                "Adoption of nature-based solutions (NbS) such as urban tree planting, green roofs, rainwater cisterns, and bio-swales.",
+                "Feasibility analyses for permeable pavements and increased green areas in roadways, alongside traditional stormwater management solutions like curbs, gutters, and retention ponds."
+            ],
+            "KeyPerformanceIndicators": [
+                "Reduction in surface water runoff during rainfall events (%).",
+                "Decrease in flooding occurrences in modified areas.",
+                "Percentage of public spaces complying with new permeable surface regulations."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRSER",
@@ -93,7 +179,56 @@
         "actionName": "Creation of a Financial Support Program to Adress Extreme Weather Events",
         "actionPriority": 4,
         "explanation": "For the city of Serra, a financial assistance program helps communities and businesses recover swiftly after floods or storms. Immediate funding reduces prolonged disruptions and fosters social stability. This approach also underscores the city\u2019s commitment to safeguarding vulnerable populations and mitigating economic losses.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0144",
+            "ActionName": "Creation of a Financial Support Program to Adress Extreme Weather Events",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "droughts",
+                "heatwaves",
+                "diseases",
+                "landslides",
+                "wildfires",
+                "floods",
+                "sea-level-rise",
+                "storms"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Creation of a program to mitigate the effects of climate tragedies, including financial assistance to affected families and efforts to secure additional resources for recovery and reconstruction.\t",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": -1,
+                "housing": 1,
+                "mobility": 1,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "medium",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Financial resources",
+                "Emergency response plans",
+                "Institutional coordination"
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of people assisted",
+                "Cost-effectiveness",
+                "Community resilience"
+            ],
+            "PowersAndMandates": [
+                "state"
+            ]
+        }
     },
     {
         "locode": "BRSER",
@@ -104,7 +239,51 @@
         "actionName": "Hydrological Monitoring System with Telemetry Stations",
         "actionPriority": 5,
         "explanation": "For the city of Serra, real-time water level tracking and flow data enable quicker responses to flooding or drought. By spotting anomalies early, authorities can warn residents and protect infrastructure. This system reduces damage from high waters and ensures better resource management during dry spells.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0164",
+            "ActionName": "Hydrological Monitoring System with Telemetry Stations",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "droughts",
+                "floods",
+                "storms"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Implementation of a hydrological monitoring system with telemetry stations to monitor rainfall, water levels, and meteorological variables in real-time.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 1,
+                "mobility": 1,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Equipment and infrastructure",
+                "Robust data management system",
+                "Institutional coordination"
+            ],
+            "KeyPerformanceIndicators": [
+                "Timeliness of data",
+                "Cost-effectiveness",
+                "Mitigation effectiveness"
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRSER",
@@ -115,7 +294,56 @@
         "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
         "actionPriority": 6,
         "explanation": "For the city of Serra, a dedicated emergency response plan ensures resources are allocated effectively when extreme weather strikes. Clear guidelines and trained teams help limit chaos, protect lives, and speed up recovery. This proactive approach safeguards both people and local infrastructure.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0169",
+            "ActionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "droughts",
+                "heatwaves",
+                "diseases",
+                "landslides",
+                "floods",
+                "wildfires",
+                "sea-level-rise",
+                "storms"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "This action focuses on preparing the municipality to respond to extreme events, aiming to provide a rapid response that minimizes the impacts on the population.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Development of a comprehensive emergency response plan that includes coordination between local authorities, emergency services, and community organizations",
+                "Investment in early warning systems and infrastructure to ensure timely and effective responses to extreme events",
+                "Training and capacity-building for local responders and communities to enhance preparedness and resilience to extreme events"
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of emergency response partnerships established.",
+                "Average response time during extreme weather events (hours).",
+                "Percentage reduction in casualties and damages during extreme weather events annually (%)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRSER",
@@ -126,7 +354,52 @@
         "actionName": "Strengthen programs for control and conservation of protected areas",
         "actionPriority": 7,
         "explanation": "For the city of Serra, improving conservation initiatives preserves forests and wetlands that help regulate local weather patterns. Protecting these areas also supports habitats, carbon storage, and water purity. This measure sustains the region\u2019s biodiversity while enhancing natural defenses against extreme events.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0162",
+            "ActionName": "Strengthen programs for control and conservation of protected areas",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "floods",
+                "landslides",
+                "heatwaves",
+                "diseases"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "This action focuses on implementing a series of integrated strategies to enhance environmental conservation and maximize its benefits, such as expanding protected areas, developing management plans for conservation units, and training ecotourism guides to strengthen sustainable tourism.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Expansion of protected areas to enhance environmental conservation.",
+                "Development of management plans for conservation units.",
+                "Training of ecotourism guides to promote sustainable tourism."
+            ],
+            "KeyPerformanceIndicators": [
+                "Percentage increase in area of protected regions (%).",
+                "Reduction in deforestation rates in protected areas annually (%).",
+                "Number of conservation programs strengthened annually."
+            ],
+            "PowersAndMandates": [
+                "state"
+            ]
+        }
     },
     {
         "locode": "BRSER",
@@ -137,7 +410,53 @@
         "actionName": "Encourage sustainable land use practices",
         "actionPriority": 8,
         "explanation": "For the city of Serra, promoting land use practices that preserve vegetation and control erosion reduces flood risk and soil depletion. Responsible zoning also prevents expansion into high-hazard zones, minimizing damage during storms. This approach underpins a balanced urban-rural interface, safeguarding the local environment.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0149",
+            "ActionName": "Encourage sustainable land use practices",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "droughts",
+                "heatwaves",
+                "landslides",
+                "floods",
+                "wildfires"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Promoting methods that guarantee the conservation and health of the soil, preserving biodiversity, reducing erosion and minimizing environmental impacts.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 2,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "medium",
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Provide access to technical knowledge and training on sustainable soil management practices.",
+                "Offer financial incentives and form partnerships with research institutions and local farmers.",
+                "Develop monitoring systems for soil health and biodiversity, and implement policies for erosion control."
+            ],
+            "KeyPerformanceIndicators": [
+                "Percentage of land area managed under sustainable land use practices (%)",
+                "Reduction in deforestation or land degradation rates (%)",
+                "Increase in biodiversity indicators on managed lands (e.g., species count, habitat quality)"
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRSER",
@@ -154,7 +473,6 @@
             "ActionType": [
                 "adaptation"
             ],
-            "AdaptationCategory": "Eco-engineering",
             "Hazard": [
                 "floods"
             ],
@@ -163,9 +481,7 @@
             "PrimaryPurpose": [
                 "climate_resilience"
             ],
-            "InterventionType": null,
             "Description": "\"Cyclone Shelters\" provide safe havens during flood and cyclone events, enhancing community resilience. This eco-engineering adaptation ensures the safety of residents in vulnerable areas during extreme weather conditions.",
-            "BehavioralChangeTargeted": null,
             "CoBenefits": {
                 "air_quality": 0,
                 "water_quality": 0,
@@ -198,13 +514,7 @@
                 "Maintenance and operational status of shelters",
                 "Partnerships with local organizations for shelter management"
             ],
-            "Impacts": [
-                "Enhances community resilience during extreme weather events",
-                "Provides safe havens for vulnerable populations",
-                "Promotes social equity and inclusion",
-                "Fosters community involvement and economic opportunities",
-                "Addresses the unique challenges faced by underserved communities"
-            ]
+            "PowersAndMandates": null
         }
     },
     {
@@ -222,7 +532,6 @@
             "ActionType": [
                 "adaptation"
             ],
-            "AdaptationCategory": "Technological\u00a0actions",
             "Hazard": [
                 "droughts"
             ],
@@ -231,9 +540,7 @@
             "PrimaryPurpose": [
                 "climate_resilience"
             ],
-            "InterventionType": null,
             "Description": "\"Water Savings\" technologies, including rainwater harvesting, aim to conserve water resources. This adaptation measure involves technological actions to enhance eco-engineering efforts, ensuring sustainable water use in the face of changing climate conditions.",
-            "BehavioralChangeTargeted": null,
             "CoBenefits": {
                 "air_quality": 0,
                 "water_quality": 1,
@@ -243,7 +550,7 @@
                 "mobility": 0,
                 "stakeholder_engagement": 0
             },
-            "EquityAndInclusionConsiderations": "The \"Water Savings\" technologies, such as rainwater harvesting, promote equity and inclusion by directly addressing the needs of vulnerable and underserved communities that often face water scarcity and limited access to clean water resources. By implementing these technologies, the action ensures that marginalized populations can benefit from sustainable water use practices, which are crucial for their health and livelihoods.\n\nAdditionally, the focus on eco-engineering efforts in the adaptation measure highlights a commitment to environmentally sustainable solutions that can be accessible to all community members, regardless of socioeconomic status. This approach fosters community engagement and empowerment, allowing underserved groups to participate in the decision-making processes related to water management.\n\nFurthermore, by enhancing water conservation in the face of climate change, the action helps to mitigate the disproportionate impacts of climate-related water shortages on vulnerable populations, thereby promoting resilience and equity in resource distribution. Overall, the initiative recognizes and addresses the specific challenges faced by underserved communities, ensuring that they are included in the benefits of climate adaptation strategies.",
+            "EquityAndInclusionConsiderations": "The \"Water Savings\" technologies, such as rainwater harvesting, promote equity and inclusion by directly addressing the needs of vulnerable and underserved communities that often face water scarcity and limited access to clean water resources. By implementing these technologies, the action ensures that marginalized populations can benefit from sustainable water use practices, which are crucial for their health and livelihoods.\n \n Additionally, the focus on eco-engineering efforts in the adaptation measure highlights a commitment to environmentally sustainable solutions that can be accessible to all community members, regardless of socioeconomic status. This approach fosters community engagement and empowerment, allowing underserved groups to participate in the decision-making processes related to water management.\n \n Furthermore, by enhancing water conservation in the face of climate change, the action helps to mitigate the disproportionate impacts of climate-related water shortages on vulnerable populations, thereby promoting resilience and equity in resource distribution. Overall, the initiative recognizes and addresses the specific challenges faced by underserved communities, ensuring that they are included in the benefits of climate adaptation strategies.",
             "GHGReductionPotential": null,
             "AdaptationEffectiveness": "high",
             "CostInvestmentNeeded": "high",
@@ -264,13 +571,7 @@
                 "Increase in groundwater levels",
                 "Frequency of maintenance and operational efficiency of systems"
             ],
-            "Impacts": [
-                "Enhances water conservation and resilience against droughts",
-                "Improves water quality for underserved communities",
-                "Promotes equity and inclusion in water resource management",
-                "Empowers marginalized populations through community engagement",
-                "Mitigates climate-related water shortages for vulnerable groups"
-            ]
+            "PowersAndMandates": null
         }
     },
     {
@@ -282,7 +583,55 @@
         "actionName": "Strengthen the healthcare network to attend to climate victims",
         "actionPriority": 11,
         "explanation": "For the city of Serra, enhancing medical facilities and training staff helps manage surges in injuries or illnesses following disasters. This measure cuts fatalities linked to extreme heat, flooding, or disease outbreaks. Stronger health services bolster overall community resilience and minimize recovery times.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0145",
+            "ActionName": "Strengthen the healthcare network to attend to climate victims",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "heatwaves",
+                "diseases",
+                "landslides",
+                "floods",
+                "storms",
+                "droughts"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Improve the infrastructure of healthcare units to assist people who require medical care due to impacts associated with climate risks (climate victims), such as those affected by heat waves or floods, especially in more vulnerable areas. Develop action plans to prepare the healthcare network for extreme climate-related situations.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "high",
+            "TimelineForImplementation": ">10 years",
+            "Dependencies": [
+                "Investment in the renovation and expansion of healthcare facilities, ensuring they are equipped to handle climate-related health impacts, particularly in vulnerable areas.",
+                "Development of action plans and training programs for healthcare professionals to respond to extreme climate events like heatwaves and floods.",
+                "Collaboration with local authorities, emergency response teams, and climate experts to create a comprehensive framework for preparing the healthcare network for climate risks."
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of healthcare facilities upgraded for climate-related emergencies.",
+                "Increase in healthcare staff trained in climate emergency response (%).",
+                "Number of climate-related injuries treated successfully.",
+                "."
+            ],
+            "PowersAndMandates": [
+                "national"
+            ]
+        }
     },
     {
         "locode": "BRSER",
@@ -293,7 +642,50 @@
         "actionName": "Recovery and preservation of green areas",
         "actionPriority": 12,
         "explanation": "For the city of Serra, restoring and protecting green spaces regulates local microclimates, lowers flood risks, and improves air quality. These areas also offer recreational spots, supporting well-being and biodiversity. In a warming climate, such natural buffers enhance the city\u2019s capacity to adapt.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0175",
+            "ActionName": "Recovery and preservation of green areas",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "heatwaves",
+                "floods",
+                "wildfires"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Rehabilitation and protection of existing green spaces, such as parks, forests, and wetlands, and expansion of green areas through planting of trees and vegetation in urban and peri-urban areas. These areas provide natural solutions for managing water resources, reducing heat stress, improving air quality, and enhancing biodiversity.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 1,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 1,
+                "mobility": 1,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Availability of suitable land for green spaces",
+                "Access to water resources for irrigation"
+            ],
+            "KeyPerformanceIndicators": [
+                "Area of green spaces created or restored.",
+                "Biodiversity indices in green areas.",
+                "Community engagement in green space activities."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRSER",
@@ -304,7 +696,50 @@
         "actionName": "Consolidate spaces for intersectoral coordination and public participation in climate policy",
         "actionPriority": 13,
         "explanation": "For the city of Serra, uniting different agencies and community members fosters shared understanding of climate risks. This collaboration shapes policies that reflect local realities, ensuring more inclusive and effective solutions. Open dialogue also speeds the process of implementing adaptation and emission-reducing strategies.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0160",
+            "ActionName": "Consolidate spaces for intersectoral coordination and public participation in climate policy",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "storms",
+                "sea-level-rise",
+                "wildfires",
+                "floods",
+                "landslides",
+                "diseases",
+                "heatwaves",
+                "droughts"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Consolidate spaces for intersectoral coordination and public participation in climate policy, and create working groups with neighboring municipalities to discuss a common climate agenda.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": null,
+            "KeyPerformanceIndicators": [
+                "Number of intersectoral meetings held per year.",
+                "Percentage of population participating in climate forums (%).",
+                "Number of proposals accepted and implemented through public consultations."
+            ],
+            "PowersAndMandates": null
+        }
     },
     {
         "locode": "BRSER",
@@ -315,7 +750,49 @@
         "actionName": "Preventive maintenance of drainage systems",
         "actionPriority": 14,
         "explanation": "For the city of Serra, checking and cleaning drains regularly stops blockages that cause urban flooding. By staying ahead of debris accumulation, local authorities protect roads, businesses, and neighborhoods. This measure also saves resources that might otherwise be spent on large-scale flood repairs.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0173",
+            "ActionName": "Preventive maintenance of drainage systems",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "floods",
+                "storms"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Regular upkeep and cleaning of urban drainage systems, including storm drains, sewers, and retention basins, to ensure efficient water flow and prevent blockages that can lead to flooding during heavy rainfall events.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 1,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 1,
+                "mobility": 1,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "medium",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Budget allocation for maintenance activities",
+                "Regular inspections to identify potential issues"
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of drainage blockages cleared.",
+                "Percentage of drainage systems in good condition.",
+                "Number of reported flood incidents."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRSER",
@@ -326,7 +803,48 @@
         "actionName": "Cleaning and Unclogging of Channels with Installation of Eco-barriers",
         "actionPriority": 15,
         "explanation": "For the city of Serra, systematically clearing waterways and placing eco-barriers prevents polluting debris from accumulating. This proactive approach maintains normal water flow, cutting the likelihood of floods and contamination. It also fosters a healthier environment and protects aquatic habitats important to local ecosystems.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0154",
+            "ActionName": "Cleaning and Unclogging of Channels with Installation of Eco-barriers",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "floods"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Cleaning and unclogging channels in the city to reduce the risk of flooding caused by extreme rainfall events. Installation of eco-barriers to assist in cleaning efforts and raise awareness about solid waste.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 2,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 1,
+                "mobility": 1,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "medium",
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Regular maintenance",
+                "Proper waste management practices"
+            ],
+            "KeyPerformanceIndicators": [
+                "Flood reduction",
+                "Waste reduction",
+                "Maintenance costs"
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRSER",
@@ -337,7 +855,54 @@
         "actionName": "Strengthen the use of climate justice criteria in the design of new infrastructure projects",
         "actionPriority": 16,
         "explanation": "For the city of Serra, incorporating climate justice principles ensures equitable access to safe roads, buildings, and public spaces. By prioritizing vulnerable groups, infrastructure serves everyone more effectively. This measure addresses inequalities made worse by extreme weather, promoting fairness in urban development.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0147",
+            "ActionName": "Strengthen the use of climate justice criteria in the design of new infrastructure projects",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "droughts",
+                "heatwaves",
+                "diseases",
+                "landslides",
+                "floods",
+                "wildfires",
+                "storms",
+                "sea-level-rise"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Create a technical-popular committee to monitor new infrastructure projects and the application of climate justice criteria, overseeing the territorial distribution of the public budget concerning works and actions for climate change mitigation and adaptation, potentially utilizing existing committees.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Establishment of a diverse committee with technical experts, community representatives, and local authorities to ensure balanced oversight.",
+                "Development of guidelines and tools to assess climate justice criteria and ensure equitable distribution of resources for climate-related projects.",
+                "Collaboration with existing committees or institutions to leverage resources, knowledge, and networks for effective monitoring of infrastructure projects and budget allocation."
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of vulnerable communities consulted during project planning.",
+                "Reduction in infrastructure-related disparities for vulnerable populations (%).",
+                "Number of training sessions held for city planners on climate justice."
+            ],
+            "PowersAndMandates": null
+        }
     },
     {
         "locode": "BRSER",
@@ -354,7 +919,6 @@
             "ActionType": [
                 "adaptation"
             ],
-            "AdaptationCategory": "Infrastructure Improvement",
             "Hazard": [
                 "droughts",
                 "floods",
@@ -369,9 +933,7 @@
             "PrimaryPurpose": [
                 "climate_resilience"
             ],
-            "InterventionType": null,
             "Description": "Enhancing food storage and distribution systems by improving transportation infrastructure, optimizing trade networks, and shortening supply chains to ensure local food availability and resilience to climate impacts. This action also includes increasing the capacity of local food storage facilities to reduce post-harvest losses, addressing inefficiencies in logistics, and bolstering infrastructure for perishable goods. It aims to improve food security and reduce vulnerability to extreme events, disruptions, and cascading impacts, especially during pandemics and other crises.",
-            "BehavioralChangeTargeted": null,
             "CoBenefits": {
                 "air_quality": 0,
                 "water_quality": 1,
@@ -398,12 +960,7 @@
                 "Improved transportation efficiency for food distribution",
                 "Shortened supply chains"
             ],
-            "Impacts": [
-                "Improved food security",
-                "Resilience to climate-induced disruptions",
-                "Reduced greenhouse gas emissions from supply chains",
-                "Enhanced local economic growth"
-            ]
+            "PowersAndMandates": null
         }
     },
     {
@@ -415,7 +972,48 @@
         "actionName": "Implementation of Wetlands",
         "actionPriority": 18,
         "explanation": "For the city of Serra, constructing or restoring wetlands creates natural flood barriers, filters pollutants, and bolsters biodiversity. These water-rich habitats buffer storm surges and heavy rains while storing carbon in plant roots. The result is greater resilience to climate extremes and a healthier local ecosystem.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0141",
+            "ActionName": "Implementation of Wetlands",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "diseases",
+                "floods"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Implementation of wetlands using phytoremediation to remove pollutants from water and improve water quality.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 2,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "low",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Maintenance"
+            ],
+            "KeyPerformanceIndicators": [
+                "Water quality improvement",
+                "Water flow rate",
+                "Maintenance costs"
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRSER",
@@ -432,7 +1030,6 @@
             "ActionType": [
                 "adaptation"
             ],
-            "AdaptationCategory": "Eco-engineering",
             "Hazard": [
                 "heatwaves"
             ],
@@ -441,9 +1038,7 @@
             "PrimaryPurpose": [
                 "climate_resilience"
             ],
-            "InterventionType": null,
             "Description": "\"Public Shading\" involves the implementation of shade structures in public spaces, contributing to eco-engineering efforts. This adaptation measure enhances outdoor comfort, reduces heat stress, and promotes sustainable urban design.",
-            "BehavioralChangeTargeted": null,
             "CoBenefits": {
                 "air_quality": 0,
                 "water_quality": 0,
@@ -453,7 +1048,7 @@
                 "mobility": 0,
                 "stakeholder_engagement": 0
             },
-            "EquityAndInclusionConsiderations": "The \"Public Shading\" climate action promotes equity and inclusion by:\n\n1. **Accessibility for Vulnerable Populations**: By providing shade in public spaces, the action directly benefits vulnerable communities, including low-income individuals, the elderly, and those with health conditions that make them more susceptible to heat stress.\n\n2. **Enhanced Outdoor Comfort**: The implementation of shade structures improves outdoor comfort for all community members, encouraging greater use of public spaces by underserved populations who may otherwise avoid them due to extreme heat.\n\n3. **Sustainable Urban Design**: The focus on eco-engineering and sustainable design ensures that the benefits of climate action are integrated into the urban environment, fostering inclusive spaces that serve diverse community needs.\n\n4. **Community Engagement**: The development of public shading initiatives often involves community input, ensuring that the voices of underserved populations are heard and considered in the planning process.\n\n5. **Health Benefits**: By reducing heat stress, the action contributes to better health outcomes for marginalized groups who may lack access to air conditioning or other cooling resources, thereby promoting health equity.\n\nOverall, the \"Public Shading\" initiative addresses the needs of vulnerable communities, ensuring that climate adaptation measures are inclusive and equitable.",
+            "EquityAndInclusionConsiderations": "The \"Public Shading\" climate action promotes equity and inclusion by:\n \n 1. **Accessibility for Vulnerable Populations**: By providing shade in public spaces, the action directly benefits vulnerable communities, including low-income individuals, the elderly, and those with health conditions that make them more susceptible to heat stress.\n \n 2. **Enhanced Outdoor Comfort**: The implementation of shade structures improves outdoor comfort for all community members, encouraging greater use of public spaces by underserved populations who may otherwise avoid them due to extreme heat.\n \n 3. **Sustainable Urban Design**: The focus on eco-engineering and sustainable design ensures that the benefits of climate action are integrated into the urban environment, fostering inclusive spaces that serve diverse community needs.\n \n 4. **Community Engagement**: The development of public shading initiatives often involves community input, ensuring that the voices of underserved populations are heard and considered in the planning process.\n \n 5. **Health Benefits**: By reducing heat stress, the action contributes to better health outcomes for marginalized groups who may lack access to air conditioning or other cooling resources, thereby promoting health equity.\n \n Overall, the \"Public Shading\" initiative addresses the needs of vulnerable communities, ensuring that climate adaptation measures are inclusive and equitable.",
             "GHGReductionPotential": null,
             "AdaptationEffectiveness": "high",
             "CostInvestmentNeeded": "low",
@@ -475,13 +1070,7 @@
                 "Energy savings in nearby buildings due to reduced heat",
                 "Community engagement and participation in shading initiatives"
             ],
-            "Impacts": [
-                "Enhances outdoor comfort for all community members",
-                "Reduces heat stress, particularly benefiting vulnerable populations",
-                "Promotes health equity by improving health outcomes for marginalized groups",
-                "Encourages greater use of public spaces by underserved populations",
-                "Integrates community input in planning, fostering inclusivity"
-            ]
+            "PowersAndMandates": null
         }
     },
     {
@@ -499,7 +1088,6 @@
             "ActionType": [
                 "adaptation"
             ],
-            "AdaptationCategory": "Risk Reduction and Preparedness",
             "Hazard": [
                 "heatwaves",
                 "droughts",
@@ -514,9 +1102,7 @@
             "PrimaryPurpose": [
                 "climate_resilience"
             ],
-            "InterventionType": null,
             "Description": "Establishing and maintaining early warning systems for disasters, including marine heatwaves, pest outbreaks, and heatwaves. These systems involve timely information dissemination to individuals, communities, and emergency services, enabling proactive measures to mitigate risks. Heat Action Plans (HAPs) are part of these systems and include detailed strategies like urban planning with nature-based solutions (e.g., green-blue spaces, cool materials), public awareness campaigns, and targeted measures for vulnerable groups (e.g., elderly, children, outdoor workers). Critical actions also include evaluation of system effectiveness post-disaster, lessons sharing, and improvements for better preparedness in future events.",
-            "BehavioralChangeTargeted": null,
             "CoBenefits": {
                 "air_quality": 2,
                 "water_quality": 1,
@@ -543,12 +1129,7 @@
                 "Public awareness levels",
                 "Community adoption of protective measures"
             ],
-            "Impacts": [
-                "Improved public health and safety",
-                "Enhanced community resilience to disasters",
-                "Reduced economic losses from heat-related productivity impacts",
-                "Broader ecosystem benefits through urban nature-based solutions"
-            ]
+            "PowersAndMandates": null
         }
     }
 ]

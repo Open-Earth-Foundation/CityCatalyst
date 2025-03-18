@@ -14,7 +14,6 @@
             "ActionType": [
                 "mitigation"
             ],
-            "AdaptationCategory": null,
             "Hazard": null,
             "Sector": [
                 "waste"
@@ -25,11 +24,7 @@
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "InterventionType": [
-                "programs_and_initiatives"
-            ],
             "Description": "\"Waste Efficiency\" initiatives aim to improve the efficiency of waste collection processes, reducing resource consumption and minimizing environmental impact. This includes optimizing waste management systems to enhance energy efficiency and promote sustainable waste disposal practices.",
-            "BehavioralChangeTargeted": "The targeted behavioral change that the \"Waste Efficiency\" initiatives aim to achieve is for individuals and organizations to adopt more sustainable waste disposal practices and actively participate in optimizing waste management systems. This includes reducing waste generation, increasing recycling rates, and utilizing energy-efficient waste collection methods. By enhancing awareness and perceptions of the environmental impact of waste, the initiative encourages people to prioritize waste efficiency in their daily activities, leading to a collective shift towards more responsible waste management behaviors.",
             "CoBenefits": {
                 "air_quality": 0,
                 "water_quality": 1,
@@ -39,7 +34,7 @@
                 "mobility": 0,
                 "stakeholder_engagement": 0
             },
-            "EquityAndInclusionConsiderations": "The \"Waste Efficiency\" initiatives promote equity and inclusion by focusing on underserved communities that often bear the brunt of inefficient waste management systems. By optimizing waste collection processes, these initiatives can reduce the environmental burden on vulnerable populations, who may live in areas disproportionately affected by waste and pollution. \n\nAdditionally, improving energy efficiency in waste management can lead to cost savings, which can be reinvested into community services or infrastructure that benefit low-income neighborhoods. The promotion of sustainable waste disposal practices also ensures that all community members, regardless of socioeconomic status, have access to environmentally responsible options, fostering a sense of shared responsibility and inclusion in climate action efforts. \n\nOverall, these initiatives recognize the unique challenges faced by underserved communities and aim to create a more equitable waste management system that benefits all residents.",
+            "EquityAndInclusionConsiderations": "The \"Waste Efficiency\" initiatives promote equity and inclusion by focusing on underserved communities that often bear the brunt of inefficient waste management systems. By optimizing waste collection processes, these initiatives can reduce the environmental burden on vulnerable populations, who may live in areas disproportionately affected by waste and pollution. \n \n Additionally, improving energy efficiency in waste management can lead to cost savings, which can be reinvested into community services or infrastructure that benefit low-income neighborhoods. The promotion of sustainable waste disposal practices also ensures that all community members, regardless of socioeconomic status, have access to environmentally responsible options, fostering a sense of shared responsibility and inclusion in climate action efforts. \n \n Overall, these initiatives recognize the unique challenges faced by underserved communities and aim to create a more equitable waste management system that benefits all residents.",
             "GHGReductionPotential": {
                 "stationary_energy": null,
                 "transportation": null,
@@ -67,13 +62,7 @@
                 "Volume of waste processed through sustainable methods",
                 "Operational efficiency of waste collection routes"
             ],
-            "Impacts": [
-                "Reduction in greenhouse gas emissions by 80-100% in the waste sector",
-                "Improved water quality through better waste management practices",
-                "Enhanced equity and inclusion for underserved communities",
-                "Increased community awareness and participation in sustainable waste practices",
-                "Cost savings from energy-efficient waste management reinvested into community services"
-            ]
+            "PowersAndMandates": null
         }
     },
     {
@@ -85,7 +74,56 @@
         "actionName": "Implementation of urban toll.",
         "actionPriority": 2,
         "explanation": "For the city of Rio Branco, an urban toll helps reduce congestion and vehicle-related emissions by discouraging unnecessary car trips. This measure promotes alternative transportation modes and lowers overall pollution levels. It also aligns with cost-effectiveness by shifting some infrastructure burdens toward those who use the roads most frequently.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0139",
+            "ActionName": "Implementation of urban toll.",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "on-road"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Establishment of a congestion charge and/or license plate rotation for light vehicles in saturated areas and at saturated times",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": -1,
+                "housing": 0,
+                "mobility": 2,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "80-100",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Establish a clear legal framework and invest in technology for monitoring and enforcement (e.g., cameras, sensors).",
+                "Launch awareness campaigns and ensure availability of efficient public transportation or alternative mobility solutions.",
+                "Collaborate with local governments and transport agencies, and set up systems for monitoring and evaluating the policy's effectiveness."
+            ],
+            "KeyPerformanceIndicators": [
+                "Reduction of CO\u2082 emissions from urban road transport (tCO\u2082e/year).",
+                "Revenue generated by the implementation of the urban congestion charge (R$)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRRBR",
@@ -102,7 +140,6 @@
             "ActionType": [
                 "mitigation"
             ],
-            "AdaptationCategory": null,
             "Hazard": null,
             "Sector": [
                 "waste"
@@ -113,12 +150,7 @@
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "InterventionType": [
-                "programs_and_initiatives",
-                "regulations_and_laws"
-            ],
             "Description": "\"Landfill Management\" strategies focus on responsible and sustainable landfill practices to minimize environmental degradation. By adopting effective management techniques, cities aim to reduce the ecological footprint associated with landfill sites and encourage waste reduction.",
-            "BehavioralChangeTargeted": "The targeted behavioral change that the \"Landfill Management\" climate action aims to achieve is a reduction in waste generation and an increase in responsible waste disposal practices among individuals and communities. This includes encouraging people to adopt habits such as recycling, composting, and minimizing single-use items, ultimately leading to a shift towards more sustainable consumption patterns and a decreased ecological footprint associated with landfill sites.",
             "CoBenefits": {
                 "air_quality": 1,
                 "water_quality": 1,
@@ -128,7 +160,7 @@
                 "mobility": 0,
                 "stakeholder_engagement": 0
             },
-            "EquityAndInclusionConsiderations": "The \"Landfill Management\" strategies promote equity and inclusion by addressing the environmental impacts of landfill sites, which often disproportionately affect vulnerable and underserved communities. These communities frequently reside near landfills and are more susceptible to health risks associated with pollution and environmental degradation. By implementing responsible and sustainable landfill practices, the action aims to reduce these negative impacts, thereby improving the quality of life for residents in these areas.\n\nAdditionally, effective waste reduction techniques can create opportunities for community engagement and participation, allowing underserved populations to have a voice in local environmental decisions. This inclusion fosters a sense of ownership and empowerment among community members, ensuring that their needs and concerns are considered in the management of landfill sites. Overall, the action acknowledges and seeks to mitigate the inequities faced by marginalized communities in relation to waste management and environmental health.",
+            "EquityAndInclusionConsiderations": "The \"Landfill Management\" strategies promote equity and inclusion by addressing the environmental impacts of landfill sites, which often disproportionately affect vulnerable and underserved communities. These communities frequently reside near landfills and are more susceptible to health risks associated with pollution and environmental degradation. By implementing responsible and sustainable landfill practices, the action aims to reduce these negative impacts, thereby improving the quality of life for residents in these areas.\n \n Additionally, effective waste reduction techniques can create opportunities for community engagement and participation, allowing underserved populations to have a voice in local environmental decisions. This inclusion fosters a sense of ownership and empowerment among community members, ensuring that their needs and concerns are considered in the management of landfill sites. Overall, the action acknowledges and seeks to mitigate the inequities faced by marginalized communities in relation to waste management and environmental health.",
             "GHGReductionPotential": {
                 "stationary_energy": null,
                 "transportation": null,
@@ -156,13 +188,7 @@
                 "Cost savings from improved landfill management practices",
                 "Compliance with environmental regulations"
             ],
-            "Impacts": [
-                "Reduction in greenhouse gas emissions from waste management",
-                "Improvement in air quality due to reduced landfill emissions",
-                "Enhancement of water quality by minimizing leachate from landfills",
-                "Promotion of equity and inclusion for underserved communities",
-                "Encouragement of sustainable waste disposal practices among individuals and communities"
-            ]
+            "PowersAndMandates": null
         }
     },
     {
@@ -174,7 +200,57 @@
         "actionName": "Establish eco-parks.",
         "actionPriority": 4,
         "explanation": "For the city of Rio Branco, eco-parks integrate waste management with green spaces, turning disposal sites into areas for recreation and education. This setup promotes resource recovery processes and community engagement. By combining environmental stewardship with public amenities, the city fosters a culture of sustainability and urban renewal.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0122",
+            "ActionName": "Establish eco-parks.",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "waste"
+            ],
+            "Subsector": [
+                "land"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "An eco-park is a facility for the mechanical and biological treatment of urban solid waste, integrating different technologies for the segregation and treatment of various fractions within the waste. This treatment aims to maximize the recovery of dry and organic waste and reduce the volume of waste to be sent for final disposal in landfills, using technologies such as energy generation, composting, recycling recovery, proper disposal of residual waste, and other existing treatment methods available in the market.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 1,
+                "habitat": 2,
+                "cost_of_living": 0,
+                "housing": 1,
+                "mobility": 0,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": "20-39",
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Implementation of eco-parks for mechanical and biological treatment of urban solid waste.",
+                "Integration of technologies such as energy generation, composting, recycling recovery, and proper disposal of residual waste.",
+                "Maximization of dry and organic waste recovery to reduce landfill disposal volumes."
+            ],
+            "KeyPerformanceIndicators": [
+                "Total area covered by eco-parks in the city (hectares).",
+                "Increase in the number of visitors to eco-parks annually.",
+                "Improvement in local biodiversity indices within eco-park areas."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRRBR",
@@ -185,7 +261,57 @@
         "actionName": "Promote Urban Reforestation and Green Corridors",
         "actionPriority": 5,
         "explanation": "For the city of Rio Branco, planting trees and establishing connected green belts lower the urban heat effect and enhance local air quality. These corridors serve as buffers against heavy rainfall, reducing flood risks. At the same time, they support biodiversity and promote healthier, more pleasant communities.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0133",
+            "ActionName": "Promote Urban Reforestation and Green Corridors",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "land"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Increase urban tree coverage to mitigate the urban heat island effect and enhance biodiversity.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 1,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 1,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "80-100"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Identification of priority areas and selection of native, climate-resilient species for tree planting.",
+                "Partnerships with local organizations and nurseries, and allocation of resources for planting and maintenance.",
+                "Community engagement to ensure long-term care and support."
+            ],
+            "KeyPerformanceIndicators": [
+                "Increase in urban tree canopy cover (%)",
+                "Total length of green corridors created or restored (kilometers)",
+                "Reduction in urban heat island effect temperatures (\u00b0C)"
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRRBR",
@@ -196,7 +322,57 @@
         "actionName": "Support Regenerative Agriculture Practices",
         "actionPriority": 6,
         "explanation": "For the city of Rio Branco, regenerative agriculture rebuilds soil fertility and captures more carbon on farms. Healthier soils also help crops handle extreme weather. By lowering reliance on chemical inputs and preserving water, this approach boosts rural livelihoods and aligns with broader climate goals.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0100",
+            "ActionName": "Support Regenerative Agriculture Practices",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "agriculture_forestry_and_fishing_activities"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Support regenerative agricultural practices that focus on restoring soil health and reducing carbon emissions.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "60-79"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Development of training programs and resources to educate farmers on regenerative agricultural techniques, such as cover cropping and reduced tillage.",
+                "Implementation of financial incentives or subsidies to support the adoption of regenerative practices.",
+                "Collaboration with agricultural research institutions to monitor and document the effectiveness of regenerative practices in carbon sequestration and soil health improvement."
+            ],
+            "KeyPerformanceIndicators": [
+                "Increase in soil organic carbon levels (tons/hectare).",
+                "Reduction in water usage per hectare in agricultural production (%).",
+                "Number of regenerative agriculture pilot projects implemented."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRRBR",
@@ -207,7 +383,57 @@
         "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
         "actionPriority": 7,
         "explanation": "For the city of Rio Branco, expanding rail-based mass transit eases road congestion and reduces transportation emissions. These systems carry more passengers efficiently, cutting down on fuel consumption and air pollution. It also fosters economic development through improved connectivity and reliable commuter services.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0057",
+            "ActionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "railways"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "These systems offer high capacity and low emissions, crucial for cities with high population density.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 1,
+                "mobility": 2,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "80-100",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "high",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Investment in the development and expansion of high-capacity public transportation infrastructure, such as electric buses and metro systems.",
+                "Implementation of policies and incentives to encourage the use of public transport over private vehicles.",
+                "Integration of renewable energy sources to power these systems, reducing emissions further."
+            ],
+            "KeyPerformanceIndicators": [
+                "Length of new transit lines built (km/year).",
+                "Reduction in road traffic congestion (%).",
+                "Reduction in private vehicle usage (number of trips avoided/year)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRRBR",
@@ -218,7 +444,57 @@
         "actionName": "Promote Sustainable Agricultural Practices",
         "actionPriority": 8,
         "explanation": "For the city of Rio Branco, sustainable agriculture protects key resources like soil and water while reducing emissions from chemical-intensive methods. By rotating crops, conserving soil moisture, and minimizing fertilizers, farmers can adapt more easily to changing climate conditions. This strategy also supports local economies by maintaining productive, resilient farmland.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0102",
+            "ActionName": "Promote Sustainable Agricultural Practices",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "agriculture_forestry_and_fishing_activities"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Encourage agricultural practices that reduce greenhouse gas emissions, such as reduced use of fertilizers and agrochemicals.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "60-79"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Development of educational programs and resources to promote sustainable agricultural practices among farmers.",
+                "Implementation of policies that incentivize the reduction of fertilizer and agrochemical use, such as subsidies for organic inputs or sustainable farming techniques.",
+                "Collaboration with agricultural organizations to provide technical support and guidance on emission-reducing practices."
+            ],
+            "KeyPerformanceIndicators": [
+                "Percentage of farmland adopting sustainable practices (% of total agricultural land).",
+                "Increase in crop yield per hectare (tons/hectare) due to sustainable methods.",
+                "Reduction in water usage for agriculture (liters or m\u00b3/hectare/year)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRRBR",
@@ -229,7 +505,57 @@
         "actionName": "Develop projects for renewable energy and waste reuse",
         "actionPriority": 9,
         "explanation": "For the city of Rio Branco, merging waste reuse with renewable energy generation transforms discarded materials into valuable resources. This method cuts emissions from traditional disposal and fossil fuels at the same time. It also stimulates innovation and lowers waste management costs for local communities.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0052",
+            "ActionName": "Develop projects for renewable energy and waste reuse",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "waste"
+            ],
+            "Subsector": [
+                "energy_generation_supplied_to_the_grid"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "This action aims to develop and implement renewable energy projects, including:a biodigester for organic waste treatment and a solar power plant.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 0,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": "60-79",
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Development and implementation of renewable energy projects.",
+                "Installation of a biodigester for organic waste treatment.",
+                "Establishment of a solar power plant to generate clean energy."
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of renewable energy and waste reuse projects implemented.",
+                "Amount of waste reused or recycled (tons/year).",
+                "Reduction in energy costs for participating municipalities (USD)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRRBR",
@@ -240,7 +566,57 @@
         "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
         "actionPriority": 10,
         "explanation": "For the city of Rio Branco, encouraging bicycle use helps curb car dependency and reduce traffic emissions. By building safe bike lanes and running awareness campaigns, cycling becomes an attractive everyday choice. This measure also fosters healthy lifestyles and eases congestion on busy roads.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0118",
+            "ActionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "on-road"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Encourage the adoption of bicycles as a regular mode of transport by expanding cycling infrastructure, such as dedicated bike lanes, parking facilities, and repair stations. Additionally, implement awareness campaigns and communication strategies to highlight the environmental, health, and economic benefits of cycling, aiming to increase public participation and make cycling a viable and sustainable transport option for daily commuting.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 1,
+                "mobility": 2,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "60-79",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Expand cycling infrastructure, including dedicated bike lanes, parking facilities, and repair stations.",
+                "Implement awareness campaigns to highlight the environmental, health, and economic benefits of cycling.",
+                "Promote public participation through communication strategies, making cycling a viable and sustainable option for daily commuting."
+            ],
+            "KeyPerformanceIndicators": [
+                "Length of new bike lanes added to the urban network (km).",
+                "Annual increase in the number of bicycle users in urban areas.",
+                "Estimated reduction in CO\u2082 equivalent emissions from the shift to cycling."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRRBR",
@@ -251,7 +627,57 @@
         "actionName": "Facilitate Technology Transfer for Conservation Practices",
         "actionPriority": 11,
         "explanation": "For the city of Rio Branco, sharing efficient resource management methods empowers farmers, businesses, and local communities to adopt greener operations. By enabling easier access to new tools and knowledge, natural areas are better conserved, and emissions stay lower. This helps sustain long-term biodiversity and socio-economic well-being.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0129",
+            "ActionName": "Facilitate Technology Transfer for Conservation Practices",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "agriculture_forestry_and_fishing_activities"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Promote the adoption of sustainable agricultural practices through training, pilot projects, and technology demonstrations.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 1,
+                "habitat": 2,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "60-79"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Provision of training programs and establishment of pilot projects to showcase sustainable practices.",
+                "Partnerships with research institutions for technology development and financial incentives to encourage adoption.",
+                "Access to technical assistance for successful implementation."
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of conservation technologies transferred and applied on farms.",
+                "Percentage of producers trained to implement conservation practices.",
+                "Reduction in soil degradation or increase in vegetation cover (hectares)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRRBR",
@@ -262,7 +688,57 @@
         "actionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
         "actionPriority": 12,
         "explanation": "For the city of Rio Branco, enhancing the bus system\u2019s reliability and comfort can make public transport more appealing than individual cars. By improving schedules, seating, and routes, emissions drop as more people opt for communal travel. A better bus network also lowers traffic congestion and noise pollution.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0117",
+            "ActionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "on-road"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Increase the quality of transportation service delivery, aiming at the modal shift of passengers from private motorized transport to public transport, thereby reducing emissions generated by cars and motorcycles.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 2,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "60-79",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Improve the quality of public transportation services to attract passengers from private motorized transport.",
+                "Implement policies and infrastructure that support and enhance the efficiency of public transportation systems.",
+                "Promote awareness of the environmental benefits of public transport to encourage a modal shift and reduce emissions."
+            ],
+            "KeyPerformanceIndicators": [
+                "Annual increase in the number of passengers using the municipal bus system.",
+                "Percentage of bus routes with improved travel time reliability.",
+                "Estimated reduction in CO\u2082 equivalent emissions due to increased public transportation use."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRRBR",
@@ -273,7 +749,57 @@
         "actionName": "Create credit lines for residential and community wind energy projects",
         "actionPriority": 13,
         "explanation": "For the city of Rio Branco, financing wind energy installations helps diversify local power sources while lowering carbon footprints. Accessible loans make small-scale turbines feasible for homeowners and neighborhood groups. This approach also promotes energy independence, reducing dependence on fossil fuels.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0005",
+            "ActionName": "Create credit lines for residential and community wind energy projects",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "stationary_energy"
+            ],
+            "Subsector": [
+                "energy_generation_supplied_to_the_grid"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Establish accessible financing programs to support the development and adoption of wind energy systems in households and community-based projects, enabling a transition to cleaner energy sources.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 2,
+                "housing": 2,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": "60-79",
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Availability of financial programs, grants, or subsidies to make wind energy systems affordable for households and community projects",
+                "Access to technical expertise and resources to guide the installation and maintenance of wind energy systems in residential and community settings",
+                "Policy and regulatory support to encourage the adoption of wind energy, including streamlined permitting processes and incentives for clean energy projects"
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of wind energy projects financed annually.",
+                "Installed capacity of wind energy systems from credit-supported projects (MW).",
+                "Estimated reduction in CO\u2082 equivalent emissions from wind energy adoption."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRRBR",
@@ -284,7 +810,57 @@
         "actionName": "Implement a project to support cooperatives of recyclabe material collectors",
         "actionPriority": 14,
         "explanation": "For the city of Rio Branco, backing recyclable material collectors fosters social inclusion and strengthens recycling programs. Organized cooperatives can gather and process more materials, reducing landfill strain. This initiative promotes circular economies, generating income while lowering environmental impacts.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0053",
+            "ActionName": "Implement a project to support cooperatives of recyclabe material collectors",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "waste"
+            ],
+            "Subsector": [
+                "disposal_of_solid_waste_generated_in_the_city"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Measures to improve working conditions and income in the processes of sorting recyclable waste. It includes ongoing training for collectors in technology, economics, business management, and conceptual planning for the operation and administration of the Sorting Unit.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 0,
+                "habitat": 1,
+                "cost_of_living": 2,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": "20-39",
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Implementation of measures to improve working conditions and income for recyclable waste sorting.",
+                "Ongoing training for collectors in technology, economics, business management, and operational planning.",
+                "Development of administrative and operational capabilities for the Sorting Unit."
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of cooperatives supported annually.",
+                "Increase in income of collectors (%).",
+                "Volume of recyclable materials collected by cooperatives (tons/year)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRRBR",
@@ -295,7 +871,57 @@
         "actionName": "Conduct Technical Assistance and Rural Extension (ATER) Actions",
         "actionPriority": 15,
         "explanation": "For the city of Rio Branco, providing hands-on guidance for farmers enhances productivity and resilience to extreme weather. Training programs share best practices that reduce emissions and protect local ecosystems. Such support also bolsters food security and economic stability in rural communities.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0130",
+            "ActionName": "Conduct Technical Assistance and Rural Extension (ATER) Actions",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "agriculture_forestry_and_fishing_activities"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Provide technical support and training to rural producers for sustainable agricultural production.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "60-79"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Availability of skilled technical staff and tailored training programs.",
+                "Partnerships with agricultural research institutions and allocation of resources for capacity-building.",
+                "Engagement with rural producers to ensure active participation."
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of producers benefiting from rural technical assistance (% of total).",
+                "Percentage of participants adopting climate-resilient practices.",
+                "Reduced vulnerability of properties to climate risk (%).\""
+            ],
+            "PowersAndMandates": [
+                "state"
+            ]
+        }
     },
     {
         "locode": "BRRBR",
@@ -312,7 +938,6 @@
             "ActionType": [
                 "mitigation"
             ],
-            "AdaptationCategory": null,
             "Hazard": null,
             "Sector": [
                 "transportation"
@@ -323,13 +948,7 @@
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "InterventionType": [
-                "incentives_and_subsidies",
-                "regulations_and_laws",
-                "programs_and_initiatives"
-            ],
             "Description": "\"Vehicle Emissions\" reduction strategies focus on minimizing the environmental impact of all types of vehicles. Implementing cleaner technologies and promoting alternative fuels contribute to lower emissions, fostering sustainable and eco-friendly transportation.",
-            "BehavioralChangeTargeted": "The targeted behavioral shift that the \"Vehicle Emissions\" reduction strategies aim to achieve is the increased adoption of cleaner transportation options, such as electric vehicles and alternative fuel vehicles, as well as a greater reliance on public transportation, biking, and walking. This shift is encouraged through financial incentives, regulations mandating lower emissions, and programs promoting sustainable transportation practices, ultimately leading to a significant reduction in greenhouse gas emissions from the transportation sector.",
             "CoBenefits": {
                 "air_quality": 1,
                 "water_quality": 0,
@@ -339,7 +958,7 @@
                 "mobility": 0,
                 "stakeholder_engagement": 0
             },
-            "EquityAndInclusionConsiderations": "The \"Vehicle Emissions\" reduction strategies inherently promote equity and inclusion by addressing the environmental impacts that disproportionately affect vulnerable and underserved communities. These communities often experience higher levels of air pollution and related health issues due to proximity to high-traffic areas and industrial zones. By implementing cleaner technologies and promoting alternative fuels, the action directly benefits these populations by improving air quality and reducing health risks.\n\nAdditionally, the focus on sustainable and eco-friendly transportation can enhance access to affordable and efficient transportation options for underserved communities, which may lack reliable public transit. This inclusivity ensures that all community members, regardless of socioeconomic status, can benefit from cleaner air and improved public health outcomes. Overall, the action recognizes and addresses the specific needs of vulnerable populations, fostering a more equitable approach to climate action.",
+            "EquityAndInclusionConsiderations": "The \"Vehicle Emissions\" reduction strategies inherently promote equity and inclusion by addressing the environmental impacts that disproportionately affect vulnerable and underserved communities. These communities often experience higher levels of air pollution and related health issues due to proximity to high-traffic areas and industrial zones. By implementing cleaner technologies and promoting alternative fuels, the action directly benefits these populations by improving air quality and reducing health risks.\n \n Additionally, the focus on sustainable and eco-friendly transportation can enhance access to affordable and efficient transportation options for underserved communities, which may lack reliable public transit. This inclusivity ensures that all community members, regardless of socioeconomic status, can benefit from cleaner air and improved public health outcomes. Overall, the action recognizes and addresses the specific needs of vulnerable populations, fostering a more equitable approach to climate action.",
             "GHGReductionPotential": {
                 "stationary_energy": null,
                 "transportation": "80-100",
@@ -369,12 +988,7 @@
                 "Percentage of low-emission zones established",
                 "Investment in sustainable transportation infrastructure"
             ],
-            "Impacts": [
-                "Significant reduction in greenhouse gas emissions from the transportation sector",
-                "Improved air quality benefiting vulnerable and underserved communities",
-                "Increased adoption of cleaner transportation options",
-                "Enhanced access to affordable and efficient transportation for underserved populations"
-            ]
+            "PowersAndMandates": null
         }
     },
     {
@@ -386,7 +1000,57 @@
         "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
         "actionPriority": 17,
         "explanation": "For the city of Rio Branco, offering no-cost rides at busy times eases road congestion and lowers emissions from personal cars. More accessible transit encourages broader participation across different income levels. This approach creates a healthier environment by reducing smog and traffic noise.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0088",
+            "ActionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "on-road"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Encourage the use of public transportation by offering free services during peak hours for workers and students. This measure reduces urban congestion, decreases the number of individual vehicles on the road, and consequently lowers greenhouse gas emissions associated with private transportation.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 2,
+                "housing": 0,
+                "mobility": 2,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "60-79",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Allocation of funding to subsidize free public transportation services during peak hours.",
+                "Development of policies to ensure the sustainability and efficiency of public transit systems amid increased demand.",
+                "Coordination with employers and educational institutions to optimize peak-hour schedules and promote the initiative."
+            ],
+            "KeyPerformanceIndicators": [
+                "Reduction in air pollution levels during peak hours (PM2.5/PM10 concentration).",
+                "Number of private vehicles removed from roads during peak hours.",
+                "Public satisfaction rate with the free transportation initiative (%)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRRBR",
@@ -397,7 +1061,56 @@
         "actionName": "Install biodigesters in rural properties",
         "actionPriority": 18,
         "explanation": "For the city of Rio Branco, installing biodigesters converts organic farm waste into biogas, cutting methane emissions while generating clean energy. This innovation supports energy self-sufficiency in remote areas and lowers dependence on fossil fuels. It also promotes sustainable waste management, reducing odor and water contamination.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0033",
+            "ActionName": "Install biodigesters in rural properties",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "stationary_energy"
+            ],
+            "Subsector": [
+                "agriculture_forestry_and_fishing_activities"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Equip rural farms and properties with biodigesters to convert organic waste into biogas and nutrient-rich fertilizers, providing a sustainable energy source.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": "80-100",
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Availability of funding or subsidies to support the installation of biodigesters on rural farms and properties",
+                "Access to technical expertise for the design, installation, and maintenance of biodigesters",
+                "Development of a supportive regulatory framework that encourages the use of biogas and organic waste management systems in rural agriculture"
+            ],
+            "KeyPerformanceIndicators": [
+                "Volume of biogas generated (m\u00b3/year).",
+                "GHG emissions avoided by replacing fossil fuels (tons CO\u2082e)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRRBR",
@@ -414,7 +1127,6 @@
             "ActionType": [
                 "mitigation"
             ],
-            "AdaptationCategory": null,
             "Hazard": null,
             "Sector": [
                 "transportation"
@@ -425,12 +1137,7 @@
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "InterventionType": [
-                "programs_and_initiatives",
-                "infrastructure_investments"
-            ],
             "Description": "\"Transit Access\" initiatives focus on improving walking, cycling, and integrated transit access to create a more interconnected and sustainable urban transportation network. This involves enhancing infrastructure and promoting multi-modal options to reduce reliance on individual vehicles.",
-            "BehavioralChangeTargeted": "The targeted behavioral change that the \"Transit Access\" initiatives aim to achieve is an increased reliance on walking, cycling, and public transportation, leading to a significant reduction in the use of individual vehicles for daily commuting and travel. This shift is facilitated by improved infrastructure and multi-modal transit options, which enhance safety, convenience, and accessibility, ultimately encouraging individuals to adopt more sustainable transportation habits.",
             "CoBenefits": {
                 "air_quality": 1,
                 "water_quality": 0,
@@ -440,7 +1147,7 @@
                 "mobility": 2,
                 "stakeholder_engagement": 0
             },
-            "EquityAndInclusionConsiderations": "The \"Transit Access\" initiatives promote equity and inclusion by:\n\n1. **Improving Accessibility**: By enhancing walking and cycling infrastructure, the initiatives ensure that individuals in underserved communities, who may not have access to private vehicles, can navigate urban areas more easily and safely.\n\n2. **Multi-Modal Options**: The promotion of integrated transit options provides diverse transportation choices, catering to the varying needs of vulnerable populations, including low-income individuals, the elderly, and people with disabilities.\n\n3. **Reducing Transportation Barriers**: By focusing on sustainable urban transportation, the initiatives aim to lower the financial burden associated with car ownership and maintenance, making mobility more affordable for underserved communities.\n\n4. **Encouraging Active Transportation**: By promoting walking and cycling, the initiatives support healthier lifestyles, which can be particularly beneficial for communities that may lack access to recreational facilities or health resources.\n\n5. **Community Engagement**: The development of interconnected transit networks often involves input from local communities, ensuring that the voices of vulnerable populations are heard and considered in transportation planning.\n\n6. **Environmental Justice**: By reducing reliance on individual vehicles, the initiatives contribute to cleaner air and a healthier environment, which disproportionately benefits underserved communities that may be located near high-traffic areas and are more vulnerable to pollution.",
+            "EquityAndInclusionConsiderations": "The \"Transit Access\" initiatives promote equity and inclusion by:\n \n 1. **Improving Accessibility**: By enhancing walking and cycling infrastructure, the initiatives ensure that individuals in underserved communities, who may not have access to private vehicles, can navigate urban areas more easily and safely.\n \n 2. **Multi-Modal Options**: The promotion of integrated transit options provides diverse transportation choices, catering to the varying needs of vulnerable populations, including low-income individuals, the elderly, and people with disabilities.\n \n 3. **Reducing Transportation Barriers**: By focusing on sustainable urban transportation, the initiatives aim to lower the financial burden associated with car ownership and maintenance, making mobility more affordable for underserved communities.\n \n 4. **Encouraging Active Transportation**: By promoting walking and cycling, the initiatives support healthier lifestyles, which can be particularly beneficial for communities that may lack access to recreational facilities or health resources.\n \n 5. **Community Engagement**: The development of interconnected transit networks often involves input from local communities, ensuring that the voices of vulnerable populations are heard and considered in transportation planning.\n \n 6. **Environmental Justice**: By reducing reliance on individual vehicles, the initiatives contribute to cleaner air and a healthier environment, which disproportionately benefits underserved communities that may be located near high-traffic areas and are more vulnerable to pollution.",
             "GHGReductionPotential": {
                 "stationary_energy": null,
                 "transportation": "20-39",
@@ -470,16 +1177,7 @@
                 "Increase in bike share program usage",
                 "Reduction in traffic congestion levels"
             ],
-            "Impacts": [
-                "Reduction in greenhouse gas emissions from transportation by 20-39%",
-                "Improved air quality due to decreased reliance on individual vehicles",
-                "Enhanced mobility options for underserved communities",
-                "Lower transportation costs for low-income individuals",
-                "Increased accessibility for vulnerable populations",
-                "Promotion of healthier lifestyles through active transportation",
-                "Community engagement in transportation planning",
-                "Contribution to environmental justice by reducing pollution exposure in high-traffic areas"
-            ]
+            "PowersAndMandates": null
         }
     },
     {
@@ -497,7 +1195,6 @@
             "ActionType": [
                 "mitigation"
             ],
-            "AdaptationCategory": null,
             "Hazard": null,
             "Sector": [
                 "waste"
@@ -508,12 +1205,7 @@
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "InterventionType": [
-                "taxes_and_fees",
-                "incentives_and_subsidies"
-            ],
             "Description": "\"Volume-Based Collection\" policies incentivize waste reduction by implementing fees or incentives based on the amount of waste generated. This approach encourages residents to minimize waste production, contributing to overall waste reduction goals.",
-            "BehavioralChangeTargeted": "The targeted behavioral shift that the \"Volume-Based Collection\" climate action aims to achieve is a reduction in waste generation among residents. By implementing fees or incentives based on the amount of waste produced, the intervention encourages individuals to minimize their waste output. This shift is expected to lead to more sustainable waste management practices, as residents become more conscious of their consumption habits and actively seek to reduce the volume of waste they generate, ultimately contributing to broader waste reduction goals and lower greenhouse gas emissions.",
             "CoBenefits": {
                 "air_quality": 0,
                 "water_quality": 0,
@@ -523,7 +1215,7 @@
                 "mobility": 0,
                 "stakeholder_engagement": 0
             },
-            "EquityAndInclusionConsiderations": "The \"Volume-Based Collection\" policies promote equity and inclusion by:\n\n1. **Incentivizing Participation**: By linking fees or incentives to the amount of waste generated, the policy encourages all residents, including those from vulnerable or underserved communities, to actively participate in waste reduction efforts. This can empower these communities to take ownership of their waste management practices.\n\n2. **Financial Relief for Low-Volume Generators**: Households that produce less waste, often found in underserved communities, may benefit from lower fees, providing them with financial relief and encouraging sustainable practices without imposing a disproportionate burden.\n\n3. **Awareness and Education**: The implementation of volume-based policies often includes educational components that inform residents about waste reduction strategies. This can particularly benefit underserved communities by providing them with knowledge and resources to reduce waste effectively.\n\n4. **Community Engagement**: The policy can foster community engagement by involving residents in discussions about waste management and reduction strategies, ensuring that the voices of vulnerable populations are heard and considered in the decision-making process.\n\n5. **Equitable Resource Allocation**: By focusing on waste reduction, the policy can lead to more equitable allocation of resources for waste management services, ensuring that underserved communities receive adequate support and infrastructure to manage their waste effectively.",
+            "EquityAndInclusionConsiderations": "The \"Volume-Based Collection\" policies promote equity and inclusion by:\n \n 1. **Incentivizing Participation**: By linking fees or incentives to the amount of waste generated, the policy encourages all residents, including those from vulnerable or underserved communities, to actively participate in waste reduction efforts. This can empower these communities to take ownership of their waste management practices.\n \n 2. **Financial Relief for Low-Volume Generators**: Households that produce less waste, often found in underserved communities, may benefit from lower fees, providing them with financial relief and encouraging sustainable practices without imposing a disproportionate burden.\n \n 3. **Awareness and Education**: The implementation of volume-based policies often includes educational components that inform residents about waste reduction strategies. This can particularly benefit underserved communities by providing them with knowledge and resources to reduce waste effectively.\n \n 4. **Community Engagement**: The policy can foster community engagement by involving residents in discussions about waste management and reduction strategies, ensuring that the voices of vulnerable populations are heard and considered in the decision-making process.\n \n 5. **Equitable Resource Allocation**: By focusing on waste reduction, the policy can lead to more equitable allocation of resources for waste management services, ensuring that underserved communities receive adequate support and infrastructure to manage their waste effectively.",
             "GHGReductionPotential": {
                 "stationary_energy": null,
                 "transportation": null,
@@ -550,13 +1242,7 @@
                 "Public awareness and engagement levels",
                 "Change in composting rates"
             ],
-            "Impacts": [
-                "Encourages waste reduction among residents",
-                "Promotes equity and inclusion in waste management",
-                "Provides financial relief for low-waste households",
-                "Fosters community engagement and education",
-                "Contributes to significant GHG reduction in the waste sector"
-            ]
+            "PowersAndMandates": null
         }
     }
 ]

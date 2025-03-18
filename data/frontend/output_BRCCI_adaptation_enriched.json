@@ -14,7 +14,6 @@
             "ActionType": [
                 "adaptation"
             ],
-            "AdaptationCategory": "Eco-engineering",
             "Hazard": [
                 "floods"
             ],
@@ -23,9 +22,7 @@
             "PrimaryPurpose": [
                 "climate_resilience"
             ],
-            "InterventionType": null,
             "Description": "\"Cyclone Shelters\" provide safe havens during flood and cyclone events, enhancing community resilience. This eco-engineering adaptation ensures the safety of residents in vulnerable areas during extreme weather conditions.",
-            "BehavioralChangeTargeted": null,
             "CoBenefits": {
                 "air_quality": 0,
                 "water_quality": 0,
@@ -58,13 +55,7 @@
                 "Maintenance and operational status of shelters",
                 "Partnerships with local organizations for shelter management"
             ],
-            "Impacts": [
-                "Enhances community resilience during extreme weather events",
-                "Provides safe havens for vulnerable populations",
-                "Promotes social equity and inclusion",
-                "Fosters community involvement and economic opportunities",
-                "Addresses the unique challenges faced by underserved communities"
-            ]
+            "PowersAndMandates": null
         }
     },
     {
@@ -76,7 +67,51 @@
         "actionName": "Hydrological Monitoring System with Telemetry Stations",
         "actionPriority": 2,
         "explanation": "For the city of Cama\u00e7ari, a Hydrological Monitoring System with Telemetry Stations enhances flood and water management by delivering real-time data. This system is well aligned with local climate patterns, enabling timely interventions that mitigate water-related disruptions. With minimal dependencies, it fosters cost-effective resilience and reduces environmental damage.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0164",
+            "ActionName": "Hydrological Monitoring System with Telemetry Stations",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "droughts",
+                "floods",
+                "storms"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Implementation of a hydrological monitoring system with telemetry stations to monitor rainfall, water levels, and meteorological variables in real-time.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 1,
+                "mobility": 1,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Equipment and infrastructure",
+                "Robust data management system",
+                "Institutional coordination"
+            ],
+            "KeyPerformanceIndicators": [
+                "Timeliness of data",
+                "Cost-effectiveness",
+                "Mitigation effectiveness"
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRCCI",
@@ -93,7 +128,6 @@
             "ActionType": [
                 "adaptation"
             ],
-            "AdaptationCategory": "Infrastructural Adaptation",
             "Hazard": [
                 "floods",
                 "droughts",
@@ -108,9 +142,7 @@
             "PrimaryPurpose": [
                 "climate_resilience"
             ],
-            "InterventionType": null,
             "Description": "Strengthening and upgrading existing infrastructure, including roads, housing, and energy systems, to improve resilience against climate risks such as floods, droughts, and heatwaves. Efforts include Air conditioning, using thermosiphons for permafrost degradation, increasing rooftop albedo (for reflectivity) and shading",
-            "BehavioralChangeTargeted": null,
             "CoBenefits": {
                 "air_quality": 1,
                 "water_quality": 1,
@@ -134,11 +166,7 @@
                 "Reduced infrastructure failure during hazards",
                 "Increased capacity for housing and energy systems"
             ],
-            "Impacts": [
-                "Enhanced urban resilience",
-                "Safer housing",
-                "Reduced economic losses due to climate impacts"
-            ]
+            "PowersAndMandates": null
         }
     },
     {
@@ -150,7 +178,56 @@
         "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
         "actionPriority": 4,
         "explanation": "For the city of Cama\u00e7ari, having a Plan for Preparation and Emergency Response Measures ensures coordinated action when storms or floods strike. It builds on existing community resources, lowering response time and overall risk. This approach has flexible implementation steps and aligns well with the city\u2019s capacity.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0169",
+            "ActionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "droughts",
+                "heatwaves",
+                "diseases",
+                "landslides",
+                "floods",
+                "wildfires",
+                "sea-level-rise",
+                "storms"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "This action focuses on preparing the municipality to respond to extreme events, aiming to provide a rapid response that minimizes the impacts on the population.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Development of a comprehensive emergency response plan that includes coordination between local authorities, emergency services, and community organizations",
+                "Investment in early warning systems and infrastructure to ensure timely and effective responses to extreme events",
+                "Training and capacity-building for local responders and communities to enhance preparedness and resilience to extreme events"
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of emergency response partnerships established.",
+                "Average response time during extreme weather events (hours).",
+                "Percentage reduction in casualties and damages during extreme weather events annually (%)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRCCI",
@@ -161,7 +238,49 @@
         "actionName": "Preventive maintenance of drainage systems",
         "actionPriority": 5,
         "explanation": "For the city of Cama\u00e7ari, Preventive maintenance of drainage systems reduces flood hazards by ensuring water can flow unobstructed. It addresses a key climate vulnerability in areas prone to intense rainfall. As a cost-effective strategy, regular upkeep extends the lifespan of public infrastructure and helps minimize health risks linked to standing water.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0173",
+            "ActionName": "Preventive maintenance of drainage systems",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "floods",
+                "storms"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Regular upkeep and cleaning of urban drainage systems, including storm drains, sewers, and retention basins, to ensure efficient water flow and prevent blockages that can lead to flooding during heavy rainfall events.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 1,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 1,
+                "mobility": 1,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "medium",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Budget allocation for maintenance activities",
+                "Regular inspections to identify potential issues"
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of drainage blockages cleared.",
+                "Percentage of drainage systems in good condition.",
+                "Number of reported flood incidents."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRCCI",
@@ -178,7 +297,6 @@
             "ActionType": [
                 "adaptation"
             ],
-            "AdaptationCategory": "Infrastructure Improvement",
             "Hazard": [
                 "droughts",
                 "floods",
@@ -193,9 +311,7 @@
             "PrimaryPurpose": [
                 "climate_resilience"
             ],
-            "InterventionType": null,
             "Description": "Enhancing food storage and distribution systems by improving transportation infrastructure, optimizing trade networks, and shortening supply chains to ensure local food availability and resilience to climate impacts. This action also includes increasing the capacity of local food storage facilities to reduce post-harvest losses, addressing inefficiencies in logistics, and bolstering infrastructure for perishable goods. It aims to improve food security and reduce vulnerability to extreme events, disruptions, and cascading impacts, especially during pandemics and other crises.",
-            "BehavioralChangeTargeted": null,
             "CoBenefits": {
                 "air_quality": 0,
                 "water_quality": 1,
@@ -222,12 +338,7 @@
                 "Improved transportation efficiency for food distribution",
                 "Shortened supply chains"
             ],
-            "Impacts": [
-                "Improved food security",
-                "Resilience to climate-induced disruptions",
-                "Reduced greenhouse gas emissions from supply chains",
-                "Enhanced local economic growth"
-            ]
+            "PowersAndMandates": null
         }
     },
     {
@@ -245,7 +356,6 @@
             "ActionType": [
                 "adaptation"
             ],
-            "AdaptationCategory": "Eco-engineering",
             "Hazard": [
                 "heatwaves"
             ],
@@ -254,9 +364,7 @@
             "PrimaryPurpose": [
                 "climate_resilience"
             ],
-            "InterventionType": null,
             "Description": "\"Public Shading\" involves the implementation of shade structures in public spaces, contributing to eco-engineering efforts. This adaptation measure enhances outdoor comfort, reduces heat stress, and promotes sustainable urban design.",
-            "BehavioralChangeTargeted": null,
             "CoBenefits": {
                 "air_quality": 0,
                 "water_quality": 0,
@@ -266,7 +374,7 @@
                 "mobility": 0,
                 "stakeholder_engagement": 0
             },
-            "EquityAndInclusionConsiderations": "The \"Public Shading\" climate action promotes equity and inclusion by:\n\n1. **Accessibility for Vulnerable Populations**: By providing shade in public spaces, the action directly benefits vulnerable communities, including low-income individuals, the elderly, and those with health conditions that make them more susceptible to heat stress.\n\n2. **Enhanced Outdoor Comfort**: The implementation of shade structures improves outdoor comfort for all community members, encouraging greater use of public spaces by underserved populations who may otherwise avoid them due to extreme heat.\n\n3. **Sustainable Urban Design**: The focus on eco-engineering and sustainable design ensures that the benefits of climate action are integrated into the urban environment, fostering inclusive spaces that serve diverse community needs.\n\n4. **Community Engagement**: The development of public shading initiatives often involves community input, ensuring that the voices of underserved populations are heard and considered in the planning process.\n\n5. **Health Benefits**: By reducing heat stress, the action contributes to better health outcomes for marginalized groups who may lack access to air conditioning or other cooling resources, thereby promoting health equity.\n\nOverall, the \"Public Shading\" initiative addresses the needs of vulnerable communities, ensuring that climate adaptation measures are inclusive and equitable.",
+            "EquityAndInclusionConsiderations": "The \"Public Shading\" climate action promotes equity and inclusion by:\n \n 1. **Accessibility for Vulnerable Populations**: By providing shade in public spaces, the action directly benefits vulnerable communities, including low-income individuals, the elderly, and those with health conditions that make them more susceptible to heat stress.\n \n 2. **Enhanced Outdoor Comfort**: The implementation of shade structures improves outdoor comfort for all community members, encouraging greater use of public spaces by underserved populations who may otherwise avoid them due to extreme heat.\n \n 3. **Sustainable Urban Design**: The focus on eco-engineering and sustainable design ensures that the benefits of climate action are integrated into the urban environment, fostering inclusive spaces that serve diverse community needs.\n \n 4. **Community Engagement**: The development of public shading initiatives often involves community input, ensuring that the voices of underserved populations are heard and considered in the planning process.\n \n 5. **Health Benefits**: By reducing heat stress, the action contributes to better health outcomes for marginalized groups who may lack access to air conditioning or other cooling resources, thereby promoting health equity.\n \n Overall, the \"Public Shading\" initiative addresses the needs of vulnerable communities, ensuring that climate adaptation measures are inclusive and equitable.",
             "GHGReductionPotential": null,
             "AdaptationEffectiveness": "high",
             "CostInvestmentNeeded": "low",
@@ -288,13 +396,7 @@
                 "Energy savings in nearby buildings due to reduced heat",
                 "Community engagement and participation in shading initiatives"
             ],
-            "Impacts": [
-                "Enhances outdoor comfort for all community members",
-                "Reduces heat stress, particularly benefiting vulnerable populations",
-                "Promotes health equity by improving health outcomes for marginalized groups",
-                "Encourages greater use of public spaces by underserved populations",
-                "Integrates community input in planning, fostering inclusivity"
-            ]
+            "PowersAndMandates": null
         }
     },
     {
@@ -306,7 +408,56 @@
         "actionName": "Development of Climate Action Plan",
         "actionPriority": 8,
         "explanation": "For the city of Cama\u00e7ari, Development of a Climate Action Plan sets a strategic roadmap for reducing greenhouse gas emissions and adapting to future climate conditions. This plan aligns with the city\u2019s environmental profile, ensuring relevant sectors are targeted for efficient emissions reduction. By outlining practical steps and timelines, it supports coordinated implementation across different municipal departments.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0176",
+            "ActionName": "Development of Climate Action Plan",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "storms",
+                "sea-level-rise",
+                "wildfires",
+                "floods",
+                "landslides",
+                "diseases",
+                "heatwaves",
+                "droughts"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "A comprehensive plan outlining a city's strategies and actions to mitigate greenhouse gas emissions and adapt to the impacts of climate change which typically includes an assessment of the city's climate risks and vulnerabilities, setting emission reduction targets, and implementation of actions across various sectors such as energy, transportation, waste management, and urban planning.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 0,
+                "housing": 1,
+                "mobility": 1,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "medium",
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Political will and commitment from government",
+                "Stakeholder engagement and collaboration",
+                "Funding and resources for implementation"
+            ],
+            "KeyPerformanceIndicators": [
+                "Greenhouse gas emission reduction targets.",
+                "Number of climate adaptation actions implemented.",
+                "Investment in climate mitigation and adaptation projects."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRCCI",
@@ -323,7 +474,6 @@
             "ActionType": [
                 "adaptation"
             ],
-            "AdaptationCategory": "Educational/Informational\u00a0actions",
             "Hazard": [
                 "storms"
             ],
@@ -332,9 +482,7 @@
             "PrimaryPurpose": [
                 "climate_resilience"
             ],
-            "InterventionType": null,
             "Description": "\"Preparedness\" refers to comprehensive planning and readiness measures to anticipate and respond to the impacts of climate-related events. This strategy ensures that communities are equipped to handle emergencies and enhance overall resilience",
-            "BehavioralChangeTargeted": null,
             "CoBenefits": {
                 "air_quality": 0,
                 "water_quality": 0,
@@ -344,7 +492,7 @@
                 "mobility": 0,
                 "stakeholder_engagement": 0
             },
-            "EquityAndInclusionConsiderations": "The climate action of \"Preparedness\" promotes equity and inclusion by ensuring that comprehensive planning and readiness measures specifically address the needs of vulnerable or underserved communities. This approach recognizes that these communities often face greater risks from climate-related events due to existing social, economic, and environmental disparities. By prioritizing their unique challenges and incorporating their voices in the planning process, the action fosters a more equitable distribution of resources and support.\n\nAdditionally, the emphasis on enhancing overall resilience means that preparedness efforts are designed to empower these communities, providing them with the tools and knowledge necessary to effectively respond to emergencies. This not only helps to mitigate the impacts of climate events but also promotes social cohesion and community engagement, ensuring that all members, particularly those who are most at risk, are included in the decision-making processes that affect their lives.",
+            "EquityAndInclusionConsiderations": "The climate action of \"Preparedness\" promotes equity and inclusion by ensuring that comprehensive planning and readiness measures specifically address the needs of vulnerable or underserved communities. This approach recognizes that these communities often face greater risks from climate-related events due to existing social, economic, and environmental disparities. By prioritizing their unique challenges and incorporating their voices in the planning process, the action fosters a more equitable distribution of resources and support.\n \n Additionally, the emphasis on enhancing overall resilience means that preparedness efforts are designed to empower these communities, providing them with the tools and knowledge necessary to effectively respond to emergencies. This not only helps to mitigate the impacts of climate events but also promotes social cohesion and community engagement, ensuring that all members, particularly those who are most at risk, are included in the decision-making processes that affect their lives.",
             "GHGReductionPotential": null,
             "AdaptationEffectiveness": "high",
             "CostInvestmentNeeded": "low",
@@ -367,12 +515,7 @@
                 "Number of partnerships established with local organizations for preparedness initiatives",
                 "Assessment scores of community resilience before and after preparedness measures"
             ],
-            "Impacts": [
-                "Enhances community resilience to storms",
-                "Promotes equity and inclusion for vulnerable communities",
-                "Empowers communities with knowledge and tools for emergency response",
-                "Fosters social cohesion and community engagement"
-            ]
+            "PowersAndMandates": null
         }
     },
     {
@@ -384,7 +527,49 @@
         "actionName": "Create the Multisectoral Heatwave Response Plan and develop the measures for its implementation",
         "actionPriority": 10,
         "explanation": "For the city of Cama\u00e7ari, creating a Multisectoral Heatwave Response Plan helps protect vulnerable populations during extreme heat events. It coordinates resources across health, energy, and community services to mitigate risks and reduce discomfort. By focusing on timely interventions, this plan proves effective for the city\u2019s growing population and intense climate patterns.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0167",
+            "ActionName": "Create the Multisectoral Heatwave Response Plan and develop the measures for its implementation",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "heatwaves"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "The Multisectoral Heatwave Response Plan should include the procedures that the municipality will apply in response to intense heat events, with a focus on the most vulnerable populations.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "medium",
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Development of a comprehensive Multisectoral Heatwave Response Plan that outlines specific procedures for managing heat events",
+                "Identification and mapping of vulnerable populations, such as the elderly and those with pre-existing health conditions, to ensure targeted interventions",
+                "Coordination with healthcare facilities, social services, and community organizations to provide support and resources during heatwaves"
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of new rainwater harvesting installations across public and private buildings annually.",
+                "Total volume of water reused and harvested annually (liters), tracked through water utility reports.",
+                "Percentage reduction in water shortages or service interruptions during drought periods, measured through water supply metrics."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRCCI",
@@ -395,7 +580,48 @@
         "actionName": "Cleaning and Unclogging of Channels with Installation of Eco-barriers",
         "actionPriority": 11,
         "explanation": "For the city of Cama\u00e7ari, Cleaning and Unclogging of Channels with Installation of Eco-barriers helps prevent flooding and water contamination. This measure is well-suited to the region\u2019s seasonal heavy rainfall, reducing pollution in water bodies. Implemented regularly, it fosters a healthier environment and mitigates risk to nearby communities.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0154",
+            "ActionName": "Cleaning and Unclogging of Channels with Installation of Eco-barriers",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "floods"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Cleaning and unclogging channels in the city to reduce the risk of flooding caused by extreme rainfall events. Installation of eco-barriers to assist in cleaning efforts and raise awareness about solid waste.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 2,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 1,
+                "mobility": 1,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "medium",
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Regular maintenance",
+                "Proper waste management practices"
+            ],
+            "KeyPerformanceIndicators": [
+                "Flood reduction",
+                "Waste reduction",
+                "Maintenance costs"
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRCCI",
@@ -412,7 +638,6 @@
             "ActionType": [
                 "adaptation"
             ],
-            "AdaptationCategory": "Risk Reduction and Preparedness",
             "Hazard": [
                 "heatwaves",
                 "droughts",
@@ -427,9 +652,7 @@
             "PrimaryPurpose": [
                 "climate_resilience"
             ],
-            "InterventionType": null,
             "Description": "Establishing and maintaining early warning systems for disasters, including marine heatwaves, pest outbreaks, and heatwaves. These systems involve timely information dissemination to individuals, communities, and emergency services, enabling proactive measures to mitigate risks. Heat Action Plans (HAPs) are part of these systems and include detailed strategies like urban planning with nature-based solutions (e.g., green-blue spaces, cool materials), public awareness campaigns, and targeted measures for vulnerable groups (e.g., elderly, children, outdoor workers). Critical actions also include evaluation of system effectiveness post-disaster, lessons sharing, and improvements for better preparedness in future events.",
-            "BehavioralChangeTargeted": null,
             "CoBenefits": {
                 "air_quality": 2,
                 "water_quality": 1,
@@ -456,12 +679,7 @@
                 "Public awareness levels",
                 "Community adoption of protective measures"
             ],
-            "Impacts": [
-                "Improved public health and safety",
-                "Enhanced community resilience to disasters",
-                "Reduced economic losses from heat-related productivity impacts",
-                "Broader ecosystem benefits through urban nature-based solutions"
-            ]
+            "PowersAndMandates": null
         }
     },
     {
@@ -473,7 +691,55 @@
         "actionName": "Strengthen the healthcare network to attend to climate victims",
         "actionPriority": 13,
         "explanation": "For the city of Cama\u00e7ari, strengthening the healthcare network to attend to climate victims ensures that medical services can handle sudden surges in demand during extreme events. This support reduces mortality and long-term health impacts by providing timely care. Incorporating local population needs, it bolsters resilience and aligns with broader public health objectives.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0145",
+            "ActionName": "Strengthen the healthcare network to attend to climate victims",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "heatwaves",
+                "diseases",
+                "landslides",
+                "floods",
+                "storms",
+                "droughts"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Improve the infrastructure of healthcare units to assist people who require medical care due to impacts associated with climate risks (climate victims), such as those affected by heat waves or floods, especially in more vulnerable areas. Develop action plans to prepare the healthcare network for extreme climate-related situations.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "high",
+            "TimelineForImplementation": ">10 years",
+            "Dependencies": [
+                "Investment in the renovation and expansion of healthcare facilities, ensuring they are equipped to handle climate-related health impacts, particularly in vulnerable areas.",
+                "Development of action plans and training programs for healthcare professionals to respond to extreme climate events like heatwaves and floods.",
+                "Collaboration with local authorities, emergency response teams, and climate experts to create a comprehensive framework for preparing the healthcare network for climate risks."
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of healthcare facilities upgraded for climate-related emergencies.",
+                "Increase in healthcare staff trained in climate emergency response (%).",
+                "Number of climate-related injuries treated successfully.",
+                "."
+            ],
+            "PowersAndMandates": [
+                "national"
+            ]
+        }
     },
     {
         "locode": "BRCCI",
@@ -490,7 +756,6 @@
             "ActionType": [
                 "adaptation"
             ],
-            "AdaptationCategory": "Technological\u00a0actions",
             "Hazard": [
                 "droughts"
             ],
@@ -499,9 +764,7 @@
             "PrimaryPurpose": [
                 "climate_resilience"
             ],
-            "InterventionType": null,
             "Description": "\"Water Recycling\" or reclamation involves technological actions to treat and reuse water resources. This adaptation measure contributes to water resource sustainability and resilience, particularly in the context of changing climate patterns.",
-            "BehavioralChangeTargeted": null,
             "CoBenefits": {
                 "air_quality": 0,
                 "water_quality": 1,
@@ -511,7 +774,7 @@
                 "mobility": 0,
                 "stakeholder_engagement": 0
             },
-            "EquityAndInclusionConsiderations": "The \"Water Recycling\" action promotes equity and inclusion by ensuring that vulnerable or underserved communities have access to sustainable water resources. By treating and reusing water, this initiative addresses the needs of populations that may face water scarcity or contamination, which often disproportionately affects low-income and marginalized groups. \n\nAdditionally, the implementation of water recycling technologies can create job opportunities and skills training for local residents, particularly in underserved areas, fostering economic empowerment. The action also considers the equitable distribution of water resources, ensuring that all community members, regardless of socioeconomic status, benefit from improved water availability and quality. \n\nOverall, this climate action actively supports the resilience of vulnerable communities by prioritizing their specific needs in the face of climate change impacts.",
+            "EquityAndInclusionConsiderations": "The \"Water Recycling\" action promotes equity and inclusion by ensuring that vulnerable or underserved communities have access to sustainable water resources. By treating and reusing water, this initiative addresses the needs of populations that may face water scarcity or contamination, which often disproportionately affects low-income and marginalized groups. \n \n Additionally, the implementation of water recycling technologies can create job opportunities and skills training for local residents, particularly in underserved areas, fostering economic empowerment. The action also considers the equitable distribution of water resources, ensuring that all community members, regardless of socioeconomic status, benefit from improved water availability and quality. \n \n Overall, this climate action actively supports the resilience of vulnerable communities by prioritizing their specific needs in the face of climate change impacts.",
             "GHGReductionPotential": null,
             "AdaptationEffectiveness": "high",
             "CostInvestmentNeeded": "high",
@@ -536,13 +799,7 @@
                 "Impact on local ecosystems",
                 "Reduction in water scarcity incidents"
             ],
-            "Impacts": [
-                "Enhances water resource sustainability",
-                "Improves water quality",
-                "Increases climate resilience for vulnerable communities",
-                "Creates job opportunities and skills training",
-                "Promotes equitable access to water resources"
-            ]
+            "PowersAndMandates": null
         }
     },
     {
@@ -554,7 +811,49 @@
         "actionName": "Landslide Risk Assessment and Management",
         "actionPriority": 15,
         "explanation": "For the city of Cama\u00e7ari, Landslide Risk Assessment and Management lowers potential damage in hilly or unstable areas by mapping hazards and guiding safer development. It addresses a key aspect of land-use planning, preventing accidents and costly repairs. This approach also protects natural ecosystems by steering construction away from high-risk zones.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0140",
+            "ActionName": "Landslide Risk Assessment and Management",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "landslides"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "This action involves assessing and managing landslide risks by collecting data, mapping hazard areas, and conducting evacuation simulations. It aims to reduce the risks associated with landslides in areas prone to these events.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 1,
+                "mobility": 1,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Comprehensive planning and policy framework",
+                "Stakeholder participation",
+                "Capacity building and institutional support"
+            ],
+            "KeyPerformanceIndicators": [
+                "Coastal erosion rates",
+                "Water quality",
+                "Habitat health"
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRCCI",
@@ -565,7 +864,53 @@
         "actionName": "Encourage sustainable land use practices",
         "actionPriority": 16,
         "explanation": "For the city of Cama\u00e7ari, encouraging sustainable land use practices helps preserve local ecosystems and reduces emissions linked to deforestation and urban sprawl. Such practices align with the region\u2019s climate and demographic demands, ensuring balanced growth. They also generate co-benefits like improved soil health and resilience to weather extremes.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0149",
+            "ActionName": "Encourage sustainable land use practices",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "droughts",
+                "heatwaves",
+                "landslides",
+                "floods",
+                "wildfires"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Promoting methods that guarantee the conservation and health of the soil, preserving biodiversity, reducing erosion and minimizing environmental impacts.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 2,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "medium",
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Provide access to technical knowledge and training on sustainable soil management practices.",
+                "Offer financial incentives and form partnerships with research institutions and local farmers.",
+                "Develop monitoring systems for soil health and biodiversity, and implement policies for erosion control."
+            ],
+            "KeyPerformanceIndicators": [
+                "Percentage of land area managed under sustainable land use practices (%)",
+                "Reduction in deforestation or land degradation rates (%)",
+                "Increase in biodiversity indicators on managed lands (e.g., species count, habitat quality)"
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRCCI",
@@ -576,7 +921,50 @@
         "actionName": "Recovery and preservation of green areas",
         "actionPriority": 17,
         "explanation": "For the city of Cama\u00e7ari, recovery and preservation of green areas assist in carbon sequestration, improve local air quality, and reduce heat island effects. Restoring habitats also safeguards biodiversity unique to the region. These initiatives have modest dependencies, allowing gradual expansion and broad community participation.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0175",
+            "ActionName": "Recovery and preservation of green areas",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "heatwaves",
+                "floods",
+                "wildfires"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Rehabilitation and protection of existing green spaces, such as parks, forests, and wetlands, and expansion of green areas through planting of trees and vegetation in urban and peri-urban areas. These areas provide natural solutions for managing water resources, reducing heat stress, improving air quality, and enhancing biodiversity.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 1,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 1,
+                "mobility": 1,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Availability of suitable land for green spaces",
+                "Access to water resources for irrigation"
+            ],
+            "KeyPerformanceIndicators": [
+                "Area of green spaces created or restored.",
+                "Biodiversity indices in green areas.",
+                "Community engagement in green space activities."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRCCI",
@@ -593,7 +981,6 @@
             "ActionType": [
                 "adaptation"
             ],
-            "AdaptationCategory": "Ecosystem-based\u00a0actions",
             "Hazard": [
                 "droughts"
             ],
@@ -602,9 +989,7 @@
             "PrimaryPurpose": [
                 "climate_resilience"
             ],
-            "InterventionType": null,
             "Description": "\"Watershed Preservation\" involves the protection and conservation of natural watershed areas to safeguard water quality, biodiversity, and ecosystem services. This initiative aims to ensure sustainable water management and resilience to the impacts of climate change.",
-            "BehavioralChangeTargeted": null,
             "CoBenefits": {
                 "air_quality": 0,
                 "water_quality": 1,
@@ -614,7 +999,7 @@
                 "mobility": 0,
                 "stakeholder_engagement": 0
             },
-            "EquityAndInclusionConsiderations": "The \"Watershed Preservation\" initiative promotes equity and inclusion by prioritizing the protection of natural resources that are vital for vulnerable and underserved communities. These communities often rely on local watersheds for their drinking water, agriculture, and livelihoods, making their preservation essential for their well-being. \n\nBy safeguarding water quality and ecosystem services, the action directly benefits those who may lack access to clean water and healthy environments, thereby addressing disparities in resource access. Additionally, the initiative may involve community engagement and participation, ensuring that the voices of marginalized groups are heard in decision-making processes related to watershed management. This inclusive approach fosters a sense of ownership and empowerment among these communities, enhancing their resilience to climate change impacts. \n\nOverall, the focus on sustainable water management through watershed preservation inherently supports the needs and rights of vulnerable populations, promoting social equity and environmental justice.",
+            "EquityAndInclusionConsiderations": "The \"Watershed Preservation\" initiative promotes equity and inclusion by prioritizing the protection of natural resources that are vital for vulnerable and underserved communities. These communities often rely on local watersheds for their drinking water, agriculture, and livelihoods, making their preservation essential for their well-being. \n \n By safeguarding water quality and ecosystem services, the action directly benefits those who may lack access to clean water and healthy environments, thereby addressing disparities in resource access. Additionally, the initiative may involve community engagement and participation, ensuring that the voices of marginalized groups are heard in decision-making processes related to watershed management. This inclusive approach fosters a sense of ownership and empowerment among these communities, enhancing their resilience to climate change impacts. \n \n Overall, the focus on sustainable water management through watershed preservation inherently supports the needs and rights of vulnerable populations, promoting social equity and environmental justice.",
             "GHGReductionPotential": null,
             "AdaptationEffectiveness": "high",
             "CostInvestmentNeeded": "low",
@@ -638,12 +1023,7 @@
                 "Water usage efficiency",
                 "Monitoring and reporting frequency"
             ],
-            "Impacts": [
-                "Improved water quality for vulnerable communities",
-                "Enhanced climate resilience through sustainable water management",
-                "Promotion of social equity and environmental justice",
-                "Empowerment of marginalized groups in decision-making processes"
-            ]
+            "PowersAndMandates": null
         }
     },
     {
@@ -655,7 +1035,56 @@
         "actionName": "Create the Municipal Climate Change Forum",
         "actionPriority": 19,
         "explanation": "For the city of Cama\u00e7ari, creating a Municipal Climate Change Forum promotes collaboration among residents, businesses, and policymakers. This inclusive platform fosters shared learning and collective decision-making that align with the city\u2019s climate goals. Its flexible structure allows for iterative improvements and ongoing engagement with local needs.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0148",
+            "ActionName": "Create the Municipal Climate Change Forum",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "droughts",
+                "diseases",
+                "heatwaves",
+                "landslides",
+                "floods",
+                "wildfires",
+                "sea-level-rise",
+                "storms"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Creation of a Municipal Climate Change Forum with the participation of community leaders, scientists, collectives, research institutes, NGOs, and members of the municipal and state administration. The Forum will serve as a reference for actions related to Climate Change, aiming to monitor future policies on the subject in the municipality, stimulate dialogue, and create a network of discussions about the climate crisis.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "medium",
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Engagement of diverse stakeholders, including community leaders, scientists, NGOs, and local authorities, to establish and sustain the Forum.",
+                "Allocation of resources to facilitate regular meetings, workshops, and events for the Forum to remain active and impactful.",
+                "Development of a clear framework and guidelines for the Forum to monitor and guide climate change policies and initiatives within the municipality."
+            ],
+            "KeyPerformanceIndicators": [
+                "Percentage of key stakeholders actively participating in the forum.",
+                "Number of climate-related policies or actions proposed through the forum.",
+                "Public engagement in forum initiatives (measured by event attendance or surveys)"
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRCCI",
@@ -666,6 +1095,47 @@
         "actionName": "Adopt the concept of green-blue infrastructure in city projects",
         "actionPriority": 20,
         "explanation": "For the city of Cama\u00e7ari, adopting the concept of green-blue infrastructure in city projects integrates natural systems into urban design. This approach mitigates flooding, improves air quality, and strengthens overall resilience to climate change. By leveraging the city\u2019s ecosystems, it delivers cost-effective benefits through sustainable planning choices.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0179",
+            "ActionName": "Adopt the concept of green-blue infrastructure in city projects",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "heatwaves",
+                "floods"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Blue infrastructure deals with urban water systems. By integrating water policies with the city's green areas, the goal is to recreate a naturally-oriented water cycle, which can bring various benefits to the city and its citizens, such as reducing heat islands and restoring ecosystems, among others.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Development of integrated water and green area policies to align urban water management with green infrastructure goals.",
+                "Availability of technical expertise and funding to implement blue infrastructure projects, such as sustainable drainage systems and water retention areas.",
+                "Collaboration with urban planners, environmental organizations, and local governments to design and manage blue infrastructure that supports ecosystem restoration and climate resilience."
+            ],
+            "KeyPerformanceIndicators": [
+                "Increase in water retention capacity of urban areas (m\u00b3).",
+                "Reduction in urban flooding incidents post-implementation (%).",
+                "Increase in green spaces linked to water features (hectares)."
+            ],
+            "PowersAndMandates": null
+        }
     }
 ]

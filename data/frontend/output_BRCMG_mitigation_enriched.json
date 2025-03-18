@@ -8,7 +8,57 @@
         "actionName": "Encourage the Use of Low-Emission Agricultural Machinery",
         "actionPriority": 1,
         "explanation": "For the city of Corumb\u00e1, encouraging low-emission agricultural machinery directly tackles a major source of greenhouse gases in local farming. It modernizes equipment and operations, reducing fuel consumption and maintenance costs. This approach aligns with local soil and climate conditions, enhancing efficiency while benefiting air quality.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0101",
+            "ActionName": "Encourage the Use of Low-Emission Agricultural Machinery",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "agriculture_forestry_and_fishing_activities"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Promote the use of low-carbon agricultural machinery, such as tractors and equipment powered by biofuels or solar energy.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "60-79"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Establishment of funding programs or incentives for farmers to purchase low-carbon agricultural machinery.",
+                "Development of partnerships with machinery manufacturers to create and distribute sustainable equipment solutions.",
+                "Implementation of training and support programs to assist farmers in integrating and maintaining low-carbon agricultural machinery."
+            ],
+            "KeyPerformanceIndicators": [
+                "Reduction in emissions from agricultural machinery (tons of CO\u2082e/year).",
+                "Number of low-emission machinery subsidies or incentives provided.",
+                "Percentage of farmers trained to operate low-emission machinery."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRCMG",
@@ -19,7 +69,57 @@
         "actionName": "Promote Sustainable Agricultural Practices",
         "actionPriority": 2,
         "explanation": "For the city of Corumb\u00e1, promoting sustainable agricultural practices helps reshape land use and crop management in ways that cut emissions at their source. Techniques like soil conservation and reduced chemical inputs also boost climate resilience for local farms. These steps foster healthier ecosystems, benefiting both the community and the environment.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0102",
+            "ActionName": "Promote Sustainable Agricultural Practices",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "agriculture_forestry_and_fishing_activities"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Encourage agricultural practices that reduce greenhouse gas emissions, such as reduced use of fertilizers and agrochemicals.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "60-79"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Development of educational programs and resources to promote sustainable agricultural practices among farmers.",
+                "Implementation of policies that incentivize the reduction of fertilizer and agrochemical use, such as subsidies for organic inputs or sustainable farming techniques.",
+                "Collaboration with agricultural organizations to provide technical support and guidance on emission-reducing practices."
+            ],
+            "KeyPerformanceIndicators": [
+                "Percentage of farmland adopting sustainable practices (% of total agricultural land).",
+                "Increase in crop yield per hectare (tons/hectare) due to sustainable methods.",
+                "Reduction in water usage for agriculture (liters or m\u00b3/hectare/year)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRCMG",
@@ -30,7 +130,57 @@
         "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
         "actionPriority": 3,
         "explanation": "For the city of Corumb\u00e1, on-demand electric transport systems lower urban emissions by replacing conventional vehicles with cleaner alternatives. They provide flexible mobility while reducing air pollution and noise. This measure can be implemented relatively quickly, bringing immediate public health benefits and supporting a more sustainable transportation network.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0068",
+            "ActionName": "Deploy on-demand transport systems with 100% electric fleets.",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "on-road"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "On-demand collective transport services, based on apps, optimize electric vehicle usage, reducing per-passenger emissions.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 2,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "80-100",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Development of digital platforms and apps to efficiently manage on-demand collective transport services.",
+                "Expansion of electric vehicle fleets tailored for shared transport solutions.",
+                "Implementation of policies and incentives to encourage the adoption and use of shared electric transport services."
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of active users of the on-demand electric fleet system.",
+                "Percentage of urban transport demand met by on-demand systems.",
+                "Reduction in noise pollution levels in urban areas"
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRCMG",
@@ -41,7 +191,57 @@
         "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
         "actionPriority": 4,
         "explanation": "For the city of Corumb\u00e1, expanding cycling infrastructure and developing resilient pedestrian walkways encourages active mobility that cuts transportation emissions. Well-designed pathways can handle heavy rainfall and extreme heat, improving safety for everyone. This approach offers cost-effective, inclusive transport options with positive impacts on public health.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0044",
+            "ActionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "on-road"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "The main objective of this action is to promote active mobility, ensuring the safety, comfort, and priority of pedestrian movement, people with disabilities (or reduced mobility), and human-powered vehicles and equipment, such as bicycles and scooters.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 2,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "80-100",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Infrastructure investments in safe and accessible pedestrian walkways, bike lanes, and facilities for people with disabilities",
+                "Policy and regulatory frameworks to prioritize active mobility and establish safety standards for pedestrians and non-motorized vehicles",
+                "Public awareness campaigns to promote active mobility and educate citizens on the benefits of walking, cycling, and using other human-powered transport"
+            ],
+            "KeyPerformanceIndicators": [
+                "Kilometers of new cycling paths and walkways constructed annually.",
+                "Increase in daily usage of cycling and pedestrian infrastructure (%).",
+                "Reduction in urban transport emissions (%)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRCMG",
@@ -52,7 +252,57 @@
         "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
         "actionPriority": 5,
         "explanation": "For the city of Corumb\u00e1, expanding rail-based mass transit can significantly lower emissions by moving large numbers of passengers more efficiently. This infrastructure cuts traffic congestion and improves travel times for daily commuters. Although it requires substantial investment, a well-designed rail network aligns with long-term sustainable growth.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0057",
+            "ActionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "railways"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "These systems offer high capacity and low emissions, crucial for cities with high population density.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 1,
+                "mobility": 2,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "80-100",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "high",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Investment in the development and expansion of high-capacity public transportation infrastructure, such as electric buses and metro systems.",
+                "Implementation of policies and incentives to encourage the use of public transport over private vehicles.",
+                "Integration of renewable energy sources to power these systems, reducing emissions further."
+            ],
+            "KeyPerformanceIndicators": [
+                "Length of new transit lines built (km/year).",
+                "Reduction in road traffic congestion (%).",
+                "Reduction in private vehicle usage (number of trips avoided/year)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRCMG",
@@ -63,7 +313,57 @@
         "actionName": "Promote Urban Reforestation and Green Corridors",
         "actionPriority": 6,
         "explanation": "For the city of Corumb\u00e1, urban reforestation and green corridors enhance local air quality, offer shading, and cool densely developed areas. These green spaces also help manage stormwater, easing flood risks during heavy rains. By prioritizing trees and green belts, the city supports public well-being and biodiversity in a single step.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0133",
+            "ActionName": "Promote Urban Reforestation and Green Corridors",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "land"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Increase urban tree coverage to mitigate the urban heat island effect and enhance biodiversity.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 1,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 1,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "80-100"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Identification of priority areas and selection of native, climate-resilient species for tree planting.",
+                "Partnerships with local organizations and nurseries, and allocation of resources for planting and maintenance.",
+                "Community engagement to ensure long-term care and support."
+            ],
+            "KeyPerformanceIndicators": [
+                "Increase in urban tree canopy cover (%)",
+                "Total length of green corridors created or restored (kilometers)",
+                "Reduction in urban heat island effect temperatures (\u00b0C)"
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRCMG",
@@ -74,7 +374,57 @@
         "actionName": "Implement Agroforestry Systems",
         "actionPriority": 7,
         "explanation": "For the city of Corumb\u00e1, implementing agroforestry combines tree cultivation with traditional farming or livestock, boosting carbon absorption and soil fertility. The presence of woody perennials helps stabilize microclimates and reduces erosion. This approach can lead to higher yields and resilience against climate extremes.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0050",
+            "ActionName": "Implement Agroforestry Systems",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "agriculture_forestry_and_fishing_activities"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Promote agroforestry systems by integrating trees into food cultivation and pasture, increasing biodiversity and carbon sequestration.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "80-100"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Provision of technical support and guidance to farmers on the design and implementation of agroforestry systems.",
+                "Development of financial incentives or subsidies to make agroforestry more economically attractive.",
+                "Creation of policies that integrate agroforestry practices into agricultural land-use planning and land tenure systems."
+            ],
+            "KeyPerformanceIndicators": [
+                "Percentage of agricultural land converted to agroforestry systems (%).",
+                "Number of new agroforestry projects implemented.",
+                "Increase in carbon sequestration in agroforestry systems (tons of CO\u2082e/year)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRCMG",
@@ -85,7 +435,57 @@
         "actionName": "Support Regenerative Agriculture Practices",
         "actionPriority": 8,
         "explanation": "For the city of Corumb\u00e1, regenerative agriculture revitalizes soil health by emphasizing techniques that increase organic matter and enhance water retention. Healthier soils improve crop performance and resilience to drought or flooding. This strengthens food security and reduces long-term emissions from the agricultural sector.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0100",
+            "ActionName": "Support Regenerative Agriculture Practices",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "agriculture_forestry_and_fishing_activities"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Support regenerative agricultural practices that focus on restoring soil health and reducing carbon emissions.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "60-79"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Development of training programs and resources to educate farmers on regenerative agricultural techniques, such as cover cropping and reduced tillage.",
+                "Implementation of financial incentives or subsidies to support the adoption of regenerative practices.",
+                "Collaboration with agricultural research institutions to monitor and document the effectiveness of regenerative practices in carbon sequestration and soil health improvement."
+            ],
+            "KeyPerformanceIndicators": [
+                "Increase in soil organic carbon levels (tons/hectare).",
+                "Reduction in water usage per hectare in agricultural production (%).",
+                "Number of regenerative agriculture pilot projects implemented."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRCMG",
@@ -96,7 +496,57 @@
         "actionName": "Encourage and promote measures for the sustainable and rational use of individual motorized transportation",
         "actionPriority": 9,
         "explanation": "For the city of Corumb\u00e1, promoting the rational use of personal vehicles directly tackles traffic-related emissions. Measures like carpooling, shared mobility, and eco-driving can rapidly reduce congestion and pollution. By improving daily commuting habits, the city lowers fuel dependency and fosters healthier urban living.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0021",
+            "ActionName": "Encourage and promote measures for the sustainable and rational use of individual motorized transportation",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "on-road"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "The objective of this action is to rationalize the use of individual motorized transportation, reducing its share in the mobility matrix. It is also important to regulate private app-based transportation services, aiming to provide quality service integrated with the city's overall mobility.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": -1,
+                "housing": 0,
+                "mobility": 1,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "80-100",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "high",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Development of policies and regulations to reduce the use of individual motorized transportation and encourage alternative modes of transport",
+                "Integration of private app-based transportation services with the city's public transportation system for seamless mobility",
+                "Investment in public transport infrastructure to provide accessible, reliable, and high-quality alternatives to private car usage"
+            ],
+            "KeyPerformanceIndicators": [
+                "Percentage reduction in private vehicle use in the city (%).",
+                "Increase in public transportation ridership annually (%).",
+                "Reduction in CO\u2082 equivalent emissions from reduced motorized transportation (tons/year)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRCMG",
@@ -107,7 +557,57 @@
         "actionName": "Strengthen Mechanisms for Deforestation Control",
         "actionPriority": 10,
         "explanation": "For the city of Corumb\u00e1, strengthening deforestation control is critical to preserving forests that act as carbon sinks and protect biodiversity. Limiting illegal land clearing safeguards water resources and reduces the severity of climate extremes like droughts or floods. This protective approach also maintains ecological balance necessary for local agriculture.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0134",
+            "ActionName": "Strengthen Mechanisms for Deforestation Control",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "land"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Enhance monitoring and enforcement to prevent illegal deforestation and promote sustainable land use.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "80-100"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Strong legal framework, advanced monitoring technologies (satellites and drones), and capacity building for local authorities.",
+                "Collaboration with local communities and adequate funding for enforcement efforts.",
+                "Transparency and accountability in reporting to ensure effective implementation."
+            ],
+            "KeyPerformanceIndicators": [
+                "Total area monitored for deforestation (hectares/year).",
+                "Reduction in annual deforestation rate (%).",
+                "Amount of emissions avoided by reducing deforestation (tCO\u2082e)."
+            ],
+            "PowersAndMandates": [
+                "national"
+            ]
+        }
     },
     {
         "locode": "BRCMG",
@@ -118,7 +618,57 @@
         "actionName": "Create Incentives for Agroforestry Practices in Livestock Systems",
         "actionPriority": 11,
         "explanation": "For the city of Corumb\u00e1, providing incentives for agroforestry in livestock systems allows farmers to integrate trees with grazing activities. This fosters richer habitats, boosts forage quality, and enhances carbon sequestration on farmland. Such mixed-use landscapes can improve rural livelihoods and environmental resilience simultaneously.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0084",
+            "ActionName": "Create Incentives for Agroforestry Practices in Livestock Systems",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "agriculture_forestry_and_fishing_activities"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Create financial and technical incentives for integrating agroforestry practices into livestock systems, promoting carbon capture, soil protection, and biodiversity improvement.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "60-79"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Development of financial incentive programs, such as subsidies or tax breaks, to support farmers in integrating agroforestry with livestock systems.",
+                "Provision of technical assistance and training to farmers on best practices for agroforestry integration into livestock operations.",
+                "Collaboration with agricultural and environmental organizations to monitor and assess the impacts of agroforestry practices on carbon capture, soil health, and biodiversity."
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of financial incentives provided to integrate agroforestry in livestock systems.",
+                "Increase in soil quality and vegetation cover in managed properties (%).",
+                "Growth in biodiversity in agroforestry areas (% of identified species)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRCMG",
@@ -129,7 +679,57 @@
         "actionName": "Promote Organic Farming",
         "actionPriority": 12,
         "explanation": "For the city of Corumb\u00e1, promoting organic farming eliminates synthetic fertilizers and pesticides that contribute to greenhouse gas emissions and water contamination. Healthier soils become more drought-resistant and produce higher-quality crops. This approach also lessens public health risks, creating safer communities and ecosystems.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0096",
+            "ActionName": "Promote Organic Farming",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "agriculture_forestry_and_fishing_activities"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Encourage the adoption of organic farming practices that avoid the use of chemicals and contribute to soil health and carbon capture.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "60-79"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Provision of financial incentives, subsidies, or grants to support the transition to organic farming practices.",
+                "Development of training and support networks to educate farmers on organic farming methods and their benefits.",
+                "Establishment of certification systems and market access strategies to ensure the economic viability of organic products."
+            ],
+            "KeyPerformanceIndicators": [
+                "Percentage of agricultural land under organic farming practices (%).",
+                "Increase in soil organic carbon content (tons of carbon per hectare).",
+                "Reduction in the use of chemical fertilizers and pesticides (kilograms/hectare/year)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRCMG",
@@ -140,7 +740,56 @@
         "actionName": "Implementation of urban toll.",
         "actionPriority": 13,
         "explanation": "For the city of Corumb\u00e1, implementing an urban toll reduces non-essential car travel and encourages commuters to choose alternatives like public transit or carpooling. By easing congestion, the city lowers traffic emissions and improves air quality in heavily traveled zones. This measure also promotes more efficient land use and mobility habits.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0139",
+            "ActionName": "Implementation of urban toll.",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "on-road"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Establishment of a congestion charge and/or license plate rotation for light vehicles in saturated areas and at saturated times",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": -1,
+                "housing": 0,
+                "mobility": 2,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "80-100",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Establish a clear legal framework and invest in technology for monitoring and enforcement (e.g., cameras, sensors).",
+                "Launch awareness campaigns and ensure availability of efficient public transportation or alternative mobility solutions.",
+                "Collaborate with local governments and transport agencies, and set up systems for monitoring and evaluating the policy's effectiveness."
+            ],
+            "KeyPerformanceIndicators": [
+                "Reduction of CO\u2082 emissions from urban road transport (tCO\u2082e/year).",
+                "Revenue generated by the implementation of the urban congestion charge (R$)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRCMG",
@@ -151,7 +800,57 @@
         "actionName": "Create credit lines for residential and community wind energy projects",
         "actionPriority": 14,
         "explanation": "For the city of Corumb\u00e1, offering credit lines for wind energy projects encourages the adoption of clean power, cutting reliance on fossil fuels. By easing financial barriers, more households and communities can install turbines that reduce both emissions and electricity costs. This decentralized approach strengthens the city\u2019s overall energy resilience.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0005",
+            "ActionName": "Create credit lines for residential and community wind energy projects",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "stationary_energy"
+            ],
+            "Subsector": [
+                "energy_generation_supplied_to_the_grid"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Establish accessible financing programs to support the development and adoption of wind energy systems in households and community-based projects, enabling a transition to cleaner energy sources.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 2,
+                "housing": 2,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": "60-79",
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Availability of financial programs, grants, or subsidies to make wind energy systems affordable for households and community projects",
+                "Access to technical expertise and resources to guide the installation and maintenance of wind energy systems in residential and community settings",
+                "Policy and regulatory support to encourage the adoption of wind energy, including streamlined permitting processes and incentives for clean energy projects"
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of wind energy projects financed annually.",
+                "Installed capacity of wind energy systems from credit-supported projects (MW).",
+                "Estimated reduction in CO\u2082 equivalent emissions from wind energy adoption."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRCMG",
@@ -162,7 +861,57 @@
         "actionName": "Accelerate Environmental Regularization of Rural Properties",
         "actionPriority": 15,
         "explanation": "For the city of Corumb\u00e1, accelerating environmental regularization clarifies property boundaries and enforces sustainable land-use practices. This prevents unlawful deforestation and aligns agricultural expansion with conservation goals. Well-defined rules also streamline compliance, ensuring long-term protection of local ecosystems.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0127",
+            "ActionName": "Accelerate Environmental Regularization of Rural Properties",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "agriculture_forestry_and_fishing_activities"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Implement programs to register properties in the Rural Environmental Registry (CAR) and adhere to environmental restoration commitments.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 2,
+                "habitat": 1,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "60-79"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Access to digital platforms and technical training for property registration and restoration processes.",
+                "Financial incentives and partnerships with environmental agencies to support implementation.",
+                "Monitoring and enforcement mechanisms to ensure compliance with restoration commitments."
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of rural properties with regularised Rural Environmental Registration (CAR).",
+                "Total area of native vegetation protected or restored on regularised properties (hectares).",
+                "Annual reduction in greenhouse gas emissions (tCO\u2082e) due to regularisation."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRCMG",
@@ -173,7 +922,57 @@
         "actionName": "Expand rural electrification with renewable energy",
         "actionPriority": 16,
         "explanation": "For the city of Corumb\u00e1, expanding rural electrification with renewable energy ensures reliable power in remote communities while reducing greenhouse gas emissions. Solar or wind solutions help replace diesel generators and create lower-cost electricity. This initiative also boosts social equity by granting modern services to underrepresented regions.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0006",
+            "ActionName": "Expand rural electrification with renewable energy",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "stationary_energy"
+            ],
+            "Subsector": [
+                "energy_generation_supplied_to_the_grid"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Extend access to electricity in rural areas by implementing renewable energy solutions such as solar panels, wind turbines, and microgrids, ensuring reliable, clean, and sustainable power for underserved communities.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 1,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 1,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": "80-100",
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "high",
+            "TimelineForImplementation": ">10 years",
+            "Dependencies": [
+                "Availability of funding and financial mechanisms to support the installation of renewable energy systems in rural areas",
+                "Development of infrastructure, such as microgrids, to ensure reliable electricity distribution in remote communities",
+                "Collaboration with local governments, energy providers, and community organizations to facilitate the implementation and maintenance of renewable energy solutions in underserved regions"
+            ],
+            "KeyPerformanceIndicators": [
+                "Percentage of rural areas electrified with renewable energy.",
+                "Installed capacity of renewable energy systems in rural areas (MW).",
+                "Annual reduction in CO\u2082 equivalent emissions from rural electrification projects."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRCMG",
@@ -190,7 +989,6 @@
             "ActionType": [
                 "mitigation"
             ],
-            "AdaptationCategory": null,
             "Hazard": null,
             "Sector": [
                 "afolu"
@@ -199,11 +997,7 @@
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "InterventionType": [
-                "programs_and_initiatives"
-            ],
             "Description": "\"Biodiversity Expansion\" initiatives aim to preserve and expand green spaces, promoting biodiversity within urban areas. By preserving natural habitats, cities enhance ecosystem services and create resilient environments that support diverse flora and fauna.",
-            "BehavioralChangeTargeted": "The targeted behavioral shift that the \"Biodiversity Expansion\" initiatives aim to achieve is an increased public engagement in the preservation and creation of green spaces within urban areas. This includes encouraging individuals and communities to actively participate in activities such as planting trees, maintaining parks, and supporting local biodiversity efforts. By fostering a greater appreciation for natural habitats and their benefits, the initiative seeks to change perceptions about the importance of green spaces, ultimately leading to more sustainable urban living practices and a collective commitment to enhancing biodiversity in cities.",
             "CoBenefits": {
                 "air_quality": 1,
                 "water_quality": 1,
@@ -243,15 +1037,7 @@
                 "Number of partnerships with local conservation organizations",
                 "Public awareness and education outreach metrics"
             ],
-            "Impacts": [
-                "Enhances urban biodiversity",
-                "Improves air quality",
-                "Improves water quality",
-                "Supports habitat preservation",
-                "Promotes equity and inclusion in green space access",
-                "Encourages community engagement in environmental stewardship",
-                "Potential GHG reduction of 40-59% in AFOLU sector"
-            ]
+            "PowersAndMandates": null
         }
     },
     {
@@ -263,7 +1049,57 @@
         "actionName": "Conduct Technical Assistance and Rural Extension (ATER) Actions",
         "actionPriority": 18,
         "explanation": "For the city of Corumb\u00e1, providing technical assistance and rural extension services empowers farmers with new methods to handle climate variability. Training in water management, sustainable livestock practices, and efficient crop rotation boosts productivity while curbing emissions. These knowledge-driven improvements help rural communities remain viable and adapt to changing environmental conditions.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0130",
+            "ActionName": "Conduct Technical Assistance and Rural Extension (ATER) Actions",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "agriculture_forestry_and_fishing_activities"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Provide technical support and training to rural producers for sustainable agricultural production.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "60-79"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Availability of skilled technical staff and tailored training programs.",
+                "Partnerships with agricultural research institutions and allocation of resources for capacity-building.",
+                "Engagement with rural producers to ensure active participation."
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of producers benefiting from rural technical assistance (% of total).",
+                "Percentage of participants adopting climate-resilient practices.",
+                "Reduced vulnerability of properties to climate risk (%).\""
+            ],
+            "PowersAndMandates": [
+                "state"
+            ]
+        }
     },
     {
         "locode": "BRCMG",
@@ -274,7 +1110,57 @@
         "actionName": "Adopt solar-powered street lighting in rural areas",
         "actionPriority": 19,
         "explanation": "For the city of Corumb\u00e1, solar-powered street lighting in rural areas brings safer, more reliable illumination without draining the electric grid. This clean energy solution enhances nighttime visibility, fostering community well-being and reducing reliance on fossil fuels. By showcasing tangible renewable applications, it helps build public support for broader sustainability measures.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0040",
+            "ActionName": "Adopt solar-powered street lighting in rural areas",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "stationary_energy"
+            ],
+            "Subsector": [
+                "residential_buildings"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Install solar-powered streetlights to improve safety and accessibility in rural communities while reducing energy costs and environmental impact.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 1,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": "80-100",
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Availability of funding or financial mechanisms to support the installation of solar-powered streetlights in rural communities",
+                "Access to technical expertise to design, install, and maintain solar-powered street lighting systems",
+                "Collaboration with local governments and communities to ensure the integration of solar streetlights into existing infrastructure and energy plans"
+            ],
+            "KeyPerformanceIndicators": [
+                "Percentage of streetlights powered by solar energy.",
+                "Annual reduction in electricity consumption (kWh).",
+                "GHG emissions avoided (tons CO\u2082e)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRCMG",
@@ -291,7 +1177,6 @@
             "ActionType": [
                 "mitigation"
             ],
-            "AdaptationCategory": null,
             "Hazard": null,
             "Sector": [
                 "transportation"
@@ -302,13 +1187,7 @@
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "InterventionType": [
-                "incentives_and_subsidies",
-                "regulations_and_laws",
-                "programs_and_initiatives"
-            ],
             "Description": "\"Vehicle Emissions\" reduction strategies focus on minimizing the environmental impact of all types of vehicles. Implementing cleaner technologies and promoting alternative fuels contribute to lower emissions, fostering sustainable and eco-friendly transportation.",
-            "BehavioralChangeTargeted": "The targeted behavioral shift that the \"Vehicle Emissions\" reduction strategies aim to achieve is the increased adoption of cleaner transportation options, such as electric vehicles and alternative fuel vehicles, as well as a greater reliance on public transportation, biking, and walking. This shift is encouraged through financial incentives, regulations mandating lower emissions, and programs promoting sustainable transportation practices, ultimately leading to a significant reduction in greenhouse gas emissions from the transportation sector.",
             "CoBenefits": {
                 "air_quality": 1,
                 "water_quality": 0,
@@ -318,7 +1197,7 @@
                 "mobility": 0,
                 "stakeholder_engagement": 0
             },
-            "EquityAndInclusionConsiderations": "The \"Vehicle Emissions\" reduction strategies inherently promote equity and inclusion by addressing the environmental impacts that disproportionately affect vulnerable and underserved communities. These communities often experience higher levels of air pollution and related health issues due to proximity to high-traffic areas and industrial zones. By implementing cleaner technologies and promoting alternative fuels, the action directly benefits these populations by improving air quality and reducing health risks.\n\nAdditionally, the focus on sustainable and eco-friendly transportation can enhance access to affordable and efficient transportation options for underserved communities, which may lack reliable public transit. This inclusivity ensures that all community members, regardless of socioeconomic status, can benefit from cleaner air and improved public health outcomes. Overall, the action recognizes and addresses the specific needs of vulnerable populations, fostering a more equitable approach to climate action.",
+            "EquityAndInclusionConsiderations": "The \"Vehicle Emissions\" reduction strategies inherently promote equity and inclusion by addressing the environmental impacts that disproportionately affect vulnerable and underserved communities. These communities often experience higher levels of air pollution and related health issues due to proximity to high-traffic areas and industrial zones. By implementing cleaner technologies and promoting alternative fuels, the action directly benefits these populations by improving air quality and reducing health risks.\n \n Additionally, the focus on sustainable and eco-friendly transportation can enhance access to affordable and efficient transportation options for underserved communities, which may lack reliable public transit. This inclusivity ensures that all community members, regardless of socioeconomic status, can benefit from cleaner air and improved public health outcomes. Overall, the action recognizes and addresses the specific needs of vulnerable populations, fostering a more equitable approach to climate action.",
             "GHGReductionPotential": {
                 "stationary_energy": null,
                 "transportation": "80-100",
@@ -348,12 +1227,7 @@
                 "Percentage of low-emission zones established",
                 "Investment in sustainable transportation infrastructure"
             ],
-            "Impacts": [
-                "Significant reduction in greenhouse gas emissions from the transportation sector",
-                "Improved air quality benefiting vulnerable and underserved communities",
-                "Increased adoption of cleaner transportation options",
-                "Enhanced access to affordable and efficient transportation for underserved populations"
-            ]
+            "PowersAndMandates": null
         }
     }
 ]

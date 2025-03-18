@@ -8,7 +8,55 @@
         "actionName": "Strengthen the healthcare network to attend to climate victims",
         "actionPriority": 1,
         "explanation": "For the city of Corumb\u00e1, strengthening the healthcare network equips medical facilities to handle rapid spikes in demand after extreme weather events. This measure focuses on safeguarding vulnerable residents by providing timely care during floods, heatwaves, or other climate-induced crises. It also aligns with the city\u2019s capacity to adapt existing systems, reducing health risks and long-term recovery costs.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0145",
+            "ActionName": "Strengthen the healthcare network to attend to climate victims",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "heatwaves",
+                "diseases",
+                "landslides",
+                "floods",
+                "storms",
+                "droughts"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Improve the infrastructure of healthcare units to assist people who require medical care due to impacts associated with climate risks (climate victims), such as those affected by heat waves or floods, especially in more vulnerable areas. Develop action plans to prepare the healthcare network for extreme climate-related situations.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "high",
+            "TimelineForImplementation": ">10 years",
+            "Dependencies": [
+                "Investment in the renovation and expansion of healthcare facilities, ensuring they are equipped to handle climate-related health impacts, particularly in vulnerable areas.",
+                "Development of action plans and training programs for healthcare professionals to respond to extreme climate events like heatwaves and floods.",
+                "Collaboration with local authorities, emergency response teams, and climate experts to create a comprehensive framework for preparing the healthcare network for climate risks."
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of healthcare facilities upgraded for climate-related emergencies.",
+                "Increase in healthcare staff trained in climate emergency response (%).",
+                "Number of climate-related injuries treated successfully.",
+                "."
+            ],
+            "PowersAndMandates": [
+                "national"
+            ]
+        }
     },
     {
         "locode": "BRCMG",
@@ -25,7 +73,6 @@
             "ActionType": [
                 "adaptation"
             ],
-            "AdaptationCategory": "Health Systems Strengthening",
             "Hazard": [
                 "heatwaves",
                 "floods",
@@ -39,9 +86,7 @@
             "PrimaryPurpose": [
                 "climate_resilience"
             ],
-            "InterventionType": null,
             "Description": "Enhancing access to health care services, including health and nutrition services, clean water, sanitation, and culturally appropriate mental health resources. Expanding telemedicine capabilities enables efficient health service delivery, particularly for remote and underserved populations. Strengthening basic public health systems and disaster preparedness can rapidly reduce vulnerability to climate-related health risks.",
-            "BehavioralChangeTargeted": null,
             "CoBenefits": {
                 "air_quality": 1,
                 "water_quality": 2,
@@ -68,12 +113,7 @@
                 "Number of culturally tailored health programs implemented",
                 "Improved water and sanitation access metrics"
             ],
-            "Impacts": [
-                "Improved public health",
-                "Reduced health inequities",
-                "Enhanced disaster preparedness",
-                "Stronger health system resilience"
-            ]
+            "PowersAndMandates": null
         }
     },
     {
@@ -85,7 +125,50 @@
         "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
         "actionPriority": 3,
         "explanation": "For the city of Corumb\u00e1, relocating communities from high-risk zones and restoring local ecosystems directly reduces exposure to floods and other hazards. By prioritizing safer locations, this measure lowers long-term risks and damages. Restoring natural habitats simultaneously revives ecological services crucial for flood control and soil stability.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0181",
+            "ActionName": "Relocation and Environmental Restoration in Vulnerable Areas",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "landslides",
+                "floods"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "A comprehensive project addressing the socio-environmental vulnerability of an informal settlement. It includes relocating residents from flood-prone areas, restoring the environment, and providing infrastructure and social services.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 2,
+                "mobility": 1,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Adequate funding",
+                "Inter-agency coordination",
+                "Land tenure security"
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of households relocated.",
+                "Environmental restoration progress.",
+                "Flood risk reduction."
+            ],
+            "PowersAndMandates": [
+                "state"
+            ]
+        }
     },
     {
         "locode": "BRCMG",
@@ -96,7 +179,49 @@
         "actionName": "Preventive maintenance of drainage systems",
         "actionPriority": 4,
         "explanation": "For the city of Corumb\u00e1, preventive maintenance of drainage systems reduces flood hazards by keeping water channels clear and functional. It addresses the region\u2019s seasonal heavy rains, minimizing waterlogging in urban and residential areas. Regular upkeep also helps preserve infrastructure, cutting long-term costs and health risks linked to stagnant water.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0173",
+            "ActionName": "Preventive maintenance of drainage systems",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "floods",
+                "storms"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Regular upkeep and cleaning of urban drainage systems, including storm drains, sewers, and retention basins, to ensure efficient water flow and prevent blockages that can lead to flooding during heavy rainfall events.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 1,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 1,
+                "mobility": 1,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "medium",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Budget allocation for maintenance activities",
+                "Regular inspections to identify potential issues"
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of drainage blockages cleared.",
+                "Percentage of drainage systems in good condition.",
+                "Number of reported flood incidents."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRCMG",
@@ -113,7 +238,6 @@
             "ActionType": [
                 "adaptation"
             ],
-            "AdaptationCategory": "Climate-Resilient Urban Planning",
             "Hazard": [
                 "floods",
                 "landslides"
@@ -126,9 +250,7 @@
             "PrimaryPurpose": [
                 "climate_resilience"
             ],
-            "InterventionType": null,
             "Description": "The development and implementation of building codes and architectural design regulations aimed at integrating climate adaptation parameters. These codes are focused on reducing risks from climate-induced hazards like floods and landslides. They also support climate-resilient urban development by guiding land use, construction practices, and infrastructure standards. The initiative fosters strategic long-term urban planning to coordinate public and private investments in adaptation, including the creation of safe zones and the transformation of precarious settlements. It ensures that new infrastructure is resilient to climate risks and that urban spaces are safe and sustainable for current and future populations.",
-            "BehavioralChangeTargeted": null,
             "CoBenefits": {
                 "air_quality": 2,
                 "water_quality": 0,
@@ -152,11 +274,7 @@
                 "Increased availability of safe housing in risk areas",
                 "Implementation rate of eco-parks and eco-gardens in vulnerable areas"
             ],
-            "Impacts": [
-                "Improved public health",
-                "Increased urban livability",
-                "Reduced disaster-related costs"
-            ]
+            "PowersAndMandates": null
         }
     },
     {
@@ -174,7 +292,6 @@
             "ActionType": [
                 "adaptation"
             ],
-            "AdaptationCategory": "Infrastructure Improvement",
             "Hazard": [
                 "droughts",
                 "floods",
@@ -189,9 +306,7 @@
             "PrimaryPurpose": [
                 "climate_resilience"
             ],
-            "InterventionType": null,
             "Description": "Enhancing food storage and distribution systems by improving transportation infrastructure, optimizing trade networks, and shortening supply chains to ensure local food availability and resilience to climate impacts. This action also includes increasing the capacity of local food storage facilities to reduce post-harvest losses, addressing inefficiencies in logistics, and bolstering infrastructure for perishable goods. It aims to improve food security and reduce vulnerability to extreme events, disruptions, and cascading impacts, especially during pandemics and other crises.",
-            "BehavioralChangeTargeted": null,
             "CoBenefits": {
                 "air_quality": 0,
                 "water_quality": 1,
@@ -218,12 +333,7 @@
                 "Improved transportation efficiency for food distribution",
                 "Shortened supply chains"
             ],
-            "Impacts": [
-                "Improved food security",
-                "Resilience to climate-induced disruptions",
-                "Reduced greenhouse gas emissions from supply chains",
-                "Enhanced local economic growth"
-            ]
+            "PowersAndMandates": null
         }
     },
     {
@@ -235,7 +345,56 @@
         "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
         "actionPriority": 7,
         "explanation": "For the city of Corumb\u00e1, establishing a formal emergency response plan ensures coordinated action when extreme weather strikes. This includes clear protocols for evacuation, resource allocation, and medical assistance. By unifying various sectors, the plan boosts overall readiness and mitigates chaos during climate-induced crises.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0169",
+            "ActionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "droughts",
+                "heatwaves",
+                "diseases",
+                "landslides",
+                "floods",
+                "wildfires",
+                "sea-level-rise",
+                "storms"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "This action focuses on preparing the municipality to respond to extreme events, aiming to provide a rapid response that minimizes the impacts on the population.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Development of a comprehensive emergency response plan that includes coordination between local authorities, emergency services, and community organizations",
+                "Investment in early warning systems and infrastructure to ensure timely and effective responses to extreme events",
+                "Training and capacity-building for local responders and communities to enhance preparedness and resilience to extreme events"
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of emergency response partnerships established.",
+                "Average response time during extreme weather events (hours).",
+                "Percentage reduction in casualties and damages during extreme weather events annually (%)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRCMG",
@@ -252,7 +411,6 @@
             "ActionType": [
                 "adaptation"
             ],
-            "AdaptationCategory": "Social Protection and Risk Reduction",
             "Hazard": [
                 "droughts",
                 "heatwaves",
@@ -267,9 +425,7 @@
             "PrimaryPurpose": [
                 "climate_resilience"
             ],
-            "InterventionType": null,
             "Description": "Social safety nets encompass adaptive social protection mechanisms to reduce food insecurity and malnutrition, especially for vulnerable populations. These include cash transfers, school feeding programs, public work initiatives, unemployment compensation, land reforms, credit and insurance schemes. Integrated approaches combine climate risk assessments with disaster risk reduction, education, and social equity to enhance resilience to climate stresses.",
-            "BehavioralChangeTargeted": null,
             "CoBenefits": {
                 "air_quality": 0,
                 "water_quality": 1,
@@ -294,11 +450,7 @@
                 "Increase in education access for vulnerable groups",
                 "Participation in social protection programs"
             ],
-            "Impacts": [
-                "Improved public health",
-                "Reduced poverty and inequality",
-                "Strengthened resilience and social empowerment"
-            ]
+            "PowersAndMandates": null
         }
     },
     {
@@ -310,7 +462,53 @@
         "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
         "actionPriority": 9,
         "explanation": "For the city of Corumb\u00e1, diagnosing and restoring ZEIS addresses critical housing and infrastructure issues faced by low-income communities. By identifying and upgrading risk-prone areas, the city can reduce the impacts of floods and heatwaves on vulnerable residents. This improvement process also strengthens overall urban resilience and equity.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0151",
+            "ActionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "sea-level-rise",
+                "floods",
+                "landslides",
+                "diseases",
+                "heatwaves"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Priority to ZEIS areas in housing improvement actions and the application of resources from the Urbanization Fund, with the implementation of urban infrastructure that considers climate adaptation in these spaces. Use of Nature-based Solutions (NbS) in the adaptation of environmental sanitation and green and blue infrastructures that enhance leisure, culture, urban agriculture, and activities to strengthen community associations.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 2,
+                "mobility": 1,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "medium",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Availability of funding from the Urbanization Fund and other financial mechanisms to support housing improvements and urban infrastructure in ZEIS areas",
+                "Collaboration between urban planners, environmental experts, and local communities to design and implement nature-based solutions (NbS) for urban infrastructure",
+                "Policy and regulatory frameworks that integrate climate adaptation measures into urban planning, ensuring that investments prioritize environmental sustainability and community"
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of ZEIS areas diagnosed and restored.",
+                "Percentage of residents benefiting from restored areas (%).",
+                "Public investments allocated to ZEIS areas (currency amount)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRCMG",
@@ -327,7 +525,6 @@
             "ActionType": [
                 "adaptation"
             ],
-            "AdaptationCategory": "Integrated Farm and Fishery Adaptation",
             "Hazard": [
                 "droughts",
                 "heatwaves",
@@ -344,9 +541,7 @@
             "PrimaryPurpose": [
                 "climate_resilience"
             ],
-            "InterventionType": null,
             "Description": "Implementing a range of strategies to adapt farms and fisheries to climate impacts. This includes changing fishing gear or vessel power, adopting new crop varieties or adjusting planting schedules, improving irrigation schemes, integrating crop and livestock systems, relocating livestock with improved pasture management, and adopting agroecological and agroforestry systems. Technological innovations like smart farming and financial measures such as subsidies support these adaptations.",
-            "BehavioralChangeTargeted": null,
             "CoBenefits": {
                 "air_quality": 1,
                 "water_quality": 2,
@@ -372,11 +567,7 @@
                 "Adoption rate of integrated systems",
                 "Reduction in climate-related yield losses"
             ],
-            "Impacts": [
-                "Improved food security",
-                "Enhanced ecosystem health",
-                "Increased resilience of agricultural and fishery systems"
-            ]
+            "PowersAndMandates": null
         }
     },
     {
@@ -394,7 +585,6 @@
             "ActionType": [
                 "adaptation"
             ],
-            "AdaptationCategory": "Infrastructure Adaptation",
             "Hazard": [
                 "droughts",
                 "floods",
@@ -409,9 +599,7 @@
             "PrimaryPurpose": [
                 "climate_resilience"
             ],
-            "InterventionType": null,
             "Description": "Ensuring access to safe drinking water infrastructure, protecting health services, and improving sanitation systems to mitigate climate impacts. This includes developing adaptive measures for water security against droughts, floods, and sea-level rise. Strengthening infrastructure resilience ensures equitable access to health services, reduces contamination risks, and addresses the impacts of climate-induced hazards.",
-            "BehavioralChangeTargeted": null,
             "CoBenefits": {
                 "air_quality": 0,
                 "water_quality": 2,
@@ -436,11 +624,7 @@
                 "improved access to potable water",
                 "number of resilient health facilities developed"
             ],
-            "Impacts": [
-                "Improved public health",
-                "enhanced water security",
-                "resilience against climate-induced hazards"
-            ]
+            "PowersAndMandates": null
         }
     },
     {
@@ -452,7 +636,50 @@
         "actionName": "Recovery and preservation of green areas",
         "actionPriority": 12,
         "explanation": "For the city of Corumb\u00e1, recovering and preserving green areas offers natural flood defenses, heat mitigation, and ecological benefits. Restoring habitats strengthens biodiversity while reducing soil erosion. These improvements create healthier surroundings, reinforcing the city\u2019s overall capacity to handle extreme climatic conditions.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0175",
+            "ActionName": "Recovery and preservation of green areas",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "heatwaves",
+                "floods",
+                "wildfires"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Rehabilitation and protection of existing green spaces, such as parks, forests, and wetlands, and expansion of green areas through planting of trees and vegetation in urban and peri-urban areas. These areas provide natural solutions for managing water resources, reducing heat stress, improving air quality, and enhancing biodiversity.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 1,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 1,
+                "mobility": 1,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Availability of suitable land for green spaces",
+                "Access to water resources for irrigation"
+            ],
+            "KeyPerformanceIndicators": [
+                "Area of green spaces created or restored.",
+                "Biodiversity indices in green areas.",
+                "Community engagement in green space activities."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRCMG",
@@ -469,7 +696,6 @@
             "ActionType": [
                 "adaptation"
             ],
-            "AdaptationCategory": "Food System Transformation",
             "Hazard": [
                 "droughts",
                 "heatwaves",
@@ -484,9 +710,7 @@
             "PrimaryPurpose": [
                 "climate_resilience"
             ],
-            "InterventionType": null,
             "Description": "Reducing food loss and waste through improved food production, distribution, and consumption practices. Actions include enhancing agricultural techniques, adopting water-saving technologies, implementing low-cost storage solutions, and promoting plant-based diets. Policymakers can encourage these behaviors with appropriate pricing policies, sustainable agriculture initiatives, and support for disadvantaged groups. The action emphasizes shifting to healthier diets, reducing overconsumption, and supporting local food systems to mitigate greenhouse gas emissions and ensure food security under climate change.",
-            "BehavioralChangeTargeted": null,
             "CoBenefits": {
                 "air_quality": 1,
                 "water_quality": 2,
@@ -513,13 +737,7 @@
                 "Improved food security indicators",
                 "Reduction in GHG emissions from food systems"
             ],
-            "Impacts": [
-                "Improved food security",
-                "Enhanced health outcomes",
-                "Reduced greenhouse gas emissions",
-                "Strengthened local food systems",
-                "Greater resilience to climate variability"
-            ]
+            "PowersAndMandates": null
         }
     },
     {
@@ -531,7 +749,52 @@
         "actionName": "Strengthen programs for control and conservation of protected areas",
         "actionPriority": 14,
         "explanation": "For the city of Corumb\u00e1, strengthening conservation programs shields critical ecosystems from deforestation and degradation. Preserved natural areas help regulate water cycles, store carbon, and protect biodiversity, all of which reinforce resilience against floods or droughts. Protecting these spaces also safeguards cultural values and long-term economic prospects, such as ecotourism.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0162",
+            "ActionName": "Strengthen programs for control and conservation of protected areas",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "floods",
+                "landslides",
+                "heatwaves",
+                "diseases"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "This action focuses on implementing a series of integrated strategies to enhance environmental conservation and maximize its benefits, such as expanding protected areas, developing management plans for conservation units, and training ecotourism guides to strengthen sustainable tourism.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Expansion of protected areas to enhance environmental conservation.",
+                "Development of management plans for conservation units.",
+                "Training of ecotourism guides to promote sustainable tourism."
+            ],
+            "KeyPerformanceIndicators": [
+                "Percentage increase in area of protected regions (%).",
+                "Reduction in deforestation rates in protected areas annually (%).",
+                "Number of conservation programs strengthened annually."
+            ],
+            "PowersAndMandates": [
+                "state"
+            ]
+        }
     },
     {
         "locode": "BRCMG",
@@ -542,7 +805,50 @@
         "actionName": "Install meteorological stations and air quality and temperature monitoring systems in critical areas",
         "actionPriority": 15,
         "explanation": "For the city of Corumb\u00e1, installing meteorological and air quality monitoring systems in critical areas provides real-time data to anticipate floods, heatwaves, and pollution spikes. This information allows more precise resource allocation and faster emergency responses. Access to accurate environmental insights also supports long-term planning and policy decisions.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0166",
+            "ActionName": "Install meteorological stations and air quality and temperature monitoring systems in critical areas",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "heatwaves",
+                "storms"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "This action seeks to implement air quality and temperature monitoring stations. Therefore, studies and surveys should first be conducted to identify the areas of the city with the highest concentrations of air pollutants and elevated temperatures, through mobile measurements using sampling methods.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 1,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Availability of funding and technical expertise to set up air quality and temperature monitoring stations in key locations",
+                "Conducting studies and surveys to identify areas with high concentrations of pollutants and elevated temperatures through mobile sampling methods",
+                "Collaboration with environmental agencies and local authorities to integrate the collected data into urban planning and public health strategies"
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of new meteorological and air quality stations installed annually.",
+                "Percentage coverage of critical areas by monitoring systems (%).",
+                "Average time for data processing and dissemination from monitoring systems (hours)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRCMG",
@@ -553,7 +859,51 @@
         "actionName": "Implement Loss Reduction and Control Program promoting water security for the municipality",
         "actionPriority": 16,
         "explanation": "For the city of Corumb\u00e1, a water loss reduction and control program secures this vital resource against droughts or infrastructure failures. By minimizing leaks and wastage, the city can better manage supply, especially during extreme weather. Such a strategy also strengthens overall resilience, ensuring consistent water availability for residents and businesses.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0150",
+            "ActionName": "Implement Loss Reduction and Control Program promoting water security for the municipality",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "droughts",
+                "heatwaves",
+                "diseases"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Ensure the availability of water in sufficient quantity and quality for the population of the city. Implement the Loss Reduction and Control Program, which aims to reduce per capita water consumption, along with the reduction of physical losses. Conduct studies, regulate, and facilitate the reuse of water for non-potable purposes, and implement equipment for the use of rainwater.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 2,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Availability of funding and technical expertise to implement water loss reduction systems, including infrastructure improvements and monitoring technologies",
+                "Development of regulatory frameworks to support water reuse for non-potable purposes and rainwater harvesting systems in both residential and commercial settings",
+                "Collaboration between local governments, utility companies, and communities to ensure efficient water management and raise awareness about water conservation practices"
+            ],
+            "KeyPerformanceIndicators": [
+                "Percentage reduction in losses within the water supply system.",
+                "Per capita water consumption reduction index (liters).",
+                "Number of new water supply sources implemented."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRCMG",
@@ -570,7 +920,6 @@
             "ActionType": [
                 "adaptation"
             ],
-            "AdaptationCategory": "Infrastructural Adaptation",
             "Hazard": [
                 "floods",
                 "droughts",
@@ -585,9 +934,7 @@
             "PrimaryPurpose": [
                 "climate_resilience"
             ],
-            "InterventionType": null,
             "Description": "Strengthening and upgrading existing infrastructure, including roads, housing, and energy systems, to improve resilience against climate risks such as floods, droughts, and heatwaves. Efforts include Air conditioning, using thermosiphons for permafrost degradation, increasing rooftop albedo (for reflectivity) and shading",
-            "BehavioralChangeTargeted": null,
             "CoBenefits": {
                 "air_quality": 1,
                 "water_quality": 1,
@@ -611,11 +958,7 @@
                 "Reduced infrastructure failure during hazards",
                 "Increased capacity for housing and energy systems"
             ],
-            "Impacts": [
-                "Enhanced urban resilience",
-                "Safer housing",
-                "Reduced economic losses due to climate impacts"
-            ]
+            "PowersAndMandates": null
         }
     },
     {
@@ -627,7 +970,56 @@
         "actionName": "Development of Climate Action Plan",
         "actionPriority": 18,
         "explanation": "For the city of Corumb\u00e1, developing a Climate Action Plan sets a unified vision for reducing emissions and adapting to environmental changes. By outlining specific goals, sectors, and timelines, this plan ensures resources are used efficiently. The strategic approach also promotes collaboration among stakeholders, guiding comprehensive climate resilience initiatives.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0176",
+            "ActionName": "Development of Climate Action Plan",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "storms",
+                "sea-level-rise",
+                "wildfires",
+                "floods",
+                "landslides",
+                "diseases",
+                "heatwaves",
+                "droughts"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "A comprehensive plan outlining a city's strategies and actions to mitigate greenhouse gas emissions and adapt to the impacts of climate change which typically includes an assessment of the city's climate risks and vulnerabilities, setting emission reduction targets, and implementation of actions across various sectors such as energy, transportation, waste management, and urban planning.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 0,
+                "housing": 1,
+                "mobility": 1,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "medium",
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Political will and commitment from government",
+                "Stakeholder engagement and collaboration",
+                "Funding and resources for implementation"
+            ],
+            "KeyPerformanceIndicators": [
+                "Greenhouse gas emission reduction targets.",
+                "Number of climate adaptation actions implemented.",
+                "Investment in climate mitigation and adaptation projects."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRCMG",
@@ -638,7 +1030,51 @@
         "actionName": "Hydrological Monitoring System with Telemetry Stations",
         "actionPriority": 19,
         "explanation": "For the city of Corumb\u00e1, a hydrological monitoring system equipped with telemetry stations delivers real-time water level and flow data. This proactive approach helps the city anticipate floods, enabling quicker warnings and effective resource deployment. It also supports long-term water management strategies, informing agricultural planning and infrastructure design.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0164",
+            "ActionName": "Hydrological Monitoring System with Telemetry Stations",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "droughts",
+                "floods",
+                "storms"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Implementation of a hydrological monitoring system with telemetry stations to monitor rainfall, water levels, and meteorological variables in real-time.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 1,
+                "mobility": 1,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Equipment and infrastructure",
+                "Robust data management system",
+                "Institutional coordination"
+            ],
+            "KeyPerformanceIndicators": [
+                "Timeliness of data",
+                "Cost-effectiveness",
+                "Mitigation effectiveness"
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRCMG",
@@ -649,6 +1085,51 @@
         "actionName": "Build safe housing and implement urban rehabilitation projects for populations living in high-risk areas",
         "actionPriority": 20,
         "explanation": "For the city of Corumb\u00e1, building safe housing and undertaking urban rehabilitation in high-risk areas secures long-term protection for residents vulnerable to floods or landslides. Upgraded dwellings reduce immediate hazards, while complementary urban improvements enhance living conditions. This approach not only addresses safety but also fosters stable neighborhoods that can better withstand climate impacts.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0170",
+            "ActionName": "Build safe housing and implement urban rehabilitation projects for populations living in high-risk areas",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "storms",
+                "floods",
+                "landslides",
+                "heatwaves"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "The priority of this action is to ensure safe housing for the population living in areas prone to landslides and flooding, as the housing deficit is one of the main factors related to these threats.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": -1,
+                "housing": 2,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "high",
+            "TimelineForImplementation": ">10 years",
+            "Dependencies": [
+                "Availability of funding and financial mechanisms to support the construction of safe housing in high-risk areas",
+                "Collaboration with urban planners and engineers to design housing solutions that are resilient to landslides and flooding",
+                "Implementation of policies to regulate land use and prevent informal settlements in areas vulnerable to climate risks"
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of safe housing units constructed annually.",
+                "Percentage reduction in population living in high-risk areas (%).",
+                "Number of urban rehabilitation projects completed annually."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     }
 ]

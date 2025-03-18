@@ -8,7 +8,56 @@
         "actionName": "Development of Climate Action Plan",
         "actionPriority": 1,
         "explanation": "For the city of Maranguape, creating a Climate Action Plan sets a clear roadmap for reducing emissions and preparing for changing weather patterns. By coordinating different sectors, it ensures that municipal resources are used efficiently. This approach fosters long-term resilience and aligns local goals with broader sustainability measures.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0176",
+            "ActionName": "Development of Climate Action Plan",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "storms",
+                "sea-level-rise",
+                "wildfires",
+                "floods",
+                "landslides",
+                "diseases",
+                "heatwaves",
+                "droughts"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "A comprehensive plan outlining a city's strategies and actions to mitigate greenhouse gas emissions and adapt to the impacts of climate change which typically includes an assessment of the city's climate risks and vulnerabilities, setting emission reduction targets, and implementation of actions across various sectors such as energy, transportation, waste management, and urban planning.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 0,
+                "housing": 1,
+                "mobility": 1,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "medium",
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Political will and commitment from government",
+                "Stakeholder engagement and collaboration",
+                "Funding and resources for implementation"
+            ],
+            "KeyPerformanceIndicators": [
+                "Greenhouse gas emission reduction targets.",
+                "Number of climate adaptation actions implemented.",
+                "Investment in climate mitigation and adaptation projects."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRMGE",
@@ -25,7 +74,6 @@
             "ActionType": [
                 "adaptation"
             ],
-            "AdaptationCategory": "Infrastructural Adaptation",
             "Hazard": [
                 "floods",
                 "droughts",
@@ -40,9 +88,7 @@
             "PrimaryPurpose": [
                 "climate_resilience"
             ],
-            "InterventionType": null,
             "Description": "Strengthening and upgrading existing infrastructure, including roads, housing, and energy systems, to improve resilience against climate risks such as floods, droughts, and heatwaves. Efforts include Air conditioning, using thermosiphons for permafrost degradation, increasing rooftop albedo (for reflectivity) and shading",
-            "BehavioralChangeTargeted": null,
             "CoBenefits": {
                 "air_quality": 1,
                 "water_quality": 1,
@@ -66,11 +112,7 @@
                 "Reduced infrastructure failure during hazards",
                 "Increased capacity for housing and energy systems"
             ],
-            "Impacts": [
-                "Enhanced urban resilience",
-                "Safer housing",
-                "Reduced economic losses due to climate impacts"
-            ]
+            "PowersAndMandates": null
         }
     },
     {
@@ -88,7 +130,6 @@
             "ActionType": [
                 "adaptation"
             ],
-            "AdaptationCategory": "Technological\u00a0actions",
             "Hazard": [
                 "droughts"
             ],
@@ -97,9 +138,7 @@
             "PrimaryPurpose": [
                 "climate_resilience"
             ],
-            "InterventionType": null,
             "Description": "\"Water Savings\" technologies, including rainwater harvesting, aim to conserve water resources. This adaptation measure involves technological actions to enhance eco-engineering efforts, ensuring sustainable water use in the face of changing climate conditions.",
-            "BehavioralChangeTargeted": null,
             "CoBenefits": {
                 "air_quality": 0,
                 "water_quality": 1,
@@ -109,7 +148,7 @@
                 "mobility": 0,
                 "stakeholder_engagement": 0
             },
-            "EquityAndInclusionConsiderations": "The \"Water Savings\" technologies, such as rainwater harvesting, promote equity and inclusion by directly addressing the needs of vulnerable and underserved communities that often face water scarcity and limited access to clean water resources. By implementing these technologies, the action ensures that marginalized populations can benefit from sustainable water use practices, which are crucial for their health and livelihoods.\n\nAdditionally, the focus on eco-engineering efforts in the adaptation measure highlights a commitment to environmentally sustainable solutions that can be accessible to all community members, regardless of socioeconomic status. This approach fosters community engagement and empowerment, allowing underserved groups to participate in the decision-making processes related to water management.\n\nFurthermore, by enhancing water conservation in the face of climate change, the action helps to mitigate the disproportionate impacts of climate-related water shortages on vulnerable populations, thereby promoting resilience and equity in resource distribution. Overall, the initiative recognizes and addresses the specific challenges faced by underserved communities, ensuring that they are included in the benefits of climate adaptation strategies.",
+            "EquityAndInclusionConsiderations": "The \"Water Savings\" technologies, such as rainwater harvesting, promote equity and inclusion by directly addressing the needs of vulnerable and underserved communities that often face water scarcity and limited access to clean water resources. By implementing these technologies, the action ensures that marginalized populations can benefit from sustainable water use practices, which are crucial for their health and livelihoods.\n \n Additionally, the focus on eco-engineering efforts in the adaptation measure highlights a commitment to environmentally sustainable solutions that can be accessible to all community members, regardless of socioeconomic status. This approach fosters community engagement and empowerment, allowing underserved groups to participate in the decision-making processes related to water management.\n \n Furthermore, by enhancing water conservation in the face of climate change, the action helps to mitigate the disproportionate impacts of climate-related water shortages on vulnerable populations, thereby promoting resilience and equity in resource distribution. Overall, the initiative recognizes and addresses the specific challenges faced by underserved communities, ensuring that they are included in the benefits of climate adaptation strategies.",
             "GHGReductionPotential": null,
             "AdaptationEffectiveness": "high",
             "CostInvestmentNeeded": "high",
@@ -130,13 +169,7 @@
                 "Increase in groundwater levels",
                 "Frequency of maintenance and operational efficiency of systems"
             ],
-            "Impacts": [
-                "Enhances water conservation and resilience against droughts",
-                "Improves water quality for underserved communities",
-                "Promotes equity and inclusion in water resource management",
-                "Empowers marginalized populations through community engagement",
-                "Mitigates climate-related water shortages for vulnerable groups"
-            ]
+            "PowersAndMandates": null
         }
     },
     {
@@ -154,7 +187,6 @@
             "ActionType": [
                 "adaptation"
             ],
-            "AdaptationCategory": "Behavioural\u00a0actions",
             "Hazard": [
                 "storms"
             ],
@@ -163,9 +195,7 @@
             "PrimaryPurpose": [
                 "climate_resilience"
             ],
-            "InterventionType": null,
             "Description": "\"Managed Retreat\" strategies involve planned relocation away from high-risk areas vulnerable to climate change impacts. This adaptation measure aims to protect communities from sea-level rise, flooding, and other environmental risks.",
-            "BehavioralChangeTargeted": null,
             "CoBenefits": {
                 "air_quality": 0,
                 "water_quality": 0,
@@ -175,7 +205,7 @@
                 "mobility": 0,
                 "stakeholder_engagement": 0
             },
-            "EquityAndInclusionConsiderations": "The \"Managed Retreat\" strategies inherently promote equity and inclusion by prioritizing the safety and well-being of vulnerable or underserved communities that are most at risk from climate change impacts. By focusing on planned relocation, these strategies aim to protect marginalized populations who often lack the resources to adapt to environmental changes on their own. \n\nAdditionally, the implementation of managed retreat involves engaging affected communities in the decision-making process, ensuring that their voices and needs are considered. This participatory approach helps to address historical inequities and empowers residents to have a say in their future. \n\nFurthermore, managed retreat can provide opportunities for equitable access to safer housing and infrastructure, reducing the disproportionate burden of climate risks faced by low-income and marginalized groups. Overall, this climate action recognizes and addresses the unique challenges faced by underserved communities, fostering a more inclusive approach to climate adaptation.",
+            "EquityAndInclusionConsiderations": "The \"Managed Retreat\" strategies inherently promote equity and inclusion by prioritizing the safety and well-being of vulnerable or underserved communities that are most at risk from climate change impacts. By focusing on planned relocation, these strategies aim to protect marginalized populations who often lack the resources to adapt to environmental changes on their own. \n \n Additionally, the implementation of managed retreat involves engaging affected communities in the decision-making process, ensuring that their voices and needs are considered. This participatory approach helps to address historical inequities and empowers residents to have a say in their future. \n \n Furthermore, managed retreat can provide opportunities for equitable access to safer housing and infrastructure, reducing the disproportionate burden of climate risks faced by low-income and marginalized groups. Overall, this climate action recognizes and addresses the unique challenges faced by underserved communities, fostering a more inclusive approach to climate adaptation.",
             "GHGReductionPotential": null,
             "AdaptationEffectiveness": "medium",
             "CostInvestmentNeeded": "high",
@@ -198,13 +228,7 @@
                 "Satisfaction levels of relocated residents",
                 "Environmental impact assessments post-relocation"
             ],
-            "Impacts": [
-                "Enhances climate resilience for vulnerable communities",
-                "Promotes equity and inclusion through community engagement",
-                "Addresses historical inequities in climate adaptation",
-                "Provides safer housing and infrastructure options",
-                "Reduces risks associated with storms for marginalized populations"
-            ]
+            "PowersAndMandates": null
         }
     },
     {
@@ -216,7 +240,52 @@
         "actionName": "Build safe housing and implement urban rehabilitation projects for populations living in high-risk areas",
         "actionPriority": 5,
         "explanation": "For the city of Maranguape, building safe housing in high-risk zones reduces exposure to climate hazards like flooding or landslides. These improvements directly protect families and stabilize entire neighborhoods. By investing in urban rehabilitation, the city fosters healthier communities and lowers reconstruction costs after severe events.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0170",
+            "ActionName": "Build safe housing and implement urban rehabilitation projects for populations living in high-risk areas",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "storms",
+                "floods",
+                "landslides",
+                "heatwaves"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "The priority of this action is to ensure safe housing for the population living in areas prone to landslides and flooding, as the housing deficit is one of the main factors related to these threats.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": -1,
+                "housing": 2,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "high",
+            "TimelineForImplementation": ">10 years",
+            "Dependencies": [
+                "Availability of funding and financial mechanisms to support the construction of safe housing in high-risk areas",
+                "Collaboration with urban planners and engineers to design housing solutions that are resilient to landslides and flooding",
+                "Implementation of policies to regulate land use and prevent informal settlements in areas vulnerable to climate risks"
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of safe housing units constructed annually.",
+                "Percentage reduction in population living in high-risk areas (%).",
+                "Number of urban rehabilitation projects completed annually."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRMGE",
@@ -227,7 +296,50 @@
         "actionName": "Consolidate spaces for intersectoral coordination and public participation in climate policy",
         "actionPriority": 6,
         "explanation": "For the city of Maranguape, fostering intersectoral coordination and public engagement ensures inclusive decision-making on climate issues. Bringing diverse stakeholders together improves policy alignment and resource sharing. This approach strengthens local commitment and promotes innovative solutions tailored to community needs.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0160",
+            "ActionName": "Consolidate spaces for intersectoral coordination and public participation in climate policy",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "storms",
+                "sea-level-rise",
+                "wildfires",
+                "floods",
+                "landslides",
+                "diseases",
+                "heatwaves",
+                "droughts"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Consolidate spaces for intersectoral coordination and public participation in climate policy, and create working groups with neighboring municipalities to discuss a common climate agenda.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": null,
+            "KeyPerformanceIndicators": [
+                "Number of intersectoral meetings held per year.",
+                "Percentage of population participating in climate forums (%).",
+                "Number of proposals accepted and implemented through public consultations."
+            ],
+            "PowersAndMandates": null
+        }
     },
     {
         "locode": "BRMGE",
@@ -244,7 +356,6 @@
             "ActionType": [
                 "adaptation"
             ],
-            "AdaptationCategory": "Health Systems Strengthening",
             "Hazard": [
                 "heatwaves",
                 "floods",
@@ -258,9 +369,7 @@
             "PrimaryPurpose": [
                 "climate_resilience"
             ],
-            "InterventionType": null,
             "Description": "Enhancing access to health care services, including health and nutrition services, clean water, sanitation, and culturally appropriate mental health resources. Expanding telemedicine capabilities enables efficient health service delivery, particularly for remote and underserved populations. Strengthening basic public health systems and disaster preparedness can rapidly reduce vulnerability to climate-related health risks.",
-            "BehavioralChangeTargeted": null,
             "CoBenefits": {
                 "air_quality": 1,
                 "water_quality": 2,
@@ -287,12 +396,7 @@
                 "Number of culturally tailored health programs implemented",
                 "Improved water and sanitation access metrics"
             ],
-            "Impacts": [
-                "Improved public health",
-                "Reduced health inequities",
-                "Enhanced disaster preparedness",
-                "Stronger health system resilience"
-            ]
+            "PowersAndMandates": null
         }
     },
     {
@@ -304,7 +408,56 @@
         "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
         "actionPriority": 8,
         "explanation": "For the city of Maranguape, having a dedicated emergency response plan allows rapid coordination and clear protocols when severe weather strikes. This readiness reduces confusion, streamlines rescue efforts, and protects human life. By prioritizing preparedness, the city can lessen storm damage and recovery costs.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0169",
+            "ActionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "droughts",
+                "heatwaves",
+                "diseases",
+                "landslides",
+                "floods",
+                "wildfires",
+                "sea-level-rise",
+                "storms"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "This action focuses on preparing the municipality to respond to extreme events, aiming to provide a rapid response that minimizes the impacts on the population.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Development of a comprehensive emergency response plan that includes coordination between local authorities, emergency services, and community organizations",
+                "Investment in early warning systems and infrastructure to ensure timely and effective responses to extreme events",
+                "Training and capacity-building for local responders and communities to enhance preparedness and resilience to extreme events"
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of emergency response partnerships established.",
+                "Average response time during extreme weather events (hours).",
+                "Percentage reduction in casualties and damages during extreme weather events annually (%)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRMGE",
@@ -315,7 +468,51 @@
         "actionName": "Hydrological Monitoring System with Telemetry Stations",
         "actionPriority": 9,
         "explanation": "For the city of Maranguape, installing a hydrological monitoring system provides real-time insight into water levels and flows. This technology helps predict floods, improving early warning and evacuation plans. By tracking conditions, officials can make better decisions that safeguard residents and infrastructure.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0164",
+            "ActionName": "Hydrological Monitoring System with Telemetry Stations",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "droughts",
+                "floods",
+                "storms"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Implementation of a hydrological monitoring system with telemetry stations to monitor rainfall, water levels, and meteorological variables in real-time.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 1,
+                "mobility": 1,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Equipment and infrastructure",
+                "Robust data management system",
+                "Institutional coordination"
+            ],
+            "KeyPerformanceIndicators": [
+                "Timeliness of data",
+                "Cost-effectiveness",
+                "Mitigation effectiveness"
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRMGE",
@@ -326,7 +523,53 @@
         "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
         "actionPriority": 10,
         "explanation": "For the city of Maranguape, diagnosing vulnerabilities in Special Social Interest Zones enables targeted improvements where risks are highest. By restoring infrastructure and housing, residents face fewer hazards from storms or heatwaves. This focused approach builds community resilience and promotes equitable urban development.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0151",
+            "ActionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "sea-level-rise",
+                "floods",
+                "landslides",
+                "diseases",
+                "heatwaves"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Priority to ZEIS areas in housing improvement actions and the application of resources from the Urbanization Fund, with the implementation of urban infrastructure that considers climate adaptation in these spaces. Use of Nature-based Solutions (NbS) in the adaptation of environmental sanitation and green and blue infrastructures that enhance leisure, culture, urban agriculture, and activities to strengthen community associations.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 2,
+                "mobility": 1,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "medium",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Availability of funding from the Urbanization Fund and other financial mechanisms to support housing improvements and urban infrastructure in ZEIS areas",
+                "Collaboration between urban planners, environmental experts, and local communities to design and implement nature-based solutions (NbS) for urban infrastructure",
+                "Policy and regulatory frameworks that integrate climate adaptation measures into urban planning, ensuring that investments prioritize environmental sustainability and community"
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of ZEIS areas diagnosed and restored.",
+                "Percentage of residents benefiting from restored areas (%).",
+                "Public investments allocated to ZEIS areas (currency amount)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRMGE",
@@ -337,7 +580,55 @@
         "actionName": "Strengthen the healthcare network to attend to climate victims",
         "actionPriority": 11,
         "explanation": "For the city of Maranguape, bolstering the healthcare network ensures faster responses to injuries and illnesses caused by extreme weather. Enhanced facilities and trained staff minimize fatalities when floods or heatwaves occur. This action also supports the broader population by maintaining quality care year-round.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0145",
+            "ActionName": "Strengthen the healthcare network to attend to climate victims",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "heatwaves",
+                "diseases",
+                "landslides",
+                "floods",
+                "storms",
+                "droughts"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Improve the infrastructure of healthcare units to assist people who require medical care due to impacts associated with climate risks (climate victims), such as those affected by heat waves or floods, especially in more vulnerable areas. Develop action plans to prepare the healthcare network for extreme climate-related situations.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "high",
+            "TimelineForImplementation": ">10 years",
+            "Dependencies": [
+                "Investment in the renovation and expansion of healthcare facilities, ensuring they are equipped to handle climate-related health impacts, particularly in vulnerable areas.",
+                "Development of action plans and training programs for healthcare professionals to respond to extreme climate events like heatwaves and floods.",
+                "Collaboration with local authorities, emergency response teams, and climate experts to create a comprehensive framework for preparing the healthcare network for climate risks."
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of healthcare facilities upgraded for climate-related emergencies.",
+                "Increase in healthcare staff trained in climate emergency response (%).",
+                "Number of climate-related injuries treated successfully.",
+                "."
+            ],
+            "PowersAndMandates": [
+                "national"
+            ]
+        }
     },
     {
         "locode": "BRMGE",
@@ -348,7 +639,56 @@
         "actionName": "Creation of a Financial Support Program to Adress Extreme Weather Events",
         "actionPriority": 12,
         "explanation": "For the city of Maranguape, a financial support program helps communities recover swiftly from disasters like storms or droughts. Quick funding reduces prolonged disruptions by assisting families and businesses with immediate reconstruction. This relief approach also promotes social stability and sustains local economies during crises.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0144",
+            "ActionName": "Creation of a Financial Support Program to Adress Extreme Weather Events",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "droughts",
+                "heatwaves",
+                "diseases",
+                "landslides",
+                "wildfires",
+                "floods",
+                "sea-level-rise",
+                "storms"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Creation of a program to mitigate the effects of climate tragedies, including financial assistance to affected families and efforts to secure additional resources for recovery and reconstruction.\t",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": -1,
+                "housing": 1,
+                "mobility": 1,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "medium",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Financial resources",
+                "Emergency response plans",
+                "Institutional coordination"
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of people assisted",
+                "Cost-effectiveness",
+                "Community resilience"
+            ],
+            "PowersAndMandates": [
+                "state"
+            ]
+        }
     },
     {
         "locode": "BRMGE",
@@ -365,7 +705,6 @@
             "ActionType": [
                 "adaptation"
             ],
-            "AdaptationCategory": "Economic\u00a0actions",
             "Hazard": [
                 "droughts"
             ],
@@ -374,9 +713,7 @@
             "PrimaryPurpose": [
                 "climate_resilience"
             ],
-            "InterventionType": null,
             "Description": "\"Water Tariffs\" involve pricing structures for water use, encouraging conservation and efficient use of water resources. This initiative aims to promote responsible water consumption and contribute to sustainable water management.",
-            "BehavioralChangeTargeted": null,
             "CoBenefits": {
                 "air_quality": 0,
                 "water_quality": 1,
@@ -386,7 +723,7 @@
                 "mobility": 0,
                 "stakeholder_engagement": 0
             },
-            "EquityAndInclusionConsiderations": "The \"Water Tariffs\" initiative promotes equity and inclusion by implementing pricing structures that can be designed to protect vulnerable and underserved communities. By encouraging responsible water consumption, the initiative can help ensure that all community members, regardless of their economic status, have access to essential water resources. \n\nAdditionally, tiered pricing models can be established, where lower rates are applied to basic water needs, ensuring that low-income households are not disproportionately burdened by costs. This approach can help prevent water insecurity among underserved populations, fostering a more equitable distribution of water resources.\n\nFurthermore, the initiative can include educational components aimed at raising awareness in vulnerable communities about water conservation practices, empowering them to make informed decisions about their water use. Overall, the \"Water Tariffs\" action considers the needs of underserved communities by promoting sustainable water management while ensuring access and affordability.",
+            "EquityAndInclusionConsiderations": "The \"Water Tariffs\" initiative promotes equity and inclusion by implementing pricing structures that can be designed to protect vulnerable and underserved communities. By encouraging responsible water consumption, the initiative can help ensure that all community members, regardless of their economic status, have access to essential water resources. \n \n Additionally, tiered pricing models can be established, where lower rates are applied to basic water needs, ensuring that low-income households are not disproportionately burdened by costs. This approach can help prevent water insecurity among underserved populations, fostering a more equitable distribution of water resources.\n \n Furthermore, the initiative can include educational components aimed at raising awareness in vulnerable communities about water conservation practices, empowering them to make informed decisions about their water use. Overall, the \"Water Tariffs\" action considers the needs of underserved communities by promoting sustainable water management while ensuring access and affordability.",
             "GHGReductionPotential": null,
             "AdaptationEffectiveness": "high",
             "CostInvestmentNeeded": "low",
@@ -408,13 +745,7 @@
                 "Percentage of households using water-efficient appliances",
                 "Impact on local water resources sustainability"
             ],
-            "Impacts": [
-                "Promotes responsible water consumption",
-                "Enhances climate resilience against droughts",
-                "Improves water quality",
-                "Supports equity and inclusion for vulnerable communities",
-                "Encourages sustainable water management practices"
-            ]
+            "PowersAndMandates": null
         }
     },
     {
@@ -432,7 +763,6 @@
             "ActionType": [
                 "adaptation"
             ],
-            "AdaptationCategory": "Technological\u00a0actions",
             "Hazard": [
                 "droughts"
             ],
@@ -441,9 +771,7 @@
             "PrimaryPurpose": [
                 "climate_resilience"
             ],
-            "InterventionType": null,
             "Description": "\"Water Recycling\" or reclamation involves technological actions to treat and reuse water resources. This adaptation measure contributes to water resource sustainability and resilience, particularly in the context of changing climate patterns.",
-            "BehavioralChangeTargeted": null,
             "CoBenefits": {
                 "air_quality": 0,
                 "water_quality": 1,
@@ -453,7 +781,7 @@
                 "mobility": 0,
                 "stakeholder_engagement": 0
             },
-            "EquityAndInclusionConsiderations": "The \"Water Recycling\" action promotes equity and inclusion by ensuring that vulnerable or underserved communities have access to sustainable water resources. By treating and reusing water, this initiative addresses the needs of populations that may face water scarcity or contamination, which often disproportionately affects low-income and marginalized groups. \n\nAdditionally, the implementation of water recycling technologies can create job opportunities and skills training for local residents, particularly in underserved areas, fostering economic empowerment. The action also considers the equitable distribution of water resources, ensuring that all community members, regardless of socioeconomic status, benefit from improved water availability and quality. \n\nOverall, this climate action actively supports the resilience of vulnerable communities by prioritizing their specific needs in the face of climate change impacts.",
+            "EquityAndInclusionConsiderations": "The \"Water Recycling\" action promotes equity and inclusion by ensuring that vulnerable or underserved communities have access to sustainable water resources. By treating and reusing water, this initiative addresses the needs of populations that may face water scarcity or contamination, which often disproportionately affects low-income and marginalized groups. \n \n Additionally, the implementation of water recycling technologies can create job opportunities and skills training for local residents, particularly in underserved areas, fostering economic empowerment. The action also considers the equitable distribution of water resources, ensuring that all community members, regardless of socioeconomic status, benefit from improved water availability and quality. \n \n Overall, this climate action actively supports the resilience of vulnerable communities by prioritizing their specific needs in the face of climate change impacts.",
             "GHGReductionPotential": null,
             "AdaptationEffectiveness": "high",
             "CostInvestmentNeeded": "high",
@@ -478,13 +806,7 @@
                 "Impact on local ecosystems",
                 "Reduction in water scarcity incidents"
             ],
-            "Impacts": [
-                "Enhances water resource sustainability",
-                "Improves water quality",
-                "Increases climate resilience for vulnerable communities",
-                "Creates job opportunities and skills training",
-                "Promotes equitable access to water resources"
-            ]
+            "PowersAndMandates": null
         }
     },
     {
@@ -496,7 +818,51 @@
         "actionName": "Implement Loss Reduction and Control Program promoting water security for the municipality",
         "actionPriority": 15,
         "explanation": "For the city of Maranguape, reducing water losses in supply networks ensures stable access to this vital resource. By minimizing leaks, officials can maintain pressure during droughts and lower operational costs. This improved efficiency also benefits residents, who face fewer disruptions and see healthier ecosystems.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0150",
+            "ActionName": "Implement Loss Reduction and Control Program promoting water security for the municipality",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "droughts",
+                "heatwaves",
+                "diseases"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Ensure the availability of water in sufficient quantity and quality for the population of the city. Implement the Loss Reduction and Control Program, which aims to reduce per capita water consumption, along with the reduction of physical losses. Conduct studies, regulate, and facilitate the reuse of water for non-potable purposes, and implement equipment for the use of rainwater.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 2,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Availability of funding and technical expertise to implement water loss reduction systems, including infrastructure improvements and monitoring technologies",
+                "Development of regulatory frameworks to support water reuse for non-potable purposes and rainwater harvesting systems in both residential and commercial settings",
+                "Collaboration between local governments, utility companies, and communities to ensure efficient water management and raise awareness about water conservation practices"
+            ],
+            "KeyPerformanceIndicators": [
+                "Percentage reduction in losses within the water supply system.",
+                "Per capita water consumption reduction index (liters).",
+                "Number of new water supply sources implemented."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRMGE",
@@ -513,7 +879,6 @@
             "ActionType": [
                 "adaptation"
             ],
-            "AdaptationCategory": "Climate-Resilient Urban Planning",
             "Hazard": [
                 "floods",
                 "landslides"
@@ -526,9 +891,7 @@
             "PrimaryPurpose": [
                 "climate_resilience"
             ],
-            "InterventionType": null,
             "Description": "The development and implementation of building codes and architectural design regulations aimed at integrating climate adaptation parameters. These codes are focused on reducing risks from climate-induced hazards like floods and landslides. They also support climate-resilient urban development by guiding land use, construction practices, and infrastructure standards. The initiative fosters strategic long-term urban planning to coordinate public and private investments in adaptation, including the creation of safe zones and the transformation of precarious settlements. It ensures that new infrastructure is resilient to climate risks and that urban spaces are safe and sustainable for current and future populations.",
-            "BehavioralChangeTargeted": null,
             "CoBenefits": {
                 "air_quality": 2,
                 "water_quality": 0,
@@ -552,11 +915,7 @@
                 "Increased availability of safe housing in risk areas",
                 "Implementation rate of eco-parks and eco-gardens in vulnerable areas"
             ],
-            "Impacts": [
-                "Improved public health",
-                "Increased urban livability",
-                "Reduced disaster-related costs"
-            ]
+            "PowersAndMandates": null
         }
     },
     {
@@ -574,7 +933,6 @@
             "ActionType": [
                 "adaptation"
             ],
-            "AdaptationCategory": "Infrastructure Improvement",
             "Hazard": [
                 "droughts",
                 "floods",
@@ -589,9 +947,7 @@
             "PrimaryPurpose": [
                 "climate_resilience"
             ],
-            "InterventionType": null,
             "Description": "Enhancing food storage and distribution systems by improving transportation infrastructure, optimizing trade networks, and shortening supply chains to ensure local food availability and resilience to climate impacts. This action also includes increasing the capacity of local food storage facilities to reduce post-harvest losses, addressing inefficiencies in logistics, and bolstering infrastructure for perishable goods. It aims to improve food security and reduce vulnerability to extreme events, disruptions, and cascading impacts, especially during pandemics and other crises.",
-            "BehavioralChangeTargeted": null,
             "CoBenefits": {
                 "air_quality": 0,
                 "water_quality": 1,
@@ -618,12 +974,7 @@
                 "Improved transportation efficiency for food distribution",
                 "Shortened supply chains"
             ],
-            "Impacts": [
-                "Improved food security",
-                "Resilience to climate-induced disruptions",
-                "Reduced greenhouse gas emissions from supply chains",
-                "Enhanced local economic growth"
-            ]
+            "PowersAndMandates": null
         }
     },
     {
@@ -635,7 +986,53 @@
         "actionName": "Encourage sustainable land use practices",
         "actionPriority": 18,
         "explanation": "For the city of Maranguape, sustainable land use lowers environmental risks like soil erosion and habitat loss. By guiding urban growth and agricultural methods, local resources remain more resilient to floods or droughts. This proactive approach preserves green areas and safeguards future development.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0149",
+            "ActionName": "Encourage sustainable land use practices",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "droughts",
+                "heatwaves",
+                "landslides",
+                "floods",
+                "wildfires"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Promoting methods that guarantee the conservation and health of the soil, preserving biodiversity, reducing erosion and minimizing environmental impacts.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 2,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "medium",
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Provide access to technical knowledge and training on sustainable soil management practices.",
+                "Offer financial incentives and form partnerships with research institutions and local farmers.",
+                "Develop monitoring systems for soil health and biodiversity, and implement policies for erosion control."
+            ],
+            "KeyPerformanceIndicators": [
+                "Percentage of land area managed under sustainable land use practices (%)",
+                "Reduction in deforestation or land degradation rates (%)",
+                "Increase in biodiversity indicators on managed lands (e.g., species count, habitat quality)"
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRMGE",
@@ -646,7 +1043,49 @@
         "actionName": "Preventive maintenance of drainage systems",
         "actionPriority": 19,
         "explanation": "For the city of Maranguape, regularly maintaining drainage systems prevents blockages that lead to flooding and infrastructure damage. This upkeep ensures safer roads and public spaces, especially during heavy rains. By reducing water accumulation, the city limits repair costs and health concerns linked to standing water.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0173",
+            "ActionName": "Preventive maintenance of drainage systems",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "floods",
+                "storms"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Regular upkeep and cleaning of urban drainage systems, including storm drains, sewers, and retention basins, to ensure efficient water flow and prevent blockages that can lead to flooding during heavy rainfall events.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 1,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 1,
+                "mobility": 1,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "medium",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Budget allocation for maintenance activities",
+                "Regular inspections to identify potential issues"
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of drainage blockages cleared.",
+                "Percentage of drainage systems in good condition.",
+                "Number of reported flood incidents."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRMGE",
@@ -657,6 +1096,48 @@
         "actionName": "Slope Stabilization and Drainage",
         "actionPriority": 20,
         "explanation": "For the city of Maranguape, stabilizing slopes and improving drainage avert landslides and erosion that jeopardize public safety. Reinforced embankments ensure critical infrastructure remains intact during intense rains. By reducing collapse risks, the city lowers recovery expenses and maintains essential transportation routes.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0184",
+            "ActionName": "Slope Stabilization and Drainage",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "landslides"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "This action involves stabilizing slopes and maintaining or restoring drainage systems in hillside areas. This helps to prevent landslides and erosion, reducing the risk of disasters.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 1,
+                "mobility": 1,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "medium",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Geotechnical and hydrological studies",
+                "Land-use planning and regulation",
+                "Monitoring and maintenance"
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of slopes stabilized",
+                "Reduction in landslide occurrences",
+                "Performance of drainage systems"
+            ],
+            "PowersAndMandates": [
+                "state"
+            ]
+        }
     }
 ]

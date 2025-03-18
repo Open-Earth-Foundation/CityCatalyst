@@ -8,7 +8,56 @@
         "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
         "actionPriority": 1,
         "explanation": "Establishing a comprehensive emergency response plan was placed ahead of developing the Municipal Risk Reduction Plan because it delivers immediate strategies for multiple hazards. This approach ensures coordinated actions and resource allocation during floods, heatwaves, or storms. By preparing first for acute climate threats, the city can protect vulnerable communities more effectively, allowing broader risk-reduction measures to follow.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0169",
+            "ActionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "droughts",
+                "heatwaves",
+                "diseases",
+                "landslides",
+                "floods",
+                "wildfires",
+                "sea-level-rise",
+                "storms"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "This action focuses on preparing the municipality to respond to extreme events, aiming to provide a rapid response that minimizes the impacts on the population.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Development of a comprehensive emergency response plan that includes coordination between local authorities, emergency services, and community organizations",
+                "Investment in early warning systems and infrastructure to ensure timely and effective responses to extreme events",
+                "Training and capacity-building for local responders and communities to enhance preparedness and resilience to extreme events"
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of emergency response partnerships established.",
+                "Average response time during extreme weather events (hours).",
+                "Percentage reduction in casualties and damages during extreme weather events annually (%)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRCXL",
@@ -19,7 +68,51 @@
         "actionName": "Develop and implement the Municipal Risk Reduction Plan (PMRR) and identify population groups vulnerable to climate risks.",
         "actionPriority": 2,
         "explanation": "Developing and implementing the Municipal Risk Reduction Plan is ranked above updating building codes because it systematically addresses how different population groups are exposed to hazards. By identifying the most at-risk residents, the city can craft targeted strategies to minimize climate impacts. Once key vulnerabilities are understood, subsequent measures like updated construction standards can be tailored for more resilient outcomes.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0172",
+            "ActionName": "Develop and implement the Municipal Risk Reduction Plan (PMRR) and identify population groups vulnerable to climate risks.",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "landslides",
+                "floods",
+                "storms"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "This action aims to strengthen the development of the Municipal Risk Reduction Plan (PMRR) in the municipality, as it is a highly relevant tool for managing climate risks, especially river floods and landslides.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Availability of technical expertise and resources to develop and implement the Municipal Risk Reduction Plan (PMRR)",
+                "Data collection and analysis to accurately assess climate risks, especially related to river floods and landslides",
+                "Political commitment and coordination between various government agencies to integrate the PMRR into broader urban planning and disaster management strategies"
+            ],
+            "KeyPerformanceIndicators": [
+                "Percentage of vulnerable population covered by MRRP (%).",
+                "Number of risk reduction measures implemented annually.",
+                "Reduction in the number of people affected by climate-related disasters annually."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRCXL",
@@ -36,7 +129,6 @@
             "ActionType": [
                 "adaptation"
             ],
-            "AdaptationCategory": "Climate-Resilient Urban Planning",
             "Hazard": [
                 "floods",
                 "landslides"
@@ -49,9 +141,7 @@
             "PrimaryPurpose": [
                 "climate_resilience"
             ],
-            "InterventionType": null,
             "Description": "The development and implementation of building codes and architectural design regulations aimed at integrating climate adaptation parameters. These codes are focused on reducing risks from climate-induced hazards like floods and landslides. They also support climate-resilient urban development by guiding land use, construction practices, and infrastructure standards. The initiative fosters strategic long-term urban planning to coordinate public and private investments in adaptation, including the creation of safe zones and the transformation of precarious settlements. It ensures that new infrastructure is resilient to climate risks and that urban spaces are safe and sustainable for current and future populations.",
-            "BehavioralChangeTargeted": null,
             "CoBenefits": {
                 "air_quality": 2,
                 "water_quality": 0,
@@ -75,11 +165,7 @@
                 "Increased availability of safe housing in risk areas",
                 "Implementation rate of eco-parks and eco-gardens in vulnerable areas"
             ],
-            "Impacts": [
-                "Improved public health",
-                "Increased urban livability",
-                "Reduced disaster-related costs"
-            ]
+            "PowersAndMandates": null
         }
     },
     {
@@ -91,7 +177,55 @@
         "actionName": "Strengthen the healthcare network to attend to climate victims",
         "actionPriority": 4,
         "explanation": "Strengthening the healthcare network is ranked above developing a Climate Action Plan because it provides immediate capacity to treat those affected by heatwaves, floods, or other climate-driven events. A robust medical response reduces casualties and long-term health consequences, especially important in densely populated areas. This ensures that the city can handle emergencies more effectively before broader climate strategies are fully in place.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0145",
+            "ActionName": "Strengthen the healthcare network to attend to climate victims",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "heatwaves",
+                "diseases",
+                "landslides",
+                "floods",
+                "storms",
+                "droughts"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Improve the infrastructure of healthcare units to assist people who require medical care due to impacts associated with climate risks (climate victims), such as those affected by heat waves or floods, especially in more vulnerable areas. Develop action plans to prepare the healthcare network for extreme climate-related situations.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "high",
+            "TimelineForImplementation": ">10 years",
+            "Dependencies": [
+                "Investment in the renovation and expansion of healthcare facilities, ensuring they are equipped to handle climate-related health impacts, particularly in vulnerable areas.",
+                "Development of action plans and training programs for healthcare professionals to respond to extreme climate events like heatwaves and floods.",
+                "Collaboration with local authorities, emergency response teams, and climate experts to create a comprehensive framework for preparing the healthcare network for climate risks."
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of healthcare facilities upgraded for climate-related emergencies.",
+                "Increase in healthcare staff trained in climate emergency response (%).",
+                "Number of climate-related injuries treated successfully.",
+                "."
+            ],
+            "PowersAndMandates": [
+                "national"
+            ]
+        }
     },
     {
         "locode": "BRCXL",
@@ -102,7 +236,56 @@
         "actionName": "Development of Climate Action Plan",
         "actionPriority": 5,
         "explanation": "Developing a Climate Action Plan is prioritized over installing a Hydrological Monitoring System because it provides a unifying roadmap for both adaptation and emissions reduction efforts. This strategy aligns all sectors\u2014transport, infrastructure, healthcare\u2014under clear climate goals. After establishing an overarching plan, more specialized measures like monitoring stations can be deployed with greater coordination.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0176",
+            "ActionName": "Development of Climate Action Plan",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "storms",
+                "sea-level-rise",
+                "wildfires",
+                "floods",
+                "landslides",
+                "diseases",
+                "heatwaves",
+                "droughts"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "A comprehensive plan outlining a city's strategies and actions to mitigate greenhouse gas emissions and adapt to the impacts of climate change which typically includes an assessment of the city's climate risks and vulnerabilities, setting emission reduction targets, and implementation of actions across various sectors such as energy, transportation, waste management, and urban planning.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 0,
+                "housing": 1,
+                "mobility": 1,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "medium",
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Political will and commitment from government",
+                "Stakeholder engagement and collaboration",
+                "Funding and resources for implementation"
+            ],
+            "KeyPerformanceIndicators": [
+                "Greenhouse gas emission reduction targets.",
+                "Number of climate adaptation actions implemented.",
+                "Investment in climate mitigation and adaptation projects."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRCXL",
@@ -113,7 +296,51 @@
         "actionName": "Hydrological Monitoring System with Telemetry Stations",
         "actionPriority": 6,
         "explanation": "A Hydrological Monitoring System with telemetry is ranked above creating the Municipal Climate Change Forum because real-time data on water flows can prevent severe flood damage and inform immediate policy decisions. By detecting abnormal patterns early, the city can coordinate evacuations or protective measures in high-risk zones. While a forum fosters dialogue and collaboration, comprehensive water monitoring offers direct and actionable insights.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0164",
+            "ActionName": "Hydrological Monitoring System with Telemetry Stations",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "droughts",
+                "floods",
+                "storms"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Implementation of a hydrological monitoring system with telemetry stations to monitor rainfall, water levels, and meteorological variables in real-time.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 1,
+                "mobility": 1,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Equipment and infrastructure",
+                "Robust data management system",
+                "Institutional coordination"
+            ],
+            "KeyPerformanceIndicators": [
+                "Timeliness of data",
+                "Cost-effectiveness",
+                "Mitigation effectiveness"
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRCXL",
@@ -124,7 +351,56 @@
         "actionName": "Create the Municipal Climate Change Forum",
         "actionPriority": 7,
         "explanation": "Creating a Municipal Climate Change Forum is prioritized over diagnostics in Special Social Interest Zones because it brings diverse stakeholders together to share knowledge and craft climate initiatives across the entire city. This collaboration shapes policies and encourages broad community engagement. Once the forum is established and stakeholder input is consolidated, targeted diagnostics and restoration efforts in priority zones can follow more effectively.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0148",
+            "ActionName": "Create the Municipal Climate Change Forum",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "droughts",
+                "diseases",
+                "heatwaves",
+                "landslides",
+                "floods",
+                "wildfires",
+                "sea-level-rise",
+                "storms"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Creation of a Municipal Climate Change Forum with the participation of community leaders, scientists, collectives, research institutes, NGOs, and members of the municipal and state administration. The Forum will serve as a reference for actions related to Climate Change, aiming to monitor future policies on the subject in the municipality, stimulate dialogue, and create a network of discussions about the climate crisis.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "medium",
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Engagement of diverse stakeholders, including community leaders, scientists, NGOs, and local authorities, to establish and sustain the Forum.",
+                "Allocation of resources to facilitate regular meetings, workshops, and events for the Forum to remain active and impactful.",
+                "Development of a clear framework and guidelines for the Forum to monitor and guide climate change policies and initiatives within the municipality."
+            ],
+            "KeyPerformanceIndicators": [
+                "Percentage of key stakeholders actively participating in the forum.",
+                "Number of climate-related policies or actions proposed through the forum.",
+                "Public engagement in forum initiatives (measured by event attendance or surveys)"
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRCXL",
@@ -135,7 +411,53 @@
         "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
         "actionPriority": 8,
         "explanation": "Developing diagnostics and restoring Special Social Interest Zones ranks higher than improving overall access to health care because it addresses critical housing and infrastructure vulnerabilities first. By identifying specific needs in low-income or hazard-prone areas, the city can reduce flood risks and other potential dangers at their source. This focused approach helps preserve community well-being before more generalized healthcare measures are expanded.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0151",
+            "ActionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "sea-level-rise",
+                "floods",
+                "landslides",
+                "diseases",
+                "heatwaves"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Priority to ZEIS areas in housing improvement actions and the application of resources from the Urbanization Fund, with the implementation of urban infrastructure that considers climate adaptation in these spaces. Use of Nature-based Solutions (NbS) in the adaptation of environmental sanitation and green and blue infrastructures that enhance leisure, culture, urban agriculture, and activities to strengthen community associations.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 2,
+                "mobility": 1,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "medium",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Availability of funding from the Urbanization Fund and other financial mechanisms to support housing improvements and urban infrastructure in ZEIS areas",
+                "Collaboration between urban planners, environmental experts, and local communities to design and implement nature-based solutions (NbS) for urban infrastructure",
+                "Policy and regulatory frameworks that integrate climate adaptation measures into urban planning, ensuring that investments prioritize environmental sustainability and community"
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of ZEIS areas diagnosed and restored.",
+                "Percentage of residents benefiting from restored areas (%).",
+                "Public investments allocated to ZEIS areas (currency amount)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRCXL",
@@ -152,7 +474,6 @@
             "ActionType": [
                 "adaptation"
             ],
-            "AdaptationCategory": "Health Systems Strengthening",
             "Hazard": [
                 "heatwaves",
                 "floods",
@@ -166,9 +487,7 @@
             "PrimaryPurpose": [
                 "climate_resilience"
             ],
-            "InterventionType": null,
             "Description": "Enhancing access to health care services, including health and nutrition services, clean water, sanitation, and culturally appropriate mental health resources. Expanding telemedicine capabilities enables efficient health service delivery, particularly for remote and underserved populations. Strengthening basic public health systems and disaster preparedness can rapidly reduce vulnerability to climate-related health risks.",
-            "BehavioralChangeTargeted": null,
             "CoBenefits": {
                 "air_quality": 1,
                 "water_quality": 2,
@@ -195,12 +514,7 @@
                 "Number of culturally tailored health programs implemented",
                 "Improved water and sanitation access metrics"
             ],
-            "Impacts": [
-                "Improved public health",
-                "Reduced health inequities",
-                "Enhanced disaster preparedness",
-                "Stronger health system resilience"
-            ]
+            "PowersAndMandates": null
         }
     },
     {
@@ -212,7 +526,51 @@
         "actionName": "Implementation of urban gardens",
         "actionPriority": 10,
         "explanation": "Implementing urban gardens is placed above building safe housing for high-risk populations because it can be initiated quickly on unused land, helping improve local food security and reduce emissions from food transport. These gardens also foster community engagement and green space in densely populated areas. While secure housing is crucial, introducing urban agriculture first provides more immediate socio-environmental benefits and fosters better dietary habits.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0156",
+            "ActionName": "Implementation of urban gardens",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "heatwaves",
+                "landslides",
+                "floods"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Identify and assess the feasibility of suitable areas for the installation of urban gardens and ensure that the sites chosen meet the expectations of the community.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 0,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 1,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "medium",
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Ensure availability of detailed land-use maps and urban planning data.",
+                "Engage with local communities to understand their needs and expectations.",
+                "Evaluate soil quality, water availability, and form partnerships to support the establishment and maintenance of gardens."
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of urban gardens created.",
+                "Amount of locally produced food (kg/year).",
+                "Number of direct beneficiaries."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRCXL",
@@ -223,7 +581,52 @@
         "actionName": "Build safe housing and implement urban rehabilitation projects for populations living in high-risk areas",
         "actionPriority": 11,
         "explanation": "Building safe housing in high-risk zones is ranked over retrofitting existing infrastructure because it relocates families away from imminent dangers such as landslides or flooding. By constructing sturdy homes and upgrading neighborhoods, the city reduces potential evacuation costs and long-term damage. Though reinforcing infrastructure is also vital, providing secure and well-planned communities directly addresses the most at-risk populations.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0170",
+            "ActionName": "Build safe housing and implement urban rehabilitation projects for populations living in high-risk areas",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "storms",
+                "floods",
+                "landslides",
+                "heatwaves"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "The priority of this action is to ensure safe housing for the population living in areas prone to landslides and flooding, as the housing deficit is one of the main factors related to these threats.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": -1,
+                "housing": 2,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "high",
+            "TimelineForImplementation": ">10 years",
+            "Dependencies": [
+                "Availability of funding and financial mechanisms to support the construction of safe housing in high-risk areas",
+                "Collaboration with urban planners and engineers to design housing solutions that are resilient to landslides and flooding",
+                "Implementation of policies to regulate land use and prevent informal settlements in areas vulnerable to climate risks"
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of safe housing units constructed annually.",
+                "Percentage reduction in population living in high-risk areas (%).",
+                "Number of urban rehabilitation projects completed annually."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRCXL",
@@ -240,7 +643,6 @@
             "ActionType": [
                 "adaptation"
             ],
-            "AdaptationCategory": "Infrastructural Adaptation",
             "Hazard": [
                 "floods",
                 "droughts",
@@ -255,9 +657,7 @@
             "PrimaryPurpose": [
                 "climate_resilience"
             ],
-            "InterventionType": null,
             "Description": "Strengthening and upgrading existing infrastructure, including roads, housing, and energy systems, to improve resilience against climate risks such as floods, droughts, and heatwaves. Efforts include Air conditioning, using thermosiphons for permafrost degradation, increasing rooftop albedo (for reflectivity) and shading",
-            "BehavioralChangeTargeted": null,
             "CoBenefits": {
                 "air_quality": 1,
                 "water_quality": 1,
@@ -281,11 +681,7 @@
                 "Reduced infrastructure failure during hazards",
                 "Increased capacity for housing and energy systems"
             ],
-            "Impacts": [
-                "Enhanced urban resilience",
-                "Safer housing",
-                "Reduced economic losses due to climate impacts"
-            ]
+            "PowersAndMandates": null
         }
     },
     {
@@ -303,7 +699,6 @@
             "ActionType": [
                 "adaptation"
             ],
-            "AdaptationCategory": "Technological\u00a0actions",
             "Hazard": [
                 "droughts"
             ],
@@ -312,9 +707,7 @@
             "PrimaryPurpose": [
                 "climate_resilience"
             ],
-            "InterventionType": null,
             "Description": "\"Water Recycling\" or reclamation involves technological actions to treat and reuse water resources. This adaptation measure contributes to water resource sustainability and resilience, particularly in the context of changing climate patterns.",
-            "BehavioralChangeTargeted": null,
             "CoBenefits": {
                 "air_quality": 0,
                 "water_quality": 1,
@@ -324,7 +717,7 @@
                 "mobility": 0,
                 "stakeholder_engagement": 0
             },
-            "EquityAndInclusionConsiderations": "The \"Water Recycling\" action promotes equity and inclusion by ensuring that vulnerable or underserved communities have access to sustainable water resources. By treating and reusing water, this initiative addresses the needs of populations that may face water scarcity or contamination, which often disproportionately affects low-income and marginalized groups. \n\nAdditionally, the implementation of water recycling technologies can create job opportunities and skills training for local residents, particularly in underserved areas, fostering economic empowerment. The action also considers the equitable distribution of water resources, ensuring that all community members, regardless of socioeconomic status, benefit from improved water availability and quality. \n\nOverall, this climate action actively supports the resilience of vulnerable communities by prioritizing their specific needs in the face of climate change impacts.",
+            "EquityAndInclusionConsiderations": "The \"Water Recycling\" action promotes equity and inclusion by ensuring that vulnerable or underserved communities have access to sustainable water resources. By treating and reusing water, this initiative addresses the needs of populations that may face water scarcity or contamination, which often disproportionately affects low-income and marginalized groups. \n \n Additionally, the implementation of water recycling technologies can create job opportunities and skills training for local residents, particularly in underserved areas, fostering economic empowerment. The action also considers the equitable distribution of water resources, ensuring that all community members, regardless of socioeconomic status, benefit from improved water availability and quality. \n \n Overall, this climate action actively supports the resilience of vulnerable communities by prioritizing their specific needs in the face of climate change impacts.",
             "GHGReductionPotential": null,
             "AdaptationEffectiveness": "high",
             "CostInvestmentNeeded": "high",
@@ -349,13 +742,7 @@
                 "Impact on local ecosystems",
                 "Reduction in water scarcity incidents"
             ],
-            "Impacts": [
-                "Enhances water resource sustainability",
-                "Improves water quality",
-                "Increases climate resilience for vulnerable communities",
-                "Creates job opportunities and skills training",
-                "Promotes equitable access to water resources"
-            ]
+            "PowersAndMandates": null
         }
     },
     {
@@ -367,7 +754,49 @@
         "actionName": "Preventive maintenance of drainage systems",
         "actionPriority": 14,
         "explanation": "Preventive drainage maintenance ranks above channel cleaning with eco-barriers because it involves regular, proactive checks and repairs that reduce the risk of blockages. By consistently keeping drains clear, the city mitigates flood damage and maintains safer roads. Although channel cleaning is also vital, setting up a maintenance schedule addresses problems before they escalate, ensuring smoother water flow during heavy rains.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0173",
+            "ActionName": "Preventive maintenance of drainage systems",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "floods",
+                "storms"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Regular upkeep and cleaning of urban drainage systems, including storm drains, sewers, and retention basins, to ensure efficient water flow and prevent blockages that can lead to flooding during heavy rainfall events.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 1,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 1,
+                "mobility": 1,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "medium",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Budget allocation for maintenance activities",
+                "Regular inspections to identify potential issues"
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of drainage blockages cleared.",
+                "Percentage of drainage systems in good condition.",
+                "Number of reported flood incidents."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRCXL",
@@ -378,7 +807,48 @@
         "actionName": "Cleaning and Unclogging of Channels with Installation of Eco-barriers",
         "actionPriority": 15,
         "explanation": "Cleaning and unclogging channels with eco-barriers is prioritized over promoting sustainable land use practices because it delivers immediate flood prevention benefits. By removing debris and installing barriers, water flow is managed more effectively, reducing the likelihood of overflow and related health hazards. While guiding land use is essential for long-term resilience, preventing waterway blockages first offers quicker results for at-risk neighborhoods.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0154",
+            "ActionName": "Cleaning and Unclogging of Channels with Installation of Eco-barriers",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "floods"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Cleaning and unclogging channels in the city to reduce the risk of flooding caused by extreme rainfall events. Installation of eco-barriers to assist in cleaning efforts and raise awareness about solid waste.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 2,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 1,
+                "mobility": 1,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "medium",
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Regular maintenance",
+                "Proper waste management practices"
+            ],
+            "KeyPerformanceIndicators": [
+                "Flood reduction",
+                "Waste reduction",
+                "Maintenance costs"
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRCXL",
@@ -389,7 +859,53 @@
         "actionName": "Encourage sustainable land use practices",
         "actionPriority": 16,
         "explanation": "Encouraging sustainable land use practices ranks higher than building Cyclone Shelters because it addresses broader planning issues that can reduce multiple climate impacts, from soil erosion to local flooding. By regulating zoning and agricultural methods, Caxias do Sul can prevent hazards before they materialize. Although cyclone shelters protect communities during storms, refining land use reduces vulnerabilities across diverse weather events.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0149",
+            "ActionName": "Encourage sustainable land use practices",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "droughts",
+                "heatwaves",
+                "landslides",
+                "floods",
+                "wildfires"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Promoting methods that guarantee the conservation and health of the soil, preserving biodiversity, reducing erosion and minimizing environmental impacts.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 2,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "medium",
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Provide access to technical knowledge and training on sustainable soil management practices.",
+                "Offer financial incentives and form partnerships with research institutions and local farmers.",
+                "Develop monitoring systems for soil health and biodiversity, and implement policies for erosion control."
+            ],
+            "KeyPerformanceIndicators": [
+                "Percentage of land area managed under sustainable land use practices (%)",
+                "Reduction in deforestation or land degradation rates (%)",
+                "Increase in biodiversity indicators on managed lands (e.g., species count, habitat quality)"
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRCXL",
@@ -406,7 +922,6 @@
             "ActionType": [
                 "adaptation"
             ],
-            "AdaptationCategory": "Eco-engineering",
             "Hazard": [
                 "floods"
             ],
@@ -415,9 +930,7 @@
             "PrimaryPurpose": [
                 "climate_resilience"
             ],
-            "InterventionType": null,
             "Description": "\"Cyclone Shelters\" provide safe havens during flood and cyclone events, enhancing community resilience. This eco-engineering adaptation ensures the safety of residents in vulnerable areas during extreme weather conditions.",
-            "BehavioralChangeTargeted": null,
             "CoBenefits": {
                 "air_quality": 0,
                 "water_quality": 0,
@@ -450,13 +963,7 @@
                 "Maintenance and operational status of shelters",
                 "Partnerships with local organizations for shelter management"
             ],
-            "Impacts": [
-                "Enhances community resilience during extreme weather events",
-                "Provides safe havens for vulnerable populations",
-                "Promotes social equity and inclusion",
-                "Fosters community involvement and economic opportunities",
-                "Addresses the unique challenges faced by underserved communities"
-            ]
+            "PowersAndMandates": null
         }
     },
     {
@@ -468,7 +975,49 @@
         "actionName": "Slope Stabilization and Drainage",
         "actionPriority": 18,
         "explanation": "Slope stabilization and drainage are prioritized over creating a financial support program because they prevent immediate dangers like landslides and water damage. By fortifying at-risk slopes, Caxias do Sul safeguards essential roads and residential areas. Although financial mechanisms are crucial for recovery, proactively stabilizing the terrain reduces the likelihood and cost of disasters.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0184",
+            "ActionName": "Slope Stabilization and Drainage",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "landslides"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "This action involves stabilizing slopes and maintaining or restoring drainage systems in hillside areas. This helps to prevent landslides and erosion, reducing the risk of disasters.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 1,
+                "mobility": 1,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "medium",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Geotechnical and hydrological studies",
+                "Land-use planning and regulation",
+                "Monitoring and maintenance"
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of slopes stabilized",
+                "Reduction in landslide occurrences",
+                "Performance of drainage systems"
+            ],
+            "PowersAndMandates": [
+                "state"
+            ]
+        }
     },
     {
         "locode": "BRCXL",
@@ -479,7 +1028,56 @@
         "actionName": "Creation of a Financial Support Program to Adress Extreme Weather Events",
         "actionPriority": 19,
         "explanation": "For Caxias do Sul, creating a financial support program for extreme weather events ranks above adopting green-blue infrastructure because it provides immediate economic relief to those hit hardest by storms or floods. This assistance can help residents rebuild quickly and mitigate further losses. While green-blue infrastructure is a long-term adaptation strategy, offering timely funding helps communities recover faster from climate shocks.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0144",
+            "ActionName": "Creation of a Financial Support Program to Adress Extreme Weather Events",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "droughts",
+                "heatwaves",
+                "diseases",
+                "landslides",
+                "wildfires",
+                "floods",
+                "sea-level-rise",
+                "storms"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Creation of a program to mitigate the effects of climate tragedies, including financial assistance to affected families and efforts to secure additional resources for recovery and reconstruction.\t",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": -1,
+                "housing": 1,
+                "mobility": 1,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "medium",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Financial resources",
+                "Emergency response plans",
+                "Institutional coordination"
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of people assisted",
+                "Cost-effectiveness",
+                "Community resilience"
+            ],
+            "PowersAndMandates": [
+                "state"
+            ]
+        }
     },
     {
         "locode": "BRCXL",
@@ -490,6 +1088,47 @@
         "actionName": "Adopt the concept of green-blue infrastructure in city projects",
         "actionPriority": 20,
         "explanation": "Adopting green-blue infrastructure is ranked after the other measures because it requires significant planning and inter-agency cooperation before widespread implementation can begin. Although integrating natural and built environments is vital for long-term resilience, Caxias do Sul first addresses more immediate challenges like emergency planning, healthcare capacity, and water management. Once these foundations are set, green-blue solutions can significantly enhance urban ecosystems and reduce future climate risks.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0179",
+            "ActionName": "Adopt the concept of green-blue infrastructure in city projects",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "heatwaves",
+                "floods"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Blue infrastructure deals with urban water systems. By integrating water policies with the city's green areas, the goal is to recreate a naturally-oriented water cycle, which can bring various benefits to the city and its citizens, such as reducing heat islands and restoring ecosystems, among others.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Development of integrated water and green area policies to align urban water management with green infrastructure goals.",
+                "Availability of technical expertise and funding to implement blue infrastructure projects, such as sustainable drainage systems and water retention areas.",
+                "Collaboration with urban planners, environmental organizations, and local governments to design and manage blue infrastructure that supports ecosystem restoration and climate resilience."
+            ],
+            "KeyPerformanceIndicators": [
+                "Increase in water retention capacity of urban areas (m\u00b3).",
+                "Reduction in urban flooding incidents post-implementation (%).",
+                "Increase in green spaces linked to water features (hectares)."
+            ],
+            "PowersAndMandates": null
+        }
     }
 ]

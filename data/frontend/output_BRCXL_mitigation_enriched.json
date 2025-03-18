@@ -14,7 +14,6 @@
             "ActionType": [
                 "mitigation"
             ],
-            "AdaptationCategory": null,
             "Hazard": null,
             "Sector": [
                 "waste"
@@ -25,11 +24,7 @@
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "InterventionType": [
-                "programs_and_initiatives"
-            ],
             "Description": "\"Waste Efficiency\" initiatives aim to improve the efficiency of waste collection processes, reducing resource consumption and minimizing environmental impact. This includes optimizing waste management systems to enhance energy efficiency and promote sustainable waste disposal practices.",
-            "BehavioralChangeTargeted": "The targeted behavioral change that the \"Waste Efficiency\" initiatives aim to achieve is for individuals and organizations to adopt more sustainable waste disposal practices and actively participate in optimizing waste management systems. This includes reducing waste generation, increasing recycling rates, and utilizing energy-efficient waste collection methods. By enhancing awareness and perceptions of the environmental impact of waste, the initiative encourages people to prioritize waste efficiency in their daily activities, leading to a collective shift towards more responsible waste management behaviors.",
             "CoBenefits": {
                 "air_quality": 0,
                 "water_quality": 1,
@@ -39,7 +34,7 @@
                 "mobility": 0,
                 "stakeholder_engagement": 0
             },
-            "EquityAndInclusionConsiderations": "The \"Waste Efficiency\" initiatives promote equity and inclusion by focusing on underserved communities that often bear the brunt of inefficient waste management systems. By optimizing waste collection processes, these initiatives can reduce the environmental burden on vulnerable populations, who may live in areas disproportionately affected by waste and pollution. \n\nAdditionally, improving energy efficiency in waste management can lead to cost savings, which can be reinvested into community services or infrastructure that benefit low-income neighborhoods. The promotion of sustainable waste disposal practices also ensures that all community members, regardless of socioeconomic status, have access to environmentally responsible options, fostering a sense of shared responsibility and inclusion in climate action efforts. \n\nOverall, these initiatives recognize the unique challenges faced by underserved communities and aim to create a more equitable waste management system that benefits all residents.",
+            "EquityAndInclusionConsiderations": "The \"Waste Efficiency\" initiatives promote equity and inclusion by focusing on underserved communities that often bear the brunt of inefficient waste management systems. By optimizing waste collection processes, these initiatives can reduce the environmental burden on vulnerable populations, who may live in areas disproportionately affected by waste and pollution. \n \n Additionally, improving energy efficiency in waste management can lead to cost savings, which can be reinvested into community services or infrastructure that benefit low-income neighborhoods. The promotion of sustainable waste disposal practices also ensures that all community members, regardless of socioeconomic status, have access to environmentally responsible options, fostering a sense of shared responsibility and inclusion in climate action efforts. \n \n Overall, these initiatives recognize the unique challenges faced by underserved communities and aim to create a more equitable waste management system that benefits all residents.",
             "GHGReductionPotential": {
                 "stationary_energy": null,
                 "transportation": null,
@@ -67,13 +62,7 @@
                 "Volume of waste processed through sustainable methods",
                 "Operational efficiency of waste collection routes"
             ],
-            "Impacts": [
-                "Reduction in greenhouse gas emissions by 80-100% in the waste sector",
-                "Improved water quality through better waste management practices",
-                "Enhanced equity and inclusion for underserved communities",
-                "Increased community awareness and participation in sustainable waste practices",
-                "Cost savings from energy-efficient waste management reinvested into community services"
-            ]
+            "PowersAndMandates": null
         }
     },
     {
@@ -91,7 +80,6 @@
             "ActionType": [
                 "mitigation"
             ],
-            "AdaptationCategory": null,
             "Hazard": null,
             "Sector": [
                 "waste"
@@ -102,12 +90,7 @@
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "InterventionType": [
-                "taxes_and_fees",
-                "incentives_and_subsidies"
-            ],
             "Description": "\"Volume-Based Collection\" policies incentivize waste reduction by implementing fees or incentives based on the amount of waste generated. This approach encourages residents to minimize waste production, contributing to overall waste reduction goals.",
-            "BehavioralChangeTargeted": "The targeted behavioral shift that the \"Volume-Based Collection\" climate action aims to achieve is a reduction in waste generation among residents. By implementing fees or incentives based on the amount of waste produced, the intervention encourages individuals to minimize their waste output. This shift is expected to lead to more sustainable waste management practices, as residents become more conscious of their consumption habits and actively seek to reduce the volume of waste they generate, ultimately contributing to broader waste reduction goals and lower greenhouse gas emissions.",
             "CoBenefits": {
                 "air_quality": 0,
                 "water_quality": 0,
@@ -117,7 +100,7 @@
                 "mobility": 0,
                 "stakeholder_engagement": 0
             },
-            "EquityAndInclusionConsiderations": "The \"Volume-Based Collection\" policies promote equity and inclusion by:\n\n1. **Incentivizing Participation**: By linking fees or incentives to the amount of waste generated, the policy encourages all residents, including those from vulnerable or underserved communities, to actively participate in waste reduction efforts. This can empower these communities to take ownership of their waste management practices.\n\n2. **Financial Relief for Low-Volume Generators**: Households that produce less waste, often found in underserved communities, may benefit from lower fees, providing them with financial relief and encouraging sustainable practices without imposing a disproportionate burden.\n\n3. **Awareness and Education**: The implementation of volume-based policies often includes educational components that inform residents about waste reduction strategies. This can particularly benefit underserved communities by providing them with knowledge and resources to reduce waste effectively.\n\n4. **Community Engagement**: The policy can foster community engagement by involving residents in discussions about waste management and reduction strategies, ensuring that the voices of vulnerable populations are heard and considered in the decision-making process.\n\n5. **Equitable Resource Allocation**: By focusing on waste reduction, the policy can lead to more equitable allocation of resources for waste management services, ensuring that underserved communities receive adequate support and infrastructure to manage their waste effectively.",
+            "EquityAndInclusionConsiderations": "The \"Volume-Based Collection\" policies promote equity and inclusion by:\n \n 1. **Incentivizing Participation**: By linking fees or incentives to the amount of waste generated, the policy encourages all residents, including those from vulnerable or underserved communities, to actively participate in waste reduction efforts. This can empower these communities to take ownership of their waste management practices.\n \n 2. **Financial Relief for Low-Volume Generators**: Households that produce less waste, often found in underserved communities, may benefit from lower fees, providing them with financial relief and encouraging sustainable practices without imposing a disproportionate burden.\n \n 3. **Awareness and Education**: The implementation of volume-based policies often includes educational components that inform residents about waste reduction strategies. This can particularly benefit underserved communities by providing them with knowledge and resources to reduce waste effectively.\n \n 4. **Community Engagement**: The policy can foster community engagement by involving residents in discussions about waste management and reduction strategies, ensuring that the voices of vulnerable populations are heard and considered in the decision-making process.\n \n 5. **Equitable Resource Allocation**: By focusing on waste reduction, the policy can lead to more equitable allocation of resources for waste management services, ensuring that underserved communities receive adequate support and infrastructure to manage their waste effectively.",
             "GHGReductionPotential": {
                 "stationary_energy": null,
                 "transportation": null,
@@ -144,13 +127,7 @@
                 "Public awareness and engagement levels",
                 "Change in composting rates"
             ],
-            "Impacts": [
-                "Encourages waste reduction among residents",
-                "Promotes equity and inclusion in waste management",
-                "Provides financial relief for low-waste households",
-                "Fosters community engagement and education",
-                "Contributes to significant GHG reduction in the waste sector"
-            ]
+            "PowersAndMandates": null
         }
     },
     {
@@ -168,7 +145,6 @@
             "ActionType": [
                 "mitigation"
             ],
-            "AdaptationCategory": null,
             "Hazard": null,
             "Sector": [
                 "waste"
@@ -179,12 +155,7 @@
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "InterventionType": [
-                "programs_and_initiatives",
-                "regulations_and_laws"
-            ],
             "Description": "\"Landfill Management\" strategies focus on responsible and sustainable landfill practices to minimize environmental degradation. By adopting effective management techniques, cities aim to reduce the ecological footprint associated with landfill sites and encourage waste reduction.",
-            "BehavioralChangeTargeted": "The targeted behavioral change that the \"Landfill Management\" climate action aims to achieve is a reduction in waste generation and an increase in responsible waste disposal practices among individuals and communities. This includes encouraging people to adopt habits such as recycling, composting, and minimizing single-use items, ultimately leading to a shift towards more sustainable consumption patterns and a decreased ecological footprint associated with landfill sites.",
             "CoBenefits": {
                 "air_quality": 1,
                 "water_quality": 1,
@@ -194,7 +165,7 @@
                 "mobility": 0,
                 "stakeholder_engagement": 0
             },
-            "EquityAndInclusionConsiderations": "The \"Landfill Management\" strategies promote equity and inclusion by addressing the environmental impacts of landfill sites, which often disproportionately affect vulnerable and underserved communities. These communities frequently reside near landfills and are more susceptible to health risks associated with pollution and environmental degradation. By implementing responsible and sustainable landfill practices, the action aims to reduce these negative impacts, thereby improving the quality of life for residents in these areas.\n\nAdditionally, effective waste reduction techniques can create opportunities for community engagement and participation, allowing underserved populations to have a voice in local environmental decisions. This inclusion fosters a sense of ownership and empowerment among community members, ensuring that their needs and concerns are considered in the management of landfill sites. Overall, the action acknowledges and seeks to mitigate the inequities faced by marginalized communities in relation to waste management and environmental health.",
+            "EquityAndInclusionConsiderations": "The \"Landfill Management\" strategies promote equity and inclusion by addressing the environmental impacts of landfill sites, which often disproportionately affect vulnerable and underserved communities. These communities frequently reside near landfills and are more susceptible to health risks associated with pollution and environmental degradation. By implementing responsible and sustainable landfill practices, the action aims to reduce these negative impacts, thereby improving the quality of life for residents in these areas.\n \n Additionally, effective waste reduction techniques can create opportunities for community engagement and participation, allowing underserved populations to have a voice in local environmental decisions. This inclusion fosters a sense of ownership and empowerment among community members, ensuring that their needs and concerns are considered in the management of landfill sites. Overall, the action acknowledges and seeks to mitigate the inequities faced by marginalized communities in relation to waste management and environmental health.",
             "GHGReductionPotential": {
                 "stationary_energy": null,
                 "transportation": null,
@@ -222,13 +193,7 @@
                 "Cost savings from improved landfill management practices",
                 "Compliance with environmental regulations"
             ],
-            "Impacts": [
-                "Reduction in greenhouse gas emissions from waste management",
-                "Improvement in air quality due to reduced landfill emissions",
-                "Enhancement of water quality by minimizing leachate from landfills",
-                "Promotion of equity and inclusion for underserved communities",
-                "Encouragement of sustainable waste disposal practices among individuals and communities"
-            ]
+            "PowersAndMandates": null
         }
     },
     {
@@ -240,7 +205,57 @@
         "actionName": "Develop projects for renewable energy and waste reuse",
         "actionPriority": 4,
         "explanation": "For the city of Caxias do Sul, developing renewable energy and waste reuse projects transforms discarded materials into valuable resources. Turning waste into energy helps curb emissions while reducing pressure on landfills. This dual benefit supports cleaner power generation and fosters a more circular local economy.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0052",
+            "ActionName": "Develop projects for renewable energy and waste reuse",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "waste"
+            ],
+            "Subsector": [
+                "energy_generation_supplied_to_the_grid"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "This action aims to develop and implement renewable energy projects, including:a biodigester for organic waste treatment and a solar power plant.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 0,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": "60-79",
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Development and implementation of renewable energy projects.",
+                "Installation of a biodigester for organic waste treatment.",
+                "Establishment of a solar power plant to generate clean energy."
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of renewable energy and waste reuse projects implemented.",
+                "Amount of waste reused or recycled (tons/year).",
+                "Reduction in energy costs for participating municipalities (USD)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRCXL",
@@ -257,7 +272,6 @@
             "ActionType": [
                 "mitigation"
             ],
-            "AdaptationCategory": null,
             "Hazard": null,
             "Sector": [
                 "waste"
@@ -268,13 +282,7 @@
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "InterventionType": [
-                "regulations_and_laws",
-                "programs_and_initiatives",
-                "infrastructure_investments"
-            ],
             "Description": "Implementation of waste hierarchy principles to reduce waste generation, improve source separation, and increase recycling and composting. Promotes decentralized waste management, home composting, and circular economy approaches to transform waste into energy or by-products while minimizing transport-related emissions.",
-            "BehavioralChangeTargeted": "Encourages waste separation at source, adoption of recycling and composting behaviors, and increased public participation in waste management programs.",
             "CoBenefits": {
                 "air_quality": 1,
                 "water_quality": 0,
@@ -309,12 +317,7 @@
                 "reduction in CH4 emissions from waste",
                 "employment opportunities created in waste management"
             ],
-            "Impacts": [
-                "Improved urban livability",
-                "reduction in landfill emissions",
-                "enhanced resource efficiency",
-                "economic growth through job creation in the waste management sector"
-            ]
+            "PowersAndMandates": null
         }
     },
     {
@@ -326,7 +329,57 @@
         "actionName": "Promote Energy Recovery from Biogas in Landfills",
         "actionPriority": 6,
         "explanation": "For the city of Caxias do Sul, recovering energy from landfill biogas turns a potent greenhouse gas into a renewable power source. This approach reduces harmful emissions while offering a local source of clean electricity. It leverages existing waste infrastructure, making it a relatively cost-effective climate solution.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0109",
+            "ActionName": "Promote Energy Recovery from Biogas in Landfills",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "waste"
+            ],
+            "Subsector": [
+                "disposal_of_solid_waste_generated_in_the_city"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Utilize biogas generated from landfills for energy production.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 0,
+                "habitat": 1,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": "20-39",
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Develop infrastructure to capture and utilize biogas generated from landfills.",
+                "Ensure regulatory frameworks are in place to support biogas energy production and distribution.",
+                "Monitor and assess the environmental and energy benefits of biogas utilization."
+            ],
+            "KeyPerformanceIndicators": [
+                "Volume of biogas captured and used for energy generation (m\u00b3/month).",
+                "Installed capacity of renewable energy generation from biogas (kW).",
+                "Annual reduction in methane (CH\u2084) emissions converted to CO\u2082 equivalent."
+            ],
+            "PowersAndMandates": [
+                "state"
+            ]
+        }
     },
     {
         "locode": "BRCXL",
@@ -343,7 +396,6 @@
             "ActionType": [
                 "mitigation"
             ],
-            "AdaptationCategory": null,
             "Hazard": null,
             "Sector": [
                 "waste"
@@ -354,12 +406,7 @@
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "InterventionType": [
-                "programs_and_initiatives",
-                "infrastructure_investments"
-            ],
             "Description": "\"Gas Management\" in sanitary landfills involves capturing leachate and managing landfill gas to mitigate environmental hazards. Implementing effective gas management systems contributes to reducing greenhouse gas emissions and enhances overall waste management sustainability.",
-            "BehavioralChangeTargeted": "The targeted behavioral change that the \"Gas Management\" climate action aims to achieve is the increased adoption of sustainable waste management practices among individuals and organizations. This includes actively participating in and supporting initiatives that capture leachate and manage landfill gas, thereby reducing greenhouse gas emissions. By fostering a perception of the importance and effectiveness of these practices, the intervention seeks to encourage people to prioritize waste reduction, recycling, and proper disposal methods, ultimately leading to a broader cultural shift towards sustainability in waste management.",
             "CoBenefits": {
                 "air_quality": 1,
                 "water_quality": 0,
@@ -369,7 +416,7 @@
                 "mobility": 0,
                 "stakeholder_engagement": 0
             },
-            "EquityAndInclusionConsiderations": "The \"Gas Management\" action in sanitary landfills promotes equity and inclusion by addressing environmental hazards that disproportionately affect vulnerable or underserved communities. By capturing leachate and managing landfill gas, this action reduces harmful emissions that can lead to health issues, particularly in low-income neighborhoods often located near landfills. \n\nAdditionally, effective gas management systems contribute to improved air quality and public health, benefiting all community members, especially those who may lack access to healthcare resources. The implementation of these systems can also create job opportunities in the local area, providing economic benefits to underserved populations. Overall, this climate action recognizes and addresses the specific needs of vulnerable communities, ensuring they receive the environmental and health protections necessary for equitable living conditions.",
+            "EquityAndInclusionConsiderations": "The \"Gas Management\" action in sanitary landfills promotes equity and inclusion by addressing environmental hazards that disproportionately affect vulnerable or underserved communities. By capturing leachate and managing landfill gas, this action reduces harmful emissions that can lead to health issues, particularly in low-income neighborhoods often located near landfills. \n \n Additionally, effective gas management systems contribute to improved air quality and public health, benefiting all community members, especially those who may lack access to healthcare resources. The implementation of these systems can also create job opportunities in the local area, providing economic benefits to underserved populations. Overall, this climate action recognizes and addresses the specific needs of vulnerable communities, ensuring they receive the environmental and health protections necessary for equitable living conditions.",
             "GHGReductionPotential": {
                 "stationary_energy": null,
                 "transportation": null,
@@ -397,13 +444,7 @@
                 "Reduction in odor complaints",
                 "Increase in landfill lifespan"
             ],
-            "Impacts": [
-                "Reduction of greenhouse gas emissions by 60-79% in the waste sector",
-                "Improvement in air quality",
-                "Promotion of sustainable waste management practices",
-                "Enhanced public health in vulnerable communities",
-                "Creation of job opportunities in local areas"
-            ]
+            "PowersAndMandates": null
         }
     },
     {
@@ -415,7 +456,57 @@
         "actionName": "Establish eco-parks.",
         "actionPriority": 8,
         "explanation": "For the city of Caxias do Sul, eco-parks bring together sustainable waste treatment, recreation, and community education in one space. These parks can process waste while offering green areas for residents, improving urban biodiversity. By integrating environmental practices with public use, they foster social engagement and awareness.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0122",
+            "ActionName": "Establish eco-parks.",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "waste"
+            ],
+            "Subsector": [
+                "land"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "An eco-park is a facility for the mechanical and biological treatment of urban solid waste, integrating different technologies for the segregation and treatment of various fractions within the waste. This treatment aims to maximize the recovery of dry and organic waste and reduce the volume of waste to be sent for final disposal in landfills, using technologies such as energy generation, composting, recycling recovery, proper disposal of residual waste, and other existing treatment methods available in the market.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 1,
+                "habitat": 2,
+                "cost_of_living": 0,
+                "housing": 1,
+                "mobility": 0,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": "20-39",
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Implementation of eco-parks for mechanical and biological treatment of urban solid waste.",
+                "Integration of technologies such as energy generation, composting, recycling recovery, and proper disposal of residual waste.",
+                "Maximization of dry and organic waste recovery to reduce landfill disposal volumes."
+            ],
+            "KeyPerformanceIndicators": [
+                "Total area covered by eco-parks in the city (hectares).",
+                "Increase in the number of visitors to eco-parks annually.",
+                "Improvement in local biodiversity indices within eco-park areas."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRCXL",
@@ -426,7 +517,57 @@
         "actionName": "Maximize composting processes.",
         "actionPriority": 9,
         "explanation": "For the city of Caxias do Sul, maximizing composting diverts organic waste from landfills, cutting methane emissions and creating nutrient-rich soil amendments. This method also lowers hauling costs associated with heavy wet waste. By turning kitchen and yard trimmings into compost, the city supports local agriculture and greener public spaces.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0119",
+            "ActionName": "Maximize composting processes.",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "waste"
+            ],
+            "Subsector": [
+                "biological_treatment_of_waste_generated_in_the_city"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "The action aims to increase the amount of organic waste treated through composting processes, preceding biodigestion whenever possible, and producing compost that can be used for activities involving the planting and maintenance of public green areas.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 1,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": "20-39",
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "high",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Expansion of composting processes to treat organic waste, with biodigestion as a preliminary step when possible.",
+                "Production of compost for use in planting and maintaining public green areas.",
+                "Development of infrastructure and systems to support increased organic waste treatment."
+            ],
+            "KeyPerformanceIndicators": [
+                "The monthly amount of organic waste diverted to composting facilities is measured in tons.",
+                "The percentage of households and businesses participating in composting programmes is also recorded.",
+                "The estimated reduction in methane emissions from organic waste decomposition in landfills is a key indicator of environmental impact."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRCXL",
@@ -437,7 +578,57 @@
         "actionName": "Implement technologies for the treatment of wet waste.",
         "actionPriority": 10,
         "explanation": "For the city of Caxias do Sul, technologies targeting wet waste transform a high-volume, high-impact stream into reusable resources. Proper treatment reduces odor and greenhouse gas emissions, especially from organic decomposition. This approach also aligns with health considerations by preventing the buildup of harmful bacteria.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0064",
+            "ActionName": "Implement technologies for the treatment of wet waste.",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "waste"
+            ],
+            "Subsector": [
+                "biological_treatment_of_waste_generated_in_the_city"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Develop feasibility studies for the implementation of wet waste treatment technologies, such as composting and biodigestion, in order to reduce the amount sent to landfills.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": "20-39",
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Development of feasibility studies for wet waste treatment technologies.",
+                "Exploration of composting and biodigestion to reduce landfill waste.",
+                "Assessment of technical and economic viability for implementation."
+            ],
+            "KeyPerformanceIndicators": [
+                "Percentage of wet waste treated using new technologies.",
+                "Biogas produced from wet waste treatment (m\u00b3/year).",
+                "GHG emissions avoided (tons CO\u2082e)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRCXL",
@@ -448,7 +639,57 @@
         "actionName": "Regulate the Construction Waste Management Plan",
         "actionPriority": 11,
         "explanation": "For the city of Caxias do Sul, regulating construction waste management addresses a major source of debris in growing urban areas. Clear guidelines ensure materials are reused or recycled whenever possible, cutting landfill use. This measure also encourages builders and developers to adopt more sustainable building practices.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0110",
+            "ActionName": "Regulate the Construction Waste Management Plan",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "waste"
+            ],
+            "Subsector": [
+                "disposal_of_solid_waste_generated_in_the_city"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Establish guidelines for the efficient management of waste, promoting sustainability through waste reduction and the reuse of materials in construction projects.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": "20-39",
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Develop clear guidelines for waste management in construction, focusing on waste reduction and material reuse.",
+                "Promote the use of sustainable building materials and circular economy principles in construction projects.",
+                "Provide training and incentives for construction companies to adopt efficient waste management practices."
+            ],
+            "KeyPerformanceIndicators": [
+                "Percentage of contractors complying with the management plan.",
+                "Monthly amount of construction waste recycled or reused (tonnes/month).",
+                "Estimated reduction in CO\u2082 equivalent emissions due to proper construction waste management."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRCXL",
@@ -459,7 +700,57 @@
         "actionName": "Adopt Centralized Biological Treatment Technologies",
         "actionPriority": 12,
         "explanation": "For the city of Caxias do Sul, centralized biological treatment processes large volumes of organic waste effectively. Such systems reduce methane emissions by breaking down organic matter under controlled conditions. They also produce renewable energy or compost, supporting broader environmental and economic benefits.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0123",
+            "ActionName": "Adopt Centralized Biological Treatment Technologies",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "waste"
+            ],
+            "Subsector": [
+                "biological_treatment_of_waste_generated_in_the_city"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Implement composting and anaerobic digestion for organic waste.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": "20-39",
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Set up infrastructure for composting and anaerobic digestion of organic waste.",
+                "Provide training and resources to ensure proper waste segregation and processing.",
+                "Develop policies and incentives to encourage participation from businesses and communities in organic waste management."
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of centralised biological treatment facilities installed.",
+                "Percentage of organic waste treated in relation to total waste generated (%).",
+                "Reduction of greenhouse gas emissions (CH\u2084 and CO\u2082) from organic waste (tCO\u2082e/year)."
+            ],
+            "PowersAndMandates": [
+                "state"
+            ]
+        }
     },
     {
         "locode": "BRCXL",
@@ -470,7 +761,57 @@
         "actionName": "Expand Wastewater Treatment Services",
         "actionPriority": 13,
         "explanation": "For the city of Caxias do Sul, expanding wastewater treatment cuts water pollution and safeguards public health. Properly treated effluent lowers the risk of disease and environmental contamination. This step also helps the municipality cope with population growth, maintaining cleaner waterways and ecosystems.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0107",
+            "ActionName": "Expand Wastewater Treatment Services",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "waste"
+            ],
+            "Subsector": [
+                "wastewater_generated_in_the_city"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Ensure comprehensive sewage treatment coverage in municipalities.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": "20-39",
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Establish and implement policies to expand sewage treatment infrastructure in municipalities.",
+                "Secure funding for the construction and maintenance of treatment facilities.",
+                "Monitor and evaluate the effectiveness of sewage treatment systems to ensure full coverage and compliance with environmental standards."
+            ],
+            "KeyPerformanceIndicators": [
+                "Percentage increase in population served by wastewater treatment systems.",
+                "Average monthly volume of waste water treated (m\u00b3).",
+                "Reduction of water pollution in monitored water bodies."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRCXL",
@@ -481,7 +822,57 @@
         "actionName": "Implement a project to support cooperatives of recyclabe material collectors",
         "actionPriority": 14,
         "explanation": "For the city of Caxias do Sul, supporting cooperatives of recyclable material collectors builds social equity while reducing landfill-bound waste. By formalizing these groups, the city fosters employment and improves recycling rates. This community-based approach also encourages more responsible waste sorting and disposal practices.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0053",
+            "ActionName": "Implement a project to support cooperatives of recyclabe material collectors",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "waste"
+            ],
+            "Subsector": [
+                "disposal_of_solid_waste_generated_in_the_city"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Measures to improve working conditions and income in the processes of sorting recyclable waste. It includes ongoing training for collectors in technology, economics, business management, and conceptual planning for the operation and administration of the Sorting Unit.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 0,
+                "habitat": 1,
+                "cost_of_living": 2,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": "20-39",
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Implementation of measures to improve working conditions and income for recyclable waste sorting.",
+                "Ongoing training for collectors in technology, economics, business management, and operational planning.",
+                "Development of administrative and operational capabilities for the Sorting Unit."
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of cooperatives supported annually.",
+                "Increase in income of collectors (%).",
+                "Volume of recyclable materials collected by cooperatives (tons/year)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRCXL",
@@ -498,7 +889,6 @@
             "ActionType": [
                 "mitigation"
             ],
-            "AdaptationCategory": null,
             "Hazard": null,
             "Sector": [
                 "transportation"
@@ -509,12 +899,7 @@
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "InterventionType": [
-                "programs_and_initiatives",
-                "infrastructure_investments"
-            ],
             "Description": "\"15/30-Minute Areas\" refer to the development of complete neighborhoods where essential services, amenities, and public transport are easily accessible within a 15 or 30-minute walk or bike ride. This urban planning approach promotes sustainability by reducing the need for long-distance travel and fostering community resilience.",
-            "BehavioralChangeTargeted": "The targeted behavioral shift that the \"15/30-Minute Areas\" climate action aims to achieve is an increase in walking and biking as primary modes of transportation for short trips within neighborhoods. By enhancing accessibility to essential services and amenities within a 15 or 30-minute radius, the intervention encourages individuals to opt for sustainable travel options over reliance on cars, thereby reducing greenhouse gas emissions and fostering a sense of community resilience.",
             "CoBenefits": {
                 "air_quality": 1,
                 "water_quality": 0,
@@ -524,7 +909,7 @@
                 "mobility": 2,
                 "stakeholder_engagement": 0
             },
-            "EquityAndInclusionConsiderations": "The \"15/30-Minute Areas\" climate action promotes equity and inclusion by ensuring that essential services and amenities are accessible to all community members, particularly benefiting vulnerable or underserved populations who may lack reliable transportation. By designing neighborhoods where key resources are within a short walking or biking distance, this approach reduces barriers to access for low-income individuals, the elderly, and those with disabilities. \n\nAdditionally, the focus on public transport integration enhances mobility options for those who may not own a vehicle, further supporting equitable access to jobs, education, and healthcare. The development of complete neighborhoods fosters a sense of community and belonging, encouraging social interactions among diverse groups and promoting inclusivity. Overall, this urban planning strategy actively addresses the needs of marginalized communities, ensuring they are not left behind in the transition to sustainable living.",
+            "EquityAndInclusionConsiderations": "The \"15/30-Minute Areas\" climate action promotes equity and inclusion by ensuring that essential services and amenities are accessible to all community members, particularly benefiting vulnerable or underserved populations who may lack reliable transportation. By designing neighborhoods where key resources are within a short walking or biking distance, this approach reduces barriers to access for low-income individuals, the elderly, and those with disabilities. \n \n Additionally, the focus on public transport integration enhances mobility options for those who may not own a vehicle, further supporting equitable access to jobs, education, and healthcare. The development of complete neighborhoods fosters a sense of community and belonging, encouraging social interactions among diverse groups and promoting inclusivity. Overall, this urban planning strategy actively addresses the needs of marginalized communities, ensuring they are not left behind in the transition to sustainable living.",
             "GHGReductionPotential": {
                 "stationary_energy": null,
                 "transportation": "0-19",
@@ -555,13 +940,7 @@
                 "Frequency of community events and engagement activities",
                 "Change in property values in 15/30-minute areas"
             ],
-            "Impacts": [
-                "Reduction in greenhouse gas emissions from transportation",
-                "Improved air quality due to decreased vehicle use",
-                "Enhanced mobility options for all community members",
-                "Increased accessibility to essential services for underserved populations",
-                "Promotion of community resilience and social interactions"
-            ]
+            "PowersAndMandates": null
         }
     },
     {
@@ -573,7 +952,57 @@
         "actionName": "Optimize the urban solid waste (USW) management system, aiming to expand collection and reduce illegal disposal.",
         "actionPriority": 16,
         "explanation": "For the city of Caxias do Sul, optimizing solid waste management ensures broader service coverage and diminishes trash dumping in unauthorized areas. This strategy improves public health by limiting unsanitary waste piles and pest infestations. Streamlined collection routes also lower emissions tied to scattered pickups and reduce cleanup costs.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0017",
+            "ActionName": "Optimize the urban solid waste (USW) management system, aiming to expand collection and reduce illegal disposal.",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "waste"
+            ],
+            "Subsector": [
+                "disposal_of_solid_waste_generated_in_the_city"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "This action focuses on optimizing the urban solid waste (USW) management system, covering all stages. Initially, the planning and infrastructure of selective waste collection in neighborhoods will be reviewed to reach more areas of the municipality and enhance the monitoring of regular disposal and waste dumps.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": "20-39",
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Investment in infrastructure and logistics for expanding selective waste collection coverage to more neighborhoods",
+                "Strengthened monitoring and enforcement systems to prevent illegal dumping and ensure proper waste disposal",
+                "Public awareness campaigns to educate citizens on the importance of waste separation and proper disposal methods"
+            ],
+            "KeyPerformanceIndicators": [
+                "Percentage of urban solid waste collected and processed properly.",
+                "Monthly reduction in the amount of illegal waste disposal incidents.",
+                "Estimated reduction in CO\u2082 equivalent emissions from improved waste management practices."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRCXL",
@@ -584,7 +1013,57 @@
         "actionName": "Universalize the coverage of the selective waste collection service for dry materials",
         "actionPriority": 17,
         "explanation": "For the city of Caxias do Sul, universal selective waste collection ensures consistent recycling options across all neighborhoods. This inclusive approach maximizes resource recovery and cuts landfill use. By making recycling easy and accessible, the city fosters a culture of sustainability and reduces carbon-intensive waste disposal.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0113",
+            "ActionName": "Universalize the coverage of the selective waste collection service for dry materials",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "waste"
+            ],
+            "Subsector": [
+                "disposal_of_solid_waste_generated_in_the_city"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Increase the waste treatment capacity of cooperatives and mobilize efforts to expand the industry's uptake of recycled waste.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": "20-39",
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "high",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Increase investment in infrastructure and training to enhance the waste treatment capacity of cooperatives.",
+                "Implement policies to incentivize the recycling industry to expand its uptake of recycled materials.",
+                "Foster collaboration between cooperatives, government, and private industry to improve recycling processes and markets."
+            ],
+            "KeyPerformanceIndicators": [
+                "Coverage percentage of the selective collection service for dry materials.",
+                "Monthly amount of dry materials collected and sent for recycling (tons/month).",
+                "Estimated reduction in CO\u2082 equivalent emissions due to increased recycling rates."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRCXL",
@@ -595,7 +1074,57 @@
         "actionName": "Expand the coverage of the public selective waste collection network",
         "actionPriority": 18,
         "explanation": "For the city of Caxias do Sul, expanding the selective collection network builds on existing recycling programs to reach more residents. Greater accessibility boosts participation in sorting and reduces contamination of recyclables. Over time, this approach decreases landfill reliance and promotes efficient use of resources.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0066",
+            "ActionName": "Expand the coverage of the public selective waste collection network",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "waste"
+            ],
+            "Subsector": [
+                "disposal_of_solid_waste_generated_in_the_city"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Revitalize and strengthen waste collection by expanding domestic solid waste collection to all neighborhoods not yet served by the service. Create and designate voluntary collection points, selective collection routes, and the location of recycling cooperatives, and develop a recycling waste collection calendar.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": "20-39",
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Expansion of domestic solid waste collection to underserved neighborhoods.",
+                "Creation of voluntary collection points, selective collection routes, and designated recycling cooperative locations.",
+                "Development of a recycling waste collection calendar to enhance service organization."
+            ],
+            "KeyPerformanceIndicators": [
+                "Percentage of households with access to selective waste collection.",
+                "Volume of recyclable waste collected (tons/year).",
+                "GHG emissions avoided through proper waste management (tons CO\u2082e)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRCXL",
@@ -606,7 +1135,57 @@
         "actionName": "Implement the Sustainable Logistics Plan in all public administration bodies",
         "actionPriority": 19,
         "explanation": "For the city of Caxias do Sul, a Sustainable Logistics Plan for public administration streamlines resource use in government operations. By introducing eco-friendly procurement and transportation methods, emissions drop across multiple departments. This cohesive effort also sets an example for private entities, reinforcing city-wide sustainability targets.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0018",
+            "ActionName": "Implement the Sustainable Logistics Plan in all public administration bodies",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "waste"
+            ],
+            "Subsector": [
+                "disposal_of_solid_waste_generated_in_the_city"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "This action aims to expand existing sustainability initiatives in public buildings, including schools, that promote the reduction of greenhouse gas emissions, such as the installation of photovoltaic energy in public buildings.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": -1,
+                "habitat": -1,
+                "cost_of_living": -1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": "20-39",
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Availability of funding and financial mechanisms to support the installation of photovoltaic energy systems in public buildings",
+                "Access to technical expertise and resources to effectively design, implement, and maintain energy-efficient systems",
+                "Policy and regulatory support to integrate sustainability initiatives into public building standards and operations"
+            ],
+            "KeyPerformanceIndicators": [
+                "Percentage of municipal fleet transitioned to sustainable vehicles (%).",
+                "Annual fuel consumption reduction in municipal operations (liters/year).",
+                "Estimated reduction in CO\u2082 equivalent emissions from sustainable logistics measures (tons/year)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRCXL",
@@ -617,6 +1196,56 @@
         "actionName": "Universalize sewage collection and treatment",
         "actionPriority": 20,
         "explanation": "For the city of Caxias do Sul, universalizing sewage collection and treatment tackles a critical source of water pollution and health risks. Extending these services citywide prevents contamination of local rivers and groundwater. Ensuring proper sanitation also boosts public well-being and aligns with broader climate resilience goals.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0112",
+            "ActionName": "Universalize sewage collection and treatment",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "waste"
+            ],
+            "Subsector": [
+                "wastewater_generated_in_the_city"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Universalize sewage collection and treatment, implement effective monitoring systems to prevent illegal discharges from homes, businesses, and industries, and continuously monitor water quality.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 2,
+                "habitat": 1,
+                "cost_of_living": 0,
+                "housing": 1,
+                "mobility": 0,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": "20-39",
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "high",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Expand sewage collection and treatment infrastructure to ensure universal coverage.",
+                "Implement monitoring systems to detect and prevent illegal discharges from homes, businesses, and industries.",
+                "Establish continuous water quality monitoring systems to ensure compliance and protect public health."
+            ],
+            "KeyPerformanceIndicators": [
+                "Percentage of the community covered by wastewater collection and treatment.",
+                "Reduction in the incidence of diseases related to poor sanitation.",
+                "Volume of wastewater treated compared to volume collected (system efficiency, %)."
+            ],
+            "PowersAndMandates": [
+                "state"
+            ]
+        }
     }
 ]

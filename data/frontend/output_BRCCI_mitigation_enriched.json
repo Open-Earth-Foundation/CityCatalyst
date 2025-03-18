@@ -14,7 +14,6 @@
             "ActionType": [
                 "mitigation"
             ],
-            "AdaptationCategory": null,
             "Hazard": null,
             "Sector": [
                 "waste"
@@ -25,11 +24,7 @@
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "InterventionType": [
-                "programs_and_initiatives"
-            ],
             "Description": "\"Waste Efficiency\" initiatives aim to improve the efficiency of waste collection processes, reducing resource consumption and minimizing environmental impact. This includes optimizing waste management systems to enhance energy efficiency and promote sustainable waste disposal practices.",
-            "BehavioralChangeTargeted": "The targeted behavioral change that the \"Waste Efficiency\" initiatives aim to achieve is for individuals and organizations to adopt more sustainable waste disposal practices and actively participate in optimizing waste management systems. This includes reducing waste generation, increasing recycling rates, and utilizing energy-efficient waste collection methods. By enhancing awareness and perceptions of the environmental impact of waste, the initiative encourages people to prioritize waste efficiency in their daily activities, leading to a collective shift towards more responsible waste management behaviors.",
             "CoBenefits": {
                 "air_quality": 0,
                 "water_quality": 1,
@@ -39,7 +34,7 @@
                 "mobility": 0,
                 "stakeholder_engagement": 0
             },
-            "EquityAndInclusionConsiderations": "The \"Waste Efficiency\" initiatives promote equity and inclusion by focusing on underserved communities that often bear the brunt of inefficient waste management systems. By optimizing waste collection processes, these initiatives can reduce the environmental burden on vulnerable populations, who may live in areas disproportionately affected by waste and pollution. \n\nAdditionally, improving energy efficiency in waste management can lead to cost savings, which can be reinvested into community services or infrastructure that benefit low-income neighborhoods. The promotion of sustainable waste disposal practices also ensures that all community members, regardless of socioeconomic status, have access to environmentally responsible options, fostering a sense of shared responsibility and inclusion in climate action efforts. \n\nOverall, these initiatives recognize the unique challenges faced by underserved communities and aim to create a more equitable waste management system that benefits all residents.",
+            "EquityAndInclusionConsiderations": "The \"Waste Efficiency\" initiatives promote equity and inclusion by focusing on underserved communities that often bear the brunt of inefficient waste management systems. By optimizing waste collection processes, these initiatives can reduce the environmental burden on vulnerable populations, who may live in areas disproportionately affected by waste and pollution. \n \n Additionally, improving energy efficiency in waste management can lead to cost savings, which can be reinvested into community services or infrastructure that benefit low-income neighborhoods. The promotion of sustainable waste disposal practices also ensures that all community members, regardless of socioeconomic status, have access to environmentally responsible options, fostering a sense of shared responsibility and inclusion in climate action efforts. \n \n Overall, these initiatives recognize the unique challenges faced by underserved communities and aim to create a more equitable waste management system that benefits all residents.",
             "GHGReductionPotential": {
                 "stationary_energy": null,
                 "transportation": null,
@@ -67,13 +62,7 @@
                 "Volume of waste processed through sustainable methods",
                 "Operational efficiency of waste collection routes"
             ],
-            "Impacts": [
-                "Reduction in greenhouse gas emissions by 80-100% in the waste sector",
-                "Improved water quality through better waste management practices",
-                "Enhanced equity and inclusion for underserved communities",
-                "Increased community awareness and participation in sustainable waste practices",
-                "Cost savings from energy-efficient waste management reinvested into community services"
-            ]
+            "PowersAndMandates": null
         }
     },
     {
@@ -91,7 +80,6 @@
             "ActionType": [
                 "mitigation"
             ],
-            "AdaptationCategory": null,
             "Hazard": null,
             "Sector": [
                 "waste"
@@ -102,12 +90,7 @@
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "InterventionType": [
-                "taxes_and_fees",
-                "incentives_and_subsidies"
-            ],
             "Description": "\"Volume-Based Collection\" policies incentivize waste reduction by implementing fees or incentives based on the amount of waste generated. This approach encourages residents to minimize waste production, contributing to overall waste reduction goals.",
-            "BehavioralChangeTargeted": "The targeted behavioral shift that the \"Volume-Based Collection\" climate action aims to achieve is a reduction in waste generation among residents. By implementing fees or incentives based on the amount of waste produced, the intervention encourages individuals to minimize their waste output. This shift is expected to lead to more sustainable waste management practices, as residents become more conscious of their consumption habits and actively seek to reduce the volume of waste they generate, ultimately contributing to broader waste reduction goals and lower greenhouse gas emissions.",
             "CoBenefits": {
                 "air_quality": 0,
                 "water_quality": 0,
@@ -117,7 +100,7 @@
                 "mobility": 0,
                 "stakeholder_engagement": 0
             },
-            "EquityAndInclusionConsiderations": "The \"Volume-Based Collection\" policies promote equity and inclusion by:\n\n1. **Incentivizing Participation**: By linking fees or incentives to the amount of waste generated, the policy encourages all residents, including those from vulnerable or underserved communities, to actively participate in waste reduction efforts. This can empower these communities to take ownership of their waste management practices.\n\n2. **Financial Relief for Low-Volume Generators**: Households that produce less waste, often found in underserved communities, may benefit from lower fees, providing them with financial relief and encouraging sustainable practices without imposing a disproportionate burden.\n\n3. **Awareness and Education**: The implementation of volume-based policies often includes educational components that inform residents about waste reduction strategies. This can particularly benefit underserved communities by providing them with knowledge and resources to reduce waste effectively.\n\n4. **Community Engagement**: The policy can foster community engagement by involving residents in discussions about waste management and reduction strategies, ensuring that the voices of vulnerable populations are heard and considered in the decision-making process.\n\n5. **Equitable Resource Allocation**: By focusing on waste reduction, the policy can lead to more equitable allocation of resources for waste management services, ensuring that underserved communities receive adequate support and infrastructure to manage their waste effectively.",
+            "EquityAndInclusionConsiderations": "The \"Volume-Based Collection\" policies promote equity and inclusion by:\n \n 1. **Incentivizing Participation**: By linking fees or incentives to the amount of waste generated, the policy encourages all residents, including those from vulnerable or underserved communities, to actively participate in waste reduction efforts. This can empower these communities to take ownership of their waste management practices.\n \n 2. **Financial Relief for Low-Volume Generators**: Households that produce less waste, often found in underserved communities, may benefit from lower fees, providing them with financial relief and encouraging sustainable practices without imposing a disproportionate burden.\n \n 3. **Awareness and Education**: The implementation of volume-based policies often includes educational components that inform residents about waste reduction strategies. This can particularly benefit underserved communities by providing them with knowledge and resources to reduce waste effectively.\n \n 4. **Community Engagement**: The policy can foster community engagement by involving residents in discussions about waste management and reduction strategies, ensuring that the voices of vulnerable populations are heard and considered in the decision-making process.\n \n 5. **Equitable Resource Allocation**: By focusing on waste reduction, the policy can lead to more equitable allocation of resources for waste management services, ensuring that underserved communities receive adequate support and infrastructure to manage their waste effectively.",
             "GHGReductionPotential": {
                 "stationary_energy": null,
                 "transportation": null,
@@ -144,13 +127,7 @@
                 "Public awareness and engagement levels",
                 "Change in composting rates"
             ],
-            "Impacts": [
-                "Encourages waste reduction among residents",
-                "Promotes equity and inclusion in waste management",
-                "Provides financial relief for low-waste households",
-                "Fosters community engagement and education",
-                "Contributes to significant GHG reduction in the waste sector"
-            ]
+            "PowersAndMandates": null
         }
     },
     {
@@ -162,7 +139,57 @@
         "actionName": "Adoption of electric drones for last-mile deliveries.",
         "actionPriority": 3,
         "explanation": "For the city of Cama\u00e7ari, adopting electric drones for last-mile deliveries reduces emissions from traditional vehicle-based transport and alleviates urban congestion. By enabling efficient and eco-friendly logistics, it benefits local businesses and residents alike. This innovation also supports improved air quality and faster service in dense areas.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0090",
+            "ActionName": "Adoption of electric drones for last-mile deliveries.",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "off-road"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Replace traditional vehicles with electric drones for short-distance deliveries in urban centers, reducing emissions and traffic congestion.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 1,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "60-79",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Development of urban airspace regulations to ensure the safe and efficient operation of delivery drones.",
+                "Investment in charging and maintenance infrastructure to support a fleet of electric drones.",
+                "Collaboration with logistics companies to integrate drones into last-mile delivery networks."
+            ],
+            "KeyPerformanceIndicators": [
+                "Delivery time reduction compared to traditional methods (minutes).",
+                "Increase in customer satisfaction with drone deliveries (%).",
+                "Reduction in traffic congestion caused by delivery vehicles (%)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRCCI",
@@ -173,7 +200,57 @@
         "actionName": "Develop projects for renewable energy and waste reuse",
         "actionPriority": 4,
         "explanation": "For the city of Cama\u00e7ari, developing projects for renewable energy and waste reuse addresses two core challenges: reducing emissions and extending the life cycle of materials. By advancing a circular economy mindset, the city can diminish reliance on fossil fuels while opening up new economic opportunities. This strategic approach also reinforces long-term sustainability and resilience.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0052",
+            "ActionName": "Develop projects for renewable energy and waste reuse",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "waste"
+            ],
+            "Subsector": [
+                "energy_generation_supplied_to_the_grid"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "This action aims to develop and implement renewable energy projects, including:a biodigester for organic waste treatment and a solar power plant.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 0,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": "60-79",
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Development and implementation of renewable energy projects.",
+                "Installation of a biodigester for organic waste treatment.",
+                "Establishment of a solar power plant to generate clean energy."
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of renewable energy and waste reuse projects implemented.",
+                "Amount of waste reused or recycled (tons/year).",
+                "Reduction in energy costs for participating municipalities (USD)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRCCI",
@@ -190,7 +267,6 @@
             "ActionType": [
                 "mitigation"
             ],
-            "AdaptationCategory": null,
             "Hazard": null,
             "Sector": [
                 "waste"
@@ -201,12 +277,7 @@
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "InterventionType": [
-                "programs_and_initiatives",
-                "infrastructure_investments"
-            ],
             "Description": "\"Gas Management\" in sanitary landfills involves capturing leachate and managing landfill gas to mitigate environmental hazards. Implementing effective gas management systems contributes to reducing greenhouse gas emissions and enhances overall waste management sustainability.",
-            "BehavioralChangeTargeted": "The targeted behavioral change that the \"Gas Management\" climate action aims to achieve is the increased adoption of sustainable waste management practices among individuals and organizations. This includes actively participating in and supporting initiatives that capture leachate and manage landfill gas, thereby reducing greenhouse gas emissions. By fostering a perception of the importance and effectiveness of these practices, the intervention seeks to encourage people to prioritize waste reduction, recycling, and proper disposal methods, ultimately leading to a broader cultural shift towards sustainability in waste management.",
             "CoBenefits": {
                 "air_quality": 1,
                 "water_quality": 0,
@@ -216,7 +287,7 @@
                 "mobility": 0,
                 "stakeholder_engagement": 0
             },
-            "EquityAndInclusionConsiderations": "The \"Gas Management\" action in sanitary landfills promotes equity and inclusion by addressing environmental hazards that disproportionately affect vulnerable or underserved communities. By capturing leachate and managing landfill gas, this action reduces harmful emissions that can lead to health issues, particularly in low-income neighborhoods often located near landfills. \n\nAdditionally, effective gas management systems contribute to improved air quality and public health, benefiting all community members, especially those who may lack access to healthcare resources. The implementation of these systems can also create job opportunities in the local area, providing economic benefits to underserved populations. Overall, this climate action recognizes and addresses the specific needs of vulnerable communities, ensuring they receive the environmental and health protections necessary for equitable living conditions.",
+            "EquityAndInclusionConsiderations": "The \"Gas Management\" action in sanitary landfills promotes equity and inclusion by addressing environmental hazards that disproportionately affect vulnerable or underserved communities. By capturing leachate and managing landfill gas, this action reduces harmful emissions that can lead to health issues, particularly in low-income neighborhoods often located near landfills. \n \n Additionally, effective gas management systems contribute to improved air quality and public health, benefiting all community members, especially those who may lack access to healthcare resources. The implementation of these systems can also create job opportunities in the local area, providing economic benefits to underserved populations. Overall, this climate action recognizes and addresses the specific needs of vulnerable communities, ensuring they receive the environmental and health protections necessary for equitable living conditions.",
             "GHGReductionPotential": {
                 "stationary_energy": null,
                 "transportation": null,
@@ -244,13 +315,7 @@
                 "Reduction in odor complaints",
                 "Increase in landfill lifespan"
             ],
-            "Impacts": [
-                "Reduction of greenhouse gas emissions by 60-79% in the waste sector",
-                "Improvement in air quality",
-                "Promotion of sustainable waste management practices",
-                "Enhanced public health in vulnerable communities",
-                "Creation of job opportunities in local areas"
-            ]
+            "PowersAndMandates": null
         }
     },
     {
@@ -268,7 +333,6 @@
             "ActionType": [
                 "mitigation"
             ],
-            "AdaptationCategory": null,
             "Hazard": null,
             "Sector": [
                 "waste"
@@ -279,12 +343,7 @@
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "InterventionType": [
-                "programs_and_initiatives",
-                "regulations_and_laws"
-            ],
             "Description": "\"Landfill Management\" strategies focus on responsible and sustainable landfill practices to minimize environmental degradation. By adopting effective management techniques, cities aim to reduce the ecological footprint associated with landfill sites and encourage waste reduction.",
-            "BehavioralChangeTargeted": "The targeted behavioral change that the \"Landfill Management\" climate action aims to achieve is a reduction in waste generation and an increase in responsible waste disposal practices among individuals and communities. This includes encouraging people to adopt habits such as recycling, composting, and minimizing single-use items, ultimately leading to a shift towards more sustainable consumption patterns and a decreased ecological footprint associated with landfill sites.",
             "CoBenefits": {
                 "air_quality": 1,
                 "water_quality": 1,
@@ -294,7 +353,7 @@
                 "mobility": 0,
                 "stakeholder_engagement": 0
             },
-            "EquityAndInclusionConsiderations": "The \"Landfill Management\" strategies promote equity and inclusion by addressing the environmental impacts of landfill sites, which often disproportionately affect vulnerable and underserved communities. These communities frequently reside near landfills and are more susceptible to health risks associated with pollution and environmental degradation. By implementing responsible and sustainable landfill practices, the action aims to reduce these negative impacts, thereby improving the quality of life for residents in these areas.\n\nAdditionally, effective waste reduction techniques can create opportunities for community engagement and participation, allowing underserved populations to have a voice in local environmental decisions. This inclusion fosters a sense of ownership and empowerment among community members, ensuring that their needs and concerns are considered in the management of landfill sites. Overall, the action acknowledges and seeks to mitigate the inequities faced by marginalized communities in relation to waste management and environmental health.",
+            "EquityAndInclusionConsiderations": "The \"Landfill Management\" strategies promote equity and inclusion by addressing the environmental impacts of landfill sites, which often disproportionately affect vulnerable and underserved communities. These communities frequently reside near landfills and are more susceptible to health risks associated with pollution and environmental degradation. By implementing responsible and sustainable landfill practices, the action aims to reduce these negative impacts, thereby improving the quality of life for residents in these areas.\n \n Additionally, effective waste reduction techniques can create opportunities for community engagement and participation, allowing underserved populations to have a voice in local environmental decisions. This inclusion fosters a sense of ownership and empowerment among community members, ensuring that their needs and concerns are considered in the management of landfill sites. Overall, the action acknowledges and seeks to mitigate the inequities faced by marginalized communities in relation to waste management and environmental health.",
             "GHGReductionPotential": {
                 "stationary_energy": null,
                 "transportation": null,
@@ -322,13 +381,7 @@
                 "Cost savings from improved landfill management practices",
                 "Compliance with environmental regulations"
             ],
-            "Impacts": [
-                "Reduction in greenhouse gas emissions from waste management",
-                "Improvement in air quality due to reduced landfill emissions",
-                "Enhancement of water quality by minimizing leachate from landfills",
-                "Promotion of equity and inclusion for underserved communities",
-                "Encouragement of sustainable waste disposal practices among individuals and communities"
-            ]
+            "PowersAndMandates": null
         }
     },
     {
@@ -340,7 +393,57 @@
         "actionName": "Implement a project to support cooperatives of recyclabe material collectors",
         "actionPriority": 7,
         "explanation": "For the city of Cama\u00e7ari, supporting cooperatives of recyclable material collectors bolsters recycling rates and offers socioeconomic benefits. By strengthening cooperative networks, more materials are diverted from landfills, reducing pollution and boosting efficiency. This measure fosters inclusive waste management and empowers local communities.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0053",
+            "ActionName": "Implement a project to support cooperatives of recyclabe material collectors",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "waste"
+            ],
+            "Subsector": [
+                "disposal_of_solid_waste_generated_in_the_city"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Measures to improve working conditions and income in the processes of sorting recyclable waste. It includes ongoing training for collectors in technology, economics, business management, and conceptual planning for the operation and administration of the Sorting Unit.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 0,
+                "habitat": 1,
+                "cost_of_living": 2,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": "20-39",
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Implementation of measures to improve working conditions and income for recyclable waste sorting.",
+                "Ongoing training for collectors in technology, economics, business management, and operational planning.",
+                "Development of administrative and operational capabilities for the Sorting Unit."
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of cooperatives supported annually.",
+                "Increase in income of collectors (%).",
+                "Volume of recyclable materials collected by cooperatives (tons/year)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRCCI",
@@ -351,7 +454,57 @@
         "actionName": "Maximize composting processes.",
         "actionPriority": 8,
         "explanation": "For the city of Cama\u00e7ari, maximizing composting processes tackles organic waste, a major fraction of municipal refuse. By converting organic material into compost, the city reduces landfill usage and mitigates emissions. This practice also supports local agriculture through enriched soil and sustainable farming.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0119",
+            "ActionName": "Maximize composting processes.",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "waste"
+            ],
+            "Subsector": [
+                "biological_treatment_of_waste_generated_in_the_city"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "The action aims to increase the amount of organic waste treated through composting processes, preceding biodigestion whenever possible, and producing compost that can be used for activities involving the planting and maintenance of public green areas.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 1,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": "20-39",
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "high",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Expansion of composting processes to treat organic waste, with biodigestion as a preliminary step when possible.",
+                "Production of compost for use in planting and maintaining public green areas.",
+                "Development of infrastructure and systems to support increased organic waste treatment."
+            ],
+            "KeyPerformanceIndicators": [
+                "The monthly amount of organic waste diverted to composting facilities is measured in tons.",
+                "The percentage of households and businesses participating in composting programmes is also recorded.",
+                "The estimated reduction in methane emissions from organic waste decomposition in landfills is a key indicator of environmental impact."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRCCI",
@@ -368,7 +521,6 @@
             "ActionType": [
                 "mitigation"
             ],
-            "AdaptationCategory": null,
             "Hazard": null,
             "Sector": [
                 "waste"
@@ -379,13 +531,7 @@
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "InterventionType": [
-                "regulations_and_laws",
-                "programs_and_initiatives",
-                "infrastructure_investments"
-            ],
             "Description": "Implementation of waste hierarchy principles to reduce waste generation, improve source separation, and increase recycling and composting. Promotes decentralized waste management, home composting, and circular economy approaches to transform waste into energy or by-products while minimizing transport-related emissions.",
-            "BehavioralChangeTargeted": "Encourages waste separation at source, adoption of recycling and composting behaviors, and increased public participation in waste management programs.",
             "CoBenefits": {
                 "air_quality": 1,
                 "water_quality": 0,
@@ -420,12 +566,7 @@
                 "reduction in CH4 emissions from waste",
                 "employment opportunities created in waste management"
             ],
-            "Impacts": [
-                "Improved urban livability",
-                "reduction in landfill emissions",
-                "enhanced resource efficiency",
-                "economic growth through job creation in the waste management sector"
-            ]
+            "PowersAndMandates": null
         }
     },
     {
@@ -437,7 +578,57 @@
         "actionName": "Promote Energy Recovery from Biogas in Landfills",
         "actionPriority": 10,
         "explanation": "For the city of Cama\u00e7ari, promoting energy recovery from landfill biogas transforms methane into a valuable energy source. By harnessing these emissions, the city cuts pollution and reduces reliance on fossil fuels. This strategy also enhances public health through better waste decomposition management.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0109",
+            "ActionName": "Promote Energy Recovery from Biogas in Landfills",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "waste"
+            ],
+            "Subsector": [
+                "disposal_of_solid_waste_generated_in_the_city"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Utilize biogas generated from landfills for energy production.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 0,
+                "habitat": 1,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": "20-39",
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Develop infrastructure to capture and utilize biogas generated from landfills.",
+                "Ensure regulatory frameworks are in place to support biogas energy production and distribution.",
+                "Monitor and assess the environmental and energy benefits of biogas utilization."
+            ],
+            "KeyPerformanceIndicators": [
+                "Volume of biogas captured and used for energy generation (m\u00b3/month).",
+                "Installed capacity of renewable energy generation from biogas (kW).",
+                "Annual reduction in methane (CH\u2084) emissions converted to CO\u2082 equivalent."
+            ],
+            "PowersAndMandates": [
+                "state"
+            ]
+        }
     },
     {
         "locode": "BRCCI",
@@ -448,7 +639,57 @@
         "actionName": "Regulate the Construction Waste Management Plan",
         "actionPriority": 11,
         "explanation": "For the city of Cama\u00e7ari, regulating construction waste ensures that building materials are handled and disposed of responsibly. This prevents debris buildup, soil contamination, and illegal dumping. Through clear guidelines, the city promotes eco-friendly innovation and safer construction practices for local residents.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0110",
+            "ActionName": "Regulate the Construction Waste Management Plan",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "waste"
+            ],
+            "Subsector": [
+                "disposal_of_solid_waste_generated_in_the_city"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Establish guidelines for the efficient management of waste, promoting sustainability through waste reduction and the reuse of materials in construction projects.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": "20-39",
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Develop clear guidelines for waste management in construction, focusing on waste reduction and material reuse.",
+                "Promote the use of sustainable building materials and circular economy principles in construction projects.",
+                "Provide training and incentives for construction companies to adopt efficient waste management practices."
+            ],
+            "KeyPerformanceIndicators": [
+                "Percentage of contractors complying with the management plan.",
+                "Monthly amount of construction waste recycled or reused (tonnes/month).",
+                "Estimated reduction in CO\u2082 equivalent emissions due to proper construction waste management."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRCCI",
@@ -465,7 +706,6 @@
             "ActionType": [
                 "mitigation"
             ],
-            "AdaptationCategory": null,
             "Hazard": null,
             "Sector": [
                 "transportation"
@@ -476,12 +716,7 @@
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "InterventionType": [
-                "programs_and_initiatives",
-                "infrastructure_investments"
-            ],
             "Description": "\"Zero Emission Buses\" initiatives focus on integrating electric or other zero-emission technologies into public transportation fleets. This strategy aims to eliminate traditional bus emissions, contributing to cleaner air and a more sustainable urban transit system.",
-            "BehavioralChangeTargeted": "The targeted behavioral shift that the \"Zero Emission Buses\" initiative aims to achieve is an increased reliance on public transportation, specifically the use of electric or zero-emission buses, over personal vehicles. This shift is intended to encourage individuals to choose cleaner, more sustainable transit options, thereby reducing greenhouse gas emissions and contributing to improved air quality in urban areas. By enhancing the perception of public transportation as a convenient, safe, and environmentally friendly alternative, the initiative seeks to foster a cultural norm that prioritizes sustainable commuting practices.",
             "CoBenefits": {
                 "air_quality": 2,
                 "water_quality": 0,
@@ -491,7 +726,7 @@
                 "mobility": 0,
                 "stakeholder_engagement": 0
             },
-            "EquityAndInclusionConsiderations": "The \"Zero Emission Buses\" initiative promotes equity and inclusion by prioritizing cleaner air in urban areas, which often include vulnerable or underserved communities that are disproportionately affected by air pollution. By transitioning to electric or zero-emission buses, the initiative directly addresses health disparities faced by these populations, improving their overall quality of life.\n\nAdditionally, the integration of zero-emission technologies into public transportation enhances accessibility to reliable and sustainable transit options for low-income individuals who may rely on public transport for their daily commutes. This ensures that all community members, regardless of socioeconomic status, have equitable access to clean transportation.\n\nFurthermore, the initiative may create job opportunities in the maintenance and operation of zero-emission buses, particularly in communities that have historically faced economic disadvantages. This can help foster economic inclusion and support local workforce development.\n\nOverall, the initiative's focus on reducing emissions and improving public transportation aligns with the needs of underserved communities, promoting environmental justice and equitable access to clean transit solutions.",
+            "EquityAndInclusionConsiderations": "The \"Zero Emission Buses\" initiative promotes equity and inclusion by prioritizing cleaner air in urban areas, which often include vulnerable or underserved communities that are disproportionately affected by air pollution. By transitioning to electric or zero-emission buses, the initiative directly addresses health disparities faced by these populations, improving their overall quality of life.\n \n Additionally, the integration of zero-emission technologies into public transportation enhances accessibility to reliable and sustainable transit options for low-income individuals who may rely on public transport for their daily commutes. This ensures that all community members, regardless of socioeconomic status, have equitable access to clean transportation.\n \n Furthermore, the initiative may create job opportunities in the maintenance and operation of zero-emission buses, particularly in communities that have historically faced economic disadvantages. This can help foster economic inclusion and support local workforce development.\n \n Overall, the initiative's focus on reducing emissions and improving public transportation aligns with the needs of underserved communities, promoting environmental justice and equitable access to clean transit solutions.",
             "GHGReductionPotential": {
                 "stationary_energy": null,
                 "transportation": "20-39",
@@ -522,13 +757,7 @@
                 "User satisfaction ratings",
                 "Reduction in noise pollution"
             ],
-            "Impacts": [
-                "Reduction of greenhouse gas emissions in the transportation sector by 20-39%",
-                "Improvement of air quality in urban areas",
-                "Promotion of equity and inclusion for underserved communities",
-                "Enhanced accessibility to public transportation for low-income individuals",
-                "Creation of job opportunities in the maintenance and operation of zero-emission buses"
-            ]
+            "PowersAndMandates": null
         }
     },
     {
@@ -540,7 +769,56 @@
         "actionName": "Implementation of urban toll.",
         "actionPriority": 13,
         "explanation": "For the city of Cama\u00e7ari, implementing an urban toll helps alleviate congestion and improve air quality by discouraging unnecessary driving. This measure can streamline traffic flow, leading to faster commutes and reduced emissions. The revenue generated may also bolster city infrastructure and public services.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0139",
+            "ActionName": "Implementation of urban toll.",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "on-road"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Establishment of a congestion charge and/or license plate rotation for light vehicles in saturated areas and at saturated times",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": -1,
+                "housing": 0,
+                "mobility": 2,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "80-100",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Establish a clear legal framework and invest in technology for monitoring and enforcement (e.g., cameras, sensors).",
+                "Launch awareness campaigns and ensure availability of efficient public transportation or alternative mobility solutions.",
+                "Collaborate with local governments and transport agencies, and set up systems for monitoring and evaluating the policy's effectiveness."
+            ],
+            "KeyPerformanceIndicators": [
+                "Reduction of CO\u2082 emissions from urban road transport (tCO\u2082e/year).",
+                "Revenue generated by the implementation of the urban congestion charge (R$)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRCCI",
@@ -551,7 +829,57 @@
         "actionName": "Optimize the urban solid waste (USW) management system, aiming to expand collection and reduce illegal disposal.",
         "actionPriority": 14,
         "explanation": "For the city of Cama\u00e7ari, optimizing the urban solid waste management system broadens collection coverage and curbs illegal dumping. This initiative safeguards both environmental quality and public health, ensuring cleaner and safer neighborhoods. Better waste oversight also strengthens the city\u2019s long-term resilience to rising waste demands.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0017",
+            "ActionName": "Optimize the urban solid waste (USW) management system, aiming to expand collection and reduce illegal disposal.",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "waste"
+            ],
+            "Subsector": [
+                "disposal_of_solid_waste_generated_in_the_city"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "This action focuses on optimizing the urban solid waste (USW) management system, covering all stages. Initially, the planning and infrastructure of selective waste collection in neighborhoods will be reviewed to reach more areas of the municipality and enhance the monitoring of regular disposal and waste dumps.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": "20-39",
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Investment in infrastructure and logistics for expanding selective waste collection coverage to more neighborhoods",
+                "Strengthened monitoring and enforcement systems to prevent illegal dumping and ensure proper waste disposal",
+                "Public awareness campaigns to educate citizens on the importance of waste separation and proper disposal methods"
+            ],
+            "KeyPerformanceIndicators": [
+                "Percentage of urban solid waste collected and processed properly.",
+                "Monthly reduction in the amount of illegal waste disposal incidents.",
+                "Estimated reduction in CO\u2082 equivalent emissions from improved waste management practices."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRCCI",
@@ -562,7 +890,57 @@
         "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
         "actionPriority": 15,
         "explanation": "For the city of Cama\u00e7ari, free public transportation during peak hours can swiftly shift commuter preferences away from personal cars. This helps lower congestion, reduce emissions, and offer more equitable access to mobility. By removing fare barriers, the city promotes a more inclusive approach to daily travel.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0088",
+            "ActionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "on-road"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Encourage the use of public transportation by offering free services during peak hours for workers and students. This measure reduces urban congestion, decreases the number of individual vehicles on the road, and consequently lowers greenhouse gas emissions associated with private transportation.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 2,
+                "housing": 0,
+                "mobility": 2,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "60-79",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Allocation of funding to subsidize free public transportation services during peak hours.",
+                "Development of policies to ensure the sustainability and efficiency of public transit systems amid increased demand.",
+                "Coordination with employers and educational institutions to optimize peak-hour schedules and promote the initiative."
+            ],
+            "KeyPerformanceIndicators": [
+                "Reduction in air pollution levels during peak hours (PM2.5/PM10 concentration).",
+                "Number of private vehicles removed from roads during peak hours.",
+                "Public satisfaction rate with the free transportation initiative (%)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRCCI",
@@ -579,7 +957,6 @@
             "ActionType": [
                 "mitigation"
             ],
-            "AdaptationCategory": null,
             "Hazard": null,
             "Sector": [
                 "transportation"
@@ -590,12 +967,7 @@
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "InterventionType": [
-                "programs_and_initiatives",
-                "incentives_and_subsidies"
-            ],
             "Description": "\"Truck Emissions\" mitigation involves adopting cleaner fuels and technologies to reduce the environmental impact of freight transportation. This initiative aims to decrease air pollution, promote sustainability, and improve the overall efficiency of urban logistics.",
-            "BehavioralChangeTargeted": "The targeted behavioral change that the \"Truck Emissions\" mitigation initiative aims to achieve is the adoption of cleaner fuels and technologies by freight transportation companies. This shift encourages these companies to prioritize sustainability and efficiency in their logistics operations, ultimately leading to a reduction in air pollution and greenhouse gas emissions associated with freight transport. By implementing financial incentives and supportive programs, the initiative seeks to influence the perceptions of these companies regarding the benefits of cleaner technologies, fostering a broader transition towards environmentally friendly practices in urban logistics.",
             "CoBenefits": {
                 "air_quality": 1,
                 "water_quality": 0,
@@ -605,7 +977,7 @@
                 "mobility": 0,
                 "stakeholder_engagement": 0
             },
-            "EquityAndInclusionConsiderations": "The \"Truck Emissions\" mitigation initiative promotes equity and inclusion by addressing the disproportionate impact of air pollution on vulnerable and underserved communities, often located near freight corridors. By adopting cleaner fuels and technologies, the action directly benefits these communities by improving air quality, which is crucial for public health, particularly for low-income populations and communities of color that may have limited access to healthcare resources. \n\nAdditionally, the initiative enhances sustainability and urban logistics efficiency, which can lead to economic opportunities and job creation in these underserved areas. By prioritizing cleaner transportation methods, the action supports a more equitable distribution of environmental benefits, ensuring that marginalized communities are not left behind in the transition to a greener economy. Overall, the focus on reducing emissions aligns with the goal of fostering healthier, more resilient communities that are often the most affected by environmental degradation.",
+            "EquityAndInclusionConsiderations": "The \"Truck Emissions\" mitigation initiative promotes equity and inclusion by addressing the disproportionate impact of air pollution on vulnerable and underserved communities, often located near freight corridors. By adopting cleaner fuels and technologies, the action directly benefits these communities by improving air quality, which is crucial for public health, particularly for low-income populations and communities of color that may have limited access to healthcare resources. \n \n Additionally, the initiative enhances sustainability and urban logistics efficiency, which can lead to economic opportunities and job creation in these underserved areas. By prioritizing cleaner transportation methods, the action supports a more equitable distribution of environmental benefits, ensuring that marginalized communities are not left behind in the transition to a greener economy. Overall, the focus on reducing emissions aligns with the goal of fostering healthier, more resilient communities that are often the most affected by environmental degradation.",
             "GHGReductionPotential": {
                 "stationary_energy": null,
                 "transportation": "20-39",
@@ -633,13 +1005,7 @@
                 "Percentage decrease in urban air pollution levels",
                 "Number of logistics companies adopting sustainable practices"
             ],
-            "Impacts": [
-                "Reduction in greenhouse gas emissions by 20-39% in the transportation sector",
-                "Improvement in air quality benefiting vulnerable communities",
-                "Promotion of cleaner fuels and technologies in freight transportation",
-                "Encouragement of sustainable practices in urban logistics",
-                "Potential economic opportunities and job creation in underserved areas"
-            ]
+            "PowersAndMandates": null
         }
     },
     {
@@ -657,7 +1023,6 @@
             "ActionType": [
                 "mitigation"
             ],
-            "AdaptationCategory": null,
             "Hazard": null,
             "Sector": [
                 "transportation"
@@ -668,13 +1033,7 @@
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "InterventionType": [
-                "incentives_and_subsidies",
-                "regulations_and_laws",
-                "programs_and_initiatives"
-            ],
             "Description": "\"Vehicle Emissions\" reduction strategies focus on minimizing the environmental impact of all types of vehicles. Implementing cleaner technologies and promoting alternative fuels contribute to lower emissions, fostering sustainable and eco-friendly transportation.",
-            "BehavioralChangeTargeted": "The targeted behavioral shift that the \"Vehicle Emissions\" reduction strategies aim to achieve is the increased adoption of cleaner transportation options, such as electric vehicles and alternative fuel vehicles, as well as a greater reliance on public transportation, biking, and walking. This shift is encouraged through financial incentives, regulations mandating lower emissions, and programs promoting sustainable transportation practices, ultimately leading to a significant reduction in greenhouse gas emissions from the transportation sector.",
             "CoBenefits": {
                 "air_quality": 1,
                 "water_quality": 0,
@@ -684,7 +1043,7 @@
                 "mobility": 0,
                 "stakeholder_engagement": 0
             },
-            "EquityAndInclusionConsiderations": "The \"Vehicle Emissions\" reduction strategies inherently promote equity and inclusion by addressing the environmental impacts that disproportionately affect vulnerable and underserved communities. These communities often experience higher levels of air pollution and related health issues due to proximity to high-traffic areas and industrial zones. By implementing cleaner technologies and promoting alternative fuels, the action directly benefits these populations by improving air quality and reducing health risks.\n\nAdditionally, the focus on sustainable and eco-friendly transportation can enhance access to affordable and efficient transportation options for underserved communities, which may lack reliable public transit. This inclusivity ensures that all community members, regardless of socioeconomic status, can benefit from cleaner air and improved public health outcomes. Overall, the action recognizes and addresses the specific needs of vulnerable populations, fostering a more equitable approach to climate action.",
+            "EquityAndInclusionConsiderations": "The \"Vehicle Emissions\" reduction strategies inherently promote equity and inclusion by addressing the environmental impacts that disproportionately affect vulnerable and underserved communities. These communities often experience higher levels of air pollution and related health issues due to proximity to high-traffic areas and industrial zones. By implementing cleaner technologies and promoting alternative fuels, the action directly benefits these populations by improving air quality and reducing health risks.\n \n Additionally, the focus on sustainable and eco-friendly transportation can enhance access to affordable and efficient transportation options for underserved communities, which may lack reliable public transit. This inclusivity ensures that all community members, regardless of socioeconomic status, can benefit from cleaner air and improved public health outcomes. Overall, the action recognizes and addresses the specific needs of vulnerable populations, fostering a more equitable approach to climate action.",
             "GHGReductionPotential": {
                 "stationary_energy": null,
                 "transportation": "80-100",
@@ -714,12 +1073,7 @@
                 "Percentage of low-emission zones established",
                 "Investment in sustainable transportation infrastructure"
             ],
-            "Impacts": [
-                "Significant reduction in greenhouse gas emissions from the transportation sector",
-                "Improved air quality benefiting vulnerable and underserved communities",
-                "Increased adoption of cleaner transportation options",
-                "Enhanced access to affordable and efficient transportation for underserved populations"
-            ]
+            "PowersAndMandates": null
         }
     },
     {
@@ -731,7 +1085,57 @@
         "actionName": "Incentive the use of drones for monitoring large agricultural properties.",
         "actionPriority": 18,
         "explanation": "For the city of Cama\u00e7ari, incentivizing drones in large-scale agriculture streamlines resource use and lowers the need for on-site vehicle inspections. Quick detection of crop issues reduces chemical inputs and water usage, benefiting both farmers and the environment. Embracing this technology promotes efficiency and supports regional agribusiness.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0093",
+            "ActionName": "Incentive the use of drones for monitoring large agricultural properties.",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "agriculture_forestry_and_fishing_activities"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Establish incentive programs for large landowners to adopt drones as a remote monitoring tool for their plantations. This technology allows for a significant reduction in the distances traveled by monitoring vehicles, minimizing GHG emissions associated with ground transportation. Additionally, drones provide greater precision and efficiency in identifying areas that require attention, such as irrigation, pest control, and crop health analysis.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 1,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "20-39",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Development of accessible financing options or tax incentives to reduce the upfront costs of adopting drone technology.",
+                "Creation of training programs for landowners and workers to effectively operate and utilize drones for plantation monitoring.",
+                "Establishment of regulations and guidelines for the safe and legal use of drones in agricultural settings."
+            ],
+            "KeyPerformanceIndicators": [
+                "Reduction in labor costs due to drone use for monitoring (%).",
+                "Percentage of detected agricultural issues resolved within a defined time frame.",
+                "Increase in agricultural yield attributed to improved monitoring techniques (%)."
+            ],
+            "PowersAndMandates": [
+                "state"
+            ]
+        }
     },
     {
         "locode": "BRCCI",
@@ -742,7 +1146,57 @@
         "actionName": "Establish eco-parks.",
         "actionPriority": 19,
         "explanation": "For the city of Cama\u00e7ari, establishing eco-parks creates protected green spaces that safeguard local biodiversity and elevate recreational opportunities. These areas improve air quality, mitigate urban heat, and foster environmental stewardship among residents. Integrating nature into city planning also enhances resilience against climate stressors.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0122",
+            "ActionName": "Establish eco-parks.",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "waste"
+            ],
+            "Subsector": [
+                "land"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "An eco-park is a facility for the mechanical and biological treatment of urban solid waste, integrating different technologies for the segregation and treatment of various fractions within the waste. This treatment aims to maximize the recovery of dry and organic waste and reduce the volume of waste to be sent for final disposal in landfills, using technologies such as energy generation, composting, recycling recovery, proper disposal of residual waste, and other existing treatment methods available in the market.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 1,
+                "habitat": 2,
+                "cost_of_living": 0,
+                "housing": 1,
+                "mobility": 0,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": "20-39",
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Implementation of eco-parks for mechanical and biological treatment of urban solid waste.",
+                "Integration of technologies such as energy generation, composting, recycling recovery, and proper disposal of residual waste.",
+                "Maximization of dry and organic waste recovery to reduce landfill disposal volumes."
+            ],
+            "KeyPerformanceIndicators": [
+                "Total area covered by eco-parks in the city (hectares).",
+                "Increase in the number of visitors to eco-parks annually.",
+                "Improvement in local biodiversity indices within eco-park areas."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     },
     {
         "locode": "BRCCI",
@@ -753,6 +1207,56 @@
         "actionName": "Replace Inefficient Lighting with LED Technology in Public Spaces",
         "actionPriority": 20,
         "explanation": "For the city of Cama\u00e7ari, replacing outdated lighting with LED technology significantly reduces electricity consumption and maintenance costs. This upgrade lowers emissions linked to power generation, aligning with broader sustainability efforts. By adopting energy-efficient illumination, the city can also enhance public safety and visibility in shared spaces.",
-        "action": null
+        "action": {
+            "ActionID": "icare_0137",
+            "ActionName": "Replace Inefficient Lighting with LED Technology in Public Spaces",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "stationary_energy"
+            ],
+            "Subsector": [
+                "commercial_and_institutional_buildings_and_facilities"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "This action focuses on replacing outdated and inefficient lighting systems in public spaces with energy-efficient LED technology. The objective is to enhance energy efficiency, reduce operational costs, and lower carbon emissions, contributing to a more sustainable and environmentally-friendly municipal infrastructure.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 1,
+                "mobility": 1,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": "20-39",
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Invest in technology, develop an action plan, and secure funding for LED installation.",
+                "Train municipal staff on installation and maintenance of energy-efficient lighting.",
+                "Ensure proper maintenance infrastructure to maximize energy savings and reduce emissions."
+            ],
+            "KeyPerformanceIndicators": [
+                "Percentage of public lighting replaced with LED technology (%).",
+                "Reduction in public lighting electricity consumption (kWh/year).",
+                "Reduction of CO\u2082 emissions related to public lighting (tCO\u2082e/year)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
     }
 ]

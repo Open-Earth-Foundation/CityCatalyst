@@ -36,7 +36,7 @@ async function createAdmin() {
   );
   const newUser = await db.models.User.create({
     userId: randomUUID(),
-    name: "Admin",
+    name: "admin",
     email: email,
     passwordHash,
     role: Roles.Admin,

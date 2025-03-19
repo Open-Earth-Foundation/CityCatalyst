@@ -6,7 +6,7 @@ from datetime import datetime
 
 # API endpoint configuration
 BASE_URL = "https://cap-plan-creator.openearth.dev"
-BASE_URL = "http://localhost:8000"  # Uncomment for local testing
+#BASE_URL = "http://localhost:8000"  # Uncomment for local testing
 
 # Endpoint URLs
 START_PLAN_URL = f"{BASE_URL}/start_plan_creation"

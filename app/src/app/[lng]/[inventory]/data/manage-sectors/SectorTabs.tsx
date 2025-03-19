@@ -2,13 +2,11 @@
 import { InventoryProgressResponse } from "@/util/types";
 import {
   Box,
-  Card,
   CheckboxCard,
   createListCollection,
   Field,
   Icon,
   Input,
-  ProgressCircle,
   Tabs,
   Text,
   Textarea,
@@ -21,7 +19,7 @@ import { SubSectorWithRelations } from "../[step]/types";
 import { StationaryEnergyIcon } from "@/components/icons";
 import { BiSelectMultiple } from "react-icons/bi";
 
-import { MdInfoOutline, MdRemoveFromQueue } from "react-icons/md";
+import { MdInfoOutline } from "react-icons/md";
 import { RiErrorWarningFill } from "react-icons/ri";
 import { CgRemoveR } from "react-icons/cg";
 
@@ -423,7 +421,8 @@ const SectorTabs: FC<SectorTabsProps> = ({
                     }))
                   }
                 />
-                <Field.ErrorText>This is an error text</Field.ErrorText>
+                {/* TODO add error feedback */}
+                <Field.ErrorText></Field.ErrorText>
               </Field.Root>
               <Button
                 variant="ghost"
@@ -586,9 +585,8 @@ const SectorTabs: FC<SectorTabsProps> = ({
                                       }))
                                     }
                                   />
-                                  <Field.ErrorText>
-                                    This is an error text
-                                  </Field.ErrorText>
+                                  {/* TODO add error feedback */}
+                                  <Field.ErrorText></Field.ErrorText>
                                 </Field.Root>
                               </Box>
                             </Box>
@@ -621,7 +619,7 @@ const SectorTabs: FC<SectorTabsProps> = ({
               </Box>
             </>
           ) : (
-            <Text>No unfinished subsectors.</Text>
+            <Text>{t("no-unfinished-subsectors")}</Text>
           )}
         </Tabs.Content>
       );

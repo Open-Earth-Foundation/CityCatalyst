@@ -28,7 +28,7 @@ export type SectorCreationAttributes = Optional<
 
 export class Sector
   extends Model<SectorAttributes, SectorCreationAttributes>
-  implements SectorAttributes
+  implements Partial<SectorAttributes>
 {
   sectorId!: string;
   sectorName?: string;

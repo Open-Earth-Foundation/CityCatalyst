@@ -26,7 +26,7 @@ export type VersionCreationAttributes = Optional<
 
 export class Version
   extends Model<VersionAttributes, VersionCreationAttributes>
-  implements VersionAttributes
+  implements Partial<VersionAttributes>
 {
   versionId!: string;
   year?: number;

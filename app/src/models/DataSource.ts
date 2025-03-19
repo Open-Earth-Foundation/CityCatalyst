@@ -103,7 +103,7 @@ export type DataSourceCreationAttributes = Optional<
 
 export class DataSource
   extends Model<DataSourceAttributes, DataSourceCreationAttributes>
-  implements DataSourceAttributes
+  implements Partial<DataSourceAttributes>
 {
   datasourceId!: string;
   datasetName?: string;

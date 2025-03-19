@@ -38,7 +38,7 @@ export type UserCreationAttributes = Optional<
 
 export class User
   extends Model<UserAttributes, UserCreationAttributes>
-  implements UserAttributes
+  implements Partial<UserAttributes>
 {
   userId!: string;
   name?: string;

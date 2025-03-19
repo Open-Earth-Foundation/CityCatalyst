@@ -14,7 +14,7 @@ export type CatalogueCreationAttributes = Optional<
 
 export class Catalogue
   extends Model<CatalogueAttributes, CatalogueCreationAttributes>
-  implements CatalogueAttributes
+  implements Partial<CatalogueAttributes>
 {
   type?: string;
   lastUpdate?: Date;

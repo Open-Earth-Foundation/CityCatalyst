@@ -23,7 +23,7 @@ export type DataSourceScopeCreationAttributes = Optional<
 
 export class DataSourceScope
   extends Model<DataSourceScopeAttributes, DataSourceScopeCreationAttributes>
-  implements DataSourceScopeAttributes
+  implements Partial<DataSourceScopeAttributes>
 {
   datasourceId!: string;
   scopeId!: string;

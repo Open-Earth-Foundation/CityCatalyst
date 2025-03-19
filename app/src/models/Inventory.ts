@@ -43,7 +43,7 @@ export type InventoryCreationAttributes = Optional<
 
 export class Inventory
   extends Model<InventoryAttributes, InventoryCreationAttributes>
-  implements InventoryAttributes
+  implements Partial<InventoryAttributes>
 {
   inventoryId!: string;
   inventoryName?: string;

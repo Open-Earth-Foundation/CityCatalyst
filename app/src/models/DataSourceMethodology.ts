@@ -27,7 +27,7 @@ export class DataSourceMethodology
     DataSourceMethodologyAttributes,
     DataSourceMethodologyCreationAttributes
   >
-  implements DataSourceMethodologyAttributes
+  implements Partial<DataSourceMethodologyAttributes>
 {
   datasourceId!: string;
   methodologyId!: string;

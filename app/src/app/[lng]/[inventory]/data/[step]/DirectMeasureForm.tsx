@@ -60,6 +60,7 @@ export function DirectMeasureForm({
                 })}
               />
             </NumberInputRoot>
+            {/* eslint-disable-next-line i18next/no-literal-string */}
             <InputAddon bgColor="base.light" color="content.tertiary">
               tCO2
             </InputAddon>
@@ -80,6 +81,7 @@ export function DirectMeasureForm({
                 })}
               />
             </NumberInputRoot>
+            {/* eslint-disable-next-line i18next/no-literal-string */}
             <InputAddon bgColor="base.light" color="content.tertiary">
               tCH4
             </InputAddon>
@@ -100,6 +102,7 @@ export function DirectMeasureForm({
                 })}
               />
             </NumberInputRoot>
+            {/* eslint-disable-next-line i18next/no-literal-string */}
             <InputAddon bgColor="base.light" color="content.tertiary">
               tN2O
             </InputAddon>

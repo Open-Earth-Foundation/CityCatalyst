@@ -11,8 +11,9 @@ import {
   useFileUploadContext,
   useRecipe,
 } from "@chakra-ui/react";
+import { TFunction } from "i18next";
 import * as React from "react";
-import { LuFile, LuUpload, LuX } from "react-icons/lu";
+import { LuFile, LuX } from "react-icons/lu";
 
 export interface FileUploadRootProps extends ChakraFileUpload.RootProps {
   inputProps?: React.InputHTMLAttributes<HTMLInputElement>;
@@ -136,13 +137,14 @@ type Assign<T, U> = Omit<T, keyof U> & U;
 
 interface FileInputProps extends Assign<ButtonProps, RecipeProps<"input">> {
   placeholder?: React.ReactNode;
+  t: TFunction;
 }
 
 export const FileInput = React.forwardRef<HTMLButtonElement, FileInputProps>(
   function FileInput(props, ref) {
     const inputRecipe = useRecipe({ key: "input" });
     const [recipeProps, restProps] = inputRecipe.splitVariantProps(props);
-    const { placeholder = "Select file(s)", ...rest } = restProps;
+    const { placeholder = "Select file(s)", t, ...rest } = restProps;
     return (
       <ChakraFileUpload.Trigger asChild>
         <Button
@@ -158,7 +160,11 @@ export const FileInput = React.forwardRef<HTMLButtonElement, FileInputProps>(
                 return <span>{acceptedFiles[0].name}</span>;
               }
               if (acceptedFiles.length > 1) {
-                return <span>{acceptedFiles.length} files</span>;
+                return (
+                  <span>
+                    {acceptedFiles.length} {t("files")}
+                  </span>
+                );
               }
               return <Span color="fg.subtle">{placeholder}</Span>;
             }}

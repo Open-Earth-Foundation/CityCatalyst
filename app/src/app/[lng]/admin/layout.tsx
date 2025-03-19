@@ -40,7 +40,7 @@ export default function AdminLayout({
         router.push(fallbackPath);
       }, REDIRECT_DELAY_MS);
     }
-  }, [isUserInfoLoading, userInfo, router, lng]);
+  }, [isUserInfoLoading, userInfo, router, lng, t]);
 
   return (
     <Box className="h-full flex flex-col" bg="background.backgroundLight">

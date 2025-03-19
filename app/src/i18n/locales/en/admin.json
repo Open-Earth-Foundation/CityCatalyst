@@ -26,5 +26,7 @@
   "not-authorized": "You are not authorized",
   "accepted": "Accepted",
   "invite-sent": "Invite sent",
-  "no-data": "No data available"
+  "no-data": "No data available",
+  "all": "All",
+  "of": "of"
 }

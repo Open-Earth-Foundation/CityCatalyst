@@ -24,6 +24,7 @@
   "role": "Role",
   "admin": "Admin",
   "user": "Contributor",
+  "contributor": "Contributor",
   "save-changes": "Save Changes",
   "my-files-sub-title": "Here you can find all your files uploaded, pending request harmonization, and included in the GHG Inventory",
   "all-inventory-years": "all inventory years",
@@ -90,5 +91,8 @@
   "password-updated": "Password updated",
   "password-updated-success": "Password updated successfully",
   "passwords-dont-match": "Passwords don't match!",
-  "email-placeholder": "Email address"
+  "email-placeholder": "Email address",
+  "remove-city-confirmation-message": "Are you sure you want to <2>permanently remove this city</2> from CityCatalyst?",
+  "no-date-available": "No date available",
+  "invalid-date": "Invalid date"
 }

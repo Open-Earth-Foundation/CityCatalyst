@@ -1,3 +1,4 @@
+/* eslint-disable i18next/no-literal-string */
 import { City } from "@/models/City";
 import {
   Body,

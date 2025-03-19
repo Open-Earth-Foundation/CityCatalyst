@@ -106,7 +106,7 @@ function DataTable<T extends Record<string, any>>({
                 value={filterValue}
                 onChange={(e) => setFilterValue(e.target.value)}
               >
-                <option value="all">All</option>
+                <option value="all">{t("all")}</option>
                 {filterOptions.map((option, idx) => (
                   <option
                     className="!capitalize"
@@ -124,8 +124,8 @@ function DataTable<T extends Record<string, any>>({
           <Flex mt={4} gap={2} justify="space-between" align="center">
             <Text fontSize="body.md" color="content.tertiary">
               {(currentPage - 1) * itemsPerPage + 1} -{" "}
-              {Math.min(filteredData.length, currentPage * itemsPerPage)} of{" "}
-              {filteredData.length}
+              {Math.min(filteredData.length, currentPage * itemsPerPage)}{" "}
+              {t("of")} {filteredData.length}
             </Text>
             <IconButton
               color="interactive.control"

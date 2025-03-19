@@ -1,10 +1,7 @@
-import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
-import { CityAttributes } from "@/models/City";
-import { UserAttributes } from "@/models/User";
-import React, { useState } from "react";
+/* eslint-disable i18next/no-literal-string */
+import React from "react";
 import {
   Body,
-  Button,
   Container,
   Head,
   Html,

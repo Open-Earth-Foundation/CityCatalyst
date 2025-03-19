@@ -11,16 +11,10 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import { TFunction } from "i18next";
 import { addFile } from "@/features/city/inventoryDataSlice";
-import { v4 as uuidv4 } from "uuid";
-import {
-  InventoryResponse,
-  UserFileResponse,
-  UserInfoResponse,
-} from "@/util/types";
+import { UserInfoResponse } from "@/util/types";
 import { MdInfoOutline, MdOutlineInsertDriveFile } from "react-icons/md";
 import { appendFileToFormData } from "@/util/helpers";
-import { api, useAddUserFileMutation } from "@/services/api";
-
+import { api } from "@/services/api";
 import {
   DialogBackdrop,
   DialogBody,
@@ -29,10 +23,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogRoot,
-  DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
-import { toaster } from "../ui/toaster";
 import { Button } from "../ui/button";
 import { Field } from "../ui/field";
 import { Checkbox } from "../ui/checkbox";
@@ -266,7 +257,7 @@ const AddFileDataDialog: FC<AddFileDataDialogProps> = ({
                   <Box>
                     {errors.subsectors && (
                       <Text color="sentiment.negativeDefault">
-                        A scope required for each sub-sector
+                        {t("scope-required-error")}
                       </Text>
                     )}
                   </Box>
@@ -298,7 +289,7 @@ const AddFileDataDialog: FC<AddFileDataDialogProps> = ({
                   <Box>
                     {errors.scopes && (
                       <Text color="sentiment.negativeDefault">
-                        A scope required for each sub-sector
+                        {t("scope-required-error")}
                       </Text>
                     )}
                   </Box>

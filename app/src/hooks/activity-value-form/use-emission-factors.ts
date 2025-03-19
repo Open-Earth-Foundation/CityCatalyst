@@ -119,7 +119,7 @@ const useEmissionFactors = ({
       {} as Record<string, ExtraField>,
     );
     return metadata;
-  }, [activityData]);
+  }, [activityData, fields]);
 
   let { data: emissionsFactors, isLoading: emissionsFactorsLoading } =
     api.useGetEmissionsFactorsQuery({

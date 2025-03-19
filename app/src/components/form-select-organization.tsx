@@ -2,6 +2,7 @@ import { Box, NativeSelectField, Select, Text } from "@chakra-ui/react";
 import React, { FC } from "react";
 import { FieldError } from "react-hook-form";
 import { NativeSelectRoot } from "./ui/native-select";
+import { TFunction } from "i18next";
 
 interface FormInputProps {
   label: string;
@@ -11,6 +12,7 @@ interface FormInputProps {
   register: Function;
   id: string;
   onInputChange: Function;
+  t: TFunction;
 }
 
 const FormSelectOrganization: FC<FormInputProps> = ({
@@ -21,6 +23,7 @@ const FormSelectOrganization: FC<FormInputProps> = ({
   register,
   id,
   onInputChange,
+  t,
 }) => {
   return (
     <Box display="flex" flexDirection="column" gap="8px">
@@ -48,8 +51,8 @@ const FormSelectOrganization: FC<FormInputProps> = ({
           })}
           onChange={(e) => onInputChange(e)}
         >
-          <option value="true">Yes</option>
-          <option value="false">No</option>
+          <option value="true">{t("yes")}</option>
+          <option value="false">{t("no")}</option>
         </NativeSelectField>
       </NativeSelectRoot>
     </Box>

@@ -119,14 +119,14 @@ const UpdateUserDialog: FC<UpdateUserDialogProps> = ({
                   label="Email"
                   register={register}
                 />
-
                 <FormSelectInput
+                  id="role"
                   label="Role"
                   value={inputValue}
                   register={register}
                   error={errors.role}
-                  id="role"
                   onInputChange={(e: any) => setInputValue(e.target.value)}
+                  t={t}
                 />
               </Box>
             </form>

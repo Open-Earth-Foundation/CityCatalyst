@@ -16,16 +16,14 @@ import {
   useDisclosure,
   PopoverTrigger,
 } from "@chakra-ui/react";
-import React, { FC, useEffect, useMemo, useState } from "react";
+import React, { FC, useState } from "react";
 
 import {
   MdMoreVert,
   MdOutlineCheck,
   MdOutlineFileDownload,
   MdOutlineFolder,
-  MdCheck,
   MdChevronRight,
-  MdSearch,
 } from "react-icons/md";
 import { FiTrash2 } from "react-icons/fi";
 import { FaFileCsv } from "react-icons/fa";
@@ -34,7 +32,7 @@ import { Session } from "next-auth";
 
 import DeleteFileModal from "@/components/Modals/delete-file-modal";
 
-import { t, TFunction } from "i18next";
+import { TFunction } from "i18next";
 import { UserAttributes } from "@/models/User";
 import { UserFileAttributes } from "@/models/UserFile";
 
@@ -290,9 +288,7 @@ const MyFilesTab: FC<MyFilesTabProps> = ({
                                   : "file"}
                               </Table.Cell>
 
-                              <Table.Cell align="right">
-                                21 Sept, 2023
-                              </Table.Cell>
+                              <Table.Cell align="right">-</Table.Cell>
                             </Table.Row>
                           ))}
                         </Table.Body>

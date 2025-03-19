@@ -114,6 +114,7 @@ export function Hero({
                       >
                         <>
                           {value}{" "}
+                          {/* eslint-disable-next-line i18next/no-literal-string */}
                           <span className="text-[16px]">{unit}CO2e</span>
                         </>
                       </Text>
@@ -228,7 +229,7 @@ export function Hero({
                           fontWeight="semibold"
                           lineHeight="32"
                         >
-                          N/A
+                          {t("n-a")}
                         </Text>
                       ) : (
                         <Text
@@ -239,7 +240,10 @@ export function Hero({
                           lineHeight="32"
                         >
                           {Math.round(inventory?.city.area!).toLocaleString()}
-                          <span className="text-[16px]">km2</span>
+                          {/* eslint-disable-next-line i18next/no-literal-string */}
+                          <span className="text-[16px]">
+                            km<sup>2</sup>
+                          </span>
                         </Text>
                       )}
                       <Tooltip

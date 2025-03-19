@@ -76,7 +76,7 @@ const MyInventoriesTab: FC<MyInventoriesTabProps> = ({
   // Converts the lastUpdated string to a Date object and returns a formatted date
   function InventoryLastUpdated(lastUpdated: Date) {
     if (!lastUpdated) {
-      return <p>No date available</p>;
+      return <p>{t("no-date-available")}</p>;
     }
 
     // Convert the string to a Date object
@@ -84,7 +84,7 @@ const MyInventoriesTab: FC<MyInventoriesTabProps> = ({
 
     // If date is invalid (e.g., `new Date('Invalid')`), handle that
     if (isNaN(date.getTime())) {
-      return <p>Invalid date</p>;
+      return <p>{t("invalid-date")}</p>;
     }
 
     return <p>{date.toLocaleDateString()}</p>;

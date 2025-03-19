@@ -177,5 +177,6 @@
   "an-error-occurred": "An error occurred",
   "error-fetching-sector-breakdown": "Error fetching sector breakdown",
   "manage-missing-subsectors": "Manage missing sub-sectors",
-  "source-open-climate": "Source: OpenClimate"
+  "source-open-climate": "Source: OpenClimate",
+  "n-a": "N/A"
 }

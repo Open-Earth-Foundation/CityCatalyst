@@ -39,13 +39,30 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# Add CORS middleware configuration
+# Add CORS middleware configuration with more explicit settings
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://cap.openearth.dev"],  # Allowed origin
+    allow_origins=[
+        "https://cap.openearth.dev",
+        "https://cap-plan-creator.openearth.dev",
+        "http://localhost:3000",
+        "http://localhost:8000"
+    ],
     allow_credentials=True,
-    allow_methods=["*"],  # Allows all methods
-    allow_headers=["*"],  # Allows all headers
+    allow_methods=["GET", "POST", "OPTIONS", "DELETE", "PATCH", "PUT"],
+    allow_headers=[
+        "Content-Type",
+        "Authorization",
+        "Access-Control-Allow-Headers",
+        "Access-Control-Allow-Origin",
+        "Access-Control-Allow-Methods",
+        "Access-Control-Allow-Credentials",
+        "Accept",
+        "Origin",
+        "X-Requested-With"
+    ],
+    expose_headers=["*"],
+    max_age=3600,  # Cache preflight requests for 1 hour
 )
 
 # Define output directory

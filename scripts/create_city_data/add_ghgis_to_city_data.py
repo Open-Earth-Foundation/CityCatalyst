@@ -1,7 +1,7 @@
 """
 This script is used to add GHGI emissions data to the city data.
 
-The GHGI emissions data is stored in the data/ghgi folder.
+The GHGI emissions data is provided via csv export and stored in the data/ghgi folder.
 
 The city data is stored in the data/cities folder.
 

@@ -63,6 +63,8 @@ const CreateOrganizationModal: FC<CreateOrganizationModalProps> = ({
     resolver: zodResolver(schema),
   });
 
+  const orgName = watch("name");
+
   const { showErrorToast } = UseErrorToast({
     title: t("error-message"),
   });
@@ -240,7 +242,7 @@ const CreateOrganizationModal: FC<CreateOrganizationModalProps> = ({
               </Text>
               <Text mt={6} color="content.tertiary" fontSize="body.lg">
                 {t("first-project-subheading", {
-                  org_name: "icare",
+                  org_name: orgName,
                 })}
               </Text>
               <HStack

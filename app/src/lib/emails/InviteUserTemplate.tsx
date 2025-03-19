@@ -1,8 +1,8 @@
-import { CityAttributes } from "@/models/City";
-import { UserAttributes } from "@/models/User";
+/* eslint-disable i18next/no-literal-string */
+import type { CityAttributes } from "@/models/City";
+import type { UserAttributes } from "@/models/User";
 import {
   Body,
-  Button,
   Container,
   Head,
   Html,

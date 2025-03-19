@@ -102,6 +102,16 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
+    jwt: async ({ token, user }) => {
+      if (user) {
+        // user is what's returned from authorize
+        token.sub = user.id; // or token.id = user.id;
+        token.role = (user as unknown as User).role;
+        token.picture = user.image;
+        token.name = user.name;
+      }
+      return token;
+    },
     session: ({ session, token }) => {
       return {
         ...session,

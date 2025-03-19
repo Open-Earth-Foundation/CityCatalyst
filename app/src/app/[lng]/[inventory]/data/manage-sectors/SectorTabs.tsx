@@ -38,7 +38,7 @@ import { api } from "@/services/api";
 import { toaster } from "@/components/ui/toaster";
 import RouteChangeDialog from "./RouteChangeDialog";
 import { usePathname, useRouter } from "next/navigation";
-import ProgressLoader from "./ProgressLoader";
+import ProgressLoader from "@/components/ProgressLoader";
 
 interface SectorTabsProps {
   t: TFunction;

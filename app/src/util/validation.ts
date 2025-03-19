@@ -248,7 +248,12 @@ export const updatePasswordRequest = z.object({
 export type UpdatePasswordRequest = z.infer<typeof updatePasswordRequest>;
 
 export const createOrganizationRequest = z.object({
-  name: z.string().max(255),
+  name: z
+    .string()
+    .max(255)
+    .refine((val) => val !== "cc_organization_default", {
+      message: "Organization name cannot be 'cc_organization_default'",
+    }),
   contactEmail: z.string().email().max(255),
 });
 
@@ -279,7 +284,6 @@ export const createProjectRequest = z.object({
   name: z.string().max(255),
   cityCountLimit: z.number().int().min(1),
   description: z.string().optional(),
-  organizationId: z.string().uuid(),
 });
 
 export type CreateProjectRequest = z.infer<typeof createProjectRequest>;

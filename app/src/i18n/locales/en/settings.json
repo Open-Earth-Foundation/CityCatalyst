@@ -89,6 +89,6 @@
   "password-number-check": "At least one number",
   "password-updated": "Password updated",
   "password-updated-success": "Password updated successfully",
-  "passwords-dont-match":"Passwords don't match!",
+  "passwords-dont-match": "Passwords don't match!",
   "email-placeholder": "Email address"
 }

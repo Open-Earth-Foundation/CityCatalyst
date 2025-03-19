@@ -1,13 +1,28 @@
+"""
+This script is used to fetch the context data for a city.
+
+The context data is fetched from the context API.
+
+The context data is saved to the data/context folder.
+
+Run it from the root of the project with the following command:
+python scripts/get_context.py --locode "BR CCI"
+"""
+
 import requests
 from pathlib import Path
 import argparse
+import json
 
 
-def get_ccra(actor_id, scenario_name):
+BASE_DIR = Path(__file__).parent.parent.parent
+
+
+def get_context(locode):
     # Base URL for the API
-    base_url = "https://ccglobal.openearth.dev/api/v0/ccra/risk_assessment/city"
+    base_url = "https://ccglobal.openearth.dev/api/v0/ccra/risk_assessment/city"  # TODO update with the correct endpoint once its created
     # Construct the API endpoint URL
-    url = f"{base_url}/{actor_id}/{scenario_name}"
+    url = f"{base_url}/{locode}"
 
     try:
         response = requests.get(url)
@@ -17,17 +32,15 @@ def get_ccra(actor_id, scenario_name):
         data = response.json()
 
         # Define the output folder and file path
-        data_folder = Path("../data/ccra")
+        data_folder = BASE_DIR / "data" / "context"
         data_folder.mkdir(parents=False, exist_ok=True)
 
         # Remove any spaces from the actor ID
-        actor_id = actor_id.replace(" ", "")
-        output_file = data_folder / f"ccra_{actor_id}_{scenario_name}.json"
+        locode = locode.replace(" ", "")
+        output_file = data_folder / f"context_{locode}.json"
 
         # Save the JSON response to a file
         with open(output_file, "w", encoding="utf-8") as file:
-            import json
-
             json.dump(data, file, indent=4)
 
         print(f"Data successfully saved to {output_file}")
@@ -38,22 +51,14 @@ def get_ccra(actor_id, scenario_name):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(
-        description="Fetch CCRA data for a city and scenario."
-    )
+    parser = argparse.ArgumentParser(description="Fetch city context data for a city.")
     parser.add_argument(
-        "--actor_id",
+        "--locode",
         type=str,
         required=True,
-        help="The actor ID for the city (e.g., BR FLN).",
-    )
-    parser.add_argument(
-        "--scenario_name",
-        type=str,
-        default="current",
-        help="The scenario name (e.g., current).",
+        help="The actor ID (locode) for the city (e.g., BR FLN).",
     )
 
     args = parser.parse_args()
 
-    get_ccra(args.actor_id, args.scenario_name)
+    get_context(args.locode)

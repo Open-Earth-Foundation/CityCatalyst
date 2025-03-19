@@ -1,11 +1,23 @@
+"""
+This script is used to add GHGI emissions data to the city data.
+
+The GHGI emissions data is stored in the data/ghgi folder.
+
+The city data is stored in the data/cities folder.
+
+Run it from the root of the project with the following command:
+python scripts/create_city_data/add_ghgis_to_city_data.py --file_name "inventory-BRCCI-2022.csv" --locode "BRCCI"
+"""
+
 import sys
 import pandas as pd
 from pathlib import Path
 import argparse
 
 # Load the city data from the CSV file
-BASE_PATH_GHGIS = Path("../data/ghgi/")
-BASE_PATH_CITIES = Path("../data/cities/")
+BASE_DIR = Path(__file__).parent.parent.parent
+BASE_PATH_GHGIS = BASE_DIR / "data" / "ghgi"
+BASE_PATH_CITIES = BASE_DIR / "data" / "cities"
 
 
 # Initialize emissions values to extract
@@ -133,10 +145,13 @@ if __name__ == "__main__":
         "--locode",
         type=str,
         required=True,
-        help="The locode of the city to add the emissions data to.",
+        help="The locode of the city to add the emissions data to like BRCCI.",
     )
 
     args = parser.parse_args()
+
+    # Remove any spaces from the locode e.g. BR CCI -> BRCCI
+    args.locode = args.locode.replace(" ", "")
 
     dict_extracted_emissions = extract_data(args.file_name)
     add_emissions_to_city_data(args.locode, dict_extracted_emissions)

@@ -1,20 +1,19 @@
 """
-Use this script to CCRA values retrieved by 
-the ccra API and stored inside a folder called 'data/ccra' 
+Use this script to CCRA values retrieved by
+the ccra API and stored inside a folder called 'data/ccra'
 to the city data stored inside 'data/cities'.
 
 Inputs: locode of the city to add the emissions data to
 """
 
-import sys
-import pandas as pd
 from pathlib import Path
 import argparse
 import json
 
-# Load the city data from the CSV file
-BASE_PATH_CCRAS = Path("../data/ccra/")
-BASE_PATH_CITIES = Path("../data/cities/")
+# Define the base path to the project root
+BASE_PATH = Path(__file__).parent.parent.parent
+BASE_PATH_CCRAS = BASE_PATH / "data" / "ccra"
+BASE_PATH_CITIES = BASE_PATH / "data" / "cities"
 
 
 def extract_ccras(locode: str) -> list:
@@ -95,6 +94,9 @@ if __name__ == "__main__":
     )
 
     args = parser.parse_args()
+
+    # Remove any spaces from the locode e.g. BR CCI -> BRCCI
+    args.locode = args.locode.replace(" ", "")
 
     try:
         list_extracted_ccras = extract_ccras(args.locode)

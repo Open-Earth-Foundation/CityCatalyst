@@ -9,7 +9,14 @@ import io
 api_router = APIRouter(prefix="/api/v0")
 
 def generate_csv_response(records):
-    """ Helper function to convert records to CSV format """
+    """Helper function to convert records to CSV format
+
+    Args:
+        records (list): List of record dictionaries to convert
+
+    Returns:
+        PlainTextResponse: CSV formatted response with text/csv media type
+    """
     output = io.StringIO()
     csvwriter = csv.writer(output)
     names = list(records[0].keys())  # Get the column names dynamically
@@ -79,7 +86,7 @@ def get_datasources(format: Optional[str] = None):
 
 
 @api_router.get("/catalogue/i18n", summary="Get the data catalogue internationalised")
-def get_datasources_il8n(format: Optional[str] = None):
+def get_datasources_i18n(format: Optional[str] = None):
     """
         Retrieves the list of internationalised datasources from the catalogue (i18n support).
 

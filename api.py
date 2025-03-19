@@ -1,5 +1,6 @@
 from fastapi import FastAPI, HTTPException, Request, BackgroundTasks
 from fastapi.responses import FileResponse, JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from pathlib import Path
 import json
@@ -36,6 +37,20 @@ app = FastAPI(
     title="Climate Action Plan Creator API",
     description="API for generating climate action implementation plans",
     version="1.0.0"
+)
+
+origins = [
+    "https://cap.openearth.dev",
+    "http://localhost",
+    "http://localhost:8080",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 # Define output directory

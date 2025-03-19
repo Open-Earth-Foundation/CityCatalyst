@@ -1,14 +1,6 @@
 import { AppSession, Auth } from "@/lib/auth";
 import { Roles } from "@/util/types";
-import {
-  afterAll,
-  beforeAll,
-  beforeEach,
-  describe,
-  expect,
-  it,
-  jest,
-} from "@jest/globals";
+import { afterAll, beforeAll, describe, expect, it, jest } from "@jest/globals";
 import { mockRequest, setupTests, testUserID } from "../helpers";
 import { db } from "@/models";
 import {
@@ -17,8 +9,8 @@ import {
 } from "@/util/validation";
 import { randomUUID } from "node:crypto";
 import { Organization } from "@/models/Organization";
-import { PATCH as transferCity } from "@/app/api/v0/city/transfer/route";
 import { Project } from "@/models/Project";
+import { PATCH as transferCity } from "@/app/api/v0/city/transfer/route";
 
 const mockUserSession: AppSession = {
   user: { id: testUserID, role: Roles.User },
@@ -55,7 +47,9 @@ describe("City Transfer API", () => {
 
   beforeAll(async () => {
     setupTests();
+    await db.initialize();
     Auth.getServerSession = jest.fn(() => Promise.resolve(mockAdminSession));
+
     organization = await db.models.Organization.create({
       ...organizationData,
       organizationId: randomUUID(),
@@ -70,11 +64,6 @@ describe("City Transfer API", () => {
       organizationId: organization.organizationId,
       projectId: randomUUID(),
     });
-  });
-
-  beforeEach(async () => {
-    Auth.getServerSession = prevGetServerSession;
-    // delete all cities
   });
 
   afterAll(() => {
@@ -107,7 +96,8 @@ describe("City Transfer API", () => {
 
     const res = await transferCity(req, { params: {} });
     expect(res.status).toBe(200);
-    expect(res.body).toEqual({ success: true });
+    const data = await res.json();
+    expect(data).toEqual({ success: true });
 
     const updatedCity = await db.models.City.findByPk(city.cityId);
     expect(updatedCity?.projectId).toBe(project2.projectId);
@@ -130,13 +120,14 @@ describe("City Transfer API", () => {
       projectId: project2.projectId,
     });
 
-    const res = await transferCity(req, { params: {} });
-    expect(res.status).toBe(404);
-    expect(res.body).toEqual({
-      message: "City not found for id:" + invalidCityId,
+    const resJSON = await transferCity(req, { params: {} });
+    const res = await resJSON.json();
+    expect(resJSON.status).toBe(404);
+    expect(res.error).toEqual({
+      message: "Cities not found for IDs: " + invalidCityId,
     });
   });
-
+  //
   it("should throw an error if user is not an admin", async () => {
     Auth.getServerSession = jest.fn(() => Promise.resolve(mockUserSession));
 
@@ -156,8 +147,8 @@ describe("City Transfer API", () => {
     });
 
     const res = await transferCity(req, { params: {} });
-
-    expect(res.status).toBe(401);
-    expect(res.body).toEqual({ message: "Forbidden" });
+    expect(res.status).toBe(403);
+    const data = await res.json();
+    expect(data.error).toEqual({ message: "Forbidden" });
   });
 });

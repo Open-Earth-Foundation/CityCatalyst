@@ -33,6 +33,17 @@ export const PATCH = apiHandler(async (req, { session }) => {
       );
     }
 
+    // confirm project exists
+    const project = await db.models.Project.findByPk(body.projectId, {
+      transaction: t,
+    });
+
+    if (!project) {
+      throw new createHttpError.NotFound(
+        `Project not found for ID: ${body.projectId}`,
+      );
+    }
+
     await db.models.City.update(
       { projectId: body.projectId },
       {

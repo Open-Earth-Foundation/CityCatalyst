@@ -71,5 +71,7 @@
   "unselected-city-boundary-heading": "Busque y seleccione la ciudad que se mostrará en el mapa",
   "unselected-city-boundary-description": "Podrá verificar el límite geográfico de su inventario",
   "recent-searches-title": "Búsquedas recientes",
-  "recent-searches-no-results": "No tienes búsquedas recientes"
+  "recent-searches-no-results": "No tienes búsquedas recientes",
+  "failed-to-add-city": "Fallo al agregar la ciudad",
+  "failed-to-create-inventory": "Fallo al crear inventario"
 }

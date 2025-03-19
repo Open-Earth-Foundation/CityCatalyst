@@ -171,5 +171,11 @@
   "afolu-other-agriculture": "Andere Landwirtschaft",
   "afolu-livestock": "Vieh",
   "afolu-land": "Land",
-  "manage-missing-subsectors": "Fehlende Teilsektoren verwalten"
+  "manage-missing-subsectors": "Fehlende Teilsektoren verwalten",
+  "add-a-new-city": "Eine neue Stadt hinzufügen",
+  "rate": "Rate",
+  "sector": "Sektor",
+  "an-error-occurred": "Ein Fehler ist aufgetreten",
+  "error-fetching-sector-breakdown": "Fehler beim Abrufen der Sektoraufteilung",
+  "source-open-climate": "Quelle: OpenClimate"
 }

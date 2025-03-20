@@ -6,7 +6,7 @@ import stream from "stream";
 import { Blob } from "fetch-blob";
 import { promisify } from "node:util";
 import fs from "fs";
-import path from "path";
+import path, { dirname } from "path";
 import { ApiResponse } from "@/util/api";
 import { db } from "@/models";
 import { Op, WhereOptions } from "sequelize";
@@ -16,6 +16,7 @@ import { DataSourceI18nAttributes } from "@/models/DataSourceI18n";
 // import { expect } from "@jest/globals";
 import assert from "node:assert";
 import { Roles } from "@/util/types";
+import { fileURLToPath } from "node:url";
 
 function expect(received: any) {
   return {
@@ -71,7 +72,9 @@ const createTestCsvFile = async (
   fileName: string,
   data: string,
 ): Promise<string> => {
-  const filePath = path.join(__dirname, fileName);
+  const currentFileName = fileURLToPath(import.meta.url);
+  const dirName = dirname(currentFileName);
+  const filePath = path.join(dirName, fileName);
 
   await fs.promises.writeFile(filePath, data, "utf8");
   return filePath;

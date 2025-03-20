@@ -3,8 +3,8 @@ Use this script to convert an Excel or CSV file to a JSON file.
 E.g. for creating an excel list out of our actions json file
 
 Example:
-python xlsx2json.py --input_file ../data/climate_actions/output/merged.xlsx --output_file merged.json
-python xlsx2json.py --input_file ../data/climate_actions/output/merged.csv --output_file merged.json
+python xlsx_csv2json.py --input_file ../data/climate_actions/output/merged.xlsx --output_file merged.json
+python xlsx_csv2json.py --input_file ../data/climate_actions/output/merged.csv --output_file merged.json
 """
 
 import argparse
@@ -14,7 +14,7 @@ import ast  # For safely evaluating string representations of lists and dictiona
 import json
 
 
-def xlsx2json(input_file: Path, output_file: Path):
+def xlsx_csv2json(input_file: Path, output_file: Path):
     # Define file paths using Path
     OUTPUT_PATH = Path("./script_outputs")
 
@@ -71,4 +71,4 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    xlsx2json(args.input_file, args.output_file)
+    xlsx_csv2json(args.input_file, args.output_file)

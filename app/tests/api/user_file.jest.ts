@@ -10,15 +10,7 @@ import {
 
 import { db } from "@/models";
 import assert from "node:assert";
-import {
-  after,
-  afterEach,
-  before,
-  beforeEach,
-  describe,
-  it,
-  mock,
-} from "node:test";
+import { after, before, beforeEach, describe, it, mock } from "node:test";
 import {
   testFileFormat,
   filePath,
@@ -88,7 +80,7 @@ describe("UserFile API", () => {
     if (db.sequelize) await db.sequelize.close();
 
     // deletes the file once test are done
-    await fs.unlink(await filePath(), (err: any) => {
+    fs.unlink(await filePath(), (err: any) => {
       if (err) console.error(err);
     });
   });

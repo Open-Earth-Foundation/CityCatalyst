@@ -130,7 +130,12 @@ function SectorTabs({
       <Tabs.List>
         {getSectorsForInventory(inventory?.inventoryType).map(
           ({ icon, name }, index) => (
-            <Tabs.Trigger key={index} value={name} minWidth="170px">
+            <Tabs.Trigger
+              key={index}
+              value={name}
+              minWidth="170px"
+              height="64px"
+            >
               <Icon
                 as={icon}
                 height="24px"
@@ -142,8 +147,7 @@ function SectorTabs({
               <Text
                 fontSize="16"
                 lineClamp={2}
-                textAlign="center"
-                w="full"
+                textAlign="left"
                 fontWeight={selectedTab === name ? 600 : 400}
                 fontStyle="normal"
                 color={

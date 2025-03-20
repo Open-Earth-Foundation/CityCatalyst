@@ -11,9 +11,9 @@ import argparse
 import json
 
 # Define the base path to the project root
-BASE_PATH = Path(__file__).parent.parent.parent
-BASE_PATH_CCRAS = BASE_PATH / "data" / "ccra"
-BASE_PATH_CITIES = BASE_PATH / "data" / "cities"
+BASE_DIR = Path(__file__).parent.parent.parent
+BASE_PATH_CCRAS = BASE_DIR / "data" / "ccra"
+BASE_PATH_CITIES = BASE_DIR / "data" / "cities"
 
 
 def extract_ccras(locode: str) -> list:

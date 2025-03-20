@@ -1,6 +1,6 @@
 from typing import Optional, Tuple, Union
 from langchain.tools import tool
-from utils.get_vectorstore import get_vectorstore
+from utils.get_vectorstore_local import get_vectorstore
 from langchain_community.tools.tavily_search import TavilySearchResults
 from langchain_core.messages import HumanMessage
 from langchain_openai import ChatOpenAI

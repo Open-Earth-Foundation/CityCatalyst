@@ -21,22 +21,19 @@ from langchain_core.messages import AIMessage
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.StreamHandler(),
-        logging.FileHandler('app.log')
-    ]
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    handlers=[logging.StreamHandler(), logging.FileHandler("app.log")],
 )
 logger = logging.getLogger(__name__)
 
 # Configure longer timeout for external requests
 httpx._config.DEFAULT_TIMEOUT_CONFIG.connect = 3000.0  # 300 seconds
-httpx._config.DEFAULT_TIMEOUT_CONFIG.read = 3000.0     # 300 seconds
+httpx._config.DEFAULT_TIMEOUT_CONFIG.read = 3000.0  # 300 seconds
 
 app = FastAPI(
     title="Climate Action Plan Creator API",
     description="API for generating climate action implementation plans",
-    version="1.0.0"
+    version="1.0.0",
 )
 
 # Add CORS middleware configuration with more explicit settings
@@ -46,7 +43,7 @@ app.add_middleware(
         "https://cap.openearth.dev",
         "https://cap-plan-creator.openearth.dev",
         "http://localhost:3000",
-        "http://localhost:8000"
+        "http://localhost:8000",
     ],
     allow_credentials=True,
     allow_methods=["GET", "POST", "OPTIONS", "DELETE", "PATCH", "PUT"],
@@ -59,7 +56,7 @@ app.add_middleware(
         "Access-Control-Allow-Credentials",
         "Accept",
         "Origin",
-        "X-Requested-With"
+        "X-Requested-With",
     ],
     expose_headers=["*"],
     max_age=3600,  # Cache preflight requests for 1 hour
@@ -76,9 +73,11 @@ logger.info(f"City data path set to: {city_data_path}")
 # Storage for task status and results
 task_storage = {}
 
+
 class PlanRequest(BaseModel):
     action: Dict[str, Any]
     city_name: str
+
 
 def load_city_data():
     """Load city data from JSON file."""
@@ -90,36 +89,41 @@ def load_city_data():
         logger.error(f"Error loading city data: {str(e)}", exc_info=True)
         raise
 
+
 def get_city_by_name(city_name: str) -> Dict[str, Any]:
     """Get city data by name."""
     city_data = load_city_data()
-    
+
     # Case-insensitive search
     city_name_lower = city_name.lower()
-    
+
     for city in city_data:
         if city["name"].lower() == city_name_lower:
             logger.info(f"Found city data for: {city['name']}")
             return city
-    
+
     logger.error(f"City not found: {city_name}")
     raise ValueError(f"City not found: {city_name}")
+
 
 @app.get("/")
 async def root():
     logger.info("Health check endpoint called")
     return {"message": "Hello World"}
 
+
 def _execute_plan_creation(task_uuid: str, request: PlanRequest):
     """Background task to execute plan creation"""
     try:
         # Update status to running
         task_storage[task_uuid]["status"] = "running"
-        logger.info(f"Task {task_uuid}: Starting plan creation for action ID: {request.action.get('ActionID', 'unknown')}")
+        logger.info(
+            f"Task {task_uuid}: Starting plan creation for action ID: {request.action.get('ActionID', 'unknown')}"
+        )
         logger.info(f"Task {task_uuid}: City name: {request.city_name}")
-        
+
         start_time = time.time()
-        
+
         # Get city data
         try:
             city_data = get_city_by_name(request.city_name)
@@ -129,12 +133,12 @@ def _execute_plan_creation(task_uuid: str, request: PlanRequest):
             task_storage[task_uuid]["status"] = "failed"
             task_storage[task_uuid]["error"] = str(e)
             return
-        
+
         # 1. Initialize the graph and state
         logger.info(f"Task {task_uuid}: Creating computation graph")
         graph = create_graph()
         logger.info(f"Task {task_uuid}: Graph created successfully")
-        
+
         logger.info(f"Task {task_uuid}: Initializing agent state")
         initial_state = AgentState(
             climate_action_data=request.action,
@@ -154,40 +158,51 @@ def _execute_plan_creation(task_uuid: str, request: PlanRequest):
 
         # 2. Generate the plan
         try:
-            logger.info(f"Task {task_uuid}: Starting graph execution for plan generation")
+            logger.info(
+                f"Task {task_uuid}: Starting graph execution for plan generation"
+            )
             result = graph.invoke(input=initial_state)
             logger.info(f"Task {task_uuid}: Graph execution completed successfully")
         except Exception as e:
-            logger.error(f"Task {task_uuid}: Error during graph execution: {str(e)}", exc_info=True)
+            logger.error(
+                f"Task {task_uuid}: Error during graph execution: {str(e)}",
+                exc_info=True,
+            )
             task_storage[task_uuid]["status"] = "failed"
             task_storage[task_uuid]["error"] = f"Error during graph execution: {str(e)}"
             return
-        
+
         # 3. Save the plan
         timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M")
-        action_id = request.action.get('ActionID', 'unknown')
+        action_id = request.action.get("ActionID", "unknown")
         filename = f"{timestamp}_{action_id}_climate_action_implementation_plan.md"
         output_path = output_dir / filename
-        
+
         output_dir.mkdir(parents=True, exist_ok=True)
-        
+
         logger.info(f"Task {task_uuid}: Saving plan to file: {output_path}")
         with open(output_path, "w", encoding="utf-8") as f:
             f.write(result["response_agent_combine"])
         logger.info(f"Task {task_uuid}: Plan file saved successfully")
-        
+
         # Store the result
         task_storage[task_uuid]["status"] = "completed"
         task_storage[task_uuid]["filename"] = filename
         task_storage[task_uuid]["output_path"] = str(output_path)
-        
+
         process_time = time.time() - start_time
-        logger.info(f"Task {task_uuid}: Plan generation completed in {process_time:.2f} seconds")
-        
+        logger.info(
+            f"Task {task_uuid}: Plan generation completed in {process_time:.2f} seconds"
+        )
+
     except Exception as e:
-        logger.error(f"Task {task_uuid}: Unexpected error during plan generation: {str(e)}", exc_info=True)
+        logger.error(
+            f"Task {task_uuid}: Unexpected error during plan generation: {str(e)}",
+            exc_info=True,
+        )
         task_storage[task_uuid]["status"] = "failed"
         task_storage[task_uuid]["error"] = f"Error generating plan: {str(e)}"
+
 
 @app.post("/start_plan_creation")
 async def start_plan_creation(request: PlanRequest):
@@ -196,103 +211,101 @@ async def start_plan_creation(request: PlanRequest):
     task_uuid = str(uuid.uuid4())
     logger.info(f"Received plan creation request, assigned task ID: {task_uuid}")
     logger.info(f"City name: {request.city_name}")
-    
+
     # Validate city name
     try:
         get_city_by_name(request.city_name)
     except ValueError as e:
         logger.error(f"Invalid city name: {request.city_name}")
-        raise HTTPException(
-            status_code=404,
-            detail=str(e)
-        )
-    
+        raise HTTPException(status_code=404, detail=str(e))
+
     # Initialize task status
     task_storage[task_uuid] = {
         "status": "pending",
         "created_at": datetime.now().isoformat(),
-        "action_id": request.action.get('ActionID', 'unknown'),
-        "city_name": request.city_name
+        "action_id": request.action.get("ActionID", "unknown"),
+        "city_name": request.city_name,
     }
-    
+
     # Start background thread for processing
-    thread = threading.Thread(
-        target=_execute_plan_creation,
-        args=(task_uuid, request)
-    )
+    thread = threading.Thread(target=_execute_plan_creation, args=(task_uuid, request))
     thread.daemon = True
     thread.start()
-    
+
     logger.info(f"Started background processing for task: {task_uuid}")
-    
+
     # Return the task ID immediately
     return JSONResponse(
-        status_code=202,
-        content={"task_id": task_uuid, "status": "pending"}
+        status_code=202, content={"task_id": task_uuid, "status": "pending"}
     )
+
 
 @app.get("/check_progress/{task_uuid}")
 async def check_progress(task_uuid: str):
     """Check the progress of a plan creation task"""
     logger.info(f"Checking progress for task: {task_uuid}")
-    
+
     if task_uuid not in task_storage:
         logger.warning(f"Task not found: {task_uuid}")
         raise HTTPException(status_code=404, detail="Task not found")
-    
+
     task_info = task_storage[task_uuid]
     logger.info(f"Task {task_uuid} status: {task_info['status']}")
-    
+
     response_data = {"status": task_info["status"]}
-    
+
     # Include error message if status is failed
     if task_info["status"] == "failed" and "error" in task_info:
         response_data["error"] = task_info["error"]
-    
+
     return response_data
+
 
 @app.get("/get_plan/{task_uuid}")
 async def get_plan(task_uuid: str):
     """Get the completed plan for a task"""
     logger.info(f"Retrieving plan for task: {task_uuid}")
-    
+
     if task_uuid not in task_storage:
         logger.warning(f"Task not found: {task_uuid}")
         raise HTTPException(status_code=404, detail="Task not found")
-    
+
     task_info = task_storage[task_uuid]
-    
+
     if task_info["status"] != "completed":
-        logger.warning(f"Task {task_uuid} is not completed yet. Current status: {task_info['status']}")
-        raise HTTPException(
-            status_code=409, 
-            detail=f"Plan is not ready yet. Current status: {task_info['status']}"
+        logger.warning(
+            f"Task {task_uuid} is not completed yet. Current status: {task_info['status']}"
         )
-    
+        raise HTTPException(
+            status_code=409,
+            detail=f"Plan is not ready yet. Current status: {task_info['status']}",
+        )
+
     output_path = Path(task_info["output_path"])
     filename = task_info["filename"]
-    
+
     logger.info(f"Returning plan file for task {task_uuid}: {output_path}")
-    
+
     # Return the file and then clean up the task data
     response = FileResponse(
-        path=output_path,
-        filename=filename,
-        media_type="text/markdown"
+        path=output_path, filename=filename, media_type="text/markdown"
     )
-    
+
     # Clean up task data after successful retrieval
     del task_storage[task_uuid]
     logger.info(f"Task {task_uuid} data cleaned up after successful retrieval")
-    
+
     return response
+
 
 # Keep the old endpoint for backward compatibility
 @app.post("/create_plan")
 async def create_plan(request: PlanRequest):
-    logger.warning("Deprecated /create_plan endpoint called. Consider using the new asynchronous API.")
+    logger.warning(
+        "Deprecated /create_plan endpoint called. Consider using the new asynchronous API."
+    )
     start_time = time.time()
-    action_id = request.action.get('ActionID', 'unknown')
+    action_id = request.action.get("ActionID", "unknown")
     logger.info(f"Starting plan creation for action ID: {action_id}")
     logger.info(f"City name: {request.city_name}")
 
@@ -303,16 +316,13 @@ async def create_plan(request: PlanRequest):
             logger.info(f"Found city data for {request.city_name}")
         except ValueError as e:
             logger.error(f"City not found: {request.city_name}")
-            raise HTTPException(
-                status_code=404,
-                detail=str(e)
-            )
-        
+            raise HTTPException(status_code=404, detail=str(e))
+
         # 1. Initialize the graph and state
         logger.info("Creating computation graph")
         graph = create_graph()
         logger.info("Graph created successfully")
-        
+
         logger.info("Initializing agent state")
         initial_state = AgentState(
             climate_action_data=request.action,
@@ -335,59 +345,55 @@ async def create_plan(request: PlanRequest):
             logger.info("Starting graph execution for plan generation")
             result = graph.invoke(input=initial_state)
             logger.info("Graph execution completed successfully")
-            logger.debug(f"Graph execution result length: {len(result['response_agent_combine'])}")
+            logger.debug(
+                f"Graph execution result length: {len(result['response_agent_combine'])}"
+            )
         except httpx.TimeoutException:
             logger.error("Timeout occurred during graph execution", exc_info=True)
             raise HTTPException(
                 status_code=500,
-                detail="Timeout while generating diagrams. Please try again."
+                detail="Timeout while generating diagrams. Please try again.",
             )
         except Exception as e:
             logger.error(f"Other Error during graph execution: {str(e)}", exc_info=True)
             raise HTTPException(
-                status_code=500,
-                detail=f"Error during graph execution: {str(e)}"
+                status_code=500, detail=f"Error during graph execution: {str(e)}"
             )
         # 3. Save the plan
         timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M")
         filename = f"{timestamp}_{action_id}_{request.city_name.replace(' ', '_')}_climate_action_implementation_plan.md"
         output_path = output_dir / filename
-        
+
         output_dir.mkdir(parents=True, exist_ok=True)
-        
+
         logger.info(f"Saving plan to file: {output_path}")
         with open(output_path, "w", encoding="utf-8") as f:
             f.write(result["response_agent_combine"])
         logger.info("Plan file saved successfully")
-            
+
         process_time = time.time() - start_time
         logger.info(f"Plan generation completed in {process_time:.2f} seconds")
-        
+
         return FileResponse(
-            path=output_path,
-            filename=filename,
-            media_type="text/markdown"
+            path=output_path, filename=filename, media_type="text/markdown"
         )
-        
+
     except HTTPException as he:
         logger.error(f"HTTP Exception during plan generation: {str(he)}", exc_info=True)
         raise
     except Exception as e:
-        logger.error(f"Unexpected error during plan generation: {str(e)}", exc_info=True)
-        raise HTTPException(
-            status_code=500,
-            detail=f"Error generating plan: {str(e)}"
+        logger.error(
+            f"Unexpected error during plan generation: {str(e)}", exc_info=True
         )
+        raise HTTPException(status_code=500, detail=f"Error generating plan: {str(e)}")
+
 
 if __name__ == "__main__":
     logger.info("Configuring Uvicorn logging")
     log_config = uvicorn.config.LOGGING_CONFIG
-    log_config["formatters"]["access"]["fmt"] = "%(asctime)s - %(name)s - %(levelname)s - %(client_addr)s - '%(request_line)s' %(status_code)s"
-    
+    log_config["formatters"]["access"][
+        "fmt"
+    ] = "%(asctime)s - %(name)s - %(levelname)s - %(client_addr)s - '%(request_line)s' %(status_code)s"
+
     logger.info("Starting Uvicorn server")
-    uvicorn.run(
-        app, 
-        host="0.0.0.0", 
-        port=8000,
-        log_config=log_config
-    ) 
+    uvicorn.run(app, host="0.0.0.0", port=8000, log_config=log_config)

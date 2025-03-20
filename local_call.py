@@ -4,6 +4,7 @@ from graph_definition import create_graph
 from state.agent_state import AgentState
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
 from pathlib import Path
+from utils.get_vectorstore_from_s3 import get_vectorstore
 
 
 def mock_api_body(climate_action_id: str, city_data_loc: str):
@@ -78,4 +79,16 @@ if __name__ == "__main__":
         climate_action_id=args.climate_action_id, city_data_loc=args.city_data_loc
     )
 
-    create_plan(climate_action_data, city_data)
+    print("Loading vector store...")
+    # Attempt to get the vector store
+    success = get_vectorstore(
+        collection_name="all_docs_db_small_chunks", local_path="vector_stores"
+    )
+
+    if success:
+        print("\nSUCCESS: Vector store is available locally")
+        print("Creating plan...")
+        create_plan(climate_action_data, city_data)
+    else:
+        print("\nFAILED: Could not get vector store")
+        print("Ending...")

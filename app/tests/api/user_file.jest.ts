@@ -9,8 +9,15 @@ import {
 } from "@/app/api/v0/city/[city]/file/[file]/route";
 
 import { db } from "@/models";
-import assert from "node:assert";
-import { after, before, beforeEach, describe, it, mock } from "node:test";
+import {
+  afterAll,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  jest,
+} from "@jest/globals";
 import {
   testFileFormat,
   filePath,
@@ -62,7 +69,7 @@ const invalidFileData = {
 };
 
 describe("UserFile API", () => {
-  before(async () => {
+  beforeAll(async () => {
     setupTests();
     await db.initialize();
     await db.models.UserFile.destroy({ where: { userId: testUserID } });
@@ -76,7 +83,7 @@ describe("UserFile API", () => {
     });
     await user.addCity(city);
   });
-  after(async () => {
+  afterAll(async () => {
     if (db.sequelize) await db.sequelize.close();
 
     // deletes the file once test are done
@@ -86,7 +93,9 @@ describe("UserFile API", () => {
   });
 
   beforeEach(() => {
-    mock.method(NotificationService, "sendNotificationEmail", () => {});
+    jest
+      .spyOn(NotificationService, "sendNotificationEmail")
+      .mockImplementation(() => Promise.resolve());
   });
 
   it("should create a user file", async () => {
@@ -112,15 +121,15 @@ describe("UserFile API", () => {
     });
     await expectStatusCode(res, 200);
     const { data } = await res.json();
-    assert.equal(data?.sector, fileData?.sector);
-    assert.equal(data?.url, fileData.url);
-    assert.equal(data?.status, fileData.status);
-    assert.equal(data?.gpcRefNo, fileData.gpc_ref_no);
-    assert.equal(fileData.data.fileName, data?.file.fileName);
-    assert.equal(fileData.data.size, data?.file.size);
-    // @ts-ignore
-    const calls = NotificationService.sendNotificationEmail.mock.calls.length;
-    assert.equal(calls, 1);
+    expect(data?.sector).toBe(fileData?.sector);
+    expect(data?.url).toBe(fileData.url);
+    expect(data?.status).toBe(fileData.status);
+    expect(data?.gpcRefNo).toBe(fileData.gpc_ref_no);
+    expect(fileData.data.fileName).toBe(data?.file.fileName);
+    expect(fileData.data.size).toBe(data?.file.size);
+    const calls = (NotificationService.sendNotificationEmail as jest.Mock).mock
+      .calls.length;
+    expect(calls).toBe(1);
   });
 
   it("should not create a file if data is invalid", async () => {
@@ -140,7 +149,7 @@ describe("UserFile API", () => {
     formData.append("gpcRefNo", invalidFileData.gpc_ref_no);
     const req = mockRequestFormData(formData);
     const res = await createUserFile(req, { params: { city: testCityID } });
-    assert.equal(res.status, 400);
+    expect(res.status).toBe(400);
   });
 
   it("should find all user files", async () => {
@@ -151,10 +160,10 @@ describe("UserFile API", () => {
     const { data } = await res.json();
 
     const userFile = data[0];
-    assert.equal(userFile?.sector, fileData.sector);
-    assert.equal(userFile?.url, fileData.url);
-    assert.equal(userFile?.status, fileData.status);
-    assert.equal(userFile?.gpcRefNo, fileData.gpc_ref_no);
+    expect(userFile?.sector).toBe(fileData.sector);
+    expect(userFile?.url).toBe(fileData.url);
+    expect(userFile?.status).toBe(fileData.status);
+    expect(userFile?.gpcRefNo).toBe(fileData.gpc_ref_no);
   });
 
   it("should find a user file", async () => {
@@ -170,10 +179,10 @@ describe("UserFile API", () => {
       params: { user: testUserID, file: userFiles.id, city: testCityID },
     });
     const { data: userFile } = await res.json();
-    assert.equal(userFile?.sector, fileData.sector);
-    assert.equal(userFile?.url, fileData.url);
-    assert.equal(userFile?.status, fileData.status);
-    assert.equal(userFile?.gpcRefNo, fileData.gpc_ref_no);
+    expect(userFile?.sector).toBe(fileData.sector);
+    expect(userFile?.url).toBe(fileData.url);
+    expect(userFile?.status).toBe(fileData.status);
+    expect(userFile?.gpcRefNo).toBe(fileData.gpc_ref_no);
   });
 
   it("should not find a user file", async () => {
@@ -182,7 +191,7 @@ describe("UserFile API", () => {
       params: { user: testUserID, file: randomUUID(), city: testCityID },
     });
 
-    assert.equal(res.status, 404);
+    expect(res.status).toBe(404);
   });
 
   it("should delete user file", async () => {
@@ -203,7 +212,7 @@ describe("UserFile API", () => {
     const res = await createUserFile(req, {
       params: { user: testUserID, city: testCityID },
     });
-    assert.equal(res.status, 200);
+    expect(res.status).toBe(200);
     const { data } = await res.json();
     const deletRequest = mockRequest();
     const deleteResponse = await deleteUserfile(deletRequest, {
@@ -211,8 +220,8 @@ describe("UserFile API", () => {
     });
 
     const { deleted } = await deleteResponse.json();
-    assert.equal(deleted, true);
-    assert.equal(deleteResponse.status, 200);
+    expect(deleted).toBe(true);
+    expect(deleteResponse.status).toBe(200);
   });
 
   it("should not delete a non-existent user file", async () => {
@@ -221,6 +230,6 @@ describe("UserFile API", () => {
       params: { user: testUserID, file: randomUUID(), city: testCityID },
     });
 
-    assert.equal(deleteResponse.status, 404);
+    expect(deleteResponse.status).toBe(404);
   });
 });

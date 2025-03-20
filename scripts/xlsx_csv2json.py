@@ -1,10 +1,10 @@
 """
-Use this script to convert an Excel file to a JSON file.
+Use this script to convert an Excel or CSV file to a JSON file.
 E.g. for creating an excel list out of our actions json file
 
 Example:
-python json2xlsx_csv.py --json_file ../data/climate_actions/output/merged.json --output_file merged.xlsx
-
+python xlsx2json.py --input_file ../data/climate_actions/output/merged.xlsx --output_file merged.json
+python xlsx2json.py --input_file ../data/climate_actions/output/merged.csv --output_file merged.json
 """
 
 import argparse
@@ -16,16 +16,22 @@ import json
 
 def xlsx2json(input_file: Path, output_file: Path):
     # Define file paths using Path
-    # input_file = Path("/content/Long_List_of_Actions_merged.xlsx")
-    # output_file = Path("/content/ipcc_mitigation_options2.json")
     OUTPUT_PATH = Path("./script_outputs")
 
     # Ensure the input file exists
     if not input_file.is_file():
         raise FileNotFoundError(f"Input file not found: {input_file}")
 
-    # Read the Excel file
-    df = pd.read_excel(input_file)
+    # Read the file based on its extension
+    file_extension = input_file.suffix.lower()
+    if file_extension == ".xlsx":
+        df = pd.read_excel(input_file)
+    elif file_extension == ".csv":
+        df = pd.read_csv(input_file)
+    else:
+        raise ValueError(
+            f"Unsupported file format: {file_extension}. Only .xlsx and .csv files are supported."
+        )
 
     # Process each column to cast strings like "[\"value\"]" or "{\"key\": \"value\"}" to proper types
     def safe_eval(value):
@@ -48,14 +54,13 @@ def xlsx2json(input_file: Path, output_file: Path):
     # Export to JSON with proper types
     df.to_json(OUTPUT_PATH / output_file, orient="records", indent=4)
 
-    print(f"Excel file successfully exported to JSON at {OUTPUT_PATH / output_file}")
+    print(f"File successfully exported to JSON at {OUTPUT_PATH / output_file}")
 
 
 if __name__ == "__main__":
-
-    parser = argparse.ArgumentParser(description="Convert JSON to CSV")
+    parser = argparse.ArgumentParser(description="Convert Excel or CSV to JSON")
     parser.add_argument(
-        "--input_file", type=Path, required=True, help="Path to the .xlsx file"
+        "--input_file", type=Path, required=True, help="Path to the .xlsx or .csv file"
     )
     parser.add_argument(
         "--output_file",

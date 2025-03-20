@@ -14,7 +14,6 @@
     "e2e:test": "npx playwright test",
     "e2e:debug": "playwright test --debug",
     "e2e:test:head": "npx playwright test -- --headed",
-    "test-single": "tsx --no-warnings --test",
     "jest": "NODE_OPTIONS=\"$NODE_OPTIONS --experimental-vm-modules\" NODE_ENV=\"test\" npx jest",
     "jest:windows": "set NODE_OPTIONS=%NODE_OPTIONS% --experimental-vm-modules && set NODE_ENV=test && npx jest",
     "storybook": "storybook dev -p 6006",

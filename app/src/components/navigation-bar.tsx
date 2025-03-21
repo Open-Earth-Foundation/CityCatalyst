@@ -28,6 +28,7 @@ import {
 import { Avatar } from "@/components/ui/avatar";
 
 import { Button } from "@/components/ui/button";
+import { Roles } from "@/util/types";
 
 function countryFromLanguage(language: string) {
   return language == "en" ? "us" : language;
@@ -259,28 +260,30 @@ export function NavigationBar({
                 minH="128px"
                 zIndex={2000}
               >
-                <MenuItem
-                  value="admin"
-                  paddingTop="12px"
-                  paddingBottom="12px"
-                  px="16px"
-                  onClick={() => router.push(`/admin`)}
-                >
-                  <Box display="flex" alignItems="center">
-                    {" "}
-                    <Icon
-                      as={MdAspectRatio}
-                      boxSize={6}
-                      color={
-                        userMenuHighlight === "admin"
-                          ? "background.neutral"
-                          : "content.tertiary"
-                      }
-                      mr={4}
-                    />
-                    <Text fontSize="title.md">{t("admin")}</Text>
-                  </Box>
-                </MenuItem>
+                {userInfo?.role === Roles.Admin && (
+                  <MenuItem
+                    value="admin"
+                    paddingTop="12px"
+                    paddingBottom="12px"
+                    px="16px"
+                    onClick={() => router.push(`/admin`)}
+                  >
+                    <Box display="flex" alignItems="center">
+                      {" "}
+                      <Icon
+                        as={MdAspectRatio}
+                        boxSize={6}
+                        color={
+                          userMenuHighlight === "admin"
+                            ? "background.neutral"
+                            : "content.tertiary"
+                        }
+                        mr={4}
+                      />
+                      <Text fontSize="title.md">{t("admin")}</Text>
+                    </Box>
+                  </MenuItem>
+                )}
                 <MenuItem
                   value="settings"
                   paddingTop="12px"

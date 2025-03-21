@@ -41,8 +41,7 @@ Follow these guidelines carefully to complete the task:
     - Ensure that the documents retrieved are relevant to the climate action (main action) and the city you are working on.
 5. Create a concise introduction for the climate action implementation plan incorporating the retrieved documents. 
 **Important**: 
-    - When using information from the retrieved documents, include the sources of the retrieved document in the output using the format: `[source: <document title and page>]`
-    - If you can not retrieve relevant information for a specific part, state this fact briefly. 
+    - If you can not retrieve relevant information for a specific part, **DO NOT** include this fact in the output. 
 </task>
 
 <tools>

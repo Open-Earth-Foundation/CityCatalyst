@@ -3,7 +3,16 @@ from langgraph.prebuilt import create_react_agent
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
 from state.agent_state import AgentState
 from data.context import sgds
+from langchain_openai import ChatOpenAI
+from tools.tools import (
+    placeholder_tool,
+)
 
+# Create the agents
+model = ChatOpenAI(model="gpt-4o", temperature=0.0, seed=42)
+
+# Define tools for the agent
+tools = [placeholder_tool]
 
 system_prompt_agent_10 = SystemMessage(
     """
@@ -52,7 +61,7 @@ Be concise, realistic, and specific. Focus on measurable impact and actionable s
 )
 
 
-def build_custom_agent_10(model, tools):
+def build_custom_agent_10():
     """Wrap create_react_agent to store final output in AgentState."""
 
     # The chain returned by create_react_agent

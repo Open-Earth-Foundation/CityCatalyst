@@ -29,6 +29,7 @@ import { SourceDrawerActivityTable } from "./SourceDrawerActivityTable";
 import { BodyLarge } from "@/components/Texts/Body";
 import { DisplayMedium } from "@/components/Texts/Display";
 import ScalingSection from "./[subsector]/ScalingSection";
+import { IoMdOpen } from "react-icons/io";
 
 export function SourceDrawer({
   source,
@@ -193,6 +194,38 @@ export function SourceDrawer({
                   <TitleLarge>{t("inside-dataset")}</TitleLarge>
                   <BodyLarge color="content.tertiary">
                     {getTranslationFromDict(source.datasetDescription)}
+                  </BodyLarge>
+                  <Separator />
+                  <TitleMedium>
+                    {t("methodology")}
+                    <Link
+                      href={source.methodologyUrl}
+                      rel="noopener noreferrer"
+                      target="_blank"
+                    >
+                      <Icon
+                        as={IoMdOpen}
+                        boxSize={4}
+                        color="interactive.secondary"
+                      />
+                    </Link>
+                  </TitleMedium>
+                  <BodyLarge>
+                    {getTranslationFromDict(source.methodologyDescription)}
+                  </BodyLarge>
+                  <TitleMedium>
+                    {t("transform-data-heading")}
+                    {/* TODO get link from design or previous version */}
+                    <Link href={""} rel="noopener noreferrer" target="_blank">
+                      <Icon
+                        as={IoMdOpen}
+                        boxSize={4}
+                        color="interactive.secondary"
+                      />
+                    </Link>
+                  </TitleMedium>
+                  <BodyLarge>
+                    {getTranslationFromDict(source.transformationDescription)}
                   </BodyLarge>
                   <TitleMedium>{t("disaggregated-analysis")}</TitleMedium>
                   {sourceData?.records && (

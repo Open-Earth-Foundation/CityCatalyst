@@ -1,4 +1,4 @@
-from typing import Optional, Tuple, Union
+from typing import Tuple, Union
 from langchain.tools import tool
 from utils.get_vectorstore_local import get_vectorstore
 from langchain_community.tools.tavily_search import TavilySearchResults
@@ -249,8 +249,10 @@ def inspect_retrieved_results(search_query: str, chunk: str):
 
 
 @tool
-def placeholder_tool():
+def placeholder_tool() -> None:
     """
     A placeholder tool that does not have any functionality.
     Never call this tool!
     """
+
+    return None

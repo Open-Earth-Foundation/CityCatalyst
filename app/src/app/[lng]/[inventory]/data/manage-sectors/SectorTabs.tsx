@@ -37,7 +37,6 @@ import { toaster } from "@/components/ui/toaster";
 import RouteChangeDialog from "./RouteChangeDialog";
 import { usePathname, useRouter } from "next/navigation";
 import ProgressLoader from "@/components/ProgressLoader";
-import { se } from "date-fns/locale";
 
 interface SectorTabsProps {
   t: TFunction;

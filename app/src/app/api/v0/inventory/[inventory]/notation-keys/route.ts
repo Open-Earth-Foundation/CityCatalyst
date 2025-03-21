@@ -23,7 +23,12 @@ export const GET = apiHandler(async (_req, { session, params }) => {
   const inventoryProgress =
     await InventoryProgressService.getInventoryProgress(inventory);
   const unfinishedSubSectors = inventoryProgress.sectorProgress.flatMap(
-    (sector) => sector.subSectors.filter((subsector) => !subsector.completed),
+    (sector) =>
+      sector.subSectors.filter((subSector) => {
+        // return unfinished subsectors or ones that are using notation keys (InventoryValue.unavailableReason)
+        // so they can be changed again after saving
+        return !subSector.completed || subSector.unavailableReasons.length > 0;
+      }),
   );
 
   return NextResponse.json({

@@ -201,13 +201,14 @@ const SectorTabs: FC<SectorTabsProps> = ({
         <Tabs.Trigger
           key={sector.sectorId}
           value={`tab-${sector.sectorId}`}
+          maxW="1/4"
           _selected={{
             color: "content.link",
             fontWeight: "bold",
             fontFamily: "heading",
           }}
         >
-          <Text fontSize="title.md" truncate>
+          <Text fontSize="title.md" lineClamp="2">
             {sector.sectorName}
           </Text>
         </Tabs.Trigger>
@@ -236,7 +237,19 @@ const SectorTabs: FC<SectorTabsProps> = ({
       },
     ],
   });
-
+  // handle undo changes
+  const handleUndoChanges = () => {
+    setCardInputs({});
+    setIsDirty(false);
+    setQuickActionValues({});
+    setSelectedCardsBySector({});
+    toaster.create({
+      title: t("success"),
+      description: t("changes-undone"),
+      type: "info",
+    });
+  };
+  // sector tab content - subsectors
   const renderSectorTabContent = () =>
     inventoryData?.sectorProgress.map(({ sector, subSectors }) => {
       // Filter to get only unfinished subsectors
@@ -604,7 +617,13 @@ const SectorTabs: FC<SectorTabsProps> = ({
                 justifyContent="flex-end"
                 gap="16px"
               >
-                <Button height="56px" width="150px" variant="outline">
+                <Button
+                  height="56px"
+                  width="150px"
+                  variant="outline"
+                  onClick={handleUndoChanges}
+                  disabled={!isDirty}
+                >
                   {t("cancel")}
                 </Button>
                 <Button
@@ -613,6 +632,7 @@ const SectorTabs: FC<SectorTabsProps> = ({
                   variant="solid"
                   onClick={() => handleUpdateNotationKeys()}
                   loading={isLoading}
+                  disabled={!isDirty}
                 >
                   {t("update")}
                 </Button>

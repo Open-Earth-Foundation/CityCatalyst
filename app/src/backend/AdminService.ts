@@ -9,6 +9,7 @@ import { City } from "@/models/City";
 import { groupBy } from "@/util/helpers";
 import OpenClimateService from "./OpenClimateService";
 import { Op } from "sequelize";
+import { InventoryTypeEnum } from "@/util/constants";
 
 export interface BulkInventoryProps {
   cityLocodes: string[]; // List of city locodes
@@ -83,7 +84,7 @@ export default class AdminService {
         inventoryId: randomUUID(),
         cityLocode,
         year,
-        scope: props.scope,
+        inventoryType: props.scope as InventoryTypeEnum,
         gwp: props.gwp,
         cityId: city.cityId,
       }));

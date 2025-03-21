@@ -37,6 +37,7 @@ import { toaster } from "@/components/ui/toaster";
 import RouteChangeDialog from "./RouteChangeDialog";
 import { usePathname, useRouter } from "next/navigation";
 import ProgressLoader from "@/components/ProgressLoader";
+import { se } from "date-fns/locale";
 
 interface SectorTabsProps {
   t: TFunction;
@@ -236,7 +237,19 @@ const SectorTabs: FC<SectorTabsProps> = ({
       },
     ],
   });
-
+  // handle undo changes
+  const handleUndoChanges = () => {
+    setCardInputs({});
+    setIsDirty(false);
+    setQuickActionValues({});
+    setSelectedCardsBySector({});
+    toaster.create({
+      title: t("success"),
+      description: t("changes-undone"),
+      type: "info",
+    });
+  };
+  // sector tab content - subsectors
   const renderSectorTabContent = () =>
     inventoryData?.sectorProgress.map(({ sector, subSectors }) => {
       // Filter to get only unfinished subsectors
@@ -604,7 +617,13 @@ const SectorTabs: FC<SectorTabsProps> = ({
                 justifyContent="flex-end"
                 gap="16px"
               >
-                <Button height="56px" width="150px" variant="outline">
+                <Button
+                  height="56px"
+                  width="150px"
+                  variant="outline"
+                  onClick={handleUndoChanges}
+                  disabled={!isDirty}
+                >
                   {t("cancel")}
                 </Button>
                 <Button
@@ -613,6 +632,7 @@ const SectorTabs: FC<SectorTabsProps> = ({
                   variant="solid"
                   onClick={() => handleUpdateNotationKeys()}
                   loading={isLoading}
+                  disabled={!isDirty}
                 >
                   {t("update")}
                 </Button>

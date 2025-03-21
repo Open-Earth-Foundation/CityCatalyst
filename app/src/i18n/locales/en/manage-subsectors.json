@@ -1214,5 +1214,6 @@
   "quick-action-applied": "Quick action applied",
   "changes-can-be-lost": "Your changes can be lost",
   "changes-can-be-lost-description": "Do you want to discard all changes made since last edit? This cannot be undone.",
-  "no-unfinished-subsectors": "No unfinished subsectors."
+  "no-unfinished-subsectors": "No unfinished subsectors.",
+  "changes-undone": "Changes undone"
 }

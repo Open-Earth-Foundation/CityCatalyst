@@ -70,5 +70,7 @@
   "unselected-city-boundary-heading": "Pesquise e selecione a cidade a ser exibida no mapa",
   "unselected-city-boundary-description": "Você poderá verificar a fronteira geográfica do seu inventário",
   "recent-searches-title": "Pesquisas Recentes",
-  "recent-searches-no-results": "Você não tem pesquisas recentes"
+  "recent-searches-no-results": "Você não tem pesquisas recentes",
+  "failed-to-add-city": "Falha ao adicionar cidade",
+  "failed-to-create-inventory": "Falha ao criar inventário"
 }

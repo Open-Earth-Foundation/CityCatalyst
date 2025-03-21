@@ -201,13 +201,14 @@ const SectorTabs: FC<SectorTabsProps> = ({
         <Tabs.Trigger
           key={sector.sectorId}
           value={`tab-${sector.sectorId}`}
+          maxW="1/4"
           _selected={{
             color: "content.link",
             fontWeight: "bold",
             fontFamily: "heading",
           }}
         >
-          <Text fontSize="title.md" truncate>
+          <Text fontSize="title.md" lineClamp="2">
             {sector.sectorName}
           </Text>
         </Tabs.Trigger>

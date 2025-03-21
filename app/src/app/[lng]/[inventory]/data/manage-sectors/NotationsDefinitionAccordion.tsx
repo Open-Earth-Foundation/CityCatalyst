@@ -57,6 +57,9 @@ const NotationsDefinitionAccordion: FC<NotationsDefinitionAccordionProps> = ({
             fontWeight="bold"
             lineHeight="28px"
             fontSize="title.lg"
+            textAlign="left"
+            display="flex"
+            flex="1"
           >
             {t("notation-key-question")}
           </Text>

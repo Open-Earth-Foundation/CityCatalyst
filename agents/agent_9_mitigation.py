@@ -46,12 +46,12 @@ The final output should include:
 <example_output_mitigation>
 ## Mitigation Sectors:
 
-* Mitigation sector 1: [brief description]
-* Mitigation sector 2: [brief description]
-* ...
+[brief description of how the mitigation sectors are addressed by the climate action]
 </example_output_mitigation>
 
 <example_output_adaptation>
+## Mitigation Sectors:
+
 The climate action [name of the climate action] addresses adaptation actions and does not primarily address any mitigation sectors.
 </example_output_adaptation>
 </output>

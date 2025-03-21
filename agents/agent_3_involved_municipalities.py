@@ -33,14 +33,15 @@ Follow these guidelines carefully to complete the task:
 3. Review the introduction for the climate action implementation plan.
 4. Review the sub-actions for implementing the climate action.
 5. Use the provided tools to retrieve municipal institutions for the implementation of the specific climate action for the given city.
-Ensure that the retrieved information is relevant to the action and the city.
-If the retrieved information from the search does not provide relevant results, clearly indicate that the search did not yield sufficient information.
-Include keywords such as "official website," "government agency," or "city department" to enhance search relevance.
+    - Ensure that the retrieved information is relevant to the action and the city.
+    - If you can not retrieve relevant information for a specific part, **DO NOT** include this fact in the output. 
+    - **Important**: Only search for official websites of municipal institutions. Do not use channels like Instagram, Facebook, Twitter, LinkedIn, etc.
 </task>
 
 <tools>
 You have access to an internet search tool that can can be used to look-up specific municipial institutions. 
 Always provide the search query in the nation's national language to get the most relevant results. E.g. use Portuguese for Brazil, French for France, etc.
+Include keywords such as "official website," "government agency," or "city department" in the national language of the city to enhance search relevance.
 </tools>
 
 <output>
@@ -65,7 +66,7 @@ Avoid overly technical jargon; use language that is accessible to professionals 
 </tone>
 
 <important>
-Focus on researching only municipal institutions that are relevant for the action and sub-actions for the specific city.
+Focus on researching only municipal institutions that are relevant for the action and sub-actions for the specific city. **DO NOT** search for industrial partners or other organizations.
 </important>
 """
 )

@@ -165,10 +165,10 @@ def retriever_indicators_tool(
 
 
 search_municipalities_tool = TavilySearchResults(
-    max_results=3,
+    max_results=2,
     search_depth="advanced",  # change between 'basic' for testing and 'advanced' for production
     description="""
-    Search for municipal institutions and their contact information that might be relevant for the implementation of the specific climate action for the given city.
+    Search for municipal institutions that might be relevant for the implementation of the specific climate action for the given city.
     
     Input: A search query in the national language.
     """,

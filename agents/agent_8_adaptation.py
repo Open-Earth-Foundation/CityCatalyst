@@ -44,12 +44,12 @@ The final output should include:
 <example_output_adaptation>
 ## Climate Risks:
 
-* Climate risk 1: [brief description]
-* Climate risk 2: [brief description]
-* ...
+[brief description of how the climate risks are addressed by the climate action]
 </example_output_adaptation>
 
 <example_output_mitigation>
+## Climate Risks:
+
 The climate action [name of the climate action] addresses mitigation actions and does not primarily address any climate risks (hazards).
 </example_output_mitigation>
 </output>

@@ -45,7 +45,7 @@ export type UserFileCreationAttributes = Optional<
 
 export class UserFile
   extends Model<UserFileAttributes, UserFileCreationAttributes>
-  implements UserFileAttributes
+  implements Partial<UserFileAttributes>
 {
   id!: string;
   userId?: string;

@@ -40,7 +40,7 @@ export type SubSectorCreationAttributes = Optional<
 
 export class SubSector
   extends Model<SubSectorAttributes, SubSectorCreationAttributes>
-  implements SubSectorAttributes
+  implements Partial<SubSectorAttributes>
 {
   subsectorId!: string;
   subsectorName?: string;

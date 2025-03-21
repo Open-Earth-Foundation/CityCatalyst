@@ -26,7 +26,7 @@ export type AssistantMessageCreationAttributes = Optional<
 
 export class AssistantMessage
   extends Model<AssistantMessageAttributes, AssistantMessageCreationAttributes>
-  implements AssistantMessageAttributes
+  implements Partial<AssistantMessageAttributes>
 {
   assistantMessageId!: string;
   threadId!: string;

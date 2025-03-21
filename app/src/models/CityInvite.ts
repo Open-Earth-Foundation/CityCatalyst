@@ -32,7 +32,7 @@ export type CityInviteOptionalAttributes =
 
 export class CityInvite
   extends Model<CityInviteAttributes, CityInviteCreationAttributes>
-  implements CityInviteAttributes
+  implements Partial<CityInviteAttributes>
 {
   id!: string;
   cityId?: string | undefined;

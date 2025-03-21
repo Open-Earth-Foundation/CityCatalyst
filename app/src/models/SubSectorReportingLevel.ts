@@ -26,7 +26,7 @@ export class SubSectorReportingLevel
     SubSectorReportingLevelAttributes,
     SubSectorReportingLevelCreationAttributes
   >
-  implements SubSectorReportingLevelAttributes
+  implements Partial<SubSectorReportingLevelAttributes>
 {
   subsectorId!: string;
   reportinglevelId!: string;

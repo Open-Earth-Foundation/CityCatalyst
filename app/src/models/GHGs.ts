@@ -23,7 +23,7 @@ export type GHGsCreationAttributes = Optional<
 
 export class GHGs
   extends Model<GHGsAttributes, GHGsCreationAttributes>
-  implements GHGsAttributes
+  implements Partial<GHGsAttributes>
 {
   ghgId!: string;
   ghgName?: string;

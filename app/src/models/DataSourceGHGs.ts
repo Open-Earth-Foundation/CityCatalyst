@@ -23,7 +23,7 @@ export type DataSourceGHGsCreationAttributes = Optional<
 
 export class DataSourceGHGs
   extends Model<DataSourceGHGsAttributes, DataSourceGHGsCreationAttributes>
-  implements DataSourceGHGsAttributes
+  implements Partial<DataSourceGHGsAttributes>
 {
   datasourceId!: string;
   ghgId!: string;

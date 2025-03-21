@@ -17,7 +17,7 @@ export type GasToCO2EqCreationAttributes = Optional<
 
 export class GasToCO2Eq
   extends Model<GasToCO2EqAttributes, GasToCO2EqCreationAttributes>
-  implements GasToCO2EqAttributes
+  implements Partial<GasToCO2EqAttributes>
 {
   gas!: string;
   co2eqPerKg?: number;

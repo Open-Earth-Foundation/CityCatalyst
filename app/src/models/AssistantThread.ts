@@ -21,7 +21,7 @@ export type AssistantThreadCreationAttributes = Optional<
 
 export class AssistantThread
   extends Model<AssistantThreadAttributes, AssistantThreadCreationAttributes>
-  implements AssistantThreadAttributes
+  implements Partial<AssistantThreadAttributes>
 {
   assistantThreadId!: string;
   assistantId?: string;

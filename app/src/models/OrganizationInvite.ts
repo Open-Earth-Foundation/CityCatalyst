@@ -35,7 +35,7 @@ export class OrganizationInvite
     OrganizationInviteAttributes,
     OrganizationInviteCreationAttributes
   >
-  implements OrganizationInviteAttributes
+  implements Partial<OrganizationInviteAttributes>
 {
   id!: string;
   organizationId?: string;

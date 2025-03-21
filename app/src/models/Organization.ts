@@ -19,7 +19,7 @@ export type OrganizationCreationAttributes = Optional<
 
 export class Organization
   extends Model<OrganizationAttributes, OrganizationCreationAttributes>
-  implements OrganizationAttributes
+  implements Partial<OrganizationAttributes>
 {
   organizationId!: string;
   name?: string;

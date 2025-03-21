@@ -58,7 +58,7 @@ export type InventoryValueCreationAttributes = Optional<
 
 export class InventoryValue
   extends Model<InventoryValueAttributes, InventoryValueCreationAttributes>
-  implements InventoryValueAttributes
+  implements Partial<InventoryValueAttributes>
 {
   id!: string;
   gpcReferenceNumber?: string;

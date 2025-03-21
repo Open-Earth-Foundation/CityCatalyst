@@ -29,7 +29,7 @@ export type GDPCreationAttributes = Optional<
 
 export class GDP
   extends Model<GDPAttributes, GDPCreationAttributes>
-  implements GDPAttributes
+  implements Partial<GDPAttributes>
 {
   cityId!: string;
   gdp?: number;

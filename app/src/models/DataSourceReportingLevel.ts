@@ -29,7 +29,7 @@ export class DataSourceReportingLevel
     DataSourceReportingLevelAttributes,
     DataSourceReportingLevelCreationAttributes
   >
-  implements DataSourceReportingLevelAttributes
+  implements Partial<DataSourceReportingLevelAttributes>
 {
   datasourceId!: string;
   reportinglevelId!: string;

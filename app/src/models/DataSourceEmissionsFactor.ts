@@ -29,7 +29,7 @@ export class DataSourceEmissionsFactor
     DataSourceEmissionsFactorAttributes,
     DataSourceEmissionsFactorCreationAttributes
   >
-  implements DataSourceEmissionsFactorAttributes
+  implements Partial<DataSourceEmissionsFactorAttributes>
 {
   datasourceId!: string;
   emissionsFactorId!: string;

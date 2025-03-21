@@ -41,7 +41,7 @@ export type SubCategoryCreationAttributes = Optional<
 
 export class SubCategory
   extends Model<SubCategoryAttributes, SubCategoryCreationAttributes>
-  implements SubCategoryAttributes
+  implements Partial<SubCategoryAttributes>
 {
   subcategoryId!: string;
   subcategoryName?: string;

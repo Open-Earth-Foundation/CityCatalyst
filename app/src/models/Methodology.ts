@@ -34,7 +34,7 @@ export type MethodologyCreationAttributes = Optional<
 
 export class Methodology
   extends Model<MethodologyAttributes, MethodologyCreationAttributes>
-  implements MethodologyAttributes
+  implements Partial<MethodologyAttributes>
 {
   methodologyId!: string;
   methodology?: string;

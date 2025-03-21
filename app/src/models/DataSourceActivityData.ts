@@ -29,7 +29,7 @@ export class DataSourceActivityData
     DataSourceActivityDataAttributes,
     DataSourceActivityDataCreationAttributes
   >
-  implements DataSourceActivityDataAttributes
+  implements Partial<DataSourceActivityDataAttributes>
 {
   datasourceId!: string;
   activitydataId!: string;

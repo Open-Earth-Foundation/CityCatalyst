@@ -24,7 +24,7 @@ export type ProjectCreationAttributes = Optional<
 
 export class Project
   extends Model<ProjectAttributes, ProjectCreationAttributes>
-  implements ProjectAttributes
+  implements Partial<ProjectAttributes>
 {
   organizationId!: string;
   cityCountLimit!: Number;

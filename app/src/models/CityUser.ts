@@ -25,7 +25,7 @@ export type CityUserCreationAttributes = Optional<
 
 export class CityUser
   extends Model<CityUserAttributes, CityUserCreationAttributes>
-  implements CityUserAttributes
+  implements Partial<CityUserAttributes>
 {
   cityUserId!: string;
   userId?: string;

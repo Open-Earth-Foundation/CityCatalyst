@@ -29,7 +29,7 @@ export class DataSourceFormulaInput
     DataSourceFormulaInputAttributes,
     DataSourceFormulaInputCreationAttributes
   >
-  implements DataSourceFormulaInputAttributes
+  implements Partial<DataSourceFormulaInputAttributes>
 {
   datasourceId!: string;
   formulaInputId!: string;

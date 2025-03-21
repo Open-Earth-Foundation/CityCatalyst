@@ -59,6 +59,7 @@ def create_graph():
     # Compile the graph
     compiled_graph = builder.compile()
 
-    render_graph(compiled_graph)
+    # Only used for debugging, commented out for production
+    # render_graph(compiled_graph)
 
     return compiled_graph

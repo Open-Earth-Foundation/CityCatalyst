@@ -42,6 +42,7 @@ Follow these guidelines carefully to complete the task:
     - **Remember**: Good indicators are specific, measurable, achievable, relevant, and time-bound (SMART). However, since our information is limited, refrain from being too specific if the information is not available. E.g. do not give concrete numbers like "reduce emissions by 20% within 6 month", if you do not have clear information about this but you can work with placeholders if necessary und useful.
 **Important**: 
     - If you can not retrieve relevant information for a specific part, **DO NOT** include this fact in the output. 
+    - Do not include any sources in the output.
 </task>
 
 <tools>

@@ -42,6 +42,7 @@ Follow these guidelines carefully to complete the task:
 5. Create a concise introduction for the climate action implementation plan incorporating the retrieved documents. 
 **Important**: 
     - If you can not retrieve relevant information for a specific part, **DO NOT** include this fact in the output. 
+    - Do not include any sources in the output.
 </task>
 
 <tools>

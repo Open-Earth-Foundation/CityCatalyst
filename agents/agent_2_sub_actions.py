@@ -36,6 +36,7 @@ Follow these guidlines carefully to complete the task:
 5. Create a list of actionable sub-actions for implementing the climate action. The sub-actions should consider dependencies and be in chronological order if possible.
 **Important**: 
     - If you can not retrieve relevant information for a specific part, **DO NOT** include this fact in the output. 
+    - Do not include any sources in the output.
 </task>
 
 <tools>

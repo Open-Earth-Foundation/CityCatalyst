@@ -39,16 +39,19 @@ export function SourceDrawerActivityTable({
   return (
     <AccordionRoot multiple>
       {activities.map((activity, i) => {
+        const translatedActivityPath = !!activity.activity_subcategory_type
+          ? " | " +
+            Object.values(activity.activity_subcategory_type)
+              .map((e) => (e ? t(e) : ""))
+              .join(" > ")
+          : "";
+
         return (
           <AccordionItem key={i} value={JSON.stringify(activity.activity_name)}>
             <AccordionItemTrigger>
               <HStack justify="space-between" width="full">
                 <BodyMedium>
-                  {t(activity.activity_name) +
-                    " | " +
-                    Object.values(activity.activity_subcategory_type)
-                      .map((e) => t(e))
-                      .join(" > ")}
+                  {t(activity.activity_name) + translatedActivityPath}
                 </BodyMedium>
                 <TitleSmall>{`${t("total")} ${getTotalEmissions(activity)}`}</TitleSmall>
               </HStack>

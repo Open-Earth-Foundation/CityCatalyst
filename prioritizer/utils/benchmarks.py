@@ -367,7 +367,7 @@ if __name__ == "__main__":
 
     # Setting this flag to True will use the full dataset for the benchmarking from the folder 'data/expert_labeled_actions'
     # Otherwise it will load the test split from the data folder 'ml/df_test_split.csv'
-    use_full_dataset = True
+    use_full_dataset = False
 
     parent_dir = Path(__file__).parent.parent.parent
 

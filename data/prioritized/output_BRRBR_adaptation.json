@@ -4,30 +4,50 @@
         "cityName": "Rio Branco",
         "region": "BR-AC",
         "regionName": "Acre",
-        "actionId": "icare_0145",
-        "actionName": "Strengthen the healthcare network to attend to climate victims",
-        "actionPriority": 1,
-        "explanation": "For the city of Rio Branco, bolstering the healthcare network ensures quick, efficient treatment during floods, heatwaves, or disease outbreaks. This measure invests in facilities, staff training, and vital equipment, reducing casualties when extreme events occur. By providing robust health services, the city builds resilience and keeps communities safer."
-    },
-    {
-        "locode": "BRRBR",
-        "cityName": "Rio Branco",
-        "region": "BR-AC",
-        "regionName": "Acre",
-        "actionId": "ipcc_0094",
-        "actionName": "Access to health care",
-        "actionPriority": 2,
-        "explanation": "For the city of Rio Branco, improving access to health care safeguards residents from climate-related health risks, such as respiratory issues or heat stress. A broader medical network delivers timely care to vulnerable groups, reducing complications during emergencies. This approach also strengthens the foundation for citywide climate adaptation efforts."
-    },
-    {
-        "locode": "BRRBR",
-        "cityName": "Rio Branco",
-        "region": "BR-AC",
-        "regionName": "Acre",
         "actionId": "icare_0169",
         "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
+        "actionPriority": 1,
+        "explanation": "Ranked #1 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BRRBR",
+        "cityName": "Rio Branco",
+        "region": "BR-AC",
+        "regionName": "Acre",
+        "actionId": "icare_0145",
+        "actionName": "Strengthen the healthcare network to attend to climate victims",
+        "actionPriority": 2,
+        "explanation": "Ranked #2 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BRRBR",
+        "cityName": "Rio Branco",
+        "region": "BR-AC",
+        "regionName": "Acre",
+        "actionId": "icare_0162",
+        "actionName": "Strengthen programs for control and conservation of protected areas",
         "actionPriority": 3,
-        "explanation": "For the city of Rio Branco, a dedicated emergency response plan streamlines actions when severe weather events strike. Clear protocols and trained personnel reduce chaos, ensuring vital services like shelters and medical aid are deployed efficiently. This readiness helps protect lives, property, and the city’s overall stability."
+        "explanation": "Ranked #3 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BRRBR",
+        "cityName": "Rio Branco",
+        "region": "BR-AC",
+        "regionName": "Acre",
+        "actionId": "icare_0176",
+        "actionName": "Development of Climate Action Plan",
+        "actionPriority": 4,
+        "explanation": "Ranked #4 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BRRBR",
+        "cityName": "Rio Branco",
+        "region": "BR-AC",
+        "regionName": "Acre",
+        "actionId": "ipcc_0092",
+        "actionName": "Social safety nets",
+        "actionPriority": 5,
+        "explanation": "Ranked #5 by tournament ranking algorithm"
     },
     {
         "locode": "BRRBR",
@@ -36,38 +56,18 @@
         "regionName": "Acre",
         "actionId": "ipcc_0097",
         "actionName": "Food storage/distribution improvements",
-        "actionPriority": 4,
-        "explanation": "For the city of Rio Branco, bolstering food storage and distribution ensures communities maintain nutritious supplies when flooding or extreme temperatures disrupt supply chains. This measure cuts waste by preserving perishables longer and streamlining logistics. Reliable access to food also stabilizes local markets, supporting both farmers and consumers."
-    },
-    {
-        "locode": "BRRBR",
-        "cityName": "Rio Branco",
-        "region": "BR-AC",
-        "regionName": "Acre",
-        "actionId": "ipcc_0099",
-        "actionName": "Water capture/storage",
-        "actionPriority": 5,
-        "explanation": "For the city of Rio Branco, water capture and storage solutions address fluctuating precipitation patterns, ensuring consistent supply during dry spells. Retaining water in safe reservoirs curbs reliance on fragile sources and reduces strain on utilities. This step also supports agriculture, industry, and daily household needs."
-    },
-    {
-        "locode": "BRRBR",
-        "cityName": "Rio Branco",
-        "region": "BR-AC",
-        "regionName": "Acre",
-        "actionId": "icare_0148",
-        "actionName": "Create the Municipal Climate Change Forum",
         "actionPriority": 6,
-        "explanation": "For the city of Rio Branco, a Municipal Climate Change Forum unites government, citizens, and local enterprises to collaborate on adaptation and mitigation strategies. By sharing knowledge and resources, stakeholders develop targeted, inclusive solutions. Ongoing dialogue within this forum fosters trust, engagement, and effective climate responses."
+        "explanation": "Ranked #6 by tournament ranking algorithm"
     },
     {
         "locode": "BRRBR",
         "cityName": "Rio Branco",
         "region": "BR-AC",
         "regionName": "Acre",
-        "actionId": "ipcc_0098",
-        "actionName": "Behaviour change in diets and food waste",
+        "actionId": "icare_0152",
+        "actionName": "Recovery of degraded areas",
         "actionPriority": 7,
-        "explanation": "For the city of Rio Branco, shifting dietary habits and reducing food waste helps lower greenhouse gas emissions and pressure on local resources. More sustainable food choices lead to healthier lifestyles and fewer landfill-bound leftovers. This shift also supports local producers, encouraging diverse and climate-resilient agriculture."
+        "explanation": "Ranked #7 by tournament ranking algorithm"
     },
     {
         "locode": "BRRBR",
@@ -77,117 +77,67 @@
         "actionId": "icare_0151",
         "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
         "actionPriority": 8,
-        "explanation": "For the city of Rio Branco, identifying weaknesses in Special Social Interest Zones directs resources to where they are needed most. Restoring these areas bolsters housing and infrastructure against flood risks, storms, or heatwaves. By focusing on at-risk communities, the city promotes equitable climate resilience for all residents."
+        "explanation": "Ranked #8 by tournament ranking algorithm"
     },
     {
         "locode": "BRRBR",
         "cityName": "Rio Branco",
         "region": "BR-AC",
         "regionName": "Acre",
-        "actionId": "icare_0181",
-        "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
+        "actionId": "ipcc_0094",
+        "actionName": "Access to health care",
         "actionPriority": 9,
-        "explanation": "For the city of Rio Branco, relocating residents from high-risk zones prevents future losses due to floods or erosion. Restoring local ecosystems following relocation further stabilizes the land, protecting communities from recurring hazards. This twofold strategy reduces long-term costs and fosters safer, healthier living conditions."
+        "explanation": "Ranked #9 by tournament ranking algorithm"
     },
     {
         "locode": "BRRBR",
         "cityName": "Rio Branco",
         "region": "BR-AC",
         "regionName": "Acre",
-        "actionId": "icare_0176",
-        "actionName": "Development of Climate Action Plan",
+        "actionId": "ipcc_0096",
+        "actionName": "Farm/fishery improvements",
         "actionPriority": 10,
-        "explanation": "For the city of Rio Branco, establishing a Climate Action Plan coordinates efforts across energy, transportation, and public health sectors. A unified vision helps allocate resources effectively and avoid overlap in adaptation measures. This forward-looking approach also secures stakeholder buy-in, propelling citywide resilience and reduced emissions."
+        "explanation": "Ranked #10 by tournament ranking algorithm"
     },
     {
         "locode": "BRRBR",
         "cityName": "Rio Branco",
         "region": "BR-AC",
         "regionName": "Acre",
-        "actionId": "ipcc_0087",
-        "actionName": "Infrastructure retrofitting",
+        "actionId": "ipcc_0098",
+        "actionName": "Behaviour change in diets and food waste",
         "actionPriority": 11,
-        "explanation": "For the city of Rio Branco, upgrading roads, bridges, and critical facilities safeguards against climate-induced damage. Reinforced structures minimize service interruptions during storms or extreme heat. By protecting daily operations and public safety, this measure also reduces long-term repair expenses."
+        "explanation": "Ranked #11 by tournament ranking algorithm"
     },
     {
         "locode": "BRRBR",
         "cityName": "Rio Branco",
         "region": "BR-AC",
         "regionName": "Acre",
-        "actionId": "icare_0152",
-        "actionName": "Recovery of degraded areas",
+        "actionId": "icare_0148",
+        "actionName": "Create the Municipal Climate Change Forum",
         "actionPriority": 12,
-        "explanation": "For the city of Rio Branco, restoring degraded lands revives natural vegetation that can stabilize soil and curb erosion. Revitalized habitats also enhance biodiversity and carbon sequestration, helping the city adapt to shifting weather patterns. This effort sustains local ecosystems that support agriculture and community livelihoods."
+        "explanation": "Ranked #12 by tournament ranking algorithm"
     },
     {
         "locode": "BRRBR",
         "cityName": "Rio Branco",
         "region": "BR-AC",
         "regionName": "Acre",
-        "actionId": "icare_0144",
-        "actionName": "Creation of a Financial Support Program to Adress Extreme Weather Events",
+        "actionId": "icare_0150",
+        "actionName": "Implement Loss Reduction and Control Program promoting water security for the municipality",
         "actionPriority": 13,
-        "explanation": "For the city of Rio Branco, a dedicated financial support program helps residents recover from floods, storms, or heatwaves more swiftly. Quick funding for repairs, relocation, or lost income eases socioeconomic strain and reduces prolonged disruption. This measure also highlights the city’s commitment to community resilience."
+        "explanation": "Ranked #13 by tournament ranking algorithm"
     },
     {
         "locode": "BRRBR",
         "cityName": "Rio Branco",
         "region": "BR-AC",
         "regionName": "Acre",
-        "actionId": "c40_0051",
-        "actionName": "Public Shading",
+        "actionId": "ipcc_0093",
+        "actionName": "Availability of health infrastructure",
         "actionPriority": 14,
-        "explanation": "For the city of Rio Branco, providing public shading in plazas and transit stops reduces heat exposure and enhances comfort. This amenity lowers health risks tied to high temperatures while encouraging outdoor activities. It further supports commercial areas by attracting foot traffic and promoting a pleasant urban environment."
-    },
-    {
-        "locode": "BRRBR",
-        "cityName": "Rio Branco",
-        "region": "BR-AC",
-        "regionName": "Acre",
-        "actionId": "icare_0170",
-        "actionName": "Build safe housing and implement urban rehabilitation projects for populations living in high-risk areas",
-        "actionPriority": 15,
-        "explanation": "For the city of Rio Branco, constructing secure homes in vulnerable zones prevents loss of life and property damage when disasters hit. Strengthening neighborhoods also lessens reliance on emergency measures, easing the burden on municipal services. This approach fosters lasting safety and community well-being."
-    },
-    {
-        "locode": "BRRBR",
-        "cityName": "Rio Branco",
-        "region": "BR-AC",
-        "regionName": "Acre",
-        "actionId": "icare_0155",
-        "actionName": "Preservation and Recovery of Water Bodies",
-        "actionPriority": 16,
-        "explanation": "For the city of Rio Branco, preserving and revitalizing water bodies safeguards essential habitats and sustains freshwater supplies. Healthy rivers and wetlands mitigate floods, store carbon, and bolster biodiversity. This measure also supports local fisheries, agriculture, and drinking water sources, strengthening overall resilience."
-    },
-    {
-        "locode": "BRRBR",
-        "cityName": "Rio Branco",
-        "region": "BR-AC",
-        "regionName": "Acre",
-        "actionId": "icare_0162",
-        "actionName": "Strengthen programs for control and conservation of protected areas",
-        "actionPriority": 17,
-        "explanation": "For the city of Rio Branco, reinforcing conservation programs safeguards forests and critical habitats that act as natural defenses against extreme events. Preserved ecosystems regulate water cycles, filter pollutants, and maintain soil stability. This measure also supports Indigenous and local communities relying on forest resources for their livelihoods."
-    },
-    {
-        "locode": "BRRBR",
-        "cityName": "Rio Branco",
-        "region": "BR-AC",
-        "regionName": "Acre",
-        "actionId": "icare_0154",
-        "actionName": "Cleaning and Unclogging of Channels with Installation of Eco-barriers",
-        "actionPriority": 18,
-        "explanation": "For the city of Rio Branco, regularly clearing channels and installing eco-barriers prevents flooding by keeping waterways unobstructed. This proactive measure reduces damage to homes and infrastructure during heavy rains. Eco-barriers also filter out debris, lowering pollution and health hazards associated with stagnant water."
-    },
-    {
-        "locode": "BRRBR",
-        "cityName": "Rio Branco",
-        "region": "BR-AC",
-        "regionName": "Acre",
-        "actionId": "ipcc_0092",
-        "actionName": "Social safety nets",
-        "actionPriority": 19,
-        "explanation": "For the city of Rio Branco, social safety nets offer continuous aid for vulnerable populations facing climate-related adversities. By ensuring support like food, health services, and temporary shelter, the city reduces the severity of crises. These programs also foster a sense of community and quick recovery when disasters strike."
+        "explanation": "Ranked #14 by tournament ranking algorithm"
     },
     {
         "locode": "BRRBR",
@@ -196,7 +146,57 @@
         "regionName": "Acre",
         "actionId": "icare_0164",
         "actionName": "Hydrological Monitoring System with Telemetry Stations",
+        "actionPriority": 15,
+        "explanation": "Ranked #15 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BRRBR",
+        "cityName": "Rio Branco",
+        "region": "BR-AC",
+        "regionName": "Acre",
+        "actionId": "icare_0144",
+        "actionName": "Creation of a Financial Support Program to Adress Extreme Weather Events",
+        "actionPriority": 16,
+        "explanation": "Ranked #16 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BRRBR",
+        "cityName": "Rio Branco",
+        "region": "BR-AC",
+        "regionName": "Acre",
+        "actionId": "icare_0149",
+        "actionName": "Encourage sustainable land use practices",
+        "actionPriority": 17,
+        "explanation": "Ranked #17 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BRRBR",
+        "cityName": "Rio Branco",
+        "region": "BR-AC",
+        "regionName": "Acre",
+        "actionId": "icare_0156",
+        "actionName": "Implementation of urban gardens",
+        "actionPriority": 18,
+        "explanation": "Ranked #18 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BRRBR",
+        "cityName": "Rio Branco",
+        "region": "BR-AC",
+        "regionName": "Acre",
+        "actionId": "icare_0181",
+        "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
+        "actionPriority": 19,
+        "explanation": "Ranked #19 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BRRBR",
+        "cityName": "Rio Branco",
+        "region": "BR-AC",
+        "regionName": "Acre",
+        "actionId": "ipcc_0088",
+        "actionName": "Building codes",
         "actionPriority": 20,
-        "explanation": "For the city of Rio Branco, deploying telemetry stations for hydrological monitoring provides real-time data on water levels and flow. This early-warning system helps forecast flooding and alerts authorities to take preventive measures. By relying on accurate information, the city can safeguard infrastructure and reduce flood-related disruptions."
+        "explanation": "Ranked #20 by tournament ranking algorithm"
     }
 ]

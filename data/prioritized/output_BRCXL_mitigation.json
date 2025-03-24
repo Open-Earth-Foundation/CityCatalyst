@@ -4,20 +4,27 @@
         "cityName": "Caxias do Sul",
         "region": "BR-RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "c40_0035",
-        "actionName": "Waste Efficiency",
-        "actionPriority": 1,
-        "explanation": "For the city of Caxias do Sul, Waste Efficiency initiatives cut emissions by reducing the volume of trash headed to landfills and optimizing resource use. This measure aligns with local infrastructure capacity, creating a more sustainable waste cycle. By streamlining collection and processing, it helps lower costs and environmental risks."
+        "actionId": "icare_0052",
+        "actionName": "Develop projects for renewable energy and waste reuse",
+        "actionPriority": 1
     },
     {
         "locode": "BRCXL",
         "cityName": "Caxias do Sul",
         "region": "BR-RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "c40_0040",
-        "actionName": "Volume-Based Collection",
-        "actionPriority": 2,
-        "explanation": "For the city of Caxias do Sul, Volume-Based Collection encourages households and businesses to limit waste at its source. This approach rewards those who produce less trash, cutting costs and lowering greenhouse gas emissions tied to disposal. It also helps shift community habits toward more responsible consumption and recycling."
+        "actionId": "icare_0121",
+        "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
+        "actionPriority": 2
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "c40_0035",
+        "actionName": "Waste Efficiency",
+        "actionPriority": 3
     },
     {
         "locode": "BRCXL",
@@ -26,48 +33,7 @@
         "regionName": "Rio Grande do Sul",
         "actionId": "c40_0036",
         "actionName": "Landfill Management",
-        "actionPriority": 3,
-        "explanation": "For the city of Caxias do Sul, modernizing Landfill Management captures harmful gases and prevents water contamination. Upgraded techniques reduce the release of methane, a potent greenhouse gas. This measure also mitigates long-term health and safety risks, preserving surrounding areas for the community."
-    },
-    {
-        "locode": "BRCXL",
-        "cityName": "Caxias do Sul",
-        "region": "BR-RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0052",
-        "actionName": "Develop projects for renewable energy and waste reuse",
-        "actionPriority": 4,
-        "explanation": "For the city of Caxias do Sul, developing renewable energy and waste reuse projects transforms discarded materials into valuable resources. Turning waste into energy helps curb emissions while reducing pressure on landfills. This dual benefit supports cleaner power generation and fosters a more circular local economy."
-    },
-    {
-        "locode": "BRCXL",
-        "cityName": "Caxias do Sul",
-        "region": "BR-RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0080",
-        "actionName": "Avoiding, Minimising, and Recycling Waste",
-        "actionPriority": 5,
-        "explanation": "For the city of Caxias do Sul, focusing on avoiding, minimizing, and recycling waste tackles the root causes of overconsumption. These practices significantly cut down on emissions by diverting recyclable materials from landfills. They also resonate with the city’s commitment to protecting local environments and reducing costs."
-    },
-    {
-        "locode": "BRCXL",
-        "cityName": "Caxias do Sul",
-        "region": "BR-RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0109",
-        "actionName": "Promote Energy Recovery from Biogas in Landfills",
-        "actionPriority": 6,
-        "explanation": "For the city of Caxias do Sul, recovering energy from landfill biogas turns a potent greenhouse gas into a renewable power source. This approach reduces harmful emissions while offering a local source of clean electricity. It leverages existing waste infrastructure, making it a relatively cost-effective climate solution."
-    },
-    {
-        "locode": "BRCXL",
-        "cityName": "Caxias do Sul",
-        "region": "BR-RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "c40_0039",
-        "actionName": "Gas Management",
-        "actionPriority": 7,
-        "explanation": "For the city of Caxias do Sul, improving Gas Management controls the release of harmful emissions at waste sites. This step curbs air pollution, benefiting public health and local ecosystems. By capturing and treating landfill gases, the city also lowers the risk of fires and long-term environmental damage."
+        "actionPriority": 4
     },
     {
         "locode": "BRCXL",
@@ -76,58 +42,16 @@
         "regionName": "Rio Grande do Sul",
         "actionId": "icare_0122",
         "actionName": "Establish eco-parks.",
-        "actionPriority": 8,
-        "explanation": "For the city of Caxias do Sul, eco-parks bring together sustainable waste treatment, recreation, and community education in one space. These parks can process waste while offering green areas for residents, improving urban biodiversity. By integrating environmental practices with public use, they foster social engagement and awareness."
+        "actionPriority": 5
     },
     {
         "locode": "BRCXL",
         "cityName": "Caxias do Sul",
         "region": "BR-RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0119",
-        "actionName": "Maximize composting processes.",
-        "actionPriority": 9,
-        "explanation": "For the city of Caxias do Sul, maximizing composting diverts organic waste from landfills, cutting methane emissions and creating nutrient-rich soil amendments. This method also lowers hauling costs associated with heavy wet waste. By turning kitchen and yard trimmings into compost, the city supports local agriculture and greener public spaces."
-    },
-    {
-        "locode": "BRCXL",
-        "cityName": "Caxias do Sul",
-        "region": "BR-RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0064",
-        "actionName": "Implement technologies for the treatment of wet waste.",
-        "actionPriority": 10,
-        "explanation": "For the city of Caxias do Sul, technologies targeting wet waste transform a high-volume, high-impact stream into reusable resources. Proper treatment reduces odor and greenhouse gas emissions, especially from organic decomposition. This approach also aligns with health considerations by preventing the buildup of harmful bacteria."
-    },
-    {
-        "locode": "BRCXL",
-        "cityName": "Caxias do Sul",
-        "region": "BR-RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0110",
-        "actionName": "Regulate the Construction Waste Management Plan",
-        "actionPriority": 11,
-        "explanation": "For the city of Caxias do Sul, regulating construction waste management addresses a major source of debris in growing urban areas. Clear guidelines ensure materials are reused or recycled whenever possible, cutting landfill use. This measure also encourages builders and developers to adopt more sustainable building practices."
-    },
-    {
-        "locode": "BRCXL",
-        "cityName": "Caxias do Sul",
-        "region": "BR-RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0123",
-        "actionName": "Adopt Centralized Biological Treatment Technologies",
-        "actionPriority": 12,
-        "explanation": "For the city of Caxias do Sul, centralized biological treatment processes large volumes of organic waste effectively. Such systems reduce methane emissions by breaking down organic matter under controlled conditions. They also produce renewable energy or compost, supporting broader environmental and economic benefits."
-    },
-    {
-        "locode": "BRCXL",
-        "cityName": "Caxias do Sul",
-        "region": "BR-RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0107",
-        "actionName": "Expand Wastewater Treatment Services",
-        "actionPriority": 13,
-        "explanation": "For the city of Caxias do Sul, expanding wastewater treatment cuts water pollution and safeguards public health. Properly treated effluent lowers the risk of disease and environmental contamination. This step also helps the municipality cope with population growth, maintaining cleaner waterways and ecosystems."
+        "actionId": "ipcc_0080",
+        "actionName": "Avoiding, Minimising, and Recycling Waste",
+        "actionPriority": 6
     },
     {
         "locode": "BRCXL",
@@ -136,18 +60,16 @@
         "regionName": "Rio Grande do Sul",
         "actionId": "icare_0053",
         "actionName": "Implement a project to support cooperatives of recyclabe material collectors",
-        "actionPriority": 14,
-        "explanation": "For the city of Caxias do Sul, supporting cooperatives of recyclable material collectors builds social equity while reducing landfill-bound waste. By formalizing these groups, the city fosters employment and improves recycling rates. This community-based approach also encourages more responsible waste sorting and disposal practices."
+        "actionPriority": 7
     },
     {
         "locode": "BRCXL",
         "cityName": "Caxias do Sul",
         "region": "BR-RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "c40_0033",
-        "actionName": "15/30-Minute Areas",
-        "actionPriority": 15,
-        "explanation": "For the city of Caxias do Sul, the 15/30-Minute Areas concept situates essential services within walkable distances. Encouraging residents to shop, dine, and access public amenities nearby lowers transportation emissions and traffic congestion. This neighborhood-focused model also enhances quality of life and promotes local economic growth."
+        "actionId": "icare_0088",
+        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
+        "actionPriority": 8
     },
     {
         "locode": "BRCXL",
@@ -156,8 +78,43 @@
         "regionName": "Rio Grande do Sul",
         "actionId": "icare_0017",
         "actionName": "Optimize the urban solid waste (USW) management system, aiming to expand collection and reduce illegal disposal.",
-        "actionPriority": 16,
-        "explanation": "For the city of Caxias do Sul, optimizing solid waste management ensures broader service coverage and diminishes trash dumping in unauthorized areas. This strategy improves public health by limiting unsanitary waste piles and pest infestations. Streamlined collection routes also lower emissions tied to scattered pickups and reduce cleanup costs."
+        "actionPriority": 9
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0094",
+        "actionName": "Adoption of biomethane in public fleets.",
+        "actionPriority": 10
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0110",
+        "actionName": "Regulate the Construction Waste Management Plan",
+        "actionPriority": 11
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0139",
+        "actionName": "Implementation of urban toll.",
+        "actionPriority": 12
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0092",
+        "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
+        "actionPriority": 13
     },
     {
         "locode": "BRCXL",
@@ -166,8 +123,34 @@
         "regionName": "Rio Grande do Sul",
         "actionId": "icare_0113",
         "actionName": "Universalize the coverage of the selective waste collection service for dry materials",
-        "actionPriority": 17,
-        "explanation": "For the city of Caxias do Sul, universal selective waste collection ensures consistent recycling options across all neighborhoods. This inclusive approach maximizes resource recovery and cuts landfill use. By making recycling easy and accessible, the city fosters a culture of sustainability and reduces carbon-intensive waste disposal."
+        "actionPriority": 14
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0111",
+        "actionName": "Strengthen the reverse logistics system.",
+        "actionPriority": 15
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0119",
+        "actionName": "Maximize composting processes.",
+        "actionPriority": 16
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "c40_0040",
+        "actionName": "Volume-Based Collection",
+        "actionPriority": 17
     },
     {
         "locode": "BRCXL",
@@ -176,27 +159,24 @@
         "regionName": "Rio Grande do Sul",
         "actionId": "icare_0066",
         "actionName": "Expand the coverage of the public selective waste collection network",
-        "actionPriority": 18,
-        "explanation": "For the city of Caxias do Sul, expanding the selective collection network builds on existing recycling programs to reach more residents. Greater accessibility boosts participation in sorting and reduces contamination of recyclables. Over time, this approach decreases landfill reliance and promotes efficient use of resources."
+        "actionPriority": 18
     },
     {
         "locode": "BRCXL",
         "cityName": "Caxias do Sul",
         "region": "BR-RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0018",
-        "actionName": "Implement the Sustainable Logistics Plan in all public administration bodies",
-        "actionPriority": 19,
-        "explanation": "For the city of Caxias do Sul, a Sustainable Logistics Plan for public administration streamlines resource use in government operations. By introducing eco-friendly procurement and transportation methods, emissions drop across multiple departments. This cohesive effort also sets an example for private entities, reinforcing city-wide sustainability targets."
+        "actionId": "icare_0068",
+        "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
+        "actionPriority": 19
     },
     {
         "locode": "BRCXL",
         "cityName": "Caxias do Sul",
         "region": "BR-RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0112",
-        "actionName": "Universalize sewage collection and treatment",
-        "actionPriority": 20,
-        "explanation": "For the city of Caxias do Sul, universalizing sewage collection and treatment tackles a critical source of water pollution and health risks. Extending these services citywide prevents contamination of local rivers and groundwater. Ensuring proper sanitation also boosts public well-being and aligns with broader climate resilience goals."
+        "actionId": "icare_0109",
+        "actionName": "Promote Energy Recovery from Biogas in Landfills",
+        "actionPriority": 20
     }
 ]

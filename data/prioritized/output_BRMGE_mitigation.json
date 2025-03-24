@@ -3,200 +3,180 @@
         "locode": "BRMGE",
         "cityName": "Maranguape",
         "region": "BR-CE",
-        "regionName": "Ceará",
-        "actionId": "icare_0050",
-        "actionName": "Implement Agroforestry Systems",
-        "actionPriority": 1,
-        "explanation": "For the city of Maranguape, implementing agroforestry merges tree cultivation with crop or livestock operations. This approach enhances soil fertility, boosts carbon capture, and moderates local temperatures. By diversifying farm landscapes, it also increases resilience to climate fluctuations and supports sustainable livelihoods."
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0121",
+        "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
+        "actionPriority": 1
     },
     {
         "locode": "BRMGE",
         "cityName": "Maranguape",
         "region": "BR-CE",
-        "regionName": "Ceará",
-        "actionId": "icare_0092",
-        "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
-        "actionPriority": 2,
-        "explanation": "For the city of Maranguape, creating micro-logistics hubs can shift short-distance deliveries from gas-powered trucks to electric cargo bikes. This reduces emissions and traffic congestion in busy areas. It also offers a cost-effective distribution method that aligns with the city’s capacity for cleaner transportation."
-    },
-    {
-        "locode": "BRMGE",
-        "cityName": "Maranguape",
-        "region": "BR-CE",
-        "regionName": "Ceará",
-        "actionId": "icare_0057",
-        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
-        "actionPriority": 3,
-        "explanation": "For the city of Maranguape, expanding rail-based mass transit can significantly reduce reliance on cars and cut emissions. Rail systems move large groups quickly, lowering congestion and pollution. This measure also fosters economic growth by improving commuter convenience and regional connectivity."
-    },
-    {
-        "locode": "BRMGE",
-        "cityName": "Maranguape",
-        "region": "BR-CE",
-        "regionName": "Ceará",
-        "actionId": "icare_0127",
-        "actionName": "Accelerate Environmental Regularization of Rural Properties",
-        "actionPriority": 4,
-        "explanation": "For the city of Maranguape, accelerating environmental regularization clarifies land ownership and usage, reducing illegal clearing and habitat loss. This action lays the groundwork for sustainable farming and conservation practices. By enforcing clear boundaries and rules, the city preserves natural resources and prevents soil degradation."
-    },
-    {
-        "locode": "BRMGE",
-        "cityName": "Maranguape",
-        "region": "BR-CE",
-        "regionName": "Ceará",
-        "actionId": "c40_0015",
-        "actionName": "Existing Building Standards",
-        "actionPriority": 5,
-        "explanation": "For the city of Maranguape, upgrading existing building standards improves structures so they use less energy and withstand local climate stresses. This action lowers operating costs and reduces greenhouse gas emissions from older buildings. It also enhances comfort for occupants by addressing insulation, ventilation, and efficiency improvements."
-    },
-    {
-        "locode": "BRMGE",
-        "cityName": "Maranguape",
-        "region": "BR-CE",
-        "regionName": "Ceará",
-        "actionId": "c40_0009",
-        "actionName": "New Building Standards",
-        "actionPriority": 6,
-        "explanation": "For the city of Maranguape, implementing new building standards ensures that future constructions meet higher energy efficiency and resilience criteria. This forward-thinking strategy reduces emissions from the start of each project. It also helps owners save on utility costs and provides safer, healthier living and working spaces."
-    },
-    {
-        "locode": "BRMGE",
-        "cityName": "Maranguape",
-        "region": "BR-CE",
-        "regionName": "Ceará",
-        "actionId": "ipcc_0068",
-        "actionName": "Bioenergy and BECCS(Bioenergy with Carbon Capture and Storage)",
-        "actionPriority": 7,
-        "explanation": "For the city of Maranguape, investing in bioenergy combined with carbon capture turns organic materials into low-carbon fuel while reducing overall emissions. Capturing and storing carbon helps lower the atmospheric impact of energy production. This dual approach supports energy needs while working toward climate goals."
-    },
-    {
-        "locode": "BRMGE",
-        "cityName": "Maranguape",
-        "region": "BR-CE",
-        "regionName": "Ceará",
+        "regionName": "Cear\u00e1",
         "actionId": "icare_0133",
         "actionName": "Promote Urban Reforestation and Green Corridors",
-        "actionPriority": 8,
-        "explanation": "For the city of Maranguape, establishing green corridors and planting trees in urban zones mitigates the heat island effect and improves air quality. These pockets of greenery also help manage stormwater and reduce flood risks. By enhancing local biodiversity, they create healthier, more livable neighborhoods."
+        "actionPriority": 2
     },
     {
         "locode": "BRMGE",
         "cityName": "Maranguape",
         "region": "BR-CE",
-        "regionName": "Ceará",
-        "actionId": "icare_0102",
-        "actionName": "Promote Sustainable Agricultural Practices",
-        "actionPriority": 9,
-        "explanation": "For the city of Maranguape, sustainable agricultural practices reduce environmental damage and improve food security. Approaches like soil conservation and minimal pesticide use keep farmlands productive while cutting emissions. This measure also boosts rural resilience against shifting climate patterns and extreme weather."
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0090",
+        "actionName": "Adoption of electric drones for last-mile deliveries.",
+        "actionPriority": 3
     },
     {
         "locode": "BRMGE",
         "cityName": "Maranguape",
         "region": "BR-CE",
-        "regionName": "Ceará",
-        "actionId": "icare_0084",
-        "actionName": "Create Incentives for Agroforestry Practices in Livestock Systems",
-        "actionPriority": 10,
-        "explanation": "For the city of Maranguape, introducing incentives for agroforestry in livestock systems merges trees with grazing land, enhancing carbon storage and biodiversity. This integration diversifies farm income streams and bolsters resilience to climate extremes. It also contributes to healthier soils, cutting reliance on external feed and fertilizers."
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0057",
+        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
+        "actionPriority": 4
     },
     {
         "locode": "BRMGE",
         "cityName": "Maranguape",
         "region": "BR-CE",
-        "regionName": "Ceará",
-        "actionId": "ipcc_0080",
-        "actionName": "Avoiding, Minimising, and Recycling Waste",
-        "actionPriority": 11,
-        "explanation": "For the city of Maranguape, avoiding, minimizing, and recycling waste addresses a core climate challenge: excessive landfill disposal. Cutting down on discarded materials curbs methane emissions, a potent greenhouse gas. Reusing and recycling also extends the life of local resources, bringing economic and environmental benefits."
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0044",
+        "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
+        "actionPriority": 5
     },
     {
         "locode": "BRMGE",
         "cityName": "Maranguape",
         "region": "BR-CE",
-        "regionName": "Ceará",
-        "actionId": "icare_0100",
-        "actionName": "Support Regenerative Agriculture Practices",
-        "actionPriority": 12,
-        "explanation": "For the city of Maranguape, regenerative agriculture restores soil health by increasing organic matter and water retention. These techniques foster productive fields that adapt better to weather changes. They also reduce chemical runoff, preserving local ecosystems and improving the profitability of farming operations."
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0068",
+        "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
+        "actionPriority": 6
     },
     {
         "locode": "BRMGE",
         "cityName": "Maranguape",
         "region": "BR-CE",
-        "regionName": "Ceará",
-        "actionId": "icare_0134",
-        "actionName": "Strengthen Mechanisms for Deforestation Control",
-        "actionPriority": 13,
-        "explanation": "For the city of Maranguape, stronger deforestation control prevents habitat destruction and helps maintain carbon-rich forests. This step lowers erosion risks, protects watersheds, and supports biodiversity crucial to local livelihoods. Enforcing these measures aligns resource management with environmental conservation and climate goals."
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0118",
+        "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
+        "actionPriority": 7
     },
     {
         "locode": "BRMGE",
         "cityName": "Maranguape",
         "region": "BR-CE",
-        "regionName": "Ceará",
-        "actionId": "icare_0130",
-        "actionName": "Conduct Technical Assistance and Rural Extension (ATER) Actions",
-        "actionPriority": 14,
-        "explanation": "For the city of Maranguape, providing technical assistance and rural extension services empowers farmers with climate-smart techniques. These programs offer on-the-ground training to boost yields while minimizing environmental impacts. By bridging knowledge gaps, the city fosters sustainable livelihoods and greater resilience to climate variability."
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0005",
+        "actionName": "Create credit lines for residential and community wind energy projects",
+        "actionPriority": 8
     },
     {
         "locode": "BRMGE",
         "cityName": "Maranguape",
         "region": "BR-CE",
-        "regionName": "Ceará",
-        "actionId": "icare_0129",
-        "actionName": "Facilitate Technology Transfer for Conservation Practices",
-        "actionPriority": 15,
-        "explanation": "For the city of Maranguape, transferring technology for conservation introduces modern, efficient methods to preserve water, soil, and forests. This approach eases adoption barriers for small and large landholders alike. With better tools and shared expertise, local communities can protect natural resources while maintaining productivity."
-    },
-    {
-        "locode": "BRMGE",
-        "cityName": "Maranguape",
-        "region": "BR-CE",
-        "regionName": "Ceará",
-        "actionId": "icare_0101",
-        "actionName": "Encourage the Use of Low-Emission Agricultural Machinery",
-        "actionPriority": 16,
-        "explanation": "For the city of Maranguape, adopting low-emission machinery in agriculture cuts fossil fuel consumption and lowers greenhouse gas output. Modernized equipment can also improve productivity and reduce operational costs. This supports local farms in a region that relies heavily on agriculture, boosting both economic and environmental well-being."
-    },
-    {
-        "locode": "BRMGE",
-        "cityName": "Maranguape",
-        "region": "BR-CE",
-        "regionName": "Ceará",
-        "actionId": "c40_0012",
-        "actionName": "New Building Standards",
-        "actionPriority": 17,
-        "explanation": "For the city of Maranguape, establishing new building standards ensures future developments meet stricter environmental and safety criteria. This action significantly cuts long-term energy demand and operational costs. It also improves comfort and durability, aligning development with local climate conditions."
-    },
-    {
-        "locode": "BRMGE",
-        "cityName": "Maranguape",
-        "region": "BR-CE",
-        "regionName": "Ceará",
-        "actionId": "icare_0096",
-        "actionName": "Promote Organic Farming",
-        "actionPriority": 18,
-        "explanation": "For the city of Maranguape, promoting organic farming eliminates synthetic pesticides and fertilizers, reducing pollution and greenhouse gas emissions. Healthier soils also become more resilient to droughts or heavy rains. This approach aligns with consumer demand for safer, sustainably produced food."
-    },
-    {
-        "locode": "BRMGE",
-        "cityName": "Maranguape",
-        "region": "BR-CE",
-        "regionName": "Ceará",
+        "regionName": "Cear\u00e1",
         "actionId": "icare_0088",
         "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
-        "actionPriority": 19,
-        "explanation": "For the city of Maranguape, offering free public transit at peak times encourages residents to opt for shared travel. This reduces both road congestion and emissions tied to individual car use. By easing access to transportation, it also fosters inclusivity and better air quality across the city."
+        "actionPriority": 9
     },
     {
         "locode": "BRMGE",
         "cityName": "Maranguape",
         "region": "BR-CE",
-        "regionName": "Ceará",
-        "actionId": "ipcc_0052",
-        "actionName": "Reduce Deforestation and Degradation",
-        "actionPriority": 20,
-        "explanation": "For the city of Maranguape, limiting deforestation and land degradation keeps ecosystems intact and supports carbon storage. Preserving forest cover helps regulate water cycles, curb erosion, and maintain local biodiversity. This measure also protects agricultural productivity and stabilizes regional climates."
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0092",
+        "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
+        "actionPriority": 10
+    },
+    {
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0091",
+        "actionName": "Implementation of prioritized routes for sustainable vehicles.",
+        "actionPriority": 11
+    },
+    {
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0050",
+        "actionName": "Implement Agroforestry Systems",
+        "actionPriority": 12
+    },
+    {
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0094",
+        "actionName": "Adoption of biomethane in public fleets.",
+        "actionPriority": 13
+    },
+    {
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0084",
+        "actionName": "Create Incentives for Agroforestry Practices in Livestock Systems",
+        "actionPriority": 14
+    },
+    {
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0134",
+        "actionName": "Strengthen Mechanisms for Deforestation Control",
+        "actionPriority": 15
+    },
+    {
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0096",
+        "actionName": "Promote Organic Farming",
+        "actionPriority": 16
+    },
+    {
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0117",
+        "actionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
+        "actionPriority": 17
+    },
+    {
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0100",
+        "actionName": "Support Regenerative Agriculture Practices",
+        "actionPriority": 18
+    },
+    {
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0139",
+        "actionName": "Implementation of urban toll.",
+        "actionPriority": 19
+    },
+    {
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0102",
+        "actionName": "Promote Sustainable Agricultural Practices",
+        "actionPriority": 20
     }
 ]

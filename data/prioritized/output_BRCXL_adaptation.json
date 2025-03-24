@@ -4,50 +4,20 @@
         "cityName": "Caxias do Sul",
         "region": "BR-RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0169",
-        "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
-        "actionPriority": 1,
-        "explanation": "Establishing a comprehensive emergency response plan was placed ahead of developing the Municipal Risk Reduction Plan because it delivers immediate strategies for multiple hazards. This approach ensures coordinated actions and resource allocation during floods, heatwaves, or storms. By preparing first for acute climate threats, the city can protect vulnerable communities more effectively, allowing broader risk-reduction measures to follow."
-    },
-    {
-        "locode": "BRCXL",
-        "cityName": "Caxias do Sul",
-        "region": "BR-RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0172",
-        "actionName": "Develop and implement the Municipal Risk Reduction Plan (PMRR) and identify population groups vulnerable to climate risks.",
-        "actionPriority": 2,
-        "explanation": "Developing and implementing the Municipal Risk Reduction Plan is ranked above updating building codes because it systematically addresses how different population groups are exposed to hazards. By identifying the most at-risk residents, the city can craft targeted strategies to minimize climate impacts. Once key vulnerabilities are understood, subsequent measures like updated construction standards can be tailored for more resilient outcomes."
-    },
-    {
-        "locode": "BRCXL",
-        "cityName": "Caxias do Sul",
-        "region": "BR-RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0088",
-        "actionName": "Building codes",
-        "actionPriority": 3,
-        "explanation": "Adapting building codes is prioritized over strengthening the healthcare network because it helps ensure that future and renovated structures are designed to withstand local climate challenges. This preventive measure can mitigate damage from storms or extreme temperatures, reducing the burden on healthcare services. By creating safer buildings first, Caxias do Sul can limit the severity of potential health crises related to climate impacts."
-    },
-    {
-        "locode": "BRCXL",
-        "cityName": "Caxias do Sul",
-        "region": "BR-RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0145",
-        "actionName": "Strengthen the healthcare network to attend to climate victims",
-        "actionPriority": 4,
-        "explanation": "Strengthening the healthcare network is ranked above developing a Climate Action Plan because it provides immediate capacity to treat those affected by heatwaves, floods, or other climate-driven events. A robust medical response reduces casualties and long-term health consequences, especially important in densely populated areas. This ensures that the city can handle emergencies more effectively before broader climate strategies are fully in place."
-    },
-    {
-        "locode": "BRCXL",
-        "cityName": "Caxias do Sul",
-        "region": "BR-RS",
-        "regionName": "Rio Grande do Sul",
         "actionId": "icare_0176",
         "actionName": "Development of Climate Action Plan",
-        "actionPriority": 5,
-        "explanation": "Developing a Climate Action Plan is prioritized over installing a Hydrological Monitoring System because it provides a unifying roadmap for both adaptation and emissions reduction efforts. This strategy aligns all sectors—transport, infrastructure, healthcare—under clear climate goals. After establishing an overarching plan, more specialized measures like monitoring stations can be deployed with greater coordination."
+        "actionPriority": 1,
+        "explanation": "Ranked #1 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0140",
+        "actionName": "Landslide Risk Assessment and Management",
+        "actionPriority": 2,
+        "explanation": "Ranked #2 by tournament ranking algorithm"
     },
     {
         "locode": "BRCXL",
@@ -56,88 +26,18 @@
         "regionName": "Rio Grande do Sul",
         "actionId": "icare_0164",
         "actionName": "Hydrological Monitoring System with Telemetry Stations",
-        "actionPriority": 6,
-        "explanation": "A Hydrological Monitoring System with telemetry is ranked above creating the Municipal Climate Change Forum because real-time data on water flows can prevent severe flood damage and inform immediate policy decisions. By detecting abnormal patterns early, the city can coordinate evacuations or protective measures in high-risk zones. While a forum fosters dialogue and collaboration, comprehensive water monitoring offers direct and actionable insights."
+        "actionPriority": 3,
+        "explanation": "Ranked #3 by tournament ranking algorithm"
     },
     {
         "locode": "BRCXL",
         "cityName": "Caxias do Sul",
         "region": "BR-RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0148",
-        "actionName": "Create the Municipal Climate Change Forum",
-        "actionPriority": 7,
-        "explanation": "Creating a Municipal Climate Change Forum is prioritized over diagnostics in Special Social Interest Zones because it brings diverse stakeholders together to share knowledge and craft climate initiatives across the entire city. This collaboration shapes policies and encourages broad community engagement. Once the forum is established and stakeholder input is consolidated, targeted diagnostics and restoration efforts in priority zones can follow more effectively."
-    },
-    {
-        "locode": "BRCXL",
-        "cityName": "Caxias do Sul",
-        "region": "BR-RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0151",
-        "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
-        "actionPriority": 8,
-        "explanation": "Developing diagnostics and restoring Special Social Interest Zones ranks higher than improving overall access to health care because it addresses critical housing and infrastructure vulnerabilities first. By identifying specific needs in low-income or hazard-prone areas, the city can reduce flood risks and other potential dangers at their source. This focused approach helps preserve community well-being before more generalized healthcare measures are expanded."
-    },
-    {
-        "locode": "BRCXL",
-        "cityName": "Caxias do Sul",
-        "region": "BR-RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0094",
-        "actionName": "Access to health care",
-        "actionPriority": 9,
-        "explanation": "Expanding access to health care is prioritized over implementing urban gardens because it ensures that residents have the medical support they need during climate-related health emergencies. Timely treatment is crucial when extreme weather events can exacerbate respiratory issues or heat-related illnesses. While urban gardens also improve local resilience, immediate health services form a more direct line of defense for vulnerable populations."
-    },
-    {
-        "locode": "BRCXL",
-        "cityName": "Caxias do Sul",
-        "region": "BR-RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0156",
-        "actionName": "Implementation of urban gardens",
-        "actionPriority": 10,
-        "explanation": "Implementing urban gardens is placed above building safe housing for high-risk populations because it can be initiated quickly on unused land, helping improve local food security and reduce emissions from food transport. These gardens also foster community engagement and green space in densely populated areas. While secure housing is crucial, introducing urban agriculture first provides more immediate socio-environmental benefits and fosters better dietary habits."
-    },
-    {
-        "locode": "BRCXL",
-        "cityName": "Caxias do Sul",
-        "region": "BR-RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0170",
-        "actionName": "Build safe housing and implement urban rehabilitation projects for populations living in high-risk areas",
-        "actionPriority": 11,
-        "explanation": "Building safe housing in high-risk zones is ranked over retrofitting existing infrastructure because it relocates families away from imminent dangers such as landslides or flooding. By constructing sturdy homes and upgrading neighborhoods, the city reduces potential evacuation costs and long-term damage. Though reinforcing infrastructure is also vital, providing secure and well-planned communities directly addresses the most at-risk populations."
-    },
-    {
-        "locode": "BRCXL",
-        "cityName": "Caxias do Sul",
-        "region": "BR-RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0087",
-        "actionName": "Infrastructure retrofitting",
-        "actionPriority": 12,
-        "explanation": "Retrofitting critical infrastructure is prioritized over implementing water recycling because it offers immediate protection against structural failures during extreme weather events. By reinforcing existing buildings and public facilities, Caxias do Sul can reduce disruptions to essential services. While water recycling benefits the city’s long-term sustainability, ensuring the resilience of core infrastructure first mitigates the most urgent climate risks."
-    },
-    {
-        "locode": "BRCXL",
-        "cityName": "Caxias do Sul",
-        "region": "BR-RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "c40_0054",
-        "actionName": "Water Recycling",
-        "actionPriority": 13,
-        "explanation": "Water recycling outranks preventive drainage maintenance because it tackles both resource scarcity and conservation, crucial for a city experiencing varied rainfall patterns. By reusing water, Caxias do Sul reduces its dependence on freshwater sources and can better handle droughts. Although drainage upkeep is essential, optimizing water use provides broader, longer-term environmental benefits."
-    },
-    {
-        "locode": "BRCXL",
-        "cityName": "Caxias do Sul",
-        "region": "BR-RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0173",
-        "actionName": "Preventive maintenance of drainage systems",
-        "actionPriority": 14,
-        "explanation": "Preventive drainage maintenance ranks above channel cleaning with eco-barriers because it involves regular, proactive checks and repairs that reduce the risk of blockages. By consistently keeping drains clear, the city mitigates flood damage and maintains safer roads. Although channel cleaning is also vital, setting up a maintenance schedule addresses problems before they escalate, ensuring smoother water flow during heavy rains."
+        "actionId": "icare_0181",
+        "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
+        "actionPriority": 4,
+        "explanation": "Ranked #4 by tournament ranking algorithm"
     },
     {
         "locode": "BRCXL",
@@ -146,8 +46,98 @@
         "regionName": "Rio Grande do Sul",
         "actionId": "icare_0154",
         "actionName": "Cleaning and Unclogging of Channels with Installation of Eco-barriers",
-        "actionPriority": 15,
-        "explanation": "Cleaning and unclogging channels with eco-barriers is prioritized over promoting sustainable land use practices because it delivers immediate flood prevention benefits. By removing debris and installing barriers, water flow is managed more effectively, reducing the likelihood of overflow and related health hazards. While guiding land use is essential for long-term resilience, preventing waterway blockages first offers quicker results for at-risk neighborhoods."
+        "actionPriority": 5,
+        "explanation": "Ranked #5 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0151",
+        "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
+        "actionPriority": 6,
+        "explanation": "Ranked #6 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "ipcc_0088",
+        "actionName": "Building codes",
+        "actionPriority": 7,
+        "explanation": "Ranked #7 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0180",
+        "actionName": "Implement permeable pavements and increase green areas in roadways",
+        "actionPriority": 8,
+        "explanation": "Ranked #8 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0175",
+        "actionName": "Recovery and preservation of green areas",
+        "actionPriority": 9,
+        "explanation": "Ranked #9 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0162",
+        "actionName": "Strengthen programs for control and conservation of protected areas",
+        "actionPriority": 10,
+        "explanation": "Ranked #10 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0169",
+        "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
+        "actionPriority": 11,
+        "explanation": "Ranked #11 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0156",
+        "actionName": "Implementation of urban gardens",
+        "actionPriority": 12,
+        "explanation": "Ranked #12 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "ipcc_0097",
+        "actionName": "Food storage/distribution improvements",
+        "actionPriority": 13,
+        "explanation": "Ranked #13 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0142",
+        "actionName": "Improvement of Water Supply and Sanitation Systems",
+        "actionPriority": 14,
+        "explanation": "Ranked #14 by tournament ranking algorithm"
     },
     {
         "locode": "BRCXL",
@@ -156,47 +146,57 @@
         "regionName": "Rio Grande do Sul",
         "actionId": "icare_0149",
         "actionName": "Encourage sustainable land use practices",
+        "actionPriority": 15,
+        "explanation": "Ranked #15 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BRCXL",
+        "cityName": "Caxias do Sul",
+        "region": "BR-RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "ipcc_0086",
+        "actionName": "Ecosystem-based adaptation",
         "actionPriority": 16,
-        "explanation": "Encouraging sustainable land use practices ranks higher than building Cyclone Shelters because it addresses broader planning issues that can reduce multiple climate impacts, from soil erosion to local flooding. By regulating zoning and agricultural methods, Caxias do Sul can prevent hazards before they materialize. Although cyclone shelters protect communities during storms, refining land use reduces vulnerabilities across diverse weather events."
+        "explanation": "Ranked #16 by tournament ranking algorithm"
     },
     {
         "locode": "BRCXL",
         "cityName": "Caxias do Sul",
         "region": "BR-RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "c40_0049",
-        "actionName": "Cyclone Shelters",
+        "actionId": "icare_0159",
+        "actionName": "Protect remaining vegetation and mangroves",
         "actionPriority": 17,
-        "explanation": "Cyclone Shelters are placed above slope stabilization and drainage measures because they provide immediate refuge during severe wind events or storms. This form of direct protection is especially important for residents in poorly constructed homes. While slope stabilization also guards against landslides, having a dedicated safe haven addresses urgent threats to human life when extreme weather strikes."
+        "explanation": "Ranked #17 by tournament ranking algorithm"
     },
     {
         "locode": "BRCXL",
         "cityName": "Caxias do Sul",
         "region": "BR-RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0184",
-        "actionName": "Slope Stabilization and Drainage",
+        "actionId": "ipcc_0095",
+        "actionName": "Disaster early warning",
         "actionPriority": 18,
-        "explanation": "Slope stabilization and drainage are prioritized over creating a financial support program because they prevent immediate dangers like landslides and water damage. By fortifying at-risk slopes, Caxias do Sul safeguards essential roads and residential areas. Although financial mechanisms are crucial for recovery, proactively stabilizing the terrain reduces the likelihood and cost of disasters."
+        "explanation": "Ranked #18 by tournament ranking algorithm"
     },
     {
         "locode": "BRCXL",
         "cityName": "Caxias do Sul",
         "region": "BR-RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0144",
-        "actionName": "Creation of a Financial Support Program to Adress Extreme Weather Events",
+        "actionId": "ipcc_0099",
+        "actionName": "Water capture/storage",
         "actionPriority": 19,
-        "explanation": "For Caxias do Sul, creating a financial support program for extreme weather events ranks above adopting green-blue infrastructure because it provides immediate economic relief to those hit hardest by storms or floods. This assistance can help residents rebuild quickly and mitigate further losses. While green-blue infrastructure is a long-term adaptation strategy, offering timely funding helps communities recover faster from climate shocks."
+        "explanation": "Ranked #19 by tournament ranking algorithm"
     },
     {
         "locode": "BRCXL",
         "cityName": "Caxias do Sul",
         "region": "BR-RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0179",
-        "actionName": "Adopt the concept of green-blue infrastructure in city projects",
+        "actionId": "ipcc_0094",
+        "actionName": "Access to health care",
         "actionPriority": 20,
-        "explanation": "Adopting green-blue infrastructure is ranked after the other measures because it requires significant planning and inter-agency cooperation before widespread implementation can begin. Although integrating natural and built environments is vital for long-term resilience, Caxias do Sul first addresses more immediate challenges like emergency planning, healthcare capacity, and water management. Once these foundations are set, green-blue solutions can significantly enhance urban ecosystems and reduce future climate risks."
+        "explanation": "Ranked #20 by tournament ranking algorithm"
     }
 ]

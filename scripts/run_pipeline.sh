@@ -11,11 +11,11 @@ set -o pipefail
 
 # OS-specific paths
 if [[ "$OSTYPE" == "linux-gnu"* || "$OSTYPE" == "darwin"* ]]; then
-  VENV_PYTHON=".cap/bin/python"
-  VENV_ACTIVATE=".cap/bin/activate"
+  VENV_PYTHON=".venv/bin/python"
+  VENV_ACTIVATE=".venv/bin/activate"
 elif [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "cygwin"* || "$OSTYPE" == "win32" ]]; then
-  VENV_PYTHON=".cap/Scripts/python.exe"
-  VENV_ACTIVATE=".cap/Scripts/activate"
+  VENV_PYTHON=".venv/Scripts/python.exe"
+  VENV_ACTIVATE=".venv/Scripts/activate"
 else
   echo "Unsupported OS: $OSTYPE"
   exit 1

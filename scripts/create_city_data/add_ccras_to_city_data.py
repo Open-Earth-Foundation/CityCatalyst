@@ -17,6 +17,9 @@ BASE_PATH_CITIES = BASE_DIR / "data" / "cities"
 
 
 def extract_ccras(locode: str) -> list:
+    # Remove any spaces from the locode e.g. BR CCI -> BRCCI
+    locode = locode.replace(" ", "")
+
     full_path = BASE_PATH_CCRAS / f"ccra_{locode}_current.json"
 
     if not full_path.exists():
@@ -48,6 +51,9 @@ def extract_ccras(locode: str) -> list:
 
 
 def add_extracted_ccras_to_city_data(locode: str, list_extracted_ccras: list) -> None:
+    # Remove any spaces from the locode e.g. BR CCI -> BRCCI
+    locode = locode.replace(" ", "")
+
     # Load the city data
     full_path = BASE_PATH_CITIES / "city_data.json"
 
@@ -94,9 +100,6 @@ if __name__ == "__main__":
     )
 
     args = parser.parse_args()
-
-    # Remove any spaces from the locode e.g. BR CCI -> BRCCI
-    args.locode = args.locode.replace(" ", "")
 
     try:
         list_extracted_ccras = extract_ccras(args.locode)

@@ -1,5 +1,15 @@
+"use client";
+
 import React, { FC, useState } from "react";
-import { Box, Icon, Separator, Text } from "@chakra-ui/react";
+import {
+  Box,
+  CheckboxGroup,
+  Fieldset,
+  For,
+  Icon,
+  Separator,
+  Text,
+} from "@chakra-ui/react";
 import DropdownSelectInput from "../dropdown-select-input";
 import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
 
@@ -262,7 +272,8 @@ const AddFileDataDialog: FC<AddFileDataDialogProps> = ({
                     )}
                   </Box>
                 </Field>
-                <Field label={<Text>{t("scopes")}</Text>}>
+                <Fieldset.Root>
+                  <Text>{t("scopes")}</Text>
                   <Box display="flex" gap="16px">
                     {scopes.map((scope) => (
                       <Box
@@ -293,7 +304,7 @@ const AddFileDataDialog: FC<AddFileDataDialogProps> = ({
                       </Text>
                     )}
                   </Box>
-                </Field>
+                </Fieldset.Root>
               </form>
             </Box>
           </Box>

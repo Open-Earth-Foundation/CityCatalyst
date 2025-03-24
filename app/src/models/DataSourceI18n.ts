@@ -105,7 +105,7 @@ export type DataSourceI18nCreationAttributes = Optional<
 
 export class DataSourceI18n
   extends Model<DataSourceI18nAttributes, DataSourceI18nCreationAttributes>
-  implements DataSourceI18nAttributes
+  implements Partial<DataSourceI18nAttributes>
 {
   datasourceId!: string;
   datasetName?: Record<string, string>;

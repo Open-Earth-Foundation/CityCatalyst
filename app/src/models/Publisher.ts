@@ -27,7 +27,7 @@ export type PublisherCreationAttributes = Optional<
 
 export class Publisher
   extends Model<PublisherAttributes, PublisherCreationAttributes>
-  implements PublisherAttributes
+  implements Partial<PublisherAttributes>
 {
   publisherId!: string;
   name?: string;

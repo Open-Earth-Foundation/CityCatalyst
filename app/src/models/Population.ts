@@ -33,7 +33,7 @@ export type PopulationCreationAttributes = Optional<
 
 export class Population
   extends Model<PopulationAttributes, PopulationCreationAttributes>
-  implements PopulationAttributes
+  implements Partial<PopulationAttributes>
 {
   cityId!: string;
   population?: number | null;

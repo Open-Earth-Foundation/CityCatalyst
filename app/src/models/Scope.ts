@@ -26,7 +26,7 @@ export type ScopeCreationAttributes = Optional<
 
 export class Scope
   extends Model<ScopeAttributes, ScopeCreationAttributes>
-  implements ScopeAttributes
+  implements Partial<ScopeAttributes>
 {
   scopeId!: string;
   scopeName?: string;

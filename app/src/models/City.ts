@@ -41,7 +41,7 @@ export type CityCreationAttributes = Optional<
 
 export class City
   extends Model<CityAttributes, CityCreationAttributes>
-  implements CityAttributes
+  implements Partial<CityAttributes>
 {
   cityId!: string;
   locode?: string;

@@ -36,7 +36,7 @@ export type ReportingLevelCreationAttributes = Optional<
 
 export class ReportingLevel
   extends Model<ReportingLevelAttributes, ReportingLevelCreationAttributes>
-  implements ReportingLevelAttributes
+  implements Partial<ReportingLevelAttributes>
 {
   reportinglevelId!: string;
   reportinglevelName?: string;

@@ -7,7 +7,7 @@ from pathlib import Path
 from utils.get_vectorstore_from_s3 import get_vectorstore
 
 
-def mock_api_body(climate_action_id: str, city_data_loc: str):
+def mock_api_body(climate_action_id: str, locode: str):
     """
     Function that mocks the API request body for the climate action and city data.
     """
@@ -15,9 +15,7 @@ def mock_api_body(climate_action_id: str, city_data_loc: str):
     climate_action_data_path = (
         Path(__file__).parent / "data" / "input" / (climate_action_id + ".json")
     )
-    city_data_path = (
-        Path(__file__).parent / "data" / "input" / (city_data_loc + ".json")
-    )
+    city_data_path = Path(__file__).parent / "data" / "input" / (locode + ".json")
 
     with open(climate_action_data_path, "r") as f:
         climate_action_data = json.load(f)
@@ -67,7 +65,7 @@ if __name__ == "__main__":
         help="The ID of the climate action to create a plan for. E.g. 'c40_xxxx' or 'ipcc_xxxx'.",
     )
     parser.add_argument(
-        "--city_data_loc",
+        "--locode",
         type=str,
         required=True,
         help="The locode of the city data for the climate action. E.g. BRCCI",
@@ -76,7 +74,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     climate_action_data, city_data = mock_api_body(
-        climate_action_id=args.climate_action_id, city_data_loc=args.city_data_loc
+        climate_action_id=args.climate_action_id, locode=args.locode
     )
 
     print("Loading vector store...")

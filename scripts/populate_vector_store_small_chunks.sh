@@ -9,11 +9,11 @@ COLLECTION_NAME="all_docs_db_small_chunks"
 
 # OS-specific paths
 if [[ "$OSTYPE" == "linux-gnu"* || "$OSTYPE" == "darwin"* ]]; then
-  VENV_PYTHON="../.plan-creator/bin/python"
-  VENV_ACTIVATE="../.plan-creator/bin/activate"
+  VENV_PYTHON="../.venv/bin/python"
+  VENV_ACTIVATE="../.venv/bin/activate"
 elif [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "cygwin"* || "$OSTYPE" == "win32" ]]; then
-  VENV_PYTHON="../.plan-creator/Scripts/python.exe"
-  VENV_ACTIVATE="../.plan-creator/Scripts/activate"
+  VENV_PYTHON="../.venv/Scripts/python.exe"
+  VENV_ACTIVATE="../.venv/Scripts/activate"
 else
   echo "Unsupported OS: $OSTYPE"
   exit 1

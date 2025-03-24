@@ -112,7 +112,6 @@ celerybeat.pid
 
 # Environments
 .env
-.plan-creator
 .venv
 .importer-creator/
 .DS_Store

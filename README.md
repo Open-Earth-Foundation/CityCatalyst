@@ -26,9 +26,9 @@ This script will automatically create the ranked actions for this city, format a
 
 To run this pipeline, AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY must be set in an `.env` file with permissions to write to the S3 bucket `/data` folder.
 
-To run the script, the packages inside `/extractor/requirements.txt` needs to be installed. The script will be looking for a virtual environment `.cap` inside the `/.cap` top level folder.
+To run the script, the packages inside `/extractor/requirements.txt` needs to be installed. The script will be looking for a virtual environment `.venv` inside the `/.venv` top level folder.
 
-If you create the virtual environment with a different name then `.cap` the path inside `run_pipeline.sh` must be adjusted accordingly.
+If you create the virtual environment with a different name then `.venv` the path inside `run_pipeline.sh` must be adjusted accordingly.
 
 Under Windows OS, this script is best executed under WSL oder Git bash.
 

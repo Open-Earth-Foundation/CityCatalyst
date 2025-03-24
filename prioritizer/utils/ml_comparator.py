@@ -677,6 +677,9 @@ def ml_compare(city: dict, action_A: dict, action_B: dict) -> int:
         # Remove columns ActionA and ActionB
         df.drop(
             columns=[
+                "city_populationSize",
+                "city_populationDensity",
+                "city_elevation",
                 "ActionA",
                 "ActionB",
                 "biome_desert",
@@ -761,7 +764,7 @@ def ml_compare(city: dict, action_A: dict, action_B: dict) -> int:
     prediction = predict_xgb(df_transformed)
 
     # (Optional for explanation) Create a SHAP waterfall plot
-    create_shap_waterfall(df_transformed, loaded_model)
+    # create_shap_waterfall(df_transformed, loaded_model)
 
     return prediction
 

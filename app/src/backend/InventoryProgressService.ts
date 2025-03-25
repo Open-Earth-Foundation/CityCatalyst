@@ -225,7 +225,7 @@ export default class InventoryProgressService {
     );
   }
 
-  private static async getSortedInventoryStructure() {
+  public static async getSortedInventoryStructure() {
     if (
       Inventory_Sector_Hierarchy.length > 0 &&
       process.env.NODE_ENV !== "test"

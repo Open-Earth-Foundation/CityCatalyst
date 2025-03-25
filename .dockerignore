@@ -5,4 +5,5 @@ __pycache__
 venv
 Dockerfile
 *.log
-data/output/*
+data/
+test_output/

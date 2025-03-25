@@ -14,8 +14,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the rest of the application
 COPY . .
 
+
 # Make the run script executable
 RUN chmod +x run.sh
+
 
 # Create output directory
 RUN mkdir -p data/output

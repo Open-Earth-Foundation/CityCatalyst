@@ -1,25 +1,25 @@
+import { db } from "@/models";
+
 export const hasAccessToCity = async (cityId: string, userId: string) => {
-  // TODO to be implemented
-  // return true for collaborators, project admins, and org admins
+  const CityUser = await db.models.CityUser.findOne({
+    where: { cityId, userId },
+  });
+  return !!CityUser;
 };
 
 export const hasProjectLevelAccess = async (
   projectId: string,
   userId: string,
 ) => {
-  // TODO to be implemented
-  // return true for project admins and org admins
-  return false;
+  const projectAdmin = await db.models.ProjectAdmin.findOne({
+    where: { projectId, userId },
+  });
+  return !!projectAdmin;
 };
 
 export const hasOrgLevelAccess = async (orgId: string, userId: string) => {
-  // TODO to be implemented
-  // return true for org admins
-  return false;
-};
-
-export const hasAccessToCityCatalyst = async (userId: string) => {
-  // TODO to be implemented
-  // return true for anyone who has some ties to an org
-  return false;
+  const orgOwner = await db.models.OrganizationAdmin.findOne({
+    where: { organizationId: orgId, userId },
+  });
+  return !!orgOwner;
 };

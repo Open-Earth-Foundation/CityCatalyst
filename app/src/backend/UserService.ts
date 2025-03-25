@@ -1,13 +1,15 @@
 import { db } from "@/models";
 import createHttpError from "http-errors";
 
-import { Roles } from "@/util/types";
+import { ProjectWithCitiesResponse, Roles } from "@/util/types";
 import { type AppSession } from "@/lib/auth";
-import type { City } from "@/models/City";
-import type { Inventory } from "@/models/Inventory";
-import type { User } from "@/models/User";
+import { City } from "@/models/City";
+import { Inventory } from "@/models/Inventory";
+import { User } from "@/models/User";
 import { Includeable, QueryTypes } from "sequelize";
 import { UserFile } from "@/models/UserFile";
+import { Project } from "@/models/Project";
+import { hasOrgLevelAccess } from "@/backend/RoleBasedAccessService";
 
 export default class UserService {
   public static async findUser(
@@ -220,5 +222,106 @@ export default class UserService {
   public static validateIsAdmin(session: AppSession | null) {
     if (!session || session.user.role !== Roles.Admin)
       throw new createHttpError.Forbidden("Forbidden");
+  }
+
+  public static async findUserProjectsAndCitiesInOrganization(
+    organizationId: string,
+    session: AppSession | null,
+  ) {
+    if (!session) throw new createHttpError.Unauthorized("Unauthorized");
+
+    // OEF admin and organization owner can see all projects
+    const orgOwner = await hasOrgLevelAccess(organizationId, session.user.id);
+    if (session.user.role == Roles.Admin || orgOwner) {
+      return await Project.findAll({
+        where: { organizationId },
+        attributes: ["projectId", "name"],
+        include: [
+          {
+            model: db.models.City,
+            as: "cities",
+            attributes: ["cityId", "name"],
+            include: [
+              {
+                model: db.models.Inventory,
+                as: "inventories",
+                attributes: ["year", "inventoryId", "lastUpdated"],
+              },
+            ],
+          },
+        ],
+      });
+    }
+
+    // Project admin can see projects they are admin of and the cities in those projects
+    const projectsAndCities: ProjectWithCitiesResponse = [];
+    const projectAdmin = await db.models.ProjectAdmin.findAll({
+      where: { userId: session.user.id },
+      include: {
+        model: db.models.Project,
+        where: { organizationId },
+        include: [
+          {
+            model: db.models.City,
+            as: "cities",
+            attributes: ["cityId", "name"],
+            include: [
+              {
+                model: db.models.Inventory,
+                as: "inventories",
+                attributes: ["year", "inventoryId", "lastUpdated"],
+              },
+            ],
+          },
+        ],
+      },
+    });
+
+    // @ts-ignore
+    projectsAndCities.concat(projectAdmin.map((pa) => pa.project));
+
+    //Collaborators can see projects they are part of and the cities in those projects
+    const cityUsersProjects = await db.models.CityUser.findAll({
+      where: { userId: session.user.id },
+      include: {
+        model: db.models.City,
+        as: "city",
+        where: { organizationId },
+        include: [
+          {
+            model: db.models.Project,
+            as: "project",
+            attributes: ["id", "name"],
+          },
+          {
+            model: db.models.Inventory,
+            as: "inventories",
+            attributes: ["year", "inventoryId", "lastUpdated"],
+          },
+        ],
+      },
+    });
+
+    for (const cu of cityUsersProjects) {
+      const projectName = cu.city.project.name;
+      const projectId = cu.city.project.id;
+      if (!groupedByProject[projectName]) {
+        groupedByProject[projectName] = {
+          projectId,
+          name: projectName,
+          cities: [],
+        };
+      }
+
+      groupedByProject[projectName].cities.push({
+        name: cu.city.name,
+        cityId: cu.city.cityId,
+        inventories: cu.city.inventories,
+      });
+    }
+
+    projectsAndCities.concat(Object.values(groupedByProject));
+
+    return projectsAndCities;
   }
 }

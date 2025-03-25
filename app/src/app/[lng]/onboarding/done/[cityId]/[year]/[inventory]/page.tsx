@@ -5,6 +5,7 @@ import { MdArrowForward } from "react-icons/md";
 import { Box, Button, Heading, Text } from "@chakra-ui/react";
 import NextLink from "next/link";
 import { Trans } from "react-i18next/TransWithoutContext";
+import { useSearchParams } from "next/navigation";
 
 export default function OnboardingDone({
   params: { lng, year, inventory },
@@ -12,6 +13,8 @@ export default function OnboardingDone({
   params: { lng: string; year: number; inventory: string };
 }) {
   const { t } = useTranslation(lng, "onboarding");
+  const searchParams = useSearchParams();
+  const projectId = searchParams.get("project");
 
   return (
     <div className="pt-[148px] w-[1024px] h-[100vh] max-w-full mx-auto px-4 pb-12 flex flex-col items-center bg-city bg-no-repeat bg-top">
@@ -37,7 +40,11 @@ export default function OnboardingDone({
         </Text>
       </Box>
       <Box display="flex" gap="24px" mt="24px">
-        <NextLink href={`/onboarding`} passHref legacyBehavior>
+        <NextLink
+          href={`/onboarding/setup?project=${projectId}`}
+          passHref
+          legacyBehavior
+        >
           <Button
             variant="ghost"
             as="a"

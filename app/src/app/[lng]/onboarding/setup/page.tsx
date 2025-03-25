@@ -11,10 +11,10 @@ import {
 } from "@/services/api";
 
 import { OCCityAttributes } from "@/util/types";
-import { MdArrowForward, MdArrowBack } from "react-icons/md";
+import { MdArrowBack, MdArrowForward } from "react-icons/md";
 import { Box, Icon, Text, useSteps } from "@chakra-ui/react";
 
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import type { SubmitHandler } from "react-hook-form";
 import { useForm } from "react-hook-form";
@@ -69,6 +69,9 @@ export default function OnboardingSetup({
     control,
     formState: { errors, isSubmitting },
   } = useForm<Inputs>();
+
+  const params = useSearchParams();
+  const projectId = params.get("project");
 
   const steps = [
     { title: t("setup-step") },
@@ -155,6 +158,7 @@ export default function OnboardingSetup({
         country: countryName ?? undefined,
         regionLocode: region?.actor_id ?? undefined,
         countryLocode: country?.actor_id ?? undefined,
+        projectId: projectId ?? undefined,
       }).unwrap();
       await addCityPopulation({
         cityId: city.cityId,
@@ -187,12 +191,7 @@ export default function OnboardingSetup({
       }).unwrap();
       setConfirming(false);
       router.push(
-        "/onboarding/done/" +
-          data.locode +
-          "/" +
-          data.year +
-          "/" +
-          inventory.inventoryId,
+        `/onboarding/done/${data.locode}/${data.year}/${inventory.inventoryId}?project=${projectId}`,
       );
     } catch (err: any) {
       console.error("Failed to create new inventory!", err);

@@ -392,3 +392,17 @@ export type ListOrganizationsResponse = {
     role: OrganizationRole;
   }[];
 }[];
+
+export type ProjectWithCitiesResponse = {
+  projectId: string;
+  name: string;
+  cities: {
+    cityId: string;
+    name: string;
+    inventories: {
+      id: string;
+      year: number;
+      lastUpdated: string;
+    }[];
+  }[];
+}[];

@@ -4,12 +4,12 @@ import Footer from "@/components/Sections/Footer";
 import { useTranslation } from "@/i18n/client";
 import {
   api,
-  useGetCitiesAndYearsQuery,
   useGetCityPopulationQuery,
+  useGetCityYearsQuery,
 } from "@/services/api";
 import { CheckUserSession } from "@/util/check-user-session";
 import { formatEmissions } from "@/util/helpers";
-import { Box, Tabs, Text, VStack, Icon } from "@chakra-ui/react";
+import { Box, Icon, Tabs, Text, VStack } from "@chakra-ui/react";
 import { useParams, useRouter } from "next/navigation";
 import MissingInventory from "@/components/missing-inventory";
 import InventoryCalculationTab from "@/components/HomePage/InventoryCalculationTab";
@@ -18,12 +18,15 @@ import NotAvailable from "@/components/NotAvailable";
 import { Hero } from "@/components/HomePage/Hero";
 import { ActionCards } from "@/components/HomePage/ActionCards";
 import { InventoryPreferencesCard } from "@/components/HomePage/InventoryPreferencesCard";
-import { useEffect } from "react";
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import { YearSelectorCard } from "@/components/Cards/years-selection-card";
 import { Button } from "../ui/button";
 import { BsPlus } from "react-icons/bs";
 import Cookies from "js-cookie";
+import {
+  ProgressCircleRing,
+  ProgressCircleRoot,
+} from "@/components/ui/progress-circle";
 
 export default function HomePage({
   lng,
@@ -87,26 +90,33 @@ export default function HomePage({
     { skip: !inventory?.cityId || !inventory?.year },
   );
 
-  const { data: citiesAndYears, isLoading } = useGetCitiesAndYearsQuery();
+  const { data: cityYears, isLoading } = useGetCityYearsQuery(
+    inventory?.cityId,
+    { skip: !inventory?.cityId || !inventory?.year },
+  );
+  console.log(cityYears, "the data I need");
 
+  // TODO replace with an endpoint to fetch just the inventories years for a particular cityId
   const formattedEmissions = inventory?.totalEmissions
     ? formatEmissions(inventory.totalEmissions)
     : { value: t("N/A"), unit: "" };
 
-  const inventoriesForCurrentCity = useMemo<
-    { year: number; inventoryId: string; lastUpdate: Date }[]
-  >(() => {
-    if (!citiesAndYears) {
-      return [];
-    }
-    return citiesAndYears
-      .filter(({ city }) => inventory?.cityId === city.cityId)
-      .map(({ years }) => years)
-      .flat();
-  }, [citiesAndYears, inventory?.cityId]);
+  const inventoriesForCurrentCity = useMemo(() => {
+    if (!cityYears) return [];
+    return [...cityYears.years].sort((a, b) => b.year - a.year) || [];
+  }, [cityYears]);
 
   return (
     <>
+      {isInventoryLoading && (
+        <Box className="flex items-center justify-center w-full">
+          <Box className="w-full py-12 flex items-center justify-center">
+            <ProgressCircleRoot value={null}>
+              <ProgressCircleRing cap="round" />
+            </ProgressCircleRoot>
+          </Box>
+        </Box>
+      )}
       {!inventory && !isInventoryLoading && (
         <>
           {isPublic ? (

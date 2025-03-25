@@ -11,6 +11,12 @@ export const POST = apiHandler(async (req, { session }) => {
     throw new createHttpError.Unauthorized("Unauthorized");
   }
 
+  const project = await db.models.Project.findByPk(body.projectId);
+
+  if (!project) {
+    throw new createHttpError.BadRequest("Invalid project id");
+  }
+
   let city = await db.models.City.findOne({
     where: {
       locode: body.locode,

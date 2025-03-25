@@ -1,4 +1,5 @@
 import {
+  Badge,
   Box,
   Button,
   Card,
@@ -127,18 +128,10 @@ const ExternalDataSection = ({
               {getTranslationFromDict(source.datasetName)}
             </Heading>
             <Flex direction="row" my={4} wrap="wrap" gap={2}>
-              <Tag.Root>
-                <Tag.StartElement>
-                  <Icon
-                    as={DataCheckIcon}
-                    boxSize={5}
-                    color="content.tertiary"
-                  />
-                </Tag.StartElement>
-                <Tag.Label fontSize={11}>
-                  {t("data-quality")}: {t("quality-" + source.dataQuality)}
-                </Tag.Label>
-              </Tag.Root>
+              <Badge>
+                <Icon as={DataCheckIcon} boxSize={5} color="content.tertiary" />
+                {t("data-quality")}: {t("quality-" + source.dataQuality)}
+              </Badge>
               {source.subCategory?.scope && (
                 <Tag.Root>
                   <Tag.StartElement>

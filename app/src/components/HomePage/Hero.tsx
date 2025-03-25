@@ -3,7 +3,7 @@ import dynamic from "next/dynamic";
 import type { TFunction } from "i18next";
 import type { PopulationAttributes } from "@/models/Population";
 import type { InventoryResponse } from "@/util/types";
-import { useGetOCCityDataQuery, useGetProjectQuery } from "@/services/api";
+import { useGetOCCityDataQuery } from "@/services/api";
 import { useMemo, useState } from "react";
 import { Box, Heading, Icon, Spinner, Text } from "@chakra-ui/react";
 import { Button } from "@/components/ui/button";
@@ -44,15 +44,6 @@ export function Hero({
     skip: !inventory.city?.locode,
   });
 
-  const { data: projectData } = useGetProjectQuery(
-    {
-      projectId: inventory.city.projectId!,
-    },
-    {
-      skip: !inventory.city.projectId,
-    },
-  );
-
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const popWithDS = useMemo(
@@ -87,7 +78,9 @@ export function Hero({
                       w="max-content"
                       onClick={() => setIsDrawerOpen(true)}
                     >
-                      <Text fontSize="title.md">{projectData?.name}</Text>
+                      <Text fontSize="title.md">
+                        {inventory?.city.project.name}
+                      </Text>
                     </Button>
                   )}
                   <Box className="flex items-center gap-4">
@@ -319,8 +312,8 @@ export function Hero({
       </Box>
       <ProjectDrawer
         t={t}
-        currentInventoryId={currentInventoryId}
-        organizationId={projectData?.organizationId}
+        currentInventoryId={currentInventoryId as string}
+        organizationId={inventory?.city.project.organizationId as string}
         isOpen={isDrawerOpen}
         onClose={() => setIsDrawerOpen(false)}
         onOpenChange={({ open }) => setIsDrawerOpen(open)}

@@ -24,6 +24,7 @@ export const POST = apiHandler(async (req, { params, session }) => {
 export const GET = apiHandler(async (req, { params, session }) => {
   // this will behave differently for different users
   const { organizationId } = params;
+  console.log("organizationId", organizationId);
   const projects = await UserService.findUserProjectsAndCitiesInOrganization(
     organizationId,
     session,

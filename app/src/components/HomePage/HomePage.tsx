@@ -91,7 +91,7 @@ export default function HomePage({
   );
 
   const { data: cityYears, isLoading } = useGetCityYearsQuery(
-    inventory?.cityId,
+    inventory?.cityId as string,
     { skip: !inventory?.cityId || !inventory?.year },
   );
   console.log(cityYears, "the data I need");

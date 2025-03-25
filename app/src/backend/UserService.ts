@@ -259,6 +259,7 @@ export default class UserService {
       where: { userId: session.user.id },
       include: {
         model: db.models.Project,
+        as: "project",
         where: { organizationId },
         include: [
           {
@@ -283,15 +284,16 @@ export default class UserService {
     //Collaborators can see projects they are part of and the cities in those projects
     const cityUsersProjects = await db.models.CityUser.findAll({
       where: { userId: session.user.id },
+      attributes: [],
       include: {
         model: db.models.City,
         as: "city",
-        where: { organizationId },
+        attributes: ["cityId", "name"],
         include: [
           {
             model: db.models.Project,
             as: "project",
-            attributes: ["id", "name"],
+            attributes: ["projectId", "name"],
           },
           {
             model: db.models.Inventory,
@@ -301,27 +303,25 @@ export default class UserService {
         ],
       },
     });
+    const groupedByProject: Record<string, ProjectWithCitiesResponse[0]> = {};
 
     for (const cu of cityUsersProjects) {
       const projectName = cu.city.project.name;
-      const projectId = cu.city.project.id;
-      if (!groupedByProject[projectName]) {
-        groupedByProject[projectName] = {
+      const projectId = cu.city.project.projectId;
+      if (!groupedByProject[projectId]) {
+        groupedByProject[projectId] = {
           projectId,
           name: projectName,
           cities: [],
         };
       }
-
-      groupedByProject[projectName].cities.push({
+      groupedByProject[projectId].cities.push({
         name: cu.city.name,
         cityId: cu.city.cityId,
         inventories: cu.city.inventories,
       });
     }
 
-    projectsAndCities.concat(Object.values(groupedByProject));
-
-    return projectsAndCities;
+    return projectsAndCities.concat(Object.values(groupedByProject));
   }
 }

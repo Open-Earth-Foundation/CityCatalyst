@@ -834,6 +834,7 @@ export function initModels(sequelize: Sequelize) {
   });
   User.hasMany(ProjectAdmin, { as: "projectAdmin", foreignKey: "userId" });
   ProjectAdmin.belongsTo(User, { as: "user", foreignKey: "userId" });
+  CityUser.belongsTo(City, { as: "city", foreignKey: "cityId" });
 
   return {
     ActivityData: ActivityData,

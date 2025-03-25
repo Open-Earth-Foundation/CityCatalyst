@@ -40,6 +40,11 @@ export type InventoryResponse = RequiredInventoryAttributes & {
   city: CityAttributes & {
     populationYear: number;
     population: number;
+    project: {
+      projectId: string;
+      name: string;
+      organizationId: string;
+    };
   };
 };
 

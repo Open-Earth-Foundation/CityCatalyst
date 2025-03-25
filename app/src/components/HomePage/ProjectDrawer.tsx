@@ -320,7 +320,7 @@ const ProjectDrawer = ({
               selectProject={selectProject}
             />
           )}
-          {selectedProject && (
+          {selectedProjectData && (
             <SingleProjectView
               t={t}
               currentInventoryId={currentInventoryId}

@@ -7,8 +7,8 @@ import { randomUUID } from "node:crypto";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
-// returns list of unfinished subsectors for given inventory
-// used to decide which subsectors to show on the notation key manager
+// returns list of unfinished subsector + scopes for given inventory
+// used to decide which subsectors + scopes to show on the notation key manager
 export const GET = apiHandler(async (_req, { session, params }) => {
   const inventoryId = z.string().uuid().parse(params.inventory);
 
@@ -20,15 +20,37 @@ export const GET = apiHandler(async (_req, { session, params }) => {
     true,
   );
 
-  const inventoryProgress =
-    await InventoryProgressService.getInventoryProgress(inventory);
-  const unfinishedSubSectors = inventoryProgress.sectorProgress.flatMap(
-    (sector) => sector.subSectors.filter((subsector) => !subsector.completed),
+  const inventoryValues = await db.models.InventoryValue.findAll({
+    where: {
+      inventoryId: inventory.inventoryId,
+    },
+  });
+  const inventoryStructure =
+    await InventoryProgressService.getSortedInventoryStructure();
+  const allInventoryValues = inventoryStructure.flatMap((sector) =>
+    sector.subSectors.flatMap((subSector) =>
+      subSector.subCategories.flatMap((subCategory) => {
+        const inventoryValue = inventoryValues.find(
+          (value) => value.subCategoryId === subCategory.subcategoryId,
+        );
+
+        return {
+          subSector,
+          subCategory,
+          isFilled: inventoryValue != null,
+          hasNotationKey:
+            inventoryValue && inventoryValue.unavailableReason != null,
+        };
+      }),
+    ),
+  );
+  const filteredInventoryValues = allInventoryValues.filter(
+    (value) => !value.isFilled || value.hasNotationKey,
   );
 
   return NextResponse.json({
     success: true,
-    result: unfinishedSubSectors,
+    result: filteredInventoryValues,
   });
 });
 

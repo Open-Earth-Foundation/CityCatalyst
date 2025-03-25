@@ -37,6 +37,7 @@ import { toaster } from "@/components/ui/toaster";
 import RouteChangeDialog from "./RouteChangeDialog";
 import { usePathname, useRouter } from "next/navigation";
 import ProgressLoader from "@/components/ProgressLoader";
+import { UseErrorToast } from "@/hooks/Toasts";
 
 interface SectorTabsProps {
   t: TFunction;
@@ -143,6 +144,10 @@ const SectorTabs: FC<SectorTabsProps> = ({
 
     // payload according to the schema
     const payload = { notationKeys: notationKeysArray };
+    const { showErrorToast } = UseErrorToast({
+      title: t("failure"),
+      description: t("notation-keys-save-failed"),
+    });
 
     try {
       await createNotationKeys({
@@ -159,12 +164,9 @@ const SectorTabs: FC<SectorTabsProps> = ({
         });
     } catch (error) {
       console.error("Failed to update notation keys", error);
+      showErrorToast();
     }
   };
-
-  if (isError) {
-    console.error("Failed to update notation keys", isError);
-  }
 
   // Modal handlers for unsaved changes
   const confirmNavigation = () => {

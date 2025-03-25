@@ -120,56 +120,62 @@ const ExternalDataSection = ({
           borderWidth={2}
           className="shadow-none hover:drop-shadow-xl transition-shadow"
         >
-          {/* TODO add icon to DataSource */}
-          <Icon as={MdHomeWork} boxSize={9} mb={6} />
-          <Heading size="sm" lineClamp={2} minHeight={10}>
-            {getTranslationFromDict(source.datasetName)}
-          </Heading>
-          <Flex direction="row" my={4} wrap="wrap" gap={2}>
-            <Tag.Root>
-              <Tag.StartElement>
-                <Icon as={DataCheckIcon} boxSize={5} color="content.tertiary" />
-              </Tag.StartElement>
-              <Tag.Label fontSize={11}>
-                {t("data-quality")}: {t("quality-" + source.dataQuality)}
-              </Tag.Label>
-            </Tag.Root>
-            {source.subCategory?.scope && (
+          <Card.Body>
+            {/* TODO add icon to DataSource */}
+            <Icon as={MdHomeWork} boxSize={9} mb={6} />
+            <Heading size="sm" lineClamp={2} minHeight={10}>
+              {getTranslationFromDict(source.datasetName)}
+            </Heading>
+            <Flex direction="row" my={4} wrap="wrap" gap={2}>
               <Tag.Root>
                 <Tag.StartElement>
-                  <Icon as={FiTarget} boxSize={4} color="content.tertiary" />
+                  <Icon
+                    as={DataCheckIcon}
+                    boxSize={5}
+                    color="content.tertiary"
+                  />
                 </Tag.StartElement>
-                <TagLabel fontSize={11}>
-                  {t("scope")}: {source.subCategory.scope.scopeName}
-                </TagLabel>
+                <Tag.Label fontSize={11}>
+                  {t("data-quality")}: {t("quality-" + source.dataQuality)}
+                </Tag.Label>
               </Tag.Root>
-            )}
-          </Flex>
-          <Text color="content.tertiary" lineClamp={5} minHeight={120}>
-            {getTranslationFromDict(source.datasetDescription) ||
-              getTranslationFromDict(source.methodologyDescription)}
-          </Text>
-          <Link
-            className="underline"
-            mt={4}
-            mb={6}
-            onClick={() => onSourceClick(source, null)}
-          >
-            {t("see-more-details")}
-          </Link>
-          <Button
-            variant="solid"
-            colorScheme={buttonColorScheme}
-            px={6}
-            py={4}
-            onClick={() => onDisconnectThirdPartyData(source)}
-            loading={isDisconnectLoading}
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
-          >
-            {buttonIcon}
-            {buttonContent}
-          </Button>
+              {source.subCategory?.scope && (
+                <Tag.Root>
+                  <Tag.StartElement>
+                    <Icon as={FiTarget} boxSize={4} color="content.tertiary" />
+                  </Tag.StartElement>
+                  <TagLabel fontSize={11}>
+                    {t("scope")}: {source.subCategory.scope.scopeName}
+                  </TagLabel>
+                </Tag.Root>
+              )}
+            </Flex>
+            <Text color="content.tertiary" lineClamp={5} minHeight={120}>
+              {getTranslationFromDict(source.datasetDescription) ||
+                getTranslationFromDict(source.methodologyDescription)}
+            </Text>
+            <Link
+              className="underline"
+              mt={4}
+              mb={6}
+              onClick={() => onSourceClick(source, null)}
+            >
+              {t("see-more-details")}
+            </Link>
+            <Button
+              variant="solid"
+              colorScheme={buttonColorScheme}
+              px={6}
+              py={4}
+              onClick={() => onDisconnectThirdPartyData(source)}
+              loading={isDisconnectLoading}
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
+            >
+              {buttonIcon}
+              {buttonContent}
+            </Button>
+          </Card.Body>
         </Card.Root>
       </SimpleGrid>
       <Box

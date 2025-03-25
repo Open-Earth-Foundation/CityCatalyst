@@ -14,10 +14,15 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the rest of the application
 COPY . .
 
-
-# Make the run script executable
-RUN chmod +x run.sh
-
+# Convert Windows line endings to Unix and make the run script executable
+RUN apt-get update && \
+    apt-get install -y dos2unix && \
+    dos2unix run.sh && \
+    chmod +x run.sh && \
+    apt-get remove -y dos2unix && \
+    apt-get autoremove -y && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 # Create output directory
 RUN mkdir -p data/output

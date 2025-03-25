@@ -25,6 +25,7 @@ def upgrade():
             city_id VARCHAR NOT NULL,
             locode VARCHAR NOT NULL,
             country_code VARCHAR NOT NULL,
+            region_name varchar,
             attribute_type VARCHAR NOT NULL,
             attribute_value VARCHAR NOT NULL,
             attribute_units VARCHAR,

@@ -9,11 +9,11 @@ def db_city_context(locode: str):
         query = text(
             """
             SELECT a.locode, cp.city_name, cp.region_code,
-            NULL as region_name,
-            MAX(CASE WHEN attribute_type = 'population' THEN attribute_value END) AS population,
-            MAX(CASE WHEN attribute_type = 'population density' THEN attribute_value END) AS population_density,
+            a.region_name as region_name,
+            MAX(CASE WHEN attribute_type = 'population' THEN attribute_value END)::numeric AS population,
+            MAX(CASE WHEN attribute_type = 'population density' THEN attribute_value END)::numeric AS population_density,
             MAX(ROUND(ST_Area(ST_Transform(geometry, 3857)) / 1000000)) AS area_km2,
-            MAX(CASE WHEN attribute_type = 'elevation' THEN attribute_value END) AS elevation,
+            MAX(CASE WHEN attribute_type = 'elevation' THEN attribute_value END)::numeric AS elevation,
             MAX(CASE WHEN attribute_type = 'main biome' THEN attribute_value END) AS biome,
             MAX(CASE WHEN attribute_type = 'income' THEN attribute_value END) AS low_income,
             MAX(CASE WHEN attribute_type = 'inadequate water access' THEN attribute_value END) AS inadequate_water_access,
@@ -22,7 +22,7 @@ def db_city_context(locode: str):
             INNER JOIN modelled.city_polygon cp
             ON a.locode = cp.locode
             WHERE REPLACE(a.locode, ' ', '') = REPLACE(:locode, ' ', '')
-            GROUP BY a.locode, cp.city_name, cp.region_code
+            GROUP BY a.locode, cp.city_name, cp.region_code, a.region_name
             """
         )
 

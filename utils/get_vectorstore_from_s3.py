@@ -18,6 +18,7 @@ Example:
 from pathlib import Path
 import boto3
 import os
+import sys
 from dotenv import load_dotenv
 
 # Load environment variables
@@ -28,6 +29,12 @@ S3_BUCKET_NAME = os.getenv("S3_BUCKET_NAME")
 
 # Get project root directory
 PROJECT_ROOT = Path(__file__).parent.parent
+
+
+def log_error(message: str):
+    """Log error message and exit with error code 1"""
+    print(f"ERROR: {message}", file=sys.stderr)
+    sys.exit(1)
 
 
 def is_valid_vectorstore(path: Path) -> bool:
@@ -128,6 +135,12 @@ def get_vectorstore(collection_name: str, local_path: str) -> bool:
 
 # Execute the script when called directly
 if __name__ == "__main__":
-    get_vectorstore(
-        collection_name="all_docs_db_small_chunks", local_path="vector_stores"
-    )
+    try:
+        success = get_vectorstore(
+            collection_name="all_docs_db_small_chunks", local_path="vector_stores"
+        )
+        if not success:
+            log_error("Failed to load or create vector store")
+        sys.exit(0)
+    except Exception as e:
+        log_error(f"Unexpected error: {str(e)}")

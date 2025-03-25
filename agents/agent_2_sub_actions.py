@@ -35,8 +35,8 @@ Follow these guidlines carefully to complete the task:
 4. Use the provided retriever_sub_action_tool to retrieve relevant documents about detailed steps for implementing the climate action.
 5. Create a list of actionable sub-actions for implementing the climate action. The sub-actions should consider dependencies and be in chronological order if possible.
 **Important**: 
-    - When using information from the retrieved documents, include the sources of the retrieved document in the output using the format: `[source: <document title and page>]`
-    - If you can not retrieve relevant information for a specific part, state this fact briefly. 
+    - If you can not retrieve relevant information for a specific part, **DO NOT** include this fact in the output. 
+    - Do not include any sources in the output.
 </task>
 
 <tools>

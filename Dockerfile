@@ -13,7 +13,12 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the rest of the application
 COPY . .
-COPY vector_stores/ .vector_stores/
+
+
+# Make the run script executable
+RUN chmod +x run.sh
+
+
 # Create output directory
 RUN mkdir -p data/output
 
@@ -21,4 +26,4 @@ RUN mkdir -p data/output
 EXPOSE 8000
 
 # Command to run the application
-CMD ["uvicorn", "api:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["./run.sh"]

@@ -1,6 +1,6 @@
-from typing import Optional, Tuple, Union
+from typing import Tuple, Union
 from langchain.tools import tool
-from utils.get_vectorstore import get_vectorstore
+from utils.get_vectorstore_local import get_vectorstore
 from langchain_community.tools.tavily_search import TavilySearchResults
 from langchain_core.messages import HumanMessage
 from langchain_openai import ChatOpenAI
@@ -165,10 +165,10 @@ def retriever_indicators_tool(
 
 
 search_municipalities_tool = TavilySearchResults(
-    max_results=3,
+    max_results=2,
     search_depth="advanced",  # change between 'basic' for testing and 'advanced' for production
     description="""
-    Search for municipal institutions and their contact information that might be relevant for the implementation of the specific climate action for the given city.
+    Search for municipal institutions that might be relevant for the implementation of the specific climate action for the given city.
     
     Input: A search query in the national language.
     """,
@@ -249,8 +249,10 @@ def inspect_retrieved_results(search_query: str, chunk: str):
 
 
 @tool
-def placeholder_tool():
+def placeholder_tool() -> None:
     """
     A placeholder tool that does not have any functionality.
     Never call this tool!
     """
+
+    return None

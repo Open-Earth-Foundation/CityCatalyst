@@ -20,8 +20,8 @@ def custom_agent_combine(state: AgentState) -> AgentState:
     response_agent_2 = state["response_agent_2"].content
     response_agent_3 = state["response_agent_3"].content
     response_agent_4 = state["response_agent_4"].content
-    response_agent_5 = state["response_agent_5"].content
-    response_agent_6 = state["response_agent_6"].content
+    # response_agent_5 = state["response_agent_5"].content
+    # response_agent_6 = state["response_agent_6"].content
     response_agent_7 = state["response_agent_7"].content
     response_agent_8 = state["response_agent_8"].content
     response_agent_9 = state["response_agent_9"].content
@@ -37,8 +37,8 @@ def custom_agent_combine(state: AgentState) -> AgentState:
         f"{response_agent_2}\n\n"
         f"{response_agent_3}\n\n"
         f"{response_agent_4}\n\n"
-        f"{response_agent_5}\n\n"
-        f"{response_agent_6}\n\n"
+        # f"{response_agent_5}\n\n"
+        # f"{response_agent_6}\n\n"
         f"{response_agent_7}\n\n"
         f"{response_agent_8}\n\n"
         f"{response_agent_9}\n\n"

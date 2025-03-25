@@ -39,10 +39,10 @@ Follow these guidelines carefully to complete the task:
 4. Use the `retriever_indicators_tool` to retrieve relevant general documents regarding monitoring, evaluation and tracking to know what good indicators are.
 5. Use the `retriever_indicators_tool` to retrieve relevant documents regarding monitoring, evaluation and tracking of the specific climate action.
 6. Based on the overall climate action implementation plan and **specifially focusing on the retrieved documents**, create 'monitoring, evaluation and reporting (MER) indicators' for the implementation of the climate action.
-    - **Remember**: Good indicators are specific, measurable, achievable, relevant, and time-bound (SMART). However, since our information is limited, refrain from being too specific if the information is not available. E.g. do not give concrete numbers like "reduce emissions by 20% within 6 month".
+    - **Remember**: Good indicators are specific, measurable, achievable, relevant, and time-bound (SMART). However, since our information is limited, refrain from being too specific if the information is not available. E.g. do not give concrete numbers like "reduce emissions by 20% within 6 month", if you do not have clear information about this but you can work with placeholders if necessary und useful.
 **Important**: 
-    - When using information from the retrieved documents, include the sources of the retrieved document in the output using the format: `[source: <document title and page>]`
-    - If you can not retrieve relevant information for a specific part, state this fact briefly. 
+    - If you can not retrieve relevant information for a specific part, **DO NOT** include this fact in the output. 
+    - Do not include any sources in the output.
 </task>
 
 <tools>

@@ -39,3 +39,9 @@ In a future version, these inputs will be passed in with the request body of an 
 docker build -t cap-plan-creator .
 
 docker tag cap-plan-creator ghcr.io/open-earth-foundation/cap-plan-creator:latest
+
+## Local Deployment
+
+docker build -t cap-plan-creator .
+
+docker run --env-file .env -p 8000:8000 cap-plan-creator

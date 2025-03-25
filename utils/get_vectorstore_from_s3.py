@@ -124,3 +124,10 @@ def get_vectorstore(collection_name: str, local_path: str) -> bool:
 
     print(f"Attempting to download from S3...")
     return download_from_s3(collection_name, vector_store_path)
+
+
+# Execute the script when called directly
+if __name__ == "__main__":
+    get_vectorstore(
+        collection_name="all_docs_db_small_chunks", local_path="vector_stores"
+    )

@@ -1,13 +1,112 @@
 [
     {
+        "locode": "BRBHZ",
+        "name": null,
+        "region": null,
+        "regionName": null,
+        "populationSize": null,
+        "populationDensity": null,
+        "area": null,
+        "elevation": null,
+        "biome": null,
+        "socioEconomicFactors": null,
+        "accessToPublicServices": null,
+        "totalEmissions": 5730242.167,
+        "stationaryEnergyEmissions": 1493477.587,
+        "transportationEmissions": 1754775.2370000002,
+        "wasteEmissions": 1350838.99,
+        "industrialProcessEmissions": 1126762.029,
+        "landUseEmissions": 4388.324,
+        "scope1Emissions": 3271605.699,
+        "scope2Emissions": 1374135.037,
+        "scope3Emissions": 25629.694,
+        "ccra": [
+            {
+                "keyimpact": "water resources",
+                "hazard": "droughts",
+                "normalised_risk_score": 0.972212634507249
+            },
+            {
+                "keyimpact": "food security",
+                "hazard": "droughts",
+                "normalised_risk_score": 0.969558041821519
+            },
+            {
+                "keyimpact": "energy security",
+                "hazard": "droughts",
+                "normalised_risk_score": 0.165936128283598
+            },
+            {
+                "keyimpact": "biodiversity",
+                "hazard": "droughts",
+                "normalised_risk_score": 0.237897264054998
+            },
+            {
+                "keyimpact": "public health",
+                "hazard": "heatwaves",
+                "normalised_risk_score": 0.99
+            },
+            {
+                "keyimpact": "infrastructure",
+                "hazard": "heatwaves",
+                "normalised_risk_score": 0.99
+            },
+            {
+                "keyimpact": "biodiversity",
+                "hazard": "heatwaves",
+                "normalised_risk_score": 0.124276376049582
+            },
+            {
+                "keyimpact": "energy security",
+                "hazard": "heatwaves",
+                "normalised_risk_score": 0.107076251163835
+            },
+            {
+                "keyimpact": "public health",
+                "hazard": "diseases",
+                "normalised_risk_score": 0.989265048151993
+            },
+            {
+                "keyimpact": "infrastructure",
+                "hazard": "landslides",
+                "normalised_risk_score": 0.0598068929909304
+            },
+            {
+                "keyimpact": "public health",
+                "hazard": "landslides",
+                "normalised_risk_score": 0.0330300277623259
+            },
+            {
+                "keyimpact": "infrastructure",
+                "hazard": "floods",
+                "normalised_risk_score": 0.99
+            },
+            {
+                "keyimpact": "food security",
+                "hazard": "floods",
+                "normalised_risk_score": 0.99
+            },
+            {
+                "keyimpact": "public health",
+                "hazard": "floods",
+                "normalised_risk_score": 0.99
+            },
+            {
+                "keyimpact": "infrastructure",
+                "hazard": "sea-level-rise",
+                "normalised_risk_score": null
+            }
+        ]
+    },
+    {
         "locode": "BRCCI",
         "name": "Camaçari",
         "region": "BR-BA",
         "regionName": "Bahia",
-        "populationSize": 300372,
+        "populationSize": 300372.0,
         "populationDensity": 382.43,
         "area": 758.73,
-        "elevation": 36,
+        "elevation": 36.0,
         "biome": "tropical_rainforest",
         "socioEconomicFactors": {
             "lowIncome": "very_high"
@@ -20,7 +119,7 @@
         "stationaryEnergyEmissions": 176766789.0,
         "transportationEmissions": 295693000.0,
         "wasteEmissions": 1124796988.0,
-        "industrialProcessEmissions": 1720470000,
+        "industrialProcessEmissions": 1720470000.0,
         "landUseEmissions": 72418882.0,
         "scope1Emissions": 3214434494.0,
         "scope2Emissions": 171982146.0,
@@ -108,10 +207,10 @@
         "name": "Corumbá",
         "region": "BR-MS",
         "regionName": "Mato Grosso do Sul",
-        "populationSize": 96268,
+        "populationSize": 96268.0,
         "populationDensity": 1.49,
         "area": 64962.0,
-        "elevation": 118,
+        "elevation": 118.0,
         "biome": "grassland_savanna",
         "socioEconomicFactors": {
             "lowIncome": "very_high"
@@ -124,7 +223,7 @@
         "stationaryEnergyEmissions": 22358041.0,
         "transportationEmissions": 62605669.0,
         "wasteEmissions": 424544630.9,
-        "industrialProcessEmissions": 303800000,
+        "industrialProcessEmissions": 303800000.0,
         "landUseEmissions": 8304745651.0,
         "scope1Emissions": 4290411784.9,
         "scope2Emissions": 4249033923.0,
@@ -212,10 +311,10 @@
         "name": "Caxias do Sul",
         "region": "BR-RS",
         "regionName": "Rio Grande do Sul",
-        "populationSize": 463501,
+        "populationSize": 463501.0,
         "populationDensity": 280.52,
         "area": 1643.0,
-        "elevation": 817,
+        "elevation": 817.0,
         "biome": "tropical_rainforest",
         "socioEconomicFactors": {
             "lowIncome": "very_high"
@@ -228,7 +327,7 @@
         "stationaryEnergyEmissions": 151964298.0,
         "transportationEmissions": 554225715.0,
         "wasteEmissions": 3564978296.0,
-        "industrialProcessEmissions": 1037560,
+        "industrialProcessEmissions": 1037560.0,
         "landUseEmissions": 255342941.0,
         "scope1Emissions": 4276317120.0,
         "scope2Emissions": 180996493.0,
@@ -316,10 +415,10 @@
         "name": "Rio Branco",
         "region": "BR-AC",
         "regionName": "Acre",
-        "populationSize": 364756,
+        "populationSize": 364756.0,
         "populationDensity": 41.28,
         "area": 9222.6,
-        "elevation": 153,
+        "elevation": 153.0,
         "biome": "tropical_rainforest",
         "socioEconomicFactors": {
             "lowIncome": "very_high"
@@ -332,7 +431,7 @@
         "stationaryEnergyEmissions": 58762012.0,
         "transportationEmissions": 257493969.0,
         "wasteEmissions": 622974542.6,
-        "industrialProcessEmissions": 0,
+        "industrialProcessEmissions": 0.0,
         "landUseEmissions": 5534964671.0,
         "scope1Emissions": 1949018303.6,
         "scope2Emissions": 4340980317.0,
@@ -420,10 +519,10 @@
         "name": "Serra",
         "region": "BR-ES",
         "regionName": "Espírito Santo",
-        "populationSize": 520653,
+        "populationSize": 520653.0,
         "populationDensity": 950.74,
         "area": 553.0,
-        "elevation": 60,
+        "elevation": 60.0,
         "biome": "tropical_rainforest",
         "socioEconomicFactors": {
             "lowIncome": "very_high"
@@ -436,7 +535,7 @@
         "stationaryEnergyEmissions": 199992647.0,
         "transportationEmissions": 738428743.0,
         "wasteEmissions": 3122542631.0,
-        "industrialProcessEmissions": 10676849598,
+        "industrialProcessEmissions": 10676849598.0,
         "landUseEmissions": 95343439.0,
         "scope1Emissions": 14692790785.0,
         "scope2Emissions": 131730706.0,
@@ -524,10 +623,10 @@
         "name": "Maranguape",
         "region": "BR-CE",
         "regionName": "Ceará",
-        "populationSize": 105093,
+        "populationSize": 105093.0,
         "populationDensity": 180.11,
-        "area": 583,
-        "elevation": 68,
+        "area": 583.0,
+        "elevation": 68.0,
         "biome": "desert",
         "socioEconomicFactors": {
             "lowIncome": "very_high"
@@ -536,14 +635,14 @@
             "inadequateWaterAccess": "low",
             "inadequateSanitation": "moderate"
         },
-        "totalEmissions": 129440000,
-        "stationaryEnergyEmissions": 14440000,
-        "transportationEmissions": 34790000,
-        "wasteEmissions": 20200000,
-        "industrialProcessEmissions": 513480,
-        "landUseEmissions": 59500000,
-        "scope1Emissions": 124199470,
-        "scope2Emissions": 5262860,
+        "totalEmissions": 129440000.0,
+        "stationaryEnergyEmissions": 14440000.0,
+        "transportationEmissions": 34790000.0,
+        "wasteEmissions": 20200000.0,
+        "industrialProcessEmissions": 513480.0,
+        "landUseEmissions": 59500000.0,
+        "scope1Emissions": 124199470.0,
+        "scope2Emissions": 5262860.0,
         "scope3Emissions": 0.0,
         "ccra": [
             {

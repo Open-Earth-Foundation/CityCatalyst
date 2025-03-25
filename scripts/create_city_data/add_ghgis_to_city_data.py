@@ -43,6 +43,9 @@ GPC_TO_SECTOR = {
 
 
 def extract_data(file_name: str) -> dict:
+    # Create a copy of the emissions dictionary to avoid global state issues
+    emissions = dict_emissions.copy()
+
     data = pd.read_csv(BASE_PATH_GHGIS / file_name, encoding="utf-8")
 
     if not data.empty:
@@ -64,7 +67,7 @@ def extract_data(file_name: str) -> dict:
             sector = GPC_TO_SECTOR.get(sector_key)
 
             if sector:
-                dict_emissions[sector] += total_emissions
+                emissions[sector] += total_emissions
 
             # Extract the scope from the GPC Reference Number
             scope_key = gpc_ref.split(".")[
@@ -72,15 +75,13 @@ def extract_data(file_name: str) -> dict:
             ]  # Get the last part of GPC (e.g., "1" from "I.1.1")
 
             if scope_key == "1":
-                dict_emissions["scope1Emissions"] += total_emissions
-
+                emissions["scope1Emissions"] += total_emissions
             elif scope_key == "2":
-                dict_emissions["scope2Emissions"] += total_emissions
-
+                emissions["scope2Emissions"] += total_emissions
             elif scope_key == "3":
-                dict_emissions["scope3Emissions"] += total_emissions
+                emissions["scope3Emissions"] += total_emissions
 
-        return dict_emissions
+        return emissions
     else:
         print(f"GHGI data could not be loaded from {file_name}")
         sys.exit(1)

@@ -8,7 +8,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 // returns list of unfinished subsector + scopes for given inventory
-// used to decide which subsectors + scopes to show on the notation key manager
+// used to decide which subsectors + scopes to show on the notation key manager for each sector
 export const GET = apiHandler(async (_req, { session, params }) => {
   const inventoryId = z.string().uuid().parse(params.inventory);
 
@@ -27,30 +27,32 @@ export const GET = apiHandler(async (_req, { session, params }) => {
   });
   const inventoryStructure =
     await InventoryProgressService.getSortedInventoryStructure();
-  const allInventoryValues = inventoryStructure.flatMap((sector) =>
+  const inventoryValuesBySector = inventoryStructure.map((sector) =>
     sector.subSectors.flatMap((subSector) =>
-      subSector.subCategories.flatMap((subCategory) => {
-        const inventoryValue = inventoryValues.find(
-          (value) => value.subCategoryId === subCategory.subcategoryId,
-        );
+      subSector.subCategories
+        .flatMap((subCategory) => {
+          const inventoryValue = inventoryValues.find(
+            (value) => value.subCategoryId === subCategory.subcategoryId,
+          );
 
-        return {
-          subSector,
-          subCategory,
-          isFilled: inventoryValue != null,
-          hasNotationKey:
-            inventoryValue && inventoryValue.unavailableReason != null,
-        };
-      }),
+          return {
+            subSector,
+            subCategory,
+            isFilled: inventoryValue != null,
+            hasNotationKey:
+              inventoryValue && inventoryValue.unavailableReason != null,
+          };
+        })
+        .filter((value) => !value.isFilled || value.hasNotationKey)
+        .map((entry) => ({
+          subSector: entry.subSector,
+          subCategory: entry.subCategory,
+        })),
     ),
   );
-  const filteredInventoryValues = allInventoryValues.filter(
-    (value) => !value.isFilled || value.hasNotationKey,
-  );
-
   return NextResponse.json({
     success: true,
-    result: filteredInventoryValues,
+    result: inventoryValuesBySector,
   });
 });
 

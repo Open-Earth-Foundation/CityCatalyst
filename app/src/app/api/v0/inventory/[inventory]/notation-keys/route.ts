@@ -7,7 +7,7 @@ import { randomUUID } from "node:crypto";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
-// returns list of unfinished subsector + scopes for given inventory
+// returns { success: true, result: { [sectorReferenceNumber]: { subSector, subCategory, inventoryValue }[] } }
 // used to decide which subsectors + scopes to show on the notation key manager for each sector
 export const GET = apiHandler(async (_req, { session, params }) => {
   const inventoryId = z.string().uuid().parse(params.inventory);
@@ -20,35 +20,37 @@ export const GET = apiHandler(async (_req, { session, params }) => {
     true,
   );
 
-  const inventoryValues = await db.models.InventoryValue.findAll({
+  const existingInventoryValues = await db.models.InventoryValue.findAll({
     where: {
       inventoryId: inventory.inventoryId,
     },
   });
   const inventoryStructure =
     await InventoryProgressService.getSortedInventoryStructure();
-  const inventoryValuesBySector = inventoryStructure.map((sector) =>
-    sector.subSectors.flatMap((subSector) =>
-      subSector.subCategories
-        .flatMap((subCategory) => {
-          const inventoryValue = inventoryValues.find(
-            (value) => value.subCategoryId === subCategory.subcategoryId,
-          );
+  const inventoryValuesBySector = Object.fromEntries(
+    inventoryStructure.map((sector) => {
+      const inventoryValues = sector.subSectors.flatMap((subSector) => {
+        return subSector.subCategories
+          .map((subCategory) => {
+            const inventoryValue = existingInventoryValues.find(
+              (value) => value.subCategoryId === subCategory.subcategoryId,
+            );
+            return {
+              inventoryValue,
+              subSector,
+              subCategory,
+            };
+          })
+          .filter(({ inventoryValue }) => {
+            const isFilled = inventoryValue != null;
+            const hasNotationKey =
+              inventoryValue && inventoryValue.unavailableReason != null;
+            return !isFilled || hasNotationKey;
+          });
+      });
 
-          return {
-            subSector,
-            subCategory,
-            isFilled: inventoryValue != null,
-            hasNotationKey:
-              inventoryValue && inventoryValue.unavailableReason != null,
-          };
-        })
-        .filter((value) => !value.isFilled || value.hasNotationKey)
-        .map((entry) => ({
-          subSector: entry.subSector,
-          subCategory: entry.subCategory,
-        })),
-    ),
+      return [sector.referenceNumber, inventoryValues];
+    }),
   );
   return NextResponse.json({
     success: true,

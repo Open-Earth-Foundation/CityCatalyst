@@ -21,8 +21,8 @@ export interface InventoryValueAttributes {
   activityUnits?: string | null; // TODO remove
   co2eq?: bigint;
   co2eqYears?: number;
-  unavailableReason?: string;
-  unavailableExplanation?: string;
+  unavailableReason?: string | null;
+  unavailableExplanation?: string | null;
   inputMethodology?: string;
   sectorId?: string;
   subSectorId?: string;
@@ -68,8 +68,8 @@ export class InventoryValue
   activityUnits?: string | null; // TODO remove
   co2eq?: bigint;
   co2eqYears?: number;
-  unavailableReason?: string;
-  unavailableExplanation?: string;
+  unavailableReason?: string | null;
+  unavailableExplanation?: string | null;
   inputMethodology?: string;
   sectorId?: string;
   subSectorId?: string;

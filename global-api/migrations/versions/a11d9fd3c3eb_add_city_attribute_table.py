@@ -19,7 +19,8 @@ depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade():
-    # Use a raw SQL statement for creating the table if it does not exist
+    # Use a raw SQL statement we apply the same scripts in global-api repo so we can successfull run pipelines
+    # without dependency on this release in citycatalyst schema.
     op.execute("""
         CREATE TABLE IF NOT EXISTS modelled.city_attribute (
             city_id VARCHAR NOT NULL,

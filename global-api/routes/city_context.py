@@ -27,24 +27,24 @@ def db_city_context(locode: str):
         )
 
         params = {
-            "locode": locode  # Correcting to pass locode instead of actor_id
+            "locode": locode
         }
         result = session.execute(query, params).mappings().all()
 
     return result
 
 
-@api_router.get("/city_context/{actor_id}", summary="Get contextual data about the city")
-def get_city_context(actor_id: str):
+@api_router.get("/city_context/{locode}", summary="Get contextual data about the city")
+def get_city_context(locode: str):
     """
     Retrieve contextual data about the city based on the provided locode.
 
-    - `actor_id`: Unique identifier for the city.
+    - `locode`: Unique identifier for the city.
 
     Returns a structured response containing contextual data for the specified city.
     """
 
-    records = db_city_context(actor_id)  # Fetch data using the actor_id as locode
+    records = db_city_context(locode)  # Fetch data using the locode as locode
 
     if not records:
         raise HTTPException(status_code=404, detail="No data available")

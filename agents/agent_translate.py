@@ -22,6 +22,11 @@ Try to keep the same tone and style as the original document.
 If you cannot translate a specific word or phrase e.g. because it is a proper noun or a scientific term, leave it in English.
 </task>
 
+<input>
+text to translate: The input is the climate action implementation plan in the specified language.
+target language: The target language that the text should be translated into. It is a 2 letter ISO language code like "en", "es", "pt", etc.
+</input>
+
 <output>
 The output must follow all the same formatting as the input. It must be translated into the specified language.
 

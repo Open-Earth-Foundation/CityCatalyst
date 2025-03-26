@@ -340,7 +340,12 @@ const SectorTabs: FC<SectorTabsProps> = ({
       const handleApplyToAll = () => {
         setCardInputs((prev) => {
           const newInputs = { ...prev };
-          selectedForThisSector.forEach((cardId) => {
+          // If there are selected cards, update only those; otherwise update all items.
+          const itemsToUpdate =
+            selectedForThisSector.length > 0
+              ? selectedForThisSector
+              : unfinishedItems.map((item) => item.subCategoryId);
+          itemsToUpdate.forEach((cardId) => {
             newInputs[cardId] = {
               notationKey: quickValues.notationKey,
               explanation: quickValues.explanation,

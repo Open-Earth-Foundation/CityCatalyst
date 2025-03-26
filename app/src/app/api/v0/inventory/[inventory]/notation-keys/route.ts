@@ -65,7 +65,7 @@ export const GET = apiHandler(async (_req, { session, params }) => {
 const saveNotationKeysRequest = z.object({
   notationKeys: z.array(
     z.object({
-      subSectorId: z.string().uuid(),
+      subCategoryId: z.string().uuid(),
       unavailableReason: z.enum([
         "no-occurrance",
         "not-estimated",
@@ -90,7 +90,7 @@ export const POST = apiHandler(async (req, { session, params }) => {
       const existingInventoryValue = await db.models.InventoryValue.findOne({
         where: {
           inventoryId,
-          subSectorId: notationKey.subSectorId,
+          subCategoryId: notationKey.subCategoryId,
         },
         transaction,
         lock: true,

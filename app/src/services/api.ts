@@ -812,7 +812,7 @@ export const api = createApi({
         query: (data: {
           inventoryId: string;
           notationKeys: {
-            subSectorId: string;
+            subCategoryId: string;
             unavailableReason: string;
             unavailableExplanation: string;
           }[];

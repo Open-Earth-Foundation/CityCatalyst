@@ -179,35 +179,36 @@ const SectorTabs: FC<SectorTabsProps> = ({
   // update notation keys for subsectors from api service
   const [createNotationKeys, { isLoading, isError, data, status }] =
     api.useUpdateOrCreateNotationKeysMutation();
-  const handleUpdateNotationKeys = async (subsectorId?: string) => {
-    let notationKeysArray;
-    if (subsectorId) {
+  const handleUpdateNotationKeys = async (subCategoryId?: string) => {
+    let notationKeys: {
+      subCategoryId: string;
+      unavailableReason: string;
+      unavailableExplanation: string;
+    }[] = [];
+    if (subCategoryId) {
       // Update a single card
-      const cardData = cardInputs[subsectorId];
+      const cardData = cardInputs[subCategoryId];
       if (!cardData) return;
-      notationKeysArray = [
+      notationKeys = [
         {
-          subSectorId: subsectorId,
+          subCategoryId,
           unavailableReason: cardData.notationKey,
           unavailableExplanation: cardData.explanation,
         },
       ];
     } else {
       // Bulk update all cards that have been edited (or, if you prefer, all selected ones)
-      notationKeysArray = Object.entries(cardInputs).map(([id, value]) => ({
-        subSectorId: id,
+      notationKeys = Object.entries(cardInputs).map(([id, value]) => ({
+        subCategoryId: id,
         unavailableReason: value.notationKey,
         unavailableExplanation: value.explanation,
       }));
     }
 
-    // payload according to the schema
-    const payload = { notationKeys: notationKeysArray };
-
     try {
       await createNotationKeys({
         inventoryId: inventoryId!,
-        ...payload,
+        notationKeys: notationKeys,
       }).unwrap();
       // clear dirty state on success
       setCardInputs({});

@@ -800,19 +800,19 @@ export const api = createApi({
         }),
       }),
       // Get unfinished subsectors
-      getUnfinishedSubsectors: builder.query({
+      getNotationKeyScopes: builder.query({
         query: (data: { inventoryId: string }) => ({
           url: `/inventory/${data.inventoryId}/notation-keys`,
           method: "GET",
         }),
-        transformResponse: (response: any) => response.data,
+        transformResponse: (response: any) => response,
       }),
       // Add notation keys to subsectors with missing data missing
       updateOrCreateNotationKeys: builder.mutation({
         query: (data: {
           inventoryId: string;
           notationKeys: {
-            subSectorId: string;
+            subCategoryId: string;
             unavailableReason: string;
             unavailableExplanation: string;
           }[];
@@ -961,7 +961,7 @@ export const {
   useGetCityInvitesQuery,
   useUpdatePasswordMutation,
   useGetInventoryPopulationsQuery,
-  useGetUnfinishedSubsectorsQuery,
+  useGetNotationKeyScopesQuery,
   useUpdateOrCreateNotationKeysMutation,
   useCreateOrganizationMutation,
   useCreateProjectMutation,

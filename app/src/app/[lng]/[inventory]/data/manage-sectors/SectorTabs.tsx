@@ -81,7 +81,6 @@ const groupScopesBySector = (data: Record<string, any[]>): SectorGroup[] => {
 };
 
 // convert sector reference to GPC reference name
-
 const getGpcReferenceName = (ref: string, t: TFunction): string => {
   const mapping: Record<string, string> = {
     I: t("stationary-energy"),
@@ -140,9 +139,10 @@ const SectorTabs: FC<SectorTabsProps> = ({
     data: sectorData,
     isLoading: isSectorDataLoading,
     error,
-  } = api.useGetUnfinishedSubsectorsQuery({
-    inventoryId: inventoryId! && inventoryId!,
-  });
+  } = api.useGetNotationKeyScopesQuery(
+    { inventoryId: inventoryId! },
+    { skip: !inventoryId },
+  );
 
   useEffect(() => {
     // Adjust the dirty check as needed (e.g., also include quickActionValues)
@@ -244,11 +244,11 @@ const SectorTabs: FC<SectorTabsProps> = ({
   // --- Grouping the new API structure ---
   // Our API response now contains a `result` object keyed by sector ref.
   const groupedSectors: SectorGroup[] = useMemo(() => {
-    if (sectorData && sectorData.result) {
+    if (sectorData?.result) {
       return groupScopesBySector(sectorData.result);
     }
     return [];
-  }, [sectorData]);
+  }, [sectorData?.result]);
 
   if (isSectorDataLoading) {
     return <ProgressLoader />;
@@ -548,7 +548,7 @@ const SectorTabs: FC<SectorTabsProps> = ({
                               lineClamp={2}
                             >
                               {t(item.subCategoryReferenceNumber!)}{" "}
-                              {/* {t(item.subSectorName)} –{" "} Todo nice to have a subsector name showing */}
+                              {t(item.subSectorName)} –{" "}
                               {t(item.subCategoryName)}
                             </Text>
                           </CheckboxCard.Label>

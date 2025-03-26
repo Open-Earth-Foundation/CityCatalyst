@@ -805,7 +805,7 @@ export const api = createApi({
           url: `/inventory/${data.inventoryId}/notation-keys`,
           method: "GET",
         }),
-        transformResponse: (response: any) => response.data,
+        transformResponse: (response: any) => response,
       }),
       // Add notation keys to subsectors with missing data missing
       updateOrCreateNotationKeys: builder.mutation({

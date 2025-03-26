@@ -16,7 +16,7 @@ import {
 import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import { TFunction } from "i18next";
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useEffect, useMemo, useState } from "react";
 import { SubSectorWithRelations } from "../[step]/types";
 import { StationaryEnergyIcon } from "@/components/icons";
 import { BiSelectMultiple } from "react-icons/bi";
@@ -40,11 +40,65 @@ import RouteChangeDialog from "./RouteChangeDialog";
 import { usePathname, useRouter } from "next/navigation";
 import ProgressLoader from "@/components/ProgressLoader";
 
+// Define your transformation interfaces
+
+interface SubcategoryItem {
+  subSectorId: string;
+  subSectorName: string;
+  subCategoryId: string;
+  subCategoryName: string;
+  subCategoryReferenceNumber: string;
+}
+
+interface SectorGroup {
+  sectorRef: string;
+  // Include the full sector data (extracted from the first item)
+  sector: {
+    sectorId: string;
+    sectorName: string;
+    referenceNumber?: string;
+  };
+  items: SubcategoryItem[];
+}
+
+const groupScopesBySector = (data: Record<string, any[]>): SectorGroup[] => {
+  return Object.entries(data).map(([sectorRef, items]) => {
+    const sector = items[0]?.subSector; // assume all items in this group share the same sector
+    return {
+      sectorRef,
+      sector: {
+        sectorId: sector?.sectorId,
+        sectorName: sector?.sectorName,
+        referenceNumber: sector?.referenceNumber,
+      },
+      items: items.map((item) => ({
+        subSectorId: item.subSector.subsectorId,
+        subSectorName: item.subSector.subsectorName,
+        subCategoryId: item.subCategory.subcategoryId,
+        subCategoryName: item.subCategory.subcategoryName,
+        subCategoryReferenceNumber: item.subCategory.referenceNumber,
+      })),
+    };
+  });
+};
+
+// convert sector reference to GPC reference name
+
+const getGpcReferenceName = (ref: string): string => {
+  const mapping: Record<string, string> = {
+    I: "Stationary Energy",
+    II: "Transport",
+    III: "Waste",
+    // Add additional mappings as needed:
+    IV: "Industrial Processes and Product Uses (IPPU)",
+    V: "Agriculture, Forestry, and Other Land Use (AFOLU)",
+  };
+  return mapping[ref] || ref;
+};
+
 interface SectorTabsProps {
   t: TFunction;
-  inventoryData: InventoryProgressResponse | undefined;
-  isInventoryDataLoading: boolean;
-  inventoryDataError: FetchBaseQueryError | SerializedError | undefined;
+  inventoryId: string | undefined;
 }
 
 interface QuickActionInputs {
@@ -58,9 +112,8 @@ interface CardInputs {
 }
 
 const SectorTabs: FC<SectorTabsProps> = ({
-  inventoryData,
-  inventoryDataError,
-  isInventoryDataLoading,
+  inventoryId,
+
   t,
 }) => {
   const router = useRouter();
@@ -85,6 +138,14 @@ const SectorTabs: FC<SectorTabsProps> = ({
   const pathname = usePathname();
   const [prevPathname, setPrevPathname] = useState(pathname);
   const [nextRoute, setNextRoute] = useState<string | null>(null);
+
+  const {
+    data: sectorData,
+    isLoading: isSectorDataLoading,
+    error,
+  } = api.useGetUnfinishedSubsectorsQuery({
+    inventoryId: inventoryId! && inventoryId!,
+  });
 
   useEffect(() => {
     // Adjust the dirty check as needed (e.g., also include quickActionValues)
@@ -148,7 +209,7 @@ const SectorTabs: FC<SectorTabsProps> = ({
 
     try {
       await createNotationKeys({
-        inventoryId: inventoryData?.inventory.inventoryId!,
+        inventoryId: inventoryId!,
         ...payload,
       }).unwrap();
       // clear dirty state on success
@@ -183,34 +244,34 @@ const SectorTabs: FC<SectorTabsProps> = ({
     setShowDialog(false);
   };
 
-  useEffect(() => {
-    if (!isInventoryDataLoading) {
-      const unfinishedSubSectors = inventoryData?.sectorProgress.flatMap(
-        (sector) =>
-          sector.subSectors.filter((subsector) => !subsector.completed),
-      );
-
-      setUnfinishedSubsectorsData(unfinishedSubSectors);
+  // --- Grouping the new API structure ---
+  // Our API response now contains a `result` object keyed by sector ref.
+  const groupedSectors: SectorGroup[] = useMemo(() => {
+    if (sectorData && sectorData.result) {
+      return groupScopesBySector(sectorData.result);
     }
-  }, [inventoryData, isInventoryDataLoading, inventoryDataError]);
-  if (isInventoryDataLoading) {
+    return [];
+  }, [sectorData]);
+
+  if (isSectorDataLoading) {
     return <ProgressLoader />;
   }
 
   const renderSectorTabList = () => {
-    return inventoryData?.sectorProgress.map(({ sector }) => {
+    return groupedSectors.map((group) => {
       return (
         <Tabs.Trigger
-          key={sector.sectorId}
-          value={`tab-${sector.sectorId}`}
+          key={group.sectorRef}
+          value={`tab-${group.sectorRef}`}
+          maxW="1/4"
           _selected={{
             color: "content.link",
             fontWeight: "bold",
             fontFamily: "heading",
           }}
         >
-          <Text fontSize="title.md" truncate>
-            {sector.sectorName}
+          <Text fontSize="title.md" lineClamp="2">
+            {getGpcReferenceName(group.sectorRef)}
           </Text>
         </Tabs.Trigger>
       );
@@ -240,52 +301,47 @@ const SectorTabs: FC<SectorTabsProps> = ({
   });
 
   const renderSectorTabContent = () =>
-    inventoryData?.sectorProgress.map(({ sector, subSectors }) => {
-      // Filter to get only unfinished subsectors
-      const unfinishedSubsectors = subSectors.filter(
-        (subsector) => !subsector.completed,
-      );
-
+    groupedSectors.map((group) => {
+      // For each group, use the sector info from group.sector and the scopes from group.items.
+      // Here we consider all items as "unfinished" (adjust filtering if needed)
+      const unfinishedItems = group.items;
       const selectedForThisSector =
-        selectedCardsBySector[sector.sectorId] || [];
-
-      // Get quick action values for this sector, defaulting to empty strings
-      const quickValues = quickActionValues[sector.sectorId] || {
+        selectedCardsBySector[group.sector.sectorId] || [];
+      const quickValues = quickActionValues[group.sector.sectorId] || {
         notationKey: "",
         explanation: "",
       };
 
-      const handleToggleCard = (subSectorId: string) => {
+      const handleToggleCard = (cardId: string) => {
         setSelectedCardsBySector((prev) => ({
           ...prev,
-          [sector.sectorId]: prev[sector.sectorId]?.includes(subSectorId)
-            ? prev[sector.sectorId].filter((id) => id !== subSectorId)
-            : [...(prev[sector.sectorId] || []), subSectorId],
+          [group.sector.sectorId]: prev[group.sector.sectorId]?.includes(cardId)
+            ? prev[group.sector.sectorId].filter((id) => id !== cardId)
+            : [...(prev[group.sector.sectorId] || []), cardId],
         }));
       };
 
-      // Toggle select all for the current sector
       const handleSelectAll = () => {
-        if (selectedForThisSector.length === unfinishedSubsectors.length) {
-          // All are selected so unselect all
+        if (selectedForThisSector.length === unfinishedItems.length) {
           setSelectedCardsBySector((prev) => ({
             ...prev,
-            [sector.sectorId]: [],
+            [group.sector.sectorId]: [],
           }));
         } else {
-          // Select all unfinished subsectors
           setSelectedCardsBySector((prev) => ({
             ...prev,
-            [sector.sectorId]: unfinishedSubsectors.map((s) => s.subsectorId),
+            [group.sector.sectorId]: unfinishedItems.map(
+              (item) => item.subCategoryId,
+            ),
           }));
         }
       };
-      // Apply quick action values to each selected card
+
       const handleApplyToAll = () => {
         setCardInputs((prev) => {
           const newInputs = { ...prev };
-          selectedForThisSector.forEach((subSectorId) => {
-            newInputs[subSectorId] = {
+          selectedForThisSector.forEach((cardId) => {
+            newInputs[cardId] = {
               notationKey: quickValues.notationKey,
               explanation: quickValues.explanation,
             };
@@ -298,10 +354,11 @@ const SectorTabs: FC<SectorTabsProps> = ({
           type: "info",
         });
       };
+
       return (
         <Tabs.Content
-          key={sector.sectorId}
-          value={`tab-${sector.sectorId}`}
+          key={group.sectorRef}
+          value={`tab-${group.sectorRef}`}
           pt="70px"
           _open={{
             animationName: "fade-in, scale-in",
@@ -318,20 +375,18 @@ const SectorTabs: FC<SectorTabsProps> = ({
             <Box display="flex" alignItems="center" gap="16px">
               <Icon as={StationaryEnergyIcon} color="interactive.control" />
               <Text fontSize="title.lg" fontFamily="heading" fontWeight="bold">
-                {sector.sectorName}
+                {getGpcReferenceName(group.sectorRef)}
               </Text>
             </Box>
             <Text fontSize="body.lg" fontFamily="body" color="content.tertiary">
               {t("content-description")}
             </Text>
           </Box>
-          {/* Quick Action form */}
+          {/* Quick Action Form */}
           <Box mb="48px" display="flex" flexDirection="column" gap="32px">
             <Box display="flex" alignItems="center" gap="8px">
-              {/* Select All button */}
               <Button variant="ghost" onClick={handleSelectAll}>
-                {selectedForThisSector.length ===
-                unfinishedSubsectors.length ? (
+                {selectedForThisSector.length === unfinishedItems.length ? (
                   <Icon as={CgRemoveR} color="content.link" boxSize={6} />
                 ) : (
                   <Icon
@@ -345,7 +400,7 @@ const SectorTabs: FC<SectorTabsProps> = ({
                   fontFamily="heading"
                   color="content.link"
                 >
-                  {selectedForThisSector.length === unfinishedSubsectors.length
+                  {selectedForThisSector.length === unfinishedItems.length
                     ? t("deselect-all")
                     : t("quick-actions")}
                 </Text>
@@ -358,10 +413,11 @@ const SectorTabs: FC<SectorTabsProps> = ({
                   onValueChange={({ value: newValue }) =>
                     setQuickActionValues((prev) => ({
                       ...prev,
-                      [sector.sectorId]: {
-                        ...prev[sector.sectorId],
+                      [group.sector.sectorId]: {
+                        ...prev[group.sector.sectorId],
                         notationKey: newValue.toString(),
-                        explanation: prev[sector.sectorId]?.explanation || "",
+                        explanation:
+                          prev[group.sector.sectorId]?.explanation || "",
                       },
                     }))
                   }
@@ -404,7 +460,6 @@ const SectorTabs: FC<SectorTabsProps> = ({
                     {t("explanation")}
                   </Text>
                 </Field.Label>
-
                 <Input
                   placeholder={t("explanation-input-placeholder")}
                   borderWidth="1px"
@@ -415,15 +470,16 @@ const SectorTabs: FC<SectorTabsProps> = ({
                   onChange={(e) =>
                     setQuickActionValues((prev) => ({
                       ...prev,
-                      [sector.sectorId]: {
-                        ...prev[sector.sectorId],
+                      [group.sector.sectorId]: {
+                        ...prev[group.sector.sectorId],
                         explanation: e.target.value,
-                        notationKey: prev[sector.sectorId]?.notationKey || "",
+                        notationKey:
+                          prev[group.sector.sectorId]?.notationKey || "",
                       },
                     }))
                   }
                 />
-                <Field.ErrorText>This is an error text</Field.ErrorText>
+                <Field.ErrorText></Field.ErrorText>
               </Field.Root>
               <Button
                 variant="ghost"
@@ -434,32 +490,32 @@ const SectorTabs: FC<SectorTabsProps> = ({
               </Button>
             </Box>
           </Box>
-
-          {/* unfinished subsectors cards */}
-          {unfinishedSubsectors.length > 0 ? (
+          {/* Checkbox Cards for each item */}
+          {unfinishedItems.length > 0 ? (
             <>
               <Box
                 display="grid"
                 gridTemplateColumns="repeat(auto-fill, minmax(450px, 1fr))"
                 gap="48px"
               >
-                {unfinishedSubsectors.map((subsector) => {
-                  const cardValue = cardInputs[subsector.subsectorId] || {
+                {unfinishedItems.map((item) => {
+                  // Use the subCategoryId as the unique key for each card
+                  const cardValue = cardInputs[item.subCategoryId] || {
                     notationKey: "",
                     explanation: "",
                   };
                   return (
                     <CheckboxCard.Root
                       width="497px"
-                      key={subsector.subsectorId}
+                      key={item.subCategoryId}
                       height="344px"
                       p={0}
                       borderCollapse="border.neutral"
                       checked={selectedForThisSector.includes(
-                        subsector.subsectorId,
+                        item.subCategoryId,
                       )}
                       onCheckedChange={() =>
-                        handleToggleCard(subsector.subsectorId)
+                        handleToggleCard(item.subCategoryId)
                       }
                     >
                       <CheckboxCard.HiddenInput />
@@ -475,10 +531,11 @@ const SectorTabs: FC<SectorTabsProps> = ({
                               fontSize="title.md"
                               fontFamily="heading"
                               fontWeight="bold"
+                              lineClamp={2}
                             >
-                              {" "}
-                              {t(subsector.referenceNumber!)} {""}
-                              {t(subsector.subsectorName!)}
+                              {t(item.subCategoryReferenceNumber!)}{" "}
+                              {/* {t(item.subSectorName)} –{" "} Todo nice to have a subsector name showing */}
+                              {t(item.subCategoryName)}
                             </Text>
                           </CheckboxCard.Label>
                           <CheckboxCard.Description w="full">
@@ -495,20 +552,20 @@ const SectorTabs: FC<SectorTabsProps> = ({
                                 gap="16px"
                                 w="full"
                               >
-                                <Field.Root orientation="vertical" w="ull">
+                                <Field.Root orientation="vertical" w="full">
                                   <SelectRoot
                                     variant="outline"
                                     collection={notationKeys}
                                     w="full"
                                     value={[cardValue.notationKey]}
-                                    onValueChange={(e) =>
+                                    onValueChange={({ value }) =>
                                       setCardInputs((prev) => ({
                                         ...prev,
-                                        [subsector.subsectorId]: {
-                                          ...prev[subsector.subsectorId],
-                                          notationKey: e.value.toString(),
+                                        [item.subCategoryId]: {
+                                          ...prev[item.subCategoryId],
+                                          notationKey: value.toString(),
                                           explanation:
-                                            prev[subsector.subsectorId]
+                                            prev[item.subCategoryId]
                                               ?.explanation || "",
                                         },
                                       }))
@@ -562,7 +619,6 @@ const SectorTabs: FC<SectorTabsProps> = ({
                                       {t("explanation")}
                                     </Text>
                                   </Field.Label>
-
                                   <Textarea
                                     placeholder={t(
                                       "explanation-input-placeholder",
@@ -576,19 +632,17 @@ const SectorTabs: FC<SectorTabsProps> = ({
                                     onChange={(e) =>
                                       setCardInputs((prev) => ({
                                         ...prev,
-                                        [subsector.subsectorId]: {
-                                          ...prev[subsector.subsectorId],
+                                        [item.subCategoryId]: {
+                                          ...prev[item.subCategoryId],
                                           explanation: e.target.value,
                                           notationKey:
-                                            prev[subsector.subsectorId]
+                                            prev[item.subCategoryId]
                                               ?.notationKey || "",
                                         },
                                       }))
                                     }
                                   />
-                                  <Field.ErrorText>
-                                    This is an error text
-                                  </Field.ErrorText>
+                                  <Field.ErrorText></Field.ErrorText>
                                 </Field.Root>
                               </Box>
                             </Box>
@@ -632,7 +686,7 @@ const SectorTabs: FC<SectorTabsProps> = ({
       <Tabs.Root
         lazyMount
         unmountOnExit
-        defaultValue={`tab-${inventoryData?.sectorProgress[0].sector.sectorId}`}
+        defaultValue={`tab-${groupedSectors[0]?.sector.sectorName}`}
       >
         <Tabs.List>{renderSectorTabList()}</Tabs.List>
         {renderSectorTabContent()}

@@ -158,7 +158,7 @@ export default function OnboardingSetup({
         country: countryName ?? undefined,
         regionLocode: region?.actor_id ?? undefined,
         countryLocode: country?.actor_id ?? undefined,
-        projectId: projectId ?? undefined,
+        projectId: projectId as string,
       }).unwrap();
       await addCityPopulation({
         cityId: city.cityId,

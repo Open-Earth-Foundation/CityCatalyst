@@ -3,9 +3,7 @@ import requests
 import time
 from pathlib import Path
 from datetime import datetime
-from dotenv import load_dotenv
-
-load_dotenv()
+import argparse
 
 # API endpoint configuration
 # BASE_URL = "https://cap-plan-creator.openearth.dev"
@@ -32,7 +30,7 @@ def load_json_file(filepath: str) -> dict:
         raise
 
 
-def test_async_plan_creation(city_name="Camaçari"):
+def test_async_plan_creation(city_name="Camaçari", language="pt"):
     """Test the asynchronous plan creation workflow."""
     try:
         print("Starting asynchronous plan creation test")
@@ -41,7 +39,11 @@ def test_async_plan_creation(city_name="Camaçari"):
         action_data = load_json_file("data/input/c40_0028.json")
 
         # Prepare request data with city name
-        request_data = {"action": action_data, "city_name": city_name}
+        request_data = {
+            "action": action_data,
+            "city_name": city_name,
+            "language": language,
+        }
 
         # Step 1: Start plan creation
         print(f"Step 1: Sending request to {START_PLAN_URL}")
@@ -130,7 +132,7 @@ def test_async_plan_creation(city_name="Camaçari"):
             # Save with timestamp and action ID
             timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M")
             action_id = action_data.get("ActionID", "unknown")
-            filename = f"{timestamp}_{action_id}_{city_name.replace(' ', '_')}_async_test_response.md"
+            filename = f"{timestamp}_{action_id}_{city_name.replace(' ', '_')}_{language}_async_test_response.md"
             output_path = output_dir / filename
 
             with open(output_path, "wb") as f:
@@ -147,8 +149,17 @@ def test_async_plan_creation(city_name="Camaçari"):
 
 
 if __name__ == "__main__":
-    # Get city name from command line argument or use default
-    import sys
+    import argparse
 
-    city_name = sys.argv[1] if len(sys.argv) > 1 else "Camaçari"
-    test_async_plan_creation(city_name)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--city", default="Camaçari", help="Name of the city")
+    parser.add_argument(
+        "--language",
+        type=str,
+        required=True,
+        choices=["en", "es", "pt"],
+        help="The language of the response. One of 'en', 'es' or 'pt'.",
+    )
+
+    args = parser.parse_args()
+    test_async_plan_creation(args.city, args.language)

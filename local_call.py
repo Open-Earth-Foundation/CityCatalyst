@@ -26,7 +26,7 @@ def mock_api_body(climate_action_id: str, locode: str):
     return climate_action_data, city_data
 
 
-def create_plan(climate_action_data: dict, city_data: dict):
+def create_plan(climate_action_data: dict, city_data: dict, language: str):
 
     # Create the graph
     graph = create_graph()
@@ -46,6 +46,8 @@ def create_plan(climate_action_data: dict, city_data: dict):
         response_agent_9=AIMessage(""),
         response_agent_10=AIMessage(""),
         response_agent_combine="",
+        response_agent_translate="",
+        language=language,
         messages=[],
     )
 
@@ -70,6 +72,13 @@ if __name__ == "__main__":
         required=True,
         help="The locode of the city data for the climate action. E.g. BRCCI",
     )
+    parser.add_argument(
+        "--language",
+        type=str,
+        required=True,
+        choices=["en", "es", "pt"],
+        help="The language of the response. One of 'en', 'es' or 'pt'.",
+    )
 
     args = parser.parse_args()
 
@@ -86,7 +95,11 @@ if __name__ == "__main__":
     if success:
         print("\nSUCCESS: Vector store is available locally")
         print("Creating plan...")
-        create_plan(climate_action_data, city_data)
+        create_plan(
+            climate_action_data=climate_action_data,
+            city_data=city_data,
+            language=args.language,
+        )
     else:
         print("\nFAILED: Could not get vector store")
         print("Ending...")

@@ -34,7 +34,7 @@ def db_city_context(locode: str):
     return result
 
 
-@api_router.get("/city_context/{locode}", summary="Get contextual data about the city")
+@api_router.get("/city_context/city/{locode}", summary="Get contextual data about the city")
 def get_city_context(locode: str):
     """
     Retrieve contextual data about the city based on the provided locode.

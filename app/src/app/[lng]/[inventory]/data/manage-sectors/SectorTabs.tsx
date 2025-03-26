@@ -1,5 +1,4 @@
 "use client";
-import { InventoryProgressResponse } from "@/util/types";
 import {
   Box,
   CheckboxCard,
@@ -11,8 +10,6 @@ import {
   Text,
   Textarea,
 } from "@chakra-ui/react";
-import { SerializedError } from "@reduxjs/toolkit";
-import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import { TFunction } from "i18next";
 import React, { FC, useEffect, useMemo, useState } from "react";
 import { SubSectorWithRelations } from "../[step]/types";
@@ -37,8 +34,6 @@ import { toaster } from "@/components/ui/toaster";
 import RouteChangeDialog from "./RouteChangeDialog";
 import { usePathname, useRouter } from "next/navigation";
 import ProgressLoader from "@/components/ProgressLoader";
-
-// Define your transformation interfaces
 
 interface SubcategoryItem {
   subSectorId: string;
@@ -107,11 +102,7 @@ interface CardInputs {
   explanation: string;
 }
 
-const SectorTabs: FC<SectorTabsProps> = ({
-  inventoryId,
-
-  t,
-}) => {
+const SectorTabs: FC<SectorTabsProps> = ({ inventoryId, t }) => {
   const router = useRouter();
 
   const [unfinishedSubsectorsData, setUnfinishedSubsectorsData] = useState<
@@ -223,6 +214,7 @@ const SectorTabs: FC<SectorTabsProps> = ({
         title: t("error"),
         description: t("error-updating-notation-keys"),
       });
+      console.error("Failed to update notation keys", error);
     }
   };
 

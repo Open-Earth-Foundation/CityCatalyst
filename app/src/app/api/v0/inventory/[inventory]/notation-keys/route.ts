@@ -25,6 +25,10 @@ export const GET = apiHandler(async (_req, { session, params }) => {
       inventoryId: inventory.inventoryId,
     },
   });
+  const inventoryValuesMap = new Map(
+    existingInventoryValues.map((value) => [value.subCategoryId, value]),
+  );
+
   const inventoryStructure =
     await InventoryProgressService.getSortedInventoryStructure();
   const inventoryValuesBySector = Object.fromEntries(
@@ -32,8 +36,8 @@ export const GET = apiHandler(async (_req, { session, params }) => {
       const inventoryValues = sector.subSectors.flatMap((subSector) => {
         return subSector.subCategories
           .map((subCategory) => {
-            const inventoryValue = existingInventoryValues.find(
-              (value) => value.subCategoryId === subCategory.subcategoryId,
+            const inventoryValue = inventoryValuesMap.get(
+              subCategory.subcategoryId,
             );
             return {
               inventoryValue,

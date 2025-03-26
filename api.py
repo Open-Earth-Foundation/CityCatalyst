@@ -77,7 +77,7 @@ task_storage = {}
 class PlanRequest(BaseModel):
     action: Dict[str, Any]
     city_name: str
-    language: str
+    language: str = "en"  # Default to English
 
 
 def load_city_data():

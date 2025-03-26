@@ -4,11 +4,27 @@ import { apiHandler } from "@/util/api";
 import { NextResponse } from "next/server";
 import createHttpError from "http-errors";
 import UserService from "@/backend/UserService";
+import { db } from "@/models";
 
 export const GET = apiHandler(async (_req, { params, session }) => {
   UserService.validateIsAdmin(session);
   const { organizationId } = params;
-  const org = await Organization.findByPk(organizationId as string);
+  const org = await Organization.findByPk(organizationId as string, {
+    include: [
+      {
+        model: db.models.Project,
+        as: "projects",
+        attributes: ["projectId", "name", "cityCountLimit"],
+        include: [
+          {
+            model: db.models.City,
+            as: "cities",
+            attributes: ["cityId", "name"],
+          },
+        ],
+      },
+    ],
+  });
   if (!org) {
     throw new createHttpError.NotFound("organization-not-found");
   }
@@ -23,9 +39,8 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
   if (!org) {
     throw new createHttpError.NotFound("organization-not-found");
   } else {
-    Organization.destroy({ where: { organizationId: organizationId } });
-    await org.update(validatedData);
-    return NextResponse.json(org);
+    const newOrg = await org.update(validatedData);
+    return NextResponse.json(newOrg);
   }
 });
 

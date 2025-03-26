@@ -28,6 +28,7 @@ import {
   MenuTrigger,
 } from "@/components/ui/menu";
 import { MdForwardToInbox, MdMoreVert, MdOutlineGroup } from "react-icons/md";
+import { useRouter } from "next/navigation";
 
 interface OrgData {
   contactEmail: string;
@@ -41,6 +42,7 @@ interface OrgData {
 const AdminPage = ({ params: { lng } }: { params: { lng: string } }) => {
   const { t } = useTranslation(lng, "admin");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const router = useRouter();
 
   const { data: organizationData, isLoading: isOrgDataLoading } =
     api.useGetOrganizationsQuery({});
@@ -214,7 +216,11 @@ const AdminPage = ({ params: { lng } }: { params: { lng: string } }) => {
                           cursor: "pointer",
                         }}
                         className="group"
-                        onClick={() => {}}
+                        onClick={() =>
+                          router.push(
+                            `/${lng}/admin/organization/${item.organizationId}/profile`,
+                          )
+                        }
                       >
                         <Icon
                           className="group-hover:text-white"

@@ -9,10 +9,10 @@ export function UseSuccessToast({
   description?: string;
   duration?: number;
 }) {
-  const showSuccessToast = () => {
+  const showSuccessToast = (data?: { title: string; description?: string }) => {
     return toaster.create({
-      title: title,
-      description: description,
+      title: data?.title ?? title,
+      description: data?.description ?? description,
       type: "success",
       duration: duration,
     });

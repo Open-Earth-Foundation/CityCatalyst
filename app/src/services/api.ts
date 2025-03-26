@@ -66,6 +66,7 @@ export const api = createApi({
     "Organizations",
     "OrganizationInvite",
     "Projects",
+    "Organization",
   ],
   baseQuery: fetchBaseQuery({ baseUrl: "/api/v0/", credentials: "include" }),
   endpoints: (builder) => {
@@ -834,6 +835,17 @@ export const api = createApi({
         },
         invalidatesTags: ["Organizations"],
       }),
+      updateOrganization: builder.mutation({
+        query: (data: { id: string; name: string; contactEmail: string }) => ({
+          url: `/organizations/${data.id}`,
+          method: "PATCH",
+          body: { name: data.name, contactEmail: data.contactEmail },
+        }),
+        transformResponse: (response: OrganizationResponse) => {
+          return response;
+        },
+        invalidatesTags: ["Organizations", "Organization"],
+      }),
       createProject: builder.mutation({
         query: (data: {
           organizationId: string;
@@ -884,6 +896,14 @@ export const api = createApi({
               : "invite sent",
           })),
         providesTags: ["Organizations"],
+      }),
+      getOrganization: builder.query({
+        query: (organizationId: string) => ({
+          method: "GET",
+          url: `/organizations/${organizationId}`,
+        }),
+        transformResponse: (response: OrganizationResponse) => response,
+        providesTags: ["Organizations", "Organization"],
       }),
     };
   },
@@ -967,5 +987,7 @@ export const {
   useCreateProjectMutation,
   useCreateOrganizationInviteMutation,
   useGetOrganizationsQuery,
+  useGetOrganizationQuery,
+  useUpdateOrganizationMutation,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

@@ -21,6 +21,7 @@
   "back": "Back",
   "error-message": "An error occurred. Please try again.",
   "organization-added": "Organization added successfully",
+  "organization-updated": "Organization updated successfully",
   "account-details": "Account details",
   "resend-invite": "Resend invite",
   "not-authorized": "You are not authorized",
@@ -28,5 +29,15 @@
   "invite-sent": "Invite sent",
   "no-data": "No data available",
   "all": "All",
-  "of": "of"
+  "of": "of",
+  "org-profile-heading": "{{name}} Profile",
+  "org-account-heading": "{{name}} Account",
+  "projects": "Projects",
+  "team": "Team",
+  "profile": "Profile",
+  "org-profile-caption": "Control panel for {{name}}",
+  "account-details-caption": "Check and edit your account details",
+  "save-change": "Save changes",
+  "plan-details": "Plan details",
+  "plan-details-caption": "<bold>{{name}}</bold> currently has <bold>{{num_projects}}</bold> projects and a count of <bold>{{num_cities}} / {{total_cities}}</bold> cities"
 }

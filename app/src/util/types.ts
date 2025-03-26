@@ -368,6 +368,15 @@ export type OrganizationResponse = {
   last_updated: string;
   name: string;
   organizationId: string;
+  projects: {
+    id: string;
+    name: string;
+    cityCountLimit: number;
+    cities: {
+      cityId: string;
+      name: string;
+    }[];
+  }[];
 };
 
 export type ProjectResponse = {

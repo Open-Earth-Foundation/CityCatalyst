@@ -6,6 +6,12 @@ import { apiHandler } from "@/util/api";
 import { randomUUID } from "node:crypto";
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { InventoryTypeEnum } from "@/util/constants";
+
+const validSectorRefNos = {
+  [InventoryTypeEnum.GPC_BASIC]: ["I", "II", "III"],
+  [InventoryTypeEnum.GPC_BASIC_PLUS]: ["I", "II", "III", "IV", "V"],
+};
 
 // returns { success: true, result: { [sectorReferenceNumber]: { subSector, subCategory, inventoryValue }[] } }
 // used to decide which subsectors + scopes to show on the notation key manager for each sector
@@ -31,6 +37,16 @@ export const GET = apiHandler(async (_req, { session, params }) => {
 
   const inventoryStructure =
     await InventoryProgressService.getSortedInventoryStructure();
+  const applicableSectors = inventoryStructure.filter((sector) => {
+    if (!sector.referenceNumber) {
+      return false;
+    }
+
+    const inventoryType =
+      inventory.inventoryType ?? InventoryTypeEnum.GPC_BASIC;
+    return validSectorRefNos[inventoryType].includes(sector.referenceNumber);
+  });
+
   const inventoryValuesBySector = Object.fromEntries(
     inventoryStructure.map((sector) => {
       const inventoryValues = sector.subSectors.flatMap((subSector) => {

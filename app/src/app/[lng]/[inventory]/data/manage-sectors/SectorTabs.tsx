@@ -117,6 +117,11 @@ const SectorTabs: FC<SectorTabsProps> = ({
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
   }, [isDirty]);
 
+  const { showErrorToast } = UseErrorToast({
+    title: t("failure"),
+    description: t("notation-keys-save-failed"),
+  });
+
   // update notation keys for subsectors from api service
   const [createNotationKeys, { isLoading, isError, data, status }] =
     api.useUpdateOrCreateNotationKeysMutation();
@@ -144,10 +149,6 @@ const SectorTabs: FC<SectorTabsProps> = ({
 
     // payload according to the schema
     const payload = { notationKeys: notationKeysArray };
-    const { showErrorToast } = UseErrorToast({
-      title: t("failure"),
-      description: t("notation-keys-save-failed"),
-    });
 
     try {
       await createNotationKeys({

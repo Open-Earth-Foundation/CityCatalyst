@@ -369,7 +369,7 @@ export type OrganizationResponse = {
   name: string;
   organizationId: string;
   projects: {
-    id: string;
+    projectId: string;
     name: string;
     cityCountLimit: number;
     cities: {

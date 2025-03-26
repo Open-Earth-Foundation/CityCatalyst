@@ -65,7 +65,7 @@ const AdminOrganizationIdProfilePage = ({
         name: organization.name,
       });
     }
-  }, [organization]);
+  }, [reset, organization]);
 
   const { showErrorToast } = UseErrorToast({
     title: t("error-message"),

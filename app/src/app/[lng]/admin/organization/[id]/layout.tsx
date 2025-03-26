@@ -31,7 +31,6 @@ export default function AdminOrganizationLayout({
   children: React.ReactNode;
   params: { lng: string; id: string };
 }) {
-  // let's fetch the organization data
   const { t } = useTranslation(lng, "admin");
   const pathName = usePathname();
 

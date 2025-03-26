@@ -10,7 +10,7 @@ import { InventoryTypeEnum } from "@/util/constants";
 
 const validSectorRefNos = {
   [InventoryTypeEnum.GPC_BASIC]: ["I", "II", "III"],
-  [InventoryTypeEnum.GPC_BASIC_PLUS]: ["I", "II", "III", "IV", "V", "VI"],
+  [InventoryTypeEnum.GPC_BASIC_PLUS]: ["I", "II", "III", "IV", "V"],
 };
 
 // returns { success: true, result: { [sectorReferenceNumber]: { subSector, subCategory, inventoryValue }[] } }
@@ -44,13 +44,6 @@ export const GET = apiHandler(async (_req, { session, params }) => {
 
     const inventoryType =
       inventory.inventoryType ?? InventoryTypeEnum.GPC_BASIC;
-    console.log(
-      "refno vorhanden?",
-      sector.referenceNumber,
-      inventoryType,
-      validSectorRefNos[inventoryType],
-      validSectorRefNos[inventoryType].includes(sector.referenceNumber),
-    );
     return validSectorRefNos[inventoryType].includes(sector.referenceNumber);
   });
 

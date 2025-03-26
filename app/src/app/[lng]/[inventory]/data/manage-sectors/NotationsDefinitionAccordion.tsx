@@ -63,7 +63,6 @@ const NotationsDefinitionAccordion: FC<NotationsDefinitionAccordionProps> = ({
           >
             {t("notation-key-question")}
           </Text>
-          <Accordion.ItemIndicator />
         </AccordionItemTrigger>
         <AccordionItemContent>
           <Accordion.ItemBody>

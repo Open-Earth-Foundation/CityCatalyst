@@ -12,7 +12,6 @@ import {
 } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import React, { FC, useEffect, useMemo, useState } from "react";
-import { SubSectorWithRelations } from "../[step]/types";
 import { StationaryEnergyIcon } from "@/components/icons";
 import { BiSelectMultiple } from "react-icons/bi";
 
@@ -34,6 +33,9 @@ import { toaster } from "@/components/ui/toaster";
 import RouteChangeDialog from "./RouteChangeDialog";
 import { usePathname, useRouter } from "next/navigation";
 import ProgressLoader from "@/components/ProgressLoader";
+import type { SubCategoryAttributes } from "@/models/SubCategory";
+import type { InventoryValueAttributes } from "@/models/InventoryValue";
+import type { SubSectorAttributes } from "@/models/SubSector";
 
 interface SubcategoryItem {
   subSectorId: string;
@@ -104,12 +106,15 @@ interface CardInputs {
   explanation: string;
 }
 
-const SectorTabs: FC<SectorTabsProps> = ({ inventoryId, t }) => {
+interface ScopeData {
+  subCategory?: SubCategoryAttributes;
+  inventoryValue?: InventoryValueAttributes;
+  subSector?: SubSectorAttributes;
+}
+
+const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
   const router = useRouter();
 
-  const [unfinishedSubsectorsData, setUnfinishedSubsectorsData] = useState<
-    SubSectorWithRelations[] | undefined
-  >([]);
   // State to track selected subsector IDs per sector (keyed by sector ID)
   const [selectedCardsBySector, setSelectedCardsBySector] = useState<
     Record<string, string[]>
@@ -127,6 +132,7 @@ const SectorTabs: FC<SectorTabsProps> = ({ inventoryId, t }) => {
   const pathname = usePathname();
   const [prevPathname, setPrevPathname] = useState(pathname);
   const [nextRoute, setNextRoute] = useState<string | null>(null);
+  const [selectedSector, setSelectedSector] = useState<SectorReference>("I");
 
   const {
     data: sectorData,
@@ -136,6 +142,28 @@ const SectorTabs: FC<SectorTabsProps> = ({ inventoryId, t }) => {
     { inventoryId: inventoryId! },
     { skip: !inventoryId },
   );
+
+  useEffect(() => {
+    if (!isSectorDataLoading && !error && sectorData?.result) {
+      const result = Object.entries(
+        sectorData.result as Record<string, ScopeData[]>,
+      ).flatMap(([_sectorRefno, scopes]: [string, ScopeData[]]) => {
+        return scopes.map((scope: ScopeData) => [
+          scope.subCategory?.subcategoryId,
+          {
+            notationKey: scope.inventoryValue?.unavailableReason,
+            explanation: scope.inventoryValue?.unavailableExplanation,
+          },
+        ]);
+      });
+      setCardInputs((prev) => {
+        const newInputs: Record<string, CardInputs> = { ...prev };
+        // If there are selected cards, update only those; otherwise update all items.
+        Object.assign(newInputs, Object.fromEntries(result));
+        return newInputs;
+      });
+    }
+  }, [error, isSectorDataLoading, sectorData]);
 
   useEffect(() => {
     // Adjust the dirty check as needed (e.g., also include quickActionValues)
@@ -191,11 +219,16 @@ const SectorTabs: FC<SectorTabsProps> = ({ inventoryId, t }) => {
       ];
     } else {
       // Bulk update all cards that have been edited (or, if you prefer, all selected ones)
-      notationKeys = Object.entries(cardInputs).map(([id, value]) => ({
-        subCategoryId: id,
-        unavailableReason: value.notationKey,
-        unavailableExplanation: value.explanation,
-      }));
+      const currentSectorSubCategoryIds = sectorData?.result[
+        selectedSector
+      ].map((scope: any) => scope.subCategory.subcategoryId);
+      notationKeys = Object.entries(cardInputs)
+        .filter(([id, _value]) => currentSectorSubCategoryIds.includes(id))
+        .map(([id, value]) => ({
+          subCategoryId: id,
+          unavailableReason: value.notationKey,
+          unavailableExplanation: value.explanation,
+        }));
     }
 
     try {
@@ -204,7 +237,6 @@ const SectorTabs: FC<SectorTabsProps> = ({ inventoryId, t }) => {
         notationKeys: notationKeys,
       }).unwrap();
       // clear dirty state on success
-      setCardInputs({});
       setIsDirty(false);
       status === "fulfilled" &&
         toaster.success({
@@ -253,7 +285,7 @@ const SectorTabs: FC<SectorTabsProps> = ({ inventoryId, t }) => {
       return (
         <Tabs.Trigger
           key={group.sectorRef}
-          value={`tab-${group.sectorRef}`}
+          value={group.sectorRef}
           maxW="1/4"
           _selected={{
             color: "content.link",
@@ -292,7 +324,7 @@ const SectorTabs: FC<SectorTabsProps> = ({ inventoryId, t }) => {
   });
   // handle undo changes
   const handleUndoChanges = () => {
-    setCardInputs({});
+    // setCardInputs({});
     setIsDirty(false);
     setQuickActionValues({});
     setSelectedCardsBySector({});
@@ -366,7 +398,7 @@ const SectorTabs: FC<SectorTabsProps> = ({ inventoryId, t }) => {
       return (
         <Tabs.Content
           key={group.sectorRef}
-          value={`tab-${group.sectorRef}`}
+          value={group.sectorRef}
           pt="70px"
           _open={{
             animationName: "fade-in, scale-in",
@@ -701,7 +733,11 @@ const SectorTabs: FC<SectorTabsProps> = ({ inventoryId, t }) => {
       <Tabs.Root
         lazyMount
         unmountOnExit
-        defaultValue={`tab-${groupedSectors[0]?.sectorRef}`}
+        defaultValue={groupedSectors[0]?.sectorRef}
+        value={selectedSector}
+        onValueChange={(value) =>
+          setSelectedSector(value.value as SectorReference)
+        }
       >
         <Tabs.List>{renderSectorTabList()}</Tabs.List>
         {renderSectorTabContent()}

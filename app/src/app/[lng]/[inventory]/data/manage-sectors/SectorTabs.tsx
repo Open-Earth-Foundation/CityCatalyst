@@ -686,7 +686,7 @@ const SectorTabs: FC<SectorTabsProps> = ({
       <Tabs.Root
         lazyMount
         unmountOnExit
-        defaultValue={`tab-${groupedSectors[0]?.sector.sectorName}`}
+        defaultValue={`tab-${groupedSectors[0]?.sectorRef}`}
       >
         <Tabs.List>{renderSectorTabList()}</Tabs.List>
         {renderSectorTabContent()}

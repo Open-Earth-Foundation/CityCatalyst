@@ -21,7 +21,7 @@ def db_city_context(locode: str):
             FROM modelled.city_attribute a
             INNER JOIN modelled.city_polygon cp
             ON a.locode = cp.locode
-            WHERE REPLACE(a.locode, ' ', '') = REPLACE(:locode, ' ', '')
+            WHERE a.locode = :locode
             GROUP BY a.locode, cp.city_name, cp.region_code, a.region_name
             """
         )

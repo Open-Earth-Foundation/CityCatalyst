@@ -1,7 +1,7 @@
 "use client";
 
 import { Box } from "@chakra-ui/react";
-import React, { useEffect } from "react";
+import React from "react";
 import Heading from "./Heading";
 import { useTranslation } from "@/i18n/client";
 import NotationsDefinitionAccordion from "./NotationsDefinitionAccordion";

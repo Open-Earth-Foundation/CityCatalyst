@@ -123,6 +123,7 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
   const pathname = usePathname();
   const [prevPathname, setPrevPathname] = useState(pathname);
   const [nextRoute, setNextRoute] = useState<string | null>(null);
+  const [selectedSector, setSelectedSector] = useState<SectorReference>("I");
 
   const {
     data: sectorData,
@@ -139,10 +140,10 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
       const result = Object.entries(sectorData.result).flatMap(
         ([_sectorRefno, scopes]: [string, any]) => {
           return scopes.map((scope: any) => [
-            scope.subCategory.subcategoryId,
+            scope.subCategory?.subcategoryId,
             {
-              notationKey: scope.inventoryValue.unavailableReason,
-              explanation: scope.inventoryValue.unavailableExplanation,
+              notationKey: scope.inventoryValue?.unavailableReason,
+              explanation: scope.inventoryValue?.unavailableExplanation,
             },
           ]);
         },
@@ -210,11 +211,16 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
       ];
     } else {
       // Bulk update all cards that have been edited (or, if you prefer, all selected ones)
-      notationKeys = Object.entries(cardInputs).map(([id, value]) => ({
-        subCategoryId: id,
-        unavailableReason: value.notationKey,
-        unavailableExplanation: value.explanation,
-      }));
+      const currentSectorSubCategoryIds = sectorData?.result[
+        selectedSector
+      ].map((scope: any) => scope.subCategory.subcategoryId);
+      notationKeys = Object.entries(cardInputs)
+        .filter(([id, _value]) => currentSectorSubCategoryIds.includes(id))
+        .map(([id, value]) => ({
+          subCategoryId: id,
+          unavailableReason: value.notationKey,
+          unavailableExplanation: value.explanation,
+        }));
     }
 
     try {
@@ -223,7 +229,6 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
         notationKeys: notationKeys,
       }).unwrap();
       // clear dirty state on success
-      setCardInputs({});
       setIsDirty(false);
       status === "fulfilled" &&
         toaster.success({
@@ -272,7 +277,7 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
       return (
         <Tabs.Trigger
           key={group.sectorRef}
-          value={`tab-${group.sectorRef}`}
+          value={group.sectorRef}
           maxW="1/4"
           _selected={{
             color: "content.link",
@@ -311,7 +316,7 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
   });
   // handle undo changes
   const handleUndoChanges = () => {
-    setCardInputs({});
+    // setCardInputs({});
     setIsDirty(false);
     setQuickActionValues({});
     setSelectedCardsBySector({});
@@ -385,7 +390,7 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
       return (
         <Tabs.Content
           key={group.sectorRef}
-          value={`tab-${group.sectorRef}`}
+          value={group.sectorRef}
           pt="70px"
           _open={{
             animationName: "fade-in, scale-in",
@@ -720,7 +725,11 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
       <Tabs.Root
         lazyMount
         unmountOnExit
-        defaultValue={`tab-${groupedSectors[0]?.sectorRef}`}
+        defaultValue={groupedSectors[0]?.sectorRef}
+        value={selectedSector}
+        onValueChange={(value) =>
+          setSelectedSector(value.value as SectorReference)
+        }
       >
         <Tabs.List>{renderSectorTabList()}</Tabs.List>
         {renderSectorTabContent()}

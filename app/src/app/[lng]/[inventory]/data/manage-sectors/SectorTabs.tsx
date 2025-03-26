@@ -221,13 +221,12 @@ const SectorTabs: FC<SectorTabsProps> = ({
           description: t("notation-keys-updated"),
         });
     } catch (error) {
-      console.error("Failed to update notation keys", error);
+      toaster.error({
+        title: t("error"),
+        description: t("error-updating-notation-keys"),
+      });
     }
   };
-
-  if (isError) {
-    console.error("Failed to update notation keys", isError);
-  }
 
   // Modal handlers for unsaved changes
   const confirmNavigation = () => {

@@ -112,12 +112,24 @@ export const POST = apiHandler(async (req, { session, params }) => {
         lock: true,
       });
 
+      const subCategory = await db.models.SubCategory.findOne({
+        where: { subcategoryId: notationKey.subCategoryId },
+        include: [
+          {
+            model: db.models.SubSector,
+            as: "subsector",
+            attributes: ["sectorId"],
+          },
+        ],
+      });
       if (existingInventoryValue) {
         // reset emissions values of inventory value as notation key was used for it
         const inventoryValue = await existingInventoryValue.update(
           {
             unavailableReason: notationKey.unavailableReason,
             unavailableExplanation: notationKey.unavailableExplanation,
+            subSectorId: subCategory?.subsectorId,
+            sectorId: subCategory?.subsector?.sectorId,
             co2eq: undefined,
             co2eqYears: undefined,
           },
@@ -135,6 +147,8 @@ export const POST = apiHandler(async (req, { session, params }) => {
           {
             ...notationKey,
             id: randomUUID(),
+            subSectorId: subCategory?.subsectorId,
+            sectorId: subCategory?.subsector?.sectorId,
             inventoryId,
           },
           { transaction },

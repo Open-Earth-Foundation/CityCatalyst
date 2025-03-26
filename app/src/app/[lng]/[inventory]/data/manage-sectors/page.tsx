@@ -34,12 +34,7 @@ const ManageSubSectors = ({
       >
         <Heading t={t} inventoryParam={inventory} />
         <NotationsDefinitionAccordion t={t} />
-        <SectorTabs
-          t={t}
-          inventoryData={inventoryData}
-          isInventoryDataLoading={isInventoryDataLoading}
-          inventoryDataError={inventoryDataError}
-        />
+        <SectorTabs t={t} inventoryId={inventory} />
       </Box>
       <Toaster />
     </Box>

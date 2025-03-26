@@ -88,8 +88,6 @@ def custom_agent_translate(state: AgentState) -> AgentState:
         # Get the translation from the model
         response = model.invoke(messages)
 
-        # print(f"Translated text: {response.content}")
-
         # Convert the response to a string
         response_str = str(response.content)
 
@@ -102,9 +100,6 @@ def custom_agent_translate(state: AgentState) -> AgentState:
 
         # Save the translated text to a file
 
-        # Convert Markdown to HTML
-        # html_content = markdown.markdown(combined_markdown, extensions=["extra"])
-
         # File output
         OUTPUT_PATH.mkdir(parents=True, exist_ok=True)
 
@@ -114,19 +109,12 @@ def custom_agent_translate(state: AgentState) -> AgentState:
         file_name = (
             f"{current_time}_{city_locode}_{climate_action_id}_implementation_plan.md"
         )
-        # file_name_html = (
-        #     f"{current_time}_{city_locode}_{climate_action_id}_implementation_plan.html"
-        # )
 
         # Write the combined Markdown text to a local file
         with open(OUTPUT_PATH / file_name, "w", encoding="utf-8") as md_file:
             md_file.write(response_str)
 
         print(f"Translated text saved to {OUTPUT_PATH / file_name}\n")
-
-        # # Write the html to a local file
-        # with open(OUTPUT_PATH / file_name_html, "w", encoding="utf-8") as md_file:
-        #     md_file.write(html_content)
 
         return result_state
 

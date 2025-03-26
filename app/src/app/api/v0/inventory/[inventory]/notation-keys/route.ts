@@ -7,8 +7,8 @@ import { randomUUID } from "node:crypto";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
-// returns list of unfinished subsectors for given inventory
-// used to decide which subsectors to show on the notation key manager
+// returns { success: true, result: { [sectorReferenceNumber]: { subSector, subCategory, inventoryValue }[] } }
+// used to decide which subsectors + scopes to show on the notation key manager for each sector
 export const GET = apiHandler(async (_req, { session, params }) => {
   const inventoryId = z.string().uuid().parse(params.inventory);
 
@@ -20,20 +20,45 @@ export const GET = apiHandler(async (_req, { session, params }) => {
     true,
   );
 
-  const inventoryProgress =
-    await InventoryProgressService.getInventoryProgress(inventory);
-  const unfinishedSubSectors = inventoryProgress.sectorProgress.flatMap(
-    (sector) =>
-      sector.subSectors.filter((subSector) => {
-        // return unfinished subsectors or ones that are using notation keys (InventoryValue.unavailableReason)
-        // so they can be changed again after saving
-        return !subSector.completed || subSector.unavailableReasons.length > 0;
-      }),
+  const existingInventoryValues = await db.models.InventoryValue.findAll({
+    where: {
+      inventoryId: inventory.inventoryId,
+    },
+  });
+  const inventoryValuesMap = new Map(
+    existingInventoryValues.map((value) => [value.subCategoryId, value]),
   );
 
+  const inventoryStructure =
+    await InventoryProgressService.getSortedInventoryStructure();
+  const inventoryValuesBySector = Object.fromEntries(
+    inventoryStructure.map((sector) => {
+      const inventoryValues = sector.subSectors.flatMap((subSector) => {
+        return subSector.subCategories
+          .map((subCategory) => {
+            const inventoryValue = inventoryValuesMap.get(
+              subCategory.subcategoryId,
+            );
+            return {
+              inventoryValue,
+              subSector,
+              subCategory,
+            };
+          })
+          .filter(({ inventoryValue }) => {
+            const isFilled = inventoryValue != null;
+            const hasNotationKey =
+              inventoryValue && inventoryValue.unavailableReason != null;
+            return !isFilled || hasNotationKey;
+          });
+      });
+
+      return [sector.referenceNumber, inventoryValues];
+    }),
+  );
   return NextResponse.json({
     success: true,
-    result: unfinishedSubSectors,
+    result: inventoryValuesBySector,
   });
 });
 

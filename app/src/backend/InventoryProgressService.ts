@@ -161,15 +161,11 @@ export default class InventoryProgressService {
           inventoryTypeSubCategoryCount,
         ); // TODO remove this when scope 3 is added back for SECTOR 1 and 2 in BASIC+;
         let completedCount = 0;
-        let unavailableReasons: string[] = [];
         if (inventoryValues?.length > 0) {
           const currentSubSectorValues = inventoryValues.filter(
             (inventoryValue) =>
               inventoryValue.subSectorId === subSector.subsectorId,
           );
-          unavailableReasons = currentSubSectorValues
-            .map((inventoryValue) => inventoryValue.unavailableReason!)
-            .filter((reason) => !!reason);
           completedCount = currentSubSectorValues.length;
         }
 
@@ -177,7 +173,6 @@ export default class InventoryProgressService {
           completed: completedCount === totalCount,
           completedCount,
           totalCount,
-          unavailableReasons,
           sectorId: subSector.sectorId, // optional string defaults to empty string
           referenceNumber: subSector.referenceNumber, // optional string defaults to empty string
           scopeId: subSector.scopeId,
@@ -227,7 +222,7 @@ export default class InventoryProgressService {
     );
   }
 
-  private static async getSortedInventoryStructure() {
+  public static async getSortedInventoryStructure() {
     if (
       Inventory_Sector_Hierarchy.length > 0 &&
       process.env.NODE_ENV !== "test"

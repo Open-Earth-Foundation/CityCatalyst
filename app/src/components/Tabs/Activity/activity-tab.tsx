@@ -325,8 +325,8 @@ const ActivityTab: FC<ActivityTabProps> = ({
           subSectorId={subsectorId}
           t={t}
           onSubmit={() => setShowUnavailableForm(false)}
-          reason={inventoryValue?.unavailableReason}
-          justification={inventoryValue?.unavailableExplanation}
+          reason={inventoryValue?.unavailableReason ?? undefined}
+          justification={inventoryValue?.unavailableExplanation ?? undefined}
         />
       )}
       {!scopeNotApplicable && externalInventoryValue && (

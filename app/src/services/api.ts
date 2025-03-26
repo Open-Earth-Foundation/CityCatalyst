@@ -800,7 +800,7 @@ export const api = createApi({
         }),
       }),
       // Get unfinished subsectors
-      getUnfinishedSubsectors: builder.query({
+      getNotationKeyScopes: builder.query({
         query: (data: { inventoryId: string }) => ({
           url: `/inventory/${data.inventoryId}/notation-keys`,
           method: "GET",
@@ -961,7 +961,7 @@ export const {
   useGetCityInvitesQuery,
   useUpdatePasswordMutation,
   useGetInventoryPopulationsQuery,
-  useGetUnfinishedSubsectorsQuery,
+  useGetNotationKeyScopesQuery,
   useUpdateOrCreateNotationKeysMutation,
   useCreateOrganizationMutation,
   useCreateProjectMutation,

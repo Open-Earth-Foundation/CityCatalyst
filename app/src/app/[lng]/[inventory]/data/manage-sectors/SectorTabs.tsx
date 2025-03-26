@@ -17,7 +17,6 @@ import { SerializedError } from "@reduxjs/toolkit";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import { TFunction } from "i18next";
 import React, { FC, useEffect, useMemo, useState } from "react";
-import { SubSectorWithRelations } from "../[step]/types";
 import { StationaryEnergyIcon } from "@/components/icons";
 import { BiSelectMultiple } from "react-icons/bi";
 
@@ -111,16 +110,9 @@ interface CardInputs {
   explanation: string;
 }
 
-const SectorTabs: FC<SectorTabsProps> = ({
-  inventoryId,
-
-  t,
-}) => {
+const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
   const router = useRouter();
 
-  const [unfinishedSubsectorsData, setUnfinishedSubsectorsData] = useState<
-    SubSectorWithRelations[] | undefined
-  >([]);
   // State to track selected subsector IDs per sector (keyed by sector ID)
   const [selectedCardsBySector, setSelectedCardsBySector] = useState<
     Record<string, string[]>
@@ -147,6 +139,29 @@ const SectorTabs: FC<SectorTabsProps> = ({
     { inventoryId: inventoryId! },
     { skip: !inventoryId },
   );
+
+  useEffect(() => {
+    if (!isSectorDataLoading && !error && sectorData?.result) {
+      // cardInputs[sectorData.result[0].subCategory.subcategoryId] = {};
+      const result = Object.entries(sectorData.result).flatMap(
+        ([_sectorRefno, scopes]: [string, any]) => {
+          return scopes.map((scope: any) => [
+            scope.subCategory.subcategoryId,
+            {
+              notationKey: scope.inventoryValue.unavailableReason,
+              explanation: scope.inventoryValue.unavailableExplanation,
+            },
+          ]);
+        },
+      );
+      setCardInputs((prev) => {
+        const newInputs: Record<string, CardInputs> = { ...prev };
+        // If there are selected cards, update only those; otherwise update all items.
+        Object.assign(newInputs, Object.fromEntries(result));
+        return newInputs;
+      });
+    }
+  }, [error, isSectorDataLoading, sectorData]);
 
   useEffect(() => {
     // Adjust the dirty check as needed (e.g., also include quickActionValues)

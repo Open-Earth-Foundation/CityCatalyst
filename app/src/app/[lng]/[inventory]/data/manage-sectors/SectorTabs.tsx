@@ -50,8 +50,10 @@ interface SubcategoryItem {
   subCategoryReferenceNumber: string;
 }
 
+type SectorReference = "I" | "II" | "III" | "IV" | "V";
+
 interface SectorGroup {
-  sectorRef: string;
+  sectorRef: SectorReference;
   // Include the full sector data (extracted from the first item)
   sector: {
     sectorId: string;
@@ -65,7 +67,7 @@ const groupScopesBySector = (data: Record<string, any[]>): SectorGroup[] => {
   return Object.entries(data).map(([sectorRef, items]) => {
     const sector = items[0]?.subSector; // assume all items in this group share the same sector
     return {
-      sectorRef,
+      sectorRef: sectorRef as SectorReference,
       sector: {
         sectorId: sector?.sectorId,
         sectorName: sector?.sectorName,
@@ -82,8 +84,8 @@ const groupScopesBySector = (data: Record<string, any[]>): SectorGroup[] => {
   });
 };
 
-// convert sector reference to GPC reference name
-const getGpcReferenceName = (ref: string, t: TFunction): string => {
+// convert sector reference number (roman numeral) to GPC sector name
+const getGPCSectorName = (sectorRef: SectorReference, t: TFunction): string => {
   const mapping: Record<string, string> = {
     I: t("stationary-energy"),
     II: t("transport"),
@@ -91,7 +93,7 @@ const getGpcReferenceName = (ref: string, t: TFunction): string => {
     IV: t("industrial-processes-and-product-uses"),
     V: t("agriculture-forestry-and-other-land-use"),
   };
-  return mapping[ref] || ref;
+  return mapping[sectorRef] || sectorRef;
 };
 
 interface SectorTabsProps {
@@ -270,7 +272,7 @@ const SectorTabs: FC<SectorTabsProps> = ({
           }}
         >
           <Text fontSize="title.md" lineClamp="2">
-            {getGpcReferenceName(group.sectorRef, t)}
+            {getGPCSectorName(group.sectorRef, t)}
           </Text>
         </Tabs.Trigger>
       );
@@ -379,7 +381,7 @@ const SectorTabs: FC<SectorTabsProps> = ({
             <Box display="flex" alignItems="center" gap="16px">
               <Icon as={StationaryEnergyIcon} color="interactive.control" />
               <Text fontSize="title.lg" fontFamily="heading" fontWeight="bold">
-                {getGpcReferenceName(group.sectorRef, t)}
+                {getGPCSectorName(group.sectorRef, t)}
               </Text>
             </Box>
             <Text fontSize="body.lg" fontFamily="body" color="content.tertiary">

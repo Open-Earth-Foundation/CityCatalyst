@@ -26,6 +26,7 @@ import React, { useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { FaLocationDot } from "react-icons/fa6";
+import { useTranslation } from "@/i18n/client";
 
 const SearchInput = ({
   searchTerm,
@@ -62,7 +63,7 @@ const SearchInput = ({
             <Icon
               as={MdClose}
               className="opacity-50"
-              box={4}
+              boxSize={4}
               color={"#414249"}
             />
           </IconButton>
@@ -101,7 +102,12 @@ const ProjectList = ({
 
   return (
     <HStack flexDirection="column" alignItems="start" gap={6}>
-      <Text fontSize="title.md" fontWeight="semibold" color="content.tertiary">
+      <Text
+        fontSize="title.md"
+        className="capitalize"
+        fontWeight="semibold"
+        color="content.tertiary"
+      >
         {t("projects")}
       </Text>
       <SearchInput searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
@@ -239,12 +245,13 @@ const SingleProjectView = ({
 
 const ProjectDrawer = ({
   isOpen,
-  t,
+  lng,
   organizationId,
   onClose,
   onOpenChange,
   currentInventoryId,
 }: {
+  lng: string;
   isOpen: boolean;
   onClose: () => void;
   onOpenChange: (val: OpenChangeDetails) => void;
@@ -252,6 +259,7 @@ const ProjectDrawer = ({
   organizationId: string;
   currentInventoryId: string;
 }) => {
+  const { t } = useTranslation(lng, "dashboard");
   const { data: projectsData, isLoading } = useGetProjectsQuery(
     {
       organizationId,

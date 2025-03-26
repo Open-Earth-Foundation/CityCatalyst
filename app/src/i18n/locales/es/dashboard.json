@@ -180,5 +180,6 @@
   "sector": "sector",
   "an-error-occurred": "Ocurrió un error",
   "error-fetching-sector-breakdown": "Error al obtener el desglose por sector",
-  "source-open-climate": "Fuente: OpenClimate"
+  "source-open-climate": "Fuente: OpenClimate",
+  "projects": "Proyectos"
 }

@@ -94,7 +94,6 @@ export default function HomePage({
     inventory?.cityId as string,
     { skip: !inventory?.cityId || !inventory?.year },
   );
-  console.log(cityYears, "the data I need");
 
   // TODO replace with an endpoint to fetch just the inventories years for a particular cityId
   const formattedEmissions = inventory?.totalEmissions

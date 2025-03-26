@@ -178,5 +178,6 @@
   "sector": "setor",
   "an-error-occurred": "Ocorreu um erro",
   "error-fetching-sector-breakdown": "Erro ao buscar a divisão por setor",
-  "source-open-climate": "Fonte: OpenClimate"
+  "source-open-climate": "Fonte: OpenClimate",
+  "projects": "Projetos"
 }

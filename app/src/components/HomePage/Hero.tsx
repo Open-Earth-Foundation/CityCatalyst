@@ -4,9 +4,8 @@ import type { TFunction } from "i18next";
 import type { PopulationAttributes } from "@/models/Population";
 import type { InventoryResponse } from "@/util/types";
 import { useGetOCCityDataQuery } from "@/services/api";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { Box, Heading, Icon, Spinner, Text } from "@chakra-ui/react";
-import { Button } from "@/components/ui/button";
 import { CircleFlag } from "react-circle-flags";
 import {
   MdArrowOutward,
@@ -17,7 +16,6 @@ import {
 import { Tooltip } from "@/components/ui/tooltip";
 import { Trans } from "react-i18next/TransWithoutContext";
 import { getShortenNumberUnit, shortenNumber } from "@/util/helpers";
-import ProjectDrawer from "@/components/HomePage/ProjectDrawer";
 
 const CityMap = dynamic(() => import("@/components/CityMap"), { ssr: false });
 
@@ -43,8 +41,6 @@ export function Hero({
   const { data: cityData } = useGetOCCityDataQuery(inventory.city?.locode!, {
     skip: !inventory.city?.locode,
   });
-
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const popWithDS = useMemo(
     () =>
@@ -73,15 +69,14 @@ export function Hero({
                 </Text>
                 <Box className="flex flex-col gap-2">
                   {!isPublic && (
-                    <Button
-                      variant="ghost"
+                    <Text
+                      fontSize="title.md"
                       w="max-content"
-                      onClick={() => setIsDrawerOpen(true)}
+                      fontWeight="semibold"
+                      color="white"
                     >
-                      <Text fontSize="title.md">
-                        {inventory?.city.project.name}
-                      </Text>
-                    </Button>
+                      {inventory?.city.project.name}
+                    </Text>
                   )}
                   <Box className="flex items-center gap-4">
                     {inventory?.city ? (
@@ -310,14 +305,6 @@ export function Hero({
           </Box>
         </Box>
       </Box>
-      <ProjectDrawer
-        t={t}
-        currentInventoryId={currentInventoryId as string}
-        organizationId={inventory?.city.project.organizationId as string}
-        isOpen={isDrawerOpen}
-        onClose={() => setIsDrawerOpen(false)}
-        onOpenChange={({ open }) => setIsDrawerOpen(open)}
-      />
     </>
   );
 }

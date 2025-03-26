@@ -106,7 +106,7 @@ export function NavigationBar({
   const currentInventoryId =
     inventoryIdFromParam ?? userInfo?.defaultInventoryId;
   const router = useRouter();
-  const dashboardPath = `/${lng}/${inventory ?? currentInventoryId}`;
+  const dashboardPath = `/${lng}/${inventoryIdFromParam ?? currentInventoryId}`;
 
   const [isUserMenuOpen, setUserMenuOpen] = useState(false);
   const [isLanguageMenuOpen, setLanguageMenuOpen] = useState(false);

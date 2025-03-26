@@ -398,16 +398,18 @@ export type ListOrganizationsResponse = {
   }[];
 }[];
 
-export type ProjectWithCitiesResponse = {
+export type ProjectWithCities = {
   projectId: string;
   name: string;
   cities: {
     cityId: string;
     name: string;
     inventories: {
-      id: string;
+      inventoryId: string;
       year: number;
       lastUpdated: string;
     }[];
   }[];
-}[];
+};
+
+export type ProjectWithCitiesResponse = ProjectWithCities[];

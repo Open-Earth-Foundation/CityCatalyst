@@ -31,7 +31,7 @@ import {
   OrganizationResponse,
   OrganizationRole,
   ProjectResponse,
-  ProjectWithCitiesResponse,
+  ProjectWithCities,
   RequiredScopesResponse,
   ResultsResponse,
   SectorBreakdownResponse,
@@ -899,7 +899,7 @@ export const api = createApi({
           method: "GET",
           url: `/organizations/${data.organizationId}/projects`,
         }),
-        transformResponse: (response: ProjectWithCitiesResponse[]) => response,
+        transformResponse: (response: ProjectWithCities[]) => response,
         providesTags: ["Projects"],
       }),
     };

@@ -16,7 +16,7 @@ import {
 } from "react-icons/md";
 import { InputGroup } from "@/components/ui/input-group";
 import { LuSearch } from "react-icons/lu";
-import { ProjectWithCitiesResponse } from "@/util/types";
+import { ProjectWithCities, ProjectWithCitiesResponse } from "@/util/types";
 import { useGetProjectsQuery } from "@/services/api";
 import {
   ProgressCircleRing,
@@ -142,19 +142,7 @@ const SingleProjectView = ({
   t,
   currentInventoryId,
 }: {
-  project: {
-    projectId: string;
-    name: string;
-    cities: {
-      cityId: string;
-      name: string;
-      inventories: {
-        id: string;
-        year: number;
-        inventoryId: string;
-      }[];
-    }[];
-  };
+  project: ProjectWithCities;
   backToProjects: () => void;
   t: Function;
   currentInventoryId: string;
@@ -168,8 +156,6 @@ const SingleProjectView = ({
   };
 
   const [searchTerm, setSearchTerm] = React.useState("");
-
-  const clearSearch = () => setSearchTerm("");
 
   const filteredCitiesList = useMemo(() => {
     if (!searchTerm) return project.cities;
@@ -255,7 +241,6 @@ const ProjectDrawer = ({
   isOpen: boolean;
   onClose: () => void;
   onOpenChange: (val: OpenChangeDetails) => void;
-  t: Function;
   organizationId: string;
   currentInventoryId: string;
 }) => {
@@ -275,11 +260,12 @@ const ProjectDrawer = ({
     setSelectedProject(projectId);
   };
 
-  const selectedProjectData = useMemo(() => {
+  const selectedProjectData = useMemo<ProjectWithCities | null>(() => {
     if (!selectedProject) return null;
 
-    return projectsData.find(
-      (project) => project.projectId === selectedProject,
+    return (
+      projectsData?.find((project) => project.projectId === selectedProject) ||
+      null
     );
   }, [projectsData, selectedProject]);
 

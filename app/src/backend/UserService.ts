@@ -316,9 +316,9 @@ export default class UserService {
         };
       }
       groupedByProject[projectId].cities.push({
-        name: cu.city.name,
-        cityId: cu.city.cityId,
-        inventories: cu.city.inventories,
+        name: cu.city.name as string,
+        cityId: cu.city.cityId as string,
+        inventories: cu.city.inventories as any,
       });
     }
 

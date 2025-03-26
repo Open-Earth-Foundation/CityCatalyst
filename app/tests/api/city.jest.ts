@@ -21,8 +21,9 @@ import { randomUUID } from "node:crypto";
 import { AppSession, Auth } from "@/lib/auth";
 import { User } from "@/models/User";
 import { Roles } from "@/util/types";
+import { Project } from "@/models/Project";
 
-const cityData: CreateCityRequest = {
+const cityData: Omit<CreateCityRequest, "projectId"> = {
   locode: "XX_CITY",
   name: "Test City",
   country: "Test Country",
@@ -30,7 +31,7 @@ const cityData: CreateCityRequest = {
   area: 1337,
 };
 
-const city2: CreateCityRequest = {
+const city2: Omit<CreateCityRequest, "projectId"> = {
   locode: "XX_CITY",
   name: "Test City 2",
   country: "Test Country 2",
@@ -54,6 +55,8 @@ const mockSession: AppSession = {
 describe("City API", () => {
   let city: City;
   let user: User;
+  let project: Project;
+
   let prevGetServerSession = Auth.getServerSession;
 
   beforeAll(async () => {
@@ -65,13 +68,19 @@ describe("City API", () => {
     });
 
     Auth.getServerSession = jest.fn(() => Promise.resolve(mockSession));
+
+    project = (await Project.findOne({
+      where: { name: "cc_project_default" },
+    })) as Project;
   });
 
   beforeEach(async () => {
     await db.models.City.destroy({ where: { locode: cityData.locode } });
+
     city = await db.models.City.create({
       ...cityData,
       cityId: randomUUID(),
+      projectId: project.projectId,
     });
     await city.addUser(user);
   });
@@ -84,7 +93,7 @@ describe("City API", () => {
   it("should create a city", async () => {
     await db.models.City.destroy({ where: { locode: cityData.locode } });
 
-    const req = mockRequest(cityData);
+    const req = mockRequest({ ...cityData, projectId: project?.projectId });
     const res = await createCity(req, { params: {} });
     assert.equal(res.status, 200);
     const { data } = await res.json();
@@ -102,7 +111,7 @@ describe("City API", () => {
     const {
       error: { issues },
     } = await res.json();
-    assert.equal(issues.length, 5);
+    assert.equal(issues.length, 6);
   });
 
   it("should find a city", async () => {
@@ -124,7 +133,7 @@ describe("City API", () => {
   });
 
   it("should update a city", async () => {
-    const req = mockRequest(city2);
+    const req = mockRequest({ ...city2, projectId: project.projectId });
     const res = await updateCity(req, { params: { city: city.cityId } });
     assert.equal(res.status, 200);
     const { data } = await res.json();
@@ -142,7 +151,7 @@ describe("City API", () => {
     const {
       error: { issues },
     } = await res.json();
-    assert.equal(issues.length, 5);
+    assert.equal(issues.length, 6);
   });
 
   it("should delete a city", async () => {

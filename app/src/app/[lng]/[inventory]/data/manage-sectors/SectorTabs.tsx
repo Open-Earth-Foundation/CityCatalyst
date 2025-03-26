@@ -84,14 +84,13 @@ const groupScopesBySector = (data: Record<string, any[]>): SectorGroup[] => {
 
 // convert sector reference to GPC reference name
 
-const getGpcReferenceName = (ref: string): string => {
+const getGpcReferenceName = (ref: string, t: TFunction): string => {
   const mapping: Record<string, string> = {
-    I: "Stationary Energy",
-    II: "Transport",
-    III: "Waste",
-    // Add additional mappings as needed:
-    IV: "Industrial Processes and Product Uses (IPPU)",
-    V: "Agriculture, Forestry, and Other Land Use (AFOLU)",
+    I: t("stationary-energy"),
+    II: t("transport"),
+    III: t("waste"),
+    IV: t("industrial-processes-and-product-uses"),
+    V: t("agriculture-forestry-and-other-land-use"),
   };
   return mapping[ref] || ref;
 };
@@ -271,7 +270,7 @@ const SectorTabs: FC<SectorTabsProps> = ({
           }}
         >
           <Text fontSize="title.md" lineClamp="2">
-            {getGpcReferenceName(group.sectorRef)}
+            {getGpcReferenceName(group.sectorRef, t)}
           </Text>
         </Tabs.Trigger>
       );
@@ -375,7 +374,7 @@ const SectorTabs: FC<SectorTabsProps> = ({
             <Box display="flex" alignItems="center" gap="16px">
               <Icon as={StationaryEnergyIcon} color="interactive.control" />
               <Text fontSize="title.lg" fontFamily="heading" fontWeight="bold">
-                {getGpcReferenceName(group.sectorRef)}
+                {getGpcReferenceName(group.sectorRef, t)}
               </Text>
             </Box>
             <Text fontSize="body.lg" fontFamily="body" color="content.tertiary">

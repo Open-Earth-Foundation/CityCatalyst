@@ -33,6 +33,9 @@ import { toaster } from "@/components/ui/toaster";
 import RouteChangeDialog from "./RouteChangeDialog";
 import { usePathname, useRouter } from "next/navigation";
 import ProgressLoader from "@/components/ProgressLoader";
+import type { SubCategoryAttributes } from "@/models/SubCategory";
+import type { InventoryValueAttributes } from "@/models/InventoryValue";
+import type { SubSectorAttributes } from "@/models/SubSector";
 
 interface SubcategoryItem {
   subSectorId: string;
@@ -103,6 +106,12 @@ interface CardInputs {
   explanation: string;
 }
 
+interface ScopeData {
+  subCategory?: SubCategoryAttributes;
+  inventoryValue?: InventoryValueAttributes;
+  subSector?: SubSectorAttributes;
+}
+
 const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
   const router = useRouter();
 
@@ -136,18 +145,17 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
 
   useEffect(() => {
     if (!isSectorDataLoading && !error && sectorData?.result) {
-      // cardInputs[sectorData.result[0].subCategory.subcategoryId] = {};
-      const result = Object.entries(sectorData.result).flatMap(
-        ([_sectorRefno, scopes]: [string, any]) => {
-          return scopes.map((scope: any) => [
-            scope.subCategory?.subcategoryId,
-            {
-              notationKey: scope.inventoryValue?.unavailableReason,
-              explanation: scope.inventoryValue?.unavailableExplanation,
-            },
-          ]);
-        },
-      );
+      const result = Object.entries(
+        sectorData.result as Record<string, ScopeData[]>,
+      ).flatMap(([_sectorRefno, scopes]: [string, ScopeData[]]) => {
+        return scopes.map((scope: ScopeData) => [
+          scope.subCategory?.subcategoryId,
+          {
+            notationKey: scope.inventoryValue?.unavailableReason,
+            explanation: scope.inventoryValue?.unavailableExplanation,
+          },
+        ]);
+      });
       setCardInputs((prev) => {
         const newInputs: Record<string, CardInputs> = { ...prev };
         // If there are selected cards, update only those; otherwise update all items.

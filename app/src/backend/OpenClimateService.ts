@@ -16,6 +16,10 @@ interface PopulationDataResult {
   regionPopulationYear?: number;
   countryPopulation?: number;
   countryPopulationYear?: number;
+  region?: string;
+  regionLocode?: string;
+  country?: string;
+  countryLocode?: string;
 }
 
 type FetchPopulationResult = PopulationEntry & { data: any };
@@ -50,6 +54,17 @@ export default class OpenClimateService {
       result.cityPopulationYear = cityResult.year;
       result.cityName = cityResult.data.data.name;
 
+      const region = cityResult.root_path_geo?.filter(
+        (item: any) => item.type === "adm1",
+      )?.[0];
+      const country = cityResult.root_path_geo?.filter(
+        (item: any) => item.type === "country",
+      )?.[0];
+      result.region = region?.name ?? undefined;
+      result.country = country?.name ?? undefined;
+      result.regionLocode = region?.actor_id ?? undefined;
+      // result.countryLocode = country?.actor_id ?? undefined;
+
       const countryLocode =
         inventoryLocode && inventoryLocode.length > 0
           ? inventoryLocode.split(" ")[0]
@@ -58,6 +73,7 @@ export default class OpenClimateService {
         result.error = `Invalid locode supplied, doesn\'t have a country locode: ${inventoryLocode}`;
         return result;
       }
+      result.countryLocode = countryLocode ?? undefined;
 
       const countryResult = await this.fetchPopulation(
         countryLocode,
@@ -101,7 +117,7 @@ export default class OpenClimateService {
     actorLocode: string,
     inventoryYear: number,
     baseUrl: string,
-  ): Promise<FetchPopulationResult | null> {
+  ): Promise<(Record<string, any> & FetchPopulationResult) | null> {
     const request = await fetch(baseUrl + actorLocode);
     const data = await request.json();
 

@@ -15,8 +15,8 @@ import { mockRequest, setupTests, testUserData, testUserID } from "../helpers";
 import { AppSession, Auth } from "@/lib/auth";
 import { Roles } from "@/util/types";
 import {
-  BulkConnectSourcesProps,
-  BulkInventoryProps,
+  BulkInventoryCreateProps,
+  BulkInventoryUpdateProps,
 } from "@/backend/AdminService";
 import { Op } from "sequelize";
 import _ from "lodash";
@@ -34,7 +34,7 @@ const cityLocodeMap: Record<string, string> = {
   "DE BER": "Berlin",
   "BR AAX": "Araxá",
 };
-const mockBulkInventoriesRequest: BulkInventoryProps = {
+const mockBulkInventoriesRequest: BulkInventoryCreateProps = {
   cityLocodes: ["US NYC", "DE BER", "BR AAX"],
   emails: [testUserData.email],
   years: [2022, 2023, 2024],
@@ -42,7 +42,7 @@ const mockBulkInventoriesRequest: BulkInventoryProps = {
   gwp: "AR6",
 };
 
-const mockConnectSourcesRequest: BulkConnectSourcesProps = {
+const mockConnectSourcesRequest: BulkInventoryUpdateProps = {
   cityLocodes: ["US NYC"],
   userEmail: testUserData.email,
   years: [2022, 2023],

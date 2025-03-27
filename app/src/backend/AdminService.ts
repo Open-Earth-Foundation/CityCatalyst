@@ -268,7 +268,6 @@ export default class AdminService {
     const area = boundaryData.area;
 
     // save context data to City table
-    // const city = await db.models.City.findOne({ where: { cityId } });
     const { region, regionLocode, country, countryLocode } = populationData;
     await db.models.City.update(
       {

@@ -1,202 +1,182 @@
 [
     {
         "locode": "BRCMG",
-        "cityName": "Corumbá",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0101",
-        "actionName": "Encourage the Use of Low-Emission Agricultural Machinery",
-        "actionPriority": 1,
-        "explanation": "For the city of Corumbá, encouraging low-emission agricultural machinery directly tackles a major source of greenhouse gases in local farming. It modernizes equipment and operations, reducing fuel consumption and maintenance costs. This approach aligns with local soil and climate conditions, enhancing efficiency while benefiting air quality."
-    },
-    {
-        "locode": "BRCMG",
-        "cityName": "Corumbá",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0102",
-        "actionName": "Promote Sustainable Agricultural Practices",
-        "actionPriority": 2,
-        "explanation": "For the city of Corumbá, promoting sustainable agricultural practices helps reshape land use and crop management in ways that cut emissions at their source. Techniques like soil conservation and reduced chemical inputs also boost climate resilience for local farms. These steps foster healthier ecosystems, benefiting both the community and the environment."
-    },
-    {
-        "locode": "BRCMG",
-        "cityName": "Corumbá",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0068",
-        "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
-        "actionPriority": 3,
-        "explanation": "For the city of Corumbá, on-demand electric transport systems lower urban emissions by replacing conventional vehicles with cleaner alternatives. They provide flexible mobility while reducing air pollution and noise. This measure can be implemented relatively quickly, bringing immediate public health benefits and supporting a more sustainable transportation network."
-    },
-    {
-        "locode": "BRCMG",
-        "cityName": "Corumbá",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0044",
-        "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
-        "actionPriority": 4,
-        "explanation": "For the city of Corumbá, expanding cycling infrastructure and developing resilient pedestrian walkways encourages active mobility that cuts transportation emissions. Well-designed pathways can handle heavy rainfall and extreme heat, improving safety for everyone. This approach offers cost-effective, inclusive transport options with positive impacts on public health."
-    },
-    {
-        "locode": "BRCMG",
-        "cityName": "Corumbá",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0057",
-        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
-        "actionPriority": 5,
-        "explanation": "For the city of Corumbá, expanding rail-based mass transit can significantly lower emissions by moving large numbers of passengers more efficiently. This infrastructure cuts traffic congestion and improves travel times for daily commuters. Although it requires substantial investment, a well-designed rail network aligns with long-term sustainable growth."
-    },
-    {
-        "locode": "BRCMG",
-        "cityName": "Corumbá",
+        "cityName": "Corumb\u00e1",
         "region": "BR-MS",
         "regionName": "Mato Grosso do Sul",
         "actionId": "icare_0133",
         "actionName": "Promote Urban Reforestation and Green Corridors",
-        "actionPriority": 6,
-        "explanation": "For the city of Corumbá, urban reforestation and green corridors enhance local air quality, offer shading, and cool densely developed areas. These green spaces also help manage stormwater, easing flood risks during heavy rains. By prioritizing trees and green belts, the city supports public well-being and biodiversity in a single step."
+        "actionPriority": 1
     },
     {
         "locode": "BRCMG",
-        "cityName": "Corumbá",
+        "cityName": "Corumb\u00e1",
         "region": "BR-MS",
         "regionName": "Mato Grosso do Sul",
         "actionId": "icare_0050",
         "actionName": "Implement Agroforestry Systems",
-        "actionPriority": 7,
-        "explanation": "For the city of Corumbá, implementing agroforestry combines tree cultivation with traditional farming or livestock, boosting carbon absorption and soil fertility. The presence of woody perennials helps stabilize microclimates and reduces erosion. This approach can lead to higher yields and resilience against climate extremes."
+        "actionPriority": 2
     },
     {
         "locode": "BRCMG",
-        "cityName": "Corumbá",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0100",
-        "actionName": "Support Regenerative Agriculture Practices",
-        "actionPriority": 8,
-        "explanation": "For the city of Corumbá, regenerative agriculture revitalizes soil health by emphasizing techniques that increase organic matter and enhance water retention. Healthier soils improve crop performance and resilience to drought or flooding. This strengthens food security and reduces long-term emissions from the agricultural sector."
-    },
-    {
-        "locode": "BRCMG",
-        "cityName": "Corumbá",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0021",
-        "actionName": "Encourage and promote measures for the sustainable and rational use of individual motorized transportation",
-        "actionPriority": 9,
-        "explanation": "For the city of Corumbá, promoting the rational use of personal vehicles directly tackles traffic-related emissions. Measures like carpooling, shared mobility, and eco-driving can rapidly reduce congestion and pollution. By improving daily commuting habits, the city lowers fuel dependency and fosters healthier urban living."
-    },
-    {
-        "locode": "BRCMG",
-        "cityName": "Corumbá",
+        "cityName": "Corumb\u00e1",
         "region": "BR-MS",
         "regionName": "Mato Grosso do Sul",
         "actionId": "icare_0134",
         "actionName": "Strengthen Mechanisms for Deforestation Control",
-        "actionPriority": 10,
-        "explanation": "For the city of Corumbá, strengthening deforestation control is critical to preserving forests that act as carbon sinks and protect biodiversity. Limiting illegal land clearing safeguards water resources and reduces the severity of climate extremes like droughts or floods. This protective approach also maintains ecological balance necessary for local agriculture."
+        "actionPriority": 3
     },
     {
         "locode": "BRCMG",
-        "cityName": "Corumbá",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0102",
+        "actionName": "Promote Sustainable Agricultural Practices",
+        "actionPriority": 4
+    },
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
         "region": "BR-MS",
         "regionName": "Mato Grosso do Sul",
         "actionId": "icare_0084",
         "actionName": "Create Incentives for Agroforestry Practices in Livestock Systems",
-        "actionPriority": 11,
-        "explanation": "For the city of Corumbá, providing incentives for agroforestry in livestock systems allows farmers to integrate trees with grazing activities. This fosters richer habitats, boosts forage quality, and enhances carbon sequestration on farmland. Such mixed-use landscapes can improve rural livelihoods and environmental resilience simultaneously."
+        "actionPriority": 5
     },
     {
         "locode": "BRCMG",
-        "cityName": "Corumbá",
+        "cityName": "Corumb\u00e1",
         "region": "BR-MS",
         "regionName": "Mato Grosso do Sul",
         "actionId": "icare_0096",
         "actionName": "Promote Organic Farming",
-        "actionPriority": 12,
-        "explanation": "For the city of Corumbá, promoting organic farming eliminates synthetic fertilizers and pesticides that contribute to greenhouse gas emissions and water contamination. Healthier soils become more drought-resistant and produce higher-quality crops. This approach also lessens public health risks, creating safer communities and ecosystems."
+        "actionPriority": 6
     },
     {
         "locode": "BRCMG",
-        "cityName": "Corumbá",
+        "cityName": "Corumb\u00e1",
         "region": "BR-MS",
         "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0139",
-        "actionName": "Implementation of urban toll.",
-        "actionPriority": 13,
-        "explanation": "For the city of Corumbá, implementing an urban toll reduces non-essential car travel and encourages commuters to choose alternatives like public transit or carpooling. By easing congestion, the city lowers traffic emissions and improves air quality in heavily traveled zones. This measure also promotes more efficient land use and mobility habits."
+        "actionId": "icare_0100",
+        "actionName": "Support Regenerative Agriculture Practices",
+        "actionPriority": 7
     },
     {
         "locode": "BRCMG",
-        "cityName": "Corumbá",
+        "cityName": "Corumb\u00e1",
         "region": "BR-MS",
         "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0005",
-        "actionName": "Create credit lines for residential and community wind energy projects",
-        "actionPriority": 14,
-        "explanation": "For the city of Corumbá, offering credit lines for wind energy projects encourages the adoption of clean power, cutting reliance on fossil fuels. By easing financial barriers, more households and communities can install turbines that reduce both emissions and electricity costs. This decentralized approach strengthens the city’s overall energy resilience."
+        "actionId": "icare_0129",
+        "actionName": "Facilitate Technology Transfer for Conservation Practices",
+        "actionPriority": 8
     },
     {
         "locode": "BRCMG",
-        "cityName": "Corumbá",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0127",
-        "actionName": "Accelerate Environmental Regularization of Rural Properties",
-        "actionPriority": 15,
-        "explanation": "For the city of Corumbá, accelerating environmental regularization clarifies property boundaries and enforces sustainable land-use practices. This prevents unlawful deforestation and aligns agricultural expansion with conservation goals. Well-defined rules also streamline compliance, ensuring long-term protection of local ecosystems."
-    },
-    {
-        "locode": "BRCMG",
-        "cityName": "Corumbá",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0006",
-        "actionName": "Expand rural electrification with renewable energy",
-        "actionPriority": 16,
-        "explanation": "For the city of Corumbá, expanding rural electrification with renewable energy ensures reliable power in remote communities while reducing greenhouse gas emissions. Solar or wind solutions help replace diesel generators and create lower-cost electricity. This initiative also boosts social equity by granting modern services to underrepresented regions."
-    },
-    {
-        "locode": "BRCMG",
-        "cityName": "Corumbá",
-        "region": "BR-MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "c40_0042",
-        "actionName": "Biodiversity Expansion",
-        "actionPriority": 17,
-        "explanation": "For the city of Corumbá, biodiversity expansion reinforces habitats that offer essential services like pollination, pest control, and water regulation. Healthy ecosystems buffer extreme weather impacts, stabilizing the local climate over time. These efforts help sustain key agricultural and fishing activities, supporting the city’s economy and food security."
-    },
-    {
-        "locode": "BRCMG",
-        "cityName": "Corumbá",
+        "cityName": "Corumb\u00e1",
         "region": "BR-MS",
         "regionName": "Mato Grosso do Sul",
         "actionId": "icare_0130",
         "actionName": "Conduct Technical Assistance and Rural Extension (ATER) Actions",
-        "actionPriority": 18,
-        "explanation": "For the city of Corumbá, providing technical assistance and rural extension services empowers farmers with new methods to handle climate variability. Training in water management, sustainable livestock practices, and efficient crop rotation boosts productivity while curbing emissions. These knowledge-driven improvements help rural communities remain viable and adapt to changing environmental conditions."
+        "actionPriority": 9
     },
     {
         "locode": "BRCMG",
-        "cityName": "Corumbá",
+        "cityName": "Corumb\u00e1",
         "region": "BR-MS",
         "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0040",
-        "actionName": "Adopt solar-powered street lighting in rural areas",
-        "actionPriority": 19,
-        "explanation": "For the city of Corumbá, solar-powered street lighting in rural areas brings safer, more reliable illumination without draining the electric grid. This clean energy solution enhances nighttime visibility, fostering community well-being and reducing reliance on fossil fuels. By showcasing tangible renewable applications, it helps build public support for broader sustainability measures."
+        "actionId": "icare_0128",
+        "actionName": "Establish Municipal Programs for Payment for Environmental Services (PES)",
+        "actionPriority": 10
     },
     {
         "locode": "BRCMG",
-        "cityName": "Corumbá",
+        "cityName": "Corumb\u00e1",
         "region": "BR-MS",
         "regionName": "Mato Grosso do Sul",
-        "actionId": "c40_0026",
-        "actionName": "Vehicle Emissions",
-        "actionPriority": 20,
-        "explanation": "For the city of Corumbá, addressing vehicle emissions remains an important goal for improving air quality and reducing climate impacts. Measures to curb exhaust pollutants can follow infrastructure upgrades and transformations in agriculture or energy sectors. By tackling transportation pollution strategically, the city ensures a comprehensive approach to lowering greenhouse gases."
+        "actionId": "icare_0101",
+        "actionName": "Encourage the Use of Low-Emission Agricultural Machinery",
+        "actionPriority": 11
+    },
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0127",
+        "actionName": "Accelerate Environmental Regularization of Rural Properties",
+        "actionPriority": 12
+    },
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0061",
+        "actionName": "Soil Carbon Management in Croplands and Grasslands",
+        "actionPriority": 13
+    },
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "c40_0042",
+        "actionName": "Biodiversity Expansion",
+        "actionPriority": 14
+    },
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0131",
+        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
+        "actionPriority": 15
+    },
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0136",
+        "actionName": "Support the Implementation of Ecological Fiscal Incentives",
+        "actionPriority": 16
+    },
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0099",
+        "actionName": "Support Agroecological Certification Programs",
+        "actionPriority": 17
+    },
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0005",
+        "actionName": "Create credit lines for residential and community wind energy projects",
+        "actionPriority": 18
+    },
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0118",
+        "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
+        "actionPriority": 19
+    },
+    {
+        "locode": "BRCMG",
+        "cityName": "Corumb\u00e1",
+        "region": "BR-MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0085",
+        "actionName": "Promote the Adoption of Agroecological Pest Control",
+        "actionPriority": 20
     }
 ]

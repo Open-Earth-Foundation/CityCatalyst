@@ -3,200 +3,200 @@
         "locode": "BRSER",
         "cityName": "Serra",
         "region": "BR-ES",
-        "regionName": "Espírito Santo",
-        "actionId": "ipcc_0087",
-        "actionName": "Infrastructure retrofitting",
-        "actionPriority": 1,
-        "explanation": "For the city of Serra, upgrading critical infrastructure helps withstand floods, storms, and other climate challenges. Reinforced roads and public buildings reduce damage costs and service interruptions. This action supports economic continuity while directly protecting residents’ daily lives."
-    },
-    {
-        "locode": "BRSER",
-        "cityName": "Serra",
-        "region": "BR-ES",
-        "regionName": "Espírito Santo",
+        "regionName": "Esp\u00edrito Santo",
         "actionId": "icare_0176",
         "actionName": "Development of Climate Action Plan",
-        "actionPriority": 2,
-        "explanation": "For the city of Serra, creating a Climate Action Plan aligns multiple sectors—energy, transport, and public health—under a shared climate vision. This coordination ensures efficient use of municipal resources and collaborative policymaking. Establishing clear goals also builds momentum for longer-term mitigation and adaptation measures."
+        "actionPriority": 1,
+        "explanation": "Ranked #1 by tournament ranking algorithm"
     },
     {
         "locode": "BRSER",
         "cityName": "Serra",
         "region": "BR-ES",
-        "regionName": "Espírito Santo",
-        "actionId": "icare_0180",
-        "actionName": "Implement permeable pavements and increase green areas in roadways",
-        "actionPriority": 3,
-        "explanation": "For the city of Serra, installing permeable pavements and introducing greenery along roads reduces flood risks and cools hot urban surfaces. By allowing rainwater to infiltrate the ground naturally, this measure mitigates drainage overload. It also improves air quality and promotes a more pleasant environment for pedestrians."
-    },
-    {
-        "locode": "BRSER",
-        "cityName": "Serra",
-        "region": "BR-ES",
-        "regionName": "Espírito Santo",
-        "actionId": "icare_0144",
-        "actionName": "Creation of a Financial Support Program to Adress Extreme Weather Events",
-        "actionPriority": 4,
-        "explanation": "For the city of Serra, a financial assistance program helps communities and businesses recover swiftly after floods or storms. Immediate funding reduces prolonged disruptions and fosters social stability. This approach also underscores the city’s commitment to safeguarding vulnerable populations and mitigating economic losses."
-    },
-    {
-        "locode": "BRSER",
-        "cityName": "Serra",
-        "region": "BR-ES",
-        "regionName": "Espírito Santo",
+        "regionName": "Esp\u00edrito Santo",
         "actionId": "icare_0164",
         "actionName": "Hydrological Monitoring System with Telemetry Stations",
-        "actionPriority": 5,
-        "explanation": "For the city of Serra, real-time water level tracking and flow data enable quicker responses to flooding or drought. By spotting anomalies early, authorities can warn residents and protect infrastructure. This system reduces damage from high waters and ensures better resource management during dry spells."
+        "actionPriority": 2,
+        "explanation": "Ranked #2 by tournament ranking algorithm"
     },
     {
         "locode": "BRSER",
         "cityName": "Serra",
         "region": "BR-ES",
-        "regionName": "Espírito Santo",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0151",
+        "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
+        "actionPriority": 3,
+        "explanation": "Ranked #3 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BRSER",
+        "cityName": "Serra",
+        "region": "BR-ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0181",
+        "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
+        "actionPriority": 4,
+        "explanation": "Ranked #4 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BRSER",
+        "cityName": "Serra",
+        "region": "BR-ES",
+        "regionName": "Esp\u00edrito Santo",
         "actionId": "icare_0169",
         "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
+        "actionPriority": 5,
+        "explanation": "Ranked #5 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BRSER",
+        "cityName": "Serra",
+        "region": "BR-ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "ipcc_0094",
+        "actionName": "Access to health care",
         "actionPriority": 6,
-        "explanation": "For the city of Serra, a dedicated emergency response plan ensures resources are allocated effectively when extreme weather strikes. Clear guidelines and trained teams help limit chaos, protect lives, and speed up recovery. This proactive approach safeguards both people and local infrastructure."
+        "explanation": "Ranked #6 by tournament ranking algorithm"
     },
     {
         "locode": "BRSER",
         "cityName": "Serra",
         "region": "BR-ES",
-        "regionName": "Espírito Santo",
-        "actionId": "icare_0162",
-        "actionName": "Strengthen programs for control and conservation of protected areas",
-        "actionPriority": 7,
-        "explanation": "For the city of Serra, improving conservation initiatives preserves forests and wetlands that help regulate local weather patterns. Protecting these areas also supports habitats, carbon storage, and water purity. This measure sustains the region’s biodiversity while enhancing natural defenses against extreme events."
-    },
-    {
-        "locode": "BRSER",
-        "cityName": "Serra",
-        "region": "BR-ES",
-        "regionName": "Espírito Santo",
-        "actionId": "icare_0149",
-        "actionName": "Encourage sustainable land use practices",
-        "actionPriority": 8,
-        "explanation": "For the city of Serra, promoting land use practices that preserve vegetation and control erosion reduces flood risk and soil depletion. Responsible zoning also prevents expansion into high-hazard zones, minimizing damage during storms. This approach underpins a balanced urban-rural interface, safeguarding the local environment."
-    },
-    {
-        "locode": "BRSER",
-        "cityName": "Serra",
-        "region": "BR-ES",
-        "regionName": "Espírito Santo",
-        "actionId": "c40_0049",
-        "actionName": "Cyclone Shelters",
-        "actionPriority": 9,
-        "explanation": "For the city of Serra, establishing cyclone shelters provides residents with a safe haven when severe storms strike. This reduces casualties and property losses, particularly in areas where buildings may not withstand intense winds. By offering secure communal facilities, the city builds confidence in emergency preparedness."
-    },
-    {
-        "locode": "BRSER",
-        "cityName": "Serra",
-        "region": "BR-ES",
-        "regionName": "Espírito Santo",
-        "actionId": "c40_0053",
-        "actionName": "Water Savings",
-        "actionPriority": 10,
-        "explanation": "For the city of Serra, water-saving measures conserve limited supplies and reduce strain on utilities, especially important in drought-prone regions. Encouraging efficient use in homes and industries also lowers energy consumption needed for treatment and distribution. This approach supports sustainable growth without compromising residents’ needs."
-    },
-    {
-        "locode": "BRSER",
-        "cityName": "Serra",
-        "region": "BR-ES",
-        "regionName": "Espírito Santo",
-        "actionId": "icare_0145",
-        "actionName": "Strengthen the healthcare network to attend to climate victims",
-        "actionPriority": 11,
-        "explanation": "For the city of Serra, enhancing medical facilities and training staff helps manage surges in injuries or illnesses following disasters. This measure cuts fatalities linked to extreme heat, flooding, or disease outbreaks. Stronger health services bolster overall community resilience and minimize recovery times."
-    },
-    {
-        "locode": "BRSER",
-        "cityName": "Serra",
-        "region": "BR-ES",
-        "regionName": "Espírito Santo",
-        "actionId": "icare_0175",
-        "actionName": "Recovery and preservation of green areas",
-        "actionPriority": 12,
-        "explanation": "For the city of Serra, restoring and protecting green spaces regulates local microclimates, lowers flood risks, and improves air quality. These areas also offer recreational spots, supporting well-being and biodiversity. In a warming climate, such natural buffers enhance the city’s capacity to adapt."
-    },
-    {
-        "locode": "BRSER",
-        "cityName": "Serra",
-        "region": "BR-ES",
-        "regionName": "Espírito Santo",
-        "actionId": "icare_0160",
-        "actionName": "Consolidate spaces for intersectoral coordination and public participation in climate policy",
-        "actionPriority": 13,
-        "explanation": "For the city of Serra, uniting different agencies and community members fosters shared understanding of climate risks. This collaboration shapes policies that reflect local realities, ensuring more inclusive and effective solutions. Open dialogue also speeds the process of implementing adaptation and emission-reducing strategies."
-    },
-    {
-        "locode": "BRSER",
-        "cityName": "Serra",
-        "region": "BR-ES",
-        "regionName": "Espírito Santo",
-        "actionId": "icare_0173",
-        "actionName": "Preventive maintenance of drainage systems",
-        "actionPriority": 14,
-        "explanation": "For the city of Serra, checking and cleaning drains regularly stops blockages that cause urban flooding. By staying ahead of debris accumulation, local authorities protect roads, businesses, and neighborhoods. This measure also saves resources that might otherwise be spent on large-scale flood repairs."
-    },
-    {
-        "locode": "BRSER",
-        "cityName": "Serra",
-        "region": "BR-ES",
-        "regionName": "Espírito Santo",
-        "actionId": "icare_0154",
-        "actionName": "Cleaning and Unclogging of Channels with Installation of Eco-barriers",
-        "actionPriority": 15,
-        "explanation": "For the city of Serra, systematically clearing waterways and placing eco-barriers prevents polluting debris from accumulating. This proactive approach maintains normal water flow, cutting the likelihood of floods and contamination. It also fosters a healthier environment and protects aquatic habitats important to local ecosystems."
-    },
-    {
-        "locode": "BRSER",
-        "cityName": "Serra",
-        "region": "BR-ES",
-        "regionName": "Espírito Santo",
-        "actionId": "icare_0147",
-        "actionName": "Strengthen the use of climate justice criteria in the design of new infrastructure projects",
-        "actionPriority": 16,
-        "explanation": "For the city of Serra, incorporating climate justice principles ensures equitable access to safe roads, buildings, and public spaces. By prioritizing vulnerable groups, infrastructure serves everyone more effectively. This measure addresses inequalities made worse by extreme weather, promoting fairness in urban development."
-    },
-    {
-        "locode": "BRSER",
-        "cityName": "Serra",
-        "region": "BR-ES",
-        "regionName": "Espírito Santo",
+        "regionName": "Esp\u00edrito Santo",
         "actionId": "ipcc_0097",
         "actionName": "Food storage/distribution improvements",
-        "actionPriority": 17,
-        "explanation": "For the city of Serra, better food storage and distribution systems reduce spoilage caused by heatwaves or flooding. Preserving essential supplies helps stabilize local markets and lowers health risks tied to compromised goods. This strategy also supports farmers by ensuring produce remains fresh during transit."
+        "actionPriority": 7,
+        "explanation": "Ranked #7 by tournament ranking algorithm"
     },
     {
         "locode": "BRSER",
         "cityName": "Serra",
         "region": "BR-ES",
-        "regionName": "Espírito Santo",
-        "actionId": "icare_0141",
-        "actionName": "Implementation of Wetlands",
-        "actionPriority": 18,
-        "explanation": "For the city of Serra, constructing or restoring wetlands creates natural flood barriers, filters pollutants, and bolsters biodiversity. These water-rich habitats buffer storm surges and heavy rains while storing carbon in plant roots. The result is greater resilience to climate extremes and a healthier local ecosystem."
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0140",
+        "actionName": "Landslide Risk Assessment and Management",
+        "actionPriority": 8,
+        "explanation": "Ranked #8 by tournament ranking algorithm"
     },
     {
         "locode": "BRSER",
         "cityName": "Serra",
         "region": "BR-ES",
-        "regionName": "Espírito Santo",
-        "actionId": "c40_0051",
-        "actionName": "Public Shading",
-        "actionPriority": 19,
-        "explanation": "For the city of Serra, adding shaded areas in public spaces reduces heat exposure and encourages outdoor activities. Providing shelter along sidewalks and community areas supports pedestrians during intense sun. This comfort factor also motivates people to walk or cycle, easing traffic and cutting emissions."
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0154",
+        "actionName": "Cleaning and Unclogging of Channels with Installation of Eco-barriers",
+        "actionPriority": 9,
+        "explanation": "Ranked #9 by tournament ranking algorithm"
     },
     {
         "locode": "BRSER",
         "cityName": "Serra",
         "region": "BR-ES",
-        "regionName": "Espírito Santo",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0149",
+        "actionName": "Encourage sustainable land use practices",
+        "actionPriority": 10,
+        "explanation": "Ranked #10 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BRSER",
+        "cityName": "Serra",
+        "region": "BR-ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0175",
+        "actionName": "Recovery and preservation of green areas",
+        "actionPriority": 11,
+        "explanation": "Ranked #11 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BRSER",
+        "cityName": "Serra",
+        "region": "BR-ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "ipcc_0088",
+        "actionName": "Building codes",
+        "actionPriority": 12,
+        "explanation": "Ranked #12 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BRSER",
+        "cityName": "Serra",
+        "region": "BR-ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0148",
+        "actionName": "Create the Municipal Climate Change Forum",
+        "actionPriority": 13,
+        "explanation": "Ranked #13 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BRSER",
+        "cityName": "Serra",
+        "region": "BR-ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "ipcc_0092",
+        "actionName": "Social safety nets",
+        "actionPriority": 14,
+        "explanation": "Ranked #14 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BRSER",
+        "cityName": "Serra",
+        "region": "BR-ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0162",
+        "actionName": "Strengthen programs for control and conservation of protected areas",
+        "actionPriority": 15,
+        "explanation": "Ranked #15 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BRSER",
+        "cityName": "Serra",
+        "region": "BR-ES",
+        "regionName": "Esp\u00edrito Santo",
         "actionId": "ipcc_0095",
         "actionName": "Disaster early warning",
+        "actionPriority": 16,
+        "explanation": "Ranked #16 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BRSER",
+        "cityName": "Serra",
+        "region": "BR-ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0156",
+        "actionName": "Implementation of urban gardens",
+        "actionPriority": 17,
+        "explanation": "Ranked #17 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BRSER",
+        "cityName": "Serra",
+        "region": "BR-ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "ipcc_0086",
+        "actionName": "Ecosystem-based adaptation",
+        "actionPriority": 18,
+        "explanation": "Ranked #18 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BRSER",
+        "cityName": "Serra",
+        "region": "BR-ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "ipcc_0096",
+        "actionName": "Farm/fishery improvements",
+        "actionPriority": 19,
+        "explanation": "Ranked #19 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BRSER",
+        "cityName": "Serra",
+        "region": "BR-ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "ipcc_0099",
+        "actionName": "Water capture/storage",
         "actionPriority": 20,
-        "explanation": "For the city of Serra, implementing a reliable disaster warning system offers communities essential lead time before storms, floods, or heatwaves intensify. Early alerts let families and businesses prepare evacuation plans or secure property. This measure ultimately decreases losses and saves lives when extreme weather strikes."
+        "explanation": "Ranked #20 by tournament ranking algorithm"
     }
 ]

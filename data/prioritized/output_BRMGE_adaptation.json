@@ -3,200 +3,200 @@
         "locode": "BRMGE",
         "cityName": "Maranguape",
         "region": "BR-CE",
-        "regionName": "Ceará",
+        "regionName": "Cear\u00e1",
         "actionId": "icare_0176",
         "actionName": "Development of Climate Action Plan",
         "actionPriority": 1,
-        "explanation": "For the city of Maranguape, creating a Climate Action Plan sets a clear roadmap for reducing emissions and preparing for changing weather patterns. By coordinating different sectors, it ensures that municipal resources are used efficiently. This approach fosters long-term resilience and aligns local goals with broader sustainability measures."
+        "explanation": "Ranked #1 by tournament ranking algorithm"
     },
     {
         "locode": "BRMGE",
         "cityName": "Maranguape",
         "region": "BR-CE",
-        "regionName": "Ceará",
-        "actionId": "ipcc_0087",
-        "actionName": "Infrastructure retrofitting",
-        "actionPriority": 2,
-        "explanation": "For the city of Maranguape, upgrading and reinforcing existing structures protects residents from extreme weather events. This measure reduces damage costs and service disruptions when climate stresses occur. Strengthened infrastructure also supports ongoing economic activity by minimizing interruptions in critical facilities."
-    },
-    {
-        "locode": "BRMGE",
-        "cityName": "Maranguape",
-        "region": "BR-CE",
-        "regionName": "Ceará",
-        "actionId": "c40_0053",
-        "actionName": "Water Savings",
-        "actionPriority": 3,
-        "explanation": "For the city of Maranguape, promoting Water Savings measures reduces strain on local freshwater sources in a region prone to fluctuations in rainfall. Encouraging careful water usage helps adapt to periods of drought and supports long-term resource security. This strategy also lowers utility costs and fosters responsible consumption patterns."
-    },
-    {
-        "locode": "BRMGE",
-        "cityName": "Maranguape",
-        "region": "BR-CE",
-        "regionName": "Ceará",
-        "actionId": "c40_0060",
-        "actionName": "Managed Retreat",
-        "actionPriority": 4,
-        "explanation": "For the city of Maranguape, Managed Retreat plans guide the gradual relocation of communities away from areas threatened by floods or erosion. This proactive approach reduces future losses and improves safety for vulnerable populations. It balances community needs with the realities of a shifting environment, ensuring more secure living conditions."
-    },
-    {
-        "locode": "BRMGE",
-        "cityName": "Maranguape",
-        "region": "BR-CE",
-        "regionName": "Ceará",
-        "actionId": "icare_0170",
-        "actionName": "Build safe housing and implement urban rehabilitation projects for populations living in high-risk areas",
-        "actionPriority": 5,
-        "explanation": "For the city of Maranguape, building safe housing in high-risk zones reduces exposure to climate hazards like flooding or landslides. These improvements directly protect families and stabilize entire neighborhoods. By investing in urban rehabilitation, the city fosters healthier communities and lowers reconstruction costs after severe events."
-    },
-    {
-        "locode": "BRMGE",
-        "cityName": "Maranguape",
-        "region": "BR-CE",
-        "regionName": "Ceará",
-        "actionId": "icare_0160",
-        "actionName": "Consolidate spaces for intersectoral coordination and public participation in climate policy",
-        "actionPriority": 6,
-        "explanation": "For the city of Maranguape, fostering intersectoral coordination and public engagement ensures inclusive decision-making on climate issues. Bringing diverse stakeholders together improves policy alignment and resource sharing. This approach strengthens local commitment and promotes innovative solutions tailored to community needs."
-    },
-    {
-        "locode": "BRMGE",
-        "cityName": "Maranguape",
-        "region": "BR-CE",
-        "regionName": "Ceará",
-        "actionId": "ipcc_0094",
-        "actionName": "Access to health care",
-        "actionPriority": 7,
-        "explanation": "For the city of Maranguape, expanding access to health care addresses climate-related health risks, such as heatstroke or vector-borne diseases. This measure saves lives by ensuring timely treatment and medical resources. A resilient health system also minimizes disruptions during disasters, improving overall well-being."
-    },
-    {
-        "locode": "BRMGE",
-        "cityName": "Maranguape",
-        "region": "BR-CE",
-        "regionName": "Ceará",
-        "actionId": "icare_0169",
-        "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
-        "actionPriority": 8,
-        "explanation": "For the city of Maranguape, having a dedicated emergency response plan allows rapid coordination and clear protocols when severe weather strikes. This readiness reduces confusion, streamlines rescue efforts, and protects human life. By prioritizing preparedness, the city can lessen storm damage and recovery costs."
-    },
-    {
-        "locode": "BRMGE",
-        "cityName": "Maranguape",
-        "region": "BR-CE",
-        "regionName": "Ceará",
-        "actionId": "icare_0164",
-        "actionName": "Hydrological Monitoring System with Telemetry Stations",
-        "actionPriority": 9,
-        "explanation": "For the city of Maranguape, installing a hydrological monitoring system provides real-time insight into water levels and flows. This technology helps predict floods, improving early warning and evacuation plans. By tracking conditions, officials can make better decisions that safeguard residents and infrastructure."
-    },
-    {
-        "locode": "BRMGE",
-        "cityName": "Maranguape",
-        "region": "BR-CE",
-        "regionName": "Ceará",
-        "actionId": "icare_0151",
-        "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
-        "actionPriority": 10,
-        "explanation": "For the city of Maranguape, diagnosing vulnerabilities in Special Social Interest Zones enables targeted improvements where risks are highest. By restoring infrastructure and housing, residents face fewer hazards from storms or heatwaves. This focused approach builds community resilience and promotes equitable urban development."
-    },
-    {
-        "locode": "BRMGE",
-        "cityName": "Maranguape",
-        "region": "BR-CE",
-        "regionName": "Ceará",
-        "actionId": "icare_0145",
-        "actionName": "Strengthen the healthcare network to attend to climate victims",
-        "actionPriority": 11,
-        "explanation": "For the city of Maranguape, bolstering the healthcare network ensures faster responses to injuries and illnesses caused by extreme weather. Enhanced facilities and trained staff minimize fatalities when floods or heatwaves occur. This action also supports the broader population by maintaining quality care year-round."
-    },
-    {
-        "locode": "BRMGE",
-        "cityName": "Maranguape",
-        "region": "BR-CE",
-        "regionName": "Ceará",
-        "actionId": "icare_0144",
-        "actionName": "Creation of a Financial Support Program to Adress Extreme Weather Events",
-        "actionPriority": 12,
-        "explanation": "For the city of Maranguape, a financial support program helps communities recover swiftly from disasters like storms or droughts. Quick funding reduces prolonged disruptions by assisting families and businesses with immediate reconstruction. This relief approach also promotes social stability and sustains local economies during crises."
-    },
-    {
-        "locode": "BRMGE",
-        "cityName": "Maranguape",
-        "region": "BR-CE",
-        "regionName": "Ceará",
-        "actionId": "c40_0062",
-        "actionName": "Water Tariffs",
-        "actionPriority": 13,
-        "explanation": "For the city of Maranguape, adjusting Water Tariffs encourages judicious water consumption and investment in efficient systems. Pricing structures can help curb overuse, especially in regions susceptible to drought. By promoting responsible usage, the city eases pressure on limited resources and secures long-term water availability."
-    },
-    {
-        "locode": "BRMGE",
-        "cityName": "Maranguape",
-        "region": "BR-CE",
-        "regionName": "Ceará",
-        "actionId": "c40_0054",
-        "actionName": "Water Recycling",
-        "actionPriority": 14,
-        "explanation": "For the city of Maranguape, recycling water reduces reliance on scarce freshwater supplies. Treated water can serve irrigation or industrial needs, cutting demand on main reservoirs. This practice also supports economic growth by diversifying sources and ensuring more stable water availability during dry spells."
-    },
-    {
-        "locode": "BRMGE",
-        "cityName": "Maranguape",
-        "region": "BR-CE",
-        "regionName": "Ceará",
-        "actionId": "icare_0150",
-        "actionName": "Implement Loss Reduction and Control Program promoting water security for the municipality",
-        "actionPriority": 15,
-        "explanation": "For the city of Maranguape, reducing water losses in supply networks ensures stable access to this vital resource. By minimizing leaks, officials can maintain pressure during droughts and lower operational costs. This improved efficiency also benefits residents, who face fewer disruptions and see healthier ecosystems."
-    },
-    {
-        "locode": "BRMGE",
-        "cityName": "Maranguape",
-        "region": "BR-CE",
-        "regionName": "Ceará",
-        "actionId": "ipcc_0088",
-        "actionName": "Building codes",
-        "actionPriority": 16,
-        "explanation": "For the city of Maranguape, adopting climate-conscious building codes strengthens new and renovated structures against regional hazards. This reduces damage from storms or extreme heat, protecting families and reducing repair costs. Safe, sustainable buildings also enhance property values and local quality of life."
-    },
-    {
-        "locode": "BRMGE",
-        "cityName": "Maranguape",
-        "region": "BR-CE",
-        "regionName": "Ceará",
+        "regionName": "Cear\u00e1",
         "actionId": "ipcc_0097",
         "actionName": "Food storage/distribution improvements",
-        "actionPriority": 17,
-        "explanation": "For the city of Maranguape, improving food storage and distribution reduces waste during extreme climate events. Secure facilities help protect perishable items from heat and flooding, maintaining essential supplies. This measure also supports local farmers and merchants by reducing losses and stabilizing food access."
+        "actionPriority": 2,
+        "explanation": "Ranked #2 by tournament ranking algorithm"
     },
     {
         "locode": "BRMGE",
         "cityName": "Maranguape",
         "region": "BR-CE",
-        "regionName": "Ceará",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0154",
+        "actionName": "Cleaning and Unclogging of Channels with Installation of Eco-barriers",
+        "actionPriority": 3,
+        "explanation": "Ranked #3 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0140",
+        "actionName": "Landslide Risk Assessment and Management",
+        "actionPriority": 4,
+        "explanation": "Ranked #4 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0164",
+        "actionName": "Hydrological Monitoring System with Telemetry Stations",
+        "actionPriority": 5,
+        "explanation": "Ranked #5 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0181",
+        "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
+        "actionPriority": 6,
+        "explanation": "Ranked #6 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0151",
+        "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
+        "actionPriority": 7,
+        "explanation": "Ranked #7 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
         "actionId": "icare_0149",
         "actionName": "Encourage sustainable land use practices",
+        "actionPriority": 8,
+        "explanation": "Ranked #8 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0175",
+        "actionName": "Recovery and preservation of green areas",
+        "actionPriority": 9,
+        "explanation": "Ranked #9 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "ipcc_0092",
+        "actionName": "Social safety nets",
+        "actionPriority": 10,
+        "explanation": "Ranked #10 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0169",
+        "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
+        "actionPriority": 11,
+        "explanation": "Ranked #11 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "ipcc_0088",
+        "actionName": "Building codes",
+        "actionPriority": 12,
+        "explanation": "Ranked #12 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "ipcc_0095",
+        "actionName": "Disaster early warning",
+        "actionPriority": 13,
+        "explanation": "Ranked #13 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0162",
+        "actionName": "Strengthen programs for control and conservation of protected areas",
+        "actionPriority": 14,
+        "explanation": "Ranked #14 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "ipcc_0094",
+        "actionName": "Access to health care",
+        "actionPriority": 15,
+        "explanation": "Ranked #15 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0156",
+        "actionName": "Implementation of urban gardens",
+        "actionPriority": 16,
+        "explanation": "Ranked #16 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0148",
+        "actionName": "Create the Municipal Climate Change Forum",
+        "actionPriority": 17,
+        "explanation": "Ranked #17 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BRMGE",
+        "cityName": "Maranguape",
+        "region": "BR-CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "ipcc_0098",
+        "actionName": "Behaviour change in diets and food waste",
         "actionPriority": 18,
-        "explanation": "For the city of Maranguape, sustainable land use lowers environmental risks like soil erosion and habitat loss. By guiding urban growth and agricultural methods, local resources remain more resilient to floods or droughts. This proactive approach preserves green areas and safeguards future development."
+        "explanation": "Ranked #18 by tournament ranking algorithm"
     },
     {
         "locode": "BRMGE",
         "cityName": "Maranguape",
         "region": "BR-CE",
-        "regionName": "Ceará",
-        "actionId": "icare_0173",
-        "actionName": "Preventive maintenance of drainage systems",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0150",
+        "actionName": "Implement Loss Reduction and Control Program promoting water security for the municipality",
         "actionPriority": 19,
-        "explanation": "For the city of Maranguape, regularly maintaining drainage systems prevents blockages that lead to flooding and infrastructure damage. This upkeep ensures safer roads and public spaces, especially during heavy rains. By reducing water accumulation, the city limits repair costs and health concerns linked to standing water."
+        "explanation": "Ranked #19 by tournament ranking algorithm"
     },
     {
         "locode": "BRMGE",
         "cityName": "Maranguape",
         "region": "BR-CE",
-        "regionName": "Ceará",
-        "actionId": "icare_0184",
-        "actionName": "Slope Stabilization and Drainage",
+        "regionName": "Cear\u00e1",
+        "actionId": "ipcc_0086",
+        "actionName": "Ecosystem-based adaptation",
         "actionPriority": 20,
-        "explanation": "For the city of Maranguape, stabilizing slopes and improving drainage avert landslides and erosion that jeopardize public safety. Reinforced embankments ensure critical infrastructure remains intact during intense rains. By reducing collapse risks, the city lowers recovery expenses and maintains essential transportation routes."
+        "explanation": "Ranked #20 by tournament ranking algorithm"
     }
 ]

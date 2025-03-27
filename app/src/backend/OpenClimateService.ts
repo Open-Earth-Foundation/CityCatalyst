@@ -54,23 +54,17 @@ export default class OpenClimateService {
       result.cityPopulationYear = cityResult.year;
       result.cityName = cityResult.data.data.name;
 
-      const region = cityResult.root_path_geo?.filter(
-        (item: any) => item.type === "adm1",
-      )?.[0];
-      const country = cityResult.root_path_geo?.filter(
-        (item: any) => item.type === "country",
-      )?.[0];
-      result.region = region?.name ?? undefined;
-      result.country = country?.name ?? undefined;
-      result.regionLocode = region?.actor_id ?? undefined;
-
-      let countryLocode = country?.actor_id ?? undefined;
-      if (!countryLocode) {
-        countryLocode =
-          inventoryLocode && inventoryLocode.length > 0
-            ? inventoryLocode.split(" ")[0]
-            : null;
+      const regionLocode = cityResult.data.data.is_part_of;
+      if (!regionLocode) {
+        result.error = `City ${inventoryLocode} does not have a region locode in OpenClimate`;
+        return result;
       }
+      result.regionLocode = regionLocode;
+
+      const countryLocode =
+        inventoryLocode && inventoryLocode.length > 0
+          ? inventoryLocode.split(" ")[0]
+          : null;
       if (!countryLocode) {
         result.error = `Invalid locode supplied, doesn\'t have a country locode: ${inventoryLocode}`;
         return result;
@@ -88,12 +82,7 @@ export default class OpenClimateService {
       }
       result.countryPopulation = countryResult.population;
       result.countryPopulationYear = countryResult.year;
-
-      const regionLocode = cityResult.data.data.is_part_of;
-      if (!regionLocode) {
-        result.error = `City ${inventoryLocode} does not have a region locode in OpenClimate`;
-        return result;
-      }
+      result.country = countryResult.data.data.name;
 
       const regionResult = await this.fetchPopulation(
         regionLocode,
@@ -106,6 +95,7 @@ export default class OpenClimateService {
       }
       result.regionPopulation = regionResult.population;
       result.regionPopulationYear = regionResult.year;
+      result.region = regionResult.data.data.name;
     } catch (err) {
       const message = `Failed to query population data for city ${inventoryLocode} and year ${inventoryYear} from URL ${url}: ${err}`;
       logger.error(message);

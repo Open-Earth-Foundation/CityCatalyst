@@ -5,7 +5,7 @@
 # 2. Generating the enriched JSON file for the frontend
 # 3. Uploading the files to the AWS S3 bucket
 
-# Usage (from git bash): bash scripts/upload_to_frontend/run_pipeline.sh BRCCI
+# Usage (from git bash): 'bash scripts/upload_to_frontend/run_pipeline.sh "BR CCI"'
 
 # Exit immediately if a command exits with a non-zero status
 set -e
@@ -13,11 +13,11 @@ set -o pipefail
 
 # OS-specific paths
 if [[ "$OSTYPE" == "linux-gnu"* || "$OSTYPE" == "darwin"* ]]; then
-  VENV_PYTHON=".cap/bin/python"
-  VENV_ACTIVATE=".cap/bin/activate"
+  VENV_PYTHON=".venv/bin/python"
+  VENV_ACTIVATE=".venv/bin/activate"
 elif [[ "$OSTYPE" == "msys"* || "$OSTYPE" == "cygwin"* || "$OSTYPE" == "win32" ]]; then
-  VENV_PYTHON=".cap/Scripts/python.exe"
-  VENV_ACTIVATE=".cap/Scripts/activate"
+  VENV_PYTHON=".venv/Scripts/python.exe"
+  VENV_ACTIVATE=".venv/Scripts/activate"
 else
   echo "Unsupported OS: $OSTYPE"
   exit 1
@@ -52,9 +52,9 @@ else
 fi
 
 
-# echo "Prioritizer..."
-# $VENV_PYTHON -m prioritizer.prioritizer --locode "$LOCODE"
-# echo -e "Prioritization done.\n"
+echo "Prioritizer..."
+$VENV_PYTHON -m prioritizer.prioritizer --locode "$LOCODE"
+echo -e "Prioritization done.\n"
 
 echo "Enrich for frontend..."
 $VENV_PYTHON -m scripts.upload_to_frontend.enrich_for_frontend_schema --locode "$LOCODE" --action_type "mitigation"

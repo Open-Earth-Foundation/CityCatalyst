@@ -31,6 +31,7 @@ import {
   OrganizationResponse,
   OrganizationRole,
   ProjectResponse,
+  ProjectWithCities,
   RequiredScopesResponse,
   ResultsResponse,
   SectorBreakdownResponse,
@@ -180,6 +181,7 @@ export const api = createApi({
           country: string;
           regionLocode: string;
           countryLocode: string;
+          projectId: string;
         }
       >({
         query: (data) => ({
@@ -852,6 +854,13 @@ export const api = createApi({
         transformResponse: (response: ProjectResponse) => response,
         invalidatesTags: ["Projects"],
       }),
+      getProject: builder.query({
+        query: (data: { projectId: string }) => ({
+          url: `/projects/${data.projectId}`,
+          method: "GET",
+        }),
+        transformResponse: (response: ProjectResponse) => response,
+      }),
       createOrganizationInvite: builder.mutation({
         query: (data: {
           organizationId: string;
@@ -884,6 +893,14 @@ export const api = createApi({
               : "invite sent",
           })),
         providesTags: ["Organizations"],
+      }),
+      getProjects: builder.query({
+        query: (data: { organizationId: string }) => ({
+          method: "GET",
+          url: `/organizations/${data.organizationId}/projects`,
+        }),
+        transformResponse: (response: ProjectWithCities[]) => response,
+        providesTags: ["Projects"],
       }),
     };
   },
@@ -967,5 +984,7 @@ export const {
   useCreateProjectMutation,
   useCreateOrganizationInviteMutation,
   useGetOrganizationsQuery,
+  useGetProjectQuery,
+  useGetProjectsQuery,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

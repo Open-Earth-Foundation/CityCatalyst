@@ -4,6 +4,7 @@ import type { User, UserId } from "./User";
 import type { GDP, GDPId } from "./GDP";
 import type { Inventory, InventoryId } from "./Inventory";
 import type { Population, PopulationId } from "./Population";
+import { Project } from "@/models/Project";
 
 export interface CityAttributes {
   cityId: string;
@@ -80,6 +81,11 @@ export class City
   hasGdp!: Sequelize.HasManyHasAssociationMixin<GDP, GDPId>;
   hasGdps!: Sequelize.HasManyHasAssociationsMixin<GDP, GDPId>;
   countGdps!: Sequelize.HasManyCountAssociationsMixin;
+
+  project!: Project;
+  getProject!: Sequelize.BelongsToGetAssociationMixin<Project>;
+  setProject!: Sequelize.BelongsToSetAssociationMixin<Project, string>;
+  createProject!: Sequelize.BelongsToCreateAssociationMixin<Project>;
   // City hasMany Inventory via cityId
   inventories!: Inventory[];
   getInventories!: Sequelize.HasManyGetAssociationsMixin<Inventory>;

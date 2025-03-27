@@ -30,6 +30,7 @@ export const createCityRequest = z.object({
   countryLocode: z.string().optional(),
   regionLocode: z.string().optional(),
   area: z.number().int().optional(),
+  projectId: z.string().uuid(),
 });
 export type CreateCityRequest = z.infer<typeof createCityRequest>;
 

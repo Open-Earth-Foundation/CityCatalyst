@@ -29,6 +29,8 @@ We have a file with all the city locodes we want to import:
 
 There are 3 utilities files to import all the data:
 
+To avoid errors, run them in the given sequence:
+
 1. `python scripts/create_city_data/run_context_bulk_import.py --bulk_file data/cities/brazil_city_locodes.json`
 2. `python scripts/create_city_data/run_ghgi_bulk_import.py --bulk_file data/cities/brazil_city_locodes.json`
 3. `python scripts/create_city_data/run_ccra_bulk_import.py --bulk_file data/cities/brazil_city_locodes.json`

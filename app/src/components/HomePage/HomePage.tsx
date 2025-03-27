@@ -95,7 +95,6 @@ export default function HomePage({
     { skip: !inventory?.cityId || !inventory?.year },
   );
 
-  // TODO replace with an endpoint to fetch just the inventories years for a particular cityId
   const formattedEmissions = inventory?.totalEmissions
     ? formatEmissions(inventory.totalEmissions)
     : { value: t("N/A"), unit: "" };

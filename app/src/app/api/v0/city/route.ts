@@ -14,7 +14,7 @@ export const POST = apiHandler(async (req, { session }) => {
   const project = await db.models.Project.findByPk(body.projectId);
 
   if (!project) {
-    throw new createHttpError.BadRequest("Invalid project id");
+    throw new createHttpError.BadRequest("invalid-project-id");
   }
 
   let city = await db.models.City.findOne({

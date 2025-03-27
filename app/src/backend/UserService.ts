@@ -9,7 +9,7 @@ import { User } from "@/models/User";
 import { Includeable, QueryTypes } from "sequelize";
 import { UserFile } from "@/models/UserFile";
 import { Project } from "@/models/Project";
-import { hasOrgLevelAccess } from "@/backend/RoleBasedAccessService";
+import { hasOrgOwnerLevelAccess } from "@/backend/RoleBasedAccessService";
 
 export default class UserService {
   public static async findUser(
@@ -231,7 +231,10 @@ export default class UserService {
     if (!session) throw new createHttpError.Unauthorized("Unauthorized");
 
     // OEF admin and organization owner can see all projects
-    const orgOwner = await hasOrgLevelAccess(organizationId, session.user.id);
+    const orgOwner = await hasOrgOwnerLevelAccess(
+      organizationId,
+      session.user.id,
+    );
     if (session.user.role == Roles.Admin || orgOwner) {
       return await Project.findAll({
         where: { organizationId },
@@ -305,9 +308,9 @@ export default class UserService {
     });
     const groupedByProject: Record<string, ProjectWithCitiesResponse[0]> = {};
 
-    for (const cu of cityUsersProjects) {
-      const projectName = cu.city.project.name;
-      const projectId = cu.city.project.projectId;
+    for (const { city } of cityUsersProjects) {
+      const projectName = city.project.name;
+      const projectId = city.project.projectId;
       if (!groupedByProject[projectId]) {
         groupedByProject[projectId] = {
           projectId,
@@ -316,9 +319,9 @@ export default class UserService {
         };
       }
       groupedByProject[projectId].cities.push({
-        name: cu.city.name as string,
-        cityId: cu.city.cityId as string,
-        inventories: cu.city.inventories as any,
+        name: city.name as string,
+        cityId: city.cityId as string,
+        inventories: city.inventories as any,
       });
     }
 

@@ -98,12 +98,6 @@ export function Hero({
                         >
                           {inventory?.city?.name}
                         </Heading>
-                        {/*{!isPublic && (*/}
-                        {/*  <InventorySelect*/}
-                        {/*    t={t}*/}
-                        {/*    currentInventoryId={currentInventoryId}*/}
-                        {/*  />*/}
-                        {/*)}*/}
                       </>
                     ) : (
                       isInventoryLoading && <Spinner size="lg" color="white" />

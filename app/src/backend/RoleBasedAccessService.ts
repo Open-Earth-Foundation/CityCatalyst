@@ -7,7 +7,7 @@ export const hasAccessToCity = async (cityId: string, userId: string) => {
   return !!CityUser;
 };
 
-export const hasProjectLevelAccess = async (
+export const hasProjectOwnerLevelAccess = async (
   projectId: string,
   userId: string,
 ) => {
@@ -17,7 +17,7 @@ export const hasProjectLevelAccess = async (
   return !!projectAdmin;
 };
 
-export const hasOrgLevelAccess = async (orgId: string, userId: string) => {
+export const hasOrgOwnerLevelAccess = async (orgId: string, userId: string) => {
   const orgOwner = await db.models.OrganizationAdmin.findOne({
     where: { organizationId: orgId, userId },
   });

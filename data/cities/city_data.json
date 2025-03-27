@@ -1682,13 +1682,13 @@
     },
     "stationaryEnergyEmissions": 7443.112,
     "transportationEmissions": 16418.02,
-    "wasteEmissions": 2040.474,
+    "wasteEmissions": 3033.474,
     "industrialProcessEmissions": 0.0,
     "landUseEmissions": 60948.09,
-    "scope1Emissions": 46767.303,
+    "scope1Emissions": 47760.303,
     "scope2Emissions": 13998.223,
     "scope3Emissions": 20779.66,
-    "totalEmissions": 86849.696,
+    "totalEmissions": 87842.696,
     "ccra": [
       {
         "keyimpact": "water resources",
@@ -4879,6 +4879,422 @@
         "keyimpact": "public health",
         "hazard": "floods",
         "normalised_risk_score": 0.99
+      },
+      {
+        "keyimpact": "infrastructure",
+        "hazard": "sea-level-rise",
+        "normalised_risk_score": null
+      }
+    ]
+  },
+  {
+    "locode": "BR ATB",
+    "name": "Abaetetuba",
+    "region": "PA",
+    "regionName": "Par\u00e1",
+    "populationSize": 158188,
+    "populationDensity": 98.21,
+    "area": 1623,
+    "elevation": 8.0,
+    "biome": "tropical_rainforest",
+    "socioEconomicFactors": {
+      "lowIncome": "high"
+    },
+    "accessToPublicServices": {
+      "inadequateWaterAccess": "very_high",
+      "inadequateSanitation": "moderate"
+    },
+    "stationaryEnergyEmissions": 97332.907,
+    "transportationEmissions": 110097.48,
+    "wasteEmissions": 55619.475,
+    "industrialProcessEmissions": 0.0,
+    "landUseEmissions": 402815.9689999999,
+    "scope1Emissions": 163292.586,
+    "scope2Emissions": 387919.283,
+    "scope3Emissions": 42316.903,
+    "totalEmissions": 665865.8309999999,
+    "ccra": [
+      {
+        "keyimpact": "water resources",
+        "hazard": "droughts",
+        "normalised_risk_score": 0.641543212760401
+      },
+      {
+        "keyimpact": "food security",
+        "hazard": "droughts",
+        "normalised_risk_score": 0.391710937810496
+      },
+      {
+        "keyimpact": "energy security",
+        "hazard": "droughts",
+        "normalised_risk_score": 0.99
+      },
+      {
+        "keyimpact": "biodiversity",
+        "hazard": "droughts",
+        "normalised_risk_score": 0.0534105242427562
+      },
+      {
+        "keyimpact": "public health",
+        "hazard": "heatwaves",
+        "normalised_risk_score": 0.99
+      },
+      {
+        "keyimpact": "infrastructure",
+        "hazard": "heatwaves",
+        "normalised_risk_score": 0.248534139570549
+      },
+      {
+        "keyimpact": "biodiversity",
+        "hazard": "heatwaves",
+        "normalised_risk_score": 0.284810167185334
+      },
+      {
+        "keyimpact": "energy security",
+        "hazard": "heatwaves",
+        "normalised_risk_score": 0.99
+      },
+      {
+        "keyimpact": "public health",
+        "hazard": "diseases",
+        "normalised_risk_score": 0.99
+      },
+      {
+        "keyimpact": "infrastructure",
+        "hazard": "landslides",
+        "normalised_risk_score": 0.170982829863898
+      },
+      {
+        "keyimpact": "public health",
+        "hazard": "landslides",
+        "normalised_risk_score": 0.594383278111253
+      },
+      {
+        "keyimpact": "infrastructure",
+        "hazard": "floods",
+        "normalised_risk_score": 0.261229234388739
+      },
+      {
+        "keyimpact": "food security",
+        "hazard": "floods",
+        "normalised_risk_score": 0.99
+      },
+      {
+        "keyimpact": "public health",
+        "hazard": "floods",
+        "normalised_risk_score": 0.547953872585504
+      },
+      {
+        "keyimpact": "infrastructure",
+        "hazard": "sea-level-rise",
+        "normalised_risk_score": null
+      }
+    ]
+  },
+  {
+    "locode": "BR CMA",
+    "name": "Camet\u00e1",
+    "region": "PA",
+    "regionName": "Par\u00e1",
+    "populationSize": 134184,
+    "populationDensity": 43.55,
+    "area": 3108,
+    "elevation": 10.0,
+    "biome": "tropical_rainforest",
+    "socioEconomicFactors": {
+      "lowIncome": "high"
+    },
+    "accessToPublicServices": {
+      "inadequateWaterAccess": "very_high",
+      "inadequateSanitation": "high"
+    },
+    "stationaryEnergyEmissions": 73357.833,
+    "transportationEmissions": 30851.301,
+    "wasteEmissions": 42448.08,
+    "industrialProcessEmissions": 0.0,
+    "landUseEmissions": 381967.716,
+    "scope1Emissions": 99448.407,
+    "scope2Emissions": 361434.006,
+    "scope3Emissions": 6382.136,
+    "totalEmissions": 528624.9299999999,
+    "ccra": [
+      {
+        "keyimpact": "water resources",
+        "hazard": "droughts",
+        "normalised_risk_score": 0.43682148959019
+      },
+      {
+        "keyimpact": "food security",
+        "hazard": "droughts",
+        "normalised_risk_score": 0.520246755647204
+      },
+      {
+        "keyimpact": "energy security",
+        "hazard": "droughts",
+        "normalised_risk_score": 0.915016974716427
+      },
+      {
+        "keyimpact": "biodiversity",
+        "hazard": "droughts",
+        "normalised_risk_score": 0.0729501192560614
+      },
+      {
+        "keyimpact": "public health",
+        "hazard": "heatwaves",
+        "normalised_risk_score": 0.99
+      },
+      {
+        "keyimpact": "infrastructure",
+        "hazard": "heatwaves",
+        "normalised_risk_score": 0.769868108104732
+      },
+      {
+        "keyimpact": "biodiversity",
+        "hazard": "heatwaves",
+        "normalised_risk_score": 0.431899417832843
+      },
+      {
+        "keyimpact": "energy security",
+        "hazard": "heatwaves",
+        "normalised_risk_score": 0.99
+      },
+      {
+        "keyimpact": "public health",
+        "hazard": "diseases",
+        "normalised_risk_score": 0.99
+      },
+      {
+        "keyimpact": "infrastructure",
+        "hazard": "landslides",
+        "normalised_risk_score": 0.721048238619236
+      },
+      {
+        "keyimpact": "public health",
+        "hazard": "landslides",
+        "normalised_risk_score": 0.617351307818864
+      },
+      {
+        "keyimpact": "infrastructure",
+        "hazard": "floods",
+        "normalised_risk_score": 0.747236426568195
+      },
+      {
+        "keyimpact": "food security",
+        "hazard": "floods",
+        "normalised_risk_score": 0.99
+      },
+      {
+        "keyimpact": "public health",
+        "hazard": "floods",
+        "normalised_risk_score": 0.422367576575514
+      },
+      {
+        "keyimpact": "infrastructure",
+        "hazard": "sea-level-rise",
+        "normalised_risk_score": null
+      }
+    ]
+  },
+  {
+    "locode": "BR PIN",
+    "name": "Parintins",
+    "region": "AM",
+    "regionName": "Amazonas",
+    "populationSize": 96372,
+    "populationDensity": 16.18,
+    "area": 6009,
+    "elevation": 6.0,
+    "biome": "tropical_rainforest",
+    "socioEconomicFactors": {
+      "lowIncome": "high"
+    },
+    "accessToPublicServices": {
+      "inadequateWaterAccess": "low",
+      "inadequateSanitation": "high"
+    },
+    "stationaryEnergyEmissions": 53633.022,
+    "transportationEmissions": 32462.129,
+    "wasteEmissions": 49511.0,
+    "industrialProcessEmissions": 0.0,
+    "landUseEmissions": 293826.597,
+    "scope1Emissions": 182910.324,
+    "scope2Emissions": 179481.037,
+    "scope3Emissions": 22971.881,
+    "totalEmissions": 429432.748,
+    "ccra": [
+      {
+        "keyimpact": "water resources",
+        "hazard": "droughts",
+        "normalised_risk_score": 0.66887110094549
+      },
+      {
+        "keyimpact": "food security",
+        "hazard": "droughts",
+        "normalised_risk_score": 0.99
+      },
+      {
+        "keyimpact": "energy security",
+        "hazard": "droughts",
+        "normalised_risk_score": 0.99
+      },
+      {
+        "keyimpact": "biodiversity",
+        "hazard": "droughts",
+        "normalised_risk_score": 0.476828831349157
+      },
+      {
+        "keyimpact": "public health",
+        "hazard": "heatwaves",
+        "normalised_risk_score": 0.99
+      },
+      {
+        "keyimpact": "infrastructure",
+        "hazard": "heatwaves",
+        "normalised_risk_score": 0.0370853473623193
+      },
+      {
+        "keyimpact": "biodiversity",
+        "hazard": "heatwaves",
+        "normalised_risk_score": 0.810178902235307
+      },
+      {
+        "keyimpact": "energy security",
+        "hazard": "heatwaves",
+        "normalised_risk_score": 0.99
+      },
+      {
+        "keyimpact": "public health",
+        "hazard": "diseases",
+        "normalised_risk_score": 0.99
+      },
+      {
+        "keyimpact": "infrastructure",
+        "hazard": "landslides",
+        "normalised_risk_score": 0.0351576877093499
+      },
+      {
+        "keyimpact": "public health",
+        "hazard": "landslides",
+        "normalised_risk_score": 0.808306709689662
+      },
+      {
+        "keyimpact": "infrastructure",
+        "hazard": "floods",
+        "normalised_risk_score": 0.0337901092727476
+      },
+      {
+        "keyimpact": "food security",
+        "hazard": "floods",
+        "normalised_risk_score": 0.99
+      },
+      {
+        "keyimpact": "public health",
+        "hazard": "floods",
+        "normalised_risk_score": 0.505425251233431
+      },
+      {
+        "keyimpact": "infrastructure",
+        "hazard": "sea-level-rise",
+        "normalised_risk_score": null
+      }
+    ]
+  },
+  {
+    "locode": "BR TAA",
+    "name": "Tarauac\u00e1",
+    "region": "AC",
+    "regionName": "Acre",
+    "populationSize": 43467,
+    "populationDensity": 2.16,
+    "area": 20726,
+    "elevation": 277.0,
+    "biome": "tropical_rainforest",
+    "socioEconomicFactors": {
+      "lowIncome": "moderate"
+    },
+    "accessToPublicServices": {
+      "inadequateWaterAccess": "very_high",
+      "inadequateSanitation": "moderate"
+    },
+    "stationaryEnergyEmissions": 24412.261,
+    "transportationEmissions": 16584.598,
+    "wasteEmissions": 9345.08,
+    "industrialProcessEmissions": 0.0,
+    "landUseEmissions": 4147406.4850000003,
+    "scope1Emissions": 399819.258,
+    "scope2Emissions": 3708073.3710000003,
+    "scope3Emissions": 69978.972,
+    "totalEmissions": 4197748.424000001,
+    "ccra": [
+      {
+        "keyimpact": "water resources",
+        "hazard": "droughts",
+        "normalised_risk_score": 0.454474819811394
+      },
+      {
+        "keyimpact": "food security",
+        "hazard": "droughts",
+        "normalised_risk_score": 0.443454457381124
+      },
+      {
+        "keyimpact": "energy security",
+        "hazard": "droughts",
+        "normalised_risk_score": 0.413377017025047
+      },
+      {
+        "keyimpact": "biodiversity",
+        "hazard": "droughts",
+        "normalised_risk_score": 0.144531818484014
+      },
+      {
+        "keyimpact": "public health",
+        "hazard": "heatwaves",
+        "normalised_risk_score": 0.746736104879117
+      },
+      {
+        "keyimpact": "infrastructure",
+        "hazard": "heatwaves",
+        "normalised_risk_score": 0.99
+      },
+      {
+        "keyimpact": "biodiversity",
+        "hazard": "heatwaves",
+        "normalised_risk_score": 0.304850968013649
+      },
+      {
+        "keyimpact": "energy security",
+        "hazard": "heatwaves",
+        "normalised_risk_score": 0.795356324914537
+      },
+      {
+        "keyimpact": "public health",
+        "hazard": "diseases",
+        "normalised_risk_score": 0.99
+      },
+      {
+        "keyimpact": "infrastructure",
+        "hazard": "landslides",
+        "normalised_risk_score": 0.99
+      },
+      {
+        "keyimpact": "public health",
+        "hazard": "landslides",
+        "normalised_risk_score": 0.871813279610648
+      },
+      {
+        "keyimpact": "infrastructure",
+        "hazard": "floods",
+        "normalised_risk_score": 0.99
+      },
+      {
+        "keyimpact": "food security",
+        "hazard": "floods",
+        "normalised_risk_score": 0.528962804512692
+      },
+      {
+        "keyimpact": "public health",
+        "hazard": "floods",
+        "normalised_risk_score": 0.497716881028239
       },
       {
         "keyimpact": "infrastructure",

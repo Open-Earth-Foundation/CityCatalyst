@@ -224,42 +224,45 @@ export default class UserService {
       throw new createHttpError.Forbidden("Forbidden");
   }
 
-  public static async findUserProjectsAndCitiesInOrganization(
+  private static async findAllProjectForAdminAndOwner(organizationId: string) {
+    return await Project.findAll({
+      where: { organizationId },
+      attributes: ["projectId", "name", "description", "cityCountLimit"],
+      include: [
+        {
+          model: db.models.ProjectAdmin,
+          as: "projectAdmins",
+          attributes: ["userId"],
+          include: [
+            {
+              model: db.models.User,
+              as: "user",
+              attributes: ["userId", "name", "email"],
+            },
+          ],
+        },
+        {
+          model: db.models.City,
+          as: "cities",
+          attributes: ["cityId", "name"],
+          include: [
+            {
+              model: db.models.Inventory,
+              as: "inventories",
+              attributes: ["year", "inventoryId", "lastUpdated"],
+            },
+          ],
+        },
+      ],
+    });
+  }
+
+  private static async findAllProjectForProjectAdmin(
+    userId: string,
     organizationId: string,
-    session: AppSession | null,
   ) {
-    if (!session) throw new createHttpError.Unauthorized("Unauthorized");
-
-    // OEF admin and organization owner can see all projects
-    const orgOwner = await hasOrgOwnerLevelAccess(
-      organizationId,
-      session.user.id,
-    );
-    if (session.user.role == Roles.Admin || orgOwner) {
-      return await Project.findAll({
-        where: { organizationId },
-        attributes: ["projectId", "name"],
-        include: [
-          {
-            model: db.models.City,
-            as: "cities",
-            attributes: ["cityId", "name"],
-            include: [
-              {
-                model: db.models.Inventory,
-                as: "inventories",
-                attributes: ["year", "inventoryId", "lastUpdated"],
-              },
-            ],
-          },
-        ],
-      });
-    }
-
-    // Project admin can see projects they are admin of and the cities in those projects
-    const projectsAndCities: ProjectWithCitiesResponse = [];
-    const projectAdmin = await db.models.ProjectAdmin.findAll({
-      where: { userId: session.user.id },
+    return await db.models.ProjectAdmin.findAll({
+      where: { userId },
       include: {
         model: db.models.Project,
         as: "project",
@@ -280,13 +283,11 @@ export default class UserService {
         ],
       },
     });
+  }
 
-    // @ts-ignore
-    projectsAndCities.concat(projectAdmin.map((pa) => pa.project));
-
-    //Collaborators can see projects they are part of and the cities in those projects
-    const cityUsersProjects = await db.models.CityUser.findAll({
-      where: { userId: session.user.id },
+  private static async findAllProjectForCollaborators(userId: string) {
+    return await db.models.CityUser.findAll({
+      where: { userId },
       attributes: [],
       include: {
         model: db.models.City,
@@ -306,6 +307,37 @@ export default class UserService {
         ],
       },
     });
+  }
+
+  public static async findUserProjectsAndCitiesInOrganization(
+    organizationId: string,
+    session: AppSession | null,
+  ) {
+    if (!session) throw new createHttpError.Unauthorized("Unauthorized");
+
+    // OEF admin and organization owner can see all projects
+    const orgOwner = await hasOrgOwnerLevelAccess(
+      organizationId,
+      session.user.id,
+    );
+    if (session.user.role == Roles.Admin || orgOwner) {
+      return await UserService.findAllProjectForAdminAndOwner(organizationId);
+    }
+
+    const [projectAdminProjects, cityUsersProjects] = await Promise.all([
+      UserService.findAllProjectForProjectAdmin(
+        session.user.id,
+        organizationId,
+      ),
+      UserService.findAllProjectForCollaborators(session.user.id),
+    ]);
+
+    // Project admin can see projects they are admin of and the cities in those projects
+    const projectsAndCities: ProjectWithCitiesResponse = [];
+
+    // @ts-ignore
+    projectsAndCities.concat(projectAdminProjects.map((pa) => pa.project));
+
     const groupedByProject: Record<string, ProjectWithCitiesResponse[0]> = {};
 
     for (const { city } of cityUsersProjects) {

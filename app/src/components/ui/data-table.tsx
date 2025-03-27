@@ -14,6 +14,8 @@ import {
 } from "@/components/ui/native-select";
 
 import { IoIosArrowBack } from "react-icons/io";
+import { InputGroup } from "@/components/ui/input-group";
+import { MdSearch } from "react-icons/md";
 
 type DataTableProps<T> = {
   data: T[];
@@ -79,12 +81,18 @@ function DataTable<T extends Record<string, any>>({
       <Flex mb={4} justifyContent="space-between">
         <Flex mb={4} gap={2}>
           {searchable && (
-            <Input
-              minWidth="350px"
-              placeholder="Search by name or email address"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
+            <InputGroup
+              startElement={
+                <Icon as={MdSearch} color="interactive.control" boxSize={6} />
+              }
+            >
+              <Input
+                minWidth="350px"
+                placeholder={t("search-records")}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </InputGroup>
           )}
 
           {filterProperty && filterOptions.length > 0 && (

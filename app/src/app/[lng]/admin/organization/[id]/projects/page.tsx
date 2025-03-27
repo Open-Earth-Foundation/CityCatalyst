@@ -8,37 +8,38 @@ import {
   Table,
   Text,
 } from "@chakra-ui/react";
-import {
-  MdAdd,
-  MdForwardToInbox,
-  MdMoreVert,
-  MdOutlineGroup,
-} from "react-icons/md";
-import React from "react";
+import { MdAdd, MdMoreVert } from "react-icons/md";
+import React, { useMemo, useState } from "react";
 import { useTranslation } from "@/i18n/client";
-import {
-  useGetOrganizationQuery,
-  useGetProjectsForOrganizationQuery,
-} from "@/services/api";
+import { useGetOrganizationQuery, useGetProjectsQuery } from "@/services/api";
 import {
   ProgressCircleRing,
   ProgressCircleRoot,
 } from "@/components/ui/progress-circle";
 import DataTable from "@/components/ui/data-table";
-import { Tag } from "@/components/ui/tag";
 import {
   MenuContent,
   MenuItem,
   MenuRoot,
   MenuTrigger,
 } from "@/components/ui/menu";
+import CreateEditProjectModal from "@/app/[lng]/admin/organization/[id]/projects/CreateEditProjectModal";
+import { RiDeleteBin6Line, RiEditLine } from "react-icons/ri";
+import DeleteProjectModal from "@/app/[lng]/admin/organization/[id]/projects/DeleteProjectModal";
 
 const AdminOrganizationProjectsPage = ({
   params: { lng, id },
 }: {
   params: { lng: string; id: string };
 }) => {
-  const [showAddProjectModal, setShowAddProjectModal] = React.useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [projectToEdit, setProjectToEdit] = useState<{
+    projectName: string;
+    description: string;
+    cityCountLimit: number;
+    projectId: string;
+  } | null>(null);
 
   const { t } = useTranslation(lng, "admin");
 
@@ -46,7 +47,24 @@ const AdminOrganizationProjectsPage = ({
     useGetOrganizationQuery(id);
 
   const { data: projects, isLoading: isProjectDataLoading } =
-    useGetProjectsForOrganizationQuery(id);
+    useGetProjectsQuery({
+      organizationId: id,
+    });
+
+  const transformedProjects = useMemo(() => {
+    if (!projects) return [];
+    return projects.map((project) => {
+      const totalCityCount = project.cities.length;
+      return {
+        name: project.name,
+        cities: `${totalCityCount}/${project.cityCountLimit}`,
+        description: project.description,
+        admin: "N/A",
+        cityCountLimit: project.cityCountLimit as number,
+        projectId: project.projectId,
+      };
+    });
+  }, [projects]);
 
   if (isOrganizationLoading) {
     return (
@@ -77,7 +95,14 @@ const AdminOrganizationProjectsPage = ({
             {t("org-project-caption", { name: organization?.name })}
           </Text>
         </Box>
-        <Button onClick={() => setShowAddProjectModal(true)} h="48px" mt="auto">
+        <Button
+          onClick={() => {
+            setProjectToEdit(null);
+            setIsModalOpen(true);
+          }}
+          h="48px"
+          mt="auto"
+        >
           <Icon as={MdAdd} h={8} w={8} />
           {t("add-project")}
         </Button>
@@ -104,32 +129,31 @@ const AdminOrganizationProjectsPage = ({
           t={t}
           searchable={true}
           pagination={true}
-          data={[...projects].reverse()}
-          title={t("manage-oef-clients")}
+          data={[...transformedProjects].reverse()}
+          title={t("projects")}
           columns={[
             {
               header: t("project-name"),
               accessor: "name",
             },
-            { header: t("cities"), accessor: "status" },
+            { header: t("cities"), accessor: "cities" },
+            { header: t("admin"), accessor: "admin" },
+            { header: t("description"), accessor: "description" },
             { header: "", accessor: null },
           ]}
           renderRow={(item, idx) => (
             <Table.Row key={idx}>
               <Table.Cell>{item.name}</Table.Cell>
-              <Table.Cell>{item.contactEmail}</Table.Cell>
-              <Table.Cell>
-                {" "}
-                {item.status === "accepted" ? (
-                  <Tag size="lg" rounded="full" colorPalette="green">
-                    {" "}
-                    {t("accepted")}
-                  </Tag>
-                ) : (
-                  <Tag size="lg" colorPalette="yellow">
-                    {t("invite-sent")}
-                  </Tag>
-                )}{" "}
+              <Table.Cell>{item.cities}</Table.Cell>
+              <Table.Cell className="truncate" maxW="200px">
+                {item.admin}
+              </Table.Cell>
+              <Table.Cell
+                className="truncate"
+                maxW="200px"
+                title={item.description}
+              >
+                {item.description}
               </Table.Cell>
               <Table.Cell>
                 <MenuRoot>
@@ -145,8 +169,8 @@ const AdminOrganizationProjectsPage = ({
                   </MenuTrigger>
                   <MenuContent w="auto" borderRadius="8px" shadow="2dp" px="0">
                     <MenuItem
-                      value={t("resend-invite")}
-                      valueText={t("resend-invite")}
+                      value={t("edit-project")}
+                      valueText={t("edit-project")}
                       p="16px"
                       display="flex"
                       alignItems="center"
@@ -156,12 +180,20 @@ const AdminOrganizationProjectsPage = ({
                         cursor: "pointer",
                       }}
                       className="group"
-                      onClick={() => {}}
+                      onClick={() => {
+                        setProjectToEdit({
+                          projectName: item.name,
+                          description: item.description as string,
+                          cityCountLimit: item.cityCountLimit,
+                          projectId: item.projectId,
+                        });
+                        setIsModalOpen(true);
+                      }}
                     >
                       <Icon
                         className="group-hover:text-white"
                         color="interactive.control"
-                        as={MdForwardToInbox}
+                        as={RiEditLine}
                         h="24px"
                         w="24px"
                       />
@@ -169,12 +201,12 @@ const AdminOrganizationProjectsPage = ({
                         className="group-hover:text-white"
                         color="content.primary"
                       >
-                        {t("resend-invite")}
+                        {t("edit-project")}
                       </Text>
                     </MenuItem>
                     <MenuItem
-                      value={t("account-details")}
-                      valueText={t("account-details")}
+                      value={t("delete-project")}
+                      valueText={t("delete-project")}
                       p="16px"
                       display="flex"
                       alignItems="center"
@@ -184,16 +216,20 @@ const AdminOrganizationProjectsPage = ({
                         cursor: "pointer",
                       }}
                       className="group"
-                      onClick={() =>
-                        router.push(
-                          `/${lng}/admin/organization/${item.organizationId}/profile`,
-                        )
-                      }
+                      onClick={() => {
+                        setProjectToEdit({
+                          projectName: item.name,
+                          description: item.description as string,
+                          cityCountLimit: item.cityCountLimit,
+                          projectId: item.projectId,
+                        });
+                        setIsDeleteModalOpen(true);
+                      }}
                     >
                       <Icon
                         className="group-hover:text-white"
-                        color="interactive.control"
-                        as={MdOutlineGroup}
+                        color="sentiment.negativeDefault"
+                        as={RiDeleteBin6Line}
                         h="24px"
                         w="24px"
                       />
@@ -201,7 +237,7 @@ const AdminOrganizationProjectsPage = ({
                         className="group-hover:text-white"
                         color="content.primary"
                       >
-                        {t("account-details")}
+                        {t("remove")}
                       </Text>
                     </MenuItem>
                   </MenuContent>
@@ -211,6 +247,28 @@ const AdminOrganizationProjectsPage = ({
           )}
         />
       )}
+      <CreateEditProjectModal
+        isOpen={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(false);
+          setProjectToEdit(null);
+        }}
+        t={t}
+        onOpenChange={setIsModalOpen}
+        organizationId={id}
+        projectData={projectToEdit}
+      />
+      <DeleteProjectModal
+        projectId={projectToEdit?.projectId as string}
+        projectName={projectToEdit?.projectName as string}
+        isOpen={isDeleteModalOpen}
+        onClose={() => {
+          setIsDeleteModalOpen(false);
+          setProjectToEdit(null);
+        }}
+        t={t}
+        onOpenChange={setIsDeleteModalOpen}
+      />
     </Box>
   );
 };

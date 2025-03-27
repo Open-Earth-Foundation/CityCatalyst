@@ -4,6 +4,7 @@
   "admin-caption": "Control panel to manage CityCatalyst organizations",
   "add-organization": "Add an organization",
   "add-project": "Add a project",
+  "edit-project": "Edit project",
   "manage-oef-clients": "Manage OEF clients",
   "organization-data": "Organization data",
   "project": "Project",
@@ -23,6 +24,9 @@
   "error-message": "An error occurred. Please try again.",
   "organization-added": "Organization added successfully",
   "organization-updated": "Organization updated successfully",
+  "project-added": "Project added successfully",
+  "project-updated": "Project updated successfully",
+  "project-deleted": "Project deleted successfully",
   "account-details": "Account details",
   "resend-invite": "Resend invite",
   "not-authorized": "You are not authorized",
@@ -42,5 +46,13 @@
   "account-details-caption": "Check and edit your account details",
   "save-change": "Save changes",
   "plan-details": "Plan details",
-  "plan-details-caption": "<bold>{{name}}</bold> currently has <bold>{{num_projects}}</bold> projects and a count of <bold>{{num_cities}} / {{total_cities}}</bold> cities"
+  "plan-details-caption": "<bold>{{name}}</bold> currently has <bold>{{num_projects}}</bold> projects and a count of <bold>{{num_cities}} / {{total_cities}}</bold> cities",
+  "search-records": "Search records",
+  "save-project": "Save project",
+  "delete-project": "Delete project",
+  "remove": "Remove",
+  "yes-i-understand": "Yes, I understand",
+  "confirm-project-delete": "Are you sure you want to permanently delete <bold>{{name}}</bold>?",
+  "delete-all-inventories-warning": "All inventories associated with this project will be deleted as well.",
+  "enter-project-name-confirmation": "Please enter <bold>{{name}}</bold> below to delete it"
 }

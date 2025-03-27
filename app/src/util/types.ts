@@ -410,6 +410,8 @@ export type ListOrganizationsResponse = {
 export type ProjectWithCities = {
   projectId: string;
   name: string;
+  description?: string;
+  cityCountLimit?: number;
   cities: {
     cityId: string;
     name: string;

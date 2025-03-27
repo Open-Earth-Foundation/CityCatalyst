@@ -9,17 +9,20 @@ import { City } from "@/models/City";
 import { groupBy } from "@/util/helpers";
 import OpenClimateService from "./OpenClimateService";
 import { Op } from "sequelize";
-import { InventoryTypeEnum } from "@/util/constants";
+import { DEFAULT_PROJECT_ID, InventoryTypeEnum } from "@/util/constants";
+import { InventoryAttributes } from "@/models/Inventory";
+import { GlobalWarmingPotentialTypeEnum } from "@/util/enums";
+import CityBoundaryService from "./CityBoundaryService";
 
-export interface BulkInventoryProps {
+export interface BulkInventoryCreateProps {
   cityLocodes: string[]; // List of city locodes
   emails: string[]; // Comma separated list of emails to invite to the all of the created inventories
   years: number[]; // List of years to create inventories for
   scope: "gpc_basic" | "gpc_basic_plus"; // Scope selection (gpc_basic or gpc_basic_plus)
-  gwp: "AR5" | "AR6"; // GWP selection (AR5 or AR6)
+  gwp: "AR5" | "AR6" | "ar5" | "ar6"; // global warming potential standard selection
 }
 
-export interface BulkConnectSourcesProps {
+export interface BulkInventoryUpdateProps {
   userEmail: string; // Email of the user whose inventories are to be connected
   cityLocodes: string[]; // List of city locodes
   years: number[]; // List of years to create inventories for
@@ -34,7 +37,7 @@ const DEFAULT_PRIORITY = 0; // 10 is the highest priority
 
 export default class AdminService {
   public static async createBulkInventories(
-    props: BulkInventoryProps,
+    props: BulkInventoryCreateProps,
     session: AppSession | null,
   ): Promise<CreateBulkInventoriesResponse> {
     this.ensureIsAdmin(session);
@@ -68,6 +71,7 @@ export default class AdminService {
         cityId: randomUUID(),
         locode: cityLocode,
         name: cityName,
+        projectId: DEFAULT_PROJECT_ID,
       });
 
       // add users to the city
@@ -80,12 +84,13 @@ export default class AdminService {
       );
 
       logger.info("Creating inventories for city " + cityLocode);
-      const inventories = props.years.map((year) => ({
+      const inventories: InventoryAttributes[] = props.years.map((year) => ({
         inventoryId: randomUUID(),
         cityLocode,
         year,
         inventoryType: props.scope as InventoryTypeEnum,
-        gwp: props.gwp,
+        globalWarmingPotentialType:
+          props.gwp.toLowerCase() as GlobalWarmingPotentialTypeEnum,
         cityId: city.cityId,
       }));
       try {
@@ -100,6 +105,14 @@ export default class AdminService {
       }
 
       for (const inventory of inventories) {
+        if (!inventory.year) {
+          console.error("No year for inventory", inventory.inventoryId);
+          errors.push({
+            locode: cityLocode,
+            error: "No year for inventory " + inventory.inventoryId,
+          });
+          continue;
+        }
         const populationErrors = await this.createPopulationEntries(
           cityLocode,
           inventory.year,
@@ -113,7 +126,7 @@ export default class AdminService {
   }
 
   public static async bulkConnectDataSources(
-    props: BulkConnectSourcesProps,
+    props: BulkInventoryUpdateProps,
     session: AppSession | null,
   ): Promise<{ errors: { locode: string; error: string }[] }> {
     this.ensureIsAdmin(session);
@@ -177,6 +190,41 @@ export default class AdminService {
     }
   }
 
+  public static async bulkUpdateInventories(
+    { cityLocodes, userEmail, years }: BulkInventoryUpdateProps,
+    session: AppSession | null,
+  ) {
+    this.ensureIsAdmin(session);
+    const errors: { locode: string; error: string }[] = [];
+    for (const locode of cityLocodes) {
+      const city = await db.models.City.findOne({
+        where: { locode },
+        attributes: ["cityId"],
+        include: [
+          {
+            model: db.models.User,
+            as: "users",
+            attributes: ["userId"],
+            where: { email: userEmail },
+          },
+        ],
+      });
+      if (!city) {
+        throw new createHttpError.NotFound(`City ${locode} not found`);
+      }
+      for (const year of years) {
+        const newErrors = await this.createPopulationEntries(
+          locode,
+          year,
+          city?.cityId,
+        );
+        errors.push(...newErrors);
+      }
+    }
+
+    return errors;
+  }
+
   private static async createPopulationEntries(
     cityLocode: string,
     inventoryYear: number,
@@ -223,6 +271,23 @@ export default class AdminService {
       cityId,
       year: populationData.regionPopulationYear,
     });
+
+    const boundaryData = await CityBoundaryService.getCityBoundary(cityLocode);
+    const area = boundaryData.area;
+
+    // save context data to City table
+    const { region, regionLocode, country, countryLocode } = populationData;
+    await db.models.City.update(
+      {
+        region,
+        regionLocode,
+        country,
+        countryLocode,
+        area: area ? Math.round(area) : undefined,
+        projectId: DEFAULT_PROJECT_ID,
+      },
+      { where: { cityId } },
+    );
 
     return errors;
   }

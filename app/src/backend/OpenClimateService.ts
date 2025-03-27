@@ -16,6 +16,10 @@ interface PopulationDataResult {
   regionPopulationYear?: number;
   countryPopulation?: number;
   countryPopulationYear?: number;
+  region?: string;
+  regionLocode?: string;
+  country?: string;
+  countryLocode?: string;
 }
 
 type FetchPopulationResult = PopulationEntry & { data: any };
@@ -50,6 +54,13 @@ export default class OpenClimateService {
       result.cityPopulationYear = cityResult.year;
       result.cityName = cityResult.data.data.name;
 
+      const regionLocode = cityResult.data.data.is_part_of;
+      if (!regionLocode) {
+        result.error = `City ${inventoryLocode} does not have a region locode in OpenClimate`;
+        return result;
+      }
+      result.regionLocode = regionLocode;
+
       const countryLocode =
         inventoryLocode && inventoryLocode.length > 0
           ? inventoryLocode.split(" ")[0]
@@ -58,6 +69,7 @@ export default class OpenClimateService {
         result.error = `Invalid locode supplied, doesn\'t have a country locode: ${inventoryLocode}`;
         return result;
       }
+      result.countryLocode = countryLocode;
 
       const countryResult = await this.fetchPopulation(
         countryLocode,
@@ -70,12 +82,7 @@ export default class OpenClimateService {
       }
       result.countryPopulation = countryResult.population;
       result.countryPopulationYear = countryResult.year;
-
-      const regionLocode = cityResult.data.data.is_part_of;
-      if (!regionLocode) {
-        result.error = `City ${inventoryLocode} does not have a region locode in OpenClimate`;
-        return result;
-      }
+      result.country = countryResult.data.data.name;
 
       const regionResult = await this.fetchPopulation(
         regionLocode,
@@ -88,6 +95,7 @@ export default class OpenClimateService {
       }
       result.regionPopulation = regionResult.population;
       result.regionPopulationYear = regionResult.year;
+      result.region = regionResult.data.data.name;
     } catch (err) {
       const message = `Failed to query population data for city ${inventoryLocode} and year ${inventoryYear} from URL ${url}: ${err}`;
       logger.error(message);
@@ -101,7 +109,7 @@ export default class OpenClimateService {
     actorLocode: string,
     inventoryYear: number,
     baseUrl: string,
-  ): Promise<FetchPopulationResult | null> {
+  ): Promise<(Record<string, any> & FetchPopulationResult) | null> {
     const request = await fetch(baseUrl + actorLocode);
     const data = await request.json();
 

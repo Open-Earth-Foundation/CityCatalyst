@@ -195,3 +195,5 @@ export const REGIONALLOCALES: Record<string, string> = {
   pt: "pt-PT", // Portuguese (Portugal)
   de: "de-DE", // German (Germany)
 };
+
+export const DEFAULT_PROJECT_ID = "ebe82f61-b51b-4015-90ef-8b94f86fb0b7";

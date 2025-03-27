@@ -27,35 +27,36 @@ def add_context_to_city_data(locode: str, context_data: Dict[str, Any]) -> None:
     full_path = BASE_PATH_CITIES / "city_data.json"
 
     if not full_path.exists():
-        raise FileNotFoundError(f"City data file not found: {full_path}")
+        # If the file does not exist, create it
+        print(f"City data file not found: {full_path}")
+        print("Creating empty city data file")
+
+        with open(full_path, "w", encoding="utf-8") as file:
+            json.dump([], file, indent=2)
 
     with open(full_path, "r", encoding="utf-8") as file:
         city_data = json.load(file)
 
-    if city_data:
-        city_found = False
+    city_found = False
 
-        # Update or add the context data for the city
-        for city in city_data:
-            if city["locode"] == locode:
-                # Update existing city with new context data
-                city.update(context_data)
-                city_found = True
-                break
+    # Update or add the context data for the city
+    for city in city_data:
+        if city["locode"] == locode:
+            # Update existing city with new context data
+            city.update(context_data)
+            city_found = True
+            break
 
-        if not city_found:
-            # Add new city with context data
-            context_data["locode"] = locode
-            city_data.append(context_data)
+    if not city_found:
+        # Add new city with context data
+        context_data["locode"] = locode
+        city_data.append(context_data)
 
-        # Save the updated JSON file in-place
-        with open(full_path, "w", encoding="utf-8") as file:
-            json.dump(city_data, file, indent=2)
+    # Save the updated JSON file in-place
+    with open(full_path, "w", encoding="utf-8") as file:
+        json.dump(city_data, file, indent=2)
 
-        print(f"City data with context values saved to {full_path}")
-
-    else:
-        print(f"No city data found in {full_path}")
+    print(f"City data with context values saved to {full_path}")
 
 
 if __name__ == "__main__":

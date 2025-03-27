@@ -32,7 +32,7 @@ def load_locodes_from_file(file_name: Path) -> list:
     Returns:
         list: List of locodes
     """
-    file_path = BASE_DIR / "data" / "cities" / file_name
+    file_path = BASE_DIR / file_name
 
     with open(file_path, "r", encoding="utf-8") as f:
         data = json.load(f)

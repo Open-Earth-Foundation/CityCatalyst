@@ -30,8 +30,8 @@ We have a file with all the city locodes we want to import:
 There are 3 utilities files to import all the data:
 
 1. `python scripts/create_city_data/run_context_bulk_import.py --bulk_file data/cities/brazil_city_locodes.json`
-2. `python scripts/create_city_data/run_ghgis_bulk_import.py --bulk_file data/cities/brazil_city_locodes.json`
-3. `python scripts/create_city_data/run_ccras_bulk_import.py --bulk_file data/cities/brazil_city_locodes.json`
+2. `python scripts/create_city_data/run_ghgi_bulk_import.py --bulk_file data/cities/brazil_city_locodes.json`
+3. `python scripts/create_city_data/run_ccra_bulk_import.py --bulk_file data/cities/brazil_city_locodes.json`
 
 This will import all the city data and store inside `data/cities/city_data.json`.
 

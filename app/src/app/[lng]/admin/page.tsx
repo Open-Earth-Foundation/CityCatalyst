@@ -119,7 +119,7 @@ const AdminPage = ({ params: { lng } }: { params: { lng: string } }) => {
         )}
         {!isOrgDataLoading && orgData.length === 0 && (
           <Text color="content.tertiary" fontSize="body.lg">
-            {t("no-organizations")}
+            {t("no-data")}
           </Text>
         )}
 

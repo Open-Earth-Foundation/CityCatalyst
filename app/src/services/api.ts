@@ -864,6 +864,14 @@ export const api = createApi({
         transformResponse: (response: ProjectResponse) => response,
         invalidatesTags: ["Projects"],
       }),
+      getProjectsForOrganization: builder.query({
+        query: (organizationId: string) => ({
+          url: `/organizations/${organizationId}/projects`,
+          method: "GET",
+        }),
+        transformResponse: (response: ProjectResponse[]) => response,
+        providesTags: ["Projects"],
+      }),
       createOrganizationInvite: builder.mutation({
         query: (data: {
           organizationId: string;
@@ -989,5 +997,6 @@ export const {
   useGetOrganizationsQuery,
   useGetOrganizationQuery,
   useUpdateOrganizationMutation,
+  useGetProjectsForOrganizationQuery,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

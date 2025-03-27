@@ -8,6 +8,7 @@ import { NextResponse } from "next/server";
 
 import UserService from "@/backend/UserService";
 import { randomUUID } from "node:crypto";
+import { db } from "@/models";
 
 export const POST = apiHandler(async (req, { params, session }) => {
   UserService.validateIsAdmin(session);
@@ -24,6 +25,15 @@ export const POST = apiHandler(async (req, { params, session }) => {
 export const GET = apiHandler(async (req, { params, session }) => {
   UserService.validateIsAdmin(session);
   const { organizationId } = params;
-  const projects = await Project.findAll({ where: { organizationId } });
+  const projects = await Project.findAll({
+    where: { organizationId },
+    include: [
+      {
+        model: db.models.City,
+        as: "cities",
+        attributes: ["cityId", "name"],
+      },
+    ],
+  });
   return NextResponse.json(projects);
 });

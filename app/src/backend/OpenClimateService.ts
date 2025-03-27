@@ -63,17 +63,19 @@ export default class OpenClimateService {
       result.region = region?.name ?? undefined;
       result.country = country?.name ?? undefined;
       result.regionLocode = region?.actor_id ?? undefined;
-      // result.countryLocode = country?.actor_id ?? undefined;
 
-      const countryLocode =
-        inventoryLocode && inventoryLocode.length > 0
-          ? inventoryLocode.split(" ")[0]
-          : null;
+      let countryLocode = country?.actor_id ?? undefined;
+      if (!countryLocode) {
+        countryLocode =
+          inventoryLocode && inventoryLocode.length > 0
+            ? inventoryLocode.split(" ")[0]
+            : null;
+      }
       if (!countryLocode) {
         result.error = `Invalid locode supplied, doesn\'t have a country locode: ${inventoryLocode}`;
         return result;
       }
-      result.countryLocode = countryLocode ?? undefined;
+      result.countryLocode = countryLocode;
 
       const countryResult = await this.fetchPopulation(
         countryLocode,

@@ -146,13 +146,10 @@ if __name__ == "__main__":
         "--locode",
         type=str,
         required=True,
-        help="The locode of the city to add the emissions data to like BRCCI.",
+        help="The locode of the city to add the emissions data to like 'BR CCI'.",
     )
 
     args = parser.parse_args()
-
-    # Remove any spaces from the locode e.g. BR CCI -> BRCCI
-    args.locode = args.locode.replace(" ", "")
 
     dict_extracted_emissions = extract_data(args.file_name)
     add_emissions_to_city_data(args.locode, dict_extracted_emissions)

@@ -1,7 +1,6 @@
 """
 Use this script to CCRA values retrieved by
-the ccra API and stored inside a folder called 'data/ccra'
-to the city data stored inside 'data/cities'.
+the ccra API and add them to the city data stored inside 'data/cities'.
 
 Inputs: locode of the city to add the emissions data to
 """
@@ -9,50 +8,37 @@ Inputs: locode of the city to add the emissions data to
 from pathlib import Path
 import argparse
 import json
+from typing import List, Dict, Any
+from get_ccra import get_ccra
 
 # Define the base path to the project root
 BASE_DIR = Path(__file__).parent.parent.parent
-BASE_PATH_CCRAS = BASE_DIR / "data" / "ccra"
 BASE_PATH_CITIES = BASE_DIR / "data" / "cities"
 
 
-def extract_ccras(locode: str) -> list:
-    # Remove any spaces from the locode e.g. BR CCI -> BRCCI
-    locode = locode.replace(" ", "")
-
-    full_path = BASE_PATH_CCRAS / f"ccra_{locode}_current.json"
-
-    if not full_path.exists():
-        raise FileNotFoundError(f"CCRA file not found: {full_path}")
-
-    with open(full_path, "r", encoding="utf-8") as file:
-        ccras = json.load(file)
-
-    if ccras:
-        print(f"CCRA data loaded from {full_path}")
-
-        list_extracted_ccras = []
-
-        for ccra in ccras:
-
-            # print(ccra["keyimpact"])
-            list_extracted_ccras.append(
-                {
-                    "keyimpact": ccra["keyimpact"],
-                    "hazard": ccra["hazard"],
-                    "normalised_risk_score": ccra["normalised_risk_score"],
-                }
-            )
-
-        return list_extracted_ccras
-    else:
-        print(f"No CCRA data found in {full_path}")
+def extract_ccras(ccra_data: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    if not ccra_data:
+        print("No CCRA data provided")
         return []
 
+    print("Processing CCRA data")
+    list_extracted_ccras = []
 
-def add_extracted_ccras_to_city_data(locode: str, list_extracted_ccras: list) -> None:
-    # Remove any spaces from the locode e.g. BR CCI -> BRCCI
-    locode = locode.replace(" ", "")
+    for ccra in ccra_data:
+        list_extracted_ccras.append(
+            {
+                "keyimpact": ccra["keyimpact"],
+                "hazard": ccra["hazard"],
+                "normalised_risk_score": ccra["normalised_risk_score"],
+            }
+        )
+
+    return list_extracted_ccras
+
+
+def add_extracted_ccras_to_city_data(
+    locode: str, list_extracted_ccras: List[Dict[str, Any]]
+) -> None:
 
     # Load the city data
     full_path = BASE_PATH_CITIES / "city_data.json"
@@ -64,10 +50,7 @@ def add_extracted_ccras_to_city_data(locode: str, list_extracted_ccras: list) ->
         city_data = json.load(file)
 
     if city_data:
-
         city_found = False
-
-        # Search for the city data with the given locode and return index
 
         # Add the list of extracted CCRA values to that city under ccra key
         for city in city_data:
@@ -81,7 +64,7 @@ def add_extracted_ccras_to_city_data(locode: str, list_extracted_ccras: list) ->
 
         # Save the updated JSON file in-place
         with open(full_path, "w", encoding="utf-8") as file:
-            json.dump(city_data, file, indent=4, ensure_ascii=False)
+            json.dump(city_data, file, indent=2)
 
         print(f"City data with CCRA values saved to {full_path}")
 
@@ -96,13 +79,18 @@ if __name__ == "__main__":
         "--locode",
         type=str,
         required=True,
-        help="The locode of the city to get the ccras for and to add to that city e.g. BRMGE.",
+        help="The locode of the city to get the ccras for and to add to that city e.g. 'BR MGE'.",
     )
 
     args = parser.parse_args()
 
     try:
-        list_extracted_ccras = extract_ccras(args.locode)
+
+        ccra_data = get_ccra(args.locode, "current")
+        if ccra_data is None:
+            print("Failed to fetch CCRA data")
+            exit(1)
+        list_extracted_ccras = extract_ccras(ccra_data)
 
         if not list_extracted_ccras:
             print("No CCRA data to add.")

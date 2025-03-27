@@ -40,6 +40,11 @@ export type InventoryResponse = RequiredInventoryAttributes & {
   city: CityAttributes & {
     populationYear: number;
     population: number;
+    project: {
+      projectId: string;
+      name: string;
+      organizationId: string;
+    };
   };
 };
 
@@ -401,3 +406,19 @@ export type ListOrganizationsResponse = {
     role: OrganizationRole;
   }[];
 }[];
+
+export type ProjectWithCities = {
+  projectId: string;
+  name: string;
+  cities: {
+    cityId: string;
+    name: string;
+    inventories: {
+      inventoryId: string;
+      year: number;
+      lastUpdated: string;
+    }[];
+  }[];
+};
+
+export type ProjectWithCitiesResponse = ProjectWithCities[];

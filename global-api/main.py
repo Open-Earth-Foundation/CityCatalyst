@@ -20,6 +20,7 @@ from routes.citywide_emission_endpoint import api_router as citywide_route
 from routes.ghgi_emissions import api_router as actor_emissions_route
 from routes.ccra_assessment import api_router as ccra_assessment
 from routes.ghgi_emission_forecast import api_router as emission_forecast
+from routes.city_context import api_router as city_context_route
 
 """
 Logger instance initialized and configured
@@ -99,6 +100,11 @@ app.include_router(
 
 app.include_router(
     city_boundaries_route,
+    tags=["City Definitions"],
+)
+
+app.include_router(
+    city_context_route,
     tags=["City Definitions"],
 )
 

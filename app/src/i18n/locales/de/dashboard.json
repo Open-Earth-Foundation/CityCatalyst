@@ -177,5 +177,6 @@
   "sector": "Sektor",
   "an-error-occurred": "Ein Fehler ist aufgetreten",
   "error-fetching-sector-breakdown": "Fehler beim Abrufen der Sektoraufteilung",
-  "source-open-climate": "Quelle: OpenClimate"
+  "source-open-climate": "Quelle: OpenClimate",
+  "projects": "Projekte"
 }

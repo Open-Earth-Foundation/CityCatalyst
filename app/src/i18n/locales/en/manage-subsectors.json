@@ -1215,5 +1215,7 @@
   "changes-can-be-lost": "Your changes can be lost",
   "changes-can-be-lost-description": "Do you want to discard all changes made since last edit? This cannot be undone.",
   "no-unfinished-subsectors": "No unfinished subsectors.",
-  "changes-undone": "Changes undone"
+  "changes-undone": "Changes undone",
+  "industrial-processes-and-product-uses": "Industrial processes and product uses (IPPU)",
+  "agriculture-forestry-and-other-land-use": "Agriculture, Forestry and Other Land Use (AFOLU)"
 }

@@ -6,6 +6,12 @@ import { apiHandler } from "@/util/api";
 import { randomUUID } from "node:crypto";
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { InventoryTypeEnum } from "@/util/constants";
+
+const validSectorRefNos = {
+  [InventoryTypeEnum.GPC_BASIC]: ["I", "II", "III"],
+  [InventoryTypeEnum.GPC_BASIC_PLUS]: ["I", "II", "III", "IV", "V"],
+};
 
 // returns { success: true, result: { [sectorReferenceNumber]: { subSector, subCategory, inventoryValue }[] } }
 // used to decide which subsectors + scopes to show on the notation key manager for each sector
@@ -31,8 +37,18 @@ export const GET = apiHandler(async (_req, { session, params }) => {
 
   const inventoryStructure =
     await InventoryProgressService.getSortedInventoryStructure();
+  const applicableSectors = inventoryStructure.filter((sector) => {
+    if (!sector.referenceNumber) {
+      return false;
+    }
+
+    const inventoryType =
+      inventory.inventoryType ?? InventoryTypeEnum.GPC_BASIC;
+    return validSectorRefNos[inventoryType].includes(sector.referenceNumber);
+  });
+
   const inventoryValuesBySector = Object.fromEntries(
-    inventoryStructure.map((sector) => {
+    applicableSectors.map((sector) => {
       const inventoryValues = sector.subSectors.flatMap((subSector) => {
         return subSector.subCategories
           .map((subCategory) => {
@@ -65,7 +81,7 @@ export const GET = apiHandler(async (_req, { session, params }) => {
 const saveNotationKeysRequest = z.object({
   notationKeys: z.array(
     z.object({
-      subSectorId: z.string().uuid(),
+      subCategoryId: z.string().uuid(),
       unavailableReason: z.enum([
         "no-occurrance",
         "not-estimated",
@@ -90,18 +106,30 @@ export const POST = apiHandler(async (req, { session, params }) => {
       const existingInventoryValue = await db.models.InventoryValue.findOne({
         where: {
           inventoryId,
-          subSectorId: notationKey.subSectorId,
+          subCategoryId: notationKey.subCategoryId,
         },
         transaction,
         lock: true,
       });
 
+      const subCategory = await db.models.SubCategory.findOne({
+        where: { subcategoryId: notationKey.subCategoryId },
+        include: [
+          {
+            model: db.models.SubSector,
+            as: "subsector",
+            attributes: ["sectorId"],
+          },
+        ],
+      });
       if (existingInventoryValue) {
         // reset emissions values of inventory value as notation key was used for it
         const inventoryValue = await existingInventoryValue.update(
           {
             unavailableReason: notationKey.unavailableReason,
             unavailableExplanation: notationKey.unavailableExplanation,
+            subSectorId: subCategory?.subsectorId,
+            sectorId: subCategory?.subsector?.sectorId,
             co2eq: undefined,
             co2eqYears: undefined,
           },
@@ -119,6 +147,8 @@ export const POST = apiHandler(async (req, { session, params }) => {
           {
             ...notationKey,
             id: randomUUID(),
+            subSectorId: subCategory?.subsectorId,
+            sectorId: subCategory?.subsector?.sectorId,
             inventoryId,
           },
           { transaction },

@@ -13,7 +13,7 @@ def db_query_total(datasource_name, spatial_granularity, actor_id, gpc_reference
         query = text(
             f"""
             SELECT		upper(e.gas_name) as gas_name,
-             			sum(e.emissions_value) as emissions_value,
+             			round(sum(e.emissions_value)) as emissions_value,
              			COALESCE(max(gwp.{gwp}),0) as gwp_100yr,
              			COALESCE(sum(e.emissions_value * gwp.{gwp}),0) as emissions_value_100yr,
                         COALESCE(sum(e.emissions_value * gwp2.{gwp}),0) as emissions_value_20yr
@@ -64,8 +64,8 @@ def db_query_eq_total(datasource_name, spatial_granularity, actor_id, gpc_refere
 
         query = text(
             f"""
-            SELECT		COALESCE(sum(e.emissions_value * gwp.{gwp}),0) as emissions_value_100yr,
-                        COALESCE(sum(e.emissions_value * gwp2.{gwp}),0) as emissions_value_20yr
+            SELECT		round(COALESCE(sum(e.emissions_value * gwp.{gwp}),0)) as emissions_value_100yr,
+                        round(COALESCE(sum(e.emissions_value * gwp2.{gwp}),0)) as emissions_value_20yr
             FROM 		modelled.emissions e
             LEFT JOIN 	modelled.emissions_factor ef
             ON 			e.emissionfactor_id = ef.emissionfactor_id
@@ -148,13 +148,13 @@ def db_query(datasource_name, spatial_granularity, actor_id, gpc_reference_numbe
 						ARRAY_AGG(
 						json_build_object(
 						'gas_name' , e.gas_name,
-						'emissions_value', e.emissions_value,
+						'emissions_value', round(e.emissions_value),
 						'emissionfactor_value', ef.emissionfactor_value,
 						'emissionfactor_datasource', ef.datasource_name,
 						'activity_value', e.activity_value::numeric,
 						'gwp', COALESCE(gwp.{gwp},0),
-						'emissions_value_100yr', COALESCE(e.emissions_value * gwp.{gwp},0),
-						'emissions_value_20yr', COALESCE(e.emissions_value * gwp2.{gwp},0)
+						'emissions_value_100yr', round(COALESCE(e.emissions_value * gwp.{gwp},0)),
+						'emissions_value_20yr', round(COALESCE(e.emissions_value * gwp2.{gwp},0))
 						)) AS gas_info
                      FROM 		modelled.emissions e
                      LEFT JOIN 	modelled.emissions_factor ef

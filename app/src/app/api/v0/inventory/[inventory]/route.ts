@@ -30,7 +30,19 @@ export const GET = apiHandler(async (req, { session, params }) => {
   inventory = await UserService.findUserInventory(
     inventoryId,
     session,
-    [{ model: db.models.City, as: "city" }],
+    [
+      {
+        model: db.models.City,
+        as: "city",
+        include: [
+          {
+            model: db.models.Project,
+            as: "project",
+            attributes: ["projectId", "name", "organizationId"],
+          },
+        ],
+      },
+    ],
     true,
   );
 

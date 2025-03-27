@@ -162,6 +162,16 @@ import type {
 import { Organization as _Organization } from "./Organization";
 import type { ProjectAttributes, ProjectCreationAttributes } from "./Project";
 import { Project as _Project } from "./Project";
+import {
+  OrganizationAdmin as _OrganizationAdmin,
+  OrganizationAdminAttributes,
+  OrganizationAdminCreationAttributes,
+} from "@/models/OrganizationAdmin";
+import {
+  ProjectAdmin as _ProjectAdmin,
+  ProjectAdminAttributes,
+  ProjectAdminCreationAttributes,
+} from "@/models/ProjectAdmin";
 
 export {
   _ActivityData as ActivityData,
@@ -203,6 +213,8 @@ export {
   _AssistantMessage as AssistantMessage,
   _AssistantThread as AssistantThread,
   _OrganizationInvite as OrganizationInvite,
+  _OrganizationAdmin as OrganizationAdmin,
+  _ProjectAdmin as ProjectAdmin,
 };
 
 export type {
@@ -280,6 +292,10 @@ export type {
   AssistantThreadCreationAttributes,
   FormulaInputAttributes,
   FormulaInputCreationAttributes,
+  OrganizationAdminAttributes,
+  OrganizationAdminCreationAttributes,
+  ProjectAdminAttributes,
+  ProjectAdminCreationAttributes,
 };
 
 export function initModels(sequelize: Sequelize) {
@@ -324,6 +340,8 @@ export function initModels(sequelize: Sequelize) {
   const AssistantMessage = _AssistantMessage.initModel(sequelize);
   const AssistantThread = _AssistantThread.initModel(sequelize);
   const OrganizationInvite = _OrganizationInvite.initModel(sequelize);
+  const OrganizationAdmin = _OrganizationAdmin.initModel(sequelize);
+  const ProjectAdmin = _ProjectAdmin.initModel(sequelize);
 
   ActivityData.belongsToMany(DataSource, {
     as: "datasourceIdDataSources",
@@ -796,6 +814,27 @@ export function initModels(sequelize: Sequelize) {
   });
   Project.hasMany(City, { as: "cities", foreignKey: "projectId" });
   City.belongsTo(Project, { as: "project", foreignKey: "projectId" });
+  OrganizationAdmin.belongsTo(Organization, {
+    as: "organization",
+    foreignKey: "organizationId",
+  });
+  Organization.hasMany(OrganizationAdmin, {
+    as: "organizationAdmins",
+    foreignKey: "organizationId",
+  });
+  OrganizationAdmin.belongsTo(User, { as: "user", foreignKey: "userId" });
+  User.hasOne(OrganizationAdmin, {
+    as: "organizationAdmin",
+    foreignKey: "userId",
+  });
+  ProjectAdmin.belongsTo(Project, { as: "project", foreignKey: "projectId" });
+  Project.hasMany(ProjectAdmin, {
+    as: "projectAdmins",
+    foreignKey: "projectId",
+  });
+  User.hasMany(ProjectAdmin, { as: "projectAdmin", foreignKey: "userId" });
+  ProjectAdmin.belongsTo(User, { as: "user", foreignKey: "userId" });
+  CityUser.belongsTo(City, { as: "city", foreignKey: "cityId" });
 
   return {
     ActivityData: ActivityData,
@@ -837,5 +876,7 @@ export function initModels(sequelize: Sequelize) {
     AssistantMessage: AssistantMessage,
     AssistantThread: AssistantThread,
     FormulaInput: FormulaInput,
+    OrganizationAdmin: OrganizationAdmin,
+    ProjectAdmin: ProjectAdmin,
   };
 }

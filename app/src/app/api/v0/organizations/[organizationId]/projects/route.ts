@@ -23,17 +23,11 @@ export const POST = apiHandler(async (req, { params, session }) => {
 });
 
 export const GET = apiHandler(async (req, { params, session }) => {
-  UserService.validateIsAdmin(session);
+  // this will behave differently for different users
   const { organizationId } = params;
-  const projects = await Project.findAll({
-    where: { organizationId },
-    include: [
-      {
-        model: db.models.City,
-        as: "cities",
-        attributes: ["cityId", "name"],
-      },
-    ],
-  });
+  const projects = await UserService.findUserProjectsAndCitiesInOrganization(
+    organizationId,
+    session,
+  );
   return NextResponse.json(projects);
 });

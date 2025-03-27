@@ -4,8 +4,7 @@ import argparse
 
 
 # Define the base directory relative to the script's location
-SCRIPT_DIR = Path(__file__).resolve().parent
-BASE_DIR = SCRIPT_DIR.parent  # Go one level up from the script's directory
+BASE_DIR = Path(__file__).parent.parent.parent
 
 # Load paths dynamically relative to the base directory
 PATH_ACTIONSLIST = BASE_DIR / "data" / "climate_actions" / "output" / "merged.json"

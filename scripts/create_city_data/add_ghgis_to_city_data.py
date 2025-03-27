@@ -1,11 +1,23 @@
+"""
+This script is used to add GHGI emissions data to the city data.
+
+The GHGI emissions data is provided via csv export and stored in the data/ghgi folder.
+
+The city data is stored in the data/cities folder.
+
+Run it from the root of the project with the following command:
+python scripts/create_city_data/add_ghgis_to_city_data.py --file_name "inventory-BRCCI-2022.csv" --locode "BRCCI"
+"""
+
 import sys
 import pandas as pd
 from pathlib import Path
 import argparse
 
 # Load the city data from the CSV file
-BASE_PATH_GHGIS = Path("../data/ghgi/")
-BASE_PATH_CITIES = Path("../data/cities/")
+BASE_DIR = Path(__file__).parent.parent.parent
+BASE_PATH_GHGIS = BASE_DIR / "data" / "ghgi"
+BASE_PATH_CITIES = BASE_DIR / "data" / "cities"
 
 
 # Initialize emissions values to extract
@@ -31,6 +43,9 @@ GPC_TO_SECTOR = {
 
 
 def extract_data(file_name: str) -> dict:
+    # Create a copy of the emissions dictionary to avoid global state issues
+    emissions = dict_emissions.copy()
+
     data = pd.read_csv(BASE_PATH_GHGIS / file_name, encoding="utf-8")
 
     if not data.empty:
@@ -52,7 +67,7 @@ def extract_data(file_name: str) -> dict:
             sector = GPC_TO_SECTOR.get(sector_key)
 
             if sector:
-                dict_emissions[sector] += total_emissions
+                emissions[sector] += total_emissions
 
             # Extract the scope from the GPC Reference Number
             scope_key = gpc_ref.split(".")[
@@ -60,15 +75,13 @@ def extract_data(file_name: str) -> dict:
             ]  # Get the last part of GPC (e.g., "1" from "I.1.1")
 
             if scope_key == "1":
-                dict_emissions["scope1Emissions"] += total_emissions
-
+                emissions["scope1Emissions"] += total_emissions
             elif scope_key == "2":
-                dict_emissions["scope2Emissions"] += total_emissions
-
+                emissions["scope2Emissions"] += total_emissions
             elif scope_key == "3":
-                dict_emissions["scope3Emissions"] += total_emissions
+                emissions["scope3Emissions"] += total_emissions
 
-        return dict_emissions
+        return emissions
     else:
         print(f"GHGI data could not be loaded from {file_name}")
         sys.exit(1)
@@ -133,7 +146,7 @@ if __name__ == "__main__":
         "--locode",
         type=str,
         required=True,
-        help="The locode of the city to add the emissions data to.",
+        help="The locode of the city to add the emissions data to like 'BR CCI'.",
     )
 
     args = parser.parse_args()

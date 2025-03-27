@@ -1,0 +1,62 @@
+[
+    {
+        "locode": "BR BHZ",
+        "cityName": "Belo Horizonte",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0061",
+        "actionName": "Replacement of diesel tractors and road machinery with electric ones.",
+        "actionPriority": 1,
+        "action": {
+            "ActionID": "icare_0061",
+            "ActionName": "Replacement of diesel tractors and road machinery with electric ones.",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "off-road"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Road construction and maintenance machinery can transition to electric alternatives, reducing emissions in parallel sectors.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": -1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "60-79",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Development of electric alternatives for road construction and maintenance machinery, ensuring performance meets industry standards.",
+                "Establishment of charging infrastructure and service networks to support the transition to electric machinery.",
+                "Financial incentives and subsidies to encourage the adoption of electric machinery in construction and maintenance projects."
+            ],
+            "KeyPerformanceIndicators": [
+                "Reduction in operating costs for electric machinery (%).",
+                "Percentage of agricultural productivity maintained or increased after implementation.",
+                "Maintenance cost reduction for electric machinery compared to diesel counterparts (%)."
+            ],
+            "PowersAndMandates": [
+                "state"
+            ]
+        }
+    }
+]

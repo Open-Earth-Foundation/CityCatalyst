@@ -1,0 +1,1121 @@
+[
+    {
+        "locode": "BR ACZ",
+        "cityName": "Aracruz",
+        "region": "ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "ipcc_0094",
+        "actionName": "Access to health care",
+        "actionPriority": 1,
+        "explanation": "Ranked #1 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "ipcc_0094",
+            "ActionName": "Access to health care",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "heatwaves",
+                "floods",
+                "droughts"
+            ],
+            "Sector": [
+                "public_health",
+                "water_resources"
+            ],
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Enhancing access to health care services, including health and nutrition services, clean water, sanitation, and culturally appropriate mental health resources. Expanding telemedicine capabilities enables efficient health service delivery, particularly for remote and underserved populations. Strengthening basic public health systems and disaster preparedness can rapidly reduce vulnerability to climate-related health risks.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 2,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 1,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": "Promotes equitable access to health care for marginalized and vulnerable groups, including homeless populations, remote communities, and those affected by housing inequities.",
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Investment in telemedicine technologies",
+                "Strengthened governance of public health systems",
+                "Capacity building for health workers",
+                "Infrastructure upgrades for health facilities"
+            ],
+            "KeyPerformanceIndicators": [
+                "Reduction in climate-related mortality",
+                "Increased access to telemedicine",
+                "Number of culturally tailored health programs implemented",
+                "Improved water and sanitation access metrics"
+            ],
+            "PowersAndMandates": null
+        }
+    },
+    {
+        "locode": "BR ACZ",
+        "cityName": "Aracruz",
+        "region": "ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0151",
+        "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
+        "actionPriority": 2,
+        "explanation": "Ranked #2 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "icare_0151",
+            "ActionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "sea-level-rise",
+                "floods",
+                "landslides",
+                "diseases",
+                "heatwaves"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Priority to ZEIS areas in housing improvement actions and the application of resources from the Urbanization Fund, with the implementation of urban infrastructure that considers climate adaptation in these spaces. Use of Nature-based Solutions (NbS) in the adaptation of environmental sanitation and green and blue infrastructures that enhance leisure, culture, urban agriculture, and activities to strengthen community associations.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 2,
+                "mobility": 1,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "medium",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Availability of funding from the Urbanization Fund and other financial mechanisms to support housing improvements and urban infrastructure in ZEIS areas",
+                "Collaboration between urban planners, environmental experts, and local communities to design and implement nature-based solutions (NbS) for urban infrastructure",
+                "Policy and regulatory frameworks that integrate climate adaptation measures into urban planning, ensuring that investments prioritize environmental sustainability and community"
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of ZEIS areas diagnosed and restored.",
+                "Percentage of residents benefiting from restored areas (%).",
+                "Public investments allocated to ZEIS areas (currency amount)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR ACZ",
+        "cityName": "Aracruz",
+        "region": "ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "ipcc_0097",
+        "actionName": "Food storage/distribution improvements",
+        "actionPriority": 3,
+        "explanation": "Ranked #3 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "ipcc_0097",
+            "ActionName": "Food storage/distribution improvements",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "droughts",
+                "floods",
+                "storms",
+                "heatwaves"
+            ],
+            "Sector": [
+                "food_security",
+                "road_infrastructure"
+            ],
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Enhancing food storage and distribution systems by improving transportation infrastructure, optimizing trade networks, and shortening supply chains to ensure local food availability and resilience to climate impacts. This action also includes increasing the capacity of local food storage facilities to reduce post-harvest losses, addressing inefficiencies in logistics, and bolstering infrastructure for perishable goods. It aims to improve food security and reduce vulnerability to extreme events, disruptions, and cascading impacts, especially during pandemics and other crises.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 2,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": "Supports equitable access to food for marginalized and vulnerable populations by prioritizing local food production and improving distribution systems that reach underserved areas.",
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Investment in infrastructure",
+                "Policy incentives for local food production",
+                "Collaboration with logistics and trade sectors",
+                "Technology for supply chain optimization"
+            ],
+            "KeyPerformanceIndicators": [
+                "Reduction in post-harvest losses",
+                "Increased local food availability",
+                "Improved transportation efficiency for food distribution",
+                "Shortened supply chains"
+            ],
+            "PowersAndMandates": null
+        }
+    },
+    {
+        "locode": "BR ACZ",
+        "cityName": "Aracruz",
+        "region": "ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "ipcc_0093",
+        "actionName": "Availability of health infrastructure",
+        "actionPriority": 4,
+        "explanation": "Ranked #4 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "ipcc_0093",
+            "ActionName": "Availability of health infrastructure",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "droughts",
+                "floods",
+                "sea-level-rise",
+                "diseases"
+            ],
+            "Sector": [
+                "public_health",
+                "water_resources"
+            ],
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Ensuring access to safe drinking water infrastructure, protecting health services, and improving sanitation systems to mitigate climate impacts. This includes developing adaptive measures for water security against droughts, floods, and sea-level rise. Strengthening infrastructure resilience ensures equitable access to health services, reduces contamination risks, and addresses the impacts of climate-induced hazards.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 2,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": "Enhances access to critical health and water resources for vulnerable and underserved communities, mitigating inequities caused by climate impacts.",
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Adequate funding",
+                "technological investments in health and water infrastructure",
+                "effective governance and cross-sector coordination"
+            ],
+            "KeyPerformanceIndicators": [
+                "Reduction in waterborne diseases",
+                "improved access to potable water",
+                "number of resilient health facilities developed"
+            ],
+            "PowersAndMandates": null
+        }
+    },
+    {
+        "locode": "BR ACZ",
+        "cityName": "Aracruz",
+        "region": "ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0149",
+        "actionName": "Encourage sustainable land use practices",
+        "actionPriority": 5,
+        "explanation": "Ranked #5 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "icare_0149",
+            "ActionName": "Encourage sustainable land use practices",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "droughts",
+                "heatwaves",
+                "landslides",
+                "floods",
+                "wildfires"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Promoting methods that guarantee the conservation and health of the soil, preserving biodiversity, reducing erosion and minimizing environmental impacts.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 2,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "medium",
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Provide access to technical knowledge and training on sustainable soil management practices.",
+                "Offer financial incentives and form partnerships with research institutions and local farmers.",
+                "Develop monitoring systems for soil health and biodiversity, and implement policies for erosion control."
+            ],
+            "KeyPerformanceIndicators": [
+                "Percentage of land area managed under sustainable land use practices (%)",
+                "Reduction in deforestation or land degradation rates (%)",
+                "Increase in biodiversity indicators on managed lands (e.g., species count, habitat quality)"
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR ACZ",
+        "cityName": "Aracruz",
+        "region": "ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0145",
+        "actionName": "Strengthen the healthcare network to attend to climate victims",
+        "actionPriority": 6,
+        "explanation": "Ranked #6 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "icare_0145",
+            "ActionName": "Strengthen the healthcare network to attend to climate victims",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "heatwaves",
+                "diseases",
+                "landslides",
+                "floods",
+                "storms",
+                "droughts"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Improve the infrastructure of healthcare units to assist people who require medical care due to impacts associated with climate risks (climate victims), such as those affected by heat waves or floods, especially in more vulnerable areas. Develop action plans to prepare the healthcare network for extreme climate-related situations.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "high",
+            "TimelineForImplementation": ">10 years",
+            "Dependencies": [
+                "Investment in the renovation and expansion of healthcare facilities, ensuring they are equipped to handle climate-related health impacts, particularly in vulnerable areas.",
+                "Development of action plans and training programs for healthcare professionals to respond to extreme climate events like heatwaves and floods.",
+                "Collaboration with local authorities, emergency response teams, and climate experts to create a comprehensive framework for preparing the healthcare network for climate risks."
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of healthcare facilities upgraded for climate-related emergencies.",
+                "Increase in healthcare staff trained in climate emergency response (%).",
+                "Number of climate-related injuries treated successfully.",
+                "."
+            ],
+            "PowersAndMandates": [
+                "national"
+            ]
+        }
+    },
+    {
+        "locode": "BR ACZ",
+        "cityName": "Aracruz",
+        "region": "ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0141",
+        "actionName": "Implementation of Wetlands",
+        "actionPriority": 7,
+        "explanation": "Ranked #7 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "icare_0141",
+            "ActionName": "Implementation of Wetlands",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "diseases",
+                "floods"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Implementation of wetlands using phytoremediation to remove pollutants from water and improve water quality.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 2,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "low",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Maintenance"
+            ],
+            "KeyPerformanceIndicators": [
+                "Water quality improvement",
+                "Water flow rate",
+                "Maintenance costs"
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR ACZ",
+        "cityName": "Aracruz",
+        "region": "ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0176",
+        "actionName": "Development of Climate Action Plan",
+        "actionPriority": 8,
+        "explanation": "Ranked #8 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "icare_0176",
+            "ActionName": "Development of Climate Action Plan",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "storms",
+                "sea-level-rise",
+                "wildfires",
+                "floods",
+                "landslides",
+                "diseases",
+                "heatwaves",
+                "droughts"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "A comprehensive plan outlining a city's strategies and actions to mitigate greenhouse gas emissions and adapt to the impacts of climate change which typically includes an assessment of the city's climate risks and vulnerabilities, setting emission reduction targets, and implementation of actions across various sectors such as energy, transportation, waste management, and urban planning.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 0,
+                "housing": 1,
+                "mobility": 1,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "medium",
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Political will and commitment from government",
+                "Stakeholder engagement and collaboration",
+                "Funding and resources for implementation"
+            ],
+            "KeyPerformanceIndicators": [
+                "Greenhouse gas emission reduction targets.",
+                "Number of climate adaptation actions implemented.",
+                "Investment in climate mitigation and adaptation projects."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR ACZ",
+        "cityName": "Aracruz",
+        "region": "ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0173",
+        "actionName": "Preventive maintenance of drainage systems",
+        "actionPriority": 9,
+        "explanation": "Ranked #9 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "icare_0173",
+            "ActionName": "Preventive maintenance of drainage systems",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "floods",
+                "storms"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Regular upkeep and cleaning of urban drainage systems, including storm drains, sewers, and retention basins, to ensure efficient water flow and prevent blockages that can lead to flooding during heavy rainfall events.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 1,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 1,
+                "mobility": 1,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "medium",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Budget allocation for maintenance activities",
+                "Regular inspections to identify potential issues"
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of drainage blockages cleared.",
+                "Percentage of drainage systems in good condition.",
+                "Number of reported flood incidents."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR ACZ",
+        "cityName": "Aracruz",
+        "region": "ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0182",
+        "actionName": "Urban Afforestation and Green Spaces Implementation",
+        "actionPriority": 10,
+        "explanation": "Ranked #10 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "icare_0182",
+            "ActionName": "Urban Afforestation and Green Spaces Implementation",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "heatwaves"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "This action focuses on expanding green areas in the city through urban afforestation. This includes planting trees in sidewalks, squares, public buildings, and schools, as well as creating ecological parks to revitalize watercourses and/or restore forests.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 1,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 1,
+                "mobility": 1,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Water resources",
+                "Long-term maintenance"
+            ],
+            "KeyPerformanceIndicators": [
+                "Area of green spaces created or restored",
+                "Community use of green spaces",
+                "Water usage and conservation"
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR ACZ",
+        "cityName": "Aracruz",
+        "region": "ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "ipcc_0087",
+        "actionName": "Infrastructure retrofitting",
+        "actionPriority": 11,
+        "explanation": "Ranked #11 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "ipcc_0087",
+            "ActionName": "Infrastructure retrofitting",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "floods",
+                "droughts",
+                "heatwaves"
+            ],
+            "Sector": [
+                "road_infrastructure",
+                "public_health",
+                "energy_security"
+            ],
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Strengthening and upgrading existing infrastructure, including roads, housing, and energy systems, to improve resilience against climate risks such as floods, droughts, and heatwaves. Efforts include Air conditioning, using thermosiphons for permafrost degradation, increasing rooftop albedo (for reflectivity) and shading",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 1,
+                "habitat": 0,
+                "cost_of_living": -1,
+                "housing": 1,
+                "mobility": 1,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": "Improves resilience for vulnerable communities, especially in low-income regions, by reducing risks from extreme climate events.",
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "high",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Policy alignment",
+                "Funding availability",
+                "Engineering and construction expertise"
+            ],
+            "KeyPerformanceIndicators": [
+                "Reduced infrastructure failure during hazards",
+                "Increased capacity for housing and energy systems"
+            ],
+            "PowersAndMandates": null
+        }
+    },
+    {
+        "locode": "BR ACZ",
+        "cityName": "Aracruz",
+        "region": "ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0175",
+        "actionName": "Recovery and preservation of green areas",
+        "actionPriority": 12,
+        "explanation": "Ranked #12 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "icare_0175",
+            "ActionName": "Recovery and preservation of green areas",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "heatwaves",
+                "floods",
+                "wildfires"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Rehabilitation and protection of existing green spaces, such as parks, forests, and wetlands, and expansion of green areas through planting of trees and vegetation in urban and peri-urban areas. These areas provide natural solutions for managing water resources, reducing heat stress, improving air quality, and enhancing biodiversity.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 1,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 1,
+                "mobility": 1,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Availability of suitable land for green spaces",
+                "Access to water resources for irrigation"
+            ],
+            "KeyPerformanceIndicators": [
+                "Area of green spaces created or restored.",
+                "Biodiversity indices in green areas.",
+                "Community engagement in green space activities."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR ACZ",
+        "cityName": "Aracruz",
+        "region": "ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0181",
+        "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
+        "actionPriority": 13,
+        "explanation": "Ranked #13 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "icare_0181",
+            "ActionName": "Relocation and Environmental Restoration in Vulnerable Areas",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "landslides",
+                "floods"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "A comprehensive project addressing the socio-environmental vulnerability of an informal settlement. It includes relocating residents from flood-prone areas, restoring the environment, and providing infrastructure and social services.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 2,
+                "mobility": 1,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Adequate funding",
+                "Inter-agency coordination",
+                "Land tenure security"
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of households relocated.",
+                "Environmental restoration progress.",
+                "Flood risk reduction."
+            ],
+            "PowersAndMandates": [
+                "state"
+            ]
+        }
+    },
+    {
+        "locode": "BR ACZ",
+        "cityName": "Aracruz",
+        "region": "ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0169",
+        "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
+        "actionPriority": 14,
+        "explanation": "Ranked #14 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "icare_0169",
+            "ActionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "droughts",
+                "heatwaves",
+                "diseases",
+                "landslides",
+                "floods",
+                "wildfires",
+                "sea-level-rise",
+                "storms"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "This action focuses on preparing the municipality to respond to extreme events, aiming to provide a rapid response that minimizes the impacts on the population.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Development of a comprehensive emergency response plan that includes coordination between local authorities, emergency services, and community organizations",
+                "Investment in early warning systems and infrastructure to ensure timely and effective responses to extreme events",
+                "Training and capacity-building for local responders and communities to enhance preparedness and resilience to extreme events"
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of emergency response partnerships established.",
+                "Average response time during extreme weather events (hours).",
+                "Percentage reduction in casualties and damages during extreme weather events annually (%)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR ACZ",
+        "cityName": "Aracruz",
+        "region": "ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "ipcc_0100",
+        "actionName": "Efficient water use/demand",
+        "actionPriority": 15,
+        "explanation": "Ranked #15 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "ipcc_0100",
+            "ActionName": "Efficient water use/demand",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "droughts",
+                "heatwaves"
+            ],
+            "Sector": [
+                "water_resources",
+                "food_security"
+            ],
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Implementing advanced irrigation techniques such as precision and drip irrigation to enhance water use efficiency in agriculture. Managed Aquifer Recharge (MAR) is applied to replenish groundwater supplies using stormwater, treated wastewater, or other sources. These actions are complemented by cooperative policies across multiple sectors to ensure sustainable water resource management, equitable access, and regional collaboration. Additionally, promoting changes in water consumption patterns, such as reducing waste and improving efficiency in urban and agricultural water use, supports resilience against water scarcity and enhances adaptive capacity in vulnerable regions. These efforts collectively aim to address the growing demand for freshwater in the face of climate change and ensure long-term sustainability.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 2,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": "Supports vulnerable farming and urban communities by ensuring equitable access to water resources, promoting sustainable consumption patterns, and addressing persistent water stress in underserved areas.",
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Infrastructure for water reuse and MAR",
+                "Regulatory frameworks for water management",
+                "Education and training on irrigation techniques",
+                "Regional and cross-sector policy coordination"
+            ],
+            "KeyPerformanceIndicators": [
+                "Reduction in agricultural water usage",
+                "Increase in groundwater recharge rates",
+                "Improved crop yields",
+                "Adoption of sustainable water consumption patterns",
+                "Regional collaboration metrics"
+            ],
+            "PowersAndMandates": null
+        }
+    },
+    {
+        "locode": "BR ACZ",
+        "cityName": "Aracruz",
+        "region": "ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "ipcc_0092",
+        "actionName": "Social safety nets",
+        "actionPriority": 16,
+        "explanation": "Ranked #16 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "ipcc_0092",
+            "ActionName": "Social safety nets",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "droughts",
+                "heatwaves",
+                "floods",
+                "storms"
+            ],
+            "Sector": [
+                "food_security",
+                "public_health"
+            ],
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Social safety nets encompass adaptive social protection mechanisms to reduce food insecurity and malnutrition, especially for vulnerable populations. These include cash transfers, school feeding programs, public work initiatives, unemployment compensation, land reforms, credit and insurance schemes. Integrated approaches combine climate risk assessments with disaster risk reduction, education, and social equity to enhance resilience to climate stresses.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 2,
+                "housing": 1,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": "Enhances the social status and rights of marginalized groups, protects vulnerable populations, reduces inequalities, and promotes education and gender equity.",
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Integration of climate and disaster risk into social protection",
+                "education programs",
+                "coordination with sustainable livelihoods and financial inclusion initiatives"
+            ],
+            "KeyPerformanceIndicators": [
+                "Reduction in malnutrition rates",
+                "Increase in education access for vulnerable groups",
+                "Participation in social protection programs"
+            ],
+            "PowersAndMandates": null
+        }
+    },
+    {
+        "locode": "BR ACZ",
+        "cityName": "Aracruz",
+        "region": "ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0150",
+        "actionName": "Implement Loss Reduction and Control Program promoting water security for the municipality",
+        "actionPriority": 17,
+        "explanation": "Ranked #17 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "icare_0150",
+            "ActionName": "Implement Loss Reduction and Control Program promoting water security for the municipality",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "droughts",
+                "heatwaves",
+                "diseases"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Ensure the availability of water in sufficient quantity and quality for the population of the city. Implement the Loss Reduction and Control Program, which aims to reduce per capita water consumption, along with the reduction of physical losses. Conduct studies, regulate, and facilitate the reuse of water for non-potable purposes, and implement equipment for the use of rainwater.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 2,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Availability of funding and technical expertise to implement water loss reduction systems, including infrastructure improvements and monitoring technologies",
+                "Development of regulatory frameworks to support water reuse for non-potable purposes and rainwater harvesting systems in both residential and commercial settings",
+                "Collaboration between local governments, utility companies, and communities to ensure efficient water management and raise awareness about water conservation practices"
+            ],
+            "KeyPerformanceIndicators": [
+                "Percentage reduction in losses within the water supply system.",
+                "Per capita water consumption reduction index (liters).",
+                "Number of new water supply sources implemented."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR ACZ",
+        "cityName": "Aracruz",
+        "region": "ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0170",
+        "actionName": "Build safe housing and implement urban rehabilitation projects for populations living in high-risk areas",
+        "actionPriority": 18,
+        "explanation": "Ranked #18 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "icare_0170",
+            "ActionName": "Build safe housing and implement urban rehabilitation projects for populations living in high-risk areas",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "storms",
+                "floods",
+                "landslides",
+                "heatwaves"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "The priority of this action is to ensure safe housing for the population living in areas prone to landslides and flooding, as the housing deficit is one of the main factors related to these threats.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": -1,
+                "housing": 2,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "high",
+            "TimelineForImplementation": ">10 years",
+            "Dependencies": [
+                "Availability of funding and financial mechanisms to support the construction of safe housing in high-risk areas",
+                "Collaboration with urban planners and engineers to design housing solutions that are resilient to landslides and flooding",
+                "Implementation of policies to regulate land use and prevent informal settlements in areas vulnerable to climate risks"
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of safe housing units constructed annually.",
+                "Percentage reduction in population living in high-risk areas (%).",
+                "Number of urban rehabilitation projects completed annually."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR ACZ",
+        "cityName": "Aracruz",
+        "region": "ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0184",
+        "actionName": "Slope Stabilization and Drainage",
+        "actionPriority": 19,
+        "explanation": "Ranked #19 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "icare_0184",
+            "ActionName": "Slope Stabilization and Drainage",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "landslides"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "This action involves stabilizing slopes and maintaining or restoring drainage systems in hillside areas. This helps to prevent landslides and erosion, reducing the risk of disasters.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 1,
+                "mobility": 1,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "medium",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Geotechnical and hydrological studies",
+                "Land-use planning and regulation",
+                "Monitoring and maintenance"
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of slopes stabilized",
+                "Reduction in landslide occurrences",
+                "Performance of drainage systems"
+            ],
+            "PowersAndMandates": [
+                "state"
+            ]
+        }
+    },
+    {
+        "locode": "BR ACZ",
+        "cityName": "Aracruz",
+        "region": "ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0154",
+        "actionName": "Cleaning and Unclogging of Channels with Installation of Eco-barriers",
+        "actionPriority": 20,
+        "explanation": "Ranked #20 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "icare_0154",
+            "ActionName": "Cleaning and Unclogging of Channels with Installation of Eco-barriers",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "floods"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Cleaning and unclogging channels in the city to reduce the risk of flooding caused by extreme rainfall events. Installation of eco-barriers to assist in cleaning efforts and raise awareness about solid waste.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 2,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 1,
+                "mobility": 1,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "medium",
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Regular maintenance",
+                "Proper waste management practices"
+            ],
+            "KeyPerformanceIndicators": [
+                "Flood reduction",
+                "Waste reduction",
+                "Maintenance costs"
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    }
+]

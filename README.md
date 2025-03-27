@@ -16,6 +16,27 @@ This project is licensed under the Affero General Public License v3.0. See the [
 
 ## Usage
 
+### Data Import
+
+We are importing data from several sources:
+
+1. City context data from: "https://ccglobal.openearth.dev/api/v0/city_context/city"
+2. City CCRA data from: "https://ccglobal.openearth.dev/api/v0/ccra/risk_assessment/city"
+3. City GHGI data from exported .csv files from CityCatalyst inventories
+
+We have a file with all the city locodes we want to import:
+`data/cities/brazil_city_locodes.json`
+
+There are 3 utilities files to import all the data:
+
+To avoid errors, run them in the given sequence:
+
+1. `python scripts/create_city_data/run_context_bulk_import.py --bulk_file data/cities/brazil_city_locodes.json`
+2. `python scripts/create_city_data/run_ghgi_bulk_import.py --bulk_file data/cities/brazil_city_locodes.json`
+3. `python scripts/create_city_data/run_ccra_bulk_import.py --bulk_file data/cities/brazil_city_locodes.json`
+
+This will import all the city data and store inside `data/cities/city_data.json`.
+
 ### Automated pipeline
 
 Run the `run_pipeline` script inside `root` folder with `sh scripts/run_pipeline.sh LOCODE` where `LOCODE` needs to be replaced by a matching locode from the cities data file inside `data/cities`.

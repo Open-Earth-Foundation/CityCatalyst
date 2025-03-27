@@ -1,40 +1,38 @@
+"""
+This script is used to fetch the CCRA data for a city and scenario.
+
+The CCRA data is fetched from the CCRA API.
+
+Run it from the root of the project with the following command:
+python scripts/get_ccra.py --locode "BR CCI"
+"""
+
 import requests
 from pathlib import Path
 import argparse
+import json
+
+BASE_DIR = Path(__file__).parent.parent.parent
 
 
-def get_ccra(actor_id, scenario_name):
+def get_ccra(locode, scenario_name):
     # Base URL for the API
     base_url = "https://ccglobal.openearth.dev/api/v0/ccra/risk_assessment/city"
     # Construct the API endpoint URL
-    url = f"{base_url}/{actor_id}/{scenario_name}"
+    url = f"{base_url}/{locode}/{scenario_name}"
 
     try:
         response = requests.get(url)
         response.raise_for_status()
 
-        # Parse the JSON response
-        data = response.json()
-
-        # Define the output folder and file path
-        data_folder = Path("../data/ccra")
-        data_folder.mkdir(parents=False, exist_ok=True)
-
-        # Remove any spaces from the actor ID
-        actor_id = actor_id.replace(" ", "")
-        output_file = data_folder / f"ccra_{actor_id}_{scenario_name}.json"
-
-        # Save the JSON response to a file
-        with open(output_file, "w", encoding="utf-8") as file:
-            import json
-
-            json.dump(data, file, indent=4)
-
-        print(f"Data successfully saved to {output_file}")
+        # Parse and return the JSON response
+        return response.json()
     except requests.exceptions.RequestException as e:
         print(f"Error fetching data: {e}")
+        return None
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
+        return None
 
 
 if __name__ == "__main__":
@@ -42,10 +40,10 @@ if __name__ == "__main__":
         description="Fetch CCRA data for a city and scenario."
     )
     parser.add_argument(
-        "--actor_id",
+        "--locode",
         type=str,
         required=True,
-        help="The actor ID for the city (e.g., BR FLN).",
+        help="The actor ID (locode) for the city (e.g., BR FLN).",
     )
     parser.add_argument(
         "--scenario_name",
@@ -56,4 +54,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    get_ccra(args.actor_id, args.scenario_name)
+    data = get_ccra(args.locode, args.scenario_name)
+    if data:
+        print("Successfully fetched CCRA data")
+        print(json.dumps(data, indent=4))

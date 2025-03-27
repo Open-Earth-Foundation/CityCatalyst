@@ -39,7 +39,6 @@ const DeleteProjectModal = (props: DeleteProjectModalProps) => {
   });
 
   const [projectToDelete, setProjectToDelete] = useState("");
-  const handleDelete = async () => {};
   const [deleteProject, { isLoading }] = useDeleteProjectMutation();
 
   const [step, setStep] = useState(1);
@@ -64,6 +63,11 @@ const DeleteProjectModal = (props: DeleteProjectModalProps) => {
     }
   };
 
+  const closeFunction = () => {
+    onClose();
+    setStep(1);
+  };
+
   return (
     <DialogRoot
       preventScroll
@@ -71,14 +75,10 @@ const DeleteProjectModal = (props: DeleteProjectModalProps) => {
       onOpenChange={(e: any) => {
         onOpenChange(e.open);
         if (!e.open) {
-          onClose();
-          setStep(1);
+          closeFunction();
         }
       }}
-      onExitComplete={() => {
-        setStep(1);
-        onClose();
-      }}
+      onExitComplete={closeFunction}
     >
       <DialogBackdrop />
       <DialogContent minH="300px" minW="600px" marginTop="2%">

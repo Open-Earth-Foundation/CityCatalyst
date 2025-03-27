@@ -85,7 +85,11 @@ const CreateEditProjectModal: FC<CreateEditProjectModalProps> = ({
         cityCountLimit: Number(projectData.cityCountLimit),
       });
     } else {
-      reset({});
+      reset({
+        projectName: "",
+        description: "",
+        cityCountLimit: 0,
+      });
     }
   }, [reset, projectData]);
 

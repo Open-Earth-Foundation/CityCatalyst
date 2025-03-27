@@ -195,6 +195,7 @@ export default class AdminService {
     session: AppSession | null,
   ) {
     this.ensureIsAdmin(session);
+    const errors: { locode: string; error: string }[] = [];
     for (const locode of cityLocodes) {
       const city = await db.models.City.findOne({
         where: { locode },
@@ -212,9 +213,16 @@ export default class AdminService {
         throw new createHttpError.NotFound(`City ${locode} not found`);
       }
       for (const year of years) {
-        await this.createPopulationEntries(locode, year, city?.cityId);
+        const newErrors = await this.createPopulationEntries(
+          locode,
+          year,
+          city?.cityId,
+        );
+        errors.push(...newErrors);
       }
     }
+
+    return errors;
   }
 
   private static async createPopulationEntries(

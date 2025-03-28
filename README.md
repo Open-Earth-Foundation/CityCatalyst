@@ -37,11 +37,20 @@ To avoid errors, run them in the given sequence:
 
 This will import all the city data and store inside `data/cities/city_data.json`.
 
-### Automated pipeline
+### Automated pipeline for ranking and bucket upload
 
-Run the `run_pipeline` script inside `root` folder with `sh scripts/run_pipeline.sh LOCODE` where `LOCODE` needs to be replaced by a matching locode from the cities data file inside `data/cities`.
+Run the `run_pipeline.py` for a single city or `run_pipeline_bulk.py` for bulk processing of all cities listed in `data/cities/brazil_city_locodes.json`.
 
-This script will automatically create the ranked actions for this city, format and upload those actions to the AWS S3 bucket for displaying in the frontend app.
+These scripts will automatically create the ranked actions for this city (or all cities), format and upload those actions to the AWS S3 bucket for displaying in the frontend app.
+
+Example:
+Single file:
+`python -m scripts.upload_to_frontend.run_pipeline --locode "BR BHZ"`
+
+Bulk:
+`python -m scripts.upload_to_frontend.run_pipeline_bulk --bulk_file data/cities/brazil_city_locodes.json --workers 10`
+
+- Workers are the paralell thread to use for bulk processing (default: number of cores)
 
 ### Requirements
 

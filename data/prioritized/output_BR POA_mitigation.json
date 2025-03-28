@@ -4,9 +4,18 @@
         "cityName": "Porto Alegre",
         "region": "RS",
         "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0005",
+        "actionName": "Create credit lines for residential and community wind energy projects",
+        "actionPriority": 1
+    },
+    {
+        "locode": "BR POA",
+        "cityName": "Porto Alegre",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
         "actionId": "icare_0121",
         "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
-        "actionPriority": 1
+        "actionPriority": 2
     },
     {
         "locode": "BR POA",
@@ -15,15 +24,6 @@
         "regionName": "Rio Grande do Sul",
         "actionId": "icare_0118",
         "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
-        "actionPriority": 2
-    },
-    {
-        "locode": "BR POA",
-        "cityName": "Porto Alegre",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0005",
-        "actionName": "Create credit lines for residential and community wind energy projects",
         "actionPriority": 3
     },
     {
@@ -40,8 +40,8 @@
         "cityName": "Porto Alegre",
         "region": "RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0092",
-        "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
+        "actionId": "icare_0025",
+        "actionName": "Promote energy-efficient low-income housing",
         "actionPriority": 5
     },
     {
@@ -58,8 +58,8 @@
         "cityName": "Porto Alegre",
         "region": "RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0057",
-        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
+        "actionId": "icare_0092",
+        "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
         "actionPriority": 7
     },
     {
@@ -67,8 +67,8 @@
         "cityName": "Porto Alegre",
         "region": "RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0025",
-        "actionName": "Promote energy-efficient low-income housing",
+        "actionId": "icare_0057",
+        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
         "actionPriority": 8
     },
     {
@@ -94,8 +94,8 @@
         "cityName": "Porto Alegre",
         "region": "RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0042",
-        "actionName": "Encourage renewable energy policies at the municipal level",
+        "actionId": "icare_0044",
+        "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
         "actionPriority": 11
     },
     {
@@ -103,8 +103,8 @@
         "cityName": "Porto Alegre",
         "region": "RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0044",
-        "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
+        "actionId": "icare_0042",
+        "actionName": "Encourage renewable energy policies at the municipal level",
         "actionPriority": 12
     },
     {
@@ -112,18 +112,9 @@
         "cityName": "Porto Alegre",
         "region": "RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0122",
-        "actionName": "Establish eco-parks.",
+        "actionId": "c40_0033",
+        "actionName": "15/30-Minute Areas",
         "actionPriority": 13
-    },
-    {
-        "locode": "BR POA",
-        "cityName": "Porto Alegre",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0133",
-        "actionName": "Promote Urban Reforestation and Green Corridors",
-        "actionPriority": 14
     },
     {
         "locode": "BR POA",
@@ -132,7 +123,25 @@
         "regionName": "Rio Grande do Sul",
         "actionId": "icare_0117",
         "actionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
+        "actionPriority": 14
+    },
+    {
+        "locode": "BR POA",
+        "cityName": "Porto Alegre",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0024",
+        "actionName": "Integrate renewables into municipal water systems",
         "actionPriority": 15
+    },
+    {
+        "locode": "BR POA",
+        "cityName": "Porto Alegre",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0029",
+        "actionName": "Adopt policies for fossil fuel-free buildings",
+        "actionPriority": 16
     },
     {
         "locode": "BR POA",
@@ -141,15 +150,6 @@
         "regionName": "Rio Grande do Sul",
         "actionId": "icare_0131",
         "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
-        "actionPriority": 16
-    },
-    {
-        "locode": "BR POA",
-        "cityName": "Porto Alegre",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0099",
-        "actionName": "Support Agroecological Certification Programs",
         "actionPriority": 17
     },
     {
@@ -157,8 +157,8 @@
         "cityName": "Porto Alegre",
         "region": "RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0139",
-        "actionName": "Implementation of urban toll.",
+        "actionId": "icare_0027",
+        "actionName": "Create financing programs for local renewable energy projects",
         "actionPriority": 18
     },
     {
@@ -175,8 +175,8 @@
         "cityName": "Porto Alegre",
         "region": "RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0024",
-        "actionName": "Integrate renewables into municipal water systems",
+        "actionId": "icare_0099",
+        "actionName": "Support Agroecological Certification Programs",
         "actionPriority": 20
     }
 ]

@@ -119,10 +119,63 @@
         "cityName": "Contagem",
         "region": "MG",
         "regionName": "Minas Gerais",
-        "actionId": "icare_0181",
-        "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
+        "actionId": "icare_0140",
+        "actionName": "Landslide Risk Assessment and Management",
         "actionPriority": 3,
         "explanation": "Ranked #3 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "icare_0140",
+            "ActionName": "Landslide Risk Assessment and Management",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "landslides"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "This action involves assessing and managing landslide risks by collecting data, mapping hazard areas, and conducting evacuation simulations. It aims to reduce the risks associated with landslides in areas prone to these events.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 1,
+                "mobility": 1,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Comprehensive planning and policy framework",
+                "Stakeholder participation",
+                "Capacity building and institutional support"
+            ],
+            "KeyPerformanceIndicators": [
+                "Coastal erosion rates",
+                "Water quality",
+                "Habitat health"
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR CGE",
+        "cityName": "Contagem",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0181",
+        "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
+        "actionPriority": 4,
+        "explanation": "Ranked #4 by tournament ranking algorithm",
         "action": {
             "ActionID": "icare_0181",
             "ActionName": "Relocation and Environmental Restoration in Vulnerable Areas",
@@ -175,8 +228,8 @@
         "regionName": "Minas Gerais",
         "actionId": "icare_0151",
         "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
-        "actionPriority": 4,
-        "explanation": "Ranked #4 by tournament ranking algorithm",
+        "actionPriority": 5,
+        "explanation": "Ranked #5 by tournament ranking algorithm",
         "action": {
             "ActionID": "icare_0151",
             "ActionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
@@ -230,126 +283,10 @@
         "cityName": "Contagem",
         "region": "MG",
         "regionName": "Minas Gerais",
-        "actionId": "icare_0169",
-        "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
-        "actionPriority": 5,
-        "explanation": "Ranked #5 by tournament ranking algorithm",
-        "action": {
-            "ActionID": "icare_0169",
-            "ActionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "droughts",
-                "heatwaves",
-                "diseases",
-                "landslides",
-                "floods",
-                "wildfires",
-                "sea-level-rise",
-                "storms"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "This action focuses on preparing the municipality to respond to extreme events, aiming to provide a rapid response that minimizes the impacts on the population.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Development of a comprehensive emergency response plan that includes coordination between local authorities, emergency services, and community organizations",
-                "Investment in early warning systems and infrastructure to ensure timely and effective responses to extreme events",
-                "Training and capacity-building for local responders and communities to enhance preparedness and resilience to extreme events"
-            ],
-            "KeyPerformanceIndicators": [
-                "Number of emergency response partnerships established.",
-                "Average response time during extreme weather events (hours).",
-                "Percentage reduction in casualties and damages during extreme weather events annually (%)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR CGE",
-        "cityName": "Contagem",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "icare_0162",
-        "actionName": "Strengthen programs for control and conservation of protected areas",
-        "actionPriority": 6,
-        "explanation": "Ranked #6 by tournament ranking algorithm",
-        "action": {
-            "ActionID": "icare_0162",
-            "ActionName": "Strengthen programs for control and conservation of protected areas",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "floods",
-                "landslides",
-                "heatwaves",
-                "diseases"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "This action focuses on implementing a series of integrated strategies to enhance environmental conservation and maximize its benefits, such as expanding protected areas, developing management plans for conservation units, and training ecotourism guides to strengthen sustainable tourism.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Expansion of protected areas to enhance environmental conservation.",
-                "Development of management plans for conservation units.",
-                "Training of ecotourism guides to promote sustainable tourism."
-            ],
-            "KeyPerformanceIndicators": [
-                "Percentage increase in area of protected regions (%).",
-                "Reduction in deforestation rates in protected areas annually (%).",
-                "Number of conservation programs strengthened annually."
-            ],
-            "PowersAndMandates": [
-                "state"
-            ]
-        }
-    },
-    {
-        "locode": "BR CGE",
-        "cityName": "Contagem",
-        "region": "MG",
-        "regionName": "Minas Gerais",
         "actionId": "ipcc_0097",
         "actionName": "Food storage/distribution improvements",
-        "actionPriority": 7,
-        "explanation": "Ranked #7 by tournament ranking algorithm",
+        "actionPriority": 6,
+        "explanation": "Ranked #6 by tournament ranking algorithm",
         "action": {
             "ActionID": "ipcc_0097",
             "ActionName": "Food storage/distribution improvements",
@@ -405,48 +342,109 @@
         "cityName": "Contagem",
         "region": "MG",
         "regionName": "Minas Gerais",
-        "actionId": "icare_0140",
-        "actionName": "Landslide Risk Assessment and Management",
-        "actionPriority": 8,
-        "explanation": "Ranked #8 by tournament ranking algorithm",
+        "actionId": "ipcc_0088",
+        "actionName": "Building codes",
+        "actionPriority": 7,
+        "explanation": "Ranked #7 by tournament ranking algorithm",
         "action": {
-            "ActionID": "icare_0140",
-            "ActionName": "Landslide Risk Assessment and Management",
+            "ActionID": "ipcc_0088",
+            "ActionName": "Building codes",
             "ActionType": [
                 "adaptation"
             ],
             "Hazard": [
+                "floods",
                 "landslides"
+            ],
+            "Sector": [
+                "road_infrastructure",
+                "geo-hydrological_disasters"
+            ],
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "The development and implementation of building codes and architectural design regulations aimed at integrating climate adaptation parameters. These codes are focused on reducing risks from climate-induced hazards like floods and landslides. They also support climate-resilient urban development by guiding land use, construction practices, and infrastructure standards. The initiative fosters strategic long-term urban planning to coordinate public and private investments in adaptation, including the creation of safe zones and the transformation of precarious settlements. It ensures that new infrastructure is resilient to climate risks and that urban spaces are safe and sustainable for current and future populations.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 2,
+                "mobility": 1,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": "Promotes inclusive urban planning by addressing risks in informal and precarious settlements and integrating eco-parks and eco-gardens for vulnerable populations.",
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Integration with local climate risk assessments",
+                "Strategic collaboration between urban planners and municipal authorities"
+            ],
+            "KeyPerformanceIndicators": [
+                "Reduction in urban flood incidents",
+                "Increased availability of safe housing in risk areas",
+                "Implementation rate of eco-parks and eco-gardens in vulnerable areas"
+            ],
+            "PowersAndMandates": null
+        }
+    },
+    {
+        "locode": "BR CGE",
+        "cityName": "Contagem",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0169",
+        "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
+        "actionPriority": 8,
+        "explanation": "Ranked #8 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "icare_0169",
+            "ActionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "droughts",
+                "heatwaves",
+                "diseases",
+                "landslides",
+                "floods",
+                "wildfires",
+                "sea-level-rise",
+                "storms"
             ],
             "Sector": null,
             "Subsector": null,
             "PrimaryPurpose": [
                 "climate_resilience"
             ],
-            "Description": "This action involves assessing and managing landslide risks by collecting data, mapping hazard areas, and conducting evacuation simulations. It aims to reduce the risks associated with landslides in areas prone to these events.",
+            "Description": "This action focuses on preparing the municipality to respond to extreme events, aiming to provide a rapid response that minimizes the impacts on the population.",
             "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 1,
+                "air_quality": 0,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
                 "stakeholder_engagement": 2
             },
             "EquityAndInclusionConsiderations": null,
             "GHGReductionPotential": null,
             "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "low",
+            "CostInvestmentNeeded": "medium",
             "TimelineForImplementation": "<5 years",
             "Dependencies": [
-                "Comprehensive planning and policy framework",
-                "Stakeholder participation",
-                "Capacity building and institutional support"
+                "Development of a comprehensive emergency response plan that includes coordination between local authorities, emergency services, and community organizations",
+                "Investment in early warning systems and infrastructure to ensure timely and effective responses to extreme events",
+                "Training and capacity-building for local responders and communities to enhance preparedness and resilience to extreme events"
             ],
             "KeyPerformanceIndicators": [
-                "Coastal erosion rates",
-                "Water quality",
-                "Habitat health"
+                "Number of emergency response partnerships established.",
+                "Average response time during extreme weather events (hours).",
+                "Percentage reduction in casualties and damages during extreme weather events annually (%)."
             ],
             "PowersAndMandates": [
                 "local"
@@ -510,234 +508,10 @@
         "cityName": "Contagem",
         "region": "MG",
         "regionName": "Minas Gerais",
-        "actionId": "icare_0175",
-        "actionName": "Recovery and preservation of green areas",
-        "actionPriority": 10,
-        "explanation": "Ranked #10 by tournament ranking algorithm",
-        "action": {
-            "ActionID": "icare_0175",
-            "ActionName": "Recovery and preservation of green areas",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "heatwaves",
-                "floods",
-                "wildfires"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Rehabilitation and protection of existing green spaces, such as parks, forests, and wetlands, and expansion of green areas through planting of trees and vegetation in urban and peri-urban areas. These areas provide natural solutions for managing water resources, reducing heat stress, improving air quality, and enhancing biodiversity.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 1,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Availability of suitable land for green spaces",
-                "Access to water resources for irrigation"
-            ],
-            "KeyPerformanceIndicators": [
-                "Area of green spaces created or restored.",
-                "Biodiversity indices in green areas.",
-                "Community engagement in green space activities."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR CGE",
-        "cityName": "Contagem",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "ipcc_0088",
-        "actionName": "Building codes",
-        "actionPriority": 11,
-        "explanation": "Ranked #11 by tournament ranking algorithm",
-        "action": {
-            "ActionID": "ipcc_0088",
-            "ActionName": "Building codes",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "floods",
-                "landslides"
-            ],
-            "Sector": [
-                "road_infrastructure",
-                "geo-hydrological_disasters"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "The development and implementation of building codes and architectural design regulations aimed at integrating climate adaptation parameters. These codes are focused on reducing risks from climate-induced hazards like floods and landslides. They also support climate-resilient urban development by guiding land use, construction practices, and infrastructure standards. The initiative fosters strategic long-term urban planning to coordinate public and private investments in adaptation, including the creation of safe zones and the transformation of precarious settlements. It ensures that new infrastructure is resilient to climate risks and that urban spaces are safe and sustainable for current and future populations.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 2,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": "Promotes inclusive urban planning by addressing risks in informal and precarious settlements and integrating eco-parks and eco-gardens for vulnerable populations.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Integration with local climate risk assessments",
-                "Strategic collaboration between urban planners and municipal authorities"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in urban flood incidents",
-                "Increased availability of safe housing in risk areas",
-                "Implementation rate of eco-parks and eco-gardens in vulnerable areas"
-            ],
-            "PowersAndMandates": null
-        }
-    },
-    {
-        "locode": "BR CGE",
-        "cityName": "Contagem",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "icare_0149",
-        "actionName": "Encourage sustainable land use practices",
-        "actionPriority": 12,
-        "explanation": "Ranked #12 by tournament ranking algorithm",
-        "action": {
-            "ActionID": "icare_0149",
-            "ActionName": "Encourage sustainable land use practices",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "droughts",
-                "heatwaves",
-                "landslides",
-                "floods",
-                "wildfires"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Promoting methods that guarantee the conservation and health of the soil, preserving biodiversity, reducing erosion and minimizing environmental impacts.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "medium",
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Provide access to technical knowledge and training on sustainable soil management practices.",
-                "Offer financial incentives and form partnerships with research institutions and local farmers.",
-                "Develop monitoring systems for soil health and biodiversity, and implement policies for erosion control."
-            ],
-            "KeyPerformanceIndicators": [
-                "Percentage of land area managed under sustainable land use practices (%)",
-                "Reduction in deforestation or land degradation rates (%)",
-                "Increase in biodiversity indicators on managed lands (e.g., species count, habitat quality)"
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR CGE",
-        "cityName": "Contagem",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "ipcc_0095",
-        "actionName": "Disaster early warning",
-        "actionPriority": 13,
-        "explanation": "Ranked #13 by tournament ranking algorithm",
-        "action": {
-            "ActionID": "ipcc_0095",
-            "ActionName": "Disaster early warning",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "heatwaves",
-                "droughts",
-                "storms"
-            ],
-            "Sector": [
-                "public_health",
-                "biodiversity",
-                "geo-hydrological_disasters"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Establishing and maintaining early warning systems for disasters, including marine heatwaves, pest outbreaks, and heatwaves. These systems involve timely information dissemination to individuals, communities, and emergency services, enabling proactive measures to mitigate risks. Heat Action Plans (HAPs) are part of these systems and include detailed strategies like urban planning with nature-based solutions (e.g., green-blue spaces, cool materials), public awareness campaigns, and targeted measures for vulnerable groups (e.g., elderly, children, outdoor workers). Critical actions also include evaluation of system effectiveness post-disaster, lessons sharing, and improvements for better preparedness in future events.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 1,
-                "habitat": 2,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 1,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": "Focuses on addressing vulnerabilities among low-income groups, elderly, pregnant women, children, and outdoor workers by incorporating targeted communication, access to cool areas, and specific health interventions. Promotes equity by engaging marginalized communities in planning and ensuring access to necessary resources.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Coordination among emergency services and health agencies",
-                "Investment in urban planning and nature-based solutions",
-                "Community education and public awareness campaigns",
-                "Technological infrastructure for early warning systems"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in heatwave-related mortality rates",
-                "Timeliness of warnings",
-                "Public awareness levels",
-                "Community adoption of protective measures"
-            ],
-            "PowersAndMandates": null
-        }
-    },
-    {
-        "locode": "BR CGE",
-        "cityName": "Contagem",
-        "region": "MG",
-        "regionName": "Minas Gerais",
         "actionId": "icare_0156",
         "actionName": "Implementation of urban gardens",
-        "actionPriority": 14,
-        "explanation": "Ranked #14 by tournament ranking algorithm",
+        "actionPriority": 10,
+        "explanation": "Ranked #10 by tournament ranking algorithm",
         "action": {
             "ActionID": "icare_0156",
             "ActionName": "Implementation of urban gardens",
@@ -789,10 +563,64 @@
         "cityName": "Contagem",
         "region": "MG",
         "regionName": "Minas Gerais",
+        "actionId": "icare_0175",
+        "actionName": "Recovery and preservation of green areas",
+        "actionPriority": 11,
+        "explanation": "Ranked #11 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "icare_0175",
+            "ActionName": "Recovery and preservation of green areas",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "heatwaves",
+                "floods",
+                "wildfires"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Rehabilitation and protection of existing green spaces, such as parks, forests, and wetlands, and expansion of green areas through planting of trees and vegetation in urban and peri-urban areas. These areas provide natural solutions for managing water resources, reducing heat stress, improving air quality, and enhancing biodiversity.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 1,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 1,
+                "mobility": 1,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Availability of suitable land for green spaces",
+                "Access to water resources for irrigation"
+            ],
+            "KeyPerformanceIndicators": [
+                "Area of green spaces created or restored.",
+                "Biodiversity indices in green areas.",
+                "Community engagement in green space activities."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR CGE",
+        "cityName": "Contagem",
+        "region": "MG",
+        "regionName": "Minas Gerais",
         "actionId": "ipcc_0086",
         "actionName": "Ecosystem-based adaptation",
-        "actionPriority": 15,
-        "explanation": "Ranked #15 by tournament ranking algorithm",
+        "actionPriority": 12,
+        "explanation": "Ranked #12 by tournament ranking algorithm",
         "action": {
             "ActionID": "ipcc_0086",
             "ActionName": "Ecosystem-based adaptation",
@@ -859,10 +687,67 @@
         "cityName": "Contagem",
         "region": "MG",
         "regionName": "Minas Gerais",
+        "actionId": "icare_0149",
+        "actionName": "Encourage sustainable land use practices",
+        "actionPriority": 13,
+        "explanation": "Ranked #13 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "icare_0149",
+            "ActionName": "Encourage sustainable land use practices",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "droughts",
+                "heatwaves",
+                "landslides",
+                "floods",
+                "wildfires"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Promoting methods that guarantee the conservation and health of the soil, preserving biodiversity, reducing erosion and minimizing environmental impacts.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 2,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "medium",
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Provide access to technical knowledge and training on sustainable soil management practices.",
+                "Offer financial incentives and form partnerships with research institutions and local farmers.",
+                "Develop monitoring systems for soil health and biodiversity, and implement policies for erosion control."
+            ],
+            "KeyPerformanceIndicators": [
+                "Percentage of land area managed under sustainable land use practices (%)",
+                "Reduction in deforestation or land degradation rates (%)",
+                "Increase in biodiversity indicators on managed lands (e.g., species count, habitat quality)"
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR CGE",
+        "cityName": "Contagem",
+        "region": "MG",
+        "regionName": "Minas Gerais",
         "actionId": "ipcc_0094",
         "actionName": "Access to health care",
-        "actionPriority": 16,
-        "explanation": "Ranked #16 by tournament ranking algorithm",
+        "actionPriority": 14,
+        "explanation": "Ranked #14 by tournament ranking algorithm",
         "action": {
             "ActionID": "ipcc_0094",
             "ActionName": "Access to health care",
@@ -919,8 +804,8 @@
         "regionName": "Minas Gerais",
         "actionId": "ipcc_0092",
         "actionName": "Social safety nets",
-        "actionPriority": 17,
-        "explanation": "Ranked #17 by tournament ranking algorithm",
+        "actionPriority": 15,
+        "explanation": "Ranked #15 by tournament ranking algorithm",
         "action": {
             "ActionID": "ipcc_0092",
             "ActionName": "Social safety nets",
@@ -974,10 +859,69 @@
         "cityName": "Contagem",
         "region": "MG",
         "regionName": "Minas Gerais",
+        "actionId": "ipcc_0095",
+        "actionName": "Disaster early warning",
+        "actionPriority": 16,
+        "explanation": "Ranked #16 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "ipcc_0095",
+            "ActionName": "Disaster early warning",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "heatwaves",
+                "droughts",
+                "storms"
+            ],
+            "Sector": [
+                "public_health",
+                "biodiversity",
+                "geo-hydrological_disasters"
+            ],
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Establishing and maintaining early warning systems for disasters, including marine heatwaves, pest outbreaks, and heatwaves. These systems involve timely information dissemination to individuals, communities, and emergency services, enabling proactive measures to mitigate risks. Heat Action Plans (HAPs) are part of these systems and include detailed strategies like urban planning with nature-based solutions (e.g., green-blue spaces, cool materials), public awareness campaigns, and targeted measures for vulnerable groups (e.g., elderly, children, outdoor workers). Critical actions also include evaluation of system effectiveness post-disaster, lessons sharing, and improvements for better preparedness in future events.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 1,
+                "habitat": 2,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 1,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": "Focuses on addressing vulnerabilities among low-income groups, elderly, pregnant women, children, and outdoor workers by incorporating targeted communication, access to cool areas, and specific health interventions. Promotes equity by engaging marginalized communities in planning and ensuring access to necessary resources.",
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Coordination among emergency services and health agencies",
+                "Investment in urban planning and nature-based solutions",
+                "Community education and public awareness campaigns",
+                "Technological infrastructure for early warning systems"
+            ],
+            "KeyPerformanceIndicators": [
+                "Reduction in heatwave-related mortality rates",
+                "Timeliness of warnings",
+                "Public awareness levels",
+                "Community adoption of protective measures"
+            ],
+            "PowersAndMandates": null
+        }
+    },
+    {
+        "locode": "BR CGE",
+        "cityName": "Contagem",
+        "region": "MG",
+        "regionName": "Minas Gerais",
         "actionId": "icare_0148",
         "actionName": "Create the Municipal Climate Change Forum",
-        "actionPriority": 18,
-        "explanation": "Ranked #18 by tournament ranking algorithm",
+        "actionPriority": 17,
+        "explanation": "Ranked #17 by tournament ranking algorithm",
         "action": {
             "ActionID": "icare_0148",
             "ActionName": "Create the Municipal Climate Change Forum",
@@ -1026,6 +970,62 @@
             ],
             "PowersAndMandates": [
                 "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR CGE",
+        "cityName": "Contagem",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0162",
+        "actionName": "Strengthen programs for control and conservation of protected areas",
+        "actionPriority": 18,
+        "explanation": "Ranked #18 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "icare_0162",
+            "ActionName": "Strengthen programs for control and conservation of protected areas",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "floods",
+                "landslides",
+                "heatwaves",
+                "diseases"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "This action focuses on implementing a series of integrated strategies to enhance environmental conservation and maximize its benefits, such as expanding protected areas, developing management plans for conservation units, and training ecotourism guides to strengthen sustainable tourism.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Expansion of protected areas to enhance environmental conservation.",
+                "Development of management plans for conservation units.",
+                "Training of ecotourism guides to promote sustainable tourism."
+            ],
+            "KeyPerformanceIndicators": [
+                "Percentage increase in area of protected regions (%).",
+                "Reduction in deforestation rates in protected areas annually (%).",
+                "Number of conservation programs strengthened annually."
+            ],
+            "PowersAndMandates": [
+                "state"
             ]
         }
     },

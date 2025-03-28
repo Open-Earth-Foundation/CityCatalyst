@@ -304,609 +304,9 @@
         "cityName": "Goi\u00e2nia",
         "region": "GO",
         "regionName": "Goi\u00e1s",
-        "actionId": "icare_0094",
-        "actionName": "Adoption of biomethane in public fleets.",
-        "actionPriority": 6,
-        "action": {
-            "ActionID": "icare_0094",
-            "ActionName": "Adoption of biomethane in public fleets.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Use biomethane produced from urban and agro-industrial waste to fuel public buses and trucks, reducing greenhouse gas emissions in municipal fleets",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 1,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Development of infrastructure for the production, processing, and distribution of biomethane from urban and agro-industrial waste.",
-                "Retrofitting or acquisition of public buses and trucks capable of using biomethane as a fuel source.",
-                "Establishment of policies and financial incentives to support biomethane production and its integration into municipal fleets."
-            ],
-            "KeyPerformanceIndicators": [
-                "Cost savings in fleet operation due to biomethane use (USD/year).",
-                "Increase in biomethane production capacity (%).",
-                "Percentage of biomethane sourced locally versus imported."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR GYN",
-        "cityName": "Goi\u00e2nia",
-        "region": "GO",
-        "regionName": "Goi\u00e1s",
-        "actionId": "icare_0092",
-        "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
-        "actionPriority": 7,
-        "action": {
-            "ActionID": "icare_0092",
-            "ActionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Create small-scale logistics hubs in urban neighborhoods to facilitate deliveries using electric cargo bikes, while implementing tax incentives or subsidies for businesses to adopt these bikes as a transportation mode, reducing emissions and improving delivery efficiency in densely populated areas.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "20-39",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Identification and development of suitable locations for small-scale logistics hubs within urban neighborhoods.",
-                "Provision of tax incentives, subsidies, or grants to encourage businesses to transition to electric cargo bikes.",
-                "Establishment of partnerships with logistics companies to ensure integration and efficiency in delivery operations using these hubs."
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in distance traveled by traditional delivery vehicles (km/year).",
-                "Increase in operational efficiency of logistics hubs (%).",
-                "Number of businesses utilizing micro-logistics hubs for deliveries."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR GYN",
-        "cityName": "Goi\u00e2nia",
-        "region": "GO",
-        "regionName": "Goi\u00e1s",
-        "actionId": "icare_0090",
-        "actionName": "Adoption of electric drones for last-mile deliveries.",
-        "actionPriority": 8,
-        "action": {
-            "ActionID": "icare_0090",
-            "ActionName": "Adoption of electric drones for last-mile deliveries.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "off-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Replace traditional vehicles with electric drones for short-distance deliveries in urban centers, reducing emissions and traffic congestion.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Development of urban airspace regulations to ensure the safe and efficient operation of delivery drones.",
-                "Investment in charging and maintenance infrastructure to support a fleet of electric drones.",
-                "Collaboration with logistics companies to integrate drones into last-mile delivery networks."
-            ],
-            "KeyPerformanceIndicators": [
-                "Delivery time reduction compared to traditional methods (minutes).",
-                "Increase in customer satisfaction with drone deliveries (%).",
-                "Reduction in traffic congestion caused by delivery vehicles (%)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR GYN",
-        "cityName": "Goi\u00e2nia",
-        "region": "GO",
-        "regionName": "Goi\u00e1s",
-        "actionId": "icare_0068",
-        "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
-        "actionPriority": 9,
-        "action": {
-            "ActionID": "icare_0068",
-            "ActionName": "Deploy on-demand transport systems with 100% electric fleets.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "On-demand collective transport services, based on apps, optimize electric vehicle usage, reducing per-passenger emissions.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "80-100",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Development of digital platforms and apps to efficiently manage on-demand collective transport services.",
-                "Expansion of electric vehicle fleets tailored for shared transport solutions.",
-                "Implementation of policies and incentives to encourage the adoption and use of shared electric transport services."
-            ],
-            "KeyPerformanceIndicators": [
-                "Number of active users of the on-demand electric fleet system.",
-                "Percentage of urban transport demand met by on-demand systems.",
-                "Reduction in noise pollution levels in urban areas"
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR GYN",
-        "cityName": "Goi\u00e2nia",
-        "region": "GO",
-        "regionName": "Goi\u00e1s",
-        "actionId": "icare_0025",
-        "actionName": "Promote energy-efficient low-income housing",
-        "actionPriority": 10,
-        "action": {
-            "ActionID": "icare_0025",
-            "ActionName": "Promote energy-efficient low-income housing",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "stationary_energy"
-            ],
-            "Subsector": [
-                "residential_buildings"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Develop and support housing projects that incorporate energy-efficient designs and technologies, reducing energy costs for low-income households.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 2,
-                "housing": 2,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": "60-79",
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Availability of funding or subsidies to support the development of energy-efficient housing for low-income households",
-                "Collaboration with architects, engineers, and contractors to design and implement energy-efficient technologies in housing projects",
-                "Development of policies and regulations to incentivize energy-efficient housing solutions and ensure affordability for low-income communities"
-            ],
-            "KeyPerformanceIndicators": [
-                "Number of energy-efficient housing units built or retrofitted.",
-                "Reduction in household energy consumption (kWh).",
-                "Decrease in energy bills for low-income households (USD)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR GYN",
-        "cityName": "Goi\u00e2nia",
-        "region": "GO",
-        "regionName": "Goi\u00e1s",
-        "actionId": "icare_0117",
-        "actionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
-        "actionPriority": 11,
-        "action": {
-            "ActionID": "icare_0117",
-            "ActionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Increase the quality of transportation service delivery, aiming at the modal shift of passengers from private motorized transport to public transport, thereby reducing emissions generated by cars and motorcycles.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Improve the quality of public transportation services to attract passengers from private motorized transport.",
-                "Implement policies and infrastructure that support and enhance the efficiency of public transportation systems.",
-                "Promote awareness of the environmental benefits of public transport to encourage a modal shift and reduce emissions."
-            ],
-            "KeyPerformanceIndicators": [
-                "Annual increase in the number of passengers using the municipal bus system.",
-                "Percentage of bus routes with improved travel time reliability.",
-                "Estimated reduction in CO\u2082 equivalent emissions due to increased public transportation use."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR GYN",
-        "cityName": "Goi\u00e2nia",
-        "region": "GO",
-        "regionName": "Goi\u00e1s",
-        "actionId": "icare_0044",
-        "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
-        "actionPriority": 12,
-        "action": {
-            "ActionID": "icare_0044",
-            "ActionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "The main objective of this action is to promote active mobility, ensuring the safety, comfort, and priority of pedestrian movement, people with disabilities (or reduced mobility), and human-powered vehicles and equipment, such as bicycles and scooters.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "80-100",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Infrastructure investments in safe and accessible pedestrian walkways, bike lanes, and facilities for people with disabilities",
-                "Policy and regulatory frameworks to prioritize active mobility and establish safety standards for pedestrians and non-motorized vehicles",
-                "Public awareness campaigns to promote active mobility and educate citizens on the benefits of walking, cycling, and using other human-powered transport"
-            ],
-            "KeyPerformanceIndicators": [
-                "Kilometers of new cycling paths and walkways constructed annually.",
-                "Increase in daily usage of cycling and pedestrian infrastructure (%).",
-                "Reduction in urban transport emissions (%)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR GYN",
-        "cityName": "Goi\u00e2nia",
-        "region": "GO",
-        "regionName": "Goi\u00e1s",
-        "actionId": "icare_0042",
-        "actionName": "Encourage renewable energy policies at the municipal level",
-        "actionPriority": 13,
-        "action": {
-            "ActionID": "icare_0042",
-            "ActionName": "Encourage renewable energy policies at the municipal level",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "stationary_energy"
-            ],
-            "Subsector": [
-                "non-specified_sources"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Advocate for and implement policies that prioritize the development and integration of renewable energy systems in local government operations and planning.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 1,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": "80-100",
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Political will and leadership to prioritize renewable energy in local government policies and planning processes",
-                "Development of clear policies and regulatory frameworks that facilitate the integration of renewable energy systems into government operations",
-                "Availability of funding or financial mechanisms to support the transition to renewable energy in municipal infrastructure and operations"
-            ],
-            "KeyPerformanceIndicators": [
-                "Number of renewable energy projects approved or initiated annually at the municipal level.",
-                "Percentage of municipal energy demand met by renewable sources (%).",
-                "Reduction in municipal carbon emissions due to --renewable energy adoption (tons CO\u2082e/year)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR GYN",
-        "cityName": "Goi\u00e2nia",
-        "region": "GO",
-        "regionName": "Goi\u00e1s",
-        "actionId": "icare_0131",
-        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
-        "actionPriority": 14,
-        "action": {
-            "ActionID": "icare_0131",
-            "ActionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Focus on buying sustainable, locally produced food for public institutions.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "20-39"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Development of procurement policies and identification of reliable local suppliers.",
-                "Partnerships with producers and allocation of funding for sustainable procurement programs.",
-                "Establishment of monitoring systems to ensure compliance with sustainability criteria."
-            ],
-            "KeyPerformanceIndicators": [
-                "Percentage of the total volume of public purchases coming from local agroecological producers.",
-                "Amount of CO\u2082 emissions avoided due to reduced transport distance (tCO\u2082e).",
-                "Number of agroecological producers benefiting from public purchases."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR GYN",
-        "cityName": "Goi\u00e2nia",
-        "region": "GO",
-        "regionName": "Goi\u00e1s",
-        "actionId": "icare_0133",
-        "actionName": "Promote Urban Reforestation and Green Corridors",
-        "actionPriority": 15,
-        "action": {
-            "ActionID": "icare_0133",
-            "ActionName": "Promote Urban Reforestation and Green Corridors",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "land"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Increase urban tree coverage to mitigate the urban heat island effect and enhance biodiversity.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 1,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "80-100"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Identification of priority areas and selection of native, climate-resilient species for tree planting.",
-                "Partnerships with local organizations and nurseries, and allocation of resources for planting and maintenance.",
-                "Community engagement to ensure long-term care and support."
-            ],
-            "KeyPerformanceIndicators": [
-                "Increase in urban tree canopy cover (%)",
-                "Total length of green corridors created or restored (kilometers)",
-                "Reduction in urban heat island effect temperatures (\u00b0C)"
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR GYN",
-        "cityName": "Goi\u00e2nia",
-        "region": "GO",
-        "regionName": "Goi\u00e1s",
         "actionId": "icare_0027",
         "actionName": "Create financing programs for local renewable energy projects",
-        "actionPriority": 16,
+        "actionPriority": 6,
         "action": {
             "ActionID": "icare_0027",
             "ActionName": "Create financing programs for local renewable energy projects",
@@ -964,9 +364,489 @@
         "cityName": "Goi\u00e2nia",
         "region": "GO",
         "regionName": "Goi\u00e1s",
+        "actionId": "icare_0025",
+        "actionName": "Promote energy-efficient low-income housing",
+        "actionPriority": 7,
+        "action": {
+            "ActionID": "icare_0025",
+            "ActionName": "Promote energy-efficient low-income housing",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "stationary_energy"
+            ],
+            "Subsector": [
+                "residential_buildings"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Develop and support housing projects that incorporate energy-efficient designs and technologies, reducing energy costs for low-income households.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 2,
+                "housing": 2,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": "60-79",
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Availability of funding or subsidies to support the development of energy-efficient housing for low-income households",
+                "Collaboration with architects, engineers, and contractors to design and implement energy-efficient technologies in housing projects",
+                "Development of policies and regulations to incentivize energy-efficient housing solutions and ensure affordability for low-income communities"
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of energy-efficient housing units built or retrofitted.",
+                "Reduction in household energy consumption (kWh).",
+                "Decrease in energy bills for low-income households (USD)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR GYN",
+        "cityName": "Goi\u00e2nia",
+        "region": "GO",
+        "regionName": "Goi\u00e1s",
+        "actionId": "icare_0094",
+        "actionName": "Adoption of biomethane in public fleets.",
+        "actionPriority": 8,
+        "action": {
+            "ActionID": "icare_0094",
+            "ActionName": "Adoption of biomethane in public fleets.",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "on-road"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Use biomethane produced from urban and agro-industrial waste to fuel public buses and trucks, reducing greenhouse gas emissions in municipal fleets",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 1,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 1,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "60-79",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Development of infrastructure for the production, processing, and distribution of biomethane from urban and agro-industrial waste.",
+                "Retrofitting or acquisition of public buses and trucks capable of using biomethane as a fuel source.",
+                "Establishment of policies and financial incentives to support biomethane production and its integration into municipal fleets."
+            ],
+            "KeyPerformanceIndicators": [
+                "Cost savings in fleet operation due to biomethane use (USD/year).",
+                "Increase in biomethane production capacity (%).",
+                "Percentage of biomethane sourced locally versus imported."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR GYN",
+        "cityName": "Goi\u00e2nia",
+        "region": "GO",
+        "regionName": "Goi\u00e1s",
+        "actionId": "icare_0090",
+        "actionName": "Adoption of electric drones for last-mile deliveries.",
+        "actionPriority": 9,
+        "action": {
+            "ActionID": "icare_0090",
+            "ActionName": "Adoption of electric drones for last-mile deliveries.",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "off-road"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Replace traditional vehicles with electric drones for short-distance deliveries in urban centers, reducing emissions and traffic congestion.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 1,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "60-79",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Development of urban airspace regulations to ensure the safe and efficient operation of delivery drones.",
+                "Investment in charging and maintenance infrastructure to support a fleet of electric drones.",
+                "Collaboration with logistics companies to integrate drones into last-mile delivery networks."
+            ],
+            "KeyPerformanceIndicators": [
+                "Delivery time reduction compared to traditional methods (minutes).",
+                "Increase in customer satisfaction with drone deliveries (%).",
+                "Reduction in traffic congestion caused by delivery vehicles (%)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR GYN",
+        "cityName": "Goi\u00e2nia",
+        "region": "GO",
+        "regionName": "Goi\u00e1s",
+        "actionId": "icare_0092",
+        "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
+        "actionPriority": 10,
+        "action": {
+            "ActionID": "icare_0092",
+            "ActionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "on-road"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Create small-scale logistics hubs in urban neighborhoods to facilitate deliveries using electric cargo bikes, while implementing tax incentives or subsidies for businesses to adopt these bikes as a transportation mode, reducing emissions and improving delivery efficiency in densely populated areas.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 2,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "20-39",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Identification and development of suitable locations for small-scale logistics hubs within urban neighborhoods.",
+                "Provision of tax incentives, subsidies, or grants to encourage businesses to transition to electric cargo bikes.",
+                "Establishment of partnerships with logistics companies to ensure integration and efficiency in delivery operations using these hubs."
+            ],
+            "KeyPerformanceIndicators": [
+                "Reduction in distance traveled by traditional delivery vehicles (km/year).",
+                "Increase in operational efficiency of logistics hubs (%).",
+                "Number of businesses utilizing micro-logistics hubs for deliveries."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR GYN",
+        "cityName": "Goi\u00e2nia",
+        "region": "GO",
+        "regionName": "Goi\u00e1s",
+        "actionId": "icare_0042",
+        "actionName": "Encourage renewable energy policies at the municipal level",
+        "actionPriority": 11,
+        "action": {
+            "ActionID": "icare_0042",
+            "ActionName": "Encourage renewable energy policies at the municipal level",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "stationary_energy"
+            ],
+            "Subsector": [
+                "non-specified_sources"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Advocate for and implement policies that prioritize the development and integration of renewable energy systems in local government operations and planning.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 1,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": "80-100",
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Political will and leadership to prioritize renewable energy in local government policies and planning processes",
+                "Development of clear policies and regulatory frameworks that facilitate the integration of renewable energy systems into government operations",
+                "Availability of funding or financial mechanisms to support the transition to renewable energy in municipal infrastructure and operations"
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of renewable energy projects approved or initiated annually at the municipal level.",
+                "Percentage of municipal energy demand met by renewable sources (%).",
+                "Reduction in municipal carbon emissions due to --renewable energy adoption (tons CO\u2082e/year)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR GYN",
+        "cityName": "Goi\u00e2nia",
+        "region": "GO",
+        "regionName": "Goi\u00e1s",
+        "actionId": "icare_0068",
+        "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
+        "actionPriority": 12,
+        "action": {
+            "ActionID": "icare_0068",
+            "ActionName": "Deploy on-demand transport systems with 100% electric fleets.",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "on-road"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "On-demand collective transport services, based on apps, optimize electric vehicle usage, reducing per-passenger emissions.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 2,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "80-100",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Development of digital platforms and apps to efficiently manage on-demand collective transport services.",
+                "Expansion of electric vehicle fleets tailored for shared transport solutions.",
+                "Implementation of policies and incentives to encourage the adoption and use of shared electric transport services."
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of active users of the on-demand electric fleet system.",
+                "Percentage of urban transport demand met by on-demand systems.",
+                "Reduction in noise pollution levels in urban areas"
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR GYN",
+        "cityName": "Goi\u00e2nia",
+        "region": "GO",
+        "regionName": "Goi\u00e1s",
+        "actionId": "icare_0044",
+        "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
+        "actionPriority": 13,
+        "action": {
+            "ActionID": "icare_0044",
+            "ActionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "on-road"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "The main objective of this action is to promote active mobility, ensuring the safety, comfort, and priority of pedestrian movement, people with disabilities (or reduced mobility), and human-powered vehicles and equipment, such as bicycles and scooters.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 2,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "80-100",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Infrastructure investments in safe and accessible pedestrian walkways, bike lanes, and facilities for people with disabilities",
+                "Policy and regulatory frameworks to prioritize active mobility and establish safety standards for pedestrians and non-motorized vehicles",
+                "Public awareness campaigns to promote active mobility and educate citizens on the benefits of walking, cycling, and using other human-powered transport"
+            ],
+            "KeyPerformanceIndicators": [
+                "Kilometers of new cycling paths and walkways constructed annually.",
+                "Increase in daily usage of cycling and pedestrian infrastructure (%).",
+                "Reduction in urban transport emissions (%)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR GYN",
+        "cityName": "Goi\u00e2nia",
+        "region": "GO",
+        "regionName": "Goi\u00e1s",
+        "actionId": "icare_0117",
+        "actionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
+        "actionPriority": 14,
+        "action": {
+            "ActionID": "icare_0117",
+            "ActionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "on-road"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Increase the quality of transportation service delivery, aiming at the modal shift of passengers from private motorized transport to public transport, thereby reducing emissions generated by cars and motorcycles.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 2,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "60-79",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Improve the quality of public transportation services to attract passengers from private motorized transport.",
+                "Implement policies and infrastructure that support and enhance the efficiency of public transportation systems.",
+                "Promote awareness of the environmental benefits of public transport to encourage a modal shift and reduce emissions."
+            ],
+            "KeyPerformanceIndicators": [
+                "Annual increase in the number of passengers using the municipal bus system.",
+                "Percentage of bus routes with improved travel time reliability.",
+                "Estimated reduction in CO\u2082 equivalent emissions due to increased public transportation use."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR GYN",
+        "cityName": "Goi\u00e2nia",
+        "region": "GO",
+        "regionName": "Goi\u00e1s",
         "actionId": "icare_0091",
         "actionName": "Implementation of prioritized routes for sustainable vehicles.",
-        "actionPriority": 17,
+        "actionPriority": 15,
         "action": {
             "ActionID": "icare_0091",
             "ActionName": "Implementation of prioritized routes for sustainable vehicles.",
@@ -1024,12 +904,12 @@
         "cityName": "Goi\u00e2nia",
         "region": "GO",
         "regionName": "Goi\u00e1s",
-        "actionId": "icare_0099",
-        "actionName": "Support Agroecological Certification Programs",
-        "actionPriority": 18,
+        "actionId": "icare_0133",
+        "actionName": "Promote Urban Reforestation and Green Corridors",
+        "actionPriority": 16,
         "action": {
-            "ActionID": "icare_0099",
-            "ActionName": "Support Agroecological Certification Programs",
+            "ActionID": "icare_0133",
+            "ActionName": "Promote Urban Reforestation and Green Corridors",
             "ActionType": [
                 "mitigation"
             ],
@@ -1038,20 +918,20 @@
                 "afolu"
             ],
             "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
+                "land"
             ],
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "Description": "Encourage the certification of agroecological products that meet sustainability criteria and have low environmental impact.",
+            "Description": "Increase urban tree coverage to mitigate the urban heat island effect and enhance biodiversity.",
             "CoBenefits": {
-                "air_quality": 1,
+                "air_quality": 2,
                 "water_quality": 1,
                 "habitat": 2,
                 "cost_of_living": 1,
                 "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
+                "mobility": 1,
+                "stakeholder_engagement": 1
             },
             "EquityAndInclusionConsiderations": null,
             "GHGReductionPotential": {
@@ -1059,20 +939,79 @@
                 "transportation": null,
                 "waste": null,
                 "ippu": null,
-                "afolu": "20-39"
+                "afolu": "80-100"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Identification of priority areas and selection of native, climate-resilient species for tree planting.",
+                "Partnerships with local organizations and nurseries, and allocation of resources for planting and maintenance.",
+                "Community engagement to ensure long-term care and support."
+            ],
+            "KeyPerformanceIndicators": [
+                "Increase in urban tree canopy cover (%)",
+                "Total length of green corridors created or restored (kilometers)",
+                "Reduction in urban heat island effect temperatures (\u00b0C)"
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR GYN",
+        "cityName": "Goi\u00e2nia",
+        "region": "GO",
+        "regionName": "Goi\u00e1s",
+        "actionId": "icare_0139",
+        "actionName": "Implementation of urban toll.",
+        "actionPriority": 17,
+        "action": {
+            "ActionID": "icare_0139",
+            "ActionName": "Implementation of urban toll.",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "on-road"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Establishment of a congestion charge and/or license plate rotation for light vehicles in saturated areas and at saturated times",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": -1,
+                "housing": 0,
+                "mobility": 2,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "80-100",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
             },
             "AdaptationEffectiveness": null,
             "CostInvestmentNeeded": "low",
             "TimelineForImplementation": "<5 years",
             "Dependencies": [
-                "Development of clear and accessible certification standards for agroecological products that emphasize sustainability and low environmental impact.",
-                "Support for farmers and producers to meet certification requirements through training, financial assistance, or technical guidance.",
-                "Creation of marketing strategies and partnerships to increase the visibility and demand for certified agroecological products in local and global markets."
+                "Establish a clear legal framework and invest in technology for monitoring and enforcement (e.g., cameras, sensors).",
+                "Launch awareness campaigns and ensure availability of efficient public transportation or alternative mobility solutions.",
+                "Collaborate with local governments and transport agencies, and set up systems for monitoring and evaluating the policy's effectiveness."
             ],
             "KeyPerformanceIndicators": [
-                "Number of farmers or producers obtaining agroecological certifications.",
-                "Percentage of certified agricultural products in the market (%).",
-                "Reduction in the use of synthetic inputs (e.g., fertilizers, pesticides)."
+                "Reduction of CO\u2082 emissions from urban road transport (tCO\u2082e/year).",
+                "Revenue generated by the implementation of the urban congestion charge (R$)."
             ],
             "PowersAndMandates": [
                 "local"
@@ -1086,7 +1025,7 @@
         "regionName": "Goi\u00e1s",
         "actionId": "icare_0038",
         "actionName": "Promote community solar farms",
-        "actionPriority": 19,
+        "actionPriority": 18,
         "action": {
             "ActionID": "icare_0038",
             "ActionName": "Promote community solar farms",
@@ -1143,54 +1082,115 @@
         "cityName": "Goi\u00e2nia",
         "region": "GO",
         "regionName": "Goi\u00e1s",
-        "actionId": "icare_0139",
-        "actionName": "Implementation of urban toll.",
-        "actionPriority": 20,
+        "actionId": "icare_0131",
+        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
+        "actionPriority": 19,
         "action": {
-            "ActionID": "icare_0139",
-            "ActionName": "Implementation of urban toll.",
+            "ActionID": "icare_0131",
+            "ActionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
             "ActionType": [
                 "mitigation"
             ],
             "Hazard": null,
             "Sector": [
-                "transportation"
+                "afolu"
             ],
             "Subsector": [
-                "on-road"
+                "agriculture_forestry_and_fishing_activities"
             ],
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "Description": "Establishment of a congestion charge and/or license plate rotation for light vehicles in saturated areas and at saturated times",
+            "Description": "Focus on buying sustainable, locally produced food for public institutions.",
             "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": -1,
+                "air_quality": 1,
+                "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": 1,
                 "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 0
+                "mobility": 0,
+                "stakeholder_engagement": 2
             },
             "EquityAndInclusionConsiderations": null,
             "GHGReductionPotential": {
                 "stationary_energy": null,
-                "transportation": "80-100",
+                "transportation": null,
                 "waste": null,
                 "ippu": null,
-                "afolu": null
+                "afolu": "20-39"
             },
             "AdaptationEffectiveness": null,
             "CostInvestmentNeeded": "low",
             "TimelineForImplementation": "<5 years",
             "Dependencies": [
-                "Establish a clear legal framework and invest in technology for monitoring and enforcement (e.g., cameras, sensors).",
-                "Launch awareness campaigns and ensure availability of efficient public transportation or alternative mobility solutions.",
-                "Collaborate with local governments and transport agencies, and set up systems for monitoring and evaluating the policy's effectiveness."
+                "Development of procurement policies and identification of reliable local suppliers.",
+                "Partnerships with producers and allocation of funding for sustainable procurement programs.",
+                "Establishment of monitoring systems to ensure compliance with sustainability criteria."
             ],
             "KeyPerformanceIndicators": [
-                "Reduction of CO\u2082 emissions from urban road transport (tCO\u2082e/year).",
-                "Revenue generated by the implementation of the urban congestion charge (R$)."
+                "Percentage of the total volume of public purchases coming from local agroecological producers.",
+                "Amount of CO\u2082 emissions avoided due to reduced transport distance (tCO\u2082e).",
+                "Number of agroecological producers benefiting from public purchases."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR GYN",
+        "cityName": "Goi\u00e2nia",
+        "region": "GO",
+        "regionName": "Goi\u00e1s",
+        "actionId": "icare_0050",
+        "actionName": "Implement Agroforestry Systems",
+        "actionPriority": 20,
+        "action": {
+            "ActionID": "icare_0050",
+            "ActionName": "Implement Agroforestry Systems",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "agriculture_forestry_and_fishing_activities"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Promote agroforestry systems by integrating trees into food cultivation and pasture, increasing biodiversity and carbon sequestration.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "80-100"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Provision of technical support and guidance to farmers on the design and implementation of agroforestry systems.",
+                "Development of financial incentives or subsidies to make agroforestry more economically attractive.",
+                "Creation of policies that integrate agroforestry practices into agricultural land-use planning and land tenure systems."
+            ],
+            "KeyPerformanceIndicators": [
+                "Percentage of agricultural land converted to agroforestry systems (%).",
+                "Number of new agroforestry projects implemented.",
+                "Increase in carbon sequestration in agroforestry systems (tons of CO\u2082e/year)."
             ],
             "PowersAndMandates": [
                 "local"

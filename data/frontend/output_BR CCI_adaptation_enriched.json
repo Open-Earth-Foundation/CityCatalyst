@@ -64,337 +64,10 @@
         "cityName": "Cama\u00e7ari",
         "region": "BA",
         "regionName": "Bahia",
-        "actionId": "icare_0140",
-        "actionName": "Landslide Risk Assessment and Management",
-        "actionPriority": 2,
-        "explanation": "Ranked #2 by tournament ranking algorithm",
-        "action": {
-            "ActionID": "icare_0140",
-            "ActionName": "Landslide Risk Assessment and Management",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "landslides"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "This action involves assessing and managing landslide risks by collecting data, mapping hazard areas, and conducting evacuation simulations. It aims to reduce the risks associated with landslides in areas prone to these events.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 1,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Comprehensive planning and policy framework",
-                "Stakeholder participation",
-                "Capacity building and institutional support"
-            ],
-            "KeyPerformanceIndicators": [
-                "Coastal erosion rates",
-                "Water quality",
-                "Habitat health"
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR CCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0164",
-        "actionName": "Hydrological Monitoring System with Telemetry Stations",
-        "actionPriority": 3,
-        "explanation": "Ranked #3 by tournament ranking algorithm",
-        "action": {
-            "ActionID": "icare_0164",
-            "ActionName": "Hydrological Monitoring System with Telemetry Stations",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "droughts",
-                "floods",
-                "storms"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Implementation of a hydrological monitoring system with telemetry stations to monitor rainfall, water levels, and meteorological variables in real-time.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Equipment and infrastructure",
-                "Robust data management system",
-                "Institutional coordination"
-            ],
-            "KeyPerformanceIndicators": [
-                "Timeliness of data",
-                "Cost-effectiveness",
-                "Mitigation effectiveness"
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR CCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0181",
-        "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
-        "actionPriority": 4,
-        "explanation": "Ranked #4 by tournament ranking algorithm",
-        "action": {
-            "ActionID": "icare_0181",
-            "ActionName": "Relocation and Environmental Restoration in Vulnerable Areas",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "landslides",
-                "floods"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "A comprehensive project addressing the socio-environmental vulnerability of an informal settlement. It includes relocating residents from flood-prone areas, restoring the environment, and providing infrastructure and social services.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 2,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Adequate funding",
-                "Inter-agency coordination",
-                "Land tenure security"
-            ],
-            "KeyPerformanceIndicators": [
-                "Number of households relocated.",
-                "Environmental restoration progress.",
-                "Flood risk reduction."
-            ],
-            "PowersAndMandates": [
-                "state"
-            ]
-        }
-    },
-    {
-        "locode": "BR CCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0162",
-        "actionName": "Strengthen programs for control and conservation of protected areas",
-        "actionPriority": 5,
-        "explanation": "Ranked #5 by tournament ranking algorithm",
-        "action": {
-            "ActionID": "icare_0162",
-            "ActionName": "Strengthen programs for control and conservation of protected areas",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "floods",
-                "landslides",
-                "heatwaves",
-                "diseases"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "This action focuses on implementing a series of integrated strategies to enhance environmental conservation and maximize its benefits, such as expanding protected areas, developing management plans for conservation units, and training ecotourism guides to strengthen sustainable tourism.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Expansion of protected areas to enhance environmental conservation.",
-                "Development of management plans for conservation units.",
-                "Training of ecotourism guides to promote sustainable tourism."
-            ],
-            "KeyPerformanceIndicators": [
-                "Percentage increase in area of protected regions (%).",
-                "Reduction in deforestation rates in protected areas annually (%).",
-                "Number of conservation programs strengthened annually."
-            ],
-            "PowersAndMandates": [
-                "state"
-            ]
-        }
-    },
-    {
-        "locode": "BR CCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0154",
-        "actionName": "Cleaning and Unclogging of Channels with Installation of Eco-barriers",
-        "actionPriority": 6,
-        "explanation": "Ranked #6 by tournament ranking algorithm",
-        "action": {
-            "ActionID": "icare_0154",
-            "ActionName": "Cleaning and Unclogging of Channels with Installation of Eco-barriers",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "floods"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Cleaning and unclogging channels in the city to reduce the risk of flooding caused by extreme rainfall events. Installation of eco-barriers to assist in cleaning efforts and raise awareness about solid waste.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "medium",
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Regular maintenance",
-                "Proper waste management practices"
-            ],
-            "KeyPerformanceIndicators": [
-                "Flood reduction",
-                "Waste reduction",
-                "Maintenance costs"
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR CCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0151",
-        "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
-        "actionPriority": 7,
-        "explanation": "Ranked #7 by tournament ranking algorithm",
-        "action": {
-            "ActionID": "icare_0151",
-            "ActionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "sea-level-rise",
-                "floods",
-                "landslides",
-                "diseases",
-                "heatwaves"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Priority to ZEIS areas in housing improvement actions and the application of resources from the Urbanization Fund, with the implementation of urban infrastructure that considers climate adaptation in these spaces. Use of Nature-based Solutions (NbS) in the adaptation of environmental sanitation and green and blue infrastructures that enhance leisure, culture, urban agriculture, and activities to strengthen community associations.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 2,
-                "mobility": 1,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "medium",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Availability of funding from the Urbanization Fund and other financial mechanisms to support housing improvements and urban infrastructure in ZEIS areas",
-                "Collaboration between urban planners, environmental experts, and local communities to design and implement nature-based solutions (NbS) for urban infrastructure",
-                "Policy and regulatory frameworks that integrate climate adaptation measures into urban planning, ensuring that investments prioritize environmental sustainability and community"
-            ],
-            "KeyPerformanceIndicators": [
-                "Number of ZEIS areas diagnosed and restored.",
-                "Percentage of residents benefiting from restored areas (%).",
-                "Public investments allocated to ZEIS areas (currency amount)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR CCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BA",
-        "regionName": "Bahia",
         "actionId": "icare_0169",
         "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
-        "actionPriority": 8,
-        "explanation": "Ranked #8 by tournament ranking algorithm",
+        "actionPriority": 2,
+        "explanation": "Ranked #2 by tournament ranking algorithm",
         "action": {
             "ActionID": "icare_0169",
             "ActionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
@@ -451,53 +124,51 @@
         "cityName": "Cama\u00e7ari",
         "region": "BA",
         "regionName": "Bahia",
-        "actionId": "ipcc_0088",
-        "actionName": "Building codes",
-        "actionPriority": 9,
-        "explanation": "Ranked #9 by tournament ranking algorithm",
+        "actionId": "icare_0154",
+        "actionName": "Cleaning and Unclogging of Channels with Installation of Eco-barriers",
+        "actionPriority": 3,
+        "explanation": "Ranked #3 by tournament ranking algorithm",
         "action": {
-            "ActionID": "ipcc_0088",
-            "ActionName": "Building codes",
+            "ActionID": "icare_0154",
+            "ActionName": "Cleaning and Unclogging of Channels with Installation of Eco-barriers",
             "ActionType": [
                 "adaptation"
             ],
             "Hazard": [
-                "floods",
-                "landslides"
+                "floods"
             ],
-            "Sector": [
-                "road_infrastructure",
-                "geo-hydrological_disasters"
-            ],
+            "Sector": null,
             "Subsector": null,
             "PrimaryPurpose": [
                 "climate_resilience"
             ],
-            "Description": "The development and implementation of building codes and architectural design regulations aimed at integrating climate adaptation parameters. These codes are focused on reducing risks from climate-induced hazards like floods and landslides. They also support climate-resilient urban development by guiding land use, construction practices, and infrastructure standards. The initiative fosters strategic long-term urban planning to coordinate public and private investments in adaptation, including the creation of safe zones and the transformation of precarious settlements. It ensures that new infrastructure is resilient to climate risks and that urban spaces are safe and sustainable for current and future populations.",
+            "Description": "Cleaning and unclogging channels in the city to reduce the risk of flooding caused by extreme rainfall events. Installation of eco-barriers to assist in cleaning efforts and raise awareness about solid waste.",
             "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
+                "air_quality": 1,
+                "water_quality": 2,
                 "habitat": 1,
                 "cost_of_living": 1,
-                "housing": 2,
+                "housing": 1,
                 "mobility": 1,
                 "stakeholder_engagement": 1
             },
-            "EquityAndInclusionConsiderations": "Promotes inclusive urban planning by addressing risks in informal and precarious settlements and integrating eco-parks and eco-gardens for vulnerable populations.",
+            "EquityAndInclusionConsiderations": null,
             "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
+            "AdaptationEffectiveness": "medium",
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
             "Dependencies": [
-                "Integration with local climate risk assessments",
-                "Strategic collaboration between urban planners and municipal authorities"
+                "Regular maintenance",
+                "Proper waste management practices"
             ],
             "KeyPerformanceIndicators": [
-                "Reduction in urban flood incidents",
-                "Increased availability of safe housing in risk areas",
-                "Implementation rate of eco-parks and eco-gardens in vulnerable areas"
+                "Flood reduction",
+                "Waste reduction",
+                "Maintenance costs"
             ],
-            "PowersAndMandates": null
+            "PowersAndMandates": [
+                "local"
+            ]
         }
     },
     {
@@ -507,8 +178,8 @@
         "regionName": "Bahia",
         "actionId": "ipcc_0097",
         "actionName": "Food storage/distribution improvements",
-        "actionPriority": 10,
-        "explanation": "Ranked #10 by tournament ranking algorithm",
+        "actionPriority": 4,
+        "explanation": "Ranked #4 by tournament ranking algorithm",
         "action": {
             "ActionID": "ipcc_0097",
             "ActionName": "Food storage/distribution improvements",
@@ -564,58 +235,274 @@
         "cityName": "Cama\u00e7ari",
         "region": "BA",
         "regionName": "Bahia",
-        "actionId": "ipcc_0095",
-        "actionName": "Disaster early warning",
-        "actionPriority": 11,
-        "explanation": "Ranked #11 by tournament ranking algorithm",
+        "actionId": "icare_0140",
+        "actionName": "Landslide Risk Assessment and Management",
+        "actionPriority": 5,
+        "explanation": "Ranked #5 by tournament ranking algorithm",
         "action": {
-            "ActionID": "ipcc_0095",
-            "ActionName": "Disaster early warning",
+            "ActionID": "icare_0140",
+            "ActionName": "Landslide Risk Assessment and Management",
             "ActionType": [
                 "adaptation"
             ],
             "Hazard": [
-                "heatwaves",
-                "droughts",
-                "storms"
+                "landslides"
             ],
-            "Sector": [
-                "public_health",
-                "biodiversity",
-                "geo-hydrological_disasters"
-            ],
+            "Sector": null,
             "Subsector": null,
             "PrimaryPurpose": [
                 "climate_resilience"
             ],
-            "Description": "Establishing and maintaining early warning systems for disasters, including marine heatwaves, pest outbreaks, and heatwaves. These systems involve timely information dissemination to individuals, communities, and emergency services, enabling proactive measures to mitigate risks. Heat Action Plans (HAPs) are part of these systems and include detailed strategies like urban planning with nature-based solutions (e.g., green-blue spaces, cool materials), public awareness campaigns, and targeted measures for vulnerable groups (e.g., elderly, children, outdoor workers). Critical actions also include evaluation of system effectiveness post-disaster, lessons sharing, and improvements for better preparedness in future events.",
+            "Description": "This action involves assessing and managing landslide risks by collecting data, mapping hazard areas, and conducting evacuation simulations. It aims to reduce the risks associated with landslides in areas prone to these events.",
             "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 1,
+                "air_quality": 1,
+                "water_quality": 2,
                 "habitat": 2,
-                "cost_of_living": 0,
-                "housing": 0,
+                "cost_of_living": 1,
+                "housing": 1,
                 "mobility": 1,
                 "stakeholder_engagement": 2
             },
-            "EquityAndInclusionConsiderations": "Focuses on addressing vulnerabilities among low-income groups, elderly, pregnant women, children, and outdoor workers by incorporating targeted communication, access to cool areas, and specific health interventions. Promotes equity by engaging marginalized communities in planning and ensuring access to necessary resources.",
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Comprehensive planning and policy framework",
+                "Stakeholder participation",
+                "Capacity building and institutional support"
+            ],
+            "KeyPerformanceIndicators": [
+                "Coastal erosion rates",
+                "Water quality",
+                "Habitat health"
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR CCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BA",
+        "regionName": "Bahia",
+        "actionId": "icare_0164",
+        "actionName": "Hydrological Monitoring System with Telemetry Stations",
+        "actionPriority": 6,
+        "explanation": "Ranked #6 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "icare_0164",
+            "ActionName": "Hydrological Monitoring System with Telemetry Stations",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "droughts",
+                "floods",
+                "storms"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Implementation of a hydrological monitoring system with telemetry stations to monitor rainfall, water levels, and meteorological variables in real-time.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 1,
+                "mobility": 1,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Equipment and infrastructure",
+                "Robust data management system",
+                "Institutional coordination"
+            ],
+            "KeyPerformanceIndicators": [
+                "Timeliness of data",
+                "Cost-effectiveness",
+                "Mitigation effectiveness"
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR CCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BA",
+        "regionName": "Bahia",
+        "actionId": "icare_0181",
+        "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
+        "actionPriority": 7,
+        "explanation": "Ranked #7 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "icare_0181",
+            "ActionName": "Relocation and Environmental Restoration in Vulnerable Areas",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "landslides",
+                "floods"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "A comprehensive project addressing the socio-environmental vulnerability of an informal settlement. It includes relocating residents from flood-prone areas, restoring the environment, and providing infrastructure and social services.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 2,
+                "mobility": 1,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
             "GHGReductionPotential": null,
             "AdaptationEffectiveness": "high",
             "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
+            "TimelineForImplementation": "5-10 years",
             "Dependencies": [
-                "Coordination among emergency services and health agencies",
-                "Investment in urban planning and nature-based solutions",
-                "Community education and public awareness campaigns",
-                "Technological infrastructure for early warning systems"
+                "Adequate funding",
+                "Inter-agency coordination",
+                "Land tenure security"
             ],
             "KeyPerformanceIndicators": [
-                "Reduction in heatwave-related mortality rates",
-                "Timeliness of warnings",
-                "Public awareness levels",
-                "Community adoption of protective measures"
+                "Number of households relocated.",
+                "Environmental restoration progress.",
+                "Flood risk reduction."
             ],
-            "PowersAndMandates": null
+            "PowersAndMandates": [
+                "state"
+            ]
+        }
+    },
+    {
+        "locode": "BR CCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BA",
+        "regionName": "Bahia",
+        "actionId": "icare_0151",
+        "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
+        "actionPriority": 8,
+        "explanation": "Ranked #8 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "icare_0151",
+            "ActionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "sea-level-rise",
+                "floods",
+                "landslides",
+                "diseases",
+                "heatwaves"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Priority to ZEIS areas in housing improvement actions and the application of resources from the Urbanization Fund, with the implementation of urban infrastructure that considers climate adaptation in these spaces. Use of Nature-based Solutions (NbS) in the adaptation of environmental sanitation and green and blue infrastructures that enhance leisure, culture, urban agriculture, and activities to strengthen community associations.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 2,
+                "mobility": 1,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "medium",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Availability of funding from the Urbanization Fund and other financial mechanisms to support housing improvements and urban infrastructure in ZEIS areas",
+                "Collaboration between urban planners, environmental experts, and local communities to design and implement nature-based solutions (NbS) for urban infrastructure",
+                "Policy and regulatory frameworks that integrate climate adaptation measures into urban planning, ensuring that investments prioritize environmental sustainability and community"
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of ZEIS areas diagnosed and restored.",
+                "Percentage of residents benefiting from restored areas (%).",
+                "Public investments allocated to ZEIS areas (currency amount)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR CCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BA",
+        "regionName": "Bahia",
+        "actionId": "icare_0162",
+        "actionName": "Strengthen programs for control and conservation of protected areas",
+        "actionPriority": 9,
+        "explanation": "Ranked #9 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "icare_0162",
+            "ActionName": "Strengthen programs for control and conservation of protected areas",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "floods",
+                "landslides",
+                "heatwaves",
+                "diseases"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "This action focuses on implementing a series of integrated strategies to enhance environmental conservation and maximize its benefits, such as expanding protected areas, developing management plans for conservation units, and training ecotourism guides to strengthen sustainable tourism.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Expansion of protected areas to enhance environmental conservation.",
+                "Development of management plans for conservation units.",
+                "Training of ecotourism guides to promote sustainable tourism."
+            ],
+            "KeyPerformanceIndicators": [
+                "Percentage increase in area of protected regions (%).",
+                "Reduction in deforestation rates in protected areas annually (%).",
+                "Number of conservation programs strengthened annually."
+            ],
+            "PowersAndMandates": [
+                "state"
+            ]
         }
     },
     {
@@ -625,8 +512,8 @@
         "regionName": "Bahia",
         "actionId": "icare_0175",
         "actionName": "Recovery and preservation of green areas",
-        "actionPriority": 12,
-        "explanation": "Ranked #12 by tournament ranking algorithm",
+        "actionPriority": 10,
+        "explanation": "Ranked #10 by tournament ranking algorithm",
         "action": {
             "ActionID": "icare_0175",
             "ActionName": "Recovery and preservation of green areas",
@@ -677,10 +564,64 @@
         "cityName": "Cama\u00e7ari",
         "region": "BA",
         "regionName": "Bahia",
+        "actionId": "ipcc_0088",
+        "actionName": "Building codes",
+        "actionPriority": 11,
+        "explanation": "Ranked #11 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "ipcc_0088",
+            "ActionName": "Building codes",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "floods",
+                "landslides"
+            ],
+            "Sector": [
+                "road_infrastructure",
+                "geo-hydrological_disasters"
+            ],
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "The development and implementation of building codes and architectural design regulations aimed at integrating climate adaptation parameters. These codes are focused on reducing risks from climate-induced hazards like floods and landslides. They also support climate-resilient urban development by guiding land use, construction practices, and infrastructure standards. The initiative fosters strategic long-term urban planning to coordinate public and private investments in adaptation, including the creation of safe zones and the transformation of precarious settlements. It ensures that new infrastructure is resilient to climate risks and that urban spaces are safe and sustainable for current and future populations.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 2,
+                "mobility": 1,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": "Promotes inclusive urban planning by addressing risks in informal and precarious settlements and integrating eco-parks and eco-gardens for vulnerable populations.",
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Integration with local climate risk assessments",
+                "Strategic collaboration between urban planners and municipal authorities"
+            ],
+            "KeyPerformanceIndicators": [
+                "Reduction in urban flood incidents",
+                "Increased availability of safe housing in risk areas",
+                "Implementation rate of eco-parks and eco-gardens in vulnerable areas"
+            ],
+            "PowersAndMandates": null
+        }
+    },
+    {
+        "locode": "BR CCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BA",
+        "regionName": "Bahia",
         "actionId": "ipcc_0086",
         "actionName": "Ecosystem-based adaptation",
-        "actionPriority": 13,
-        "explanation": "Ranked #13 by tournament ranking algorithm",
+        "actionPriority": 12,
+        "explanation": "Ranked #12 by tournament ranking algorithm",
         "action": {
             "ActionID": "ipcc_0086",
             "ActionName": "Ecosystem-based adaptation",
@@ -749,8 +690,8 @@
         "regionName": "Bahia",
         "actionId": "icare_0149",
         "actionName": "Encourage sustainable land use practices",
-        "actionPriority": 14,
-        "explanation": "Ranked #14 by tournament ranking algorithm",
+        "actionPriority": 13,
+        "explanation": "Ranked #13 by tournament ranking algorithm",
         "action": {
             "ActionID": "icare_0149",
             "ActionName": "Encourage sustainable land use practices",
@@ -806,8 +747,8 @@
         "regionName": "Bahia",
         "actionId": "ipcc_0094",
         "actionName": "Access to health care",
-        "actionPriority": 15,
-        "explanation": "Ranked #15 by tournament ranking algorithm",
+        "actionPriority": 14,
+        "explanation": "Ranked #14 by tournament ranking algorithm",
         "action": {
             "ActionID": "ipcc_0094",
             "ActionName": "Access to health care",
@@ -864,8 +805,8 @@
         "regionName": "Bahia",
         "actionId": "icare_0156",
         "actionName": "Implementation of urban gardens",
-        "actionPriority": 16,
-        "explanation": "Ranked #16 by tournament ranking algorithm",
+        "actionPriority": 15,
+        "explanation": "Ranked #15 by tournament ranking algorithm",
         "action": {
             "ActionID": "icare_0156",
             "ActionName": "Implementation of urban gardens",
@@ -919,8 +860,8 @@
         "regionName": "Bahia",
         "actionId": "ipcc_0092",
         "actionName": "Social safety nets",
-        "actionPriority": 17,
-        "explanation": "Ranked #17 by tournament ranking algorithm",
+        "actionPriority": 16,
+        "explanation": "Ranked #16 by tournament ranking algorithm",
         "action": {
             "ActionID": "ipcc_0092",
             "ActionName": "Social safety nets",
@@ -965,6 +906,65 @@
                 "Reduction in malnutrition rates",
                 "Increase in education access for vulnerable groups",
                 "Participation in social protection programs"
+            ],
+            "PowersAndMandates": null
+        }
+    },
+    {
+        "locode": "BR CCI",
+        "cityName": "Cama\u00e7ari",
+        "region": "BA",
+        "regionName": "Bahia",
+        "actionId": "ipcc_0095",
+        "actionName": "Disaster early warning",
+        "actionPriority": 17,
+        "explanation": "Ranked #17 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "ipcc_0095",
+            "ActionName": "Disaster early warning",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "heatwaves",
+                "droughts",
+                "storms"
+            ],
+            "Sector": [
+                "public_health",
+                "biodiversity",
+                "geo-hydrological_disasters"
+            ],
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Establishing and maintaining early warning systems for disasters, including marine heatwaves, pest outbreaks, and heatwaves. These systems involve timely information dissemination to individuals, communities, and emergency services, enabling proactive measures to mitigate risks. Heat Action Plans (HAPs) are part of these systems and include detailed strategies like urban planning with nature-based solutions (e.g., green-blue spaces, cool materials), public awareness campaigns, and targeted measures for vulnerable groups (e.g., elderly, children, outdoor workers). Critical actions also include evaluation of system effectiveness post-disaster, lessons sharing, and improvements for better preparedness in future events.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 1,
+                "habitat": 2,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 1,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": "Focuses on addressing vulnerabilities among low-income groups, elderly, pregnant women, children, and outdoor workers by incorporating targeted communication, access to cool areas, and specific health interventions. Promotes equity by engaging marginalized communities in planning and ensuring access to necessary resources.",
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Coordination among emergency services and health agencies",
+                "Investment in urban planning and nature-based solutions",
+                "Community education and public awareness campaigns",
+                "Technological infrastructure for early warning systems"
+            ],
+            "KeyPerformanceIndicators": [
+                "Reduction in heatwave-related mortality rates",
+                "Timeliness of warnings",
+                "Public awareness levels",
+                "Community adoption of protective measures"
             ],
             "PowersAndMandates": null
         }

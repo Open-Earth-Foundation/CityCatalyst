@@ -4,8 +4,8 @@
         "cityName": "Rio de Janeiro",
         "region": "RJ",
         "regionName": "Rio de Janeiro",
-        "actionId": "icare_0121",
-        "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
+        "actionId": "icare_0005",
+        "actionName": "Create credit lines for residential and community wind energy projects",
         "actionPriority": 1
     },
     {
@@ -13,8 +13,8 @@
         "cityName": "Rio de Janeiro",
         "region": "RJ",
         "regionName": "Rio de Janeiro",
-        "actionId": "icare_0057",
-        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
+        "actionId": "icare_0121",
+        "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
         "actionPriority": 2
     },
     {
@@ -31,45 +31,9 @@
         "cityName": "Rio de Janeiro",
         "region": "RJ",
         "regionName": "Rio de Janeiro",
-        "actionId": "icare_0005",
-        "actionName": "Create credit lines for residential and community wind energy projects",
-        "actionPriority": 4
-    },
-    {
-        "locode": "BR RIO",
-        "cityName": "Rio de Janeiro",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0088",
-        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
-        "actionPriority": 5
-    },
-    {
-        "locode": "BR RIO",
-        "cityName": "Rio de Janeiro",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0094",
-        "actionName": "Adoption of biomethane in public fleets.",
-        "actionPriority": 6
-    },
-    {
-        "locode": "BR RIO",
-        "cityName": "Rio de Janeiro",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
         "actionId": "icare_0025",
         "actionName": "Promote energy-efficient low-income housing",
-        "actionPriority": 7
-    },
-    {
-        "locode": "BR RIO",
-        "cityName": "Rio de Janeiro",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0092",
-        "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
-        "actionPriority": 8
+        "actionPriority": 4
     },
     {
         "locode": "BR RIO",
@@ -78,16 +42,25 @@
         "regionName": "Rio de Janeiro",
         "actionId": "icare_0042",
         "actionName": "Encourage renewable energy policies at the municipal level",
-        "actionPriority": 9
+        "actionPriority": 5
     },
     {
         "locode": "BR RIO",
         "cityName": "Rio de Janeiro",
         "region": "RJ",
         "regionName": "Rio de Janeiro",
-        "actionId": "icare_0044",
-        "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
-        "actionPriority": 10
+        "actionId": "icare_0088",
+        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
+        "actionPriority": 6
+    },
+    {
+        "locode": "BR RIO",
+        "cityName": "Rio de Janeiro",
+        "region": "RJ",
+        "regionName": "Rio de Janeiro",
+        "actionId": "icare_0094",
+        "actionName": "Adoption of biomethane in public fleets.",
+        "actionPriority": 7
     },
     {
         "locode": "BR RIO",
@@ -96,7 +69,25 @@
         "regionName": "Rio de Janeiro",
         "actionId": "icare_0090",
         "actionName": "Adoption of electric drones for last-mile deliveries.",
-        "actionPriority": 11
+        "actionPriority": 8
+    },
+    {
+        "locode": "BR RIO",
+        "cityName": "Rio de Janeiro",
+        "region": "RJ",
+        "regionName": "Rio de Janeiro",
+        "actionId": "icare_0057",
+        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
+        "actionPriority": 9
+    },
+    {
+        "locode": "BR RIO",
+        "cityName": "Rio de Janeiro",
+        "region": "RJ",
+        "regionName": "Rio de Janeiro",
+        "actionId": "icare_0092",
+        "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
+        "actionPriority": 10
     },
     {
         "locode": "BR RIO",
@@ -105,6 +96,15 @@
         "regionName": "Rio de Janeiro",
         "actionId": "icare_0068",
         "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
+        "actionPriority": 11
+    },
+    {
+        "locode": "BR RIO",
+        "cityName": "Rio de Janeiro",
+        "region": "RJ",
+        "regionName": "Rio de Janeiro",
+        "actionId": "icare_0044",
+        "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
         "actionPriority": 12
     },
     {
@@ -121,8 +121,8 @@
         "cityName": "Rio de Janeiro",
         "region": "RJ",
         "regionName": "Rio de Janeiro",
-        "actionId": "icare_0133",
-        "actionName": "Promote Urban Reforestation and Green Corridors",
+        "actionId": "icare_0024",
+        "actionName": "Integrate renewables into municipal water systems",
         "actionPriority": 14
     },
     {
@@ -130,36 +130,9 @@
         "cityName": "Rio de Janeiro",
         "region": "RJ",
         "regionName": "Rio de Janeiro",
-        "actionId": "icare_0029",
-        "actionName": "Adopt policies for fossil fuel-free buildings",
+        "actionId": "icare_0099",
+        "actionName": "Support Agroecological Certification Programs",
         "actionPriority": 15
-    },
-    {
-        "locode": "BR RIO",
-        "cityName": "Rio de Janeiro",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0038",
-        "actionName": "Promote community solar farms",
-        "actionPriority": 16
-    },
-    {
-        "locode": "BR RIO",
-        "cityName": "Rio de Janeiro",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0024",
-        "actionName": "Integrate renewables into municipal water systems",
-        "actionPriority": 17
-    },
-    {
-        "locode": "BR RIO",
-        "cityName": "Rio de Janeiro",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0131",
-        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
-        "actionPriority": 18
     },
     {
         "locode": "BR RIO",
@@ -168,6 +141,33 @@
         "regionName": "Rio de Janeiro",
         "actionId": "icare_0027",
         "actionName": "Create financing programs for local renewable energy projects",
+        "actionPriority": 16
+    },
+    {
+        "locode": "BR RIO",
+        "cityName": "Rio de Janeiro",
+        "region": "RJ",
+        "regionName": "Rio de Janeiro",
+        "actionId": "icare_0133",
+        "actionName": "Promote Urban Reforestation and Green Corridors",
+        "actionPriority": 17
+    },
+    {
+        "locode": "BR RIO",
+        "cityName": "Rio de Janeiro",
+        "region": "RJ",
+        "regionName": "Rio de Janeiro",
+        "actionId": "icare_0139",
+        "actionName": "Implementation of urban toll.",
+        "actionPriority": 18
+    },
+    {
+        "locode": "BR RIO",
+        "cityName": "Rio de Janeiro",
+        "region": "RJ",
+        "regionName": "Rio de Janeiro",
+        "actionId": "icare_0093",
+        "actionName": "Incentive the use of drones for monitoring large agricultural properties.",
         "actionPriority": 19
     },
     {

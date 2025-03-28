@@ -4,27 +4,9 @@
         "cityName": "Coxim",
         "region": "MS",
         "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0118",
-        "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
-        "actionPriority": 1
-    },
-    {
-        "locode": "BR COX",
-        "cityName": "Coxim",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
         "actionId": "icare_0005",
         "actionName": "Create credit lines for residential and community wind energy projects",
-        "actionPriority": 2
-    },
-    {
-        "locode": "BR COX",
-        "cityName": "Coxim",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0133",
-        "actionName": "Promote Urban Reforestation and Green Corridors",
-        "actionPriority": 3
+        "actionPriority": 1
     },
     {
         "locode": "BR COX",
@@ -33,7 +15,16 @@
         "regionName": "Mato Grosso do Sul",
         "actionId": "icare_0121",
         "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
-        "actionPriority": 4
+        "actionPriority": 2
+    },
+    {
+        "locode": "BR COX",
+        "cityName": "Coxim",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0118",
+        "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
+        "actionPriority": 3
     },
     {
         "locode": "BR COX",
@@ -42,6 +33,15 @@
         "regionName": "Mato Grosso do Sul",
         "actionId": "icare_0094",
         "actionName": "Adoption of biomethane in public fleets.",
+        "actionPriority": 4
+    },
+    {
+        "locode": "BR COX",
+        "cityName": "Coxim",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0092",
+        "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
         "actionPriority": 5
     },
     {
@@ -58,8 +58,8 @@
         "cityName": "Coxim",
         "region": "MS",
         "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0092",
-        "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
+        "actionId": "icare_0057",
+        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
         "actionPriority": 7
     },
     {
@@ -67,8 +67,8 @@
         "cityName": "Coxim",
         "region": "MS",
         "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0090",
-        "actionName": "Adoption of electric drones for last-mile deliveries.",
+        "actionId": "icare_0025",
+        "actionName": "Promote energy-efficient low-income housing",
         "actionPriority": 8
     },
     {
@@ -76,18 +76,9 @@
         "cityName": "Coxim",
         "region": "MS",
         "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0057",
-        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
+        "actionId": "icare_0133",
+        "actionName": "Promote Urban Reforestation and Green Corridors",
         "actionPriority": 9
-    },
-    {
-        "locode": "BR COX",
-        "cityName": "Coxim",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0117",
-        "actionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
-        "actionPriority": 10
     },
     {
         "locode": "BR COX",
@@ -96,6 +87,15 @@
         "regionName": "Mato Grosso do Sul",
         "actionId": "icare_0068",
         "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
+        "actionPriority": 10
+    },
+    {
+        "locode": "BR COX",
+        "cityName": "Coxim",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "c40_0033",
+        "actionName": "15/30-Minute Areas",
         "actionPriority": 11
     },
     {
@@ -103,8 +103,8 @@
         "cityName": "Coxim",
         "region": "MS",
         "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0044",
-        "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
+        "actionId": "icare_0090",
+        "actionName": "Adoption of electric drones for last-mile deliveries.",
         "actionPriority": 12
     },
     {
@@ -121,9 +121,18 @@
         "cityName": "Coxim",
         "region": "MS",
         "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0025",
-        "actionName": "Promote energy-efficient low-income housing",
+        "actionId": "icare_0044",
+        "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
         "actionPriority": 14
+    },
+    {
+        "locode": "BR COX",
+        "cityName": "Coxim",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0091",
+        "actionName": "Implementation of prioritized routes for sustainable vehicles.",
+        "actionPriority": 15
     },
     {
         "locode": "BR COX",
@@ -132,15 +141,6 @@
         "regionName": "Mato Grosso do Sul",
         "actionId": "icare_0136",
         "actionName": "Support the Implementation of Ecological Fiscal Incentives",
-        "actionPriority": 15
-    },
-    {
-        "locode": "BR COX",
-        "cityName": "Coxim",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0011",
-        "actionName": "Provide tax incentives for renewable energy in residential projects",
         "actionPriority": 16
     },
     {
@@ -148,27 +148,9 @@
         "cityName": "Coxim",
         "region": "MS",
         "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0102",
-        "actionName": "Promote Sustainable Agricultural Practices",
+        "actionId": "icare_0117",
+        "actionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
         "actionPriority": 17
-    },
-    {
-        "locode": "BR COX",
-        "cityName": "Coxim",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0084",
-        "actionName": "Create Incentives for Agroforestry Practices in Livestock Systems",
-        "actionPriority": 18
-    },
-    {
-        "locode": "BR COX",
-        "cityName": "Coxim",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "c40_0033",
-        "actionName": "15/30-Minute Areas",
-        "actionPriority": 19
     },
     {
         "locode": "BR COX",
@@ -177,6 +159,24 @@
         "regionName": "Mato Grosso do Sul",
         "actionId": "icare_0099",
         "actionName": "Support Agroecological Certification Programs",
+        "actionPriority": 18
+    },
+    {
+        "locode": "BR COX",
+        "cityName": "Coxim",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0096",
+        "actionName": "Promote Organic Farming",
+        "actionPriority": 19
+    },
+    {
+        "locode": "BR COX",
+        "cityName": "Coxim",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0084",
+        "actionName": "Create Incentives for Agroforestry Practices in Livestock Systems",
         "actionPriority": 20
     }
 ]

@@ -64,67 +64,10 @@
         "cityName": "Palmeira dos \u00cdndios",
         "region": "AL",
         "regionName": "Alagoas",
-        "actionId": "icare_0151",
-        "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
-        "actionPriority": 2,
-        "explanation": "Ranked #2 by tournament ranking algorithm",
-        "action": {
-            "ActionID": "icare_0151",
-            "ActionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "sea-level-rise",
-                "floods",
-                "landslides",
-                "diseases",
-                "heatwaves"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Priority to ZEIS areas in housing improvement actions and the application of resources from the Urbanization Fund, with the implementation of urban infrastructure that considers climate adaptation in these spaces. Use of Nature-based Solutions (NbS) in the adaptation of environmental sanitation and green and blue infrastructures that enhance leisure, culture, urban agriculture, and activities to strengthen community associations.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 2,
-                "mobility": 1,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "medium",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Availability of funding from the Urbanization Fund and other financial mechanisms to support housing improvements and urban infrastructure in ZEIS areas",
-                "Collaboration between urban planners, environmental experts, and local communities to design and implement nature-based solutions (NbS) for urban infrastructure",
-                "Policy and regulatory frameworks that integrate climate adaptation measures into urban planning, ensuring that investments prioritize environmental sustainability and community"
-            ],
-            "KeyPerformanceIndicators": [
-                "Number of ZEIS areas diagnosed and restored.",
-                "Percentage of residents benefiting from restored areas (%).",
-                "Public investments allocated to ZEIS areas (currency amount)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR PIS",
-        "cityName": "Palmeira dos \u00cdndios",
-        "region": "AL",
-        "regionName": "Alagoas",
         "actionId": "icare_0162",
         "actionName": "Strengthen programs for control and conservation of protected areas",
-        "actionPriority": 3,
-        "explanation": "Ranked #3 by tournament ranking algorithm",
+        "actionPriority": 2,
+        "explanation": "Ranked #2 by tournament ranking algorithm",
         "action": {
             "ActionID": "icare_0162",
             "ActionName": "Strengthen programs for control and conservation of protected areas",
@@ -166,6 +109,60 @@
                 "Percentage increase in area of protected regions (%).",
                 "Reduction in deforestation rates in protected areas annually (%).",
                 "Number of conservation programs strengthened annually."
+            ],
+            "PowersAndMandates": [
+                "state"
+            ]
+        }
+    },
+    {
+        "locode": "BR PIS",
+        "cityName": "Palmeira dos \u00cdndios",
+        "region": "AL",
+        "regionName": "Alagoas",
+        "actionId": "icare_0181",
+        "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
+        "actionPriority": 3,
+        "explanation": "Ranked #3 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "icare_0181",
+            "ActionName": "Relocation and Environmental Restoration in Vulnerable Areas",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "landslides",
+                "floods"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "A comprehensive project addressing the socio-environmental vulnerability of an informal settlement. It includes relocating residents from flood-prone areas, restoring the environment, and providing infrastructure and social services.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 2,
+                "mobility": 1,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Adequate funding",
+                "Inter-agency coordination",
+                "Land tenure security"
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of households relocated.",
+                "Environmental restoration progress.",
+                "Flood risk reduction."
             ],
             "PowersAndMandates": [
                 "state"
@@ -231,10 +228,67 @@
         "cityName": "Palmeira dos \u00cdndios",
         "region": "AL",
         "regionName": "Alagoas",
-        "actionId": "icare_0169",
-        "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
+        "actionId": "icare_0151",
+        "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
         "actionPriority": 5,
         "explanation": "Ranked #5 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "icare_0151",
+            "ActionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "sea-level-rise",
+                "floods",
+                "landslides",
+                "diseases",
+                "heatwaves"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Priority to ZEIS areas in housing improvement actions and the application of resources from the Urbanization Fund, with the implementation of urban infrastructure that considers climate adaptation in these spaces. Use of Nature-based Solutions (NbS) in the adaptation of environmental sanitation and green and blue infrastructures that enhance leisure, culture, urban agriculture, and activities to strengthen community associations.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 2,
+                "mobility": 1,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "medium",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Availability of funding from the Urbanization Fund and other financial mechanisms to support housing improvements and urban infrastructure in ZEIS areas",
+                "Collaboration between urban planners, environmental experts, and local communities to design and implement nature-based solutions (NbS) for urban infrastructure",
+                "Policy and regulatory frameworks that integrate climate adaptation measures into urban planning, ensuring that investments prioritize environmental sustainability and community"
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of ZEIS areas diagnosed and restored.",
+                "Percentage of residents benefiting from restored areas (%).",
+                "Public investments allocated to ZEIS areas (currency amount)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR PIS",
+        "cityName": "Palmeira dos \u00cdndios",
+        "region": "AL",
+        "regionName": "Alagoas",
+        "actionId": "icare_0169",
+        "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
+        "actionPriority": 6,
+        "explanation": "Ranked #6 by tournament ranking algorithm",
         "action": {
             "ActionID": "icare_0169",
             "ActionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
@@ -280,58 +334,6 @@
                 "Number of emergency response partnerships established.",
                 "Average response time during extreme weather events (hours).",
                 "Percentage reduction in casualties and damages during extreme weather events annually (%)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR PIS",
-        "cityName": "Palmeira dos \u00cdndios",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "icare_0154",
-        "actionName": "Cleaning and Unclogging of Channels with Installation of Eco-barriers",
-        "actionPriority": 6,
-        "explanation": "Ranked #6 by tournament ranking algorithm",
-        "action": {
-            "ActionID": "icare_0154",
-            "ActionName": "Cleaning and Unclogging of Channels with Installation of Eco-barriers",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "floods"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Cleaning and unclogging channels in the city to reduce the risk of flooding caused by extreme rainfall events. Installation of eco-barriers to assist in cleaning efforts and raise awareness about solid waste.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "medium",
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Regular maintenance",
-                "Proper waste management practices"
-            ],
-            "KeyPerformanceIndicators": [
-                "Flood reduction",
-                "Waste reduction",
-                "Maintenance costs"
             ],
             "PowersAndMandates": [
                 "local"
@@ -396,119 +398,10 @@
         "cityName": "Palmeira dos \u00cdndios",
         "region": "AL",
         "regionName": "Alagoas",
-        "actionId": "icare_0164",
-        "actionName": "Hydrological Monitoring System with Telemetry Stations",
-        "actionPriority": 8,
-        "explanation": "Ranked #8 by tournament ranking algorithm",
-        "action": {
-            "ActionID": "icare_0164",
-            "ActionName": "Hydrological Monitoring System with Telemetry Stations",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "droughts",
-                "floods",
-                "storms"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Implementation of a hydrological monitoring system with telemetry stations to monitor rainfall, water levels, and meteorological variables in real-time.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Equipment and infrastructure",
-                "Robust data management system",
-                "Institutional coordination"
-            ],
-            "KeyPerformanceIndicators": [
-                "Timeliness of data",
-                "Cost-effectiveness",
-                "Mitigation effectiveness"
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR PIS",
-        "cityName": "Palmeira dos \u00cdndios",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "icare_0181",
-        "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
-        "actionPriority": 9,
-        "explanation": "Ranked #9 by tournament ranking algorithm",
-        "action": {
-            "ActionID": "icare_0181",
-            "ActionName": "Relocation and Environmental Restoration in Vulnerable Areas",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "landslides",
-                "floods"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "A comprehensive project addressing the socio-environmental vulnerability of an informal settlement. It includes relocating residents from flood-prone areas, restoring the environment, and providing infrastructure and social services.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 2,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Adequate funding",
-                "Inter-agency coordination",
-                "Land tenure security"
-            ],
-            "KeyPerformanceIndicators": [
-                "Number of households relocated.",
-                "Environmental restoration progress.",
-                "Flood risk reduction."
-            ],
-            "PowersAndMandates": [
-                "state"
-            ]
-        }
-    },
-    {
-        "locode": "BR PIS",
-        "cityName": "Palmeira dos \u00cdndios",
-        "region": "AL",
-        "regionName": "Alagoas",
         "actionId": "icare_0156",
         "actionName": "Implementation of urban gardens",
-        "actionPriority": 10,
-        "explanation": "Ranked #10 by tournament ranking algorithm",
+        "actionPriority": 8,
+        "explanation": "Ranked #8 by tournament ranking algorithm",
         "action": {
             "ActionID": "icare_0156",
             "ActionName": "Implementation of urban gardens",
@@ -549,6 +442,113 @@
                 "Number of urban gardens created.",
                 "Amount of locally produced food (kg/year).",
                 "Number of direct beneficiaries."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR PIS",
+        "cityName": "Palmeira dos \u00cdndios",
+        "region": "AL",
+        "regionName": "Alagoas",
+        "actionId": "icare_0154",
+        "actionName": "Cleaning and Unclogging of Channels with Installation of Eco-barriers",
+        "actionPriority": 9,
+        "explanation": "Ranked #9 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "icare_0154",
+            "ActionName": "Cleaning and Unclogging of Channels with Installation of Eco-barriers",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "floods"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Cleaning and unclogging channels in the city to reduce the risk of flooding caused by extreme rainfall events. Installation of eco-barriers to assist in cleaning efforts and raise awareness about solid waste.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 2,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 1,
+                "mobility": 1,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "medium",
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Regular maintenance",
+                "Proper waste management practices"
+            ],
+            "KeyPerformanceIndicators": [
+                "Flood reduction",
+                "Waste reduction",
+                "Maintenance costs"
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR PIS",
+        "cityName": "Palmeira dos \u00cdndios",
+        "region": "AL",
+        "regionName": "Alagoas",
+        "actionId": "icare_0164",
+        "actionName": "Hydrological Monitoring System with Telemetry Stations",
+        "actionPriority": 10,
+        "explanation": "Ranked #10 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "icare_0164",
+            "ActionName": "Hydrological Monitoring System with Telemetry Stations",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "droughts",
+                "floods",
+                "storms"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Implementation of a hydrological monitoring system with telemetry stations to monitor rainfall, water levels, and meteorological variables in real-time.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 1,
+                "mobility": 1,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Equipment and infrastructure",
+                "Robust data management system",
+                "Institutional coordination"
+            ],
+            "KeyPerformanceIndicators": [
+                "Timeliness of data",
+                "Cost-effectiveness",
+                "Mitigation effectiveness"
             ],
             "PowersAndMandates": [
                 "local"
@@ -743,10 +743,63 @@
         "cityName": "Palmeira dos \u00cdndios",
         "region": "AL",
         "regionName": "Alagoas",
-        "actionId": "icare_0149",
-        "actionName": "Encourage sustainable land use practices",
+        "actionId": "icare_0142",
+        "actionName": "Improvement of Water Supply and Sanitation Systems",
         "actionPriority": 14,
         "explanation": "Ranked #14 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "icare_0142",
+            "ActionName": "Improvement of Water Supply and Sanitation Systems",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "floods"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "This action involves implementing artesian wells, cisterns, and water supply systems, as well as improving water quality and expanding sanitation services in the city.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 2,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 1,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Infrastructure development",
+                "Financial resources",
+                "Technical expertise"
+            ],
+            "KeyPerformanceIndicators": [
+                "Access to safe water",
+                "Water quality",
+                "Sanitation coverage"
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR PIS",
+        "cityName": "Palmeira dos \u00cdndios",
+        "region": "AL",
+        "regionName": "Alagoas",
+        "actionId": "icare_0149",
+        "actionName": "Encourage sustainable land use practices",
+        "actionPriority": 15,
+        "explanation": "Ranked #15 by tournament ranking algorithm",
         "action": {
             "ActionID": "icare_0149",
             "ActionName": "Encourage sustainable land use practices",
@@ -802,8 +855,8 @@
         "regionName": "Alagoas",
         "actionId": "ipcc_0094",
         "actionName": "Access to health care",
-        "actionPriority": 15,
-        "explanation": "Ranked #15 by tournament ranking algorithm",
+        "actionPriority": 16,
+        "explanation": "Ranked #16 by tournament ranking algorithm",
         "action": {
             "ActionID": "ipcc_0094",
             "ActionName": "Access to health care",
@@ -858,10 +911,119 @@
         "cityName": "Palmeira dos \u00cdndios",
         "region": "AL",
         "regionName": "Alagoas",
+        "actionId": "icare_0182",
+        "actionName": "Urban Afforestation and Green Spaces Implementation",
+        "actionPriority": 17,
+        "explanation": "Ranked #17 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "icare_0182",
+            "ActionName": "Urban Afforestation and Green Spaces Implementation",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "heatwaves"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "This action focuses on expanding green areas in the city through urban afforestation. This includes planting trees in sidewalks, squares, public buildings, and schools, as well as creating ecological parks to revitalize watercourses and/or restore forests.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 1,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 1,
+                "mobility": 1,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Water resources",
+                "Long-term maintenance"
+            ],
+            "KeyPerformanceIndicators": [
+                "Area of green spaces created or restored",
+                "Community use of green spaces",
+                "Water usage and conservation"
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR PIS",
+        "cityName": "Palmeira dos \u00cdndios",
+        "region": "AL",
+        "regionName": "Alagoas",
+        "actionId": "ipcc_0092",
+        "actionName": "Social safety nets",
+        "actionPriority": 18,
+        "explanation": "Ranked #18 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "ipcc_0092",
+            "ActionName": "Social safety nets",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "droughts",
+                "heatwaves",
+                "floods",
+                "storms"
+            ],
+            "Sector": [
+                "food_security",
+                "public_health"
+            ],
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Social safety nets encompass adaptive social protection mechanisms to reduce food insecurity and malnutrition, especially for vulnerable populations. These include cash transfers, school feeding programs, public work initiatives, unemployment compensation, land reforms, credit and insurance schemes. Integrated approaches combine climate risk assessments with disaster risk reduction, education, and social equity to enhance resilience to climate stresses.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 2,
+                "housing": 1,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": "Enhances the social status and rights of marginalized groups, protects vulnerable populations, reduces inequalities, and promotes education and gender equity.",
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Integration of climate and disaster risk into social protection",
+                "education programs",
+                "coordination with sustainable livelihoods and financial inclusion initiatives"
+            ],
+            "KeyPerformanceIndicators": [
+                "Reduction in malnutrition rates",
+                "Increase in education access for vulnerable groups",
+                "Participation in social protection programs"
+            ],
+            "PowersAndMandates": null
+        }
+    },
+    {
+        "locode": "BR PIS",
+        "cityName": "Palmeira dos \u00cdndios",
+        "region": "AL",
+        "regionName": "Alagoas",
         "actionId": "ipcc_0095",
         "actionName": "Disaster early warning",
-        "actionPriority": 16,
-        "explanation": "Ranked #16 by tournament ranking algorithm",
+        "actionPriority": 19,
+        "explanation": "Ranked #19 by tournament ranking algorithm",
         "action": {
             "ActionID": "ipcc_0095",
             "ActionName": "Disaster early warning",
@@ -919,8 +1081,8 @@
         "regionName": "Alagoas",
         "actionId": "icare_0180",
         "actionName": "Implement permeable pavements and increase green areas in roadways",
-        "actionPriority": 17,
-        "explanation": "Ranked #17 by tournament ranking algorithm",
+        "actionPriority": 20,
+        "explanation": "Ranked #20 by tournament ranking algorithm",
         "action": {
             "ActionID": "icare_0180",
             "ActionName": "Implement permeable pavements and increase green areas in roadways",
@@ -961,171 +1123,6 @@
                 "Reduction in surface water runoff during rainfall events (%).",
                 "Decrease in flooding occurrences in modified areas.",
                 "Percentage of public spaces complying with new permeable surface regulations."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR PIS",
-        "cityName": "Palmeira dos \u00cdndios",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "icare_0142",
-        "actionName": "Improvement of Water Supply and Sanitation Systems",
-        "actionPriority": 18,
-        "explanation": "Ranked #18 by tournament ranking algorithm",
-        "action": {
-            "ActionID": "icare_0142",
-            "ActionName": "Improvement of Water Supply and Sanitation Systems",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "floods"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "This action involves implementing artesian wells, cisterns, and water supply systems, as well as improving water quality and expanding sanitation services in the city.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 2,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Infrastructure development",
-                "Financial resources",
-                "Technical expertise"
-            ],
-            "KeyPerformanceIndicators": [
-                "Access to safe water",
-                "Water quality",
-                "Sanitation coverage"
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR PIS",
-        "cityName": "Palmeira dos \u00cdndios",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "icare_0148",
-        "actionName": "Create the Municipal Climate Change Forum",
-        "actionPriority": 19,
-        "explanation": "Ranked #19 by tournament ranking algorithm",
-        "action": {
-            "ActionID": "icare_0148",
-            "ActionName": "Create the Municipal Climate Change Forum",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "droughts",
-                "diseases",
-                "heatwaves",
-                "landslides",
-                "floods",
-                "wildfires",
-                "sea-level-rise",
-                "storms"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Creation of a Municipal Climate Change Forum with the participation of community leaders, scientists, collectives, research institutes, NGOs, and members of the municipal and state administration. The Forum will serve as a reference for actions related to Climate Change, aiming to monitor future policies on the subject in the municipality, stimulate dialogue, and create a network of discussions about the climate crisis.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "medium",
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Engagement of diverse stakeholders, including community leaders, scientists, NGOs, and local authorities, to establish and sustain the Forum.",
-                "Allocation of resources to facilitate regular meetings, workshops, and events for the Forum to remain active and impactful.",
-                "Development of a clear framework and guidelines for the Forum to monitor and guide climate change policies and initiatives within the municipality."
-            ],
-            "KeyPerformanceIndicators": [
-                "Percentage of key stakeholders actively participating in the forum.",
-                "Number of climate-related policies or actions proposed through the forum.",
-                "Public engagement in forum initiatives (measured by event attendance or surveys)"
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR PIS",
-        "cityName": "Palmeira dos \u00cdndios",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "icare_0182",
-        "actionName": "Urban Afforestation and Green Spaces Implementation",
-        "actionPriority": 20,
-        "explanation": "Ranked #20 by tournament ranking algorithm",
-        "action": {
-            "ActionID": "icare_0182",
-            "ActionName": "Urban Afforestation and Green Spaces Implementation",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "heatwaves"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "This action focuses on expanding green areas in the city through urban afforestation. This includes planting trees in sidewalks, squares, public buildings, and schools, as well as creating ecological parks to revitalize watercourses and/or restore forests.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 1,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Water resources",
-                "Long-term maintenance"
-            ],
-            "KeyPerformanceIndicators": [
-                "Area of green spaces created or restored",
-                "Community use of green spaces",
-                "Water usage and conservation"
             ],
             "PowersAndMandates": [
                 "local"

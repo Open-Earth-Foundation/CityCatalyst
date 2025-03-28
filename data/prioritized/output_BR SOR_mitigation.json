@@ -40,8 +40,8 @@
         "cityName": "Sorocaba",
         "region": "SP",
         "regionName": "S\u00e3o Paulo",
-        "actionId": "icare_0094",
-        "actionName": "Adoption of biomethane in public fleets.",
+        "actionId": "icare_0092",
+        "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
         "actionPriority": 5
     },
     {
@@ -49,27 +49,9 @@
         "cityName": "Sorocaba",
         "region": "SP",
         "regionName": "S\u00e3o Paulo",
-        "actionId": "icare_0092",
-        "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
+        "actionId": "icare_0094",
+        "actionName": "Adoption of biomethane in public fleets.",
         "actionPriority": 6
-    },
-    {
-        "locode": "BR SOR",
-        "cityName": "Sorocaba",
-        "region": "SP",
-        "regionName": "S\u00e3o Paulo",
-        "actionId": "icare_0025",
-        "actionName": "Promote energy-efficient low-income housing",
-        "actionPriority": 7
-    },
-    {
-        "locode": "BR SOR",
-        "cityName": "Sorocaba",
-        "region": "SP",
-        "regionName": "S\u00e3o Paulo",
-        "actionId": "icare_0090",
-        "actionName": "Adoption of electric drones for last-mile deliveries.",
-        "actionPriority": 8
     },
     {
         "locode": "BR SOR",
@@ -78,16 +60,7 @@
         "regionName": "S\u00e3o Paulo",
         "actionId": "icare_0057",
         "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
-        "actionPriority": 9
-    },
-    {
-        "locode": "BR SOR",
-        "cityName": "Sorocaba",
-        "region": "SP",
-        "regionName": "S\u00e3o Paulo",
-        "actionId": "icare_0044",
-        "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
-        "actionPriority": 10
+        "actionPriority": 7
     },
     {
         "locode": "BR SOR",
@@ -96,7 +69,16 @@
         "regionName": "S\u00e3o Paulo",
         "actionId": "icare_0042",
         "actionName": "Encourage renewable energy policies at the municipal level",
-        "actionPriority": 11
+        "actionPriority": 8
+    },
+    {
+        "locode": "BR SOR",
+        "cityName": "Sorocaba",
+        "region": "SP",
+        "regionName": "S\u00e3o Paulo",
+        "actionId": "icare_0025",
+        "actionName": "Promote energy-efficient low-income housing",
+        "actionPriority": 9
     },
     {
         "locode": "BR SOR",
@@ -105,70 +87,16 @@
         "regionName": "S\u00e3o Paulo",
         "actionId": "icare_0068",
         "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
-        "actionPriority": 12
+        "actionPriority": 10
     },
     {
         "locode": "BR SOR",
         "cityName": "Sorocaba",
         "region": "SP",
         "regionName": "S\u00e3o Paulo",
-        "actionId": "icare_0131",
-        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
-        "actionPriority": 13
-    },
-    {
-        "locode": "BR SOR",
-        "cityName": "Sorocaba",
-        "region": "SP",
-        "regionName": "S\u00e3o Paulo",
-        "actionId": "icare_0136",
-        "actionName": "Support the Implementation of Ecological Fiscal Incentives",
-        "actionPriority": 14
-    },
-    {
-        "locode": "BR SOR",
-        "cityName": "Sorocaba",
-        "region": "SP",
-        "regionName": "S\u00e3o Paulo",
-        "actionId": "icare_0133",
-        "actionName": "Promote Urban Reforestation and Green Corridors",
-        "actionPriority": 15
-    },
-    {
-        "locode": "BR SOR",
-        "cityName": "Sorocaba",
-        "region": "SP",
-        "regionName": "S\u00e3o Paulo",
-        "actionId": "icare_0099",
-        "actionName": "Support Agroecological Certification Programs",
-        "actionPriority": 16
-    },
-    {
-        "locode": "BR SOR",
-        "cityName": "Sorocaba",
-        "region": "SP",
-        "regionName": "S\u00e3o Paulo",
-        "actionId": "icare_0027",
-        "actionName": "Create financing programs for local renewable energy projects",
-        "actionPriority": 17
-    },
-    {
-        "locode": "BR SOR",
-        "cityName": "Sorocaba",
-        "region": "SP",
-        "regionName": "S\u00e3o Paulo",
-        "actionId": "icare_0132",
-        "actionName": "Encourage Local Agroecological Production and Short Supply Chains",
-        "actionPriority": 18
-    },
-    {
-        "locode": "BR SOR",
-        "cityName": "Sorocaba",
-        "region": "SP",
-        "regionName": "S\u00e3o Paulo",
-        "actionId": "ipcc_0016",
-        "actionName": "Eco-driving",
-        "actionPriority": 19
+        "actionId": "icare_0090",
+        "actionName": "Adoption of electric drones for last-mile deliveries.",
+        "actionPriority": 11
     },
     {
         "locode": "BR SOR",
@@ -177,6 +105,78 @@
         "regionName": "S\u00e3o Paulo",
         "actionId": "icare_0117",
         "actionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
+        "actionPriority": 12
+    },
+    {
+        "locode": "BR SOR",
+        "cityName": "Sorocaba",
+        "region": "SP",
+        "regionName": "S\u00e3o Paulo",
+        "actionId": "icare_0044",
+        "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
+        "actionPriority": 13
+    },
+    {
+        "locode": "BR SOR",
+        "cityName": "Sorocaba",
+        "region": "SP",
+        "regionName": "S\u00e3o Paulo",
+        "actionId": "c40_0033",
+        "actionName": "15/30-Minute Areas",
+        "actionPriority": 14
+    },
+    {
+        "locode": "BR SOR",
+        "cityName": "Sorocaba",
+        "region": "SP",
+        "regionName": "S\u00e3o Paulo",
+        "actionId": "icare_0131",
+        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
+        "actionPriority": 15
+    },
+    {
+        "locode": "BR SOR",
+        "cityName": "Sorocaba",
+        "region": "SP",
+        "regionName": "S\u00e3o Paulo",
+        "actionId": "icare_0133",
+        "actionName": "Promote Urban Reforestation and Green Corridors",
+        "actionPriority": 16
+    },
+    {
+        "locode": "BR SOR",
+        "cityName": "Sorocaba",
+        "region": "SP",
+        "regionName": "S\u00e3o Paulo",
+        "actionId": "icare_0099",
+        "actionName": "Support Agroecological Certification Programs",
+        "actionPriority": 17
+    },
+    {
+        "locode": "BR SOR",
+        "cityName": "Sorocaba",
+        "region": "SP",
+        "regionName": "S\u00e3o Paulo",
+        "actionId": "icare_0102",
+        "actionName": "Promote Sustainable Agricultural Practices",
+        "actionPriority": 18
+    },
+    {
+        "locode": "BR SOR",
+        "cityName": "Sorocaba",
+        "region": "SP",
+        "regionName": "S\u00e3o Paulo",
+        "actionId": "icare_0132",
+        "actionName": "Encourage Local Agroecological Production and Short Supply Chains",
+        "actionPriority": 19
+    },
+    {
+        "locode": "BR SOR",
+        "cityName": "Sorocaba",
+        "region": "SP",
+        "regionName": "S\u00e3o Paulo",
+        "actionId": "icare_0136",
+        "actionName": "Support the Implementation of Ecological Fiscal Incentives",
         "actionPriority": 20
     }
 ]

@@ -4,9 +4,18 @@
         "cityName": "Ilh\u00e9us",
         "region": "BA",
         "regionName": "Bahia",
+        "actionId": "icare_0118",
+        "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
+        "actionPriority": 1
+    },
+    {
+        "locode": "BR IOS",
+        "cityName": "Ilh\u00e9us",
+        "region": "BA",
+        "regionName": "Bahia",
         "actionId": "icare_0005",
         "actionName": "Create credit lines for residential and community wind energy projects",
-        "actionPriority": 1
+        "actionPriority": 2
     },
     {
         "locode": "BR IOS",
@@ -15,25 +24,7 @@
         "regionName": "Bahia",
         "actionId": "icare_0121",
         "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
-        "actionPriority": 2
-    },
-    {
-        "locode": "BR IOS",
-        "cityName": "Ilh\u00e9us",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0118",
-        "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
         "actionPriority": 3
-    },
-    {
-        "locode": "BR IOS",
-        "cityName": "Ilh\u00e9us",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0088",
-        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
-        "actionPriority": 4
     },
     {
         "locode": "BR IOS",
@@ -42,7 +33,7 @@
         "regionName": "Bahia",
         "actionId": "icare_0057",
         "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
-        "actionPriority": 5
+        "actionPriority": 4
     },
     {
         "locode": "BR IOS",
@@ -51,6 +42,15 @@
         "regionName": "Bahia",
         "actionId": "icare_0094",
         "actionName": "Adoption of biomethane in public fleets.",
+        "actionPriority": 5
+    },
+    {
+        "locode": "BR IOS",
+        "cityName": "Ilh\u00e9us",
+        "region": "BA",
+        "regionName": "Bahia",
+        "actionId": "icare_0088",
+        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
         "actionPriority": 6
     },
     {
@@ -85,9 +85,18 @@
         "cityName": "Ilh\u00e9us",
         "region": "BA",
         "regionName": "Bahia",
+        "actionId": "icare_0133",
+        "actionName": "Promote Urban Reforestation and Green Corridors",
+        "actionPriority": 10
+    },
+    {
+        "locode": "BR IOS",
+        "cityName": "Ilh\u00e9us",
+        "region": "BA",
+        "regionName": "Bahia",
         "actionId": "icare_0044",
         "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
-        "actionPriority": 10
+        "actionPriority": 11
     },
     {
         "locode": "BR IOS",
@@ -96,52 +105,7 @@
         "regionName": "Bahia",
         "actionId": "icare_0068",
         "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
-        "actionPriority": 11
-    },
-    {
-        "locode": "BR IOS",
-        "cityName": "Ilh\u00e9us",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0131",
-        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
         "actionPriority": 12
-    },
-    {
-        "locode": "BR IOS",
-        "cityName": "Ilh\u00e9us",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0133",
-        "actionName": "Promote Urban Reforestation and Green Corridors",
-        "actionPriority": 13
-    },
-    {
-        "locode": "BR IOS",
-        "cityName": "Ilh\u00e9us",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0132",
-        "actionName": "Encourage Local Agroecological Production and Short Supply Chains",
-        "actionPriority": 14
-    },
-    {
-        "locode": "BR IOS",
-        "cityName": "Ilh\u00e9us",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "c40_0033",
-        "actionName": "15/30-Minute Areas",
-        "actionPriority": 15
-    },
-    {
-        "locode": "BR IOS",
-        "cityName": "Ilh\u00e9us",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0099",
-        "actionName": "Support Agroecological Certification Programs",
-        "actionPriority": 16
     },
     {
         "locode": "BR IOS",
@@ -150,16 +114,16 @@
         "regionName": "Bahia",
         "actionId": "icare_0117",
         "actionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
-        "actionPriority": 17
+        "actionPriority": 13
     },
     {
         "locode": "BR IOS",
         "cityName": "Ilh\u00e9us",
         "region": "BA",
         "regionName": "Bahia",
-        "actionId": "icare_0139",
-        "actionName": "Implementation of urban toll.",
-        "actionPriority": 18
+        "actionId": "c40_0033",
+        "actionName": "15/30-Minute Areas",
+        "actionPriority": 14
     },
     {
         "locode": "BR IOS",
@@ -168,7 +132,16 @@
         "regionName": "Bahia",
         "actionId": "icare_0042",
         "actionName": "Encourage renewable energy policies at the municipal level",
-        "actionPriority": 19
+        "actionPriority": 15
+    },
+    {
+        "locode": "BR IOS",
+        "cityName": "Ilh\u00e9us",
+        "region": "BA",
+        "regionName": "Bahia",
+        "actionId": "icare_0131",
+        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
+        "actionPriority": 16
     },
     {
         "locode": "BR IOS",
@@ -177,6 +150,33 @@
         "regionName": "Bahia",
         "actionId": "icare_0136",
         "actionName": "Support the Implementation of Ecological Fiscal Incentives",
+        "actionPriority": 17
+    },
+    {
+        "locode": "BR IOS",
+        "cityName": "Ilh\u00e9us",
+        "region": "BA",
+        "regionName": "Bahia",
+        "actionId": "icare_0099",
+        "actionName": "Support Agroecological Certification Programs",
+        "actionPriority": 18
+    },
+    {
+        "locode": "BR IOS",
+        "cityName": "Ilh\u00e9us",
+        "region": "BA",
+        "regionName": "Bahia",
+        "actionId": "ipcc_0016",
+        "actionName": "Eco-driving",
+        "actionPriority": 19
+    },
+    {
+        "locode": "BR IOS",
+        "cityName": "Ilh\u00e9us",
+        "region": "BA",
+        "regionName": "Bahia",
+        "actionId": "icare_0027",
+        "actionName": "Create financing programs for local renewable energy projects",
         "actionPriority": 20
     }
 ]

@@ -124,9 +124,69 @@
         "cityName": "Ji-Paran\u00e1",
         "region": "RO",
         "regionName": "Rond\u00f4nia",
+        "actionId": "icare_0133",
+        "actionName": "Promote Urban Reforestation and Green Corridors",
+        "actionPriority": 3,
+        "action": {
+            "ActionID": "icare_0133",
+            "ActionName": "Promote Urban Reforestation and Green Corridors",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "land"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Increase urban tree coverage to mitigate the urban heat island effect and enhance biodiversity.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 1,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 1,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "80-100"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Identification of priority areas and selection of native, climate-resilient species for tree planting.",
+                "Partnerships with local organizations and nurseries, and allocation of resources for planting and maintenance.",
+                "Community engagement to ensure long-term care and support."
+            ],
+            "KeyPerformanceIndicators": [
+                "Increase in urban tree canopy cover (%)",
+                "Total length of green corridors created or restored (kilometers)",
+                "Reduction in urban heat island effect temperatures (\u00b0C)"
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR JPR",
+        "cityName": "Ji-Paran\u00e1",
+        "region": "RO",
+        "regionName": "Rond\u00f4nia",
         "actionId": "icare_0121",
         "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
-        "actionPriority": 3,
+        "actionPriority": 4,
         "action": {
             "ActionID": "icare_0121",
             "ActionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
@@ -186,7 +246,7 @@
         "regionName": "Rond\u00f4nia",
         "actionId": "icare_0092",
         "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
-        "actionPriority": 4,
+        "actionPriority": 5,
         "action": {
             "ActionID": "icare_0092",
             "ActionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
@@ -244,189 +304,9 @@
         "cityName": "Ji-Paran\u00e1",
         "region": "RO",
         "regionName": "Rond\u00f4nia",
-        "actionId": "icare_0133",
-        "actionName": "Promote Urban Reforestation and Green Corridors",
-        "actionPriority": 5,
-        "action": {
-            "ActionID": "icare_0133",
-            "ActionName": "Promote Urban Reforestation and Green Corridors",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "land"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Increase urban tree coverage to mitigate the urban heat island effect and enhance biodiversity.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 1,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "80-100"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Identification of priority areas and selection of native, climate-resilient species for tree planting.",
-                "Partnerships with local organizations and nurseries, and allocation of resources for planting and maintenance.",
-                "Community engagement to ensure long-term care and support."
-            ],
-            "KeyPerformanceIndicators": [
-                "Increase in urban tree canopy cover (%)",
-                "Total length of green corridors created or restored (kilometers)",
-                "Reduction in urban heat island effect temperatures (\u00b0C)"
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR JPR",
-        "cityName": "Ji-Paran\u00e1",
-        "region": "RO",
-        "regionName": "Rond\u00f4nia",
-        "actionId": "icare_0025",
-        "actionName": "Promote energy-efficient low-income housing",
-        "actionPriority": 6,
-        "action": {
-            "ActionID": "icare_0025",
-            "ActionName": "Promote energy-efficient low-income housing",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "stationary_energy"
-            ],
-            "Subsector": [
-                "residential_buildings"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Develop and support housing projects that incorporate energy-efficient designs and technologies, reducing energy costs for low-income households.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 2,
-                "housing": 2,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": "60-79",
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Availability of funding or subsidies to support the development of energy-efficient housing for low-income households",
-                "Collaboration with architects, engineers, and contractors to design and implement energy-efficient technologies in housing projects",
-                "Development of policies and regulations to incentivize energy-efficient housing solutions and ensure affordability for low-income communities"
-            ],
-            "KeyPerformanceIndicators": [
-                "Number of energy-efficient housing units built or retrofitted.",
-                "Reduction in household energy consumption (kWh).",
-                "Decrease in energy bills for low-income households (USD)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR JPR",
-        "cityName": "Ji-Paran\u00e1",
-        "region": "RO",
-        "regionName": "Rond\u00f4nia",
-        "actionId": "icare_0094",
-        "actionName": "Adoption of biomethane in public fleets.",
-        "actionPriority": 7,
-        "action": {
-            "ActionID": "icare_0094",
-            "ActionName": "Adoption of biomethane in public fleets.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Use biomethane produced from urban and agro-industrial waste to fuel public buses and trucks, reducing greenhouse gas emissions in municipal fleets",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 1,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Development of infrastructure for the production, processing, and distribution of biomethane from urban and agro-industrial waste.",
-                "Retrofitting or acquisition of public buses and trucks capable of using biomethane as a fuel source.",
-                "Establishment of policies and financial incentives to support biomethane production and its integration into municipal fleets."
-            ],
-            "KeyPerformanceIndicators": [
-                "Cost savings in fleet operation due to biomethane use (USD/year).",
-                "Increase in biomethane production capacity (%).",
-                "Percentage of biomethane sourced locally versus imported."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR JPR",
-        "cityName": "Ji-Paran\u00e1",
-        "region": "RO",
-        "regionName": "Rond\u00f4nia",
         "actionId": "icare_0088",
         "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
-        "actionPriority": 8,
+        "actionPriority": 6,
         "action": {
             "ActionID": "icare_0088",
             "ActionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
@@ -486,7 +366,7 @@
         "regionName": "Rond\u00f4nia",
         "actionId": "icare_0090",
         "actionName": "Adoption of electric drones for last-mile deliveries.",
-        "actionPriority": 9,
+        "actionPriority": 7,
         "action": {
             "ActionID": "icare_0090",
             "ActionName": "Adoption of electric drones for last-mile deliveries.",
@@ -544,9 +424,69 @@
         "cityName": "Ji-Paran\u00e1",
         "region": "RO",
         "regionName": "Rond\u00f4nia",
+        "actionId": "icare_0094",
+        "actionName": "Adoption of biomethane in public fleets.",
+        "actionPriority": 8,
+        "action": {
+            "ActionID": "icare_0094",
+            "ActionName": "Adoption of biomethane in public fleets.",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "on-road"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Use biomethane produced from urban and agro-industrial waste to fuel public buses and trucks, reducing greenhouse gas emissions in municipal fleets",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 1,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 1,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "60-79",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Development of infrastructure for the production, processing, and distribution of biomethane from urban and agro-industrial waste.",
+                "Retrofitting or acquisition of public buses and trucks capable of using biomethane as a fuel source.",
+                "Establishment of policies and financial incentives to support biomethane production and its integration into municipal fleets."
+            ],
+            "KeyPerformanceIndicators": [
+                "Cost savings in fleet operation due to biomethane use (USD/year).",
+                "Increase in biomethane production capacity (%).",
+                "Percentage of biomethane sourced locally versus imported."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR JPR",
+        "cityName": "Ji-Paran\u00e1",
+        "region": "RO",
+        "regionName": "Rond\u00f4nia",
         "actionId": "icare_0057",
         "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
-        "actionPriority": 10,
+        "actionPriority": 9,
         "action": {
             "ActionID": "icare_0057",
             "ActionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
@@ -606,7 +546,7 @@
         "regionName": "Rond\u00f4nia",
         "actionId": "icare_0068",
         "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
-        "actionPriority": 11,
+        "actionPriority": 10,
         "action": {
             "ActionID": "icare_0068",
             "ActionName": "Deploy on-demand transport systems with 100% electric fleets.",
@@ -653,6 +593,66 @@
                 "Number of active users of the on-demand electric fleet system.",
                 "Percentage of urban transport demand met by on-demand systems.",
                 "Reduction in noise pollution levels in urban areas"
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR JPR",
+        "cityName": "Ji-Paran\u00e1",
+        "region": "RO",
+        "regionName": "Rond\u00f4nia",
+        "actionId": "icare_0025",
+        "actionName": "Promote energy-efficient low-income housing",
+        "actionPriority": 11,
+        "action": {
+            "ActionID": "icare_0025",
+            "ActionName": "Promote energy-efficient low-income housing",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "stationary_energy"
+            ],
+            "Subsector": [
+                "residential_buildings"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Develop and support housing projects that incorporate energy-efficient designs and technologies, reducing energy costs for low-income households.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 2,
+                "housing": 2,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": "60-79",
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Availability of funding or subsidies to support the development of energy-efficient housing for low-income households",
+                "Collaboration with architects, engineers, and contractors to design and implement energy-efficient technologies in housing projects",
+                "Development of policies and regulations to incentivize energy-efficient housing solutions and ensure affordability for low-income communities"
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of energy-efficient housing units built or retrofitted.",
+                "Reduction in household energy consumption (kWh).",
+                "Decrease in energy bills for low-income households (USD)."
             ],
             "PowersAndMandates": [
                 "local"
@@ -784,69 +784,9 @@
         "cityName": "Ji-Paran\u00e1",
         "region": "RO",
         "regionName": "Rond\u00f4nia",
-        "actionId": "icare_0084",
-        "actionName": "Create Incentives for Agroforestry Practices in Livestock Systems",
-        "actionPriority": 14,
-        "action": {
-            "ActionID": "icare_0084",
-            "ActionName": "Create Incentives for Agroforestry Practices in Livestock Systems",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Create financial and technical incentives for integrating agroforestry practices into livestock systems, promoting carbon capture, soil protection, and biodiversity improvement.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "60-79"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Development of financial incentive programs, such as subsidies or tax breaks, to support farmers in integrating agroforestry with livestock systems.",
-                "Provision of technical assistance and training to farmers on best practices for agroforestry integration into livestock operations.",
-                "Collaboration with agricultural and environmental organizations to monitor and assess the impacts of agroforestry practices on carbon capture, soil health, and biodiversity."
-            ],
-            "KeyPerformanceIndicators": [
-                "Number of financial incentives provided to integrate agroforestry in livestock systems.",
-                "Increase in soil quality and vegetation cover in managed properties (%).",
-                "Growth in biodiversity in agroforestry areas (% of identified species)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR JPR",
-        "cityName": "Ji-Paran\u00e1",
-        "region": "RO",
-        "regionName": "Rond\u00f4nia",
         "actionId": "icare_0117",
         "actionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
-        "actionPriority": 15,
+        "actionPriority": 14,
         "action": {
             "ActionID": "icare_0117",
             "ActionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
@@ -904,12 +844,80 @@
         "cityName": "Ji-Paran\u00e1",
         "region": "RO",
         "regionName": "Rond\u00f4nia",
-        "actionId": "icare_0096",
-        "actionName": "Promote Organic Farming",
+        "actionId": "c40_0033",
+        "actionName": "15/30-Minute Areas",
+        "actionPriority": 15,
+        "action": {
+            "ActionID": "c40_0033",
+            "ActionName": "15/30-Minute Areas",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "all"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "\"15/30-Minute Areas\" refer to the development of complete neighborhoods where essential services, amenities, and public transport are easily accessible within a 15 or 30-minute walk or bike ride. This urban planning approach promotes sustainability by reducing the need for long-distance travel and fostering community resilience.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 2,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": "The \"15/30-Minute Areas\" climate action promotes equity and inclusion by ensuring that essential services and amenities are accessible to all community members, particularly benefiting vulnerable or underserved populations who may lack reliable transportation. By designing neighborhoods where key resources are within a short walking or biking distance, this approach reduces barriers to access for low-income individuals, the elderly, and those with disabilities. \n \n Additionally, the focus on public transport integration enhances mobility options for those who may not own a vehicle, further supporting equitable access to jobs, education, and healthcare. The development of complete neighborhoods fosters a sense of community and belonging, encouraging social interactions among diverse groups and promoting inclusivity. Overall, this urban planning strategy actively addresses the needs of marginalized communities, ensuring they are not left behind in the transition to sustainable living.",
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "0-19",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Availability of essential services and amenities within walking or biking distance",
+                "Investment in public transport infrastructure",
+                "Community engagement and support for local planning initiatives",
+                "Zoning regulations that promote mixed-use development",
+                "Sustainable urban design principles that prioritize walkability and bikeability",
+                "Collaboration between local government, urban planners, and residents"
+            ],
+            "KeyPerformanceIndicators": [
+                "Percentage of residents within 15/30-minute reach of essential services",
+                "Reduction in average commuting distance",
+                "Increase in active transportation (walking/biking) rates",
+                "Public transport usage rates",
+                "Reduction in greenhouse gas emissions from transportation",
+                "Community satisfaction with local amenities",
+                "Number of new businesses established within 15/30-minute areas",
+                "Increase in green spaces per capita",
+                "Frequency of community events and engagement activities",
+                "Change in property values in 15/30-minute areas"
+            ],
+            "PowersAndMandates": null
+        }
+    },
+    {
+        "locode": "BR JPR",
+        "cityName": "Ji-Paran\u00e1",
+        "region": "RO",
+        "regionName": "Rond\u00f4nia",
+        "actionId": "icare_0084",
+        "actionName": "Create Incentives for Agroforestry Practices in Livestock Systems",
         "actionPriority": 16,
         "action": {
-            "ActionID": "icare_0096",
-            "ActionName": "Promote Organic Farming",
+            "ActionID": "icare_0084",
+            "ActionName": "Create Incentives for Agroforestry Practices in Livestock Systems",
             "ActionType": [
                 "mitigation"
             ],
@@ -923,7 +931,7 @@
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "Description": "Encourage the adoption of organic farming practices that avoid the use of chemicals and contribute to soil health and carbon capture.",
+            "Description": "Create financial and technical incentives for integrating agroforestry practices into livestock systems, promoting carbon capture, soil protection, and biodiversity improvement.",
             "CoBenefits": {
                 "air_quality": 2,
                 "water_quality": 2,
@@ -945,14 +953,14 @@
             "CostInvestmentNeeded": "medium",
             "TimelineForImplementation": "5-10 years",
             "Dependencies": [
-                "Provision of financial incentives, subsidies, or grants to support the transition to organic farming practices.",
-                "Development of training and support networks to educate farmers on organic farming methods and their benefits.",
-                "Establishment of certification systems and market access strategies to ensure the economic viability of organic products."
+                "Development of financial incentive programs, such as subsidies or tax breaks, to support farmers in integrating agroforestry with livestock systems.",
+                "Provision of technical assistance and training to farmers on best practices for agroforestry integration into livestock operations.",
+                "Collaboration with agricultural and environmental organizations to monitor and assess the impacts of agroforestry practices on carbon capture, soil health, and biodiversity."
             ],
             "KeyPerformanceIndicators": [
-                "Percentage of agricultural land under organic farming practices (%).",
-                "Increase in soil organic carbon content (tons of carbon per hectare).",
-                "Reduction in the use of chemical fertilizers and pesticides (kilograms/hectare/year)."
+                "Number of financial incentives provided to integrate agroforestry in livestock systems.",
+                "Increase in soil quality and vegetation cover in managed properties (%).",
+                "Growth in biodiversity in agroforestry areas (% of identified species)."
             ],
             "PowersAndMandates": [
                 "local"
@@ -1024,12 +1032,12 @@
         "cityName": "Ji-Paran\u00e1",
         "region": "RO",
         "regionName": "Rond\u00f4nia",
-        "actionId": "icare_0100",
-        "actionName": "Support Regenerative Agriculture Practices",
+        "actionId": "icare_0136",
+        "actionName": "Support the Implementation of Ecological Fiscal Incentives",
         "actionPriority": 18,
         "action": {
-            "ActionID": "icare_0100",
-            "ActionName": "Support Regenerative Agriculture Practices",
+            "ActionID": "icare_0136",
+            "ActionName": "Support the Implementation of Ecological Fiscal Incentives",
             "ActionType": [
                 "mitigation"
             ],
@@ -1038,15 +1046,15 @@
                 "afolu"
             ],
             "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
+                "land"
             ],
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "Description": "Support regenerative agricultural practices that focus on restoring soil health and reducing carbon emissions.",
+            "Description": "Encourage the application of ecological taxes and incentives to promote environmental conservation.",
             "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 2,
+                "air_quality": 1,
+                "water_quality": 1,
                 "habitat": 2,
                 "cost_of_living": 1,
                 "housing": 0,
@@ -1059,92 +1067,24 @@
                 "transportation": null,
                 "waste": null,
                 "ippu": null,
-                "afolu": "60-79"
+                "afolu": "20-39"
             },
             "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Development of training programs and resources to educate farmers on regenerative agricultural techniques, such as cover cropping and reduced tillage.",
-                "Implementation of financial incentives or subsidies to support the adoption of regenerative practices.",
-                "Collaboration with agricultural research institutions to monitor and document the effectiveness of regenerative practices in carbon sequestration and soil health improvement."
-            ],
-            "KeyPerformanceIndicators": [
-                "Increase in soil organic carbon levels (tons/hectare).",
-                "Reduction in water usage per hectare in agricultural production (%).",
-                "Number of regenerative agriculture pilot projects implemented."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR JPR",
-        "cityName": "Ji-Paran\u00e1",
-        "region": "RO",
-        "regionName": "Rond\u00f4nia",
-        "actionId": "c40_0033",
-        "actionName": "15/30-Minute Areas",
-        "actionPriority": 19,
-        "action": {
-            "ActionID": "c40_0033",
-            "ActionName": "15/30-Minute Areas",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "all"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "\"15/30-Minute Areas\" refer to the development of complete neighborhoods where essential services, amenities, and public transport are easily accessible within a 15 or 30-minute walk or bike ride. This urban planning approach promotes sustainability by reducing the need for long-distance travel and fostering community resilience.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "The \"15/30-Minute Areas\" climate action promotes equity and inclusion by ensuring that essential services and amenities are accessible to all community members, particularly benefiting vulnerable or underserved populations who may lack reliable transportation. By designing neighborhoods where key resources are within a short walking or biking distance, this approach reduces barriers to access for low-income individuals, the elderly, and those with disabilities. \n \n Additionally, the focus on public transport integration enhances mobility options for those who may not own a vehicle, further supporting equitable access to jobs, education, and healthcare. The development of complete neighborhoods fosters a sense of community and belonging, encouraging social interactions among diverse groups and promoting inclusivity. Overall, this urban planning strategy actively addresses the needs of marginalized communities, ensuring they are not left behind in the transition to sustainable living.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "0-19",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
+            "CostInvestmentNeeded": "low",
             "TimelineForImplementation": "<5 years",
             "Dependencies": [
-                "Availability of essential services and amenities within walking or biking distance",
-                "Investment in public transport infrastructure",
-                "Community engagement and support for local planning initiatives",
-                "Zoning regulations that promote mixed-use development",
-                "Sustainable urban design principles that prioritize walkability and bikeability",
-                "Collaboration between local government, urban planners, and residents"
+                "Establish a clear regulatory framework with fair tax rates and incentives for sustainability.",
+                "Implement effective monitoring systems to track compliance and measure impact.",
+                "Promote public awareness and foster collaboration between governments, businesses, and communities."
             ],
             "KeyPerformanceIndicators": [
-                "Percentage of residents within 15/30-minute reach of essential services",
-                "Reduction in average commuting distance",
-                "Increase in active transportation (walking/biking) rates",
-                "Public transport usage rates",
-                "Reduction in greenhouse gas emissions from transportation",
-                "Community satisfaction with local amenities",
-                "Number of new businesses established within 15/30-minute areas",
-                "Increase in green spaces per capita",
-                "Frequency of community events and engagement activities",
-                "Change in property values in 15/30-minute areas"
+                "Number of municipalities that have adopted environmental tax incentives.",
+                "Percentage of tax revenue spent on sustainable practices.",
+                "Acreage or number of properties benefiting from conservation practices as a result of incentives."
             ],
-            "PowersAndMandates": null
+            "PowersAndMandates": [
+                "state"
+            ]
         }
     },
     {
@@ -1154,7 +1094,7 @@
         "regionName": "Rond\u00f4nia",
         "actionId": "icare_0139",
         "actionName": "Implementation of urban toll.",
-        "actionPriority": 20,
+        "actionPriority": 19,
         "action": {
             "ActionID": "icare_0139",
             "ActionName": "Implementation of urban toll.",
@@ -1200,6 +1140,66 @@
             "KeyPerformanceIndicators": [
                 "Reduction of CO\u2082 emissions from urban road transport (tCO\u2082e/year).",
                 "Revenue generated by the implementation of the urban congestion charge (R$)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR JPR",
+        "cityName": "Ji-Paran\u00e1",
+        "region": "RO",
+        "regionName": "Rond\u00f4nia",
+        "actionId": "icare_0096",
+        "actionName": "Promote Organic Farming",
+        "actionPriority": 20,
+        "action": {
+            "ActionID": "icare_0096",
+            "ActionName": "Promote Organic Farming",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "agriculture_forestry_and_fishing_activities"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Encourage the adoption of organic farming practices that avoid the use of chemicals and contribute to soil health and carbon capture.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "60-79"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Provision of financial incentives, subsidies, or grants to support the transition to organic farming practices.",
+                "Development of training and support networks to educate farmers on organic farming methods and their benefits.",
+                "Establishment of certification systems and market access strategies to ensure the economic viability of organic products."
+            ],
+            "KeyPerformanceIndicators": [
+                "Percentage of agricultural land under organic farming practices (%).",
+                "Increase in soil organic carbon content (tons of carbon per hectare).",
+                "Reduction in the use of chemical fertilizers and pesticides (kilograms/hectare/year)."
             ],
             "PowersAndMandates": [
                 "local"

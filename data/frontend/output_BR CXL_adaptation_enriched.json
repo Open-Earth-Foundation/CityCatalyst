@@ -117,35 +117,33 @@
         "cityName": "Caxias do Sul",
         "region": "RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0162",
-        "actionName": "Strengthen programs for control and conservation of protected areas",
+        "actionId": "icare_0181",
+        "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
         "actionPriority": 3,
         "explanation": "Ranked #3 by tournament ranking algorithm",
         "action": {
-            "ActionID": "icare_0162",
-            "ActionName": "Strengthen programs for control and conservation of protected areas",
+            "ActionID": "icare_0181",
+            "ActionName": "Relocation and Environmental Restoration in Vulnerable Areas",
             "ActionType": [
                 "adaptation"
             ],
             "Hazard": [
-                "floods",
                 "landslides",
-                "heatwaves",
-                "diseases"
+                "floods"
             ],
             "Sector": null,
             "Subsector": null,
             "PrimaryPurpose": [
                 "climate_resilience"
             ],
-            "Description": "This action focuses on implementing a series of integrated strategies to enhance environmental conservation and maximize its benefits, such as expanding protected areas, developing management plans for conservation units, and training ecotourism guides to strengthen sustainable tourism.",
+            "Description": "A comprehensive project addressing the socio-environmental vulnerability of an informal settlement. It includes relocating residents from flood-prone areas, restoring the environment, and providing infrastructure and social services.",
             "CoBenefits": {
-                "air_quality": 2,
+                "air_quality": 1,
                 "water_quality": 2,
                 "habitat": 2,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
+                "cost_of_living": 1,
+                "housing": 2,
+                "mobility": 1,
                 "stakeholder_engagement": 1
             },
             "EquityAndInclusionConsiderations": null,
@@ -154,14 +152,14 @@
             "CostInvestmentNeeded": "medium",
             "TimelineForImplementation": "5-10 years",
             "Dependencies": [
-                "Expansion of protected areas to enhance environmental conservation.",
-                "Development of management plans for conservation units.",
-                "Training of ecotourism guides to promote sustainable tourism."
+                "Adequate funding",
+                "Inter-agency coordination",
+                "Land tenure security"
             ],
             "KeyPerformanceIndicators": [
-                "Percentage increase in area of protected regions (%).",
-                "Reduction in deforestation rates in protected areas annually (%).",
-                "Number of conservation programs strengthened annually."
+                "Number of households relocated.",
+                "Environmental restoration progress.",
+                "Flood risk reduction."
             ],
             "PowersAndMandates": [
                 "state"
@@ -280,64 +278,10 @@
         "cityName": "Caxias do Sul",
         "region": "RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0181",
-        "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
-        "actionPriority": 6,
-        "explanation": "Ranked #6 by tournament ranking algorithm",
-        "action": {
-            "ActionID": "icare_0181",
-            "ActionName": "Relocation and Environmental Restoration in Vulnerable Areas",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "landslides",
-                "floods"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "A comprehensive project addressing the socio-environmental vulnerability of an informal settlement. It includes relocating residents from flood-prone areas, restoring the environment, and providing infrastructure and social services.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 2,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Adequate funding",
-                "Inter-agency coordination",
-                "Land tenure security"
-            ],
-            "KeyPerformanceIndicators": [
-                "Number of households relocated.",
-                "Environmental restoration progress.",
-                "Flood risk reduction."
-            ],
-            "PowersAndMandates": [
-                "state"
-            ]
-        }
-    },
-    {
-        "locode": "BR CXL",
-        "cityName": "Caxias do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
         "actionId": "icare_0151",
         "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
-        "actionPriority": 7,
-        "explanation": "Ranked #7 by tournament ranking algorithm",
+        "actionPriority": 6,
+        "explanation": "Ranked #6 by tournament ranking algorithm",
         "action": {
             "ActionID": "icare_0151",
             "ActionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
@@ -391,10 +335,125 @@
         "cityName": "Caxias do Sul",
         "region": "RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0175",
-        "actionName": "Recovery and preservation of green areas",
+        "actionId": "icare_0169",
+        "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
+        "actionPriority": 7,
+        "explanation": "Ranked #7 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "icare_0169",
+            "ActionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "droughts",
+                "heatwaves",
+                "diseases",
+                "landslides",
+                "floods",
+                "wildfires",
+                "sea-level-rise",
+                "storms"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "This action focuses on preparing the municipality to respond to extreme events, aiming to provide a rapid response that minimizes the impacts on the population.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Development of a comprehensive emergency response plan that includes coordination between local authorities, emergency services, and community organizations",
+                "Investment in early warning systems and infrastructure to ensure timely and effective responses to extreme events",
+                "Training and capacity-building for local responders and communities to enhance preparedness and resilience to extreme events"
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of emergency response partnerships established.",
+                "Average response time during extreme weather events (hours).",
+                "Percentage reduction in casualties and damages during extreme weather events annually (%)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR CXL",
+        "cityName": "Caxias do Sul",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0156",
+        "actionName": "Implementation of urban gardens",
         "actionPriority": 8,
         "explanation": "Ranked #8 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "icare_0156",
+            "ActionName": "Implementation of urban gardens",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "heatwaves",
+                "landslides",
+                "floods"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Identify and assess the feasibility of suitable areas for the installation of urban gardens and ensure that the sites chosen meet the expectations of the community.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 0,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 1,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "medium",
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Ensure availability of detailed land-use maps and urban planning data.",
+                "Engage with local communities to understand their needs and expectations.",
+                "Evaluate soil quality, water availability, and form partnerships to support the establishment and maintenance of gardens."
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of urban gardens created.",
+                "Amount of locally produced food (kg/year).",
+                "Number of direct beneficiaries."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR CXL",
+        "cityName": "Caxias do Sul",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0175",
+        "actionName": "Recovery and preservation of green areas",
+        "actionPriority": 9,
+        "explanation": "Ranked #9 by tournament ranking algorithm",
         "action": {
             "ActionID": "icare_0175",
             "ActionName": "Recovery and preservation of green areas",
@@ -447,8 +506,8 @@
         "regionName": "Rio Grande do Sul",
         "actionId": "ipcc_0088",
         "actionName": "Building codes",
-        "actionPriority": 9,
-        "explanation": "Ranked #9 by tournament ranking algorithm",
+        "actionPriority": 10,
+        "explanation": "Ranked #10 by tournament ranking algorithm",
         "action": {
             "ActionID": "ipcc_0088",
             "ActionName": "Building codes",
@@ -499,19 +558,247 @@
         "cityName": "Caxias do Sul",
         "region": "RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0156",
-        "actionName": "Implementation of urban gardens",
-        "actionPriority": 10,
-        "explanation": "Ranked #10 by tournament ranking algorithm",
+        "actionId": "ipcc_0097",
+        "actionName": "Food storage/distribution improvements",
+        "actionPriority": 11,
+        "explanation": "Ranked #11 by tournament ranking algorithm",
         "action": {
-            "ActionID": "icare_0156",
-            "ActionName": "Implementation of urban gardens",
+            "ActionID": "ipcc_0097",
+            "ActionName": "Food storage/distribution improvements",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "droughts",
+                "floods",
+                "storms",
+                "heatwaves"
+            ],
+            "Sector": [
+                "food_security",
+                "road_infrastructure"
+            ],
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Enhancing food storage and distribution systems by improving transportation infrastructure, optimizing trade networks, and shortening supply chains to ensure local food availability and resilience to climate impacts. This action also includes increasing the capacity of local food storage facilities to reduce post-harvest losses, addressing inefficiencies in logistics, and bolstering infrastructure for perishable goods. It aims to improve food security and reduce vulnerability to extreme events, disruptions, and cascading impacts, especially during pandemics and other crises.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 2,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": "Supports equitable access to food for marginalized and vulnerable populations by prioritizing local food production and improving distribution systems that reach underserved areas.",
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Investment in infrastructure",
+                "Policy incentives for local food production",
+                "Collaboration with logistics and trade sectors",
+                "Technology for supply chain optimization"
+            ],
+            "KeyPerformanceIndicators": [
+                "Reduction in post-harvest losses",
+                "Increased local food availability",
+                "Improved transportation efficiency for food distribution",
+                "Shortened supply chains"
+            ],
+            "PowersAndMandates": null
+        }
+    },
+    {
+        "locode": "BR CXL",
+        "cityName": "Caxias do Sul",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "ipcc_0094",
+        "actionName": "Access to health care",
+        "actionPriority": 12,
+        "explanation": "Ranked #12 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "ipcc_0094",
+            "ActionName": "Access to health care",
             "ActionType": [
                 "adaptation"
             ],
             "Hazard": [
                 "heatwaves",
+                "floods",
+                "droughts"
+            ],
+            "Sector": [
+                "public_health",
+                "water_resources"
+            ],
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Enhancing access to health care services, including health and nutrition services, clean water, sanitation, and culturally appropriate mental health resources. Expanding telemedicine capabilities enables efficient health service delivery, particularly for remote and underserved populations. Strengthening basic public health systems and disaster preparedness can rapidly reduce vulnerability to climate-related health risks.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 2,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 1,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": "Promotes equitable access to health care for marginalized and vulnerable groups, including homeless populations, remote communities, and those affected by housing inequities.",
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Investment in telemedicine technologies",
+                "Strengthened governance of public health systems",
+                "Capacity building for health workers",
+                "Infrastructure upgrades for health facilities"
+            ],
+            "KeyPerformanceIndicators": [
+                "Reduction in climate-related mortality",
+                "Increased access to telemedicine",
+                "Number of culturally tailored health programs implemented",
+                "Improved water and sanitation access metrics"
+            ],
+            "PowersAndMandates": null
+        }
+    },
+    {
+        "locode": "BR CXL",
+        "cityName": "Caxias do Sul",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0162",
+        "actionName": "Strengthen programs for control and conservation of protected areas",
+        "actionPriority": 13,
+        "explanation": "Ranked #13 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "icare_0162",
+            "ActionName": "Strengthen programs for control and conservation of protected areas",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "floods",
                 "landslides",
+                "heatwaves",
+                "diseases"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "This action focuses on implementing a series of integrated strategies to enhance environmental conservation and maximize its benefits, such as expanding protected areas, developing management plans for conservation units, and training ecotourism guides to strengthen sustainable tourism.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Expansion of protected areas to enhance environmental conservation.",
+                "Development of management plans for conservation units.",
+                "Training of ecotourism guides to promote sustainable tourism."
+            ],
+            "KeyPerformanceIndicators": [
+                "Percentage increase in area of protected regions (%).",
+                "Reduction in deforestation rates in protected areas annually (%).",
+                "Number of conservation programs strengthened annually."
+            ],
+            "PowersAndMandates": [
+                "state"
+            ]
+        }
+    },
+    {
+        "locode": "BR CXL",
+        "cityName": "Caxias do Sul",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0149",
+        "actionName": "Encourage sustainable land use practices",
+        "actionPriority": 14,
+        "explanation": "Ranked #14 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "icare_0149",
+            "ActionName": "Encourage sustainable land use practices",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "droughts",
+                "heatwaves",
+                "landslides",
+                "floods",
+                "wildfires"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Promoting methods that guarantee the conservation and health of the soil, preserving biodiversity, reducing erosion and minimizing environmental impacts.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 2,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "medium",
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Provide access to technical knowledge and training on sustainable soil management practices.",
+                "Offer financial incentives and form partnerships with research institutions and local farmers.",
+                "Develop monitoring systems for soil health and biodiversity, and implement policies for erosion control."
+            ],
+            "KeyPerformanceIndicators": [
+                "Percentage of land area managed under sustainable land use practices (%)",
+                "Reduction in deforestation or land degradation rates (%)",
+                "Increase in biodiversity indicators on managed lands (e.g., species count, habitat quality)"
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR CXL",
+        "cityName": "Caxias do Sul",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0142",
+        "actionName": "Improvement of Water Supply and Sanitation Systems",
+        "actionPriority": 15,
+        "explanation": "Ranked #15 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "icare_0142",
+            "ActionName": "Improvement of Water Supply and Sanitation Systems",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
                 "floods"
             ],
             "Sector": null,
@@ -519,30 +806,30 @@
             "PrimaryPurpose": [
                 "climate_resilience"
             ],
-            "Description": "Identify and assess the feasibility of suitable areas for the installation of urban gardens and ensure that the sites chosen meet the expectations of the community.",
+            "Description": "This action involves implementing artesian wells, cisterns, and water supply systems, as well as improving water quality and expanding sanitation services in the city.",
             "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
+                "air_quality": 0,
+                "water_quality": 2,
                 "habitat": 1,
                 "cost_of_living": 1,
                 "housing": 1,
                 "mobility": 0,
-                "stakeholder_engagement": 2
+                "stakeholder_engagement": 1
             },
             "EquityAndInclusionConsiderations": null,
             "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "medium",
-            "CostInvestmentNeeded": "low",
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "medium",
             "TimelineForImplementation": "<5 years",
             "Dependencies": [
-                "Ensure availability of detailed land-use maps and urban planning data.",
-                "Engage with local communities to understand their needs and expectations.",
-                "Evaluate soil quality, water availability, and form partnerships to support the establishment and maintenance of gardens."
+                "Infrastructure development",
+                "Financial resources",
+                "Technical expertise"
             ],
             "KeyPerformanceIndicators": [
-                "Number of urban gardens created.",
-                "Amount of locally produced food (kg/year).",
-                "Number of direct beneficiaries."
+                "Access to safe water",
+                "Water quality",
+                "Sanitation coverage"
             ],
             "PowersAndMandates": [
                 "local"
@@ -556,8 +843,8 @@
         "regionName": "Rio Grande do Sul",
         "actionId": "ipcc_0086",
         "actionName": "Ecosystem-based adaptation",
-        "actionPriority": 11,
-        "explanation": "Ranked #11 by tournament ranking algorithm",
+        "actionPriority": 16,
+        "explanation": "Ranked #16 by tournament ranking algorithm",
         "action": {
             "ActionID": "ipcc_0086",
             "ActionName": "Ecosystem-based adaptation",
@@ -624,293 +911,6 @@
         "cityName": "Caxias do Sul",
         "region": "RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0169",
-        "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
-        "actionPriority": 12,
-        "explanation": "Ranked #12 by tournament ranking algorithm",
-        "action": {
-            "ActionID": "icare_0169",
-            "ActionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "droughts",
-                "heatwaves",
-                "diseases",
-                "landslides",
-                "floods",
-                "wildfires",
-                "sea-level-rise",
-                "storms"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "This action focuses on preparing the municipality to respond to extreme events, aiming to provide a rapid response that minimizes the impacts on the population.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Development of a comprehensive emergency response plan that includes coordination between local authorities, emergency services, and community organizations",
-                "Investment in early warning systems and infrastructure to ensure timely and effective responses to extreme events",
-                "Training and capacity-building for local responders and communities to enhance preparedness and resilience to extreme events"
-            ],
-            "KeyPerformanceIndicators": [
-                "Number of emergency response partnerships established.",
-                "Average response time during extreme weather events (hours).",
-                "Percentage reduction in casualties and damages during extreme weather events annually (%)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR CXL",
-        "cityName": "Caxias do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0097",
-        "actionName": "Food storage/distribution improvements",
-        "actionPriority": 13,
-        "explanation": "Ranked #13 by tournament ranking algorithm",
-        "action": {
-            "ActionID": "ipcc_0097",
-            "ActionName": "Food storage/distribution improvements",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "droughts",
-                "floods",
-                "storms",
-                "heatwaves"
-            ],
-            "Sector": [
-                "food_security",
-                "road_infrastructure"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Enhancing food storage and distribution systems by improving transportation infrastructure, optimizing trade networks, and shortening supply chains to ensure local food availability and resilience to climate impacts. This action also includes increasing the capacity of local food storage facilities to reduce post-harvest losses, addressing inefficiencies in logistics, and bolstering infrastructure for perishable goods. It aims to improve food security and reduce vulnerability to extreme events, disruptions, and cascading impacts, especially during pandemics and other crises.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": "Supports equitable access to food for marginalized and vulnerable populations by prioritizing local food production and improving distribution systems that reach underserved areas.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Investment in infrastructure",
-                "Policy incentives for local food production",
-                "Collaboration with logistics and trade sectors",
-                "Technology for supply chain optimization"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in post-harvest losses",
-                "Increased local food availability",
-                "Improved transportation efficiency for food distribution",
-                "Shortened supply chains"
-            ],
-            "PowersAndMandates": null
-        }
-    },
-    {
-        "locode": "BR CXL",
-        "cityName": "Caxias do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0149",
-        "actionName": "Encourage sustainable land use practices",
-        "actionPriority": 14,
-        "explanation": "Ranked #14 by tournament ranking algorithm",
-        "action": {
-            "ActionID": "icare_0149",
-            "ActionName": "Encourage sustainable land use practices",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "droughts",
-                "heatwaves",
-                "landslides",
-                "floods",
-                "wildfires"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Promoting methods that guarantee the conservation and health of the soil, preserving biodiversity, reducing erosion and minimizing environmental impacts.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "medium",
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Provide access to technical knowledge and training on sustainable soil management practices.",
-                "Offer financial incentives and form partnerships with research institutions and local farmers.",
-                "Develop monitoring systems for soil health and biodiversity, and implement policies for erosion control."
-            ],
-            "KeyPerformanceIndicators": [
-                "Percentage of land area managed under sustainable land use practices (%)",
-                "Reduction in deforestation or land degradation rates (%)",
-                "Increase in biodiversity indicators on managed lands (e.g., species count, habitat quality)"
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR CXL",
-        "cityName": "Caxias do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0094",
-        "actionName": "Access to health care",
-        "actionPriority": 15,
-        "explanation": "Ranked #15 by tournament ranking algorithm",
-        "action": {
-            "ActionID": "ipcc_0094",
-            "ActionName": "Access to health care",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "heatwaves",
-                "floods",
-                "droughts"
-            ],
-            "Sector": [
-                "public_health",
-                "water_resources"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Enhancing access to health care services, including health and nutrition services, clean water, sanitation, and culturally appropriate mental health resources. Expanding telemedicine capabilities enables efficient health service delivery, particularly for remote and underserved populations. Strengthening basic public health systems and disaster preparedness can rapidly reduce vulnerability to climate-related health risks.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": "Promotes equitable access to health care for marginalized and vulnerable groups, including homeless populations, remote communities, and those affected by housing inequities.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Investment in telemedicine technologies",
-                "Strengthened governance of public health systems",
-                "Capacity building for health workers",
-                "Infrastructure upgrades for health facilities"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in climate-related mortality",
-                "Increased access to telemedicine",
-                "Number of culturally tailored health programs implemented",
-                "Improved water and sanitation access metrics"
-            ],
-            "PowersAndMandates": null
-        }
-    },
-    {
-        "locode": "BR CXL",
-        "cityName": "Caxias do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0163",
-        "actionName": "Creation of a First Response Brigade for Fire Fighting",
-        "actionPriority": 16,
-        "explanation": "Ranked #16 by tournament ranking algorithm",
-        "action": {
-            "ActionID": "icare_0163",
-            "ActionName": "Creation of a First Response Brigade for Fire Fighting",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "wildfires"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Creation of a First Response Brigade in rural communities to provide them with training and equipment for fire prevention and firefighting.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "medium",
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Fire prevention education",
-                "Ongoing support and resources",
-                "Communication systems"
-            ],
-            "KeyPerformanceIndicators": [
-                "Response time",
-                "Burned area",
-                "Fire suppression effetiveness"
-            ],
-            "PowersAndMandates": [
-                "state"
-            ]
-        }
-    },
-    {
-        "locode": "BR CXL",
-        "cityName": "Caxias do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
         "actionId": "ipcc_0095",
         "actionName": "Disaster early warning",
         "actionPriority": 17,
@@ -970,52 +970,56 @@
         "cityName": "Caxias do Sul",
         "region": "RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0142",
-        "actionName": "Improvement of Water Supply and Sanitation Systems",
+        "actionId": "ipcc_0092",
+        "actionName": "Social safety nets",
         "actionPriority": 18,
         "explanation": "Ranked #18 by tournament ranking algorithm",
         "action": {
-            "ActionID": "icare_0142",
-            "ActionName": "Improvement of Water Supply and Sanitation Systems",
+            "ActionID": "ipcc_0092",
+            "ActionName": "Social safety nets",
             "ActionType": [
                 "adaptation"
             ],
             "Hazard": [
-                "floods"
+                "droughts",
+                "heatwaves",
+                "floods",
+                "storms"
             ],
-            "Sector": null,
+            "Sector": [
+                "food_security",
+                "public_health"
+            ],
             "Subsector": null,
             "PrimaryPurpose": [
                 "climate_resilience"
             ],
-            "Description": "This action involves implementing artesian wells, cisterns, and water supply systems, as well as improving water quality and expanding sanitation services in the city.",
+            "Description": "Social safety nets encompass adaptive social protection mechanisms to reduce food insecurity and malnutrition, especially for vulnerable populations. These include cash transfers, school feeding programs, public work initiatives, unemployment compensation, land reforms, credit and insurance schemes. Integrated approaches combine climate risk assessments with disaster risk reduction, education, and social equity to enhance resilience to climate stresses.",
             "CoBenefits": {
                 "air_quality": 0,
-                "water_quality": 2,
+                "water_quality": 1,
                 "habitat": 1,
-                "cost_of_living": 1,
+                "cost_of_living": 2,
                 "housing": 1,
                 "mobility": 0,
-                "stakeholder_engagement": 1
+                "stakeholder_engagement": 2
             },
-            "EquityAndInclusionConsiderations": null,
+            "EquityAndInclusionConsiderations": "Enhances the social status and rights of marginalized groups, protects vulnerable populations, reduces inequalities, and promotes education and gender equity.",
             "GHGReductionPotential": null,
             "AdaptationEffectiveness": "high",
             "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
+            "TimelineForImplementation": "5-10 years",
             "Dependencies": [
-                "Infrastructure development",
-                "Financial resources",
-                "Technical expertise"
+                "Integration of climate and disaster risk into social protection",
+                "education programs",
+                "coordination with sustainable livelihoods and financial inclusion initiatives"
             ],
             "KeyPerformanceIndicators": [
-                "Access to safe water",
-                "Water quality",
-                "Sanitation coverage"
+                "Reduction in malnutrition rates",
+                "Increase in education access for vulnerable groups",
+                "Participation in social protection programs"
             ],
-            "PowersAndMandates": [
-                "local"
-            ]
+            "PowersAndMandates": null
         }
     },
     {

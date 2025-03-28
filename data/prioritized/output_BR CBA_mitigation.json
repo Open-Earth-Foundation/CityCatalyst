@@ -31,18 +31,9 @@
         "cityName": "Cuiab\u00e1",
         "region": "MT",
         "regionName": "Mato Grosso",
-        "actionId": "icare_0088",
-        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
-        "actionPriority": 4
-    },
-    {
-        "locode": "BR CBA",
-        "cityName": "Cuiab\u00e1",
-        "region": "MT",
-        "regionName": "Mato Grosso",
         "actionId": "icare_0094",
         "actionName": "Adoption of biomethane in public fleets.",
-        "actionPriority": 5
+        "actionPriority": 4
     },
     {
         "locode": "BR CBA",
@@ -51,16 +42,7 @@
         "regionName": "Mato Grosso",
         "actionId": "icare_0092",
         "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
-        "actionPriority": 6
-    },
-    {
-        "locode": "BR CBA",
-        "cityName": "Cuiab\u00e1",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0090",
-        "actionName": "Adoption of electric drones for last-mile deliveries.",
-        "actionPriority": 7
+        "actionPriority": 5
     },
     {
         "locode": "BR CBA",
@@ -69,7 +51,16 @@
         "regionName": "Mato Grosso",
         "actionId": "icare_0057",
         "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
-        "actionPriority": 8
+        "actionPriority": 6
+    },
+    {
+        "locode": "BR CBA",
+        "cityName": "Cuiab\u00e1",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0088",
+        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
+        "actionPriority": 7
     },
     {
         "locode": "BR CBA",
@@ -78,16 +69,7 @@
         "regionName": "Mato Grosso",
         "actionId": "icare_0133",
         "actionName": "Promote Urban Reforestation and Green Corridors",
-        "actionPriority": 9
-    },
-    {
-        "locode": "BR CBA",
-        "cityName": "Cuiab\u00e1",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0068",
-        "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
-        "actionPriority": 10
+        "actionPriority": 8
     },
     {
         "locode": "BR CBA",
@@ -96,16 +78,25 @@
         "regionName": "Mato Grosso",
         "actionId": "icare_0025",
         "actionName": "Promote energy-efficient low-income housing",
-        "actionPriority": 11
+        "actionPriority": 9
     },
     {
         "locode": "BR CBA",
         "cityName": "Cuiab\u00e1",
         "region": "MT",
         "regionName": "Mato Grosso",
-        "actionId": "icare_0044",
-        "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
-        "actionPriority": 12
+        "actionId": "icare_0090",
+        "actionName": "Adoption of electric drones for last-mile deliveries.",
+        "actionPriority": 10
+    },
+    {
+        "locode": "BR CBA",
+        "cityName": "Cuiab\u00e1",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0068",
+        "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
+        "actionPriority": 11
     },
     {
         "locode": "BR CBA",
@@ -114,25 +105,16 @@
         "regionName": "Mato Grosso",
         "actionId": "icare_0117",
         "actionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
+        "actionPriority": 12
+    },
+    {
+        "locode": "BR CBA",
+        "cityName": "Cuiab\u00e1",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0044",
+        "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
         "actionPriority": 13
-    },
-    {
-        "locode": "BR CBA",
-        "cityName": "Cuiab\u00e1",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0091",
-        "actionName": "Implementation of prioritized routes for sustainable vehicles.",
-        "actionPriority": 14
-    },
-    {
-        "locode": "BR CBA",
-        "cityName": "Cuiab\u00e1",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "c40_0033",
-        "actionName": "15/30-Minute Areas",
-        "actionPriority": 15
     },
     {
         "locode": "BR CBA",
@@ -141,7 +123,7 @@
         "regionName": "Mato Grosso",
         "actionId": "icare_0131",
         "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
-        "actionPriority": 16
+        "actionPriority": 14
     },
     {
         "locode": "BR CBA",
@@ -150,7 +132,7 @@
         "regionName": "Mato Grosso",
         "actionId": "icare_0042",
         "actionName": "Encourage renewable energy policies at the municipal level",
-        "actionPriority": 17
+        "actionPriority": 15
     },
     {
         "locode": "BR CBA",
@@ -159,7 +141,7 @@
         "regionName": "Mato Grosso",
         "actionId": "icare_0099",
         "actionName": "Support Agroecological Certification Programs",
-        "actionPriority": 18
+        "actionPriority": 16
     },
     {
         "locode": "BR CBA",
@@ -168,6 +150,24 @@
         "regionName": "Mato Grosso",
         "actionId": "icare_0136",
         "actionName": "Support the Implementation of Ecological Fiscal Incentives",
+        "actionPriority": 17
+    },
+    {
+        "locode": "BR CBA",
+        "cityName": "Cuiab\u00e1",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0027",
+        "actionName": "Create financing programs for local renewable energy projects",
+        "actionPriority": 18
+    },
+    {
+        "locode": "BR CBA",
+        "cityName": "Cuiab\u00e1",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0091",
+        "actionName": "Implementation of prioritized routes for sustainable vehicles.",
         "actionPriority": 19
     },
     {
@@ -175,8 +175,8 @@
         "cityName": "Cuiab\u00e1",
         "region": "MT",
         "regionName": "Mato Grosso",
-        "actionId": "icare_0024",
-        "actionName": "Integrate renewables into municipal water systems",
+        "actionId": "ipcc_0006",
+        "actionName": "Teleworking",
         "actionPriority": 20
     }
 ]

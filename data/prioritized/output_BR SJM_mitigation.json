@@ -4,9 +4,18 @@
         "cityName": "S\u00e3o Jo\u00e3o de Meriti",
         "region": "RJ",
         "regionName": "Rio de Janeiro",
+        "actionId": "icare_0118",
+        "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
+        "actionPriority": 1
+    },
+    {
+        "locode": "BR SJM",
+        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
+        "region": "RJ",
+        "regionName": "Rio de Janeiro",
         "actionId": "icare_0005",
         "actionName": "Create credit lines for residential and community wind energy projects",
-        "actionPriority": 1
+        "actionPriority": 2
     },
     {
         "locode": "BR SJM",
@@ -15,15 +24,6 @@
         "regionName": "Rio de Janeiro",
         "actionId": "icare_0121",
         "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
-        "actionPriority": 2
-    },
-    {
-        "locode": "BR SJM",
-        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0118",
-        "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
         "actionPriority": 3
     },
     {
@@ -31,8 +31,8 @@
         "cityName": "S\u00e3o Jo\u00e3o de Meriti",
         "region": "RJ",
         "regionName": "Rio de Janeiro",
-        "actionId": "icare_0092",
-        "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
+        "actionId": "icare_0094",
+        "actionName": "Adoption of biomethane in public fleets.",
         "actionPriority": 4
     },
     {
@@ -49,18 +49,9 @@
         "cityName": "S\u00e3o Jo\u00e3o de Meriti",
         "region": "RJ",
         "regionName": "Rio de Janeiro",
-        "actionId": "icare_0094",
-        "actionName": "Adoption of biomethane in public fleets.",
+        "actionId": "icare_0092",
+        "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
         "actionPriority": 6
-    },
-    {
-        "locode": "BR SJM",
-        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0057",
-        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
-        "actionPriority": 7
     },
     {
         "locode": "BR SJM",
@@ -69,6 +60,15 @@
         "regionName": "Rio de Janeiro",
         "actionId": "icare_0090",
         "actionName": "Adoption of electric drones for last-mile deliveries.",
+        "actionPriority": 7
+    },
+    {
+        "locode": "BR SJM",
+        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
+        "region": "RJ",
+        "regionName": "Rio de Janeiro",
+        "actionId": "icare_0057",
+        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
         "actionPriority": 8
     },
     {
@@ -85,8 +85,8 @@
         "cityName": "S\u00e3o Jo\u00e3o de Meriti",
         "region": "RJ",
         "regionName": "Rio de Janeiro",
-        "actionId": "icare_0068",
-        "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
+        "actionId": "icare_0044",
+        "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
         "actionPriority": 10
     },
     {
@@ -103,8 +103,8 @@
         "cityName": "S\u00e3o Jo\u00e3o de Meriti",
         "region": "RJ",
         "regionName": "Rio de Janeiro",
-        "actionId": "icare_0131",
-        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
+        "actionId": "icare_0117",
+        "actionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
         "actionPriority": 12
     },
     {
@@ -112,8 +112,8 @@
         "cityName": "S\u00e3o Jo\u00e3o de Meriti",
         "region": "RJ",
         "regionName": "Rio de Janeiro",
-        "actionId": "icare_0044",
-        "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
+        "actionId": "icare_0042",
+        "actionName": "Encourage renewable energy policies at the municipal level",
         "actionPriority": 13
     },
     {
@@ -121,8 +121,8 @@
         "cityName": "S\u00e3o Jo\u00e3o de Meriti",
         "region": "RJ",
         "regionName": "Rio de Janeiro",
-        "actionId": "icare_0136",
-        "actionName": "Support the Implementation of Ecological Fiscal Incentives",
+        "actionId": "icare_0068",
+        "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
         "actionPriority": 14
     },
     {
@@ -130,8 +130,8 @@
         "cityName": "S\u00e3o Jo\u00e3o de Meriti",
         "region": "RJ",
         "regionName": "Rio de Janeiro",
-        "actionId": "icare_0011",
-        "actionName": "Provide tax incentives for renewable energy in residential projects",
+        "actionId": "icare_0131",
+        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
         "actionPriority": 15
     },
     {
@@ -148,27 +148,9 @@
         "cityName": "S\u00e3o Jo\u00e3o de Meriti",
         "region": "RJ",
         "regionName": "Rio de Janeiro",
-        "actionId": "icare_0042",
-        "actionName": "Encourage renewable energy policies at the municipal level",
+        "actionId": "icare_0136",
+        "actionName": "Support the Implementation of Ecological Fiscal Incentives",
         "actionPriority": 17
-    },
-    {
-        "locode": "BR SJM",
-        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0117",
-        "actionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
-        "actionPriority": 18
-    },
-    {
-        "locode": "BR SJM",
-        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0084",
-        "actionName": "Create Incentives for Agroforestry Practices in Livestock Systems",
-        "actionPriority": 19
     },
     {
         "locode": "BR SJM",
@@ -177,6 +159,24 @@
         "regionName": "Rio de Janeiro",
         "actionId": "icare_0099",
         "actionName": "Support Agroecological Certification Programs",
+        "actionPriority": 18
+    },
+    {
+        "locode": "BR SJM",
+        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
+        "region": "RJ",
+        "regionName": "Rio de Janeiro",
+        "actionId": "icare_0132",
+        "actionName": "Encourage Local Agroecological Production and Short Supply Chains",
+        "actionPriority": 19
+    },
+    {
+        "locode": "BR SJM",
+        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
+        "region": "RJ",
+        "regionName": "Rio de Janeiro",
+        "actionId": "icare_0027",
+        "actionName": "Create financing programs for local renewable energy projects",
         "actionPriority": 20
     }
 ]

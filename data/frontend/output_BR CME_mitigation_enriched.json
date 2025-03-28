@@ -124,69 +124,9 @@
         "cityName": "Camaragibe",
         "region": "PE",
         "regionName": "Pernambuco",
-        "actionId": "icare_0005",
-        "actionName": "Create credit lines for residential and community wind energy projects",
-        "actionPriority": 3,
-        "action": {
-            "ActionID": "icare_0005",
-            "ActionName": "Create credit lines for residential and community wind energy projects",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "stationary_energy"
-            ],
-            "Subsector": [
-                "energy_generation_supplied_to_the_grid"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Establish accessible financing programs to support the development and adoption of wind energy systems in households and community-based projects, enabling a transition to cleaner energy sources.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 2,
-                "housing": 2,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": "60-79",
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Availability of financial programs, grants, or subsidies to make wind energy systems affordable for households and community projects",
-                "Access to technical expertise and resources to guide the installation and maintenance of wind energy systems in residential and community settings",
-                "Policy and regulatory support to encourage the adoption of wind energy, including streamlined permitting processes and incentives for clean energy projects"
-            ],
-            "KeyPerformanceIndicators": [
-                "Number of wind energy projects financed annually.",
-                "Installed capacity of wind energy systems from credit-supported projects (MW).",
-                "Estimated reduction in CO\u2082 equivalent emissions from wind energy adoption."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR CME",
-        "cityName": "Camaragibe",
-        "region": "PE",
-        "regionName": "Pernambuco",
         "actionId": "icare_0094",
         "actionName": "Adoption of biomethane in public fleets.",
-        "actionPriority": 4,
+        "actionPriority": 3,
         "action": {
             "ActionID": "icare_0094",
             "ActionName": "Adoption of biomethane in public fleets.",
@@ -244,55 +184,55 @@
         "cityName": "Camaragibe",
         "region": "PE",
         "regionName": "Pernambuco",
-        "actionId": "icare_0057",
-        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
-        "actionPriority": 5,
+        "actionId": "icare_0005",
+        "actionName": "Create credit lines for residential and community wind energy projects",
+        "actionPriority": 4,
         "action": {
-            "ActionID": "icare_0057",
-            "ActionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
+            "ActionID": "icare_0005",
+            "ActionName": "Create credit lines for residential and community wind energy projects",
             "ActionType": [
                 "mitigation"
             ],
             "Hazard": null,
             "Sector": [
-                "transportation"
+                "stationary_energy"
             ],
             "Subsector": [
-                "railways"
+                "energy_generation_supplied_to_the_grid"
             ],
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "Description": "These systems offer high capacity and low emissions, crucial for cities with high population density.",
+            "Description": "Establish accessible financing programs to support the development and adoption of wind energy systems in households and community-based projects, enabling a transition to cleaner energy sources.",
             "CoBenefits": {
                 "air_quality": 2,
                 "water_quality": 0,
                 "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 2,
-                "stakeholder_engagement": 0
+                "cost_of_living": 2,
+                "housing": 2,
+                "mobility": 0,
+                "stakeholder_engagement": 1
             },
             "EquityAndInclusionConsiderations": null,
             "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "80-100",
+                "stationary_energy": "60-79",
+                "transportation": null,
                 "waste": null,
                 "ippu": null,
                 "afolu": null
             },
             "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
+            "CostInvestmentNeeded": "medium",
             "TimelineForImplementation": "5-10 years",
             "Dependencies": [
-                "Investment in the development and expansion of high-capacity public transportation infrastructure, such as electric buses and metro systems.",
-                "Implementation of policies and incentives to encourage the use of public transport over private vehicles.",
-                "Integration of renewable energy sources to power these systems, reducing emissions further."
+                "Availability of financial programs, grants, or subsidies to make wind energy systems affordable for households and community projects",
+                "Access to technical expertise and resources to guide the installation and maintenance of wind energy systems in residential and community settings",
+                "Policy and regulatory support to encourage the adoption of wind energy, including streamlined permitting processes and incentives for clean energy projects"
             ],
             "KeyPerformanceIndicators": [
-                "Length of new transit lines built (km/year).",
-                "Reduction in road traffic congestion (%).",
-                "Reduction in private vehicle usage (number of trips avoided/year)."
+                "Number of wind energy projects financed annually.",
+                "Installed capacity of wind energy systems from credit-supported projects (MW).",
+                "Estimated reduction in CO\u2082 equivalent emissions from wind energy adoption."
             ],
             "PowersAndMandates": [
                 "local"
@@ -306,7 +246,7 @@
         "regionName": "Pernambuco",
         "actionId": "icare_0088",
         "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
-        "actionPriority": 6,
+        "actionPriority": 5,
         "action": {
             "ActionID": "icare_0088",
             "ActionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
@@ -366,7 +306,7 @@
         "regionName": "Pernambuco",
         "actionId": "icare_0092",
         "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
-        "actionPriority": 7,
+        "actionPriority": 6,
         "action": {
             "ActionID": "icare_0092",
             "ActionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
@@ -426,7 +366,7 @@
         "regionName": "Pernambuco",
         "actionId": "icare_0090",
         "actionName": "Adoption of electric drones for last-mile deliveries.",
-        "actionPriority": 8,
+        "actionPriority": 7,
         "action": {
             "ActionID": "icare_0090",
             "ActionName": "Adoption of electric drones for last-mile deliveries.",
@@ -473,6 +413,66 @@
                 "Delivery time reduction compared to traditional methods (minutes).",
                 "Increase in customer satisfaction with drone deliveries (%).",
                 "Reduction in traffic congestion caused by delivery vehicles (%)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR CME",
+        "cityName": "Camaragibe",
+        "region": "PE",
+        "regionName": "Pernambuco",
+        "actionId": "icare_0057",
+        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
+        "actionPriority": 8,
+        "action": {
+            "ActionID": "icare_0057",
+            "ActionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "railways"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "These systems offer high capacity and low emissions, crucial for cities with high population density.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 1,
+                "mobility": 2,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "80-100",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "high",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Investment in the development and expansion of high-capacity public transportation infrastructure, such as electric buses and metro systems.",
+                "Implementation of policies and incentives to encourage the use of public transport over private vehicles.",
+                "Integration of renewable energy sources to power these systems, reducing emissions further."
+            ],
+            "KeyPerformanceIndicators": [
+                "Length of new transit lines built (km/year).",
+                "Reduction in road traffic congestion (%).",
+                "Reduction in private vehicle usage (number of trips avoided/year)."
             ],
             "PowersAndMandates": [
                 "local"
@@ -544,189 +544,9 @@
         "cityName": "Camaragibe",
         "region": "PE",
         "regionName": "Pernambuco",
-        "actionId": "icare_0133",
-        "actionName": "Promote Urban Reforestation and Green Corridors",
-        "actionPriority": 10,
-        "action": {
-            "ActionID": "icare_0133",
-            "ActionName": "Promote Urban Reforestation and Green Corridors",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "land"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Increase urban tree coverage to mitigate the urban heat island effect and enhance biodiversity.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 1,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "80-100"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Identification of priority areas and selection of native, climate-resilient species for tree planting.",
-                "Partnerships with local organizations and nurseries, and allocation of resources for planting and maintenance.",
-                "Community engagement to ensure long-term care and support."
-            ],
-            "KeyPerformanceIndicators": [
-                "Increase in urban tree canopy cover (%)",
-                "Total length of green corridors created or restored (kilometers)",
-                "Reduction in urban heat island effect temperatures (\u00b0C)"
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR CME",
-        "cityName": "Camaragibe",
-        "region": "PE",
-        "regionName": "Pernambuco",
-        "actionId": "icare_0068",
-        "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
-        "actionPriority": 11,
-        "action": {
-            "ActionID": "icare_0068",
-            "ActionName": "Deploy on-demand transport systems with 100% electric fleets.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "On-demand collective transport services, based on apps, optimize electric vehicle usage, reducing per-passenger emissions.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "80-100",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Development of digital platforms and apps to efficiently manage on-demand collective transport services.",
-                "Expansion of electric vehicle fleets tailored for shared transport solutions.",
-                "Implementation of policies and incentives to encourage the adoption and use of shared electric transport services."
-            ],
-            "KeyPerformanceIndicators": [
-                "Number of active users of the on-demand electric fleet system.",
-                "Percentage of urban transport demand met by on-demand systems.",
-                "Reduction in noise pollution levels in urban areas"
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR CME",
-        "cityName": "Camaragibe",
-        "region": "PE",
-        "regionName": "Pernambuco",
-        "actionId": "icare_0117",
-        "actionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
-        "actionPriority": 12,
-        "action": {
-            "ActionID": "icare_0117",
-            "ActionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Increase the quality of transportation service delivery, aiming at the modal shift of passengers from private motorized transport to public transport, thereby reducing emissions generated by cars and motorcycles.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Improve the quality of public transportation services to attract passengers from private motorized transport.",
-                "Implement policies and infrastructure that support and enhance the efficiency of public transportation systems.",
-                "Promote awareness of the environmental benefits of public transport to encourage a modal shift and reduce emissions."
-            ],
-            "KeyPerformanceIndicators": [
-                "Annual increase in the number of passengers using the municipal bus system.",
-                "Percentage of bus routes with improved travel time reliability.",
-                "Estimated reduction in CO\u2082 equivalent emissions due to increased public transportation use."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR CME",
-        "cityName": "Camaragibe",
-        "region": "PE",
-        "regionName": "Pernambuco",
         "actionId": "icare_0044",
         "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
-        "actionPriority": 13,
+        "actionPriority": 10,
         "action": {
             "ActionID": "icare_0044",
             "ActionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
@@ -784,9 +604,129 @@
         "cityName": "Camaragibe",
         "region": "PE",
         "regionName": "Pernambuco",
+        "actionId": "icare_0042",
+        "actionName": "Encourage renewable energy policies at the municipal level",
+        "actionPriority": 11,
+        "action": {
+            "ActionID": "icare_0042",
+            "ActionName": "Encourage renewable energy policies at the municipal level",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "stationary_energy"
+            ],
+            "Subsector": [
+                "non-specified_sources"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Advocate for and implement policies that prioritize the development and integration of renewable energy systems in local government operations and planning.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 1,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": "80-100",
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Political will and leadership to prioritize renewable energy in local government policies and planning processes",
+                "Development of clear policies and regulatory frameworks that facilitate the integration of renewable energy systems into government operations",
+                "Availability of funding or financial mechanisms to support the transition to renewable energy in municipal infrastructure and operations"
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of renewable energy projects approved or initiated annually at the municipal level.",
+                "Percentage of municipal energy demand met by renewable sources (%).",
+                "Reduction in municipal carbon emissions due to --renewable energy adoption (tons CO\u2082e/year)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR CME",
+        "cityName": "Camaragibe",
+        "region": "PE",
+        "regionName": "Pernambuco",
+        "actionId": "icare_0068",
+        "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
+        "actionPriority": 12,
+        "action": {
+            "ActionID": "icare_0068",
+            "ActionName": "Deploy on-demand transport systems with 100% electric fleets.",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "on-road"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "On-demand collective transport services, based on apps, optimize electric vehicle usage, reducing per-passenger emissions.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 2,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "80-100",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Development of digital platforms and apps to efficiently manage on-demand collective transport services.",
+                "Expansion of electric vehicle fleets tailored for shared transport solutions.",
+                "Implementation of policies and incentives to encourage the adoption and use of shared electric transport services."
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of active users of the on-demand electric fleet system.",
+                "Percentage of urban transport demand met by on-demand systems.",
+                "Reduction in noise pollution levels in urban areas"
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR CME",
+        "cityName": "Camaragibe",
+        "region": "PE",
+        "regionName": "Pernambuco",
         "actionId": "icare_0131",
         "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
-        "actionPriority": 14,
+        "actionPriority": 13,
         "action": {
             "ActionID": "icare_0131",
             "ActionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
@@ -844,12 +784,72 @@
         "cityName": "Camaragibe",
         "region": "PE",
         "regionName": "Pernambuco",
-        "actionId": "icare_0027",
-        "actionName": "Create financing programs for local renewable energy projects",
+        "actionId": "icare_0133",
+        "actionName": "Promote Urban Reforestation and Green Corridors",
+        "actionPriority": 14,
+        "action": {
+            "ActionID": "icare_0133",
+            "ActionName": "Promote Urban Reforestation and Green Corridors",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "land"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Increase urban tree coverage to mitigate the urban heat island effect and enhance biodiversity.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 1,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 1,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "80-100"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Identification of priority areas and selection of native, climate-resilient species for tree planting.",
+                "Partnerships with local organizations and nurseries, and allocation of resources for planting and maintenance.",
+                "Community engagement to ensure long-term care and support."
+            ],
+            "KeyPerformanceIndicators": [
+                "Increase in urban tree canopy cover (%)",
+                "Total length of green corridors created or restored (kilometers)",
+                "Reduction in urban heat island effect temperatures (\u00b0C)"
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR CME",
+        "cityName": "Camaragibe",
+        "region": "PE",
+        "regionName": "Pernambuco",
+        "actionId": "icare_0028",
+        "actionName": "Incorporate natural shading and ventilation designs",
         "actionPriority": 15,
         "action": {
-            "ActionID": "icare_0027",
-            "ActionName": "Create financing programs for local renewable energy projects",
+            "ActionID": "icare_0028",
+            "ActionName": "Incorporate natural shading and ventilation designs",
             "ActionType": [
                 "mitigation"
             ],
@@ -858,25 +858,205 @@
                 "stationary_energy"
             ],
             "Subsector": [
-                "energy_industries"
+                "residential_buildings"
             ],
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "Description": "Establish funding mechanisms, such as grants and low-interest loans, to support the development of small-scale renewable energy initiatives in communities.",
+            "Description": "Encourage the use of architectural features such as shaded facades, green roofs, and cross-ventilation to reduce reliance on mechanical cooling systems.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 1,
+                "mobility": 0,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": "20-39",
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Development of building design guidelines and standards that promote the integration of passive cooling features like shaded facades, green roofs, and cross-ventilation",
+                "Availability of financial incentives or support for incorporating energy-efficient architectural features in both new and existing buildings",
+                "Collaboration with architects, urban planners, and local authorities to integrate these features into urban development and renovation projects"
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of buildings incorporating natural shading/ventilation.",
+                "Reduction in cooling energy demand (%) per building.",
+                "Temperature resilience improvements in monitored buildings (\u00b0C)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR CME",
+        "cityName": "Camaragibe",
+        "region": "PE",
+        "regionName": "Pernambuco",
+        "actionId": "icare_0050",
+        "actionName": "Implement Agroforestry Systems",
+        "actionPriority": 16,
+        "action": {
+            "ActionID": "icare_0050",
+            "ActionName": "Implement Agroforestry Systems",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "agriculture_forestry_and_fishing_activities"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Promote agroforestry systems by integrating trees into food cultivation and pasture, increasing biodiversity and carbon sequestration.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "80-100"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Provision of technical support and guidance to farmers on the design and implementation of agroforestry systems.",
+                "Development of financial incentives or subsidies to make agroforestry more economically attractive.",
+                "Creation of policies that integrate agroforestry practices into agricultural land-use planning and land tenure systems."
+            ],
+            "KeyPerformanceIndicators": [
+                "Percentage of agricultural land converted to agroforestry systems (%).",
+                "Number of new agroforestry projects implemented.",
+                "Increase in carbon sequestration in agroforestry systems (tons of CO\u2082e/year)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR CME",
+        "cityName": "Camaragibe",
+        "region": "PE",
+        "regionName": "Pernambuco",
+        "actionId": "icare_0136",
+        "actionName": "Support the Implementation of Ecological Fiscal Incentives",
+        "actionPriority": 17,
+        "action": {
+            "ActionID": "icare_0136",
+            "ActionName": "Support the Implementation of Ecological Fiscal Incentives",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "land"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Encourage the application of ecological taxes and incentives to promote environmental conservation.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 1,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "20-39"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Establish a clear regulatory framework with fair tax rates and incentives for sustainability.",
+                "Implement effective monitoring systems to track compliance and measure impact.",
+                "Promote public awareness and foster collaboration between governments, businesses, and communities."
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of municipalities that have adopted environmental tax incentives.",
+                "Percentage of tax revenue spent on sustainable practices.",
+                "Acreage or number of properties benefiting from conservation practices as a result of incentives."
+            ],
+            "PowersAndMandates": [
+                "state"
+            ]
+        }
+    },
+    {
+        "locode": "BR CME",
+        "cityName": "Camaragibe",
+        "region": "PE",
+        "regionName": "Pernambuco",
+        "actionId": "icare_0117",
+        "actionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
+        "actionPriority": 18,
+        "action": {
+            "ActionID": "icare_0117",
+            "ActionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "on-road"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Increase the quality of transportation service delivery, aiming at the modal shift of passengers from private motorized transport to public transport, thereby reducing emissions generated by cars and motorcycles.",
             "CoBenefits": {
                 "air_quality": 2,
                 "water_quality": 0,
                 "habitat": 0,
-                "cost_of_living": 2,
-                "housing": 1,
-                "mobility": 0,
-                "stakeholder_engagement": 1
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 2,
+                "stakeholder_engagement": 0
             },
             "EquityAndInclusionConsiderations": null,
             "GHGReductionPotential": {
-                "stationary_energy": "60-79",
-                "transportation": null,
+                "stationary_energy": null,
+                "transportation": "60-79",
                 "waste": null,
                 "ippu": null,
                 "afolu": null
@@ -885,14 +1065,14 @@
             "CostInvestmentNeeded": "medium",
             "TimelineForImplementation": "5-10 years",
             "Dependencies": [
-                "Development of accessible financial mechanisms, including grants and low-interest loans, to support small-scale renewable energy projects in communities",
-                "Collaboration with financial institutions and local governments to ensure the effective disbursement and management of funding for renewable energy initiatives",
-                "Clear guidelines and support for community organizations and local businesses to access funding and successfully implement renewable energy projects"
+                "Improve the quality of public transportation services to attract passengers from private motorized transport.",
+                "Implement policies and infrastructure that support and enhance the efficiency of public transportation systems.",
+                "Promote awareness of the environmental benefits of public transport to encourage a modal shift and reduce emissions."
             ],
             "KeyPerformanceIndicators": [
-                "Total funds allocated for renewable energy projects (USD).",
-                "Number of projects financed annually.",
-                "Increase in renewable energy capacity installed (MW)."
+                "Annual increase in the number of passengers using the municipal bus system.",
+                "Percentage of bus routes with improved travel time reliability.",
+                "Estimated reduction in CO\u2082 equivalent emissions due to increased public transportation use."
             ],
             "PowersAndMandates": [
                 "local"
@@ -906,7 +1086,7 @@
         "regionName": "Pernambuco",
         "actionId": "c40_0033",
         "actionName": "15/30-Minute Areas",
-        "actionPriority": 16,
+        "actionPriority": 19,
         "action": {
             "ActionID": "c40_0033",
             "ActionName": "15/30-Minute Areas",
@@ -972,69 +1152,9 @@
         "cityName": "Camaragibe",
         "region": "PE",
         "regionName": "Pernambuco",
-        "actionId": "icare_0042",
-        "actionName": "Encourage renewable energy policies at the municipal level",
-        "actionPriority": 17,
-        "action": {
-            "ActionID": "icare_0042",
-            "ActionName": "Encourage renewable energy policies at the municipal level",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "stationary_energy"
-            ],
-            "Subsector": [
-                "non-specified_sources"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Advocate for and implement policies that prioritize the development and integration of renewable energy systems in local government operations and planning.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 1,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": "80-100",
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Political will and leadership to prioritize renewable energy in local government policies and planning processes",
-                "Development of clear policies and regulatory frameworks that facilitate the integration of renewable energy systems into government operations",
-                "Availability of funding or financial mechanisms to support the transition to renewable energy in municipal infrastructure and operations"
-            ],
-            "KeyPerformanceIndicators": [
-                "Number of renewable energy projects approved or initiated annually at the municipal level.",
-                "Percentage of municipal energy demand met by renewable sources (%).",
-                "Reduction in municipal carbon emissions due to --renewable energy adoption (tons CO\u2082e/year)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR CME",
-        "cityName": "Camaragibe",
-        "region": "PE",
-        "regionName": "Pernambuco",
         "actionId": "icare_0099",
         "actionName": "Support Agroecological Certification Programs",
-        "actionPriority": 18,
+        "actionPriority": 20,
         "action": {
             "ActionID": "icare_0099",
             "ActionName": "Support Agroecological Certification Programs",
@@ -1081,126 +1201,6 @@
                 "Number of farmers or producers obtaining agroecological certifications.",
                 "Percentage of certified agricultural products in the market (%).",
                 "Reduction in the use of synthetic inputs (e.g., fertilizers, pesticides)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR CME",
-        "cityName": "Camaragibe",
-        "region": "PE",
-        "regionName": "Pernambuco",
-        "actionId": "icare_0136",
-        "actionName": "Support the Implementation of Ecological Fiscal Incentives",
-        "actionPriority": 19,
-        "action": {
-            "ActionID": "icare_0136",
-            "ActionName": "Support the Implementation of Ecological Fiscal Incentives",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "land"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Encourage the application of ecological taxes and incentives to promote environmental conservation.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "20-39"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Establish a clear regulatory framework with fair tax rates and incentives for sustainability.",
-                "Implement effective monitoring systems to track compliance and measure impact.",
-                "Promote public awareness and foster collaboration between governments, businesses, and communities."
-            ],
-            "KeyPerformanceIndicators": [
-                "Number of municipalities that have adopted environmental tax incentives.",
-                "Percentage of tax revenue spent on sustainable practices.",
-                "Acreage or number of properties benefiting from conservation practices as a result of incentives."
-            ],
-            "PowersAndMandates": [
-                "state"
-            ]
-        }
-    },
-    {
-        "locode": "BR CME",
-        "cityName": "Camaragibe",
-        "region": "PE",
-        "regionName": "Pernambuco",
-        "actionId": "icare_0100",
-        "actionName": "Support Regenerative Agriculture Practices",
-        "actionPriority": 20,
-        "action": {
-            "ActionID": "icare_0100",
-            "ActionName": "Support Regenerative Agriculture Practices",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Support regenerative agricultural practices that focus on restoring soil health and reducing carbon emissions.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "60-79"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Development of training programs and resources to educate farmers on regenerative agricultural techniques, such as cover cropping and reduced tillage.",
-                "Implementation of financial incentives or subsidies to support the adoption of regenerative practices.",
-                "Collaboration with agricultural research institutions to monitor and document the effectiveness of regenerative practices in carbon sequestration and soil health improvement."
-            ],
-            "KeyPerformanceIndicators": [
-                "Increase in soil organic carbon levels (tons/hectare).",
-                "Reduction in water usage per hectare in agricultural production (%).",
-                "Number of regenerative agriculture pilot projects implemented."
             ],
             "PowersAndMandates": [
                 "local"

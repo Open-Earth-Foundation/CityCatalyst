@@ -4,27 +4,9 @@
         "cityName": "Campo Largo",
         "region": "PR",
         "regionName": "Paran\u00e1",
-        "actionId": "icare_0121",
-        "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
-        "actionPriority": 1
-    },
-    {
-        "locode": "BR CLO",
-        "cityName": "Campo Largo",
-        "region": "PR",
-        "regionName": "Paran\u00e1",
         "actionId": "icare_0118",
         "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
-        "actionPriority": 2
-    },
-    {
-        "locode": "BR CLO",
-        "cityName": "Campo Largo",
-        "region": "PR",
-        "regionName": "Paran\u00e1",
-        "actionId": "icare_0088",
-        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
-        "actionPriority": 3
+        "actionPriority": 1
     },
     {
         "locode": "BR CLO",
@@ -33,7 +15,16 @@
         "regionName": "Paran\u00e1",
         "actionId": "icare_0005",
         "actionName": "Create credit lines for residential and community wind energy projects",
-        "actionPriority": 4
+        "actionPriority": 2
+    },
+    {
+        "locode": "BR CLO",
+        "cityName": "Campo Largo",
+        "region": "PR",
+        "regionName": "Paran\u00e1",
+        "actionId": "icare_0121",
+        "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
+        "actionPriority": 3
     },
     {
         "locode": "BR CLO",
@@ -42,6 +33,15 @@
         "regionName": "Paran\u00e1",
         "actionId": "icare_0094",
         "actionName": "Adoption of biomethane in public fleets.",
+        "actionPriority": 4
+    },
+    {
+        "locode": "BR CLO",
+        "cityName": "Campo Largo",
+        "region": "PR",
+        "regionName": "Paran\u00e1",
+        "actionId": "icare_0088",
+        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
         "actionPriority": 5
     },
     {
@@ -94,18 +94,9 @@
         "cityName": "Campo Largo",
         "region": "PR",
         "regionName": "Paran\u00e1",
-        "actionId": "icare_0042",
-        "actionName": "Encourage renewable energy policies at the municipal level",
+        "actionId": "icare_0117",
+        "actionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
         "actionPriority": 11
-    },
-    {
-        "locode": "BR CLO",
-        "cityName": "Campo Largo",
-        "region": "PR",
-        "regionName": "Paran\u00e1",
-        "actionId": "ipcc_0016",
-        "actionName": "Eco-driving",
-        "actionPriority": 12
     },
     {
         "locode": "BR CLO",
@@ -114,7 +105,7 @@
         "regionName": "Paran\u00e1",
         "actionId": "icare_0068",
         "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
-        "actionPriority": 13
+        "actionPriority": 12
     },
     {
         "locode": "BR CLO",
@@ -123,6 +114,15 @@
         "regionName": "Paran\u00e1",
         "actionId": "icare_0044",
         "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
+        "actionPriority": 13
+    },
+    {
+        "locode": "BR CLO",
+        "cityName": "Campo Largo",
+        "region": "PR",
+        "regionName": "Paran\u00e1",
+        "actionId": "icare_0027",
+        "actionName": "Create financing programs for local renewable energy projects",
         "actionPriority": 14
     },
     {
@@ -139,8 +139,8 @@
         "cityName": "Campo Largo",
         "region": "PR",
         "regionName": "Paran\u00e1",
-        "actionId": "icare_0131",
-        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
+        "actionId": "icare_0042",
+        "actionName": "Encourage renewable energy policies at the municipal level",
         "actionPriority": 16
     },
     {
@@ -148,18 +148,9 @@
         "cityName": "Campo Largo",
         "region": "PR",
         "regionName": "Paran\u00e1",
-        "actionId": "icare_0117",
-        "actionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
+        "actionId": "icare_0131",
+        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
         "actionPriority": 17
-    },
-    {
-        "locode": "BR CLO",
-        "cityName": "Campo Largo",
-        "region": "PR",
-        "regionName": "Paran\u00e1",
-        "actionId": "icare_0136",
-        "actionName": "Support the Implementation of Ecological Fiscal Incentives",
-        "actionPriority": 18
     },
     {
         "locode": "BR CLO",
@@ -168,6 +159,15 @@
         "regionName": "Paran\u00e1",
         "actionId": "icare_0099",
         "actionName": "Support Agroecological Certification Programs",
+        "actionPriority": 18
+    },
+    {
+        "locode": "BR CLO",
+        "cityName": "Campo Largo",
+        "region": "PR",
+        "regionName": "Paran\u00e1",
+        "actionId": "icare_0136",
+        "actionName": "Support the Implementation of Ecological Fiscal Incentives",
         "actionPriority": 19
     },
     {
@@ -175,8 +175,8 @@
         "cityName": "Campo Largo",
         "region": "PR",
         "regionName": "Paran\u00e1",
-        "actionId": "icare_0028",
-        "actionName": "Incorporate natural shading and ventilation designs",
+        "actionId": "ipcc_0006",
+        "actionName": "Teleworking",
         "actionPriority": 20
     }
 ]

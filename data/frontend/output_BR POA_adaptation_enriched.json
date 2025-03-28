@@ -117,10 +117,116 @@
         "cityName": "Porto Alegre",
         "region": "RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0164",
-        "actionName": "Hydrological Monitoring System with Telemetry Stations",
+        "actionId": "icare_0181",
+        "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
         "actionPriority": 3,
         "explanation": "Ranked #3 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "icare_0181",
+            "ActionName": "Relocation and Environmental Restoration in Vulnerable Areas",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "landslides",
+                "floods"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "A comprehensive project addressing the socio-environmental vulnerability of an informal settlement. It includes relocating residents from flood-prone areas, restoring the environment, and providing infrastructure and social services.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 2,
+                "mobility": 1,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Adequate funding",
+                "Inter-agency coordination",
+                "Land tenure security"
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of households relocated.",
+                "Environmental restoration progress.",
+                "Flood risk reduction."
+            ],
+            "PowersAndMandates": [
+                "state"
+            ]
+        }
+    },
+    {
+        "locode": "BR POA",
+        "cityName": "Porto Alegre",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0154",
+        "actionName": "Cleaning and Unclogging of Channels with Installation of Eco-barriers",
+        "actionPriority": 4,
+        "explanation": "Ranked #4 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "icare_0154",
+            "ActionName": "Cleaning and Unclogging of Channels with Installation of Eco-barriers",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "floods"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Cleaning and unclogging channels in the city to reduce the risk of flooding caused by extreme rainfall events. Installation of eco-barriers to assist in cleaning efforts and raise awareness about solid waste.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 2,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 1,
+                "mobility": 1,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "medium",
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Regular maintenance",
+                "Proper waste management practices"
+            ],
+            "KeyPerformanceIndicators": [
+                "Flood reduction",
+                "Waste reduction",
+                "Maintenance costs"
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR POA",
+        "cityName": "Porto Alegre",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0164",
+        "actionName": "Hydrological Monitoring System with Telemetry Stations",
+        "actionPriority": 5,
+        "explanation": "Ranked #5 by tournament ranking algorithm",
         "action": {
             "ActionID": "icare_0164",
             "ActionName": "Hydrological Monitoring System with Telemetry Stations",
@@ -172,64 +278,10 @@
         "cityName": "Porto Alegre",
         "region": "RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0181",
-        "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
-        "actionPriority": 4,
-        "explanation": "Ranked #4 by tournament ranking algorithm",
-        "action": {
-            "ActionID": "icare_0181",
-            "ActionName": "Relocation and Environmental Restoration in Vulnerable Areas",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "landslides",
-                "floods"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "A comprehensive project addressing the socio-environmental vulnerability of an informal settlement. It includes relocating residents from flood-prone areas, restoring the environment, and providing infrastructure and social services.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 2,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Adequate funding",
-                "Inter-agency coordination",
-                "Land tenure security"
-            ],
-            "KeyPerformanceIndicators": [
-                "Number of households relocated.",
-                "Environmental restoration progress.",
-                "Flood risk reduction."
-            ],
-            "PowersAndMandates": [
-                "state"
-            ]
-        }
-    },
-    {
-        "locode": "BR POA",
-        "cityName": "Porto Alegre",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
         "actionId": "icare_0175",
         "actionName": "Recovery and preservation of green areas",
-        "actionPriority": 5,
-        "explanation": "Ranked #5 by tournament ranking algorithm",
+        "actionPriority": 6,
+        "explanation": "Ranked #6 by tournament ranking algorithm",
         "action": {
             "ActionID": "icare_0175",
             "ActionName": "Recovery and preservation of green areas",
@@ -282,8 +334,8 @@
         "regionName": "Rio Grande do Sul",
         "actionId": "icare_0151",
         "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
-        "actionPriority": 6,
-        "explanation": "Ranked #6 by tournament ranking algorithm",
+        "actionPriority": 7,
+        "explanation": "Ranked #7 by tournament ranking algorithm",
         "action": {
             "ActionID": "icare_0151",
             "ActionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
@@ -337,186 +389,10 @@
         "cityName": "Porto Alegre",
         "region": "RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0154",
-        "actionName": "Cleaning and Unclogging of Channels with Installation of Eco-barriers",
-        "actionPriority": 7,
-        "explanation": "Ranked #7 by tournament ranking algorithm",
-        "action": {
-            "ActionID": "icare_0154",
-            "ActionName": "Cleaning and Unclogging of Channels with Installation of Eco-barriers",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "floods"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Cleaning and unclogging channels in the city to reduce the risk of flooding caused by extreme rainfall events. Installation of eco-barriers to assist in cleaning efforts and raise awareness about solid waste.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "medium",
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Regular maintenance",
-                "Proper waste management practices"
-            ],
-            "KeyPerformanceIndicators": [
-                "Flood reduction",
-                "Waste reduction",
-                "Maintenance costs"
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR POA",
-        "cityName": "Porto Alegre",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0088",
-        "actionName": "Building codes",
-        "actionPriority": 8,
-        "explanation": "Ranked #8 by tournament ranking algorithm",
-        "action": {
-            "ActionID": "ipcc_0088",
-            "ActionName": "Building codes",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "floods",
-                "landslides"
-            ],
-            "Sector": [
-                "road_infrastructure",
-                "geo-hydrological_disasters"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "The development and implementation of building codes and architectural design regulations aimed at integrating climate adaptation parameters. These codes are focused on reducing risks from climate-induced hazards like floods and landslides. They also support climate-resilient urban development by guiding land use, construction practices, and infrastructure standards. The initiative fosters strategic long-term urban planning to coordinate public and private investments in adaptation, including the creation of safe zones and the transformation of precarious settlements. It ensures that new infrastructure is resilient to climate risks and that urban spaces are safe and sustainable for current and future populations.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 2,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": "Promotes inclusive urban planning by addressing risks in informal and precarious settlements and integrating eco-parks and eco-gardens for vulnerable populations.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Integration with local climate risk assessments",
-                "Strategic collaboration between urban planners and municipal authorities"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in urban flood incidents",
-                "Increased availability of safe housing in risk areas",
-                "Implementation rate of eco-parks and eco-gardens in vulnerable areas"
-            ],
-            "PowersAndMandates": null
-        }
-    },
-    {
-        "locode": "BR POA",
-        "cityName": "Porto Alegre",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0086",
-        "actionName": "Ecosystem-based adaptation",
-        "actionPriority": 9,
-        "explanation": "Ranked #9 by tournament ranking algorithm",
-        "action": {
-            "ActionID": "ipcc_0086",
-            "ActionName": "Ecosystem-based adaptation",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "storms",
-                "sea-level-rise",
-                "heatwaves",
-                "floods"
-            ],
-            "Sector": [
-                "biodiversity",
-                "geo-hydrological_disasters",
-                "water_resources",
-                "public_health"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Restoring and sustainably managing marine, coastal, urban, riverine, and wetland ecosystems to protect against climate hazards such as storm surges, floods, and heatwaves. Efforts include agroecology, coastal and marine vegetation and reefs, vegetation corridors, mangrove habitat restoration, urban green space to reduce temperatures. These actions improve biodiversity, store carbon, enhance water quality, and provide socio-economic and cultural co-benefits.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 0,
-                "housing": 1,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": "Supports vulnerable communities by enhancing climate resilience, promoting equitable access to ecosystem services, and creating livelihood opportunities, especially for marginalized and underserved populations.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Community engagement",
-                "Regulatory support",
-                "Financial investment",
-                "Urban planning",
-                "Climate-resilient vegetation",
-                "Biodiversity assessments",
-                "Catchment management",
-                "Upstream planning",
-                "Sustainable funding"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in storm surge damage",
-                "Carbon sequestration rates",
-                "Increased biodiversity",
-                "Temperature reduction in urban areas",
-                "Improved water quality",
-                "Access to green spaces by underserved communities",
-                "Reduction in flood events",
-                "Enhanced ecosystem health"
-            ],
-            "PowersAndMandates": null
-        }
-    },
-    {
-        "locode": "BR POA",
-        "cityName": "Porto Alegre",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
         "actionId": "icare_0156",
         "actionName": "Implementation of urban gardens",
-        "actionPriority": 10,
-        "explanation": "Ranked #10 by tournament ranking algorithm",
+        "actionPriority": 8,
+        "explanation": "Ranked #8 by tournament ranking algorithm",
         "action": {
             "ActionID": "icare_0156",
             "ActionName": "Implementation of urban gardens",
@@ -568,10 +444,64 @@
         "cityName": "Porto Alegre",
         "region": "RS",
         "regionName": "Rio Grande do Sul",
+        "actionId": "ipcc_0088",
+        "actionName": "Building codes",
+        "actionPriority": 9,
+        "explanation": "Ranked #9 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "ipcc_0088",
+            "ActionName": "Building codes",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "floods",
+                "landslides"
+            ],
+            "Sector": [
+                "road_infrastructure",
+                "geo-hydrological_disasters"
+            ],
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "The development and implementation of building codes and architectural design regulations aimed at integrating climate adaptation parameters. These codes are focused on reducing risks from climate-induced hazards like floods and landslides. They also support climate-resilient urban development by guiding land use, construction practices, and infrastructure standards. The initiative fosters strategic long-term urban planning to coordinate public and private investments in adaptation, including the creation of safe zones and the transformation of precarious settlements. It ensures that new infrastructure is resilient to climate risks and that urban spaces are safe and sustainable for current and future populations.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 2,
+                "mobility": 1,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": "Promotes inclusive urban planning by addressing risks in informal and precarious settlements and integrating eco-parks and eco-gardens for vulnerable populations.",
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Integration with local climate risk assessments",
+                "Strategic collaboration between urban planners and municipal authorities"
+            ],
+            "KeyPerformanceIndicators": [
+                "Reduction in urban flood incidents",
+                "Increased availability of safe housing in risk areas",
+                "Implementation rate of eco-parks and eco-gardens in vulnerable areas"
+            ],
+            "PowersAndMandates": null
+        }
+    },
+    {
+        "locode": "BR POA",
+        "cityName": "Porto Alegre",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
         "actionId": "ipcc_0097",
         "actionName": "Food storage/distribution improvements",
-        "actionPriority": 11,
-        "explanation": "Ranked #11 by tournament ranking algorithm",
+        "actionPriority": 10,
+        "explanation": "Ranked #10 by tournament ranking algorithm",
         "action": {
             "ActionID": "ipcc_0097",
             "ActionName": "Food storage/distribution improvements",
@@ -627,54 +557,58 @@
         "cityName": "Porto Alegre",
         "region": "RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0162",
-        "actionName": "Strengthen programs for control and conservation of protected areas",
-        "actionPriority": 12,
-        "explanation": "Ranked #12 by tournament ranking algorithm",
+        "actionId": "icare_0169",
+        "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
+        "actionPriority": 11,
+        "explanation": "Ranked #11 by tournament ranking algorithm",
         "action": {
-            "ActionID": "icare_0162",
-            "ActionName": "Strengthen programs for control and conservation of protected areas",
+            "ActionID": "icare_0169",
+            "ActionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
             "ActionType": [
                 "adaptation"
             ],
             "Hazard": [
-                "floods",
-                "landslides",
+                "droughts",
                 "heatwaves",
-                "diseases"
+                "diseases",
+                "landslides",
+                "floods",
+                "wildfires",
+                "sea-level-rise",
+                "storms"
             ],
             "Sector": null,
             "Subsector": null,
             "PrimaryPurpose": [
                 "climate_resilience"
             ],
-            "Description": "This action focuses on implementing a series of integrated strategies to enhance environmental conservation and maximize its benefits, such as expanding protected areas, developing management plans for conservation units, and training ecotourism guides to strengthen sustainable tourism.",
+            "Description": "This action focuses on preparing the municipality to respond to extreme events, aiming to provide a rapid response that minimizes the impacts on the population.",
             "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 2,
-                "habitat": 2,
+                "air_quality": 0,
+                "water_quality": 0,
+                "habitat": 0,
                 "cost_of_living": 0,
                 "housing": 0,
                 "mobility": 0,
-                "stakeholder_engagement": 1
+                "stakeholder_engagement": 2
             },
             "EquityAndInclusionConsiderations": null,
             "GHGReductionPotential": null,
             "AdaptationEffectiveness": "high",
             "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
+            "TimelineForImplementation": "<5 years",
             "Dependencies": [
-                "Expansion of protected areas to enhance environmental conservation.",
-                "Development of management plans for conservation units.",
-                "Training of ecotourism guides to promote sustainable tourism."
+                "Development of a comprehensive emergency response plan that includes coordination between local authorities, emergency services, and community organizations",
+                "Investment in early warning systems and infrastructure to ensure timely and effective responses to extreme events",
+                "Training and capacity-building for local responders and communities to enhance preparedness and resilience to extreme events"
             ],
             "KeyPerformanceIndicators": [
-                "Percentage increase in area of protected regions (%).",
-                "Reduction in deforestation rates in protected areas annually (%).",
-                "Number of conservation programs strengthened annually."
+                "Number of emergency response partnerships established.",
+                "Average response time during extreme weather events (hours).",
+                "Percentage reduction in casualties and damages during extreme weather events annually (%)."
             ],
             "PowersAndMandates": [
-                "state"
+                "local"
             ]
         }
     },
@@ -685,8 +619,8 @@
         "regionName": "Rio Grande do Sul",
         "actionId": "icare_0149",
         "actionName": "Encourage sustainable land use practices",
-        "actionPriority": 13,
-        "explanation": "Ranked #13 by tournament ranking algorithm",
+        "actionPriority": 12,
+        "explanation": "Ranked #12 by tournament ranking algorithm",
         "action": {
             "ActionID": "icare_0149",
             "ActionName": "Encourage sustainable land use practices",
@@ -732,6 +666,62 @@
             ],
             "PowersAndMandates": [
                 "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR POA",
+        "cityName": "Porto Alegre",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0162",
+        "actionName": "Strengthen programs for control and conservation of protected areas",
+        "actionPriority": 13,
+        "explanation": "Ranked #13 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "icare_0162",
+            "ActionName": "Strengthen programs for control and conservation of protected areas",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "floods",
+                "landslides",
+                "heatwaves",
+                "diseases"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "This action focuses on implementing a series of integrated strategies to enhance environmental conservation and maximize its benefits, such as expanding protected areas, developing management plans for conservation units, and training ecotourism guides to strengthen sustainable tourism.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Expansion of protected areas to enhance environmental conservation.",
+                "Development of management plans for conservation units.",
+                "Training of ecotourism guides to promote sustainable tourism."
+            ],
+            "KeyPerformanceIndicators": [
+                "Percentage increase in area of protected regions (%).",
+                "Reduction in deforestation rates in protected areas annually (%).",
+                "Number of conservation programs strengthened annually."
+            ],
+            "PowersAndMandates": [
+                "state"
             ]
         }
     },
@@ -908,10 +898,135 @@
         "cityName": "Porto Alegre",
         "region": "RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0095",
-        "actionName": "Disaster early warning",
+        "actionId": "ipcc_0086",
+        "actionName": "Ecosystem-based adaptation",
         "actionPriority": 17,
         "explanation": "Ranked #17 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "ipcc_0086",
+            "ActionName": "Ecosystem-based adaptation",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "storms",
+                "sea-level-rise",
+                "heatwaves",
+                "floods"
+            ],
+            "Sector": [
+                "biodiversity",
+                "geo-hydrological_disasters",
+                "water_resources",
+                "public_health"
+            ],
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Restoring and sustainably managing marine, coastal, urban, riverine, and wetland ecosystems to protect against climate hazards such as storm surges, floods, and heatwaves. Efforts include agroecology, coastal and marine vegetation and reefs, vegetation corridors, mangrove habitat restoration, urban green space to reduce temperatures. These actions improve biodiversity, store carbon, enhance water quality, and provide socio-economic and cultural co-benefits.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": 0,
+                "housing": 1,
+                "mobility": 1,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": "Supports vulnerable communities by enhancing climate resilience, promoting equitable access to ecosystem services, and creating livelihood opportunities, especially for marginalized and underserved populations.",
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Community engagement",
+                "Regulatory support",
+                "Financial investment",
+                "Urban planning",
+                "Climate-resilient vegetation",
+                "Biodiversity assessments",
+                "Catchment management",
+                "Upstream planning",
+                "Sustainable funding"
+            ],
+            "KeyPerformanceIndicators": [
+                "Reduction in storm surge damage",
+                "Carbon sequestration rates",
+                "Increased biodiversity",
+                "Temperature reduction in urban areas",
+                "Improved water quality",
+                "Access to green spaces by underserved communities",
+                "Reduction in flood events",
+                "Enhanced ecosystem health"
+            ],
+            "PowersAndMandates": null
+        }
+    },
+    {
+        "locode": "BR POA",
+        "cityName": "Porto Alegre",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0172",
+        "actionName": "Develop and implement the Municipal Risk Reduction Plan (PMRR) and identify population groups vulnerable to climate risks.",
+        "actionPriority": 18,
+        "explanation": "Ranked #18 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "icare_0172",
+            "ActionName": "Develop and implement the Municipal Risk Reduction Plan (PMRR) and identify population groups vulnerable to climate risks.",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "landslides",
+                "floods",
+                "storms"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "This action aims to strengthen the development of the Municipal Risk Reduction Plan (PMRR) in the municipality, as it is a highly relevant tool for managing climate risks, especially river floods and landslides.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Availability of technical expertise and resources to develop and implement the Municipal Risk Reduction Plan (PMRR)",
+                "Data collection and analysis to accurately assess climate risks, especially related to river floods and landslides",
+                "Political commitment and coordination between various government agencies to integrate the PMRR into broader urban planning and disaster management strategies"
+            ],
+            "KeyPerformanceIndicators": [
+                "Percentage of vulnerable population covered by MRRP (%).",
+                "Number of risk reduction measures implemented annually.",
+                "Reduction in the number of people affected by climate-related disasters annually."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR POA",
+        "cityName": "Porto Alegre",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "ipcc_0095",
+        "actionName": "Disaster early warning",
+        "actionPriority": 19,
+        "explanation": "Ranked #19 by tournament ranking algorithm",
         "action": {
             "ActionID": "ipcc_0095",
             "ActionName": "Disaster early warning",
@@ -967,178 +1082,54 @@
         "cityName": "Porto Alegre",
         "region": "RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0169",
-        "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
-        "actionPriority": 18,
-        "explanation": "Ranked #18 by tournament ranking algorithm",
+        "actionId": "icare_0180",
+        "actionName": "Implement permeable pavements and increase green areas in roadways",
+        "actionPriority": 20,
+        "explanation": "Ranked #20 by tournament ranking algorithm",
         "action": {
-            "ActionID": "icare_0169",
-            "ActionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
+            "ActionID": "icare_0180",
+            "ActionName": "Implement permeable pavements and increase green areas in roadways",
             "ActionType": [
                 "adaptation"
             ],
             "Hazard": [
-                "droughts",
-                "heatwaves",
-                "diseases",
-                "landslides",
                 "floods",
-                "wildfires",
-                "sea-level-rise",
-                "storms"
+                "landslides",
+                "heatwaves"
             ],
             "Sector": null,
             "Subsector": null,
             "PrimaryPurpose": [
                 "climate_resilience"
             ],
-            "Description": "This action focuses on preparing the municipality to respond to extreme events, aiming to provide a rapid response that minimizes the impacts on the population.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Development of a comprehensive emergency response plan that includes coordination between local authorities, emergency services, and community organizations",
-                "Investment in early warning systems and infrastructure to ensure timely and effective responses to extreme events",
-                "Training and capacity-building for local responders and communities to enhance preparedness and resilience to extreme events"
-            ],
-            "KeyPerformanceIndicators": [
-                "Number of emergency response partnerships established.",
-                "Average response time during extreme weather events (hours).",
-                "Percentage reduction in casualties and damages during extreme weather events annually (%)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR POA",
-        "cityName": "Porto Alegre",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0099",
-        "actionName": "Water capture/storage",
-        "actionPriority": 19,
-        "explanation": "Ranked #19 by tournament ranking algorithm",
-        "action": {
-            "ActionID": "ipcc_0099",
-            "ActionName": "Water capture/storage",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "droughts",
-                "floods",
-                "storms"
-            ],
-            "Sector": [
-                "water_resources",
-                "food_security",
-                "energy_security",
-                "geo-hydrological_disasters"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Implementing water capture and storage solutions such as farm ponds, revival of water bodies, rain gardens, bioswales, retention ponds, and water storage tanks. These measures aim to mitigate climate-induced impacts by improving water management, reducing stormwater runoff, enhancing water quality, and supporting agriculture and energy production under changing climate scenarios. Multi-purpose water reservoirs and dams provide additional benefits by addressing water shortages and managing risks associated with natural hazards.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 1,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": "Ensures access to water for underserved communities, supports sustainable livelihoods in water-scarce regions, and promotes equitable resource distribution through inclusive decision-making processes.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Investment in green infrastructure",
-                "community engagement",
-                "policy support for water resource management"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in stormwater runoff",
-                "increase in water storage capacity",
-                "improvement in water quality",
-                "stability in agricultural yields"
-            ],
-            "PowersAndMandates": null
-        }
-    },
-    {
-        "locode": "BR POA",
-        "cityName": "Porto Alegre",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0084",
-        "actionName": "Restore/create natural areas",
-        "actionPriority": 20,
-        "explanation": "Ranked #20 by tournament ranking algorithm",
-        "action": {
-            "ActionID": "ipcc_0084",
-            "ActionName": "Restore/create natural areas",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "sea-level-rise",
-                "floods",
-                "storms",
-                "droughts"
-            ],
-            "Sector": [
-                "biodiversity",
-                "water_resources",
-                "geo-hydrological_disasters"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Restoration and conservation of marine and coastal habitats, such as mangroves, vegetated dunes, seagrasses, coral reefs, and kelp forests, to protect coastal communities, support biodiversity, sequester carbon, and mitigate climate change. Efforts include creating marine protected areas, active restoration of coral reefs, ridge-to-reef management, restoring\n dunes, planting salinity-tolerant trees, increasing forest cover, detect and manage forest pests.",
+            "Description": "Increase the permeable and semi-permeable areas in buildings and public spaces under the administration of the City, with the adoption of nature-based solutions (NbS). In areas with space limitations, the action includes feasibility analyses for implementing permeable pavements and increasing green areas in roadways. Among traditional construction solutions, there are features such as curbs and gutters with stormwater drains, as well as larger-scale solutions like retention ponds. Nature-based solutions include urban tree planting, green roofs, rainwater cisterns, bio-swales, and more.",
             "CoBenefits": {
                 "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 0,
                 "housing": 1,
                 "mobility": 0,
                 "stakeholder_engagement": 1
             },
-            "EquityAndInclusionConsiderations": "Promotes inclusion by protecting ecosystems that support vulnerable coastal communities and enhances livelihoods through sustainable fisheries and recreation opportunities.",
+            "EquityAndInclusionConsiderations": null,
             "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
+            "AdaptationEffectiveness": "medium",
             "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
+            "TimelineForImplementation": "<5 years",
             "Dependencies": [
-                "Community engagement",
-                "Funding for restoration projects",
-                "Integration of local knowledge",
-                "Sustainable management of marine resources"
+                "Expansion of permeable and semi-permeable areas in City-administered buildings and public spaces.",
+                "Adoption of nature-based solutions (NbS) such as urban tree planting, green roofs, rainwater cisterns, and bio-swales.",
+                "Feasibility analyses for permeable pavements and increased green areas in roadways, alongside traditional stormwater management solutions like curbs, gutters, and retention ponds."
             ],
             "KeyPerformanceIndicators": [
-                "Area of habitats restored",
-                "Reduction in coastal flooding incidents",
-                "Improvement in biodiversity indices",
-                "Carbon sequestration capacity"
+                "Reduction in surface water runoff during rainfall events (%).",
+                "Decrease in flooding occurrences in modified areas.",
+                "Percentage of public spaces complying with new permeable surface regulations."
             ],
-            "PowersAndMandates": null
+            "PowersAndMandates": [
+                "local"
+            ]
         }
     }
 ]

@@ -22,8 +22,8 @@
         "cityName": "Rio Branco",
         "region": "AC",
         "regionName": "Acre",
-        "actionId": "icare_0134",
-        "actionName": "Strengthen Mechanisms for Deforestation Control",
+        "actionId": "icare_0084",
+        "actionName": "Create Incentives for Agroforestry Practices in Livestock Systems",
         "actionPriority": 3
     },
     {
@@ -31,8 +31,8 @@
         "cityName": "Rio Branco",
         "region": "AC",
         "regionName": "Acre",
-        "actionId": "icare_0096",
-        "actionName": "Promote Organic Farming",
+        "actionId": "icare_0134",
+        "actionName": "Strengthen Mechanisms for Deforestation Control",
         "actionPriority": 4
     },
     {
@@ -49,8 +49,8 @@
         "cityName": "Rio Branco",
         "region": "AC",
         "regionName": "Acre",
-        "actionId": "icare_0084",
-        "actionName": "Create Incentives for Agroforestry Practices in Livestock Systems",
+        "actionId": "icare_0102",
+        "actionName": "Promote Sustainable Agricultural Practices",
         "actionPriority": 6
     },
     {
@@ -58,8 +58,8 @@
         "cityName": "Rio Branco",
         "region": "AC",
         "regionName": "Acre",
-        "actionId": "icare_0102",
-        "actionName": "Promote Sustainable Agricultural Practices",
+        "actionId": "icare_0096",
+        "actionName": "Promote Organic Farming",
         "actionPriority": 7
     },
     {
@@ -112,8 +112,8 @@
         "cityName": "Rio Branco",
         "region": "AC",
         "regionName": "Acre",
-        "actionId": "icare_0131",
-        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
+        "actionId": "icare_0057",
+        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
         "actionPriority": 13
     },
     {
@@ -121,18 +121,9 @@
         "cityName": "Rio Branco",
         "region": "AC",
         "regionName": "Acre",
-        "actionId": "c40_0042",
-        "actionName": "Biodiversity Expansion",
+        "actionId": "icare_0131",
+        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
         "actionPriority": 14
-    },
-    {
-        "locode": "BR RBR",
-        "cityName": "Rio Branco",
-        "region": "AC",
-        "regionName": "Acre",
-        "actionId": "icare_0099",
-        "actionName": "Support Agroecological Certification Programs",
-        "actionPriority": 15
     },
     {
         "locode": "BR RBR",
@@ -141,6 +132,15 @@
         "regionName": "Acre",
         "actionId": "icare_0136",
         "actionName": "Support the Implementation of Ecological Fiscal Incentives",
+        "actionPriority": 15
+    },
+    {
+        "locode": "BR RBR",
+        "cityName": "Rio Branco",
+        "region": "AC",
+        "regionName": "Acre",
+        "actionId": "icare_0099",
+        "actionName": "Support Agroecological Certification Programs",
         "actionPriority": 16
     },
     {
@@ -166,8 +166,8 @@
         "cityName": "Rio Branco",
         "region": "AC",
         "regionName": "Acre",
-        "actionId": "icare_0044",
-        "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
+        "actionId": "icare_0121",
+        "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
         "actionPriority": 19
     },
     {
@@ -175,8 +175,8 @@
         "cityName": "Rio Branco",
         "region": "AC",
         "regionName": "Acre",
-        "actionId": "icare_0121",
-        "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
+        "actionId": "icare_0068",
+        "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
         "actionPriority": 20
     }
 ]

@@ -4,39 +4,39 @@
         "cityName": "Palmeira dos \u00cdndios",
         "region": "AL",
         "regionName": "Alagoas",
-        "actionId": "icare_0005",
-        "actionName": "Create credit lines for residential and community wind energy projects",
+        "actionId": "icare_0118",
+        "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
         "actionPriority": 1,
         "action": {
-            "ActionID": "icare_0005",
-            "ActionName": "Create credit lines for residential and community wind energy projects",
+            "ActionID": "icare_0118",
+            "ActionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
             "ActionType": [
                 "mitigation"
             ],
             "Hazard": null,
             "Sector": [
-                "stationary_energy"
+                "transportation"
             ],
             "Subsector": [
-                "energy_generation_supplied_to_the_grid"
+                "on-road"
             ],
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "Description": "Establish accessible financing programs to support the development and adoption of wind energy systems in households and community-based projects, enabling a transition to cleaner energy sources.",
+            "Description": "Encourage the adoption of bicycles as a regular mode of transport by expanding cycling infrastructure, such as dedicated bike lanes, parking facilities, and repair stations. Additionally, implement awareness campaigns and communication strategies to highlight the environmental, health, and economic benefits of cycling, aiming to increase public participation and make cycling a viable and sustainable transport option for daily commuting.",
             "CoBenefits": {
                 "air_quality": 2,
                 "water_quality": 0,
                 "habitat": 0,
-                "cost_of_living": 2,
-                "housing": 2,
-                "mobility": 0,
+                "cost_of_living": 1,
+                "housing": 1,
+                "mobility": 2,
                 "stakeholder_engagement": 1
             },
             "EquityAndInclusionConsiderations": null,
             "GHGReductionPotential": {
-                "stationary_energy": "60-79",
-                "transportation": null,
+                "stationary_energy": null,
+                "transportation": "60-79",
                 "waste": null,
                 "ippu": null,
                 "afolu": null
@@ -45,14 +45,14 @@
             "CostInvestmentNeeded": "medium",
             "TimelineForImplementation": "5-10 years",
             "Dependencies": [
-                "Availability of financial programs, grants, or subsidies to make wind energy systems affordable for households and community projects",
-                "Access to technical expertise and resources to guide the installation and maintenance of wind energy systems in residential and community settings",
-                "Policy and regulatory support to encourage the adoption of wind energy, including streamlined permitting processes and incentives for clean energy projects"
+                "Expand cycling infrastructure, including dedicated bike lanes, parking facilities, and repair stations.",
+                "Implement awareness campaigns to highlight the environmental, health, and economic benefits of cycling.",
+                "Promote public participation through communication strategies, making cycling a viable and sustainable option for daily commuting."
             ],
             "KeyPerformanceIndicators": [
-                "Number of wind energy projects financed annually.",
-                "Installed capacity of wind energy systems from credit-supported projects (MW).",
-                "Estimated reduction in CO\u2082 equivalent emissions from wind energy adoption."
+                "Length of new bike lanes added to the urban network (km).",
+                "Annual increase in the number of bicycle users in urban areas.",
+                "Estimated reduction in CO\u2082 equivalent emissions from the shift to cycling."
             ],
             "PowersAndMandates": [
                 "local"
@@ -124,355 +124,55 @@
         "cityName": "Palmeira dos \u00cdndios",
         "region": "AL",
         "regionName": "Alagoas",
-        "actionId": "icare_0118",
-        "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
+        "actionId": "icare_0005",
+        "actionName": "Create credit lines for residential and community wind energy projects",
         "actionPriority": 3,
         "action": {
-            "ActionID": "icare_0118",
-            "ActionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
+            "ActionID": "icare_0005",
+            "ActionName": "Create credit lines for residential and community wind energy projects",
             "ActionType": [
                 "mitigation"
             ],
             "Hazard": null,
             "Sector": [
-                "transportation"
+                "stationary_energy"
             ],
             "Subsector": [
-                "on-road"
+                "energy_generation_supplied_to_the_grid"
             ],
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "Description": "Encourage the adoption of bicycles as a regular mode of transport by expanding cycling infrastructure, such as dedicated bike lanes, parking facilities, and repair stations. Additionally, implement awareness campaigns and communication strategies to highlight the environmental, health, and economic benefits of cycling, aiming to increase public participation and make cycling a viable and sustainable transport option for daily commuting.",
+            "Description": "Establish accessible financing programs to support the development and adoption of wind energy systems in households and community-based projects, enabling a transition to cleaner energy sources.",
             "CoBenefits": {
                 "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 2,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Expand cycling infrastructure, including dedicated bike lanes, parking facilities, and repair stations.",
-                "Implement awareness campaigns to highlight the environmental, health, and economic benefits of cycling.",
-                "Promote public participation through communication strategies, making cycling a viable and sustainable option for daily commuting."
-            ],
-            "KeyPerformanceIndicators": [
-                "Length of new bike lanes added to the urban network (km).",
-                "Annual increase in the number of bicycle users in urban areas.",
-                "Estimated reduction in CO\u2082 equivalent emissions from the shift to cycling."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR PIS",
-        "cityName": "Palmeira dos \u00cdndios",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "icare_0133",
-        "actionName": "Promote Urban Reforestation and Green Corridors",
-        "actionPriority": 4,
-        "action": {
-            "ActionID": "icare_0133",
-            "ActionName": "Promote Urban Reforestation and Green Corridors",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "land"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Increase urban tree coverage to mitigate the urban heat island effect and enhance biodiversity.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 1,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "80-100"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Identification of priority areas and selection of native, climate-resilient species for tree planting.",
-                "Partnerships with local organizations and nurseries, and allocation of resources for planting and maintenance.",
-                "Community engagement to ensure long-term care and support."
-            ],
-            "KeyPerformanceIndicators": [
-                "Increase in urban tree canopy cover (%)",
-                "Total length of green corridors created or restored (kilometers)",
-                "Reduction in urban heat island effect temperatures (\u00b0C)"
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR PIS",
-        "cityName": "Palmeira dos \u00cdndios",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "icare_0088",
-        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
-        "actionPriority": 5,
-        "action": {
-            "ActionID": "icare_0088",
-            "ActionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Encourage the use of public transportation by offering free services during peak hours for workers and students. This measure reduces urban congestion, decreases the number of individual vehicles on the road, and consequently lowers greenhouse gas emissions associated with private transportation.",
-            "CoBenefits": {
-                "air_quality": 1,
                 "water_quality": 0,
                 "habitat": 0,
                 "cost_of_living": 2,
-                "housing": 0,
-                "mobility": 2,
+                "housing": 2,
+                "mobility": 0,
                 "stakeholder_engagement": 1
             },
             "EquityAndInclusionConsiderations": null,
             "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
+                "stationary_energy": "60-79",
+                "transportation": null,
                 "waste": null,
                 "ippu": null,
                 "afolu": null
             },
             "AdaptationEffectiveness": null,
             "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Allocation of funding to subsidize free public transportation services during peak hours.",
-                "Development of policies to ensure the sustainability and efficiency of public transit systems amid increased demand.",
-                "Coordination with employers and educational institutions to optimize peak-hour schedules and promote the initiative."
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in air pollution levels during peak hours (PM2.5/PM10 concentration).",
-                "Number of private vehicles removed from roads during peak hours.",
-                "Public satisfaction rate with the free transportation initiative (%)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR PIS",
-        "cityName": "Palmeira dos \u00cdndios",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "icare_0092",
-        "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
-        "actionPriority": 6,
-        "action": {
-            "ActionID": "icare_0092",
-            "ActionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Create small-scale logistics hubs in urban neighborhoods to facilitate deliveries using electric cargo bikes, while implementing tax incentives or subsidies for businesses to adopt these bikes as a transportation mode, reducing emissions and improving delivery efficiency in densely populated areas.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "20-39",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Identification and development of suitable locations for small-scale logistics hubs within urban neighborhoods.",
-                "Provision of tax incentives, subsidies, or grants to encourage businesses to transition to electric cargo bikes.",
-                "Establishment of partnerships with logistics companies to ensure integration and efficiency in delivery operations using these hubs."
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in distance traveled by traditional delivery vehicles (km/year).",
-                "Increase in operational efficiency of logistics hubs (%).",
-                "Number of businesses utilizing micro-logistics hubs for deliveries."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR PIS",
-        "cityName": "Palmeira dos \u00cdndios",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "icare_0094",
-        "actionName": "Adoption of biomethane in public fleets.",
-        "actionPriority": 7,
-        "action": {
-            "ActionID": "icare_0094",
-            "ActionName": "Adoption of biomethane in public fleets.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Use biomethane produced from urban and agro-industrial waste to fuel public buses and trucks, reducing greenhouse gas emissions in municipal fleets",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 1,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Development of infrastructure for the production, processing, and distribution of biomethane from urban and agro-industrial waste.",
-                "Retrofitting or acquisition of public buses and trucks capable of using biomethane as a fuel source.",
-                "Establishment of policies and financial incentives to support biomethane production and its integration into municipal fleets."
-            ],
-            "KeyPerformanceIndicators": [
-                "Cost savings in fleet operation due to biomethane use (USD/year).",
-                "Increase in biomethane production capacity (%).",
-                "Percentage of biomethane sourced locally versus imported."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR PIS",
-        "cityName": "Palmeira dos \u00cdndios",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "icare_0057",
-        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
-        "actionPriority": 8,
-        "action": {
-            "ActionID": "icare_0057",
-            "ActionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "railways"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "These systems offer high capacity and low emissions, crucial for cities with high population density.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 2,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "80-100",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
             "TimelineForImplementation": "5-10 years",
             "Dependencies": [
-                "Investment in the development and expansion of high-capacity public transportation infrastructure, such as electric buses and metro systems.",
-                "Implementation of policies and incentives to encourage the use of public transport over private vehicles.",
-                "Integration of renewable energy sources to power these systems, reducing emissions further."
+                "Availability of financial programs, grants, or subsidies to make wind energy systems affordable for households and community projects",
+                "Access to technical expertise and resources to guide the installation and maintenance of wind energy systems in residential and community settings",
+                "Policy and regulatory support to encourage the adoption of wind energy, including streamlined permitting processes and incentives for clean energy projects"
             ],
             "KeyPerformanceIndicators": [
-                "Length of new transit lines built (km/year).",
-                "Reduction in road traffic congestion (%).",
-                "Reduction in private vehicle usage (number of trips avoided/year)."
+                "Number of wind energy projects financed annually.",
+                "Installed capacity of wind energy systems from credit-supported projects (MW).",
+                "Estimated reduction in CO\u2082 equivalent emissions from wind energy adoption."
             ],
             "PowersAndMandates": [
                 "local"
@@ -486,7 +186,7 @@
         "regionName": "Alagoas",
         "actionId": "icare_0090",
         "actionName": "Adoption of electric drones for last-mile deliveries.",
-        "actionPriority": 9,
+        "actionPriority": 4,
         "action": {
             "ActionID": "icare_0090",
             "ActionName": "Adoption of electric drones for last-mile deliveries.",
@@ -546,7 +246,7 @@
         "regionName": "Alagoas",
         "actionId": "icare_0025",
         "actionName": "Promote energy-efficient low-income housing",
-        "actionPriority": 10,
+        "actionPriority": 5,
         "action": {
             "ActionID": "icare_0025",
             "ActionName": "Promote energy-efficient low-income housing",
@@ -604,39 +304,99 @@
         "cityName": "Palmeira dos \u00cdndios",
         "region": "AL",
         "regionName": "Alagoas",
-        "actionId": "icare_0042",
-        "actionName": "Encourage renewable energy policies at the municipal level",
-        "actionPriority": 11,
+        "actionId": "icare_0094",
+        "actionName": "Adoption of biomethane in public fleets.",
+        "actionPriority": 6,
         "action": {
-            "ActionID": "icare_0042",
-            "ActionName": "Encourage renewable energy policies at the municipal level",
+            "ActionID": "icare_0094",
+            "ActionName": "Adoption of biomethane in public fleets.",
             "ActionType": [
                 "mitigation"
             ],
             "Hazard": null,
             "Sector": [
-                "stationary_energy"
+                "transportation"
             ],
             "Subsector": [
-                "non-specified_sources"
+                "on-road"
             ],
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "Description": "Advocate for and implement policies that prioritize the development and integration of renewable energy systems in local government operations and planning.",
+            "Description": "Use biomethane produced from urban and agro-industrial waste to fuel public buses and trucks, reducing greenhouse gas emissions in municipal fleets",
             "CoBenefits": {
                 "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 1,
-                "cost_of_living": 0,
+                "water_quality": 1,
+                "habitat": 0,
+                "cost_of_living": 1,
                 "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
+                "mobility": 1,
+                "stakeholder_engagement": 1
             },
             "EquityAndInclusionConsiderations": null,
             "GHGReductionPotential": {
-                "stationary_energy": "80-100",
-                "transportation": null,
+                "stationary_energy": null,
+                "transportation": "60-79",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Development of infrastructure for the production, processing, and distribution of biomethane from urban and agro-industrial waste.",
+                "Retrofitting or acquisition of public buses and trucks capable of using biomethane as a fuel source.",
+                "Establishment of policies and financial incentives to support biomethane production and its integration into municipal fleets."
+            ],
+            "KeyPerformanceIndicators": [
+                "Cost savings in fleet operation due to biomethane use (USD/year).",
+                "Increase in biomethane production capacity (%).",
+                "Percentage of biomethane sourced locally versus imported."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR PIS",
+        "cityName": "Palmeira dos \u00cdndios",
+        "region": "AL",
+        "regionName": "Alagoas",
+        "actionId": "icare_0092",
+        "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
+        "actionPriority": 7,
+        "action": {
+            "ActionID": "icare_0092",
+            "ActionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "on-road"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Create small-scale logistics hubs in urban neighborhoods to facilitate deliveries using electric cargo bikes, while implementing tax incentives or subsidies for businesses to adopt these bikes as a transportation mode, reducing emissions and improving delivery efficiency in densely populated areas.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 2,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "20-39",
                 "waste": null,
                 "ippu": null,
                 "afolu": null
@@ -645,14 +405,14 @@
             "CostInvestmentNeeded": "low",
             "TimelineForImplementation": "<5 years",
             "Dependencies": [
-                "Political will and leadership to prioritize renewable energy in local government policies and planning processes",
-                "Development of clear policies and regulatory frameworks that facilitate the integration of renewable energy systems into government operations",
-                "Availability of funding or financial mechanisms to support the transition to renewable energy in municipal infrastructure and operations"
+                "Identification and development of suitable locations for small-scale logistics hubs within urban neighborhoods.",
+                "Provision of tax incentives, subsidies, or grants to encourage businesses to transition to electric cargo bikes.",
+                "Establishment of partnerships with logistics companies to ensure integration and efficiency in delivery operations using these hubs."
             ],
             "KeyPerformanceIndicators": [
-                "Number of renewable energy projects approved or initiated annually at the municipal level.",
-                "Percentage of municipal energy demand met by renewable sources (%).",
-                "Reduction in municipal carbon emissions due to --renewable energy adoption (tons CO\u2082e/year)."
+                "Reduction in distance traveled by traditional delivery vehicles (km/year).",
+                "Increase in operational efficiency of logistics hubs (%).",
+                "Number of businesses utilizing micro-logistics hubs for deliveries."
             ],
             "PowersAndMandates": [
                 "local"
@@ -666,7 +426,7 @@
         "regionName": "Alagoas",
         "actionId": "icare_0068",
         "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
-        "actionPriority": 12,
+        "actionPriority": 8,
         "action": {
             "ActionID": "icare_0068",
             "ActionName": "Deploy on-demand transport systems with 100% electric fleets.",
@@ -724,9 +484,189 @@
         "cityName": "Palmeira dos \u00cdndios",
         "region": "AL",
         "regionName": "Alagoas",
+        "actionId": "icare_0057",
+        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
+        "actionPriority": 9,
+        "action": {
+            "ActionID": "icare_0057",
+            "ActionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "railways"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "These systems offer high capacity and low emissions, crucial for cities with high population density.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 1,
+                "mobility": 2,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "80-100",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "high",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Investment in the development and expansion of high-capacity public transportation infrastructure, such as electric buses and metro systems.",
+                "Implementation of policies and incentives to encourage the use of public transport over private vehicles.",
+                "Integration of renewable energy sources to power these systems, reducing emissions further."
+            ],
+            "KeyPerformanceIndicators": [
+                "Length of new transit lines built (km/year).",
+                "Reduction in road traffic congestion (%).",
+                "Reduction in private vehicle usage (number of trips avoided/year)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR PIS",
+        "cityName": "Palmeira dos \u00cdndios",
+        "region": "AL",
+        "regionName": "Alagoas",
+        "actionId": "icare_0133",
+        "actionName": "Promote Urban Reforestation and Green Corridors",
+        "actionPriority": 10,
+        "action": {
+            "ActionID": "icare_0133",
+            "ActionName": "Promote Urban Reforestation and Green Corridors",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "land"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Increase urban tree coverage to mitigate the urban heat island effect and enhance biodiversity.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 1,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 1,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "80-100"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Identification of priority areas and selection of native, climate-resilient species for tree planting.",
+                "Partnerships with local organizations and nurseries, and allocation of resources for planting and maintenance.",
+                "Community engagement to ensure long-term care and support."
+            ],
+            "KeyPerformanceIndicators": [
+                "Increase in urban tree canopy cover (%)",
+                "Total length of green corridors created or restored (kilometers)",
+                "Reduction in urban heat island effect temperatures (\u00b0C)"
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR PIS",
+        "cityName": "Palmeira dos \u00cdndios",
+        "region": "AL",
+        "regionName": "Alagoas",
+        "actionId": "icare_0088",
+        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
+        "actionPriority": 11,
+        "action": {
+            "ActionID": "icare_0088",
+            "ActionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "on-road"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Encourage the use of public transportation by offering free services during peak hours for workers and students. This measure reduces urban congestion, decreases the number of individual vehicles on the road, and consequently lowers greenhouse gas emissions associated with private transportation.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 2,
+                "housing": 0,
+                "mobility": 2,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "60-79",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Allocation of funding to subsidize free public transportation services during peak hours.",
+                "Development of policies to ensure the sustainability and efficiency of public transit systems amid increased demand.",
+                "Coordination with employers and educational institutions to optimize peak-hour schedules and promote the initiative."
+            ],
+            "KeyPerformanceIndicators": [
+                "Reduction in air pollution levels during peak hours (PM2.5/PM10 concentration).",
+                "Number of private vehicles removed from roads during peak hours.",
+                "Public satisfaction rate with the free transportation initiative (%)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR PIS",
+        "cityName": "Palmeira dos \u00cdndios",
+        "region": "AL",
+        "regionName": "Alagoas",
         "actionId": "icare_0044",
         "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
-        "actionPriority": 13,
+        "actionPriority": 12,
         "action": {
             "ActionID": "icare_0044",
             "ActionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
@@ -773,6 +713,66 @@
                 "Kilometers of new cycling paths and walkways constructed annually.",
                 "Increase in daily usage of cycling and pedestrian infrastructure (%).",
                 "Reduction in urban transport emissions (%)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR PIS",
+        "cityName": "Palmeira dos \u00cdndios",
+        "region": "AL",
+        "regionName": "Alagoas",
+        "actionId": "icare_0042",
+        "actionName": "Encourage renewable energy policies at the municipal level",
+        "actionPriority": 13,
+        "action": {
+            "ActionID": "icare_0042",
+            "ActionName": "Encourage renewable energy policies at the municipal level",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "stationary_energy"
+            ],
+            "Subsector": [
+                "non-specified_sources"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Advocate for and implement policies that prioritize the development and integration of renewable energy systems in local government operations and planning.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 1,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": "80-100",
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Political will and leadership to prioritize renewable energy in local government policies and planning processes",
+                "Development of clear policies and regulatory frameworks that facilitate the integration of renewable energy systems into government operations",
+                "Availability of funding or financial mechanisms to support the transition to renewable energy in municipal infrastructure and operations"
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of renewable energy projects approved or initiated annually at the municipal level.",
+                "Percentage of municipal energy demand met by renewable sources (%).",
+                "Reduction in municipal carbon emissions due to --renewable energy adoption (tons CO\u2082e/year)."
             ],
             "PowersAndMandates": [
                 "local"
@@ -912,12 +912,12 @@
         "cityName": "Palmeira dos \u00cdndios",
         "region": "AL",
         "regionName": "Alagoas",
-        "actionId": "icare_0099",
-        "actionName": "Support Agroecological Certification Programs",
+        "actionId": "icare_0102",
+        "actionName": "Promote Sustainable Agricultural Practices",
         "actionPriority": 16,
         "action": {
-            "ActionID": "icare_0099",
-            "ActionName": "Support Agroecological Certification Programs",
+            "ActionID": "icare_0102",
+            "ActionName": "Promote Sustainable Agricultural Practices",
             "ActionType": [
                 "mitigation"
             ],
@@ -931,67 +931,7 @@
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "Description": "Encourage the certification of agroecological products that meet sustainability criteria and have low environmental impact.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "20-39"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Development of clear and accessible certification standards for agroecological products that emphasize sustainability and low environmental impact.",
-                "Support for farmers and producers to meet certification requirements through training, financial assistance, or technical guidance.",
-                "Creation of marketing strategies and partnerships to increase the visibility and demand for certified agroecological products in local and global markets."
-            ],
-            "KeyPerformanceIndicators": [
-                "Number of farmers or producers obtaining agroecological certifications.",
-                "Percentage of certified agricultural products in the market (%).",
-                "Reduction in the use of synthetic inputs (e.g., fertilizers, pesticides)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR PIS",
-        "cityName": "Palmeira dos \u00cdndios",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "icare_0100",
-        "actionName": "Support Regenerative Agriculture Practices",
-        "actionPriority": 17,
-        "action": {
-            "ActionID": "icare_0100",
-            "ActionName": "Support Regenerative Agriculture Practices",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Support regenerative agricultural practices that focus on restoring soil health and reducing carbon emissions.",
+            "Description": "Encourage agricultural practices that reduce greenhouse gas emissions, such as reduced use of fertilizers and agrochemicals.",
             "CoBenefits": {
                 "air_quality": 2,
                 "water_quality": 2,
@@ -1013,14 +953,14 @@
             "CostInvestmentNeeded": "medium",
             "TimelineForImplementation": "5-10 years",
             "Dependencies": [
-                "Development of training programs and resources to educate farmers on regenerative agricultural techniques, such as cover cropping and reduced tillage.",
-                "Implementation of financial incentives or subsidies to support the adoption of regenerative practices.",
-                "Collaboration with agricultural research institutions to monitor and document the effectiveness of regenerative practices in carbon sequestration and soil health improvement."
+                "Development of educational programs and resources to promote sustainable agricultural practices among farmers.",
+                "Implementation of policies that incentivize the reduction of fertilizer and agrochemical use, such as subsidies for organic inputs or sustainable farming techniques.",
+                "Collaboration with agricultural organizations to provide technical support and guidance on emission-reducing practices."
             ],
             "KeyPerformanceIndicators": [
-                "Increase in soil organic carbon levels (tons/hectare).",
-                "Reduction in water usage per hectare in agricultural production (%).",
-                "Number of regenerative agriculture pilot projects implemented."
+                "Percentage of farmland adopting sustainable practices (% of total agricultural land).",
+                "Increase in crop yield per hectare (tons/hectare) due to sustainable methods.",
+                "Reduction in water usage for agriculture (liters or m\u00b3/hectare/year)."
             ],
             "PowersAndMandates": [
                 "local"
@@ -1032,55 +972,55 @@
         "cityName": "Palmeira dos \u00cdndios",
         "region": "AL",
         "regionName": "Alagoas",
-        "actionId": "icare_0132",
-        "actionName": "Encourage Local Agroecological Production and Short Supply Chains",
-        "actionPriority": 18,
+        "actionId": "icare_0091",
+        "actionName": "Implementation of prioritized routes for sustainable vehicles.",
+        "actionPriority": 17,
         "action": {
-            "ActionID": "icare_0132",
-            "ActionName": "Encourage Local Agroecological Production and Short Supply Chains",
+            "ActionID": "icare_0091",
+            "ActionName": "Implementation of prioritized routes for sustainable vehicles.",
             "ActionType": [
                 "mitigation"
             ],
             "Hazard": null,
             "Sector": [
-                "afolu"
+                "transportation"
             ],
             "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
+                "on-road"
             ],
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "Description": "Support local, sustainable agricultural practices and reduce emissions associated with food transport.",
+            "Description": "Create priority lanes for electric, hybrid, and low-emission vehicles in urban centers to encourage their adoption and reduce pollution in high-traffic areas.",
             "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 1,
-                "cost_of_living": 1,
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 0,
                 "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
+                "mobility": 2,
+                "stakeholder_engagement": 1
             },
             "EquityAndInclusionConsiderations": null,
             "GHGReductionPotential": {
                 "stationary_energy": null,
-                "transportation": null,
+                "transportation": "60-79",
                 "waste": null,
                 "ippu": null,
-                "afolu": "20-39"
+                "afolu": null
             },
             "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
             "Dependencies": [
-                "Incentives for sustainable agricultural practices and development of local food distribution networks.",
-                "Partnerships with producers and investment in infrastructure to support local markets.",
-                "Policies to prioritize low-emission transportation methods."
+                "Implementation of traffic management systems to enforce and monitor the use of priority lanes.",
+                "Development of clear signage and public awareness campaigns to inform drivers about lane eligibility and usage.",
+                "Establishment of regulatory frameworks incentivizing the adoption of low-emission vehicles for eligibility in priority lanes."
             ],
             "KeyPerformanceIndicators": [
-                "Number of producers adhering to local agroecological practices.",
-                "Percentage of food consumed in the city from short chains.",
-                "Reduction in emissions associated with food transport (tCO\u2082e)."
+                "Percentage of sustainable vehicles using prioritized routes.",
+                "Increase in delivery efficiency for goods transported via prioritized routes (%).",
+                "Public acceptance rate of prioritized routes for sustainable vehicles (%)."
             ],
             "PowersAndMandates": [
                 "local"
@@ -1094,7 +1034,7 @@
         "regionName": "Alagoas",
         "actionId": "icare_0136",
         "actionName": "Support the Implementation of Ecological Fiscal Incentives",
-        "actionPriority": 19,
+        "actionPriority": 18,
         "action": {
             "ActionID": "icare_0136",
             "ActionName": "Support the Implementation of Ecological Fiscal Incentives",
@@ -1152,39 +1092,39 @@
         "cityName": "Palmeira dos \u00cdndios",
         "region": "AL",
         "regionName": "Alagoas",
-        "actionId": "icare_0027",
-        "actionName": "Create financing programs for local renewable energy projects",
-        "actionPriority": 20,
+        "actionId": "icare_0117",
+        "actionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
+        "actionPriority": 19,
         "action": {
-            "ActionID": "icare_0027",
-            "ActionName": "Create financing programs for local renewable energy projects",
+            "ActionID": "icare_0117",
+            "ActionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
             "ActionType": [
                 "mitigation"
             ],
             "Hazard": null,
             "Sector": [
-                "stationary_energy"
+                "transportation"
             ],
             "Subsector": [
-                "energy_industries"
+                "on-road"
             ],
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "Description": "Establish funding mechanisms, such as grants and low-interest loans, to support the development of small-scale renewable energy initiatives in communities.",
+            "Description": "Increase the quality of transportation service delivery, aiming at the modal shift of passengers from private motorized transport to public transport, thereby reducing emissions generated by cars and motorcycles.",
             "CoBenefits": {
                 "air_quality": 2,
                 "water_quality": 0,
                 "habitat": 0,
-                "cost_of_living": 2,
-                "housing": 1,
-                "mobility": 0,
-                "stakeholder_engagement": 1
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 2,
+                "stakeholder_engagement": 0
             },
             "EquityAndInclusionConsiderations": null,
             "GHGReductionPotential": {
-                "stationary_energy": "60-79",
-                "transportation": null,
+                "stationary_energy": null,
+                "transportation": "60-79",
                 "waste": null,
                 "ippu": null,
                 "afolu": null
@@ -1193,14 +1133,74 @@
             "CostInvestmentNeeded": "medium",
             "TimelineForImplementation": "5-10 years",
             "Dependencies": [
-                "Development of accessible financial mechanisms, including grants and low-interest loans, to support small-scale renewable energy projects in communities",
-                "Collaboration with financial institutions and local governments to ensure the effective disbursement and management of funding for renewable energy initiatives",
-                "Clear guidelines and support for community organizations and local businesses to access funding and successfully implement renewable energy projects"
+                "Improve the quality of public transportation services to attract passengers from private motorized transport.",
+                "Implement policies and infrastructure that support and enhance the efficiency of public transportation systems.",
+                "Promote awareness of the environmental benefits of public transport to encourage a modal shift and reduce emissions."
             ],
             "KeyPerformanceIndicators": [
-                "Total funds allocated for renewable energy projects (USD).",
-                "Number of projects financed annually.",
-                "Increase in renewable energy capacity installed (MW)."
+                "Annual increase in the number of passengers using the municipal bus system.",
+                "Percentage of bus routes with improved travel time reliability.",
+                "Estimated reduction in CO\u2082 equivalent emissions due to increased public transportation use."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR PIS",
+        "cityName": "Palmeira dos \u00cdndios",
+        "region": "AL",
+        "regionName": "Alagoas",
+        "actionId": "icare_0099",
+        "actionName": "Support Agroecological Certification Programs",
+        "actionPriority": 20,
+        "action": {
+            "ActionID": "icare_0099",
+            "ActionName": "Support Agroecological Certification Programs",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "agriculture_forestry_and_fishing_activities"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Encourage the certification of agroecological products that meet sustainability criteria and have low environmental impact.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 1,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "20-39"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Development of clear and accessible certification standards for agroecological products that emphasize sustainability and low environmental impact.",
+                "Support for farmers and producers to meet certification requirements through training, financial assistance, or technical guidance.",
+                "Creation of marketing strategies and partnerships to increase the visibility and demand for certified agroecological products in local and global markets."
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of farmers or producers obtaining agroecological certifications.",
+                "Percentage of certified agricultural products in the market (%).",
+                "Reduction in the use of synthetic inputs (e.g., fertilizers, pesticides)."
             ],
             "PowersAndMandates": [
                 "local"

@@ -4,27 +4,9 @@
         "cityName": "C\u00e1ceres",
         "region": "MT",
         "regionName": "Mato Grosso",
-        "actionId": "icare_0133",
-        "actionName": "Promote Urban Reforestation and Green Corridors",
-        "actionPriority": 1
-    },
-    {
-        "locode": "BR CCX",
-        "cityName": "C\u00e1ceres",
-        "region": "MT",
-        "regionName": "Mato Grosso",
         "actionId": "icare_0118",
         "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
-        "actionPriority": 2
-    },
-    {
-        "locode": "BR CCX",
-        "cityName": "C\u00e1ceres",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0121",
-        "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
-        "actionPriority": 3
+        "actionPriority": 1
     },
     {
         "locode": "BR CCX",
@@ -33,7 +15,7 @@
         "regionName": "Mato Grosso",
         "actionId": "icare_0057",
         "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
-        "actionPriority": 4
+        "actionPriority": 2
     },
     {
         "locode": "BR CCX",
@@ -42,6 +24,24 @@
         "regionName": "Mato Grosso",
         "actionId": "icare_0005",
         "actionName": "Create credit lines for residential and community wind energy projects",
+        "actionPriority": 3
+    },
+    {
+        "locode": "BR CCX",
+        "cityName": "C\u00e1ceres",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0121",
+        "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
+        "actionPriority": 4
+    },
+    {
+        "locode": "BR CCX",
+        "cityName": "C\u00e1ceres",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0133",
+        "actionName": "Promote Urban Reforestation and Green Corridors",
         "actionPriority": 5
     },
     {
@@ -67,54 +67,9 @@
         "cityName": "C\u00e1ceres",
         "region": "MT",
         "regionName": "Mato Grosso",
-        "actionId": "icare_0131",
-        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
+        "actionId": "icare_0099",
+        "actionName": "Support Agroecological Certification Programs",
         "actionPriority": 8
-    },
-    {
-        "locode": "BR CCX",
-        "cityName": "C\u00e1ceres",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0117",
-        "actionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
-        "actionPriority": 9
-    },
-    {
-        "locode": "BR CCX",
-        "cityName": "C\u00e1ceres",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0094",
-        "actionName": "Adoption of biomethane in public fleets.",
-        "actionPriority": 10
-    },
-    {
-        "locode": "BR CCX",
-        "cityName": "C\u00e1ceres",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "c40_0033",
-        "actionName": "15/30-Minute Areas",
-        "actionPriority": 11
-    },
-    {
-        "locode": "BR CCX",
-        "cityName": "C\u00e1ceres",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0068",
-        "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
-        "actionPriority": 12
-    },
-    {
-        "locode": "BR CCX",
-        "cityName": "C\u00e1ceres",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0050",
-        "actionName": "Implement Agroforestry Systems",
-        "actionPriority": 13
     },
     {
         "locode": "BR CCX",
@@ -123,7 +78,79 @@
         "regionName": "Mato Grosso",
         "actionId": "icare_0090",
         "actionName": "Adoption of electric drones for last-mile deliveries.",
+        "actionPriority": 9
+    },
+    {
+        "locode": "BR CCX",
+        "cityName": "C\u00e1ceres",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0131",
+        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
+        "actionPriority": 10
+    },
+    {
+        "locode": "BR CCX",
+        "cityName": "C\u00e1ceres",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0136",
+        "actionName": "Support the Implementation of Ecological Fiscal Incentives",
+        "actionPriority": 11
+    },
+    {
+        "locode": "BR CCX",
+        "cityName": "C\u00e1ceres",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0096",
+        "actionName": "Promote Organic Farming",
+        "actionPriority": 12
+    },
+    {
+        "locode": "BR CCX",
+        "cityName": "C\u00e1ceres",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0068",
+        "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
+        "actionPriority": 13
+    },
+    {
+        "locode": "BR CCX",
+        "cityName": "C\u00e1ceres",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0050",
+        "actionName": "Implement Agroforestry Systems",
         "actionPriority": 14
+    },
+    {
+        "locode": "BR CCX",
+        "cityName": "C\u00e1ceres",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0094",
+        "actionName": "Adoption of biomethane in public fleets.",
+        "actionPriority": 15
+    },
+    {
+        "locode": "BR CCX",
+        "cityName": "C\u00e1ceres",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "c40_0033",
+        "actionName": "15/30-Minute Areas",
+        "actionPriority": 16
+    },
+    {
+        "locode": "BR CCX",
+        "cityName": "C\u00e1ceres",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0117",
+        "actionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
+        "actionPriority": 17
     },
     {
         "locode": "BR CCX",
@@ -132,33 +159,6 @@
         "regionName": "Mato Grosso",
         "actionId": "icare_0044",
         "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
-        "actionPriority": 15
-    },
-    {
-        "locode": "BR CCX",
-        "cityName": "C\u00e1ceres",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0100",
-        "actionName": "Support Regenerative Agriculture Practices",
-        "actionPriority": 16
-    },
-    {
-        "locode": "BR CCX",
-        "cityName": "C\u00e1ceres",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0091",
-        "actionName": "Implementation of prioritized routes for sustainable vehicles.",
-        "actionPriority": 17
-    },
-    {
-        "locode": "BR CCX",
-        "cityName": "C\u00e1ceres",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0099",
-        "actionName": "Support Agroecological Certification Programs",
         "actionPriority": 18
     },
     {
@@ -166,8 +166,8 @@
         "cityName": "C\u00e1ceres",
         "region": "MT",
         "regionName": "Mato Grosso",
-        "actionId": "c40_0032",
-        "actionName": "Transit Access",
+        "actionId": "icare_0102",
+        "actionName": "Promote Sustainable Agricultural Practices",
         "actionPriority": 19
     },
     {

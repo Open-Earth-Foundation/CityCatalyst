@@ -184,12 +184,12 @@
         "cityName": "Maranguape",
         "region": "CE",
         "regionName": "Cear\u00e1",
-        "actionId": "icare_0068",
-        "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
+        "actionId": "icare_0092",
+        "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
         "actionPriority": 4,
         "action": {
-            "ActionID": "icare_0068",
-            "ActionName": "Deploy on-demand transport systems with 100% electric fleets.",
+            "ActionID": "icare_0092",
+            "ActionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
             "ActionType": [
                 "mitigation"
             ],
@@ -203,9 +203,9 @@
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "Description": "On-demand collective transport services, based on apps, optimize electric vehicle usage, reducing per-passenger emissions.",
+            "Description": "Create small-scale logistics hubs in urban neighborhoods to facilitate deliveries using electric cargo bikes, while implementing tax incentives or subsidies for businesses to adopt these bikes as a transportation mode, reducing emissions and improving delivery efficiency in densely populated areas.",
             "CoBenefits": {
-                "air_quality": 2,
+                "air_quality": 1,
                 "water_quality": 0,
                 "habitat": 0,
                 "cost_of_living": 1,
@@ -216,83 +216,23 @@
             "EquityAndInclusionConsiderations": null,
             "GHGReductionPotential": {
                 "stationary_energy": null,
-                "transportation": "80-100",
+                "transportation": "20-39",
                 "waste": null,
                 "ippu": null,
                 "afolu": null
             },
             "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Development of digital platforms and apps to efficiently manage on-demand collective transport services.",
-                "Expansion of electric vehicle fleets tailored for shared transport solutions.",
-                "Implementation of policies and incentives to encourage the adoption and use of shared electric transport services."
-            ],
-            "KeyPerformanceIndicators": [
-                "Number of active users of the on-demand electric fleet system.",
-                "Percentage of urban transport demand met by on-demand systems.",
-                "Reduction in noise pollution levels in urban areas"
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR MGE",
-        "cityName": "Maranguape",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0094",
-        "actionName": "Adoption of biomethane in public fleets.",
-        "actionPriority": 5,
-        "action": {
-            "ActionID": "icare_0094",
-            "ActionName": "Adoption of biomethane in public fleets.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Use biomethane produced from urban and agro-industrial waste to fuel public buses and trucks, reducing greenhouse gas emissions in municipal fleets",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 1,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
+            "CostInvestmentNeeded": "low",
             "TimelineForImplementation": "<5 years",
             "Dependencies": [
-                "Development of infrastructure for the production, processing, and distribution of biomethane from urban and agro-industrial waste.",
-                "Retrofitting or acquisition of public buses and trucks capable of using biomethane as a fuel source.",
-                "Establishment of policies and financial incentives to support biomethane production and its integration into municipal fleets."
+                "Identification and development of suitable locations for small-scale logistics hubs within urban neighborhoods.",
+                "Provision of tax incentives, subsidies, or grants to encourage businesses to transition to electric cargo bikes.",
+                "Establishment of partnerships with logistics companies to ensure integration and efficiency in delivery operations using these hubs."
             ],
             "KeyPerformanceIndicators": [
-                "Cost savings in fleet operation due to biomethane use (USD/year).",
-                "Increase in biomethane production capacity (%).",
-                "Percentage of biomethane sourced locally versus imported."
+                "Reduction in distance traveled by traditional delivery vehicles (km/year).",
+                "Increase in operational efficiency of logistics hubs (%).",
+                "Number of businesses utilizing micro-logistics hubs for deliveries."
             ],
             "PowersAndMandates": [
                 "local"
@@ -306,7 +246,7 @@
         "regionName": "Cear\u00e1",
         "actionId": "icare_0088",
         "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
-        "actionPriority": 6,
+        "actionPriority": 5,
         "action": {
             "ActionID": "icare_0088",
             "ActionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
@@ -364,12 +304,12 @@
         "cityName": "Maranguape",
         "region": "CE",
         "regionName": "Cear\u00e1",
-        "actionId": "icare_0092",
-        "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
-        "actionPriority": 7,
+        "actionId": "icare_0094",
+        "actionName": "Adoption of biomethane in public fleets.",
+        "actionPriority": 6,
         "action": {
-            "ActionID": "icare_0092",
-            "ActionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
+            "ActionID": "icare_0094",
+            "ActionName": "Adoption of biomethane in public fleets.",
             "ActionType": [
                 "mitigation"
             ],
@@ -383,36 +323,96 @@
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "Description": "Create small-scale logistics hubs in urban neighborhoods to facilitate deliveries using electric cargo bikes, while implementing tax incentives or subsidies for businesses to adopt these bikes as a transportation mode, reducing emissions and improving delivery efficiency in densely populated areas.",
+            "Description": "Use biomethane produced from urban and agro-industrial waste to fuel public buses and trucks, reducing greenhouse gas emissions in municipal fleets",
             "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
+                "air_quality": 2,
+                "water_quality": 1,
                 "habitat": 0,
                 "cost_of_living": 1,
                 "housing": 0,
-                "mobility": 2,
+                "mobility": 1,
                 "stakeholder_engagement": 1
             },
             "EquityAndInclusionConsiderations": null,
             "GHGReductionPotential": {
                 "stationary_energy": null,
-                "transportation": "20-39",
+                "transportation": "60-79",
                 "waste": null,
                 "ippu": null,
                 "afolu": null
             },
             "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
+            "CostInvestmentNeeded": "medium",
             "TimelineForImplementation": "<5 years",
             "Dependencies": [
-                "Identification and development of suitable locations for small-scale logistics hubs within urban neighborhoods.",
-                "Provision of tax incentives, subsidies, or grants to encourage businesses to transition to electric cargo bikes.",
-                "Establishment of partnerships with logistics companies to ensure integration and efficiency in delivery operations using these hubs."
+                "Development of infrastructure for the production, processing, and distribution of biomethane from urban and agro-industrial waste.",
+                "Retrofitting or acquisition of public buses and trucks capable of using biomethane as a fuel source.",
+                "Establishment of policies and financial incentives to support biomethane production and its integration into municipal fleets."
             ],
             "KeyPerformanceIndicators": [
-                "Reduction in distance traveled by traditional delivery vehicles (km/year).",
-                "Increase in operational efficiency of logistics hubs (%).",
-                "Number of businesses utilizing micro-logistics hubs for deliveries."
+                "Cost savings in fleet operation due to biomethane use (USD/year).",
+                "Increase in biomethane production capacity (%).",
+                "Percentage of biomethane sourced locally versus imported."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR MGE",
+        "cityName": "Maranguape",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0057",
+        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
+        "actionPriority": 7,
+        "action": {
+            "ActionID": "icare_0057",
+            "ActionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "railways"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "These systems offer high capacity and low emissions, crucial for cities with high population density.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 1,
+                "mobility": 2,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "80-100",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "high",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Investment in the development and expansion of high-capacity public transportation infrastructure, such as electric buses and metro systems.",
+                "Implementation of policies and incentives to encourage the use of public transport over private vehicles.",
+                "Integration of renewable energy sources to power these systems, reducing emissions further."
+            ],
+            "KeyPerformanceIndicators": [
+                "Length of new transit lines built (km/year).",
+                "Reduction in road traffic congestion (%).",
+                "Reduction in private vehicle usage (number of trips avoided/year)."
             ],
             "PowersAndMandates": [
                 "local"
@@ -484,69 +484,9 @@
         "cityName": "Maranguape",
         "region": "CE",
         "regionName": "Cear\u00e1",
-        "actionId": "icare_0057",
-        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
-        "actionPriority": 9,
-        "action": {
-            "ActionID": "icare_0057",
-            "ActionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "railways"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "These systems offer high capacity and low emissions, crucial for cities with high population density.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 2,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "80-100",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Investment in the development and expansion of high-capacity public transportation infrastructure, such as electric buses and metro systems.",
-                "Implementation of policies and incentives to encourage the use of public transport over private vehicles.",
-                "Integration of renewable energy sources to power these systems, reducing emissions further."
-            ],
-            "KeyPerformanceIndicators": [
-                "Length of new transit lines built (km/year).",
-                "Reduction in road traffic congestion (%).",
-                "Reduction in private vehicle usage (number of trips avoided/year)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR MGE",
-        "cityName": "Maranguape",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
         "actionId": "icare_0025",
         "actionName": "Promote energy-efficient low-income housing",
-        "actionPriority": 10,
+        "actionPriority": 9,
         "action": {
             "ActionID": "icare_0025",
             "ActionName": "Promote energy-efficient low-income housing",
@@ -593,6 +533,66 @@
                 "Number of energy-efficient housing units built or retrofitted.",
                 "Reduction in household energy consumption (kWh).",
                 "Decrease in energy bills for low-income households (USD)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR MGE",
+        "cityName": "Maranguape",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0068",
+        "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
+        "actionPriority": 10,
+        "action": {
+            "ActionID": "icare_0068",
+            "ActionName": "Deploy on-demand transport systems with 100% electric fleets.",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "on-road"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "On-demand collective transport services, based on apps, optimize electric vehicle usage, reducing per-passenger emissions.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 2,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "80-100",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Development of digital platforms and apps to efficiently manage on-demand collective transport services.",
+                "Expansion of electric vehicle fleets tailored for shared transport solutions.",
+                "Implementation of policies and incentives to encourage the adoption and use of shared electric transport services."
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of active users of the on-demand electric fleet system.",
+                "Percentage of urban transport demand met by on-demand systems.",
+                "Reduction in noise pollution levels in urban areas"
             ],
             "PowersAndMandates": [
                 "local"
@@ -664,55 +664,55 @@
         "cityName": "Maranguape",
         "region": "CE",
         "regionName": "Cear\u00e1",
-        "actionId": "icare_0131",
-        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
+        "actionId": "icare_0117",
+        "actionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
         "actionPriority": 12,
         "action": {
-            "ActionID": "icare_0131",
-            "ActionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
+            "ActionID": "icare_0117",
+            "ActionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
             "ActionType": [
                 "mitigation"
             ],
             "Hazard": null,
             "Sector": [
-                "afolu"
+                "transportation"
             ],
             "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
+                "on-road"
             ],
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "Description": "Focus on buying sustainable, locally produced food for public institutions.",
+            "Description": "Increase the quality of transportation service delivery, aiming at the modal shift of passengers from private motorized transport to public transport, thereby reducing emissions generated by cars and motorcycles.",
             "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 2,
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 0,
                 "cost_of_living": 1,
                 "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
+                "mobility": 2,
+                "stakeholder_engagement": 0
             },
             "EquityAndInclusionConsiderations": null,
             "GHGReductionPotential": {
                 "stationary_energy": null,
-                "transportation": null,
+                "transportation": "60-79",
                 "waste": null,
                 "ippu": null,
-                "afolu": "20-39"
+                "afolu": null
             },
             "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
             "Dependencies": [
-                "Development of procurement policies and identification of reliable local suppliers.",
-                "Partnerships with producers and allocation of funding for sustainable procurement programs.",
-                "Establishment of monitoring systems to ensure compliance with sustainability criteria."
+                "Improve the quality of public transportation services to attract passengers from private motorized transport.",
+                "Implement policies and infrastructure that support and enhance the efficiency of public transportation systems.",
+                "Promote awareness of the environmental benefits of public transport to encourage a modal shift and reduce emissions."
             ],
             "KeyPerformanceIndicators": [
-                "Percentage of the total volume of public purchases coming from local agroecological producers.",
-                "Amount of CO\u2082 emissions avoided due to reduced transport distance (tCO\u2082e).",
-                "Number of agroecological producers benefiting from public purchases."
+                "Annual increase in the number of passengers using the municipal bus system.",
+                "Percentage of bus routes with improved travel time reliability.",
+                "Estimated reduction in CO\u2082 equivalent emissions due to increased public transportation use."
             ],
             "PowersAndMandates": [
                 "local"
@@ -784,12 +784,12 @@
         "cityName": "Maranguape",
         "region": "CE",
         "regionName": "Cear\u00e1",
-        "actionId": "icare_0099",
-        "actionName": "Support Agroecological Certification Programs",
+        "actionId": "icare_0136",
+        "actionName": "Support the Implementation of Ecological Fiscal Incentives",
         "actionPriority": 14,
         "action": {
-            "ActionID": "icare_0099",
-            "ActionName": "Support Agroecological Certification Programs",
+            "ActionID": "icare_0136",
+            "ActionName": "Support the Implementation of Ecological Fiscal Incentives",
             "ActionType": [
                 "mitigation"
             ],
@@ -798,12 +798,12 @@
                 "afolu"
             ],
             "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
+                "land"
             ],
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "Description": "Encourage the certification of agroecological products that meet sustainability criteria and have low environmental impact.",
+            "Description": "Encourage the application of ecological taxes and incentives to promote environmental conservation.",
             "CoBenefits": {
                 "air_quality": 1,
                 "water_quality": 1,
@@ -825,77 +825,17 @@
             "CostInvestmentNeeded": "low",
             "TimelineForImplementation": "<5 years",
             "Dependencies": [
-                "Development of clear and accessible certification standards for agroecological products that emphasize sustainability and low environmental impact.",
-                "Support for farmers and producers to meet certification requirements through training, financial assistance, or technical guidance.",
-                "Creation of marketing strategies and partnerships to increase the visibility and demand for certified agroecological products in local and global markets."
+                "Establish a clear regulatory framework with fair tax rates and incentives for sustainability.",
+                "Implement effective monitoring systems to track compliance and measure impact.",
+                "Promote public awareness and foster collaboration between governments, businesses, and communities."
             ],
             "KeyPerformanceIndicators": [
-                "Number of farmers or producers obtaining agroecological certifications.",
-                "Percentage of certified agricultural products in the market (%).",
-                "Reduction in the use of synthetic inputs (e.g., fertilizers, pesticides)."
+                "Number of municipalities that have adopted environmental tax incentives.",
+                "Percentage of tax revenue spent on sustainable practices.",
+                "Acreage or number of properties benefiting from conservation practices as a result of incentives."
             ],
             "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR MGE",
-        "cityName": "Maranguape",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0117",
-        "actionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
-        "actionPriority": 15,
-        "action": {
-            "ActionID": "icare_0117",
-            "ActionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Increase the quality of transportation service delivery, aiming at the modal shift of passengers from private motorized transport to public transport, thereby reducing emissions generated by cars and motorcycles.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Improve the quality of public transportation services to attract passengers from private motorized transport.",
-                "Implement policies and infrastructure that support and enhance the efficiency of public transportation systems.",
-                "Promote awareness of the environmental benefits of public transport to encourage a modal shift and reduce emissions."
-            ],
-            "KeyPerformanceIndicators": [
-                "Annual increase in the number of passengers using the municipal bus system.",
-                "Percentage of bus routes with improved travel time reliability.",
-                "Estimated reduction in CO\u2082 equivalent emissions due to increased public transportation use."
-            ],
-            "PowersAndMandates": [
-                "local"
+                "state"
             ]
         }
     },
@@ -906,7 +846,7 @@
         "regionName": "Cear\u00e1",
         "actionId": "c40_0033",
         "actionName": "15/30-Minute Areas",
-        "actionPriority": 16,
+        "actionPriority": 15,
         "action": {
             "ActionID": "c40_0033",
             "ActionName": "15/30-Minute Areas",
@@ -972,12 +912,12 @@
         "cityName": "Maranguape",
         "region": "CE",
         "regionName": "Cear\u00e1",
-        "actionId": "icare_0136",
-        "actionName": "Support the Implementation of Ecological Fiscal Incentives",
-        "actionPriority": 17,
+        "actionId": "icare_0131",
+        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
+        "actionPriority": 16,
         "action": {
-            "ActionID": "icare_0136",
-            "ActionName": "Support the Implementation of Ecological Fiscal Incentives",
+            "ActionID": "icare_0131",
+            "ActionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
             "ActionType": [
                 "mitigation"
             ],
@@ -986,12 +926,72 @@
                 "afolu"
             ],
             "Subsector": [
-                "land"
+                "agriculture_forestry_and_fishing_activities"
             ],
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "Description": "Encourage the application of ecological taxes and incentives to promote environmental conservation.",
+            "Description": "Focus on buying sustainable, locally produced food for public institutions.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "20-39"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Development of procurement policies and identification of reliable local suppliers.",
+                "Partnerships with producers and allocation of funding for sustainable procurement programs.",
+                "Establishment of monitoring systems to ensure compliance with sustainability criteria."
+            ],
+            "KeyPerformanceIndicators": [
+                "Percentage of the total volume of public purchases coming from local agroecological producers.",
+                "Amount of CO\u2082 emissions avoided due to reduced transport distance (tCO\u2082e).",
+                "Number of agroecological producers benefiting from public purchases."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR MGE",
+        "cityName": "Maranguape",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0099",
+        "actionName": "Support Agroecological Certification Programs",
+        "actionPriority": 17,
+        "action": {
+            "ActionID": "icare_0099",
+            "ActionName": "Support Agroecological Certification Programs",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "agriculture_forestry_and_fishing_activities"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Encourage the certification of agroecological products that meet sustainability criteria and have low environmental impact.",
             "CoBenefits": {
                 "air_quality": 1,
                 "water_quality": 1,
@@ -1013,17 +1013,137 @@
             "CostInvestmentNeeded": "low",
             "TimelineForImplementation": "<5 years",
             "Dependencies": [
-                "Establish a clear regulatory framework with fair tax rates and incentives for sustainability.",
-                "Implement effective monitoring systems to track compliance and measure impact.",
-                "Promote public awareness and foster collaboration between governments, businesses, and communities."
+                "Development of clear and accessible certification standards for agroecological products that emphasize sustainability and low environmental impact.",
+                "Support for farmers and producers to meet certification requirements through training, financial assistance, or technical guidance.",
+                "Creation of marketing strategies and partnerships to increase the visibility and demand for certified agroecological products in local and global markets."
             ],
             "KeyPerformanceIndicators": [
-                "Number of municipalities that have adopted environmental tax incentives.",
-                "Percentage of tax revenue spent on sustainable practices.",
-                "Acreage or number of properties benefiting from conservation practices as a result of incentives."
+                "Number of farmers or producers obtaining agroecological certifications.",
+                "Percentage of certified agricultural products in the market (%).",
+                "Reduction in the use of synthetic inputs (e.g., fertilizers, pesticides)."
             ],
             "PowersAndMandates": [
-                "state"
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR MGE",
+        "cityName": "Maranguape",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0085",
+        "actionName": "Promote the Adoption of Agroecological Pest Control",
+        "actionPriority": 18,
+        "action": {
+            "ActionID": "icare_0085",
+            "ActionName": "Promote the Adoption of Agroecological Pest Control",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "agriculture_forestry_and_fishing_activities"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Encourage pest control methods that are agroecological, such as using natural predators and repellent plants, to reduce reliance on chemical pesticides.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "20-39"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Development of educational programs to inform farmers about agroecological pest control methods and their benefits.",
+                "Provision of access to resources or materials for implementing natural pest control methods, such as introducing beneficial insects or cultivating repellent plants.",
+                "Creation of incentives or support networks to encourage the transition away from chemical pesticides in favor of sustainable alternatives."
+            ],
+            "KeyPerformanceIndicators": [
+                "Increase in productivity rates in areas adopting agroecological pest control (%).",
+                "Number of educational campaigns conducted on sustainable pest control.",
+                "Impact on total production costs due to the adoption of agroecological practices (%)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR MGE",
+        "cityName": "Maranguape",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0132",
+        "actionName": "Encourage Local Agroecological Production and Short Supply Chains",
+        "actionPriority": 19,
+        "action": {
+            "ActionID": "icare_0132",
+            "ActionName": "Encourage Local Agroecological Production and Short Supply Chains",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "agriculture_forestry_and_fishing_activities"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Support local, sustainable agricultural practices and reduce emissions associated with food transport.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 2,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "20-39"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Incentives for sustainable agricultural practices and development of local food distribution networks.",
+                "Partnerships with producers and investment in infrastructure to support local markets.",
+                "Policies to prioritize low-emission transportation methods."
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of producers adhering to local agroecological practices.",
+                "Percentage of food consumed in the city from short chains.",
+                "Reduction in emissions associated with food transport (tCO\u2082e)."
+            ],
+            "PowersAndMandates": [
+                "local"
             ]
         }
     },
@@ -1034,7 +1154,7 @@
         "regionName": "Cear\u00e1",
         "actionId": "icare_0042",
         "actionName": "Encourage renewable energy policies at the municipal level",
-        "actionPriority": 18,
+        "actionPriority": 20,
         "action": {
             "ActionID": "icare_0042",
             "ActionName": "Encourage renewable energy policies at the municipal level",
@@ -1081,125 +1201,6 @@
                 "Number of renewable energy projects approved or initiated annually at the municipal level.",
                 "Percentage of municipal energy demand met by renewable sources (%).",
                 "Reduction in municipal carbon emissions due to --renewable energy adoption (tons CO\u2082e/year)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR MGE",
-        "cityName": "Maranguape",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0096",
-        "actionName": "Promote Organic Farming",
-        "actionPriority": 19,
-        "action": {
-            "ActionID": "icare_0096",
-            "ActionName": "Promote Organic Farming",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Encourage the adoption of organic farming practices that avoid the use of chemicals and contribute to soil health and carbon capture.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "60-79"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Provision of financial incentives, subsidies, or grants to support the transition to organic farming practices.",
-                "Development of training and support networks to educate farmers on organic farming methods and their benefits.",
-                "Establishment of certification systems and market access strategies to ensure the economic viability of organic products."
-            ],
-            "KeyPerformanceIndicators": [
-                "Percentage of agricultural land under organic farming practices (%).",
-                "Increase in soil organic carbon content (tons of carbon per hectare).",
-                "Reduction in the use of chemical fertilizers and pesticides (kilograms/hectare/year)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR MGE",
-        "cityName": "Maranguape",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0038",
-        "actionName": "Promote community solar farms",
-        "actionPriority": 20,
-        "action": {
-            "ActionID": "icare_0038",
-            "ActionName": "Promote community solar farms",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "stationary_energy"
-            ],
-            "Subsector": [
-                "energy_generation_supplied_to_the_grid"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Develop and encourage the adoption of shared solar energy projects, enabling communities to collectively benefit from clean, renewable power.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 1,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": "80-100",
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Development of policies and regulatory frameworks to support community-based shared solar energy projects and ensure equitable access to clean energy",
-                "Availability of financial mechanisms or incentives to help communities invest in and maintain shared solar energy systems",
-                "Collaboration between local governments, energy providers, and community organizations to design and implement shared solar projects effectively"
-            ],
-            "KeyPerformanceIndicators": [
-                "Number of households served by community solar projects.",
-                "GHG emissions avoided through solar energy production (tons CO\u2082e)"
             ],
             "PowersAndMandates": [
                 "local"

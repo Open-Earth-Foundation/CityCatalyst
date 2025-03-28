@@ -4,9 +4,18 @@
         "cityName": "Tangar\u00e1 da Serra",
         "region": "MT",
         "regionName": "Mato Grosso",
+        "actionId": "icare_0118",
+        "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
+        "actionPriority": 1
+    },
+    {
+        "locode": "BR TSE",
+        "cityName": "Tangar\u00e1 da Serra",
+        "region": "MT",
+        "regionName": "Mato Grosso",
         "actionId": "icare_0005",
         "actionName": "Create credit lines for residential and community wind energy projects",
-        "actionPriority": 1
+        "actionPriority": 2
     },
     {
         "locode": "BR TSE",
@@ -15,15 +24,6 @@
         "regionName": "Mato Grosso",
         "actionId": "icare_0121",
         "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
-        "actionPriority": 2
-    },
-    {
-        "locode": "BR TSE",
-        "cityName": "Tangar\u00e1 da Serra",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0118",
-        "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
         "actionPriority": 3
     },
     {
@@ -40,8 +40,8 @@
         "cityName": "Tangar\u00e1 da Serra",
         "region": "MT",
         "regionName": "Mato Grosso",
-        "actionId": "icare_0092",
-        "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
+        "actionId": "icare_0088",
+        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
         "actionPriority": 5
     },
     {
@@ -49,8 +49,8 @@
         "cityName": "Tangar\u00e1 da Serra",
         "region": "MT",
         "regionName": "Mato Grosso",
-        "actionId": "icare_0088",
-        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
+        "actionId": "icare_0092",
+        "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
         "actionPriority": 6
     },
     {
@@ -58,45 +58,9 @@
         "cityName": "Tangar\u00e1 da Serra",
         "region": "MT",
         "regionName": "Mato Grosso",
-        "actionId": "icare_0136",
-        "actionName": "Support the Implementation of Ecological Fiscal Incentives",
+        "actionId": "icare_0102",
+        "actionName": "Promote Sustainable Agricultural Practices",
         "actionPriority": 7
-    },
-    {
-        "locode": "BR TSE",
-        "cityName": "Tangar\u00e1 da Serra",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0057",
-        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
-        "actionPriority": 8
-    },
-    {
-        "locode": "BR TSE",
-        "cityName": "Tangar\u00e1 da Serra",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0094",
-        "actionName": "Adoption of biomethane in public fleets.",
-        "actionPriority": 9
-    },
-    {
-        "locode": "BR TSE",
-        "cityName": "Tangar\u00e1 da Serra",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0131",
-        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
-        "actionPriority": 10
-    },
-    {
-        "locode": "BR TSE",
-        "cityName": "Tangar\u00e1 da Serra",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0050",
-        "actionName": "Implement Agroforestry Systems",
-        "actionPriority": 11
     },
     {
         "locode": "BR TSE",
@@ -105,25 +69,25 @@
         "regionName": "Mato Grosso",
         "actionId": "icare_0025",
         "actionName": "Promote energy-efficient low-income housing",
-        "actionPriority": 12
+        "actionPriority": 8
     },
     {
         "locode": "BR TSE",
         "cityName": "Tangar\u00e1 da Serra",
         "region": "MT",
         "regionName": "Mato Grosso",
-        "actionId": "icare_0085",
-        "actionName": "Promote the Adoption of Agroecological Pest Control",
-        "actionPriority": 13
+        "actionId": "icare_0131",
+        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
+        "actionPriority": 9
     },
     {
         "locode": "BR TSE",
         "cityName": "Tangar\u00e1 da Serra",
         "region": "MT",
         "regionName": "Mato Grosso",
-        "actionId": "icare_0132",
-        "actionName": "Encourage Local Agroecological Production and Short Supply Chains",
-        "actionPriority": 14
+        "actionId": "icare_0094",
+        "actionName": "Adoption of biomethane in public fleets.",
+        "actionPriority": 10
     },
     {
         "locode": "BR TSE",
@@ -132,7 +96,25 @@
         "regionName": "Mato Grosso",
         "actionId": "icare_0099",
         "actionName": "Support Agroecological Certification Programs",
-        "actionPriority": 15
+        "actionPriority": 11
+    },
+    {
+        "locode": "BR TSE",
+        "cityName": "Tangar\u00e1 da Serra",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0136",
+        "actionName": "Support the Implementation of Ecological Fiscal Incentives",
+        "actionPriority": 12
+    },
+    {
+        "locode": "BR TSE",
+        "cityName": "Tangar\u00e1 da Serra",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0057",
+        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
+        "actionPriority": 13
     },
     {
         "locode": "BR TSE",
@@ -141,25 +123,7 @@
         "regionName": "Mato Grosso",
         "actionId": "icare_0090",
         "actionName": "Adoption of electric drones for last-mile deliveries.",
-        "actionPriority": 16
-    },
-    {
-        "locode": "BR TSE",
-        "cityName": "Tangar\u00e1 da Serra",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0068",
-        "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
-        "actionPriority": 17
-    },
-    {
-        "locode": "BR TSE",
-        "cityName": "Tangar\u00e1 da Serra",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0044",
-        "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
-        "actionPriority": 18
+        "actionPriority": 14
     },
     {
         "locode": "BR TSE",
@@ -168,7 +132,34 @@
         "regionName": "Mato Grosso",
         "actionId": "icare_0117",
         "actionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
-        "actionPriority": 19
+        "actionPriority": 15
+    },
+    {
+        "locode": "BR TSE",
+        "cityName": "Tangar\u00e1 da Serra",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0068",
+        "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
+        "actionPriority": 16
+    },
+    {
+        "locode": "BR TSE",
+        "cityName": "Tangar\u00e1 da Serra",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0100",
+        "actionName": "Support Regenerative Agriculture Practices",
+        "actionPriority": 17
+    },
+    {
+        "locode": "BR TSE",
+        "cityName": "Tangar\u00e1 da Serra",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0084",
+        "actionName": "Create Incentives for Agroforestry Practices in Livestock Systems",
+        "actionPriority": 18
     },
     {
         "locode": "BR TSE",
@@ -177,6 +168,15 @@
         "regionName": "Mato Grosso",
         "actionId": "icare_0027",
         "actionName": "Create financing programs for local renewable energy projects",
+        "actionPriority": 19
+    },
+    {
+        "locode": "BR TSE",
+        "cityName": "Tangar\u00e1 da Serra",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "c40_0033",
+        "actionName": "15/30-Minute Areas",
         "actionPriority": 20
     }
 ]

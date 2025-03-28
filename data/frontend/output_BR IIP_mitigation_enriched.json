@@ -4,69 +4,9 @@
         "cityName": "Itapipoca",
         "region": "CE",
         "regionName": "Cear\u00e1",
-        "actionId": "icare_0005",
-        "actionName": "Create credit lines for residential and community wind energy projects",
-        "actionPriority": 1,
-        "action": {
-            "ActionID": "icare_0005",
-            "ActionName": "Create credit lines for residential and community wind energy projects",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "stationary_energy"
-            ],
-            "Subsector": [
-                "energy_generation_supplied_to_the_grid"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Establish accessible financing programs to support the development and adoption of wind energy systems in households and community-based projects, enabling a transition to cleaner energy sources.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 2,
-                "housing": 2,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": "60-79",
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Availability of financial programs, grants, or subsidies to make wind energy systems affordable for households and community projects",
-                "Access to technical expertise and resources to guide the installation and maintenance of wind energy systems in residential and community settings",
-                "Policy and regulatory support to encourage the adoption of wind energy, including streamlined permitting processes and incentives for clean energy projects"
-            ],
-            "KeyPerformanceIndicators": [
-                "Number of wind energy projects financed annually.",
-                "Installed capacity of wind energy systems from credit-supported projects (MW).",
-                "Estimated reduction in CO\u2082 equivalent emissions from wind energy adoption."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR IIP",
-        "cityName": "Itapipoca",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
         "actionId": "icare_0121",
         "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
-        "actionPriority": 2,
+        "actionPriority": 1,
         "action": {
             "ActionID": "icare_0121",
             "ActionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
@@ -126,7 +66,7 @@
         "regionName": "Cear\u00e1",
         "actionId": "icare_0118",
         "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
-        "actionPriority": 3,
+        "actionPriority": 2,
         "action": {
             "ActionID": "icare_0118",
             "ActionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
@@ -184,30 +124,90 @@
         "cityName": "Itapipoca",
         "region": "CE",
         "regionName": "Cear\u00e1",
-        "actionId": "icare_0094",
-        "actionName": "Adoption of biomethane in public fleets.",
-        "actionPriority": 4,
+        "actionId": "icare_0005",
+        "actionName": "Create credit lines for residential and community wind energy projects",
+        "actionPriority": 3,
         "action": {
-            "ActionID": "icare_0094",
-            "ActionName": "Adoption of biomethane in public fleets.",
+            "ActionID": "icare_0005",
+            "ActionName": "Create credit lines for residential and community wind energy projects",
             "ActionType": [
                 "mitigation"
             ],
             "Hazard": null,
             "Sector": [
-                "transportation"
+                "stationary_energy"
             ],
             "Subsector": [
-                "on-road"
+                "energy_generation_supplied_to_the_grid"
             ],
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "Description": "Use biomethane produced from urban and agro-industrial waste to fuel public buses and trucks, reducing greenhouse gas emissions in municipal fleets",
+            "Description": "Establish accessible financing programs to support the development and adoption of wind energy systems in households and community-based projects, enabling a transition to cleaner energy sources.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 2,
+                "housing": 2,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": "60-79",
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Availability of financial programs, grants, or subsidies to make wind energy systems affordable for households and community projects",
+                "Access to technical expertise and resources to guide the installation and maintenance of wind energy systems in residential and community settings",
+                "Policy and regulatory support to encourage the adoption of wind energy, including streamlined permitting processes and incentives for clean energy projects"
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of wind energy projects financed annually.",
+                "Installed capacity of wind energy systems from credit-supported projects (MW).",
+                "Estimated reduction in CO\u2082 equivalent emissions from wind energy adoption."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR IIP",
+        "cityName": "Itapipoca",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0133",
+        "actionName": "Promote Urban Reforestation and Green Corridors",
+        "actionPriority": 4,
+        "action": {
+            "ActionID": "icare_0133",
+            "ActionName": "Promote Urban Reforestation and Green Corridors",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "land"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Increase urban tree coverage to mitigate the urban heat island effect and enhance biodiversity.",
             "CoBenefits": {
                 "air_quality": 2,
                 "water_quality": 1,
-                "habitat": 0,
+                "habitat": 2,
                 "cost_of_living": 1,
                 "housing": 0,
                 "mobility": 1,
@@ -216,23 +216,23 @@
             "EquityAndInclusionConsiderations": null,
             "GHGReductionPotential": {
                 "stationary_energy": null,
-                "transportation": "60-79",
+                "transportation": null,
                 "waste": null,
                 "ippu": null,
-                "afolu": null
+                "afolu": "80-100"
             },
             "AdaptationEffectiveness": null,
             "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
+            "TimelineForImplementation": "5-10 years",
             "Dependencies": [
-                "Development of infrastructure for the production, processing, and distribution of biomethane from urban and agro-industrial waste.",
-                "Retrofitting or acquisition of public buses and trucks capable of using biomethane as a fuel source.",
-                "Establishment of policies and financial incentives to support biomethane production and its integration into municipal fleets."
+                "Identification of priority areas and selection of native, climate-resilient species for tree planting.",
+                "Partnerships with local organizations and nurseries, and allocation of resources for planting and maintenance.",
+                "Community engagement to ensure long-term care and support."
             ],
             "KeyPerformanceIndicators": [
-                "Cost savings in fleet operation due to biomethane use (USD/year).",
-                "Increase in biomethane production capacity (%).",
-                "Percentage of biomethane sourced locally versus imported."
+                "Increase in urban tree canopy cover (%)",
+                "Total length of green corridors created or restored (kilometers)",
+                "Reduction in urban heat island effect temperatures (\u00b0C)"
             ],
             "PowersAndMandates": [
                 "local"
@@ -424,9 +424,69 @@
         "cityName": "Itapipoca",
         "region": "CE",
         "regionName": "Cear\u00e1",
+        "actionId": "icare_0094",
+        "actionName": "Adoption of biomethane in public fleets.",
+        "actionPriority": 8,
+        "action": {
+            "ActionID": "icare_0094",
+            "ActionName": "Adoption of biomethane in public fleets.",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "on-road"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Use biomethane produced from urban and agro-industrial waste to fuel public buses and trucks, reducing greenhouse gas emissions in municipal fleets",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 1,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 1,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "60-79",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Development of infrastructure for the production, processing, and distribution of biomethane from urban and agro-industrial waste.",
+                "Retrofitting or acquisition of public buses and trucks capable of using biomethane as a fuel source.",
+                "Establishment of policies and financial incentives to support biomethane production and its integration into municipal fleets."
+            ],
+            "KeyPerformanceIndicators": [
+                "Cost savings in fleet operation due to biomethane use (USD/year).",
+                "Increase in biomethane production capacity (%).",
+                "Percentage of biomethane sourced locally versus imported."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR IIP",
+        "cityName": "Itapipoca",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
         "actionId": "icare_0090",
         "actionName": "Adoption of electric drones for last-mile deliveries.",
-        "actionPriority": 8,
+        "actionPriority": 9,
         "action": {
             "ActionID": "icare_0090",
             "ActionName": "Adoption of electric drones for last-mile deliveries.",
@@ -486,7 +546,7 @@
         "regionName": "Cear\u00e1",
         "actionId": "icare_0057",
         "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
-        "actionPriority": 9,
+        "actionPriority": 10,
         "action": {
             "ActionID": "icare_0057",
             "ActionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
@@ -546,7 +606,7 @@
         "regionName": "Cear\u00e1",
         "actionId": "icare_0068",
         "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
-        "actionPriority": 10,
+        "actionPriority": 11,
         "action": {
             "ActionID": "icare_0068",
             "ActionName": "Deploy on-demand transport systems with 100% electric fleets.",
@@ -604,189 +664,9 @@
         "cityName": "Itapipoca",
         "region": "CE",
         "regionName": "Cear\u00e1",
-        "actionId": "icare_0042",
-        "actionName": "Encourage renewable energy policies at the municipal level",
-        "actionPriority": 11,
-        "action": {
-            "ActionID": "icare_0042",
-            "ActionName": "Encourage renewable energy policies at the municipal level",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "stationary_energy"
-            ],
-            "Subsector": [
-                "non-specified_sources"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Advocate for and implement policies that prioritize the development and integration of renewable energy systems in local government operations and planning.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 1,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": "80-100",
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Political will and leadership to prioritize renewable energy in local government policies and planning processes",
-                "Development of clear policies and regulatory frameworks that facilitate the integration of renewable energy systems into government operations",
-                "Availability of funding or financial mechanisms to support the transition to renewable energy in municipal infrastructure and operations"
-            ],
-            "KeyPerformanceIndicators": [
-                "Number of renewable energy projects approved or initiated annually at the municipal level.",
-                "Percentage of municipal energy demand met by renewable sources (%).",
-                "Reduction in municipal carbon emissions due to --renewable energy adoption (tons CO\u2082e/year)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR IIP",
-        "cityName": "Itapipoca",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0133",
-        "actionName": "Promote Urban Reforestation and Green Corridors",
-        "actionPriority": 12,
-        "action": {
-            "ActionID": "icare_0133",
-            "ActionName": "Promote Urban Reforestation and Green Corridors",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "land"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Increase urban tree coverage to mitigate the urban heat island effect and enhance biodiversity.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 1,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "80-100"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Identification of priority areas and selection of native, climate-resilient species for tree planting.",
-                "Partnerships with local organizations and nurseries, and allocation of resources for planting and maintenance.",
-                "Community engagement to ensure long-term care and support."
-            ],
-            "KeyPerformanceIndicators": [
-                "Increase in urban tree canopy cover (%)",
-                "Total length of green corridors created or restored (kilometers)",
-                "Reduction in urban heat island effect temperatures (\u00b0C)"
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR IIP",
-        "cityName": "Itapipoca",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0044",
-        "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
-        "actionPriority": 13,
-        "action": {
-            "ActionID": "icare_0044",
-            "ActionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "The main objective of this action is to promote active mobility, ensuring the safety, comfort, and priority of pedestrian movement, people with disabilities (or reduced mobility), and human-powered vehicles and equipment, such as bicycles and scooters.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "80-100",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Infrastructure investments in safe and accessible pedestrian walkways, bike lanes, and facilities for people with disabilities",
-                "Policy and regulatory frameworks to prioritize active mobility and establish safety standards for pedestrians and non-motorized vehicles",
-                "Public awareness campaigns to promote active mobility and educate citizens on the benefits of walking, cycling, and using other human-powered transport"
-            ],
-            "KeyPerformanceIndicators": [
-                "Kilometers of new cycling paths and walkways constructed annually.",
-                "Increase in daily usage of cycling and pedestrian infrastructure (%).",
-                "Reduction in urban transport emissions (%)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR IIP",
-        "cityName": "Itapipoca",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
         "actionId": "icare_0131",
         "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
-        "actionPriority": 14,
+        "actionPriority": 12,
         "action": {
             "ActionID": "icare_0131",
             "ActionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
@@ -844,246 +724,9 @@
         "cityName": "Itapipoca",
         "region": "CE",
         "regionName": "Cear\u00e1",
-        "actionId": "icare_0091",
-        "actionName": "Implementation of prioritized routes for sustainable vehicles.",
-        "actionPriority": 15,
-        "action": {
-            "ActionID": "icare_0091",
-            "ActionName": "Implementation of prioritized routes for sustainable vehicles.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Create priority lanes for electric, hybrid, and low-emission vehicles in urban centers to encourage their adoption and reduce pollution in high-traffic areas.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Implementation of traffic management systems to enforce and monitor the use of priority lanes.",
-                "Development of clear signage and public awareness campaigns to inform drivers about lane eligibility and usage.",
-                "Establishment of regulatory frameworks incentivizing the adoption of low-emission vehicles for eligibility in priority lanes."
-            ],
-            "KeyPerformanceIndicators": [
-                "Percentage of sustainable vehicles using prioritized routes.",
-                "Increase in delivery efficiency for goods transported via prioritized routes (%).",
-                "Public acceptance rate of prioritized routes for sustainable vehicles (%)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR IIP",
-        "cityName": "Itapipoca",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0038",
-        "actionName": "Promote community solar farms",
-        "actionPriority": 16,
-        "action": {
-            "ActionID": "icare_0038",
-            "ActionName": "Promote community solar farms",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "stationary_energy"
-            ],
-            "Subsector": [
-                "energy_generation_supplied_to_the_grid"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Develop and encourage the adoption of shared solar energy projects, enabling communities to collectively benefit from clean, renewable power.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 1,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": "80-100",
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Development of policies and regulatory frameworks to support community-based shared solar energy projects and ensure equitable access to clean energy",
-                "Availability of financial mechanisms or incentives to help communities invest in and maintain shared solar energy systems",
-                "Collaboration between local governments, energy providers, and community organizations to design and implement shared solar projects effectively"
-            ],
-            "KeyPerformanceIndicators": [
-                "Number of households served by community solar projects.",
-                "GHG emissions avoided through solar energy production (tons CO\u2082e)"
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR IIP",
-        "cityName": "Itapipoca",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0117",
-        "actionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
-        "actionPriority": 17,
-        "action": {
-            "ActionID": "icare_0117",
-            "ActionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Increase the quality of transportation service delivery, aiming at the modal shift of passengers from private motorized transport to public transport, thereby reducing emissions generated by cars and motorcycles.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Improve the quality of public transportation services to attract passengers from private motorized transport.",
-                "Implement policies and infrastructure that support and enhance the efficiency of public transportation systems.",
-                "Promote awareness of the environmental benefits of public transport to encourage a modal shift and reduce emissions."
-            ],
-            "KeyPerformanceIndicators": [
-                "Annual increase in the number of passengers using the municipal bus system.",
-                "Percentage of bus routes with improved travel time reliability.",
-                "Estimated reduction in CO\u2082 equivalent emissions due to increased public transportation use."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR IIP",
-        "cityName": "Itapipoca",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "ipcc_0006",
-        "actionName": "Teleworking",
-        "actionPriority": 18,
-        "action": {
-            "ActionID": "ipcc_0006",
-            "ActionName": "Teleworking",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Encouraging teleworking (working from home) and videoconferencing as alternatives to commuting and in-person meetings, thereby reducing light-duty vehicle travel and associated emissions.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": "Improves work flexibility, enabling greater participation from individuals with mobility constraints or caregiving responsibilities.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "0-19",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Widespread access to high-speed internet",
-                "supportive organizational policies",
-                "employee willingness to adopt teleworking"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in commuter trips",
-                "increase in teleworking adoption rates",
-                "decreased transport-related emissions"
-            ],
-            "PowersAndMandates": null
-        }
-    },
-    {
-        "locode": "BR IIP",
-        "cityName": "Itapipoca",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
         "actionId": "c40_0033",
         "actionName": "15/30-Minute Areas",
-        "actionPriority": 19,
+        "actionPriority": 13,
         "action": {
             "ActionID": "c40_0033",
             "ActionName": "15/30-Minute Areas",
@@ -1142,6 +785,366 @@
                 "Change in property values in 15/30-minute areas"
             ],
             "PowersAndMandates": null
+        }
+    },
+    {
+        "locode": "BR IIP",
+        "cityName": "Itapipoca",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0044",
+        "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
+        "actionPriority": 14,
+        "action": {
+            "ActionID": "icare_0044",
+            "ActionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "on-road"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "The main objective of this action is to promote active mobility, ensuring the safety, comfort, and priority of pedestrian movement, people with disabilities (or reduced mobility), and human-powered vehicles and equipment, such as bicycles and scooters.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 2,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "80-100",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Infrastructure investments in safe and accessible pedestrian walkways, bike lanes, and facilities for people with disabilities",
+                "Policy and regulatory frameworks to prioritize active mobility and establish safety standards for pedestrians and non-motorized vehicles",
+                "Public awareness campaigns to promote active mobility and educate citizens on the benefits of walking, cycling, and using other human-powered transport"
+            ],
+            "KeyPerformanceIndicators": [
+                "Kilometers of new cycling paths and walkways constructed annually.",
+                "Increase in daily usage of cycling and pedestrian infrastructure (%).",
+                "Reduction in urban transport emissions (%)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR IIP",
+        "cityName": "Itapipoca",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0117",
+        "actionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
+        "actionPriority": 15,
+        "action": {
+            "ActionID": "icare_0117",
+            "ActionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "on-road"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Increase the quality of transportation service delivery, aiming at the modal shift of passengers from private motorized transport to public transport, thereby reducing emissions generated by cars and motorcycles.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 2,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "60-79",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Improve the quality of public transportation services to attract passengers from private motorized transport.",
+                "Implement policies and infrastructure that support and enhance the efficiency of public transportation systems.",
+                "Promote awareness of the environmental benefits of public transport to encourage a modal shift and reduce emissions."
+            ],
+            "KeyPerformanceIndicators": [
+                "Annual increase in the number of passengers using the municipal bus system.",
+                "Percentage of bus routes with improved travel time reliability.",
+                "Estimated reduction in CO\u2082 equivalent emissions due to increased public transportation use."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR IIP",
+        "cityName": "Itapipoca",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0102",
+        "actionName": "Promote Sustainable Agricultural Practices",
+        "actionPriority": 16,
+        "action": {
+            "ActionID": "icare_0102",
+            "ActionName": "Promote Sustainable Agricultural Practices",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "agriculture_forestry_and_fishing_activities"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Encourage agricultural practices that reduce greenhouse gas emissions, such as reduced use of fertilizers and agrochemicals.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "60-79"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Development of educational programs and resources to promote sustainable agricultural practices among farmers.",
+                "Implementation of policies that incentivize the reduction of fertilizer and agrochemical use, such as subsidies for organic inputs or sustainable farming techniques.",
+                "Collaboration with agricultural organizations to provide technical support and guidance on emission-reducing practices."
+            ],
+            "KeyPerformanceIndicators": [
+                "Percentage of farmland adopting sustainable practices (% of total agricultural land).",
+                "Increase in crop yield per hectare (tons/hectare) due to sustainable methods.",
+                "Reduction in water usage for agriculture (liters or m\u00b3/hectare/year)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR IIP",
+        "cityName": "Itapipoca",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0042",
+        "actionName": "Encourage renewable energy policies at the municipal level",
+        "actionPriority": 17,
+        "action": {
+            "ActionID": "icare_0042",
+            "ActionName": "Encourage renewable energy policies at the municipal level",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "stationary_energy"
+            ],
+            "Subsector": [
+                "non-specified_sources"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Advocate for and implement policies that prioritize the development and integration of renewable energy systems in local government operations and planning.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 1,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": "80-100",
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Political will and leadership to prioritize renewable energy in local government policies and planning processes",
+                "Development of clear policies and regulatory frameworks that facilitate the integration of renewable energy systems into government operations",
+                "Availability of funding or financial mechanisms to support the transition to renewable energy in municipal infrastructure and operations"
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of renewable energy projects approved or initiated annually at the municipal level.",
+                "Percentage of municipal energy demand met by renewable sources (%).",
+                "Reduction in municipal carbon emissions due to --renewable energy adoption (tons CO\u2082e/year)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR IIP",
+        "cityName": "Itapipoca",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0096",
+        "actionName": "Promote Organic Farming",
+        "actionPriority": 18,
+        "action": {
+            "ActionID": "icare_0096",
+            "ActionName": "Promote Organic Farming",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "agriculture_forestry_and_fishing_activities"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Encourage the adoption of organic farming practices that avoid the use of chemicals and contribute to soil health and carbon capture.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "60-79"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Provision of financial incentives, subsidies, or grants to support the transition to organic farming practices.",
+                "Development of training and support networks to educate farmers on organic farming methods and their benefits.",
+                "Establishment of certification systems and market access strategies to ensure the economic viability of organic products."
+            ],
+            "KeyPerformanceIndicators": [
+                "Percentage of agricultural land under organic farming practices (%).",
+                "Increase in soil organic carbon content (tons of carbon per hectare).",
+                "Reduction in the use of chemical fertilizers and pesticides (kilograms/hectare/year)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR IIP",
+        "cityName": "Itapipoca",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0100",
+        "actionName": "Support Regenerative Agriculture Practices",
+        "actionPriority": 19,
+        "action": {
+            "ActionID": "icare_0100",
+            "ActionName": "Support Regenerative Agriculture Practices",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "agriculture_forestry_and_fishing_activities"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Support regenerative agricultural practices that focus on restoring soil health and reducing carbon emissions.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "60-79"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Development of training programs and resources to educate farmers on regenerative agricultural techniques, such as cover cropping and reduced tillage.",
+                "Implementation of financial incentives or subsidies to support the adoption of regenerative practices.",
+                "Collaboration with agricultural research institutions to monitor and document the effectiveness of regenerative practices in carbon sequestration and soil health improvement."
+            ],
+            "KeyPerformanceIndicators": [
+                "Increase in soil organic carbon levels (tons/hectare).",
+                "Reduction in water usage per hectare in agricultural production (%).",
+                "Number of regenerative agriculture pilot projects implemented."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
         }
     },
     {

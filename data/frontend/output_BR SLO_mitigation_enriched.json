@@ -4,69 +4,9 @@
         "cityName": "S\u00e3o Leopoldo",
         "region": "RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0121",
-        "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
-        "actionPriority": 1,
-        "action": {
-            "ActionID": "icare_0121",
-            "ActionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "This action encourages the establishment of bike-sharing systems in cities, specifically promoting the use of electric bicycles. These systems allow residents to rent electric bikes for short trips, reducing the dependence on cars for urban transportation. By integrating electric bikes, cities can further reduce greenhouse gas emissions, alleviate traffic congestion, and promote a healthier and more sustainable mode of transportation for both urban and rural areas. This initiative also supports mobility equality, as it makes bikes more accessible to a wider range of people.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Establishment of bike-sharing systems with a focus on electric bicycles to reduce car dependence.",
-                "Integration of electric bikes to lower greenhouse gas emissions, alleviate traffic congestion, and promote sustainable transportation.",
-                "Promotion of mobility equality by making electric bikes accessible to a wider population."
-            ],
-            "KeyPerformanceIndicators": [
-                "Number of electric bikes available in bike-sharing programs.",
-                "Annual increase in bike-sharing users.",
-                "Estimated reduction in CO\u2082 equivalent emissions from the adoption of electric bike-sharing."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR SLO",
-        "cityName": "S\u00e3o Leopoldo",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
         "actionId": "icare_0118",
         "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
-        "actionPriority": 2,
+        "actionPriority": 1,
         "action": {
             "ActionID": "icare_0118",
             "ActionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
@@ -113,6 +53,66 @@
                 "Length of new bike lanes added to the urban network (km).",
                 "Annual increase in the number of bicycle users in urban areas.",
                 "Estimated reduction in CO\u2082 equivalent emissions from the shift to cycling."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR SLO",
+        "cityName": "S\u00e3o Leopoldo",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0121",
+        "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
+        "actionPriority": 2,
+        "action": {
+            "ActionID": "icare_0121",
+            "ActionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "on-road"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "This action encourages the establishment of bike-sharing systems in cities, specifically promoting the use of electric bicycles. These systems allow residents to rent electric bikes for short trips, reducing the dependence on cars for urban transportation. By integrating electric bikes, cities can further reduce greenhouse gas emissions, alleviate traffic congestion, and promote a healthier and more sustainable mode of transportation for both urban and rural areas. This initiative also supports mobility equality, as it makes bikes more accessible to a wider range of people.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 2,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "60-79",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Establishment of bike-sharing systems with a focus on electric bicycles to reduce car dependence.",
+                "Integration of electric bikes to lower greenhouse gas emissions, alleviate traffic congestion, and promote sustainable transportation.",
+                "Promotion of mobility equality by making electric bikes accessible to a wider population."
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of electric bikes available in bike-sharing programs.",
+                "Annual increase in bike-sharing users.",
+                "Estimated reduction in CO\u2082 equivalent emissions from the adoption of electric bike-sharing."
             ],
             "PowersAndMandates": [
                 "local"
@@ -184,69 +184,9 @@
         "cityName": "S\u00e3o Leopoldo",
         "region": "RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0088",
-        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
-        "actionPriority": 4,
-        "action": {
-            "ActionID": "icare_0088",
-            "ActionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Encourage the use of public transportation by offering free services during peak hours for workers and students. This measure reduces urban congestion, decreases the number of individual vehicles on the road, and consequently lowers greenhouse gas emissions associated with private transportation.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 2,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Allocation of funding to subsidize free public transportation services during peak hours.",
-                "Development of policies to ensure the sustainability and efficiency of public transit systems amid increased demand.",
-                "Coordination with employers and educational institutions to optimize peak-hour schedules and promote the initiative."
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in air pollution levels during peak hours (PM2.5/PM10 concentration).",
-                "Number of private vehicles removed from roads during peak hours.",
-                "Public satisfaction rate with the free transportation initiative (%)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR SLO",
-        "cityName": "S\u00e3o Leopoldo",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
         "actionId": "icare_0094",
         "actionName": "Adoption of biomethane in public fleets.",
-        "actionPriority": 5,
+        "actionPriority": 4,
         "action": {
             "ActionID": "icare_0094",
             "ActionName": "Adoption of biomethane in public fleets.",
@@ -293,6 +233,66 @@
                 "Cost savings in fleet operation due to biomethane use (USD/year).",
                 "Increase in biomethane production capacity (%).",
                 "Percentage of biomethane sourced locally versus imported."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR SLO",
+        "cityName": "S\u00e3o Leopoldo",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0057",
+        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
+        "actionPriority": 5,
+        "action": {
+            "ActionID": "icare_0057",
+            "ActionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "railways"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "These systems offer high capacity and low emissions, crucial for cities with high population density.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 1,
+                "mobility": 2,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "80-100",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "high",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Investment in the development and expansion of high-capacity public transportation infrastructure, such as electric buses and metro systems.",
+                "Implementation of policies and incentives to encourage the use of public transport over private vehicles.",
+                "Integration of renewable energy sources to power these systems, reducing emissions further."
+            ],
+            "KeyPerformanceIndicators": [
+                "Length of new transit lines built (km/year).",
+                "Reduction in road traffic congestion (%).",
+                "Reduction in private vehicle usage (number of trips avoided/year)."
             ],
             "PowersAndMandates": [
                 "local"
@@ -424,9 +424,129 @@
         "cityName": "S\u00e3o Leopoldo",
         "region": "RS",
         "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0044",
+        "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
+        "actionPriority": 8,
+        "action": {
+            "ActionID": "icare_0044",
+            "ActionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "on-road"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "The main objective of this action is to promote active mobility, ensuring the safety, comfort, and priority of pedestrian movement, people with disabilities (or reduced mobility), and human-powered vehicles and equipment, such as bicycles and scooters.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 2,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "80-100",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Infrastructure investments in safe and accessible pedestrian walkways, bike lanes, and facilities for people with disabilities",
+                "Policy and regulatory frameworks to prioritize active mobility and establish safety standards for pedestrians and non-motorized vehicles",
+                "Public awareness campaigns to promote active mobility and educate citizens on the benefits of walking, cycling, and using other human-powered transport"
+            ],
+            "KeyPerformanceIndicators": [
+                "Kilometers of new cycling paths and walkways constructed annually.",
+                "Increase in daily usage of cycling and pedestrian infrastructure (%).",
+                "Reduction in urban transport emissions (%)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR SLO",
+        "cityName": "S\u00e3o Leopoldo",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0088",
+        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
+        "actionPriority": 9,
+        "action": {
+            "ActionID": "icare_0088",
+            "ActionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "on-road"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Encourage the use of public transportation by offering free services during peak hours for workers and students. This measure reduces urban congestion, decreases the number of individual vehicles on the road, and consequently lowers greenhouse gas emissions associated with private transportation.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 2,
+                "housing": 0,
+                "mobility": 2,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "60-79",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Allocation of funding to subsidize free public transportation services during peak hours.",
+                "Development of policies to ensure the sustainability and efficiency of public transit systems amid increased demand.",
+                "Coordination with employers and educational institutions to optimize peak-hour schedules and promote the initiative."
+            ],
+            "KeyPerformanceIndicators": [
+                "Reduction in air pollution levels during peak hours (PM2.5/PM10 concentration).",
+                "Number of private vehicles removed from roads during peak hours.",
+                "Public satisfaction rate with the free transportation initiative (%)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR SLO",
+        "cityName": "S\u00e3o Leopoldo",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
         "actionId": "icare_0068",
         "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
-        "actionPriority": 8,
+        "actionPriority": 10,
         "action": {
             "ActionID": "icare_0068",
             "ActionName": "Deploy on-demand transport systems with 100% electric fleets.",
@@ -484,189 +604,9 @@
         "cityName": "S\u00e3o Leopoldo",
         "region": "RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0057",
-        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
-        "actionPriority": 9,
-        "action": {
-            "ActionID": "icare_0057",
-            "ActionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "railways"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "These systems offer high capacity and low emissions, crucial for cities with high population density.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 2,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "80-100",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Investment in the development and expansion of high-capacity public transportation infrastructure, such as electric buses and metro systems.",
-                "Implementation of policies and incentives to encourage the use of public transport over private vehicles.",
-                "Integration of renewable energy sources to power these systems, reducing emissions further."
-            ],
-            "KeyPerformanceIndicators": [
-                "Length of new transit lines built (km/year).",
-                "Reduction in road traffic congestion (%).",
-                "Reduction in private vehicle usage (number of trips avoided/year)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR SLO",
-        "cityName": "S\u00e3o Leopoldo",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0025",
-        "actionName": "Promote energy-efficient low-income housing",
-        "actionPriority": 10,
-        "action": {
-            "ActionID": "icare_0025",
-            "ActionName": "Promote energy-efficient low-income housing",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "stationary_energy"
-            ],
-            "Subsector": [
-                "residential_buildings"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Develop and support housing projects that incorporate energy-efficient designs and technologies, reducing energy costs for low-income households.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 2,
-                "housing": 2,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": "60-79",
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Availability of funding or subsidies to support the development of energy-efficient housing for low-income households",
-                "Collaboration with architects, engineers, and contractors to design and implement energy-efficient technologies in housing projects",
-                "Development of policies and regulations to incentivize energy-efficient housing solutions and ensure affordability for low-income communities"
-            ],
-            "KeyPerformanceIndicators": [
-                "Number of energy-efficient housing units built or retrofitted.",
-                "Reduction in household energy consumption (kWh).",
-                "Decrease in energy bills for low-income households (USD)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR SLO",
-        "cityName": "S\u00e3o Leopoldo",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0136",
-        "actionName": "Support the Implementation of Ecological Fiscal Incentives",
-        "actionPriority": 11,
-        "action": {
-            "ActionID": "icare_0136",
-            "ActionName": "Support the Implementation of Ecological Fiscal Incentives",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "land"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Encourage the application of ecological taxes and incentives to promote environmental conservation.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "20-39"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Establish a clear regulatory framework with fair tax rates and incentives for sustainability.",
-                "Implement effective monitoring systems to track compliance and measure impact.",
-                "Promote public awareness and foster collaboration between governments, businesses, and communities."
-            ],
-            "KeyPerformanceIndicators": [
-                "Number of municipalities that have adopted environmental tax incentives.",
-                "Percentage of tax revenue spent on sustainable practices.",
-                "Acreage or number of properties benefiting from conservation practices as a result of incentives."
-            ],
-            "PowersAndMandates": [
-                "state"
-            ]
-        }
-    },
-    {
-        "locode": "BR SLO",
-        "cityName": "S\u00e3o Leopoldo",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
         "actionId": "c40_0033",
         "actionName": "15/30-Minute Areas",
-        "actionPriority": 12,
+        "actionPriority": 11,
         "action": {
             "ActionID": "c40_0033",
             "ActionName": "15/30-Minute Areas",
@@ -732,69 +672,9 @@
         "cityName": "S\u00e3o Leopoldo",
         "region": "RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0133",
-        "actionName": "Promote Urban Reforestation and Green Corridors",
-        "actionPriority": 13,
-        "action": {
-            "ActionID": "icare_0133",
-            "ActionName": "Promote Urban Reforestation and Green Corridors",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "land"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Increase urban tree coverage to mitigate the urban heat island effect and enhance biodiversity.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 1,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "80-100"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Identification of priority areas and selection of native, climate-resilient species for tree planting.",
-                "Partnerships with local organizations and nurseries, and allocation of resources for planting and maintenance.",
-                "Community engagement to ensure long-term care and support."
-            ],
-            "KeyPerformanceIndicators": [
-                "Increase in urban tree canopy cover (%)",
-                "Total length of green corridors created or restored (kilometers)",
-                "Reduction in urban heat island effect temperatures (\u00b0C)"
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR SLO",
-        "cityName": "S\u00e3o Leopoldo",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
         "actionId": "icare_0042",
         "actionName": "Encourage renewable energy policies at the municipal level",
-        "actionPriority": 14,
+        "actionPriority": 12,
         "action": {
             "ActionID": "icare_0042",
             "ActionName": "Encourage renewable energy policies at the municipal level",
@@ -852,39 +732,39 @@
         "cityName": "S\u00e3o Leopoldo",
         "region": "RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0044",
-        "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
-        "actionPriority": 15,
+        "actionId": "icare_0025",
+        "actionName": "Promote energy-efficient low-income housing",
+        "actionPriority": 13,
         "action": {
-            "ActionID": "icare_0044",
-            "ActionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
+            "ActionID": "icare_0025",
+            "ActionName": "Promote energy-efficient low-income housing",
             "ActionType": [
                 "mitigation"
             ],
             "Hazard": null,
             "Sector": [
-                "transportation"
+                "stationary_energy"
             ],
             "Subsector": [
-                "on-road"
+                "residential_buildings"
             ],
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "Description": "The main objective of this action is to promote active mobility, ensuring the safety, comfort, and priority of pedestrian movement, people with disabilities (or reduced mobility), and human-powered vehicles and equipment, such as bicycles and scooters.",
+            "Description": "Develop and support housing projects that incorporate energy-efficient designs and technologies, reducing energy costs for low-income households.",
             "CoBenefits": {
-                "air_quality": 2,
+                "air_quality": 0,
                 "water_quality": 0,
                 "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 2,
+                "cost_of_living": 2,
+                "housing": 2,
+                "mobility": 0,
                 "stakeholder_engagement": 1
             },
             "EquityAndInclusionConsiderations": null,
             "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "80-100",
+                "stationary_energy": "60-79",
+                "transportation": null,
                 "waste": null,
                 "ippu": null,
                 "afolu": null
@@ -893,14 +773,74 @@
             "CostInvestmentNeeded": "medium",
             "TimelineForImplementation": "5-10 years",
             "Dependencies": [
-                "Infrastructure investments in safe and accessible pedestrian walkways, bike lanes, and facilities for people with disabilities",
-                "Policy and regulatory frameworks to prioritize active mobility and establish safety standards for pedestrians and non-motorized vehicles",
-                "Public awareness campaigns to promote active mobility and educate citizens on the benefits of walking, cycling, and using other human-powered transport"
+                "Availability of funding or subsidies to support the development of energy-efficient housing for low-income households",
+                "Collaboration with architects, engineers, and contractors to design and implement energy-efficient technologies in housing projects",
+                "Development of policies and regulations to incentivize energy-efficient housing solutions and ensure affordability for low-income communities"
             ],
             "KeyPerformanceIndicators": [
-                "Kilometers of new cycling paths and walkways constructed annually.",
-                "Increase in daily usage of cycling and pedestrian infrastructure (%).",
-                "Reduction in urban transport emissions (%)."
+                "Number of energy-efficient housing units built or retrofitted.",
+                "Reduction in household energy consumption (kWh).",
+                "Decrease in energy bills for low-income households (USD)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR SLO",
+        "cityName": "S\u00e3o Leopoldo",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0133",
+        "actionName": "Promote Urban Reforestation and Green Corridors",
+        "actionPriority": 14,
+        "action": {
+            "ActionID": "icare_0133",
+            "ActionName": "Promote Urban Reforestation and Green Corridors",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "land"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Increase urban tree coverage to mitigate the urban heat island effect and enhance biodiversity.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 1,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 1,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "80-100"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Identification of priority areas and selection of native, climate-resilient species for tree planting.",
+                "Partnerships with local organizations and nurseries, and allocation of resources for planting and maintenance.",
+                "Community engagement to ensure long-term care and support."
+            ],
+            "KeyPerformanceIndicators": [
+                "Increase in urban tree canopy cover (%)",
+                "Total length of green corridors created or restored (kilometers)",
+                "Reduction in urban heat island effect temperatures (\u00b0C)"
             ],
             "PowersAndMandates": [
                 "local"
@@ -914,7 +854,7 @@
         "regionName": "Rio Grande do Sul",
         "actionId": "icare_0131",
         "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
-        "actionPriority": 16,
+        "actionPriority": 15,
         "action": {
             "ActionID": "icare_0131",
             "ActionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
@@ -972,9 +912,190 @@
         "cityName": "S\u00e3o Leopoldo",
         "region": "RS",
         "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0136",
+        "actionName": "Support the Implementation of Ecological Fiscal Incentives",
+        "actionPriority": 16,
+        "action": {
+            "ActionID": "icare_0136",
+            "ActionName": "Support the Implementation of Ecological Fiscal Incentives",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "land"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Encourage the application of ecological taxes and incentives to promote environmental conservation.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 1,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "20-39"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Establish a clear regulatory framework with fair tax rates and incentives for sustainability.",
+                "Implement effective monitoring systems to track compliance and measure impact.",
+                "Promote public awareness and foster collaboration between governments, businesses, and communities."
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of municipalities that have adopted environmental tax incentives.",
+                "Percentage of tax revenue spent on sustainable practices.",
+                "Acreage or number of properties benefiting from conservation practices as a result of incentives."
+            ],
+            "PowersAndMandates": [
+                "state"
+            ]
+        }
+    },
+    {
+        "locode": "BR SLO",
+        "cityName": "S\u00e3o Leopoldo",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "ipcc_0016",
+        "actionName": "Eco-driving",
+        "actionPriority": 17,
+        "action": {
+            "ActionID": "ipcc_0016",
+            "ActionName": "Eco-driving",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "on-road"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "A set of driving practices aimed at improving fuel efficiency, reducing greenhouse gas emissions, and minimizing wear and tear on vehicles by promoting smooth driving, regular vehicle maintenance, and traffic anticipation.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 1,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": "Promotes accessibility to fuel-saving techniques for all drivers, reducing operating costs and supporting vulnerable communities dependent on vehicle transport.",
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "0-19",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Driver education",
+                "effective training programs",
+                "policy support",
+                "incentive mechanisms",
+                "encourage adoption of eco-driving practices"
+            ],
+            "KeyPerformanceIndicators": [
+                "Percentage reduction in fuel consumption",
+                "GHG emissions per vehicle",
+                "number of drivers trained in eco-driving",
+                "adherence to eco-driving practices among trained drivers"
+            ],
+            "PowersAndMandates": null
+        }
+    },
+    {
+        "locode": "BR SLO",
+        "cityName": "S\u00e3o Leopoldo",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0099",
+        "actionName": "Support Agroecological Certification Programs",
+        "actionPriority": 18,
+        "action": {
+            "ActionID": "icare_0099",
+            "ActionName": "Support Agroecological Certification Programs",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "agriculture_forestry_and_fishing_activities"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Encourage the certification of agroecological products that meet sustainability criteria and have low environmental impact.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 1,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "20-39"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Development of clear and accessible certification standards for agroecological products that emphasize sustainability and low environmental impact.",
+                "Support for farmers and producers to meet certification requirements through training, financial assistance, or technical guidance.",
+                "Creation of marketing strategies and partnerships to increase the visibility and demand for certified agroecological products in local and global markets."
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of farmers or producers obtaining agroecological certifications.",
+                "Percentage of certified agricultural products in the market (%).",
+                "Reduction in the use of synthetic inputs (e.g., fertilizers, pesticides)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR SLO",
+        "cityName": "S\u00e3o Leopoldo",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
         "actionId": "icare_0117",
         "actionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
-        "actionPriority": 17,
+        "actionPriority": 19,
         "action": {
             "ActionID": "icare_0117",
             "ActionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
@@ -1034,7 +1155,7 @@
         "regionName": "Rio Grande do Sul",
         "actionId": "icare_0027",
         "actionName": "Create financing programs for local renewable energy projects",
-        "actionPriority": 18,
+        "actionPriority": 20,
         "action": {
             "ActionID": "icare_0027",
             "ActionName": "Create financing programs for local renewable energy projects",
@@ -1081,126 +1202,6 @@
                 "Total funds allocated for renewable energy projects (USD).",
                 "Number of projects financed annually.",
                 "Increase in renewable energy capacity installed (MW)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR SLO",
-        "cityName": "S\u00e3o Leopoldo",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0099",
-        "actionName": "Support Agroecological Certification Programs",
-        "actionPriority": 19,
-        "action": {
-            "ActionID": "icare_0099",
-            "ActionName": "Support Agroecological Certification Programs",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Encourage the certification of agroecological products that meet sustainability criteria and have low environmental impact.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "20-39"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Development of clear and accessible certification standards for agroecological products that emphasize sustainability and low environmental impact.",
-                "Support for farmers and producers to meet certification requirements through training, financial assistance, or technical guidance.",
-                "Creation of marketing strategies and partnerships to increase the visibility and demand for certified agroecological products in local and global markets."
-            ],
-            "KeyPerformanceIndicators": [
-                "Number of farmers or producers obtaining agroecological certifications.",
-                "Percentage of certified agricultural products in the market (%).",
-                "Reduction in the use of synthetic inputs (e.g., fertilizers, pesticides)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR SLO",
-        "cityName": "S\u00e3o Leopoldo",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0122",
-        "actionName": "Establish eco-parks.",
-        "actionPriority": 20,
-        "action": {
-            "ActionID": "icare_0122",
-            "ActionName": "Establish eco-parks.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "waste"
-            ],
-            "Subsector": [
-                "land"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "An eco-park is a facility for the mechanical and biological treatment of urban solid waste, integrating different technologies for the segregation and treatment of various fractions within the waste. This treatment aims to maximize the recovery of dry and organic waste and reduce the volume of waste to be sent for final disposal in landfills, using technologies such as energy generation, composting, recycling recovery, proper disposal of residual waste, and other existing treatment methods available in the market.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
-                "habitat": 2,
-                "cost_of_living": 0,
-                "housing": 1,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": "20-39",
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Implementation of eco-parks for mechanical and biological treatment of urban solid waste.",
-                "Integration of technologies such as energy generation, composting, recycling recovery, and proper disposal of residual waste.",
-                "Maximization of dry and organic waste recovery to reduce landfill disposal volumes."
-            ],
-            "KeyPerformanceIndicators": [
-                "Total area covered by eco-parks in the city (hectares).",
-                "Increase in the number of visitors to eco-parks annually.",
-                "Improvement in local biodiversity indices within eco-park areas."
             ],
             "PowersAndMandates": [
                 "local"

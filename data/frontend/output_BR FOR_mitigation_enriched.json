@@ -124,9 +124,69 @@
         "cityName": "Fortaleza",
         "region": "CE",
         "regionName": "Cear\u00e1",
+        "actionId": "icare_0094",
+        "actionName": "Adoption of biomethane in public fleets.",
+        "actionPriority": 3,
+        "action": {
+            "ActionID": "icare_0094",
+            "ActionName": "Adoption of biomethane in public fleets.",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "on-road"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Use biomethane produced from urban and agro-industrial waste to fuel public buses and trucks, reducing greenhouse gas emissions in municipal fleets",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 1,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 1,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "60-79",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Development of infrastructure for the production, processing, and distribution of biomethane from urban and agro-industrial waste.",
+                "Retrofitting or acquisition of public buses and trucks capable of using biomethane as a fuel source.",
+                "Establishment of policies and financial incentives to support biomethane production and its integration into municipal fleets."
+            ],
+            "KeyPerformanceIndicators": [
+                "Cost savings in fleet operation due to biomethane use (USD/year).",
+                "Increase in biomethane production capacity (%).",
+                "Percentage of biomethane sourced locally versus imported."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR FOR",
+        "cityName": "Fortaleza",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
         "actionId": "icare_0005",
         "actionName": "Create credit lines for residential and community wind energy projects",
-        "actionPriority": 3,
+        "actionPriority": 4,
         "action": {
             "ActionID": "icare_0005",
             "ActionName": "Create credit lines for residential and community wind energy projects",
@@ -184,9 +244,189 @@
         "cityName": "Fortaleza",
         "region": "CE",
         "regionName": "Cear\u00e1",
+        "actionId": "icare_0068",
+        "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
+        "actionPriority": 5,
+        "action": {
+            "ActionID": "icare_0068",
+            "ActionName": "Deploy on-demand transport systems with 100% electric fleets.",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "on-road"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "On-demand collective transport services, based on apps, optimize electric vehicle usage, reducing per-passenger emissions.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 2,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "80-100",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Development of digital platforms and apps to efficiently manage on-demand collective transport services.",
+                "Expansion of electric vehicle fleets tailored for shared transport solutions.",
+                "Implementation of policies and incentives to encourage the adoption and use of shared electric transport services."
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of active users of the on-demand electric fleet system.",
+                "Percentage of urban transport demand met by on-demand systems.",
+                "Reduction in noise pollution levels in urban areas"
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR FOR",
+        "cityName": "Fortaleza",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0057",
+        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
+        "actionPriority": 6,
+        "action": {
+            "ActionID": "icare_0057",
+            "ActionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "railways"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "These systems offer high capacity and low emissions, crucial for cities with high population density.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 1,
+                "mobility": 2,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "80-100",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "high",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Investment in the development and expansion of high-capacity public transportation infrastructure, such as electric buses and metro systems.",
+                "Implementation of policies and incentives to encourage the use of public transport over private vehicles.",
+                "Integration of renewable energy sources to power these systems, reducing emissions further."
+            ],
+            "KeyPerformanceIndicators": [
+                "Length of new transit lines built (km/year).",
+                "Reduction in road traffic congestion (%).",
+                "Reduction in private vehicle usage (number of trips avoided/year)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR FOR",
+        "cityName": "Fortaleza",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0025",
+        "actionName": "Promote energy-efficient low-income housing",
+        "actionPriority": 7,
+        "action": {
+            "ActionID": "icare_0025",
+            "ActionName": "Promote energy-efficient low-income housing",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "stationary_energy"
+            ],
+            "Subsector": [
+                "residential_buildings"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Develop and support housing projects that incorporate energy-efficient designs and technologies, reducing energy costs for low-income households.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 2,
+                "housing": 2,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": "60-79",
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Availability of funding or subsidies to support the development of energy-efficient housing for low-income households",
+                "Collaboration with architects, engineers, and contractors to design and implement energy-efficient technologies in housing projects",
+                "Development of policies and regulations to incentivize energy-efficient housing solutions and ensure affordability for low-income communities"
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of energy-efficient housing units built or retrofitted.",
+                "Reduction in household energy consumption (kWh).",
+                "Decrease in energy bills for low-income households (USD)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR FOR",
+        "cityName": "Fortaleza",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
         "actionId": "icare_0088",
         "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
-        "actionPriority": 4,
+        "actionPriority": 8,
         "action": {
             "ActionID": "icare_0088",
             "ActionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
@@ -246,7 +486,7 @@
         "regionName": "Cear\u00e1",
         "actionId": "icare_0044",
         "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
-        "actionPriority": 5,
+        "actionPriority": 9,
         "action": {
             "ActionID": "icare_0044",
             "ActionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
@@ -304,129 +544,9 @@
         "cityName": "Fortaleza",
         "region": "CE",
         "regionName": "Cear\u00e1",
-        "actionId": "icare_0025",
-        "actionName": "Promote energy-efficient low-income housing",
-        "actionPriority": 6,
-        "action": {
-            "ActionID": "icare_0025",
-            "ActionName": "Promote energy-efficient low-income housing",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "stationary_energy"
-            ],
-            "Subsector": [
-                "residential_buildings"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Develop and support housing projects that incorporate energy-efficient designs and technologies, reducing energy costs for low-income households.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 2,
-                "housing": 2,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": "60-79",
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Availability of funding or subsidies to support the development of energy-efficient housing for low-income households",
-                "Collaboration with architects, engineers, and contractors to design and implement energy-efficient technologies in housing projects",
-                "Development of policies and regulations to incentivize energy-efficient housing solutions and ensure affordability for low-income communities"
-            ],
-            "KeyPerformanceIndicators": [
-                "Number of energy-efficient housing units built or retrofitted.",
-                "Reduction in household energy consumption (kWh).",
-                "Decrease in energy bills for low-income households (USD)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR FOR",
-        "cityName": "Fortaleza",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0094",
-        "actionName": "Adoption of biomethane in public fleets.",
-        "actionPriority": 7,
-        "action": {
-            "ActionID": "icare_0094",
-            "ActionName": "Adoption of biomethane in public fleets.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Use biomethane produced from urban and agro-industrial waste to fuel public buses and trucks, reducing greenhouse gas emissions in municipal fleets",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 1,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Development of infrastructure for the production, processing, and distribution of biomethane from urban and agro-industrial waste.",
-                "Retrofitting or acquisition of public buses and trucks capable of using biomethane as a fuel source.",
-                "Establishment of policies and financial incentives to support biomethane production and its integration into municipal fleets."
-            ],
-            "KeyPerformanceIndicators": [
-                "Cost savings in fleet operation due to biomethane use (USD/year).",
-                "Increase in biomethane production capacity (%).",
-                "Percentage of biomethane sourced locally versus imported."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR FOR",
-        "cityName": "Fortaleza",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
         "actionId": "icare_0092",
         "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
-        "actionPriority": 8,
+        "actionPriority": 10,
         "action": {
             "ActionID": "icare_0092",
             "ActionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
@@ -473,126 +593,6 @@
                 "Reduction in distance traveled by traditional delivery vehicles (km/year).",
                 "Increase in operational efficiency of logistics hubs (%).",
                 "Number of businesses utilizing micro-logistics hubs for deliveries."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR FOR",
-        "cityName": "Fortaleza",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0057",
-        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
-        "actionPriority": 9,
-        "action": {
-            "ActionID": "icare_0057",
-            "ActionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "railways"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "These systems offer high capacity and low emissions, crucial for cities with high population density.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 2,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "80-100",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Investment in the development and expansion of high-capacity public transportation infrastructure, such as electric buses and metro systems.",
-                "Implementation of policies and incentives to encourage the use of public transport over private vehicles.",
-                "Integration of renewable energy sources to power these systems, reducing emissions further."
-            ],
-            "KeyPerformanceIndicators": [
-                "Length of new transit lines built (km/year).",
-                "Reduction in road traffic congestion (%).",
-                "Reduction in private vehicle usage (number of trips avoided/year)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR FOR",
-        "cityName": "Fortaleza",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0068",
-        "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
-        "actionPriority": 10,
-        "action": {
-            "ActionID": "icare_0068",
-            "ActionName": "Deploy on-demand transport systems with 100% electric fleets.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "On-demand collective transport services, based on apps, optimize electric vehicle usage, reducing per-passenger emissions.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "80-100",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Development of digital platforms and apps to efficiently manage on-demand collective transport services.",
-                "Expansion of electric vehicle fleets tailored for shared transport solutions.",
-                "Implementation of policies and incentives to encourage the adoption and use of shared electric transport services."
-            ],
-            "KeyPerformanceIndicators": [
-                "Number of active users of the on-demand electric fleet system.",
-                "Percentage of urban transport demand met by on-demand systems.",
-                "Reduction in noise pollution levels in urban areas"
             ],
             "PowersAndMandates": [
                 "local"
@@ -664,69 +664,9 @@
         "cityName": "Fortaleza",
         "region": "CE",
         "regionName": "Cear\u00e1",
-        "actionId": "icare_0042",
-        "actionName": "Encourage renewable energy policies at the municipal level",
-        "actionPriority": 12,
-        "action": {
-            "ActionID": "icare_0042",
-            "ActionName": "Encourage renewable energy policies at the municipal level",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "stationary_energy"
-            ],
-            "Subsector": [
-                "non-specified_sources"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Advocate for and implement policies that prioritize the development and integration of renewable energy systems in local government operations and planning.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 1,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": "80-100",
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Political will and leadership to prioritize renewable energy in local government policies and planning processes",
-                "Development of clear policies and regulatory frameworks that facilitate the integration of renewable energy systems into government operations",
-                "Availability of funding or financial mechanisms to support the transition to renewable energy in municipal infrastructure and operations"
-            ],
-            "KeyPerformanceIndicators": [
-                "Number of renewable energy projects approved or initiated annually at the municipal level.",
-                "Percentage of municipal energy demand met by renewable sources (%).",
-                "Reduction in municipal carbon emissions due to --renewable energy adoption (tons CO\u2082e/year)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR FOR",
-        "cityName": "Fortaleza",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
         "actionId": "icare_0117",
         "actionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
-        "actionPriority": 13,
+        "actionPriority": 12,
         "action": {
             "ActionID": "icare_0117",
             "ActionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
@@ -784,197 +724,9 @@
         "cityName": "Fortaleza",
         "region": "CE",
         "regionName": "Cear\u00e1",
-        "actionId": "c40_0033",
-        "actionName": "15/30-Minute Areas",
-        "actionPriority": 14,
-        "action": {
-            "ActionID": "c40_0033",
-            "ActionName": "15/30-Minute Areas",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "all"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "\"15/30-Minute Areas\" refer to the development of complete neighborhoods where essential services, amenities, and public transport are easily accessible within a 15 or 30-minute walk or bike ride. This urban planning approach promotes sustainability by reducing the need for long-distance travel and fostering community resilience.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "The \"15/30-Minute Areas\" climate action promotes equity and inclusion by ensuring that essential services and amenities are accessible to all community members, particularly benefiting vulnerable or underserved populations who may lack reliable transportation. By designing neighborhoods where key resources are within a short walking or biking distance, this approach reduces barriers to access for low-income individuals, the elderly, and those with disabilities. \n \n Additionally, the focus on public transport integration enhances mobility options for those who may not own a vehicle, further supporting equitable access to jobs, education, and healthcare. The development of complete neighborhoods fosters a sense of community and belonging, encouraging social interactions among diverse groups and promoting inclusivity. Overall, this urban planning strategy actively addresses the needs of marginalized communities, ensuring they are not left behind in the transition to sustainable living.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "0-19",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Availability of essential services and amenities within walking or biking distance",
-                "Investment in public transport infrastructure",
-                "Community engagement and support for local planning initiatives",
-                "Zoning regulations that promote mixed-use development",
-                "Sustainable urban design principles that prioritize walkability and bikeability",
-                "Collaboration between local government, urban planners, and residents"
-            ],
-            "KeyPerformanceIndicators": [
-                "Percentage of residents within 15/30-minute reach of essential services",
-                "Reduction in average commuting distance",
-                "Increase in active transportation (walking/biking) rates",
-                "Public transport usage rates",
-                "Reduction in greenhouse gas emissions from transportation",
-                "Community satisfaction with local amenities",
-                "Number of new businesses established within 15/30-minute areas",
-                "Increase in green spaces per capita",
-                "Frequency of community events and engagement activities",
-                "Change in property values in 15/30-minute areas"
-            ],
-            "PowersAndMandates": null
-        }
-    },
-    {
-        "locode": "BR FOR",
-        "cityName": "Fortaleza",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0131",
-        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
-        "actionPriority": 15,
-        "action": {
-            "ActionID": "icare_0131",
-            "ActionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Focus on buying sustainable, locally produced food for public institutions.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "20-39"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Development of procurement policies and identification of reliable local suppliers.",
-                "Partnerships with producers and allocation of funding for sustainable procurement programs.",
-                "Establishment of monitoring systems to ensure compliance with sustainability criteria."
-            ],
-            "KeyPerformanceIndicators": [
-                "Percentage of the total volume of public purchases coming from local agroecological producers.",
-                "Amount of CO\u2082 emissions avoided due to reduced transport distance (tCO\u2082e).",
-                "Number of agroecological producers benefiting from public purchases."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR FOR",
-        "cityName": "Fortaleza",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0133",
-        "actionName": "Promote Urban Reforestation and Green Corridors",
-        "actionPriority": 16,
-        "action": {
-            "ActionID": "icare_0133",
-            "ActionName": "Promote Urban Reforestation and Green Corridors",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "land"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Increase urban tree coverage to mitigate the urban heat island effect and enhance biodiversity.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 1,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "80-100"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Identification of priority areas and selection of native, climate-resilient species for tree planting.",
-                "Partnerships with local organizations and nurseries, and allocation of resources for planting and maintenance.",
-                "Community engagement to ensure long-term care and support."
-            ],
-            "KeyPerformanceIndicators": [
-                "Increase in urban tree canopy cover (%)",
-                "Total length of green corridors created or restored (kilometers)",
-                "Reduction in urban heat island effect temperatures (\u00b0C)"
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR FOR",
-        "cityName": "Fortaleza",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
         "actionId": "icare_0027",
         "actionName": "Create financing programs for local renewable energy projects",
-        "actionPriority": 17,
+        "actionPriority": 13,
         "action": {
             "ActionID": "icare_0027",
             "ActionName": "Create financing programs for local renewable energy projects",
@@ -1032,55 +784,55 @@
         "cityName": "Fortaleza",
         "region": "CE",
         "regionName": "Cear\u00e1",
-        "actionId": "icare_0122",
-        "actionName": "Establish eco-parks.",
-        "actionPriority": 18,
+        "actionId": "icare_0042",
+        "actionName": "Encourage renewable energy policies at the municipal level",
+        "actionPriority": 14,
         "action": {
-            "ActionID": "icare_0122",
-            "ActionName": "Establish eco-parks.",
+            "ActionID": "icare_0042",
+            "ActionName": "Encourage renewable energy policies at the municipal level",
             "ActionType": [
                 "mitigation"
             ],
             "Hazard": null,
             "Sector": [
-                "waste"
+                "stationary_energy"
             ],
             "Subsector": [
-                "land"
+                "non-specified_sources"
             ],
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "Description": "An eco-park is a facility for the mechanical and biological treatment of urban solid waste, integrating different technologies for the segregation and treatment of various fractions within the waste. This treatment aims to maximize the recovery of dry and organic waste and reduce the volume of waste to be sent for final disposal in landfills, using technologies such as energy generation, composting, recycling recovery, proper disposal of residual waste, and other existing treatment methods available in the market.",
+            "Description": "Advocate for and implement policies that prioritize the development and integration of renewable energy systems in local government operations and planning.",
             "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
-                "habitat": 2,
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 1,
                 "cost_of_living": 0,
-                "housing": 1,
+                "housing": 0,
                 "mobility": 0,
-                "stakeholder_engagement": 0
+                "stakeholder_engagement": 2
             },
             "EquityAndInclusionConsiderations": null,
             "GHGReductionPotential": {
-                "stationary_energy": null,
+                "stationary_energy": "80-100",
                 "transportation": null,
-                "waste": "20-39",
+                "waste": null,
                 "ippu": null,
                 "afolu": null
             },
             "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
+            "CostInvestmentNeeded": "low",
             "TimelineForImplementation": "<5 years",
             "Dependencies": [
-                "Implementation of eco-parks for mechanical and biological treatment of urban solid waste.",
-                "Integration of technologies such as energy generation, composting, recycling recovery, and proper disposal of residual waste.",
-                "Maximization of dry and organic waste recovery to reduce landfill disposal volumes."
+                "Political will and leadership to prioritize renewable energy in local government policies and planning processes",
+                "Development of clear policies and regulatory frameworks that facilitate the integration of renewable energy systems into government operations",
+                "Availability of funding or financial mechanisms to support the transition to renewable energy in municipal infrastructure and operations"
             ],
             "KeyPerformanceIndicators": [
-                "Total area covered by eco-parks in the city (hectares).",
-                "Increase in the number of visitors to eco-parks annually.",
-                "Improvement in local biodiversity indices within eco-park areas."
+                "Number of renewable energy projects approved or initiated annually at the municipal level.",
+                "Percentage of municipal energy demand met by renewable sources (%).",
+                "Reduction in municipal carbon emissions due to --renewable energy adoption (tons CO\u2082e/year)."
             ],
             "PowersAndMandates": [
                 "local"
@@ -1094,7 +846,7 @@
         "regionName": "Cear\u00e1",
         "actionId": "icare_0091",
         "actionName": "Implementation of prioritized routes for sustainable vehicles.",
-        "actionPriority": 19,
+        "actionPriority": 15,
         "action": {
             "ActionID": "icare_0091",
             "ActionName": "Implementation of prioritized routes for sustainable vehicles.",
@@ -1152,9 +904,188 @@
         "cityName": "Fortaleza",
         "region": "CE",
         "regionName": "Cear\u00e1",
+        "actionId": "icare_0024",
+        "actionName": "Integrate renewables into municipal water systems",
+        "actionPriority": 16,
+        "action": {
+            "ActionID": "icare_0024",
+            "ActionName": "Integrate renewables into municipal water systems",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "stationary_energy"
+            ],
+            "Subsector": [
+                "energy_generation_supplied_to_the_grid"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Implement renewable energy sources, such as solar or wind power, to drive water treatment, pumping, and distribution systems, reducing energy costs and emissions.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": "80-100",
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Availability of funding or financial incentives to integrate renewable energy sources like solar or wind power into water treatment and distribution systems",
+                "Technical expertise and infrastructure to retrofit existing systems with renewable energy solutions or design new facilities powered by renewables",
+                "Policy and regulatory support to encourage the use of clean energy in water systems and ensure its integration into municipal energy grids"
+            ],
+            "KeyPerformanceIndicators": [
+                "Percentage of municipal water systems powered by renewables.",
+                "Reduction in energy consumption from non-renewable sources (kWh/year).",
+                "GHG emissions avoided (tons CO\u2082e)"
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR FOR",
+        "cityName": "Fortaleza",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0131",
+        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
+        "actionPriority": 17,
+        "action": {
+            "ActionID": "icare_0131",
+            "ActionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "agriculture_forestry_and_fishing_activities"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Focus on buying sustainable, locally produced food for public institutions.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "20-39"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Development of procurement policies and identification of reliable local suppliers.",
+                "Partnerships with producers and allocation of funding for sustainable procurement programs.",
+                "Establishment of monitoring systems to ensure compliance with sustainability criteria."
+            ],
+            "KeyPerformanceIndicators": [
+                "Percentage of the total volume of public purchases coming from local agroecological producers.",
+                "Amount of CO\u2082 emissions avoided due to reduced transport distance (tCO\u2082e).",
+                "Number of agroecological producers benefiting from public purchases."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR FOR",
+        "cityName": "Fortaleza",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0139",
+        "actionName": "Implementation of urban toll.",
+        "actionPriority": 18,
+        "action": {
+            "ActionID": "icare_0139",
+            "ActionName": "Implementation of urban toll.",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "on-road"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Establishment of a congestion charge and/or license plate rotation for light vehicles in saturated areas and at saturated times",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": -1,
+                "housing": 0,
+                "mobility": 2,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "80-100",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Establish a clear legal framework and invest in technology for monitoring and enforcement (e.g., cameras, sensors).",
+                "Launch awareness campaigns and ensure availability of efficient public transportation or alternative mobility solutions.",
+                "Collaborate with local governments and transport agencies, and set up systems for monitoring and evaluating the policy's effectiveness."
+            ],
+            "KeyPerformanceIndicators": [
+                "Reduction of CO\u2082 emissions from urban road transport (tCO\u2082e/year).",
+                "Revenue generated by the implementation of the urban congestion charge (R$)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR FOR",
+        "cityName": "Fortaleza",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
         "actionId": "icare_0038",
         "actionName": "Promote community solar farms",
-        "actionPriority": 20,
+        "actionPriority": 19,
         "action": {
             "ActionID": "icare_0038",
             "ActionName": "Promote community solar farms",
@@ -1203,6 +1134,66 @@
             ],
             "PowersAndMandates": [
                 "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR FOR",
+        "cityName": "Fortaleza",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0136",
+        "actionName": "Support the Implementation of Ecological Fiscal Incentives",
+        "actionPriority": 20,
+        "action": {
+            "ActionID": "icare_0136",
+            "ActionName": "Support the Implementation of Ecological Fiscal Incentives",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "land"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Encourage the application of ecological taxes and incentives to promote environmental conservation.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 1,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "20-39"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Establish a clear regulatory framework with fair tax rates and incentives for sustainability.",
+                "Implement effective monitoring systems to track compliance and measure impact.",
+                "Promote public awareness and foster collaboration between governments, businesses, and communities."
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of municipalities that have adopted environmental tax incentives.",
+                "Percentage of tax revenue spent on sustainable practices.",
+                "Acreage or number of properties benefiting from conservation practices as a result of incentives."
+            ],
+            "PowersAndMandates": [
+                "state"
             ]
         }
     }

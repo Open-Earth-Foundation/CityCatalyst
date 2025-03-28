@@ -4,10 +4,62 @@
         "cityName": "Caracara\u00ed",
         "region": "RR",
         "regionName": "Roraima",
-        "actionId": "icare_0140",
-        "actionName": "Landslide Risk Assessment and Management",
+        "actionId": "icare_0154",
+        "actionName": "Cleaning and Unclogging of Channels with Installation of Eco-barriers",
         "actionPriority": 1,
         "explanation": "Ranked #1 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "icare_0154",
+            "ActionName": "Cleaning and Unclogging of Channels with Installation of Eco-barriers",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "floods"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Cleaning and unclogging channels in the city to reduce the risk of flooding caused by extreme rainfall events. Installation of eco-barriers to assist in cleaning efforts and raise awareness about solid waste.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 2,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 1,
+                "mobility": 1,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "medium",
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Regular maintenance",
+                "Proper waste management practices"
+            ],
+            "KeyPerformanceIndicators": [
+                "Flood reduction",
+                "Waste reduction",
+                "Maintenance costs"
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR CCY",
+        "cityName": "Caracara\u00ed",
+        "region": "RR",
+        "regionName": "Roraima",
+        "actionId": "icare_0140",
+        "actionName": "Landslide Risk Assessment and Management",
+        "actionPriority": 2,
+        "explanation": "Ranked #2 by tournament ranking algorithm",
         "action": {
             "ActionID": "icare_0140",
             "ActionName": "Landslide Risk Assessment and Management",
@@ -59,8 +111,8 @@
         "regionName": "Roraima",
         "actionId": "icare_0176",
         "actionName": "Development of Climate Action Plan",
-        "actionPriority": 2,
-        "explanation": "Ranked #2 by tournament ranking algorithm",
+        "actionPriority": 3,
+        "explanation": "Ranked #3 by tournament ranking algorithm",
         "action": {
             "ActionID": "icare_0176",
             "ActionName": "Development of Climate Action Plan",
@@ -106,58 +158,6 @@
                 "Greenhouse gas emission reduction targets.",
                 "Number of climate adaptation actions implemented.",
                 "Investment in climate mitigation and adaptation projects."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR CCY",
-        "cityName": "Caracara\u00ed",
-        "region": "RR",
-        "regionName": "Roraima",
-        "actionId": "icare_0154",
-        "actionName": "Cleaning and Unclogging of Channels with Installation of Eco-barriers",
-        "actionPriority": 3,
-        "explanation": "Ranked #3 by tournament ranking algorithm",
-        "action": {
-            "ActionID": "icare_0154",
-            "ActionName": "Cleaning and Unclogging of Channels with Installation of Eco-barriers",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "floods"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Cleaning and unclogging channels in the city to reduce the risk of flooding caused by extreme rainfall events. Installation of eco-barriers to assist in cleaning efforts and raise awareness about solid waste.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "medium",
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Regular maintenance",
-                "Proper waste management practices"
-            ],
-            "KeyPerformanceIndicators": [
-                "Flood reduction",
-                "Waste reduction",
-                "Maintenance costs"
             ],
             "PowersAndMandates": [
                 "local"
@@ -224,64 +224,10 @@
         "cityName": "Caracara\u00ed",
         "region": "RR",
         "regionName": "Roraima",
-        "actionId": "icare_0181",
-        "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
-        "actionPriority": 5,
-        "explanation": "Ranked #5 by tournament ranking algorithm",
-        "action": {
-            "ActionID": "icare_0181",
-            "ActionName": "Relocation and Environmental Restoration in Vulnerable Areas",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "landslides",
-                "floods"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "A comprehensive project addressing the socio-environmental vulnerability of an informal settlement. It includes relocating residents from flood-prone areas, restoring the environment, and providing infrastructure and social services.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 2,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Adequate funding",
-                "Inter-agency coordination",
-                "Land tenure security"
-            ],
-            "KeyPerformanceIndicators": [
-                "Number of households relocated.",
-                "Environmental restoration progress.",
-                "Flood risk reduction."
-            ],
-            "PowersAndMandates": [
-                "state"
-            ]
-        }
-    },
-    {
-        "locode": "BR CCY",
-        "cityName": "Caracara\u00ed",
-        "region": "RR",
-        "regionName": "Roraima",
         "actionId": "icare_0151",
         "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
-        "actionPriority": 6,
-        "explanation": "Ranked #6 by tournament ranking algorithm",
+        "actionPriority": 5,
+        "explanation": "Ranked #5 by tournament ranking algorithm",
         "action": {
             "ActionID": "icare_0151",
             "ActionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
@@ -327,6 +273,60 @@
             ],
             "PowersAndMandates": [
                 "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR CCY",
+        "cityName": "Caracara\u00ed",
+        "region": "RR",
+        "regionName": "Roraima",
+        "actionId": "icare_0181",
+        "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
+        "actionPriority": 6,
+        "explanation": "Ranked #6 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "icare_0181",
+            "ActionName": "Relocation and Environmental Restoration in Vulnerable Areas",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "landslides",
+                "floods"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "A comprehensive project addressing the socio-environmental vulnerability of an informal settlement. It includes relocating residents from flood-prone areas, restoring the environment, and providing infrastructure and social services.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 2,
+                "mobility": 1,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Adequate funding",
+                "Inter-agency coordination",
+                "Land tenure security"
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of households relocated.",
+                "Environmental restoration progress.",
+                "Flood risk reduction."
+            ],
+            "PowersAndMandates": [
+                "state"
             ]
         }
     },
@@ -389,175 +389,10 @@
         "cityName": "Caracara\u00ed",
         "region": "RR",
         "regionName": "Roraima",
-        "actionId": "ipcc_0097",
-        "actionName": "Food storage/distribution improvements",
-        "actionPriority": 8,
-        "explanation": "Ranked #8 by tournament ranking algorithm",
-        "action": {
-            "ActionID": "ipcc_0097",
-            "ActionName": "Food storage/distribution improvements",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "droughts",
-                "floods",
-                "storms",
-                "heatwaves"
-            ],
-            "Sector": [
-                "food_security",
-                "road_infrastructure"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Enhancing food storage and distribution systems by improving transportation infrastructure, optimizing trade networks, and shortening supply chains to ensure local food availability and resilience to climate impacts. This action also includes increasing the capacity of local food storage facilities to reduce post-harvest losses, addressing inefficiencies in logistics, and bolstering infrastructure for perishable goods. It aims to improve food security and reduce vulnerability to extreme events, disruptions, and cascading impacts, especially during pandemics and other crises.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": "Supports equitable access to food for marginalized and vulnerable populations by prioritizing local food production and improving distribution systems that reach underserved areas.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Investment in infrastructure",
-                "Policy incentives for local food production",
-                "Collaboration with logistics and trade sectors",
-                "Technology for supply chain optimization"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in post-harvest losses",
-                "Increased local food availability",
-                "Improved transportation efficiency for food distribution",
-                "Shortened supply chains"
-            ],
-            "PowersAndMandates": null
-        }
-    },
-    {
-        "locode": "BR CCY",
-        "cityName": "Caracara\u00ed",
-        "region": "RR",
-        "regionName": "Roraima",
-        "actionId": "icare_0175",
-        "actionName": "Recovery and preservation of green areas",
-        "actionPriority": 9,
-        "explanation": "Ranked #9 by tournament ranking algorithm",
-        "action": {
-            "ActionID": "icare_0175",
-            "ActionName": "Recovery and preservation of green areas",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "heatwaves",
-                "floods",
-                "wildfires"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Rehabilitation and protection of existing green spaces, such as parks, forests, and wetlands, and expansion of green areas through planting of trees and vegetation in urban and peri-urban areas. These areas provide natural solutions for managing water resources, reducing heat stress, improving air quality, and enhancing biodiversity.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 1,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Availability of suitable land for green spaces",
-                "Access to water resources for irrigation"
-            ],
-            "KeyPerformanceIndicators": [
-                "Area of green spaces created or restored.",
-                "Biodiversity indices in green areas.",
-                "Community engagement in green space activities."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR CCY",
-        "cityName": "Caracara\u00ed",
-        "region": "RR",
-        "regionName": "Roraima",
-        "actionId": "icare_0182",
-        "actionName": "Urban Afforestation and Green Spaces Implementation",
-        "actionPriority": 10,
-        "explanation": "Ranked #10 by tournament ranking algorithm",
-        "action": {
-            "ActionID": "icare_0182",
-            "ActionName": "Urban Afforestation and Green Spaces Implementation",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "heatwaves"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "This action focuses on expanding green areas in the city through urban afforestation. This includes planting trees in sidewalks, squares, public buildings, and schools, as well as creating ecological parks to revitalize watercourses and/or restore forests.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 1,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Water resources",
-                "Long-term maintenance"
-            ],
-            "KeyPerformanceIndicators": [
-                "Area of green spaces created or restored",
-                "Community use of green spaces",
-                "Water usage and conservation"
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR CCY",
-        "cityName": "Caracara\u00ed",
-        "region": "RR",
-        "regionName": "Roraima",
         "actionId": "ipcc_0095",
         "actionName": "Disaster early warning",
-        "actionPriority": 11,
-        "explanation": "Ranked #11 by tournament ranking algorithm",
+        "actionPriority": 8,
+        "explanation": "Ranked #8 by tournament ranking algorithm",
         "action": {
             "ActionID": "ipcc_0095",
             "ActionName": "Disaster early warning",
@@ -613,10 +448,287 @@
         "cityName": "Caracara\u00ed",
         "region": "RR",
         "regionName": "Roraima",
-        "actionId": "ipcc_0086",
-        "actionName": "Ecosystem-based adaptation",
+        "actionId": "ipcc_0097",
+        "actionName": "Food storage/distribution improvements",
+        "actionPriority": 9,
+        "explanation": "Ranked #9 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "ipcc_0097",
+            "ActionName": "Food storage/distribution improvements",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "droughts",
+                "floods",
+                "storms",
+                "heatwaves"
+            ],
+            "Sector": [
+                "food_security",
+                "road_infrastructure"
+            ],
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Enhancing food storage and distribution systems by improving transportation infrastructure, optimizing trade networks, and shortening supply chains to ensure local food availability and resilience to climate impacts. This action also includes increasing the capacity of local food storage facilities to reduce post-harvest losses, addressing inefficiencies in logistics, and bolstering infrastructure for perishable goods. It aims to improve food security and reduce vulnerability to extreme events, disruptions, and cascading impacts, especially during pandemics and other crises.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 2,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": "Supports equitable access to food for marginalized and vulnerable populations by prioritizing local food production and improving distribution systems that reach underserved areas.",
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Investment in infrastructure",
+                "Policy incentives for local food production",
+                "Collaboration with logistics and trade sectors",
+                "Technology for supply chain optimization"
+            ],
+            "KeyPerformanceIndicators": [
+                "Reduction in post-harvest losses",
+                "Increased local food availability",
+                "Improved transportation efficiency for food distribution",
+                "Shortened supply chains"
+            ],
+            "PowersAndMandates": null
+        }
+    },
+    {
+        "locode": "BR CCY",
+        "cityName": "Caracara\u00ed",
+        "region": "RR",
+        "regionName": "Roraima",
+        "actionId": "icare_0156",
+        "actionName": "Implementation of urban gardens",
+        "actionPriority": 10,
+        "explanation": "Ranked #10 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "icare_0156",
+            "ActionName": "Implementation of urban gardens",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "heatwaves",
+                "landslides",
+                "floods"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Identify and assess the feasibility of suitable areas for the installation of urban gardens and ensure that the sites chosen meet the expectations of the community.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 0,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 1,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "medium",
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Ensure availability of detailed land-use maps and urban planning data.",
+                "Engage with local communities to understand their needs and expectations.",
+                "Evaluate soil quality, water availability, and form partnerships to support the establishment and maintenance of gardens."
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of urban gardens created.",
+                "Amount of locally produced food (kg/year).",
+                "Number of direct beneficiaries."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR CCY",
+        "cityName": "Caracara\u00ed",
+        "region": "RR",
+        "regionName": "Roraima",
+        "actionId": "icare_0182",
+        "actionName": "Urban Afforestation and Green Spaces Implementation",
+        "actionPriority": 11,
+        "explanation": "Ranked #11 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "icare_0182",
+            "ActionName": "Urban Afforestation and Green Spaces Implementation",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "heatwaves"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "This action focuses on expanding green areas in the city through urban afforestation. This includes planting trees in sidewalks, squares, public buildings, and schools, as well as creating ecological parks to revitalize watercourses and/or restore forests.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 1,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 1,
+                "mobility": 1,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Water resources",
+                "Long-term maintenance"
+            ],
+            "KeyPerformanceIndicators": [
+                "Area of green spaces created or restored",
+                "Community use of green spaces",
+                "Water usage and conservation"
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR CCY",
+        "cityName": "Caracara\u00ed",
+        "region": "RR",
+        "regionName": "Roraima",
+        "actionId": "icare_0175",
+        "actionName": "Recovery and preservation of green areas",
         "actionPriority": 12,
         "explanation": "Ranked #12 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "icare_0175",
+            "ActionName": "Recovery and preservation of green areas",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "heatwaves",
+                "floods",
+                "wildfires"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Rehabilitation and protection of existing green spaces, such as parks, forests, and wetlands, and expansion of green areas through planting of trees and vegetation in urban and peri-urban areas. These areas provide natural solutions for managing water resources, reducing heat stress, improving air quality, and enhancing biodiversity.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 1,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 1,
+                "mobility": 1,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Availability of suitable land for green spaces",
+                "Access to water resources for irrigation"
+            ],
+            "KeyPerformanceIndicators": [
+                "Area of green spaces created or restored.",
+                "Biodiversity indices in green areas.",
+                "Community engagement in green space activities."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR CCY",
+        "cityName": "Caracara\u00ed",
+        "region": "RR",
+        "regionName": "Roraima",
+        "actionId": "icare_0149",
+        "actionName": "Encourage sustainable land use practices",
+        "actionPriority": 13,
+        "explanation": "Ranked #13 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "icare_0149",
+            "ActionName": "Encourage sustainable land use practices",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "droughts",
+                "heatwaves",
+                "landslides",
+                "floods",
+                "wildfires"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Promoting methods that guarantee the conservation and health of the soil, preserving biodiversity, reducing erosion and minimizing environmental impacts.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 2,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "medium",
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Provide access to technical knowledge and training on sustainable soil management practices.",
+                "Offer financial incentives and form partnerships with research institutions and local farmers.",
+                "Develop monitoring systems for soil health and biodiversity, and implement policies for erosion control."
+            ],
+            "KeyPerformanceIndicators": [
+                "Percentage of land area managed under sustainable land use practices (%)",
+                "Reduction in deforestation or land degradation rates (%)",
+                "Increase in biodiversity indicators on managed lands (e.g., species count, habitat quality)"
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR CCY",
+        "cityName": "Caracara\u00ed",
+        "region": "RR",
+        "regionName": "Roraima",
+        "actionId": "ipcc_0086",
+        "actionName": "Ecosystem-based adaptation",
+        "actionPriority": 14,
+        "explanation": "Ranked #14 by tournament ranking algorithm",
         "action": {
             "ActionID": "ipcc_0086",
             "ActionName": "Ecosystem-based adaptation",
@@ -683,54 +795,57 @@
         "cityName": "Caracara\u00ed",
         "region": "RR",
         "regionName": "Roraima",
-        "actionId": "icare_0156",
-        "actionName": "Implementation of urban gardens",
-        "actionPriority": 13,
-        "explanation": "Ranked #13 by tournament ranking algorithm",
+        "actionId": "ipcc_0094",
+        "actionName": "Access to health care",
+        "actionPriority": 15,
+        "explanation": "Ranked #15 by tournament ranking algorithm",
         "action": {
-            "ActionID": "icare_0156",
-            "ActionName": "Implementation of urban gardens",
+            "ActionID": "ipcc_0094",
+            "ActionName": "Access to health care",
             "ActionType": [
                 "adaptation"
             ],
             "Hazard": [
                 "heatwaves",
-                "landslides",
-                "floods"
+                "floods",
+                "droughts"
             ],
-            "Sector": null,
+            "Sector": [
+                "public_health",
+                "water_resources"
+            ],
             "Subsector": null,
             "PrimaryPurpose": [
                 "climate_resilience"
             ],
-            "Description": "Identify and assess the feasibility of suitable areas for the installation of urban gardens and ensure that the sites chosen meet the expectations of the community.",
+            "Description": "Enhancing access to health care services, including health and nutrition services, clean water, sanitation, and culturally appropriate mental health resources. Expanding telemedicine capabilities enables efficient health service delivery, particularly for remote and underserved populations. Strengthening basic public health systems and disaster preparedness can rapidly reduce vulnerability to climate-related health risks.",
             "CoBenefits": {
                 "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 1,
+                "water_quality": 2,
+                "habitat": 0,
                 "cost_of_living": 1,
                 "housing": 1,
                 "mobility": 0,
                 "stakeholder_engagement": 2
             },
-            "EquityAndInclusionConsiderations": null,
+            "EquityAndInclusionConsiderations": "Promotes equitable access to health care for marginalized and vulnerable groups, including homeless populations, remote communities, and those affected by housing inequities.",
             "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "medium",
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
             "Dependencies": [
-                "Ensure availability of detailed land-use maps and urban planning data.",
-                "Engage with local communities to understand their needs and expectations.",
-                "Evaluate soil quality, water availability, and form partnerships to support the establishment and maintenance of gardens."
+                "Investment in telemedicine technologies",
+                "Strengthened governance of public health systems",
+                "Capacity building for health workers",
+                "Infrastructure upgrades for health facilities"
             ],
             "KeyPerformanceIndicators": [
-                "Number of urban gardens created.",
-                "Amount of locally produced food (kg/year).",
-                "Number of direct beneficiaries."
+                "Reduction in climate-related mortality",
+                "Increased access to telemedicine",
+                "Number of culturally tailored health programs implemented",
+                "Improved water and sanitation access metrics"
             ],
-            "PowersAndMandates": [
-                "local"
-            ]
+            "PowersAndMandates": null
         }
     },
     {
@@ -738,56 +853,56 @@
         "cityName": "Caracara\u00ed",
         "region": "RR",
         "regionName": "Roraima",
-        "actionId": "icare_0149",
-        "actionName": "Encourage sustainable land use practices",
-        "actionPriority": 14,
-        "explanation": "Ranked #14 by tournament ranking algorithm",
+        "actionId": "ipcc_0092",
+        "actionName": "Social safety nets",
+        "actionPriority": 16,
+        "explanation": "Ranked #16 by tournament ranking algorithm",
         "action": {
-            "ActionID": "icare_0149",
-            "ActionName": "Encourage sustainable land use practices",
+            "ActionID": "ipcc_0092",
+            "ActionName": "Social safety nets",
             "ActionType": [
                 "adaptation"
             ],
             "Hazard": [
                 "droughts",
                 "heatwaves",
-                "landslides",
                 "floods",
-                "wildfires"
+                "storms"
             ],
-            "Sector": null,
+            "Sector": [
+                "food_security",
+                "public_health"
+            ],
             "Subsector": null,
             "PrimaryPurpose": [
                 "climate_resilience"
             ],
-            "Description": "Promoting methods that guarantee the conservation and health of the soil, preserving biodiversity, reducing erosion and minimizing environmental impacts.",
+            "Description": "Social safety nets encompass adaptive social protection mechanisms to reduce food insecurity and malnutrition, especially for vulnerable populations. These include cash transfers, school feeding programs, public work initiatives, unemployment compensation, land reforms, credit and insurance schemes. Integrated approaches combine climate risk assessments with disaster risk reduction, education, and social equity to enhance resilience to climate stresses.",
             "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
+                "air_quality": 0,
+                "water_quality": 1,
                 "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 0,
+                "cost_of_living": 2,
+                "housing": 1,
                 "mobility": 0,
-                "stakeholder_engagement": 1
+                "stakeholder_engagement": 2
             },
-            "EquityAndInclusionConsiderations": null,
+            "EquityAndInclusionConsiderations": "Enhances the social status and rights of marginalized groups, protects vulnerable populations, reduces inequalities, and promotes education and gender equity.",
             "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "medium",
-            "CostInvestmentNeeded": "low",
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "medium",
             "TimelineForImplementation": "5-10 years",
             "Dependencies": [
-                "Provide access to technical knowledge and training on sustainable soil management practices.",
-                "Offer financial incentives and form partnerships with research institutions and local farmers.",
-                "Develop monitoring systems for soil health and biodiversity, and implement policies for erosion control."
+                "Integration of climate and disaster risk into social protection",
+                "education programs",
+                "coordination with sustainable livelihoods and financial inclusion initiatives"
             ],
             "KeyPerformanceIndicators": [
-                "Percentage of land area managed under sustainable land use practices (%)",
-                "Reduction in deforestation or land degradation rates (%)",
-                "Increase in biodiversity indicators on managed lands (e.g., species count, habitat quality)"
+                "Reduction in malnutrition rates",
+                "Increase in education access for vulnerable groups",
+                "Participation in social protection programs"
             ],
-            "PowersAndMandates": [
-                "local"
-            ]
+            "PowersAndMandates": null
         }
     },
     {
@@ -797,8 +912,8 @@
         "regionName": "Roraima",
         "actionId": "ipcc_0099",
         "actionName": "Water capture/storage",
-        "actionPriority": 15,
-        "explanation": "Ranked #15 by tournament ranking algorithm",
+        "actionPriority": 17,
+        "explanation": "Ranked #17 by tournament ranking algorithm",
         "action": {
             "ActionID": "ipcc_0099",
             "ActionName": "Water capture/storage",
@@ -856,8 +971,8 @@
         "regionName": "Roraima",
         "actionId": "icare_0163",
         "actionName": "Creation of a First Response Brigade for Fire Fighting",
-        "actionPriority": 16,
-        "explanation": "Ranked #16 by tournament ranking algorithm",
+        "actionPriority": 18,
+        "explanation": "Ranked #18 by tournament ranking algorithm",
         "action": {
             "ActionID": "icare_0163",
             "ActionName": "Creation of a First Response Brigade for Fire Fighting",
@@ -907,124 +1022,13 @@
         "cityName": "Caracara\u00ed",
         "region": "RR",
         "regionName": "Roraima",
-        "actionId": "ipcc_0094",
-        "actionName": "Access to health care",
-        "actionPriority": 17,
-        "explanation": "Ranked #17 by tournament ranking algorithm",
-        "action": {
-            "ActionID": "ipcc_0094",
-            "ActionName": "Access to health care",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "heatwaves",
-                "floods",
-                "droughts"
-            ],
-            "Sector": [
-                "public_health",
-                "water_resources"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Enhancing access to health care services, including health and nutrition services, clean water, sanitation, and culturally appropriate mental health resources. Expanding telemedicine capabilities enables efficient health service delivery, particularly for remote and underserved populations. Strengthening basic public health systems and disaster preparedness can rapidly reduce vulnerability to climate-related health risks.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": "Promotes equitable access to health care for marginalized and vulnerable groups, including homeless populations, remote communities, and those affected by housing inequities.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Investment in telemedicine technologies",
-                "Strengthened governance of public health systems",
-                "Capacity building for health workers",
-                "Infrastructure upgrades for health facilities"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in climate-related mortality",
-                "Increased access to telemedicine",
-                "Number of culturally tailored health programs implemented",
-                "Improved water and sanitation access metrics"
-            ],
-            "PowersAndMandates": null
-        }
-    },
-    {
-        "locode": "BR CCY",
-        "cityName": "Caracara\u00ed",
-        "region": "RR",
-        "regionName": "Roraima",
-        "actionId": "icare_0167",
-        "actionName": "Create the Multisectoral Heatwave Response Plan and develop the measures for its implementation",
-        "actionPriority": 18,
-        "explanation": "Ranked #18 by tournament ranking algorithm",
-        "action": {
-            "ActionID": "icare_0167",
-            "ActionName": "Create the Multisectoral Heatwave Response Plan and develop the measures for its implementation",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "heatwaves"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "The Multisectoral Heatwave Response Plan should include the procedures that the municipality will apply in response to intense heat events, with a focus on the most vulnerable populations.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "medium",
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Development of a comprehensive Multisectoral Heatwave Response Plan that outlines specific procedures for managing heat events",
-                "Identification and mapping of vulnerable populations, such as the elderly and those with pre-existing health conditions, to ensure targeted interventions",
-                "Coordination with healthcare facilities, social services, and community organizations to provide support and resources during heatwaves"
-            ],
-            "KeyPerformanceIndicators": [
-                "Number of new rainwater harvesting installations across public and private buildings annually.",
-                "Total volume of water reused and harvested annually (liters), tracked through water utility reports.",
-                "Percentage reduction in water shortages or service interruptions during drought periods, measured through water supply metrics."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR CCY",
-        "cityName": "Caracara\u00ed",
-        "region": "RR",
-        "regionName": "Roraima",
-        "actionId": "ipcc_0092",
-        "actionName": "Social safety nets",
+        "actionId": "ipcc_0098",
+        "actionName": "Behaviour change in diets and food waste",
         "actionPriority": 19,
         "explanation": "Ranked #19 by tournament ranking algorithm",
         "action": {
-            "ActionID": "ipcc_0092",
-            "ActionName": "Social safety nets",
+            "ActionID": "ipcc_0098",
+            "ActionName": "Behaviour change in diets and food waste",
             "ActionType": [
                 "adaptation"
             ],
@@ -1032,76 +1036,17 @@
                 "droughts",
                 "heatwaves",
                 "floods",
-                "storms"
+                "wildfires"
             ],
             "Sector": [
                 "food_security",
-                "public_health"
+                "biodiversity"
             ],
             "Subsector": null,
             "PrimaryPurpose": [
                 "climate_resilience"
             ],
-            "Description": "Social safety nets encompass adaptive social protection mechanisms to reduce food insecurity and malnutrition, especially for vulnerable populations. These include cash transfers, school feeding programs, public work initiatives, unemployment compensation, land reforms, credit and insurance schemes. Integrated approaches combine climate risk assessments with disaster risk reduction, education, and social equity to enhance resilience to climate stresses.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 2,
-                "housing": 1,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": "Enhances the social status and rights of marginalized groups, protects vulnerable populations, reduces inequalities, and promotes education and gender equity.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Integration of climate and disaster risk into social protection",
-                "education programs",
-                "coordination with sustainable livelihoods and financial inclusion initiatives"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in malnutrition rates",
-                "Increase in education access for vulnerable groups",
-                "Participation in social protection programs"
-            ],
-            "PowersAndMandates": null
-        }
-    },
-    {
-        "locode": "BR CCY",
-        "cityName": "Caracara\u00ed",
-        "region": "RR",
-        "regionName": "Roraima",
-        "actionId": "ipcc_0096",
-        "actionName": "Farm/fishery improvements",
-        "actionPriority": 20,
-        "explanation": "Ranked #20 by tournament ranking algorithm",
-        "action": {
-            "ActionID": "ipcc_0096",
-            "ActionName": "Farm/fishery improvements",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "droughts",
-                "heatwaves",
-                "floods",
-                "wildfires",
-                "storms"
-            ],
-            "Sector": [
-                "food_security",
-                "biodiversity",
-                "water_resources"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Implementing a range of strategies to adapt farms and fisheries to climate impacts. This includes changing fishing gear or vessel power, adopting new crop varieties or adjusting planting schedules, improving irrigation schemes, integrating crop and livestock systems, relocating livestock with improved pasture management, and adopting agroecological and agroforestry systems. Technological innovations like smart farming and financial measures such as subsidies support these adaptations.",
+            "Description": "Reducing food loss and waste through improved food production, distribution, and consumption practices. Actions include enhancing agricultural techniques, adopting water-saving technologies, implementing low-cost storage solutions, and promoting plant-based diets. Policymakers can encourage these behaviors with appropriate pricing policies, sustainable agriculture initiatives, and support for disadvantaged groups. The action emphasizes shifting to healthier diets, reducing overconsumption, and supporting local food systems to mitigate greenhouse gas emissions and ensure food security under climate change.",
             "CoBenefits": {
                 "air_quality": 1,
                 "water_quality": 2,
@@ -1111,23 +1056,76 @@
                 "mobility": 0,
                 "stakeholder_engagement": 2
             },
-            "EquityAndInclusionConsiderations": "Ensures access to resources for marginalized farmers and fishers, promotes diverse livelihood options, and builds resilience in underserved communities.",
+            "EquityAndInclusionConsiderations": "Promotes access to affordable, healthy food for vulnerable communities, empowering women, youth, and socially disadvantaged groups. Encourages equitable participation in sustainable agricultural practices and local food networks.",
             "GHGReductionPotential": null,
             "AdaptationEffectiveness": "high",
             "CostInvestmentNeeded": "medium",
             "TimelineForImplementation": "5-10 years",
             "Dependencies": [
-                "Policy support for climate-resilient agriculture and fisheries",
-                "Access to finance and subsidies",
-                "Training for adopting new practices",
-                "Improved market infrastructure"
+                "Education and training for farmers",
+                "Access to sustainable agricultural inputs",
+                "Policy support for sustainable practices",
+                "Technological infrastructure for storage and processing"
             ],
             "KeyPerformanceIndicators": [
-                "Increase in agricultural and fishery productivity",
-                "Adoption rate of integrated systems",
-                "Reduction in climate-related yield losses"
+                "Reduction in food loss and waste percentages",
+                "Increase in adoption of plant-based diets",
+                "Improved food security indicators",
+                "Reduction in GHG emissions from food systems"
             ],
             "PowersAndMandates": null
+        }
+    },
+    {
+        "locode": "BR CCY",
+        "cityName": "Caracara\u00ed",
+        "region": "RR",
+        "regionName": "Roraima",
+        "actionId": "icare_0141",
+        "actionName": "Implementation of Wetlands",
+        "actionPriority": 20,
+        "explanation": "Ranked #20 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "icare_0141",
+            "ActionName": "Implementation of Wetlands",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "diseases",
+                "floods"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Implementation of wetlands using phytoremediation to remove pollutants from water and improve water quality.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 2,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "low",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Maintenance"
+            ],
+            "KeyPerformanceIndicators": [
+                "Water quality improvement",
+                "Water flow rate",
+                "Maintenance costs"
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
         }
     }
 ]

@@ -117,67 +117,10 @@
         "cityName": "Gravata\u00ed",
         "region": "RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0151",
-        "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
-        "actionPriority": 3,
-        "explanation": "Ranked #3 by tournament ranking algorithm",
-        "action": {
-            "ActionID": "icare_0151",
-            "ActionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "sea-level-rise",
-                "floods",
-                "landslides",
-                "diseases",
-                "heatwaves"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Priority to ZEIS areas in housing improvement actions and the application of resources from the Urbanization Fund, with the implementation of urban infrastructure that considers climate adaptation in these spaces. Use of Nature-based Solutions (NbS) in the adaptation of environmental sanitation and green and blue infrastructures that enhance leisure, culture, urban agriculture, and activities to strengthen community associations.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 2,
-                "mobility": 1,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "medium",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Availability of funding from the Urbanization Fund and other financial mechanisms to support housing improvements and urban infrastructure in ZEIS areas",
-                "Collaboration between urban planners, environmental experts, and local communities to design and implement nature-based solutions (NbS) for urban infrastructure",
-                "Policy and regulatory frameworks that integrate climate adaptation measures into urban planning, ensuring that investments prioritize environmental sustainability and community"
-            ],
-            "KeyPerformanceIndicators": [
-                "Number of ZEIS areas diagnosed and restored.",
-                "Percentage of residents benefiting from restored areas (%).",
-                "Public investments allocated to ZEIS areas (currency amount)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR GRA",
-        "cityName": "Gravata\u00ed",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
         "actionId": "icare_0154",
         "actionName": "Cleaning and Unclogging of Channels with Installation of Eco-barriers",
-        "actionPriority": 4,
-        "explanation": "Ranked #4 by tournament ranking algorithm",
+        "actionPriority": 3,
+        "explanation": "Ranked #3 by tournament ranking algorithm",
         "action": {
             "ActionID": "icare_0154",
             "ActionName": "Cleaning and Unclogging of Channels with Installation of Eco-barriers",
@@ -218,6 +161,60 @@
             ],
             "PowersAndMandates": [
                 "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR GRA",
+        "cityName": "Gravata\u00ed",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0181",
+        "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
+        "actionPriority": 4,
+        "explanation": "Ranked #4 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "icare_0181",
+            "ActionName": "Relocation and Environmental Restoration in Vulnerable Areas",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "landslides",
+                "floods"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "A comprehensive project addressing the socio-environmental vulnerability of an informal settlement. It includes relocating residents from flood-prone areas, restoring the environment, and providing infrastructure and social services.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 2,
+                "mobility": 1,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Adequate funding",
+                "Inter-agency coordination",
+                "Land tenure security"
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of households relocated.",
+                "Environmental restoration progress.",
+                "Flood risk reduction."
+            ],
+            "PowersAndMandates": [
+                "state"
             ]
         }
     },
@@ -281,73 +278,21 @@
         "cityName": "Gravata\u00ed",
         "region": "RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0181",
-        "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
+        "actionId": "icare_0151",
+        "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
         "actionPriority": 6,
         "explanation": "Ranked #6 by tournament ranking algorithm",
         "action": {
-            "ActionID": "icare_0181",
-            "ActionName": "Relocation and Environmental Restoration in Vulnerable Areas",
+            "ActionID": "icare_0151",
+            "ActionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
             "ActionType": [
                 "adaptation"
             ],
             "Hazard": [
-                "landslides",
-                "floods"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "A comprehensive project addressing the socio-environmental vulnerability of an informal settlement. It includes relocating residents from flood-prone areas, restoring the environment, and providing infrastructure and social services.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 2,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Adequate funding",
-                "Inter-agency coordination",
-                "Land tenure security"
-            ],
-            "KeyPerformanceIndicators": [
-                "Number of households relocated.",
-                "Environmental restoration progress.",
-                "Flood risk reduction."
-            ],
-            "PowersAndMandates": [
-                "state"
-            ]
-        }
-    },
-    {
-        "locode": "BR GRA",
-        "cityName": "Gravata\u00ed",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0180",
-        "actionName": "Implement permeable pavements and increase green areas in roadways",
-        "actionPriority": 7,
-        "explanation": "Ranked #7 by tournament ranking algorithm",
-        "action": {
-            "ActionID": "icare_0180",
-            "ActionName": "Implement permeable pavements and increase green areas in roadways",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
+                "sea-level-rise",
                 "floods",
                 "landslides",
+                "diseases",
                 "heatwaves"
             ],
             "Sector": null,
@@ -355,254 +300,30 @@
             "PrimaryPurpose": [
                 "climate_resilience"
             ],
-            "Description": "Increase the permeable and semi-permeable areas in buildings and public spaces under the administration of the City, with the adoption of nature-based solutions (NbS). In areas with space limitations, the action includes feasibility analyses for implementing permeable pavements and increasing green areas in roadways. Among traditional construction solutions, there are features such as curbs and gutters with stormwater drains, as well as larger-scale solutions like retention ponds. Nature-based solutions include urban tree planting, green roofs, rainwater cisterns, bio-swales, and more.",
+            "Description": "Priority to ZEIS areas in housing improvement actions and the application of resources from the Urbanization Fund, with the implementation of urban infrastructure that considers climate adaptation in these spaces. Use of Nature-based Solutions (NbS) in the adaptation of environmental sanitation and green and blue infrastructures that enhance leisure, culture, urban agriculture, and activities to strengthen community associations.",
             "CoBenefits": {
                 "air_quality": 1,
                 "water_quality": 1,
                 "habitat": 1,
-                "cost_of_living": 0,
-                "housing": 1,
-                "mobility": 0,
-                "stakeholder_engagement": 1
+                "cost_of_living": 1,
+                "housing": 2,
+                "mobility": 1,
+                "stakeholder_engagement": 2
             },
             "EquityAndInclusionConsiderations": null,
             "GHGReductionPotential": null,
             "AdaptationEffectiveness": "medium",
             "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Expansion of permeable and semi-permeable areas in City-administered buildings and public spaces.",
-                "Adoption of nature-based solutions (NbS) such as urban tree planting, green roofs, rainwater cisterns, and bio-swales.",
-                "Feasibility analyses for permeable pavements and increased green areas in roadways, alongside traditional stormwater management solutions like curbs, gutters, and retention ponds."
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in surface water runoff during rainfall events (%).",
-                "Decrease in flooding occurrences in modified areas.",
-                "Percentage of public spaces complying with new permeable surface regulations."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR GRA",
-        "cityName": "Gravata\u00ed",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0175",
-        "actionName": "Recovery and preservation of green areas",
-        "actionPriority": 8,
-        "explanation": "Ranked #8 by tournament ranking algorithm",
-        "action": {
-            "ActionID": "icare_0175",
-            "ActionName": "Recovery and preservation of green areas",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "heatwaves",
-                "floods",
-                "wildfires"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Rehabilitation and protection of existing green spaces, such as parks, forests, and wetlands, and expansion of green areas through planting of trees and vegetation in urban and peri-urban areas. These areas provide natural solutions for managing water resources, reducing heat stress, improving air quality, and enhancing biodiversity.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 1,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
             "TimelineForImplementation": "5-10 years",
             "Dependencies": [
-                "Availability of suitable land for green spaces",
-                "Access to water resources for irrigation"
+                "Availability of funding from the Urbanization Fund and other financial mechanisms to support housing improvements and urban infrastructure in ZEIS areas",
+                "Collaboration between urban planners, environmental experts, and local communities to design and implement nature-based solutions (NbS) for urban infrastructure",
+                "Policy and regulatory frameworks that integrate climate adaptation measures into urban planning, ensuring that investments prioritize environmental sustainability and community"
             ],
             "KeyPerformanceIndicators": [
-                "Area of green spaces created or restored.",
-                "Biodiversity indices in green areas.",
-                "Community engagement in green space activities."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR GRA",
-        "cityName": "Gravata\u00ed",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0088",
-        "actionName": "Building codes",
-        "actionPriority": 9,
-        "explanation": "Ranked #9 by tournament ranking algorithm",
-        "action": {
-            "ActionID": "ipcc_0088",
-            "ActionName": "Building codes",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "floods",
-                "landslides"
-            ],
-            "Sector": [
-                "road_infrastructure",
-                "geo-hydrological_disasters"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "The development and implementation of building codes and architectural design regulations aimed at integrating climate adaptation parameters. These codes are focused on reducing risks from climate-induced hazards like floods and landslides. They also support climate-resilient urban development by guiding land use, construction practices, and infrastructure standards. The initiative fosters strategic long-term urban planning to coordinate public and private investments in adaptation, including the creation of safe zones and the transformation of precarious settlements. It ensures that new infrastructure is resilient to climate risks and that urban spaces are safe and sustainable for current and future populations.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 2,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": "Promotes inclusive urban planning by addressing risks in informal and precarious settlements and integrating eco-parks and eco-gardens for vulnerable populations.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Integration with local climate risk assessments",
-                "Strategic collaboration between urban planners and municipal authorities"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in urban flood incidents",
-                "Increased availability of safe housing in risk areas",
-                "Implementation rate of eco-parks and eco-gardens in vulnerable areas"
-            ],
-            "PowersAndMandates": null
-        }
-    },
-    {
-        "locode": "BR GRA",
-        "cityName": "Gravata\u00ed",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0162",
-        "actionName": "Strengthen programs for control and conservation of protected areas",
-        "actionPriority": 10,
-        "explanation": "Ranked #10 by tournament ranking algorithm",
-        "action": {
-            "ActionID": "icare_0162",
-            "ActionName": "Strengthen programs for control and conservation of protected areas",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "floods",
-                "landslides",
-                "heatwaves",
-                "diseases"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "This action focuses on implementing a series of integrated strategies to enhance environmental conservation and maximize its benefits, such as expanding protected areas, developing management plans for conservation units, and training ecotourism guides to strengthen sustainable tourism.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Expansion of protected areas to enhance environmental conservation.",
-                "Development of management plans for conservation units.",
-                "Training of ecotourism guides to promote sustainable tourism."
-            ],
-            "KeyPerformanceIndicators": [
-                "Percentage increase in area of protected regions (%).",
-                "Reduction in deforestation rates in protected areas annually (%).",
-                "Number of conservation programs strengthened annually."
-            ],
-            "PowersAndMandates": [
-                "state"
-            ]
-        }
-    },
-    {
-        "locode": "BR GRA",
-        "cityName": "Gravata\u00ed",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0169",
-        "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
-        "actionPriority": 11,
-        "explanation": "Ranked #11 by tournament ranking algorithm",
-        "action": {
-            "ActionID": "icare_0169",
-            "ActionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "droughts",
-                "heatwaves",
-                "diseases",
-                "landslides",
-                "floods",
-                "wildfires",
-                "sea-level-rise",
-                "storms"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "This action focuses on preparing the municipality to respond to extreme events, aiming to provide a rapid response that minimizes the impacts on the population.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Development of a comprehensive emergency response plan that includes coordination between local authorities, emergency services, and community organizations",
-                "Investment in early warning systems and infrastructure to ensure timely and effective responses to extreme events",
-                "Training and capacity-building for local responders and communities to enhance preparedness and resilience to extreme events"
-            ],
-            "KeyPerformanceIndicators": [
-                "Number of emergency response partnerships established.",
-                "Average response time during extreme weather events (hours).",
-                "Percentage reduction in casualties and damages during extreme weather events annually (%)."
+                "Number of ZEIS areas diagnosed and restored.",
+                "Percentage of residents benefiting from restored areas (%).",
+                "Public investments allocated to ZEIS areas (currency amount)."
             ],
             "PowersAndMandates": [
                 "local"
@@ -616,8 +337,8 @@
         "regionName": "Rio Grande do Sul",
         "actionId": "icare_0156",
         "actionName": "Implementation of urban gardens",
-        "actionPriority": 12,
-        "explanation": "Ranked #12 by tournament ranking algorithm",
+        "actionPriority": 7,
+        "explanation": "Ranked #7 by tournament ranking algorithm",
         "action": {
             "ActionID": "icare_0156",
             "ActionName": "Implementation of urban gardens",
@@ -669,10 +390,230 @@
         "cityName": "Gravata\u00ed",
         "region": "RS",
         "regionName": "Rio Grande do Sul",
+        "actionId": "ipcc_0088",
+        "actionName": "Building codes",
+        "actionPriority": 8,
+        "explanation": "Ranked #8 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "ipcc_0088",
+            "ActionName": "Building codes",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "floods",
+                "landslides"
+            ],
+            "Sector": [
+                "road_infrastructure",
+                "geo-hydrological_disasters"
+            ],
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "The development and implementation of building codes and architectural design regulations aimed at integrating climate adaptation parameters. These codes are focused on reducing risks from climate-induced hazards like floods and landslides. They also support climate-resilient urban development by guiding land use, construction practices, and infrastructure standards. The initiative fosters strategic long-term urban planning to coordinate public and private investments in adaptation, including the creation of safe zones and the transformation of precarious settlements. It ensures that new infrastructure is resilient to climate risks and that urban spaces are safe and sustainable for current and future populations.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 2,
+                "mobility": 1,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": "Promotes inclusive urban planning by addressing risks in informal and precarious settlements and integrating eco-parks and eco-gardens for vulnerable populations.",
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Integration with local climate risk assessments",
+                "Strategic collaboration between urban planners and municipal authorities"
+            ],
+            "KeyPerformanceIndicators": [
+                "Reduction in urban flood incidents",
+                "Increased availability of safe housing in risk areas",
+                "Implementation rate of eco-parks and eco-gardens in vulnerable areas"
+            ],
+            "PowersAndMandates": null
+        }
+    },
+    {
+        "locode": "BR GRA",
+        "cityName": "Gravata\u00ed",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "ipcc_0097",
+        "actionName": "Food storage/distribution improvements",
+        "actionPriority": 9,
+        "explanation": "Ranked #9 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "ipcc_0097",
+            "ActionName": "Food storage/distribution improvements",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "droughts",
+                "floods",
+                "storms",
+                "heatwaves"
+            ],
+            "Sector": [
+                "food_security",
+                "road_infrastructure"
+            ],
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Enhancing food storage and distribution systems by improving transportation infrastructure, optimizing trade networks, and shortening supply chains to ensure local food availability and resilience to climate impacts. This action also includes increasing the capacity of local food storage facilities to reduce post-harvest losses, addressing inefficiencies in logistics, and bolstering infrastructure for perishable goods. It aims to improve food security and reduce vulnerability to extreme events, disruptions, and cascading impacts, especially during pandemics and other crises.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 2,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": "Supports equitable access to food for marginalized and vulnerable populations by prioritizing local food production and improving distribution systems that reach underserved areas.",
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Investment in infrastructure",
+                "Policy incentives for local food production",
+                "Collaboration with logistics and trade sectors",
+                "Technology for supply chain optimization"
+            ],
+            "KeyPerformanceIndicators": [
+                "Reduction in post-harvest losses",
+                "Increased local food availability",
+                "Improved transportation efficiency for food distribution",
+                "Shortened supply chains"
+            ],
+            "PowersAndMandates": null
+        }
+    },
+    {
+        "locode": "BR GRA",
+        "cityName": "Gravata\u00ed",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0142",
+        "actionName": "Improvement of Water Supply and Sanitation Systems",
+        "actionPriority": 10,
+        "explanation": "Ranked #10 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "icare_0142",
+            "ActionName": "Improvement of Water Supply and Sanitation Systems",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "floods"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "This action involves implementing artesian wells, cisterns, and water supply systems, as well as improving water quality and expanding sanitation services in the city.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 2,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 1,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Infrastructure development",
+                "Financial resources",
+                "Technical expertise"
+            ],
+            "KeyPerformanceIndicators": [
+                "Access to safe water",
+                "Water quality",
+                "Sanitation coverage"
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR GRA",
+        "cityName": "Gravata\u00ed",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0175",
+        "actionName": "Recovery and preservation of green areas",
+        "actionPriority": 11,
+        "explanation": "Ranked #11 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "icare_0175",
+            "ActionName": "Recovery and preservation of green areas",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "heatwaves",
+                "floods",
+                "wildfires"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Rehabilitation and protection of existing green spaces, such as parks, forests, and wetlands, and expansion of green areas through planting of trees and vegetation in urban and peri-urban areas. These areas provide natural solutions for managing water resources, reducing heat stress, improving air quality, and enhancing biodiversity.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 1,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 1,
+                "mobility": 1,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Availability of suitable land for green spaces",
+                "Access to water resources for irrigation"
+            ],
+            "KeyPerformanceIndicators": [
+                "Area of green spaces created or restored.",
+                "Biodiversity indices in green areas.",
+                "Community engagement in green space activities."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR GRA",
+        "cityName": "Gravata\u00ed",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
         "actionId": "ipcc_0086",
         "actionName": "Ecosystem-based adaptation",
-        "actionPriority": 13,
-        "explanation": "Ranked #13 by tournament ranking algorithm",
+        "actionPriority": 12,
+        "explanation": "Ranked #12 by tournament ranking algorithm",
         "action": {
             "ActionID": "ipcc_0086",
             "ActionName": "Ecosystem-based adaptation",
@@ -741,8 +682,8 @@
         "regionName": "Rio Grande do Sul",
         "actionId": "ipcc_0092",
         "actionName": "Social safety nets",
-        "actionPriority": 14,
-        "explanation": "Ranked #14 by tournament ranking algorithm",
+        "actionPriority": 13,
+        "explanation": "Ranked #13 by tournament ranking algorithm",
         "action": {
             "ActionID": "ipcc_0092",
             "ActionName": "Social safety nets",
@@ -796,57 +737,55 @@
         "cityName": "Gravata\u00ed",
         "region": "RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0094",
-        "actionName": "Access to health care",
-        "actionPriority": 15,
-        "explanation": "Ranked #15 by tournament ranking algorithm",
+        "actionId": "icare_0162",
+        "actionName": "Strengthen programs for control and conservation of protected areas",
+        "actionPriority": 14,
+        "explanation": "Ranked #14 by tournament ranking algorithm",
         "action": {
-            "ActionID": "ipcc_0094",
-            "ActionName": "Access to health care",
+            "ActionID": "icare_0162",
+            "ActionName": "Strengthen programs for control and conservation of protected areas",
             "ActionType": [
                 "adaptation"
             ],
             "Hazard": [
-                "heatwaves",
                 "floods",
-                "droughts"
+                "landslides",
+                "heatwaves",
+                "diseases"
             ],
-            "Sector": [
-                "public_health",
-                "water_resources"
-            ],
+            "Sector": null,
             "Subsector": null,
             "PrimaryPurpose": [
                 "climate_resilience"
             ],
-            "Description": "Enhancing access to health care services, including health and nutrition services, clean water, sanitation, and culturally appropriate mental health resources. Expanding telemedicine capabilities enables efficient health service delivery, particularly for remote and underserved populations. Strengthening basic public health systems and disaster preparedness can rapidly reduce vulnerability to climate-related health risks.",
+            "Description": "This action focuses on implementing a series of integrated strategies to enhance environmental conservation and maximize its benefits, such as expanding protected areas, developing management plans for conservation units, and training ecotourism guides to strengthen sustainable tourism.",
             "CoBenefits": {
-                "air_quality": 1,
+                "air_quality": 2,
                 "water_quality": 2,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 1,
+                "habitat": 2,
+                "cost_of_living": 0,
+                "housing": 0,
                 "mobility": 0,
-                "stakeholder_engagement": 2
+                "stakeholder_engagement": 1
             },
-            "EquityAndInclusionConsiderations": "Promotes equitable access to health care for marginalized and vulnerable groups, including homeless populations, remote communities, and those affected by housing inequities.",
+            "EquityAndInclusionConsiderations": null,
             "GHGReductionPotential": null,
             "AdaptationEffectiveness": "high",
             "CostInvestmentNeeded": "medium",
             "TimelineForImplementation": "5-10 years",
             "Dependencies": [
-                "Investment in telemedicine technologies",
-                "Strengthened governance of public health systems",
-                "Capacity building for health workers",
-                "Infrastructure upgrades for health facilities"
+                "Expansion of protected areas to enhance environmental conservation.",
+                "Development of management plans for conservation units.",
+                "Training of ecotourism guides to promote sustainable tourism."
             ],
             "KeyPerformanceIndicators": [
-                "Reduction in climate-related mortality",
-                "Increased access to telemedicine",
-                "Number of culturally tailored health programs implemented",
-                "Improved water and sanitation access metrics"
+                "Percentage increase in area of protected regions (%).",
+                "Reduction in deforestation rates in protected areas annually (%).",
+                "Number of conservation programs strengthened annually."
             ],
-            "PowersAndMandates": null
+            "PowersAndMandates": [
+                "state"
+            ]
         }
     },
     {
@@ -854,58 +793,116 @@
         "cityName": "Gravata\u00ed",
         "region": "RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0097",
-        "actionName": "Food storage/distribution improvements",
-        "actionPriority": 16,
-        "explanation": "Ranked #16 by tournament ranking algorithm",
+        "actionId": "icare_0149",
+        "actionName": "Encourage sustainable land use practices",
+        "actionPriority": 15,
+        "explanation": "Ranked #15 by tournament ranking algorithm",
         "action": {
-            "ActionID": "ipcc_0097",
-            "ActionName": "Food storage/distribution improvements",
+            "ActionID": "icare_0149",
+            "ActionName": "Encourage sustainable land use practices",
             "ActionType": [
                 "adaptation"
             ],
             "Hazard": [
                 "droughts",
+                "heatwaves",
+                "landslides",
                 "floods",
-                "storms",
-                "heatwaves"
+                "wildfires"
             ],
-            "Sector": [
-                "food_security",
-                "road_infrastructure"
-            ],
+            "Sector": null,
             "Subsector": null,
             "PrimaryPurpose": [
                 "climate_resilience"
             ],
-            "Description": "Enhancing food storage and distribution systems by improving transportation infrastructure, optimizing trade networks, and shortening supply chains to ensure local food availability and resilience to climate impacts. This action also includes increasing the capacity of local food storage facilities to reduce post-harvest losses, addressing inefficiencies in logistics, and bolstering infrastructure for perishable goods. It aims to improve food security and reduce vulnerability to extreme events, disruptions, and cascading impacts, especially during pandemics and other crises.",
+            "Description": "Promoting methods that guarantee the conservation and health of the soil, preserving biodiversity, reducing erosion and minimizing environmental impacts.",
             "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 1,
+                "air_quality": 1,
+                "water_quality": 2,
                 "habitat": 1,
                 "cost_of_living": 1,
                 "housing": 0,
-                "mobility": 2,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "medium",
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Provide access to technical knowledge and training on sustainable soil management practices.",
+                "Offer financial incentives and form partnerships with research institutions and local farmers.",
+                "Develop monitoring systems for soil health and biodiversity, and implement policies for erosion control."
+            ],
+            "KeyPerformanceIndicators": [
+                "Percentage of land area managed under sustainable land use practices (%)",
+                "Reduction in deforestation or land degradation rates (%)",
+                "Increase in biodiversity indicators on managed lands (e.g., species count, habitat quality)"
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR GRA",
+        "cityName": "Gravata\u00ed",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0169",
+        "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
+        "actionPriority": 16,
+        "explanation": "Ranked #16 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "icare_0169",
+            "ActionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "droughts",
+                "heatwaves",
+                "diseases",
+                "landslides",
+                "floods",
+                "wildfires",
+                "sea-level-rise",
+                "storms"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "This action focuses on preparing the municipality to respond to extreme events, aiming to provide a rapid response that minimizes the impacts on the population.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
                 "stakeholder_engagement": 2
             },
-            "EquityAndInclusionConsiderations": "Supports equitable access to food for marginalized and vulnerable populations by prioritizing local food production and improving distribution systems that reach underserved areas.",
+            "EquityAndInclusionConsiderations": null,
             "GHGReductionPotential": null,
             "AdaptationEffectiveness": "high",
             "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
+            "TimelineForImplementation": "<5 years",
             "Dependencies": [
-                "Investment in infrastructure",
-                "Policy incentives for local food production",
-                "Collaboration with logistics and trade sectors",
-                "Technology for supply chain optimization"
+                "Development of a comprehensive emergency response plan that includes coordination between local authorities, emergency services, and community organizations",
+                "Investment in early warning systems and infrastructure to ensure timely and effective responses to extreme events",
+                "Training and capacity-building for local responders and communities to enhance preparedness and resilience to extreme events"
             ],
             "KeyPerformanceIndicators": [
-                "Reduction in post-harvest losses",
-                "Increased local food availability",
-                "Improved transportation efficiency for food distribution",
-                "Shortened supply chains"
+                "Number of emergency response partnerships established.",
+                "Average response time during extreme weather events (hours).",
+                "Percentage reduction in casualties and damages during extreme weather events annually (%)."
             ],
-            "PowersAndMandates": null
+            "PowersAndMandates": [
+                "local"
+            ]
         }
     },
     {
@@ -972,52 +969,50 @@
         "cityName": "Gravata\u00ed",
         "region": "RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0149",
-        "actionName": "Encourage sustainable land use practices",
+        "actionId": "icare_0180",
+        "actionName": "Implement permeable pavements and increase green areas in roadways",
         "actionPriority": 18,
         "explanation": "Ranked #18 by tournament ranking algorithm",
         "action": {
-            "ActionID": "icare_0149",
-            "ActionName": "Encourage sustainable land use practices",
+            "ActionID": "icare_0180",
+            "ActionName": "Implement permeable pavements and increase green areas in roadways",
             "ActionType": [
                 "adaptation"
             ],
             "Hazard": [
-                "droughts",
-                "heatwaves",
-                "landslides",
                 "floods",
-                "wildfires"
+                "landslides",
+                "heatwaves"
             ],
             "Sector": null,
             "Subsector": null,
             "PrimaryPurpose": [
                 "climate_resilience"
             ],
-            "Description": "Promoting methods that guarantee the conservation and health of the soil, preserving biodiversity, reducing erosion and minimizing environmental impacts.",
+            "Description": "Increase the permeable and semi-permeable areas in buildings and public spaces under the administration of the City, with the adoption of nature-based solutions (NbS). In areas with space limitations, the action includes feasibility analyses for implementing permeable pavements and increasing green areas in roadways. Among traditional construction solutions, there are features such as curbs and gutters with stormwater drains, as well as larger-scale solutions like retention ponds. Nature-based solutions include urban tree planting, green roofs, rainwater cisterns, bio-swales, and more.",
             "CoBenefits": {
                 "air_quality": 1,
-                "water_quality": 2,
+                "water_quality": 1,
                 "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 0,
+                "cost_of_living": 0,
+                "housing": 1,
                 "mobility": 0,
                 "stakeholder_engagement": 1
             },
             "EquityAndInclusionConsiderations": null,
             "GHGReductionPotential": null,
             "AdaptationEffectiveness": "medium",
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "5-10 years",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
             "Dependencies": [
-                "Provide access to technical knowledge and training on sustainable soil management practices.",
-                "Offer financial incentives and form partnerships with research institutions and local farmers.",
-                "Develop monitoring systems for soil health and biodiversity, and implement policies for erosion control."
+                "Expansion of permeable and semi-permeable areas in City-administered buildings and public spaces.",
+                "Adoption of nature-based solutions (NbS) such as urban tree planting, green roofs, rainwater cisterns, and bio-swales.",
+                "Feasibility analyses for permeable pavements and increased green areas in roadways, alongside traditional stormwater management solutions like curbs, gutters, and retention ponds."
             ],
             "KeyPerformanceIndicators": [
-                "Percentage of land area managed under sustainable land use practices (%)",
-                "Reduction in deforestation or land degradation rates (%)",
-                "Increase in biodiversity indicators on managed lands (e.g., species count, habitat quality)"
+                "Reduction in surface water runoff during rainfall events (%).",
+                "Decrease in flooding occurrences in modified areas.",
+                "Percentage of public spaces complying with new permeable surface regulations."
             ],
             "PowersAndMandates": [
                 "local"
@@ -1029,10 +1024,69 @@
         "cityName": "Gravata\u00ed",
         "region": "RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0148",
-        "actionName": "Create the Municipal Climate Change Forum",
+        "actionId": "ipcc_0099",
+        "actionName": "Water capture/storage",
         "actionPriority": 19,
         "explanation": "Ranked #19 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "ipcc_0099",
+            "ActionName": "Water capture/storage",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "droughts",
+                "floods",
+                "storms"
+            ],
+            "Sector": [
+                "water_resources",
+                "food_security",
+                "energy_security",
+                "geo-hydrological_disasters"
+            ],
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Implementing water capture and storage solutions such as farm ponds, revival of water bodies, rain gardens, bioswales, retention ponds, and water storage tanks. These measures aim to mitigate climate-induced impacts by improving water management, reducing stormwater runoff, enhancing water quality, and supporting agriculture and energy production under changing climate scenarios. Multi-purpose water reservoirs and dams provide additional benefits by addressing water shortages and managing risks associated with natural hazards.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 1,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": "Ensures access to water for underserved communities, supports sustainable livelihoods in water-scarce regions, and promotes equitable resource distribution through inclusive decision-making processes.",
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Investment in green infrastructure",
+                "community engagement",
+                "policy support for water resource management"
+            ],
+            "KeyPerformanceIndicators": [
+                "Reduction in stormwater runoff",
+                "increase in water storage capacity",
+                "improvement in water quality",
+                "stability in agricultural yields"
+            ],
+            "PowersAndMandates": null
+        }
+    },
+    {
+        "locode": "BR GRA",
+        "cityName": "Gravata\u00ed",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0148",
+        "actionName": "Create the Municipal Climate Change Forum",
+        "actionPriority": 20,
+        "explanation": "Ranked #20 by tournament ranking algorithm",
         "action": {
             "ActionID": "icare_0148",
             "ActionName": "Create the Municipal Climate Change Forum",
@@ -1078,59 +1132,6 @@
                 "Percentage of key stakeholders actively participating in the forum.",
                 "Number of climate-related policies or actions proposed through the forum.",
                 "Public engagement in forum initiatives (measured by event attendance or surveys)"
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR GRA",
-        "cityName": "Gravata\u00ed",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0142",
-        "actionName": "Improvement of Water Supply and Sanitation Systems",
-        "actionPriority": 20,
-        "explanation": "Ranked #20 by tournament ranking algorithm",
-        "action": {
-            "ActionID": "icare_0142",
-            "ActionName": "Improvement of Water Supply and Sanitation Systems",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "floods"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "This action involves implementing artesian wells, cisterns, and water supply systems, as well as improving water quality and expanding sanitation services in the city.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 2,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Infrastructure development",
-                "Financial resources",
-                "Technical expertise"
-            ],
-            "KeyPerformanceIndicators": [
-                "Access to safe water",
-                "Water quality",
-                "Sanitation coverage"
             ],
             "PowersAndMandates": [
                 "local"

@@ -4,9 +4,18 @@
         "cityName": "Gravata\u00ed",
         "region": "RS",
         "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0005",
+        "actionName": "Create credit lines for residential and community wind energy projects",
+        "actionPriority": 1
+    },
+    {
+        "locode": "BR GRA",
+        "cityName": "Gravata\u00ed",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
         "actionId": "icare_0121",
         "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
-        "actionPriority": 1
+        "actionPriority": 2
     },
     {
         "locode": "BR GRA",
@@ -15,15 +24,6 @@
         "regionName": "Rio Grande do Sul",
         "actionId": "icare_0118",
         "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
-        "actionPriority": 2
-    },
-    {
-        "locode": "BR GRA",
-        "cityName": "Gravata\u00ed",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0057",
-        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
         "actionPriority": 3
     },
     {
@@ -31,8 +31,8 @@
         "cityName": "Gravata\u00ed",
         "region": "RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0005",
-        "actionName": "Create credit lines for residential and community wind energy projects",
+        "actionId": "icare_0025",
+        "actionName": "Promote energy-efficient low-income housing",
         "actionPriority": 4
     },
     {
@@ -49,8 +49,8 @@
         "cityName": "Gravata\u00ed",
         "region": "RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0092",
-        "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
+        "actionId": "icare_0088",
+        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
         "actionPriority": 6
     },
     {
@@ -58,27 +58,9 @@
         "cityName": "Gravata\u00ed",
         "region": "RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0088",
-        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
+        "actionId": "icare_0092",
+        "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
         "actionPriority": 7
-    },
-    {
-        "locode": "BR GRA",
-        "cityName": "Gravata\u00ed",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0025",
-        "actionName": "Promote energy-efficient low-income housing",
-        "actionPriority": 8
-    },
-    {
-        "locode": "BR GRA",
-        "cityName": "Gravata\u00ed",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0068",
-        "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
-        "actionPriority": 9
     },
     {
         "locode": "BR GRA",
@@ -87,16 +69,25 @@
         "regionName": "Rio Grande do Sul",
         "actionId": "icare_0090",
         "actionName": "Adoption of electric drones for last-mile deliveries.",
-        "actionPriority": 10
+        "actionPriority": 8
     },
     {
         "locode": "BR GRA",
         "cityName": "Gravata\u00ed",
         "region": "RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0117",
-        "actionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
-        "actionPriority": 11
+        "actionId": "icare_0057",
+        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
+        "actionPriority": 9
+    },
+    {
+        "locode": "BR GRA",
+        "cityName": "Gravata\u00ed",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0068",
+        "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
+        "actionPriority": 10
     },
     {
         "locode": "BR GRA",
@@ -105,7 +96,7 @@
         "regionName": "Rio Grande do Sul",
         "actionId": "icare_0042",
         "actionName": "Encourage renewable energy policies at the municipal level",
-        "actionPriority": 12
+        "actionPriority": 11
     },
     {
         "locode": "BR GRA",
@@ -114,6 +105,15 @@
         "regionName": "Rio Grande do Sul",
         "actionId": "icare_0044",
         "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
+        "actionPriority": 12
+    },
+    {
+        "locode": "BR GRA",
+        "cityName": "Gravata\u00ed",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0117",
+        "actionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
         "actionPriority": 13
     },
     {
@@ -130,36 +130,9 @@
         "cityName": "Gravata\u00ed",
         "region": "RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0099",
-        "actionName": "Support Agroecological Certification Programs",
-        "actionPriority": 15
-    },
-    {
-        "locode": "BR GRA",
-        "cityName": "Gravata\u00ed",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
         "actionId": "icare_0133",
         "actionName": "Promote Urban Reforestation and Green Corridors",
-        "actionPriority": 16
-    },
-    {
-        "locode": "BR GRA",
-        "cityName": "Gravata\u00ed",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0102",
-        "actionName": "Promote Sustainable Agricultural Practices",
-        "actionPriority": 17
-    },
-    {
-        "locode": "BR GRA",
-        "cityName": "Gravata\u00ed",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0091",
-        "actionName": "Implementation of prioritized routes for sustainable vehicles.",
-        "actionPriority": 18
+        "actionPriority": 15
     },
     {
         "locode": "BR GRA",
@@ -168,6 +141,33 @@
         "regionName": "Rio Grande do Sul",
         "actionId": "icare_0136",
         "actionName": "Support the Implementation of Ecological Fiscal Incentives",
+        "actionPriority": 16
+    },
+    {
+        "locode": "BR GRA",
+        "cityName": "Gravata\u00ed",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "c40_0033",
+        "actionName": "15/30-Minute Areas",
+        "actionPriority": 17
+    },
+    {
+        "locode": "BR GRA",
+        "cityName": "Gravata\u00ed",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0099",
+        "actionName": "Support Agroecological Certification Programs",
+        "actionPriority": 18
+    },
+    {
+        "locode": "BR GRA",
+        "cityName": "Gravata\u00ed",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0139",
+        "actionName": "Implementation of urban toll.",
         "actionPriority": 19
     },
     {
@@ -175,8 +175,8 @@
         "cityName": "Gravata\u00ed",
         "region": "RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0027",
-        "actionName": "Create financing programs for local renewable energy projects",
+        "actionId": "icare_0132",
+        "actionName": "Encourage Local Agroecological Production and Short Supply Chains",
         "actionPriority": 20
     }
 ]

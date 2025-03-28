@@ -4,9 +4,18 @@
         "cityName": "Abaetetuba",
         "region": "PA",
         "regionName": "Par\u00e1",
+        "actionId": "icare_0121",
+        "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
+        "actionPriority": 1
+    },
+    {
+        "locode": "BR ATB",
+        "cityName": "Abaetetuba",
+        "region": "PA",
+        "regionName": "Par\u00e1",
         "actionId": "icare_0118",
         "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
-        "actionPriority": 1
+        "actionPriority": 2
     },
     {
         "locode": "BR ATB",
@@ -15,16 +24,16 @@
         "regionName": "Par\u00e1",
         "actionId": "icare_0005",
         "actionName": "Create credit lines for residential and community wind energy projects",
-        "actionPriority": 2
+        "actionPriority": 3
     },
     {
         "locode": "BR ATB",
         "cityName": "Abaetetuba",
         "region": "PA",
         "regionName": "Par\u00e1",
-        "actionId": "icare_0121",
-        "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
-        "actionPriority": 3
+        "actionId": "icare_0133",
+        "actionName": "Promote Urban Reforestation and Green Corridors",
+        "actionPriority": 4
     },
     {
         "locode": "BR ATB",
@@ -33,15 +42,6 @@
         "regionName": "Par\u00e1",
         "actionId": "icare_0088",
         "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
-        "actionPriority": 4
-    },
-    {
-        "locode": "BR ATB",
-        "cityName": "Abaetetuba",
-        "region": "PA",
-        "regionName": "Par\u00e1",
-        "actionId": "icare_0092",
-        "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
         "actionPriority": 5
     },
     {
@@ -58,8 +58,8 @@
         "cityName": "Abaetetuba",
         "region": "PA",
         "regionName": "Par\u00e1",
-        "actionId": "icare_0025",
-        "actionName": "Promote energy-efficient low-income housing",
+        "actionId": "icare_0092",
+        "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
         "actionPriority": 7
     },
     {
@@ -76,45 +76,9 @@
         "cityName": "Abaetetuba",
         "region": "PA",
         "regionName": "Par\u00e1",
-        "actionId": "icare_0044",
-        "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
-        "actionPriority": 9
-    },
-    {
-        "locode": "BR ATB",
-        "cityName": "Abaetetuba",
-        "region": "PA",
-        "regionName": "Par\u00e1",
-        "actionId": "icare_0131",
-        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
-        "actionPriority": 10
-    },
-    {
-        "locode": "BR ATB",
-        "cityName": "Abaetetuba",
-        "region": "PA",
-        "regionName": "Par\u00e1",
         "actionId": "icare_0090",
         "actionName": "Adoption of electric drones for last-mile deliveries.",
-        "actionPriority": 11
-    },
-    {
-        "locode": "BR ATB",
-        "cityName": "Abaetetuba",
-        "region": "PA",
-        "regionName": "Par\u00e1",
-        "actionId": "icare_0133",
-        "actionName": "Promote Urban Reforestation and Green Corridors",
-        "actionPriority": 12
-    },
-    {
-        "locode": "BR ATB",
-        "cityName": "Abaetetuba",
-        "region": "PA",
-        "regionName": "Par\u00e1",
-        "actionId": "icare_0042",
-        "actionName": "Encourage renewable energy policies at the municipal level",
-        "actionPriority": 13
+        "actionPriority": 9
     },
     {
         "locode": "BR ATB",
@@ -123,7 +87,34 @@
         "regionName": "Par\u00e1",
         "actionId": "icare_0068",
         "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
-        "actionPriority": 14
+        "actionPriority": 10
+    },
+    {
+        "locode": "BR ATB",
+        "cityName": "Abaetetuba",
+        "region": "PA",
+        "regionName": "Par\u00e1",
+        "actionId": "icare_0131",
+        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
+        "actionPriority": 11
+    },
+    {
+        "locode": "BR ATB",
+        "cityName": "Abaetetuba",
+        "region": "PA",
+        "regionName": "Par\u00e1",
+        "actionId": "icare_0044",
+        "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
+        "actionPriority": 12
+    },
+    {
+        "locode": "BR ATB",
+        "cityName": "Abaetetuba",
+        "region": "PA",
+        "regionName": "Par\u00e1",
+        "actionId": "c40_0033",
+        "actionName": "15/30-Minute Areas",
+        "actionPriority": 13
     },
     {
         "locode": "BR ATB",
@@ -132,34 +123,7 @@
         "regionName": "Par\u00e1",
         "actionId": "icare_0136",
         "actionName": "Support the Implementation of Ecological Fiscal Incentives",
-        "actionPriority": 15
-    },
-    {
-        "locode": "BR ATB",
-        "cityName": "Abaetetuba",
-        "region": "PA",
-        "regionName": "Par\u00e1",
-        "actionId": "icare_0100",
-        "actionName": "Support Regenerative Agriculture Practices",
-        "actionPriority": 16
-    },
-    {
-        "locode": "BR ATB",
-        "cityName": "Abaetetuba",
-        "region": "PA",
-        "regionName": "Par\u00e1",
-        "actionId": "icare_0038",
-        "actionName": "Promote community solar farms",
-        "actionPriority": 17
-    },
-    {
-        "locode": "BR ATB",
-        "cityName": "Abaetetuba",
-        "region": "PA",
-        "regionName": "Par\u00e1",
-        "actionId": "icare_0096",
-        "actionName": "Promote Organic Farming",
-        "actionPriority": 18
+        "actionPriority": 14
     },
     {
         "locode": "BR ATB",
@@ -168,7 +132,16 @@
         "regionName": "Par\u00e1",
         "actionId": "icare_0099",
         "actionName": "Support Agroecological Certification Programs",
-        "actionPriority": 19
+        "actionPriority": 15
+    },
+    {
+        "locode": "BR ATB",
+        "cityName": "Abaetetuba",
+        "region": "PA",
+        "regionName": "Par\u00e1",
+        "actionId": "icare_0025",
+        "actionName": "Promote energy-efficient low-income housing",
+        "actionPriority": 16
     },
     {
         "locode": "BR ATB",
@@ -177,6 +150,33 @@
         "regionName": "Par\u00e1",
         "actionId": "icare_0117",
         "actionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
+        "actionPriority": 17
+    },
+    {
+        "locode": "BR ATB",
+        "cityName": "Abaetetuba",
+        "region": "PA",
+        "regionName": "Par\u00e1",
+        "actionId": "icare_0027",
+        "actionName": "Create financing programs for local renewable energy projects",
+        "actionPriority": 18
+    },
+    {
+        "locode": "BR ATB",
+        "cityName": "Abaetetuba",
+        "region": "PA",
+        "regionName": "Par\u00e1",
+        "actionId": "icare_0042",
+        "actionName": "Encourage renewable energy policies at the municipal level",
+        "actionPriority": 19
+    },
+    {
+        "locode": "BR ATB",
+        "cityName": "Abaetetuba",
+        "region": "PA",
+        "regionName": "Par\u00e1",
+        "actionId": "ipcc_0006",
+        "actionName": "Teleworking",
         "actionPriority": 20
     }
 ]

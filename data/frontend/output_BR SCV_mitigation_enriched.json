@@ -4,9 +4,69 @@
         "cityName": "S\u00e3o Crist\u00f3v\u00e3o",
         "region": "SE",
         "regionName": "Sergipe",
+        "actionId": "icare_0121",
+        "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
+        "actionPriority": 1,
+        "action": {
+            "ActionID": "icare_0121",
+            "ActionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "on-road"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "This action encourages the establishment of bike-sharing systems in cities, specifically promoting the use of electric bicycles. These systems allow residents to rent electric bikes for short trips, reducing the dependence on cars for urban transportation. By integrating electric bikes, cities can further reduce greenhouse gas emissions, alleviate traffic congestion, and promote a healthier and more sustainable mode of transportation for both urban and rural areas. This initiative also supports mobility equality, as it makes bikes more accessible to a wider range of people.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 2,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "60-79",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Establishment of bike-sharing systems with a focus on electric bicycles to reduce car dependence.",
+                "Integration of electric bikes to lower greenhouse gas emissions, alleviate traffic congestion, and promote sustainable transportation.",
+                "Promotion of mobility equality by making electric bikes accessible to a wider population."
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of electric bikes available in bike-sharing programs.",
+                "Annual increase in bike-sharing users.",
+                "Estimated reduction in CO\u2082 equivalent emissions from the adoption of electric bike-sharing."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR SCV",
+        "cityName": "S\u00e3o Crist\u00f3v\u00e3o",
+        "region": "SE",
+        "regionName": "Sergipe",
         "actionId": "icare_0118",
         "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
-        "actionPriority": 1,
+        "actionPriority": 2,
         "action": {
             "ActionID": "icare_0118",
             "ActionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
@@ -66,7 +126,7 @@
         "regionName": "Sergipe",
         "actionId": "icare_0005",
         "actionName": "Create credit lines for residential and community wind energy projects",
-        "actionPriority": 2,
+        "actionPriority": 3,
         "action": {
             "ActionID": "icare_0005",
             "ActionName": "Create credit lines for residential and community wind energy projects",
@@ -124,129 +184,9 @@
         "cityName": "S\u00e3o Crist\u00f3v\u00e3o",
         "region": "SE",
         "regionName": "Sergipe",
-        "actionId": "icare_0121",
-        "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
-        "actionPriority": 3,
-        "action": {
-            "ActionID": "icare_0121",
-            "ActionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "This action encourages the establishment of bike-sharing systems in cities, specifically promoting the use of electric bicycles. These systems allow residents to rent electric bikes for short trips, reducing the dependence on cars for urban transportation. By integrating electric bikes, cities can further reduce greenhouse gas emissions, alleviate traffic congestion, and promote a healthier and more sustainable mode of transportation for both urban and rural areas. This initiative also supports mobility equality, as it makes bikes more accessible to a wider range of people.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Establishment of bike-sharing systems with a focus on electric bicycles to reduce car dependence.",
-                "Integration of electric bikes to lower greenhouse gas emissions, alleviate traffic congestion, and promote sustainable transportation.",
-                "Promotion of mobility equality by making electric bikes accessible to a wider population."
-            ],
-            "KeyPerformanceIndicators": [
-                "Number of electric bikes available in bike-sharing programs.",
-                "Annual increase in bike-sharing users.",
-                "Estimated reduction in CO\u2082 equivalent emissions from the adoption of electric bike-sharing."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR SCV",
-        "cityName": "S\u00e3o Crist\u00f3v\u00e3o",
-        "region": "SE",
-        "regionName": "Sergipe",
-        "actionId": "icare_0092",
-        "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
-        "actionPriority": 4,
-        "action": {
-            "ActionID": "icare_0092",
-            "ActionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Create small-scale logistics hubs in urban neighborhoods to facilitate deliveries using electric cargo bikes, while implementing tax incentives or subsidies for businesses to adopt these bikes as a transportation mode, reducing emissions and improving delivery efficiency in densely populated areas.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "20-39",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Identification and development of suitable locations for small-scale logistics hubs within urban neighborhoods.",
-                "Provision of tax incentives, subsidies, or grants to encourage businesses to transition to electric cargo bikes.",
-                "Establishment of partnerships with logistics companies to ensure integration and efficiency in delivery operations using these hubs."
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in distance traveled by traditional delivery vehicles (km/year).",
-                "Increase in operational efficiency of logistics hubs (%).",
-                "Number of businesses utilizing micro-logistics hubs for deliveries."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR SCV",
-        "cityName": "S\u00e3o Crist\u00f3v\u00e3o",
-        "region": "SE",
-        "regionName": "Sergipe",
         "actionId": "icare_0094",
         "actionName": "Adoption of biomethane in public fleets.",
-        "actionPriority": 5,
+        "actionPriority": 4,
         "action": {
             "ActionID": "icare_0094",
             "ActionName": "Adoption of biomethane in public fleets.",
@@ -306,7 +246,7 @@
         "regionName": "Sergipe",
         "actionId": "icare_0088",
         "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
-        "actionPriority": 6,
+        "actionPriority": 5,
         "action": {
             "ActionID": "icare_0088",
             "ActionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
@@ -364,12 +304,12 @@
         "cityName": "S\u00e3o Crist\u00f3v\u00e3o",
         "region": "SE",
         "regionName": "Sergipe",
-        "actionId": "icare_0057",
-        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
-        "actionPriority": 7,
+        "actionId": "icare_0092",
+        "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
+        "actionPriority": 6,
         "action": {
-            "ActionID": "icare_0057",
-            "ActionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
+            "ActionID": "icare_0092",
+            "ActionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
             "ActionType": [
                 "mitigation"
             ],
@@ -378,101 +318,41 @@
                 "transportation"
             ],
             "Subsector": [
-                "railways"
+                "on-road"
             ],
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "Description": "These systems offer high capacity and low emissions, crucial for cities with high population density.",
+            "Description": "Create small-scale logistics hubs in urban neighborhoods to facilitate deliveries using electric cargo bikes, while implementing tax incentives or subsidies for businesses to adopt these bikes as a transportation mode, reducing emissions and improving delivery efficiency in densely populated areas.",
             "CoBenefits": {
-                "air_quality": 2,
+                "air_quality": 1,
                 "water_quality": 0,
                 "habitat": 0,
                 "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 2,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "80-100",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Investment in the development and expansion of high-capacity public transportation infrastructure, such as electric buses and metro systems.",
-                "Implementation of policies and incentives to encourage the use of public transport over private vehicles.",
-                "Integration of renewable energy sources to power these systems, reducing emissions further."
-            ],
-            "KeyPerformanceIndicators": [
-                "Length of new transit lines built (km/year).",
-                "Reduction in road traffic congestion (%).",
-                "Reduction in private vehicle usage (number of trips avoided/year)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR SCV",
-        "cityName": "S\u00e3o Crist\u00f3v\u00e3o",
-        "region": "SE",
-        "regionName": "Sergipe",
-        "actionId": "icare_0133",
-        "actionName": "Promote Urban Reforestation and Green Corridors",
-        "actionPriority": 8,
-        "action": {
-            "ActionID": "icare_0133",
-            "ActionName": "Promote Urban Reforestation and Green Corridors",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "land"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Increase urban tree coverage to mitigate the urban heat island effect and enhance biodiversity.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 1,
-                "habitat": 2,
-                "cost_of_living": 1,
                 "housing": 0,
-                "mobility": 1,
+                "mobility": 2,
                 "stakeholder_engagement": 1
             },
             "EquityAndInclusionConsiderations": null,
             "GHGReductionPotential": {
                 "stationary_energy": null,
-                "transportation": null,
+                "transportation": "20-39",
                 "waste": null,
                 "ippu": null,
-                "afolu": "80-100"
+                "afolu": null
             },
             "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
             "Dependencies": [
-                "Identification of priority areas and selection of native, climate-resilient species for tree planting.",
-                "Partnerships with local organizations and nurseries, and allocation of resources for planting and maintenance.",
-                "Community engagement to ensure long-term care and support."
+                "Identification and development of suitable locations for small-scale logistics hubs within urban neighborhoods.",
+                "Provision of tax incentives, subsidies, or grants to encourage businesses to transition to electric cargo bikes.",
+                "Establishment of partnerships with logistics companies to ensure integration and efficiency in delivery operations using these hubs."
             ],
             "KeyPerformanceIndicators": [
-                "Increase in urban tree canopy cover (%)",
-                "Total length of green corridors created or restored (kilometers)",
-                "Reduction in urban heat island effect temperatures (\u00b0C)"
+                "Reduction in distance traveled by traditional delivery vehicles (km/year).",
+                "Increase in operational efficiency of logistics hubs (%).",
+                "Number of businesses utilizing micro-logistics hubs for deliveries."
             ],
             "PowersAndMandates": [
                 "local"
@@ -486,7 +366,7 @@
         "regionName": "Sergipe",
         "actionId": "icare_0090",
         "actionName": "Adoption of electric drones for last-mile deliveries.",
-        "actionPriority": 9,
+        "actionPriority": 7,
         "action": {
             "ActionID": "icare_0090",
             "ActionName": "Adoption of electric drones for last-mile deliveries.",
@@ -544,12 +424,12 @@
         "cityName": "S\u00e3o Crist\u00f3v\u00e3o",
         "region": "SE",
         "regionName": "Sergipe",
-        "actionId": "icare_0025",
-        "actionName": "Promote energy-efficient low-income housing",
-        "actionPriority": 10,
+        "actionId": "icare_0042",
+        "actionName": "Encourage renewable energy policies at the municipal level",
+        "actionPriority": 8,
         "action": {
-            "ActionID": "icare_0025",
-            "ActionName": "Promote energy-efficient low-income housing",
+            "ActionID": "icare_0042",
+            "ActionName": "Encourage renewable energy policies at the municipal level",
             "ActionType": [
                 "mitigation"
             ],
@@ -558,25 +438,145 @@
                 "stationary_energy"
             ],
             "Subsector": [
-                "residential_buildings"
+                "non-specified_sources"
             ],
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "Description": "Develop and support housing projects that incorporate energy-efficient designs and technologies, reducing energy costs for low-income households.",
+            "Description": "Advocate for and implement policies that prioritize the development and integration of renewable energy systems in local government operations and planning.",
             "CoBenefits": {
-                "air_quality": 0,
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 1,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": "80-100",
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Political will and leadership to prioritize renewable energy in local government policies and planning processes",
+                "Development of clear policies and regulatory frameworks that facilitate the integration of renewable energy systems into government operations",
+                "Availability of funding or financial mechanisms to support the transition to renewable energy in municipal infrastructure and operations"
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of renewable energy projects approved or initiated annually at the municipal level.",
+                "Percentage of municipal energy demand met by renewable sources (%).",
+                "Reduction in municipal carbon emissions due to --renewable energy adoption (tons CO\u2082e/year)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR SCV",
+        "cityName": "S\u00e3o Crist\u00f3v\u00e3o",
+        "region": "SE",
+        "regionName": "Sergipe",
+        "actionId": "icare_0057",
+        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
+        "actionPriority": 9,
+        "action": {
+            "ActionID": "icare_0057",
+            "ActionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "railways"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "These systems offer high capacity and low emissions, crucial for cities with high population density.",
+            "CoBenefits": {
+                "air_quality": 2,
                 "water_quality": 0,
                 "habitat": 0,
-                "cost_of_living": 2,
-                "housing": 2,
-                "mobility": 0,
+                "cost_of_living": 1,
+                "housing": 1,
+                "mobility": 2,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "80-100",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "high",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Investment in the development and expansion of high-capacity public transportation infrastructure, such as electric buses and metro systems.",
+                "Implementation of policies and incentives to encourage the use of public transport over private vehicles.",
+                "Integration of renewable energy sources to power these systems, reducing emissions further."
+            ],
+            "KeyPerformanceIndicators": [
+                "Length of new transit lines built (km/year).",
+                "Reduction in road traffic congestion (%).",
+                "Reduction in private vehicle usage (number of trips avoided/year)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR SCV",
+        "cityName": "S\u00e3o Crist\u00f3v\u00e3o",
+        "region": "SE",
+        "regionName": "Sergipe",
+        "actionId": "icare_0068",
+        "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
+        "actionPriority": 10,
+        "action": {
+            "ActionID": "icare_0068",
+            "ActionName": "Deploy on-demand transport systems with 100% electric fleets.",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "on-road"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "On-demand collective transport services, based on apps, optimize electric vehicle usage, reducing per-passenger emissions.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 2,
                 "stakeholder_engagement": 1
             },
             "EquityAndInclusionConsiderations": null,
             "GHGReductionPotential": {
-                "stationary_energy": "60-79",
-                "transportation": null,
+                "stationary_energy": null,
+                "transportation": "80-100",
                 "waste": null,
                 "ippu": null,
                 "afolu": null
@@ -585,14 +585,14 @@
             "CostInvestmentNeeded": "medium",
             "TimelineForImplementation": "5-10 years",
             "Dependencies": [
-                "Availability of funding or subsidies to support the development of energy-efficient housing for low-income households",
-                "Collaboration with architects, engineers, and contractors to design and implement energy-efficient technologies in housing projects",
-                "Development of policies and regulations to incentivize energy-efficient housing solutions and ensure affordability for low-income communities"
+                "Development of digital platforms and apps to efficiently manage on-demand collective transport services.",
+                "Expansion of electric vehicle fleets tailored for shared transport solutions.",
+                "Implementation of policies and incentives to encourage the adoption and use of shared electric transport services."
             ],
             "KeyPerformanceIndicators": [
-                "Number of energy-efficient housing units built or retrofitted.",
-                "Reduction in household energy consumption (kWh).",
-                "Decrease in energy bills for low-income households (USD)."
+                "Number of active users of the on-demand electric fleet system.",
+                "Percentage of urban transport demand met by on-demand systems.",
+                "Reduction in noise pollution levels in urban areas"
             ],
             "PowersAndMandates": [
                 "local"
@@ -664,9 +664,69 @@
         "cityName": "S\u00e3o Crist\u00f3v\u00e3o",
         "region": "SE",
         "regionName": "Sergipe",
+        "actionId": "icare_0025",
+        "actionName": "Promote energy-efficient low-income housing",
+        "actionPriority": 12,
+        "action": {
+            "ActionID": "icare_0025",
+            "ActionName": "Promote energy-efficient low-income housing",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "stationary_energy"
+            ],
+            "Subsector": [
+                "residential_buildings"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Develop and support housing projects that incorporate energy-efficient designs and technologies, reducing energy costs for low-income households.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 2,
+                "housing": 2,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": "60-79",
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Availability of funding or subsidies to support the development of energy-efficient housing for low-income households",
+                "Collaboration with architects, engineers, and contractors to design and implement energy-efficient technologies in housing projects",
+                "Development of policies and regulations to incentivize energy-efficient housing solutions and ensure affordability for low-income communities"
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of energy-efficient housing units built or retrofitted.",
+                "Reduction in household energy consumption (kWh).",
+                "Decrease in energy bills for low-income households (USD)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR SCV",
+        "cityName": "S\u00e3o Crist\u00f3v\u00e3o",
+        "region": "SE",
+        "regionName": "Sergipe",
         "actionId": "icare_0131",
         "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
-        "actionPriority": 12,
+        "actionPriority": 13,
         "action": {
             "ActionID": "icare_0131",
             "ActionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
@@ -724,175 +784,55 @@
         "cityName": "S\u00e3o Crist\u00f3v\u00e3o",
         "region": "SE",
         "regionName": "Sergipe",
-        "actionId": "icare_0068",
-        "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
-        "actionPriority": 13,
+        "actionId": "icare_0133",
+        "actionName": "Promote Urban Reforestation and Green Corridors",
+        "actionPriority": 14,
         "action": {
-            "ActionID": "icare_0068",
-            "ActionName": "Deploy on-demand transport systems with 100% electric fleets.",
+            "ActionID": "icare_0133",
+            "ActionName": "Promote Urban Reforestation and Green Corridors",
             "ActionType": [
                 "mitigation"
             ],
             "Hazard": null,
             "Sector": [
-                "transportation"
+                "afolu"
             ],
             "Subsector": [
-                "on-road"
+                "land"
             ],
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "Description": "On-demand collective transport services, based on apps, optimize electric vehicle usage, reducing per-passenger emissions.",
+            "Description": "Increase urban tree coverage to mitigate the urban heat island effect and enhance biodiversity.",
             "CoBenefits": {
                 "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
+                "water_quality": 1,
+                "habitat": 2,
                 "cost_of_living": 1,
                 "housing": 0,
-                "mobility": 2,
+                "mobility": 1,
                 "stakeholder_engagement": 1
             },
             "EquityAndInclusionConsiderations": null,
             "GHGReductionPotential": {
                 "stationary_energy": null,
-                "transportation": "80-100",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Development of digital platforms and apps to efficiently manage on-demand collective transport services.",
-                "Expansion of electric vehicle fleets tailored for shared transport solutions.",
-                "Implementation of policies and incentives to encourage the adoption and use of shared electric transport services."
-            ],
-            "KeyPerformanceIndicators": [
-                "Number of active users of the on-demand electric fleet system.",
-                "Percentage of urban transport demand met by on-demand systems.",
-                "Reduction in noise pollution levels in urban areas"
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR SCV",
-        "cityName": "S\u00e3o Crist\u00f3v\u00e3o",
-        "region": "SE",
-        "regionName": "Sergipe",
-        "actionId": "icare_0117",
-        "actionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
-        "actionPriority": 14,
-        "action": {
-            "ActionID": "icare_0117",
-            "ActionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Increase the quality of transportation service delivery, aiming at the modal shift of passengers from private motorized transport to public transport, thereby reducing emissions generated by cars and motorcycles.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Improve the quality of public transportation services to attract passengers from private motorized transport.",
-                "Implement policies and infrastructure that support and enhance the efficiency of public transportation systems.",
-                "Promote awareness of the environmental benefits of public transport to encourage a modal shift and reduce emissions."
-            ],
-            "KeyPerformanceIndicators": [
-                "Annual increase in the number of passengers using the municipal bus system.",
-                "Percentage of bus routes with improved travel time reliability.",
-                "Estimated reduction in CO\u2082 equivalent emissions due to increased public transportation use."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR SCV",
-        "cityName": "S\u00e3o Crist\u00f3v\u00e3o",
-        "region": "SE",
-        "regionName": "Sergipe",
-        "actionId": "icare_0042",
-        "actionName": "Encourage renewable energy policies at the municipal level",
-        "actionPriority": 15,
-        "action": {
-            "ActionID": "icare_0042",
-            "ActionName": "Encourage renewable energy policies at the municipal level",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "stationary_energy"
-            ],
-            "Subsector": [
-                "non-specified_sources"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Advocate for and implement policies that prioritize the development and integration of renewable energy systems in local government operations and planning.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 1,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": "80-100",
                 "transportation": null,
                 "waste": null,
                 "ippu": null,
-                "afolu": null
+                "afolu": "80-100"
             },
             "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
             "Dependencies": [
-                "Political will and leadership to prioritize renewable energy in local government policies and planning processes",
-                "Development of clear policies and regulatory frameworks that facilitate the integration of renewable energy systems into government operations",
-                "Availability of funding or financial mechanisms to support the transition to renewable energy in municipal infrastructure and operations"
+                "Identification of priority areas and selection of native, climate-resilient species for tree planting.",
+                "Partnerships with local organizations and nurseries, and allocation of resources for planting and maintenance.",
+                "Community engagement to ensure long-term care and support."
             ],
             "KeyPerformanceIndicators": [
-                "Number of renewable energy projects approved or initiated annually at the municipal level.",
-                "Percentage of municipal energy demand met by renewable sources (%).",
-                "Reduction in municipal carbon emissions due to --renewable energy adoption (tons CO\u2082e/year)."
+                "Increase in urban tree canopy cover (%)",
+                "Total length of green corridors created or restored (kilometers)",
+                "Reduction in urban heat island effect temperatures (\u00b0C)"
             ],
             "PowersAndMandates": [
                 "local"
@@ -906,7 +846,7 @@
         "regionName": "Sergipe",
         "actionId": "c40_0033",
         "actionName": "15/30-Minute Areas",
-        "actionPriority": 16,
+        "actionPriority": 15,
         "action": {
             "ActionID": "c40_0033",
             "ActionName": "15/30-Minute Areas",
@@ -972,115 +912,55 @@
         "cityName": "S\u00e3o Crist\u00f3v\u00e3o",
         "region": "SE",
         "regionName": "Sergipe",
-        "actionId": "icare_0099",
-        "actionName": "Support Agroecological Certification Programs",
-        "actionPriority": 17,
+        "actionId": "icare_0027",
+        "actionName": "Create financing programs for local renewable energy projects",
+        "actionPriority": 16,
         "action": {
-            "ActionID": "icare_0099",
-            "ActionName": "Support Agroecological Certification Programs",
+            "ActionID": "icare_0027",
+            "ActionName": "Create financing programs for local renewable energy projects",
             "ActionType": [
                 "mitigation"
             ],
             "Hazard": null,
             "Sector": [
-                "afolu"
+                "stationary_energy"
             ],
             "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
+                "energy_industries"
             ],
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "Description": "Encourage the certification of agroecological products that meet sustainability criteria and have low environmental impact.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "20-39"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Development of clear and accessible certification standards for agroecological products that emphasize sustainability and low environmental impact.",
-                "Support for farmers and producers to meet certification requirements through training, financial assistance, or technical guidance.",
-                "Creation of marketing strategies and partnerships to increase the visibility and demand for certified agroecological products in local and global markets."
-            ],
-            "KeyPerformanceIndicators": [
-                "Number of farmers or producers obtaining agroecological certifications.",
-                "Percentage of certified agricultural products in the market (%).",
-                "Reduction in the use of synthetic inputs (e.g., fertilizers, pesticides)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR SCV",
-        "cityName": "S\u00e3o Crist\u00f3v\u00e3o",
-        "region": "SE",
-        "regionName": "Sergipe",
-        "actionId": "icare_0050",
-        "actionName": "Implement Agroforestry Systems",
-        "actionPriority": 18,
-        "action": {
-            "ActionID": "icare_0050",
-            "ActionName": "Implement Agroforestry Systems",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Promote agroforestry systems by integrating trees into food cultivation and pasture, increasing biodiversity and carbon sequestration.",
+            "Description": "Establish funding mechanisms, such as grants and low-interest loans, to support the development of small-scale renewable energy initiatives in communities.",
             "CoBenefits": {
                 "air_quality": 2,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 2,
+                "housing": 1,
                 "mobility": 0,
-                "stakeholder_engagement": 2
+                "stakeholder_engagement": 1
             },
             "EquityAndInclusionConsiderations": null,
             "GHGReductionPotential": {
-                "stationary_energy": null,
+                "stationary_energy": "60-79",
                 "transportation": null,
                 "waste": null,
                 "ippu": null,
-                "afolu": "80-100"
+                "afolu": null
             },
             "AdaptationEffectiveness": null,
             "CostInvestmentNeeded": "medium",
             "TimelineForImplementation": "5-10 years",
             "Dependencies": [
-                "Provision of technical support and guidance to farmers on the design and implementation of agroforestry systems.",
-                "Development of financial incentives or subsidies to make agroforestry more economically attractive.",
-                "Creation of policies that integrate agroforestry practices into agricultural land-use planning and land tenure systems."
+                "Development of accessible financial mechanisms, including grants and low-interest loans, to support small-scale renewable energy projects in communities",
+                "Collaboration with financial institutions and local governments to ensure the effective disbursement and management of funding for renewable energy initiatives",
+                "Clear guidelines and support for community organizations and local businesses to access funding and successfully implement renewable energy projects"
             ],
             "KeyPerformanceIndicators": [
-                "Percentage of agricultural land converted to agroforestry systems (%).",
-                "Number of new agroforestry projects implemented.",
-                "Increase in carbon sequestration in agroforestry systems (tons of CO\u2082e/year)."
+                "Total funds allocated for renewable energy projects (USD).",
+                "Number of projects financed annually.",
+                "Increase in renewable energy capacity installed (MW)."
             ],
             "PowersAndMandates": [
                 "local"
@@ -1094,7 +974,7 @@
         "regionName": "Sergipe",
         "actionId": "icare_0136",
         "actionName": "Support the Implementation of Ecological Fiscal Incentives",
-        "actionPriority": 19,
+        "actionPriority": 17,
         "action": {
             "ActionID": "icare_0136",
             "ActionName": "Support the Implementation of Ecological Fiscal Incentives",
@@ -1152,12 +1032,12 @@
         "cityName": "S\u00e3o Crist\u00f3v\u00e3o",
         "region": "SE",
         "regionName": "Sergipe",
-        "actionId": "icare_0132",
-        "actionName": "Encourage Local Agroecological Production and Short Supply Chains",
-        "actionPriority": 20,
+        "actionId": "icare_0099",
+        "actionName": "Support Agroecological Certification Programs",
+        "actionPriority": 18,
         "action": {
-            "ActionID": "icare_0132",
-            "ActionName": "Encourage Local Agroecological Production and Short Supply Chains",
+            "ActionID": "icare_0099",
+            "ActionName": "Support Agroecological Certification Programs",
             "ActionType": [
                 "mitigation"
             ],
@@ -1171,11 +1051,11 @@
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "Description": "Support local, sustainable agricultural practices and reduce emissions associated with food transport.",
+            "Description": "Encourage the certification of agroecological products that meet sustainability criteria and have low environmental impact.",
             "CoBenefits": {
                 "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 1,
+                "water_quality": 1,
+                "habitat": 2,
                 "cost_of_living": 1,
                 "housing": 0,
                 "mobility": 0,
@@ -1193,18 +1073,137 @@
             "CostInvestmentNeeded": "low",
             "TimelineForImplementation": "<5 years",
             "Dependencies": [
-                "Incentives for sustainable agricultural practices and development of local food distribution networks.",
-                "Partnerships with producers and investment in infrastructure to support local markets.",
-                "Policies to prioritize low-emission transportation methods."
+                "Development of clear and accessible certification standards for agroecological products that emphasize sustainability and low environmental impact.",
+                "Support for farmers and producers to meet certification requirements through training, financial assistance, or technical guidance.",
+                "Creation of marketing strategies and partnerships to increase the visibility and demand for certified agroecological products in local and global markets."
             ],
             "KeyPerformanceIndicators": [
-                "Number of producers adhering to local agroecological practices.",
-                "Percentage of food consumed in the city from short chains.",
-                "Reduction in emissions associated with food transport (tCO\u2082e)."
+                "Number of farmers or producers obtaining agroecological certifications.",
+                "Percentage of certified agricultural products in the market (%).",
+                "Reduction in the use of synthetic inputs (e.g., fertilizers, pesticides)."
             ],
             "PowersAndMandates": [
                 "local"
             ]
+        }
+    },
+    {
+        "locode": "BR SCV",
+        "cityName": "S\u00e3o Crist\u00f3v\u00e3o",
+        "region": "SE",
+        "regionName": "Sergipe",
+        "actionId": "ipcc_0006",
+        "actionName": "Teleworking",
+        "actionPriority": 19,
+        "action": {
+            "ActionID": "ipcc_0006",
+            "ActionName": "Teleworking",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "on-road"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Encouraging teleworking (working from home) and videoconferencing as alternatives to commuting and in-person meetings, thereby reducing light-duty vehicle travel and associated emissions.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 1,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": "Improves work flexibility, enabling greater participation from individuals with mobility constraints or caregiving responsibilities.",
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "0-19",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Widespread access to high-speed internet",
+                "supportive organizational policies",
+                "employee willingness to adopt teleworking"
+            ],
+            "KeyPerformanceIndicators": [
+                "Reduction in commuter trips",
+                "increase in teleworking adoption rates",
+                "decreased transport-related emissions"
+            ],
+            "PowersAndMandates": null
+        }
+    },
+    {
+        "locode": "BR SCV",
+        "cityName": "S\u00e3o Crist\u00f3v\u00e3o",
+        "region": "SE",
+        "regionName": "Sergipe",
+        "actionId": "ipcc_0016",
+        "actionName": "Eco-driving",
+        "actionPriority": 20,
+        "action": {
+            "ActionID": "ipcc_0016",
+            "ActionName": "Eco-driving",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "on-road"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "A set of driving practices aimed at improving fuel efficiency, reducing greenhouse gas emissions, and minimizing wear and tear on vehicles by promoting smooth driving, regular vehicle maintenance, and traffic anticipation.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 1,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": "Promotes accessibility to fuel-saving techniques for all drivers, reducing operating costs and supporting vulnerable communities dependent on vehicle transport.",
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "0-19",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Driver education",
+                "effective training programs",
+                "policy support",
+                "incentive mechanisms",
+                "encourage adoption of eco-driving practices"
+            ],
+            "KeyPerformanceIndicators": [
+                "Percentage reduction in fuel consumption",
+                "GHG emissions per vehicle",
+                "number of drivers trained in eco-driving",
+                "adherence to eco-driving practices among trained drivers"
+            ],
+            "PowersAndMandates": null
         }
     }
 ]

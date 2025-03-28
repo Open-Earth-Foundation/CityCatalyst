@@ -4,36 +4,9 @@
         "cityName": "Miranda",
         "region": "MS",
         "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0094",
-        "actionName": "Adoption of biomethane in public fleets.",
-        "actionPriority": 1
-    },
-    {
-        "locode": "BR MRD",
-        "cityName": "Miranda",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
         "actionId": "icare_0118",
         "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
-        "actionPriority": 2
-    },
-    {
-        "locode": "BR MRD",
-        "cityName": "Miranda",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0133",
-        "actionName": "Promote Urban Reforestation and Green Corridors",
-        "actionPriority": 3
-    },
-    {
-        "locode": "BR MRD",
-        "cityName": "Miranda",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0092",
-        "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
-        "actionPriority": 4
+        "actionPriority": 1
     },
     {
         "locode": "BR MRD",
@@ -42,7 +15,7 @@
         "regionName": "Mato Grosso do Sul",
         "actionId": "icare_0005",
         "actionName": "Create credit lines for residential and community wind energy projects",
-        "actionPriority": 5
+        "actionPriority": 2
     },
     {
         "locode": "BR MRD",
@@ -51,16 +24,7 @@
         "regionName": "Mato Grosso do Sul",
         "actionId": "icare_0121",
         "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
-        "actionPriority": 6
-    },
-    {
-        "locode": "BR MRD",
-        "cityName": "Miranda",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0090",
-        "actionName": "Adoption of electric drones for last-mile deliveries.",
-        "actionPriority": 7
+        "actionPriority": 3
     },
     {
         "locode": "BR MRD",
@@ -69,6 +33,42 @@
         "regionName": "Mato Grosso do Sul",
         "actionId": "icare_0088",
         "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
+        "actionPriority": 4
+    },
+    {
+        "locode": "BR MRD",
+        "cityName": "Miranda",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0133",
+        "actionName": "Promote Urban Reforestation and Green Corridors",
+        "actionPriority": 5
+    },
+    {
+        "locode": "BR MRD",
+        "cityName": "Miranda",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0094",
+        "actionName": "Adoption of biomethane in public fleets.",
+        "actionPriority": 6
+    },
+    {
+        "locode": "BR MRD",
+        "cityName": "Miranda",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0092",
+        "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
+        "actionPriority": 7
+    },
+    {
+        "locode": "BR MRD",
+        "cityName": "Miranda",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0090",
+        "actionName": "Adoption of electric drones for last-mile deliveries.",
         "actionPriority": 8
     },
     {
@@ -85,8 +85,8 @@
         "cityName": "Miranda",
         "region": "MS",
         "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0068",
-        "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
+        "actionId": "icare_0044",
+        "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
         "actionPriority": 10
     },
     {
@@ -94,18 +94,9 @@
         "cityName": "Miranda",
         "region": "MS",
         "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0044",
-        "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
+        "actionId": "icare_0068",
+        "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
         "actionPriority": 11
-    },
-    {
-        "locode": "BR MRD",
-        "cityName": "Miranda",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0025",
-        "actionName": "Promote energy-efficient low-income housing",
-        "actionPriority": 12
     },
     {
         "locode": "BR MRD",
@@ -114,43 +105,16 @@
         "regionName": "Mato Grosso do Sul",
         "actionId": "icare_0131",
         "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
+        "actionPriority": 12
+    },
+    {
+        "locode": "BR MRD",
+        "cityName": "Miranda",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0085",
+        "actionName": "Promote the Adoption of Agroecological Pest Control",
         "actionPriority": 13
-    },
-    {
-        "locode": "BR MRD",
-        "cityName": "Miranda",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "c40_0033",
-        "actionName": "15/30-Minute Areas",
-        "actionPriority": 14
-    },
-    {
-        "locode": "BR MRD",
-        "cityName": "Miranda",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0099",
-        "actionName": "Support Agroecological Certification Programs",
-        "actionPriority": 15
-    },
-    {
-        "locode": "BR MRD",
-        "cityName": "Miranda",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0136",
-        "actionName": "Support the Implementation of Ecological Fiscal Incentives",
-        "actionPriority": 16
-    },
-    {
-        "locode": "BR MRD",
-        "cityName": "Miranda",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0100",
-        "actionName": "Support Regenerative Agriculture Practices",
-        "actionPriority": 17
     },
     {
         "locode": "BR MRD",
@@ -159,6 +123,42 @@
         "regionName": "Mato Grosso do Sul",
         "actionId": "icare_0117",
         "actionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
+        "actionPriority": 14
+    },
+    {
+        "locode": "BR MRD",
+        "cityName": "Miranda",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "c40_0033",
+        "actionName": "15/30-Minute Areas",
+        "actionPriority": 15
+    },
+    {
+        "locode": "BR MRD",
+        "cityName": "Miranda",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0025",
+        "actionName": "Promote energy-efficient low-income housing",
+        "actionPriority": 16
+    },
+    {
+        "locode": "BR MRD",
+        "cityName": "Miranda",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0096",
+        "actionName": "Promote Organic Farming",
+        "actionPriority": 17
+    },
+    {
+        "locode": "BR MRD",
+        "cityName": "Miranda",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0136",
+        "actionName": "Support the Implementation of Ecological Fiscal Incentives",
         "actionPriority": 18
     },
     {
@@ -166,8 +166,8 @@
         "cityName": "Miranda",
         "region": "MS",
         "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0006",
-        "actionName": "Teleworking",
+        "actionId": "icare_0050",
+        "actionName": "Implement Agroforestry Systems",
         "actionPriority": 19
     },
     {
@@ -175,8 +175,8 @@
         "cityName": "Miranda",
         "region": "MS",
         "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0139",
-        "actionName": "Implementation of urban toll.",
+        "actionId": "icare_0099",
+        "actionName": "Support Agroecological Certification Programs",
         "actionPriority": 20
     }
 ]

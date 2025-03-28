@@ -4,9 +4,18 @@
         "cityName": "Contagem",
         "region": "MG",
         "regionName": "Minas Gerais",
+        "actionId": "icare_0118",
+        "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
+        "actionPriority": 1
+    },
+    {
+        "locode": "BR CGE",
+        "cityName": "Contagem",
+        "region": "MG",
+        "regionName": "Minas Gerais",
         "actionId": "icare_0005",
         "actionName": "Create credit lines for residential and community wind energy projects",
-        "actionPriority": 1
+        "actionPriority": 2
     },
     {
         "locode": "BR CGE",
@@ -15,34 +24,7 @@
         "regionName": "Minas Gerais",
         "actionId": "icare_0121",
         "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
-        "actionPriority": 2
-    },
-    {
-        "locode": "BR CGE",
-        "cityName": "Contagem",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "icare_0118",
-        "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
         "actionPriority": 3
-    },
-    {
-        "locode": "BR CGE",
-        "cityName": "Contagem",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "icare_0094",
-        "actionName": "Adoption of biomethane in public fleets.",
-        "actionPriority": 4
-    },
-    {
-        "locode": "BR CGE",
-        "cityName": "Contagem",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "icare_0057",
-        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
-        "actionPriority": 5
     },
     {
         "locode": "BR CGE",
@@ -51,6 +33,24 @@
         "regionName": "Minas Gerais",
         "actionId": "icare_0088",
         "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
+        "actionPriority": 4
+    },
+    {
+        "locode": "BR CGE",
+        "cityName": "Contagem",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0025",
+        "actionName": "Promote energy-efficient low-income housing",
+        "actionPriority": 5
+    },
+    {
+        "locode": "BR CGE",
+        "cityName": "Contagem",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0094",
+        "actionName": "Adoption of biomethane in public fleets.",
         "actionPriority": 6
     },
     {
@@ -76,18 +76,9 @@
         "cityName": "Contagem",
         "region": "MG",
         "regionName": "Minas Gerais",
-        "actionId": "icare_0027",
-        "actionName": "Create financing programs for local renewable energy projects",
+        "actionId": "icare_0057",
+        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
         "actionPriority": 9
-    },
-    {
-        "locode": "BR CGE",
-        "cityName": "Contagem",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "icare_0044",
-        "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
-        "actionPriority": 10
     },
     {
         "locode": "BR CGE",
@@ -96,16 +87,16 @@
         "regionName": "Minas Gerais",
         "actionId": "icare_0068",
         "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
-        "actionPriority": 11
+        "actionPriority": 10
     },
     {
         "locode": "BR CGE",
         "cityName": "Contagem",
         "region": "MG",
         "regionName": "Minas Gerais",
-        "actionId": "icare_0025",
-        "actionName": "Promote energy-efficient low-income housing",
-        "actionPriority": 12
+        "actionId": "icare_0044",
+        "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
+        "actionPriority": 11
     },
     {
         "locode": "BR CGE",
@@ -114,7 +105,7 @@
         "regionName": "Minas Gerais",
         "actionId": "icare_0131",
         "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
-        "actionPriority": 13
+        "actionPriority": 12
     },
     {
         "locode": "BR CGE",
@@ -123,6 +114,15 @@
         "regionName": "Minas Gerais",
         "actionId": "icare_0133",
         "actionName": "Promote Urban Reforestation and Green Corridors",
+        "actionPriority": 13
+    },
+    {
+        "locode": "BR CGE",
+        "cityName": "Contagem",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0117",
+        "actionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
         "actionPriority": 14
     },
     {
@@ -157,8 +157,8 @@
         "cityName": "Contagem",
         "region": "MG",
         "regionName": "Minas Gerais",
-        "actionId": "icare_0099",
-        "actionName": "Support Agroecological Certification Programs",
+        "actionId": "icare_0027",
+        "actionName": "Create financing programs for local renewable energy projects",
         "actionPriority": 18
     },
     {
@@ -166,8 +166,8 @@
         "cityName": "Contagem",
         "region": "MG",
         "regionName": "Minas Gerais",
-        "actionId": "ipcc_0006",
-        "actionName": "Teleworking",
+        "actionId": "icare_0139",
+        "actionName": "Implementation of urban toll.",
         "actionPriority": 19
     },
     {
@@ -175,8 +175,8 @@
         "cityName": "Contagem",
         "region": "MG",
         "regionName": "Minas Gerais",
-        "actionId": "icare_0122",
-        "actionName": "Establish eco-parks.",
+        "actionId": "icare_0099",
+        "actionName": "Support Agroecological Certification Programs",
         "actionPriority": 20
     }
 ]

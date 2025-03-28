@@ -4,69 +4,9 @@
         "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
         "region": "PE",
         "regionName": "Pernambuco",
-        "actionId": "icare_0005",
-        "actionName": "Create credit lines for residential and community wind energy projects",
-        "actionPriority": 1,
-        "action": {
-            "ActionID": "icare_0005",
-            "ActionName": "Create credit lines for residential and community wind energy projects",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "stationary_energy"
-            ],
-            "Subsector": [
-                "energy_generation_supplied_to_the_grid"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Establish accessible financing programs to support the development and adoption of wind energy systems in households and community-based projects, enabling a transition to cleaner energy sources.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 2,
-                "housing": 2,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": "60-79",
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Availability of financial programs, grants, or subsidies to make wind energy systems affordable for households and community projects",
-                "Access to technical expertise and resources to guide the installation and maintenance of wind energy systems in residential and community settings",
-                "Policy and regulatory support to encourage the adoption of wind energy, including streamlined permitting processes and incentives for clean energy projects"
-            ],
-            "KeyPerformanceIndicators": [
-                "Number of wind energy projects financed annually.",
-                "Installed capacity of wind energy systems from credit-supported projects (MW).",
-                "Estimated reduction in CO\u2082 equivalent emissions from wind energy adoption."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR VDS",
-        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
-        "region": "PE",
-        "regionName": "Pernambuco",
         "actionId": "icare_0121",
         "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
-        "actionPriority": 2,
+        "actionPriority": 1,
         "action": {
             "ActionID": "icare_0121",
             "ActionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
@@ -126,7 +66,7 @@
         "regionName": "Pernambuco",
         "actionId": "icare_0118",
         "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
-        "actionPriority": 3,
+        "actionPriority": 2,
         "action": {
             "ActionID": "icare_0118",
             "ActionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
@@ -184,175 +124,55 @@
         "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
         "region": "PE",
         "regionName": "Pernambuco",
-        "actionId": "icare_0094",
-        "actionName": "Adoption of biomethane in public fleets.",
-        "actionPriority": 4,
+        "actionId": "icare_0005",
+        "actionName": "Create credit lines for residential and community wind energy projects",
+        "actionPriority": 3,
         "action": {
-            "ActionID": "icare_0094",
-            "ActionName": "Adoption of biomethane in public fleets.",
+            "ActionID": "icare_0005",
+            "ActionName": "Create credit lines for residential and community wind energy projects",
             "ActionType": [
                 "mitigation"
             ],
             "Hazard": null,
             "Sector": [
-                "transportation"
+                "stationary_energy"
             ],
             "Subsector": [
-                "on-road"
+                "energy_generation_supplied_to_the_grid"
             ],
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "Description": "Use biomethane produced from urban and agro-industrial waste to fuel public buses and trucks, reducing greenhouse gas emissions in municipal fleets",
+            "Description": "Establish accessible financing programs to support the development and adoption of wind energy systems in households and community-based projects, enabling a transition to cleaner energy sources.",
             "CoBenefits": {
                 "air_quality": 2,
-                "water_quality": 1,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Development of infrastructure for the production, processing, and distribution of biomethane from urban and agro-industrial waste.",
-                "Retrofitting or acquisition of public buses and trucks capable of using biomethane as a fuel source.",
-                "Establishment of policies and financial incentives to support biomethane production and its integration into municipal fleets."
-            ],
-            "KeyPerformanceIndicators": [
-                "Cost savings in fleet operation due to biomethane use (USD/year).",
-                "Increase in biomethane production capacity (%).",
-                "Percentage of biomethane sourced locally versus imported."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR VDS",
-        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
-        "region": "PE",
-        "regionName": "Pernambuco",
-        "actionId": "icare_0057",
-        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
-        "actionPriority": 5,
-        "action": {
-            "ActionID": "icare_0057",
-            "ActionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "railways"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "These systems offer high capacity and low emissions, crucial for cities with high population density.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 2,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "80-100",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Investment in the development and expansion of high-capacity public transportation infrastructure, such as electric buses and metro systems.",
-                "Implementation of policies and incentives to encourage the use of public transport over private vehicles.",
-                "Integration of renewable energy sources to power these systems, reducing emissions further."
-            ],
-            "KeyPerformanceIndicators": [
-                "Length of new transit lines built (km/year).",
-                "Reduction in road traffic congestion (%).",
-                "Reduction in private vehicle usage (number of trips avoided/year)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR VDS",
-        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
-        "region": "PE",
-        "regionName": "Pernambuco",
-        "actionId": "icare_0088",
-        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
-        "actionPriority": 6,
-        "action": {
-            "ActionID": "icare_0088",
-            "ActionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Encourage the use of public transportation by offering free services during peak hours for workers and students. This measure reduces urban congestion, decreases the number of individual vehicles on the road, and consequently lowers greenhouse gas emissions associated with private transportation.",
-            "CoBenefits": {
-                "air_quality": 1,
                 "water_quality": 0,
                 "habitat": 0,
                 "cost_of_living": 2,
-                "housing": 0,
-                "mobility": 2,
+                "housing": 2,
+                "mobility": 0,
                 "stakeholder_engagement": 1
             },
             "EquityAndInclusionConsiderations": null,
             "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
+                "stationary_energy": "60-79",
+                "transportation": null,
                 "waste": null,
                 "ippu": null,
                 "afolu": null
             },
             "AdaptationEffectiveness": null,
             "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
+            "TimelineForImplementation": "5-10 years",
             "Dependencies": [
-                "Allocation of funding to subsidize free public transportation services during peak hours.",
-                "Development of policies to ensure the sustainability and efficiency of public transit systems amid increased demand.",
-                "Coordination with employers and educational institutions to optimize peak-hour schedules and promote the initiative."
+                "Availability of financial programs, grants, or subsidies to make wind energy systems affordable for households and community projects",
+                "Access to technical expertise and resources to guide the installation and maintenance of wind energy systems in residential and community settings",
+                "Policy and regulatory support to encourage the adoption of wind energy, including streamlined permitting processes and incentives for clean energy projects"
             ],
             "KeyPerformanceIndicators": [
-                "Reduction in air pollution levels during peak hours (PM2.5/PM10 concentration).",
-                "Number of private vehicles removed from roads during peak hours.",
-                "Public satisfaction rate with the free transportation initiative (%)."
+                "Number of wind energy projects financed annually.",
+                "Installed capacity of wind energy systems from credit-supported projects (MW).",
+                "Estimated reduction in CO\u2082 equivalent emissions from wind energy adoption."
             ],
             "PowersAndMandates": [
                 "local"
@@ -366,7 +186,7 @@
         "regionName": "Pernambuco",
         "actionId": "icare_0092",
         "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
-        "actionPriority": 7,
+        "actionPriority": 4,
         "action": {
             "ActionID": "icare_0092",
             "ActionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
@@ -424,9 +244,69 @@
         "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
         "region": "PE",
         "regionName": "Pernambuco",
+        "actionId": "icare_0088",
+        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
+        "actionPriority": 5,
+        "action": {
+            "ActionID": "icare_0088",
+            "ActionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "on-road"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Encourage the use of public transportation by offering free services during peak hours for workers and students. This measure reduces urban congestion, decreases the number of individual vehicles on the road, and consequently lowers greenhouse gas emissions associated with private transportation.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 2,
+                "housing": 0,
+                "mobility": 2,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "60-79",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Allocation of funding to subsidize free public transportation services during peak hours.",
+                "Development of policies to ensure the sustainability and efficiency of public transit systems amid increased demand.",
+                "Coordination with employers and educational institutions to optimize peak-hour schedules and promote the initiative."
+            ],
+            "KeyPerformanceIndicators": [
+                "Reduction in air pollution levels during peak hours (PM2.5/PM10 concentration).",
+                "Number of private vehicles removed from roads during peak hours.",
+                "Public satisfaction rate with the free transportation initiative (%)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR VDS",
+        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
+        "region": "PE",
+        "regionName": "Pernambuco",
         "actionId": "icare_0025",
         "actionName": "Promote energy-efficient low-income housing",
-        "actionPriority": 8,
+        "actionPriority": 6,
         "action": {
             "ActionID": "icare_0025",
             "ActionName": "Promote energy-efficient low-income housing",
@@ -484,9 +364,69 @@
         "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
         "region": "PE",
         "regionName": "Pernambuco",
+        "actionId": "icare_0094",
+        "actionName": "Adoption of biomethane in public fleets.",
+        "actionPriority": 7,
+        "action": {
+            "ActionID": "icare_0094",
+            "ActionName": "Adoption of biomethane in public fleets.",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "on-road"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Use biomethane produced from urban and agro-industrial waste to fuel public buses and trucks, reducing greenhouse gas emissions in municipal fleets",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 1,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 1,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "60-79",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Development of infrastructure for the production, processing, and distribution of biomethane from urban and agro-industrial waste.",
+                "Retrofitting or acquisition of public buses and trucks capable of using biomethane as a fuel source.",
+                "Establishment of policies and financial incentives to support biomethane production and its integration into municipal fleets."
+            ],
+            "KeyPerformanceIndicators": [
+                "Cost savings in fleet operation due to biomethane use (USD/year).",
+                "Increase in biomethane production capacity (%).",
+                "Percentage of biomethane sourced locally versus imported."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR VDS",
+        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
+        "region": "PE",
+        "regionName": "Pernambuco",
         "actionId": "icare_0090",
         "actionName": "Adoption of electric drones for last-mile deliveries.",
-        "actionPriority": 9,
+        "actionPriority": 8,
         "action": {
             "ActionID": "icare_0090",
             "ActionName": "Adoption of electric drones for last-mile deliveries.",
@@ -544,69 +484,9 @@
         "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
         "region": "PE",
         "regionName": "Pernambuco",
-        "actionId": "icare_0131",
-        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
-        "actionPriority": 10,
-        "action": {
-            "ActionID": "icare_0131",
-            "ActionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Focus on buying sustainable, locally produced food for public institutions.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "20-39"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Development of procurement policies and identification of reliable local suppliers.",
-                "Partnerships with producers and allocation of funding for sustainable procurement programs.",
-                "Establishment of monitoring systems to ensure compliance with sustainability criteria."
-            ],
-            "KeyPerformanceIndicators": [
-                "Percentage of the total volume of public purchases coming from local agroecological producers.",
-                "Amount of CO\u2082 emissions avoided due to reduced transport distance (tCO\u2082e).",
-                "Number of agroecological producers benefiting from public purchases."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR VDS",
-        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
-        "region": "PE",
-        "regionName": "Pernambuco",
         "actionId": "icare_0133",
         "actionName": "Promote Urban Reforestation and Green Corridors",
-        "actionPriority": 11,
+        "actionPriority": 9,
         "action": {
             "ActionID": "icare_0133",
             "ActionName": "Promote Urban Reforestation and Green Corridors",
@@ -664,12 +544,12 @@
         "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
         "region": "PE",
         "regionName": "Pernambuco",
-        "actionId": "icare_0044",
-        "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
-        "actionPriority": 12,
+        "actionId": "icare_0057",
+        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
+        "actionPriority": 10,
         "action": {
-            "ActionID": "icare_0044",
-            "ActionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
+            "ActionID": "icare_0057",
+            "ActionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
             "ActionType": [
                 "mitigation"
             ],
@@ -678,20 +558,20 @@
                 "transportation"
             ],
             "Subsector": [
-                "on-road"
+                "railways"
             ],
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "Description": "The main objective of this action is to promote active mobility, ensuring the safety, comfort, and priority of pedestrian movement, people with disabilities (or reduced mobility), and human-powered vehicles and equipment, such as bicycles and scooters.",
+            "Description": "These systems offer high capacity and low emissions, crucial for cities with high population density.",
             "CoBenefits": {
                 "air_quality": 2,
                 "water_quality": 0,
                 "habitat": 0,
                 "cost_of_living": 1,
-                "housing": 0,
+                "housing": 1,
                 "mobility": 2,
-                "stakeholder_engagement": 1
+                "stakeholder_engagement": 0
             },
             "EquityAndInclusionConsiderations": null,
             "GHGReductionPotential": {
@@ -702,17 +582,17 @@
                 "afolu": null
             },
             "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
+            "CostInvestmentNeeded": "high",
             "TimelineForImplementation": "5-10 years",
             "Dependencies": [
-                "Infrastructure investments in safe and accessible pedestrian walkways, bike lanes, and facilities for people with disabilities",
-                "Policy and regulatory frameworks to prioritize active mobility and establish safety standards for pedestrians and non-motorized vehicles",
-                "Public awareness campaigns to promote active mobility and educate citizens on the benefits of walking, cycling, and using other human-powered transport"
+                "Investment in the development and expansion of high-capacity public transportation infrastructure, such as electric buses and metro systems.",
+                "Implementation of policies and incentives to encourage the use of public transport over private vehicles.",
+                "Integration of renewable energy sources to power these systems, reducing emissions further."
             ],
             "KeyPerformanceIndicators": [
-                "Kilometers of new cycling paths and walkways constructed annually.",
-                "Increase in daily usage of cycling and pedestrian infrastructure (%).",
-                "Reduction in urban transport emissions (%)."
+                "Length of new transit lines built (km/year).",
+                "Reduction in road traffic congestion (%).",
+                "Reduction in private vehicle usage (number of trips avoided/year)."
             ],
             "PowersAndMandates": [
                 "local"
@@ -726,7 +606,7 @@
         "regionName": "Pernambuco",
         "actionId": "icare_0042",
         "actionName": "Encourage renewable energy policies at the municipal level",
-        "actionPriority": 13,
+        "actionPriority": 11,
         "action": {
             "ActionID": "icare_0042",
             "ActionName": "Encourage renewable energy policies at the municipal level",
@@ -784,12 +664,12 @@
         "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
         "region": "PE",
         "regionName": "Pernambuco",
-        "actionId": "icare_0099",
-        "actionName": "Support Agroecological Certification Programs",
-        "actionPriority": 14,
+        "actionId": "icare_0131",
+        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
+        "actionPriority": 12,
         "action": {
-            "ActionID": "icare_0099",
-            "ActionName": "Support Agroecological Certification Programs",
+            "ActionID": "icare_0131",
+            "ActionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
             "ActionType": [
                 "mitigation"
             ],
@@ -803,10 +683,10 @@
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "Description": "Encourage the certification of agroecological products that meet sustainability criteria and have low environmental impact.",
+            "Description": "Focus on buying sustainable, locally produced food for public institutions.",
             "CoBenefits": {
                 "air_quality": 1,
-                "water_quality": 1,
+                "water_quality": 2,
                 "habitat": 2,
                 "cost_of_living": 1,
                 "housing": 0,
@@ -825,14 +705,74 @@
             "CostInvestmentNeeded": "low",
             "TimelineForImplementation": "<5 years",
             "Dependencies": [
-                "Development of clear and accessible certification standards for agroecological products that emphasize sustainability and low environmental impact.",
-                "Support for farmers and producers to meet certification requirements through training, financial assistance, or technical guidance.",
-                "Creation of marketing strategies and partnerships to increase the visibility and demand for certified agroecological products in local and global markets."
+                "Development of procurement policies and identification of reliable local suppliers.",
+                "Partnerships with producers and allocation of funding for sustainable procurement programs.",
+                "Establishment of monitoring systems to ensure compliance with sustainability criteria."
             ],
             "KeyPerformanceIndicators": [
-                "Number of farmers or producers obtaining agroecological certifications.",
-                "Percentage of certified agricultural products in the market (%).",
-                "Reduction in the use of synthetic inputs (e.g., fertilizers, pesticides)."
+                "Percentage of the total volume of public purchases coming from local agroecological producers.",
+                "Amount of CO\u2082 emissions avoided due to reduced transport distance (tCO\u2082e).",
+                "Number of agroecological producers benefiting from public purchases."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR VDS",
+        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
+        "region": "PE",
+        "regionName": "Pernambuco",
+        "actionId": "icare_0044",
+        "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
+        "actionPriority": 13,
+        "action": {
+            "ActionID": "icare_0044",
+            "ActionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "on-road"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "The main objective of this action is to promote active mobility, ensuring the safety, comfort, and priority of pedestrian movement, people with disabilities (or reduced mobility), and human-powered vehicles and equipment, such as bicycles and scooters.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 2,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "80-100",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Infrastructure investments in safe and accessible pedestrian walkways, bike lanes, and facilities for people with disabilities",
+                "Policy and regulatory frameworks to prioritize active mobility and establish safety standards for pedestrians and non-motorized vehicles",
+                "Public awareness campaigns to promote active mobility and educate citizens on the benefits of walking, cycling, and using other human-powered transport"
+            ],
+            "KeyPerformanceIndicators": [
+                "Kilometers of new cycling paths and walkways constructed annually.",
+                "Increase in daily usage of cycling and pedestrian infrastructure (%).",
+                "Reduction in urban transport emissions (%)."
             ],
             "PowersAndMandates": [
                 "local"
@@ -846,7 +786,7 @@
         "regionName": "Pernambuco",
         "actionId": "icare_0068",
         "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
-        "actionPriority": 15,
+        "actionPriority": 14,
         "action": {
             "ActionID": "icare_0068",
             "ActionName": "Deploy on-demand transport systems with 100% electric fleets.",
@@ -904,72 +844,12 @@
         "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
         "region": "PE",
         "regionName": "Pernambuco",
-        "actionId": "icare_0117",
-        "actionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
-        "actionPriority": 16,
+        "actionId": "icare_0099",
+        "actionName": "Support Agroecological Certification Programs",
+        "actionPriority": 15,
         "action": {
-            "ActionID": "icare_0117",
-            "ActionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Increase the quality of transportation service delivery, aiming at the modal shift of passengers from private motorized transport to public transport, thereby reducing emissions generated by cars and motorcycles.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Improve the quality of public transportation services to attract passengers from private motorized transport.",
-                "Implement policies and infrastructure that support and enhance the efficiency of public transportation systems.",
-                "Promote awareness of the environmental benefits of public transport to encourage a modal shift and reduce emissions."
-            ],
-            "KeyPerformanceIndicators": [
-                "Annual increase in the number of passengers using the municipal bus system.",
-                "Percentage of bus routes with improved travel time reliability.",
-                "Estimated reduction in CO\u2082 equivalent emissions due to increased public transportation use."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR VDS",
-        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
-        "region": "PE",
-        "regionName": "Pernambuco",
-        "actionId": "icare_0050",
-        "actionName": "Implement Agroforestry Systems",
-        "actionPriority": 17,
-        "action": {
-            "ActionID": "icare_0050",
-            "ActionName": "Implement Agroforestry Systems",
+            "ActionID": "icare_0099",
+            "ActionName": "Support Agroecological Certification Programs",
             "ActionType": [
                 "mitigation"
             ],
@@ -983,10 +863,10 @@
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "Description": "Promote agroforestry systems by integrating trees into food cultivation and pasture, increasing biodiversity and carbon sequestration.",
+            "Description": "Encourage the certification of agroecological products that meet sustainability criteria and have low environmental impact.",
             "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 2,
+                "air_quality": 1,
+                "water_quality": 1,
                 "habitat": 2,
                 "cost_of_living": 1,
                 "housing": 0,
@@ -999,20 +879,20 @@
                 "transportation": null,
                 "waste": null,
                 "ippu": null,
-                "afolu": "80-100"
+                "afolu": "20-39"
             },
             "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
             "Dependencies": [
-                "Provision of technical support and guidance to farmers on the design and implementation of agroforestry systems.",
-                "Development of financial incentives or subsidies to make agroforestry more economically attractive.",
-                "Creation of policies that integrate agroforestry practices into agricultural land-use planning and land tenure systems."
+                "Development of clear and accessible certification standards for agroecological products that emphasize sustainability and low environmental impact.",
+                "Support for farmers and producers to meet certification requirements through training, financial assistance, or technical guidance.",
+                "Creation of marketing strategies and partnerships to increase the visibility and demand for certified agroecological products in local and global markets."
             ],
             "KeyPerformanceIndicators": [
-                "Percentage of agricultural land converted to agroforestry systems (%).",
-                "Number of new agroforestry projects implemented.",
-                "Increase in carbon sequestration in agroforestry systems (tons of CO\u2082e/year)."
+                "Number of farmers or producers obtaining agroecological certifications.",
+                "Percentage of certified agricultural products in the market (%).",
+                "Reduction in the use of synthetic inputs (e.g., fertilizers, pesticides)."
             ],
             "PowersAndMandates": [
                 "local"
@@ -1024,77 +904,9 @@
         "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
         "region": "PE",
         "regionName": "Pernambuco",
-        "actionId": "c40_0033",
-        "actionName": "15/30-Minute Areas",
-        "actionPriority": 18,
-        "action": {
-            "ActionID": "c40_0033",
-            "ActionName": "15/30-Minute Areas",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "all"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "\"15/30-Minute Areas\" refer to the development of complete neighborhoods where essential services, amenities, and public transport are easily accessible within a 15 or 30-minute walk or bike ride. This urban planning approach promotes sustainability by reducing the need for long-distance travel and fostering community resilience.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "The \"15/30-Minute Areas\" climate action promotes equity and inclusion by ensuring that essential services and amenities are accessible to all community members, particularly benefiting vulnerable or underserved populations who may lack reliable transportation. By designing neighborhoods where key resources are within a short walking or biking distance, this approach reduces barriers to access for low-income individuals, the elderly, and those with disabilities. \n \n Additionally, the focus on public transport integration enhances mobility options for those who may not own a vehicle, further supporting equitable access to jobs, education, and healthcare. The development of complete neighborhoods fosters a sense of community and belonging, encouraging social interactions among diverse groups and promoting inclusivity. Overall, this urban planning strategy actively addresses the needs of marginalized communities, ensuring they are not left behind in the transition to sustainable living.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "0-19",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Availability of essential services and amenities within walking or biking distance",
-                "Investment in public transport infrastructure",
-                "Community engagement and support for local planning initiatives",
-                "Zoning regulations that promote mixed-use development",
-                "Sustainable urban design principles that prioritize walkability and bikeability",
-                "Collaboration between local government, urban planners, and residents"
-            ],
-            "KeyPerformanceIndicators": [
-                "Percentage of residents within 15/30-minute reach of essential services",
-                "Reduction in average commuting distance",
-                "Increase in active transportation (walking/biking) rates",
-                "Public transport usage rates",
-                "Reduction in greenhouse gas emissions from transportation",
-                "Community satisfaction with local amenities",
-                "Number of new businesses established within 15/30-minute areas",
-                "Increase in green spaces per capita",
-                "Frequency of community events and engagement activities",
-                "Change in property values in 15/30-minute areas"
-            ],
-            "PowersAndMandates": null
-        }
-    },
-    {
-        "locode": "BR VDS",
-        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
-        "region": "PE",
-        "regionName": "Pernambuco",
         "actionId": "icare_0136",
         "actionName": "Support the Implementation of Ecological Fiscal Incentives",
-        "actionPriority": 19,
+        "actionPriority": 16,
         "action": {
             "ActionID": "icare_0136",
             "ActionName": "Support the Implementation of Ecological Fiscal Incentives",
@@ -1152,12 +964,12 @@
         "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
         "region": "PE",
         "regionName": "Pernambuco",
-        "actionId": "ipcc_0016",
-        "actionName": "Eco-driving",
-        "actionPriority": 20,
+        "actionId": "ipcc_0006",
+        "actionName": "Teleworking",
+        "actionPriority": 17,
         "action": {
-            "ActionID": "ipcc_0016",
-            "ActionName": "Eco-driving",
+            "ActionID": "ipcc_0006",
+            "ActionName": "Teleworking",
             "ActionType": [
                 "mitigation"
             ],
@@ -1171,7 +983,7 @@
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "Description": "A set of driving practices aimed at improving fuel efficiency, reducing greenhouse gas emissions, and minimizing wear and tear on vehicles by promoting smooth driving, regular vehicle maintenance, and traffic anticipation.",
+            "Description": "Encouraging teleworking (working from home) and videoconferencing as alternatives to commuting and in-person meetings, thereby reducing light-duty vehicle travel and associated emissions.",
             "CoBenefits": {
                 "air_quality": 1,
                 "water_quality": 0,
@@ -1181,7 +993,7 @@
                 "mobility": 1,
                 "stakeholder_engagement": 1
             },
-            "EquityAndInclusionConsiderations": "Promotes accessibility to fuel-saving techniques for all drivers, reducing operating costs and supporting vulnerable communities dependent on vehicle transport.",
+            "EquityAndInclusionConsiderations": "Improves work flexibility, enabling greater participation from individuals with mobility constraints or caregiving responsibilities.",
             "GHGReductionPotential": {
                 "stationary_energy": null,
                 "transportation": "0-19",
@@ -1193,17 +1005,202 @@
             "CostInvestmentNeeded": "low",
             "TimelineForImplementation": "<5 years",
             "Dependencies": [
-                "Driver education",
-                "effective training programs",
-                "policy support",
-                "incentive mechanisms",
-                "encourage adoption of eco-driving practices"
+                "Widespread access to high-speed internet",
+                "supportive organizational policies",
+                "employee willingness to adopt teleworking"
             ],
             "KeyPerformanceIndicators": [
-                "Percentage reduction in fuel consumption",
-                "GHG emissions per vehicle",
-                "number of drivers trained in eco-driving",
-                "adherence to eco-driving practices among trained drivers"
+                "Reduction in commuter trips",
+                "increase in teleworking adoption rates",
+                "decreased transport-related emissions"
+            ],
+            "PowersAndMandates": null
+        }
+    },
+    {
+        "locode": "BR VDS",
+        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
+        "region": "PE",
+        "regionName": "Pernambuco",
+        "actionId": "icare_0117",
+        "actionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
+        "actionPriority": 18,
+        "action": {
+            "ActionID": "icare_0117",
+            "ActionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "on-road"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Increase the quality of transportation service delivery, aiming at the modal shift of passengers from private motorized transport to public transport, thereby reducing emissions generated by cars and motorcycles.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 2,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "60-79",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Improve the quality of public transportation services to attract passengers from private motorized transport.",
+                "Implement policies and infrastructure that support and enhance the efficiency of public transportation systems.",
+                "Promote awareness of the environmental benefits of public transport to encourage a modal shift and reduce emissions."
+            ],
+            "KeyPerformanceIndicators": [
+                "Annual increase in the number of passengers using the municipal bus system.",
+                "Percentage of bus routes with improved travel time reliability.",
+                "Estimated reduction in CO\u2082 equivalent emissions due to increased public transportation use."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR VDS",
+        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
+        "region": "PE",
+        "regionName": "Pernambuco",
+        "actionId": "icare_0027",
+        "actionName": "Create financing programs for local renewable energy projects",
+        "actionPriority": 19,
+        "action": {
+            "ActionID": "icare_0027",
+            "ActionName": "Create financing programs for local renewable energy projects",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "stationary_energy"
+            ],
+            "Subsector": [
+                "energy_industries"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Establish funding mechanisms, such as grants and low-interest loans, to support the development of small-scale renewable energy initiatives in communities.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 2,
+                "housing": 1,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": "60-79",
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Development of accessible financial mechanisms, including grants and low-interest loans, to support small-scale renewable energy projects in communities",
+                "Collaboration with financial institutions and local governments to ensure the effective disbursement and management of funding for renewable energy initiatives",
+                "Clear guidelines and support for community organizations and local businesses to access funding and successfully implement renewable energy projects"
+            ],
+            "KeyPerformanceIndicators": [
+                "Total funds allocated for renewable energy projects (USD).",
+                "Number of projects financed annually.",
+                "Increase in renewable energy capacity installed (MW)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR VDS",
+        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
+        "region": "PE",
+        "regionName": "Pernambuco",
+        "actionId": "c40_0033",
+        "actionName": "15/30-Minute Areas",
+        "actionPriority": 20,
+        "action": {
+            "ActionID": "c40_0033",
+            "ActionName": "15/30-Minute Areas",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "all"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "\"15/30-Minute Areas\" refer to the development of complete neighborhoods where essential services, amenities, and public transport are easily accessible within a 15 or 30-minute walk or bike ride. This urban planning approach promotes sustainability by reducing the need for long-distance travel and fostering community resilience.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 2,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": "The \"15/30-Minute Areas\" climate action promotes equity and inclusion by ensuring that essential services and amenities are accessible to all community members, particularly benefiting vulnerable or underserved populations who may lack reliable transportation. By designing neighborhoods where key resources are within a short walking or biking distance, this approach reduces barriers to access for low-income individuals, the elderly, and those with disabilities. \n \n Additionally, the focus on public transport integration enhances mobility options for those who may not own a vehicle, further supporting equitable access to jobs, education, and healthcare. The development of complete neighborhoods fosters a sense of community and belonging, encouraging social interactions among diverse groups and promoting inclusivity. Overall, this urban planning strategy actively addresses the needs of marginalized communities, ensuring they are not left behind in the transition to sustainable living.",
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "0-19",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Availability of essential services and amenities within walking or biking distance",
+                "Investment in public transport infrastructure",
+                "Community engagement and support for local planning initiatives",
+                "Zoning regulations that promote mixed-use development",
+                "Sustainable urban design principles that prioritize walkability and bikeability",
+                "Collaboration between local government, urban planners, and residents"
+            ],
+            "KeyPerformanceIndicators": [
+                "Percentage of residents within 15/30-minute reach of essential services",
+                "Reduction in average commuting distance",
+                "Increase in active transportation (walking/biking) rates",
+                "Public transport usage rates",
+                "Reduction in greenhouse gas emissions from transportation",
+                "Community satisfaction with local amenities",
+                "Number of new businesses established within 15/30-minute areas",
+                "Increase in green spaces per capita",
+                "Frequency of community events and engagement activities",
+                "Change in property values in 15/30-minute areas"
             ],
             "PowersAndMandates": null
         }

@@ -4,12 +4,12 @@
         "cityName": "Manaus",
         "region": "AM",
         "regionName": "Amazonas",
-        "actionId": "icare_0118",
-        "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
+        "actionId": "icare_0121",
+        "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
         "actionPriority": 1,
         "action": {
-            "ActionID": "icare_0118",
-            "ActionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
+            "ActionID": "icare_0121",
+            "ActionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
             "ActionType": [
                 "mitigation"
             ],
@@ -23,13 +23,13 @@
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "Description": "Encourage the adoption of bicycles as a regular mode of transport by expanding cycling infrastructure, such as dedicated bike lanes, parking facilities, and repair stations. Additionally, implement awareness campaigns and communication strategies to highlight the environmental, health, and economic benefits of cycling, aiming to increase public participation and make cycling a viable and sustainable transport option for daily commuting.",
+            "Description": "This action encourages the establishment of bike-sharing systems in cities, specifically promoting the use of electric bicycles. These systems allow residents to rent electric bikes for short trips, reducing the dependence on cars for urban transportation. By integrating electric bikes, cities can further reduce greenhouse gas emissions, alleviate traffic congestion, and promote a healthier and more sustainable mode of transportation for both urban and rural areas. This initiative also supports mobility equality, as it makes bikes more accessible to a wider range of people.",
             "CoBenefits": {
                 "air_quality": 2,
                 "water_quality": 0,
                 "habitat": 0,
                 "cost_of_living": 1,
-                "housing": 1,
+                "housing": 0,
                 "mobility": 2,
                 "stakeholder_engagement": 1
             },
@@ -43,16 +43,16 @@
             },
             "AdaptationEffectiveness": null,
             "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
+            "TimelineForImplementation": "<5 years",
             "Dependencies": [
-                "Expand cycling infrastructure, including dedicated bike lanes, parking facilities, and repair stations.",
-                "Implement awareness campaigns to highlight the environmental, health, and economic benefits of cycling.",
-                "Promote public participation through communication strategies, making cycling a viable and sustainable option for daily commuting."
+                "Establishment of bike-sharing systems with a focus on electric bicycles to reduce car dependence.",
+                "Integration of electric bikes to lower greenhouse gas emissions, alleviate traffic congestion, and promote sustainable transportation.",
+                "Promotion of mobility equality by making electric bikes accessible to a wider population."
             ],
             "KeyPerformanceIndicators": [
-                "Length of new bike lanes added to the urban network (km).",
-                "Annual increase in the number of bicycle users in urban areas.",
-                "Estimated reduction in CO\u2082 equivalent emissions from the shift to cycling."
+                "Number of electric bikes available in bike-sharing programs.",
+                "Annual increase in bike-sharing users.",
+                "Estimated reduction in CO\u2082 equivalent emissions from the adoption of electric bike-sharing."
             ],
             "PowersAndMandates": [
                 "local"
@@ -124,12 +124,12 @@
         "cityName": "Manaus",
         "region": "AM",
         "regionName": "Amazonas",
-        "actionId": "icare_0121",
-        "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
+        "actionId": "icare_0118",
+        "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
         "actionPriority": 3,
         "action": {
-            "ActionID": "icare_0121",
-            "ActionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
+            "ActionID": "icare_0118",
+            "ActionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
             "ActionType": [
                 "mitigation"
             ],
@@ -143,13 +143,13 @@
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "Description": "This action encourages the establishment of bike-sharing systems in cities, specifically promoting the use of electric bicycles. These systems allow residents to rent electric bikes for short trips, reducing the dependence on cars for urban transportation. By integrating electric bikes, cities can further reduce greenhouse gas emissions, alleviate traffic congestion, and promote a healthier and more sustainable mode of transportation for both urban and rural areas. This initiative also supports mobility equality, as it makes bikes more accessible to a wider range of people.",
+            "Description": "Encourage the adoption of bicycles as a regular mode of transport by expanding cycling infrastructure, such as dedicated bike lanes, parking facilities, and repair stations. Additionally, implement awareness campaigns and communication strategies to highlight the environmental, health, and economic benefits of cycling, aiming to increase public participation and make cycling a viable and sustainable transport option for daily commuting.",
             "CoBenefits": {
                 "air_quality": 2,
                 "water_quality": 0,
                 "habitat": 0,
                 "cost_of_living": 1,
-                "housing": 0,
+                "housing": 1,
                 "mobility": 2,
                 "stakeholder_engagement": 1
             },
@@ -163,76 +163,16 @@
             },
             "AdaptationEffectiveness": null,
             "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
+            "TimelineForImplementation": "5-10 years",
             "Dependencies": [
-                "Establishment of bike-sharing systems with a focus on electric bicycles to reduce car dependence.",
-                "Integration of electric bikes to lower greenhouse gas emissions, alleviate traffic congestion, and promote sustainable transportation.",
-                "Promotion of mobility equality by making electric bikes accessible to a wider population."
+                "Expand cycling infrastructure, including dedicated bike lanes, parking facilities, and repair stations.",
+                "Implement awareness campaigns to highlight the environmental, health, and economic benefits of cycling.",
+                "Promote public participation through communication strategies, making cycling a viable and sustainable option for daily commuting."
             ],
             "KeyPerformanceIndicators": [
-                "Number of electric bikes available in bike-sharing programs.",
-                "Annual increase in bike-sharing users.",
-                "Estimated reduction in CO\u2082 equivalent emissions from the adoption of electric bike-sharing."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR MAO",
-        "cityName": "Manaus",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "icare_0088",
-        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
-        "actionPriority": 4,
-        "action": {
-            "ActionID": "icare_0088",
-            "ActionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Encourage the use of public transportation by offering free services during peak hours for workers and students. This measure reduces urban congestion, decreases the number of individual vehicles on the road, and consequently lowers greenhouse gas emissions associated with private transportation.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 2,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Allocation of funding to subsidize free public transportation services during peak hours.",
-                "Development of policies to ensure the sustainability and efficiency of public transit systems amid increased demand.",
-                "Coordination with employers and educational institutions to optimize peak-hour schedules and promote the initiative."
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in air pollution levels during peak hours (PM2.5/PM10 concentration).",
-                "Number of private vehicles removed from roads during peak hours.",
-                "Public satisfaction rate with the free transportation initiative (%)."
+                "Length of new bike lanes added to the urban network (km).",
+                "Annual increase in the number of bicycle users in urban areas.",
+                "Estimated reduction in CO\u2082 equivalent emissions from the shift to cycling."
             ],
             "PowersAndMandates": [
                 "local"
@@ -246,7 +186,7 @@
         "regionName": "Amazonas",
         "actionId": "icare_0094",
         "actionName": "Adoption of biomethane in public fleets.",
-        "actionPriority": 5,
+        "actionPriority": 4,
         "action": {
             "ActionID": "icare_0094",
             "ActionName": "Adoption of biomethane in public fleets.",
@@ -304,69 +244,9 @@
         "cityName": "Manaus",
         "region": "AM",
         "regionName": "Amazonas",
-        "actionId": "icare_0068",
-        "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
-        "actionPriority": 6,
-        "action": {
-            "ActionID": "icare_0068",
-            "ActionName": "Deploy on-demand transport systems with 100% electric fleets.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "On-demand collective transport services, based on apps, optimize electric vehicle usage, reducing per-passenger emissions.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "80-100",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Development of digital platforms and apps to efficiently manage on-demand collective transport services.",
-                "Expansion of electric vehicle fleets tailored for shared transport solutions.",
-                "Implementation of policies and incentives to encourage the adoption and use of shared electric transport services."
-            ],
-            "KeyPerformanceIndicators": [
-                "Number of active users of the on-demand electric fleet system.",
-                "Percentage of urban transport demand met by on-demand systems.",
-                "Reduction in noise pollution levels in urban areas"
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR MAO",
-        "cityName": "Manaus",
-        "region": "AM",
-        "regionName": "Amazonas",
         "actionId": "icare_0090",
         "actionName": "Adoption of electric drones for last-mile deliveries.",
-        "actionPriority": 7,
+        "actionPriority": 5,
         "action": {
             "ActionID": "icare_0090",
             "ActionName": "Adoption of electric drones for last-mile deliveries.",
@@ -426,7 +306,7 @@
         "regionName": "Amazonas",
         "actionId": "icare_0057",
         "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
-        "actionPriority": 8,
+        "actionPriority": 6,
         "action": {
             "ActionID": "icare_0057",
             "ActionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
@@ -484,9 +364,69 @@
         "cityName": "Manaus",
         "region": "AM",
         "regionName": "Amazonas",
+        "actionId": "icare_0088",
+        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
+        "actionPriority": 7,
+        "action": {
+            "ActionID": "icare_0088",
+            "ActionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "on-road"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Encourage the use of public transportation by offering free services during peak hours for workers and students. This measure reduces urban congestion, decreases the number of individual vehicles on the road, and consequently lowers greenhouse gas emissions associated with private transportation.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 2,
+                "housing": 0,
+                "mobility": 2,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "60-79",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Allocation of funding to subsidize free public transportation services during peak hours.",
+                "Development of policies to ensure the sustainability and efficiency of public transit systems amid increased demand.",
+                "Coordination with employers and educational institutions to optimize peak-hour schedules and promote the initiative."
+            ],
+            "KeyPerformanceIndicators": [
+                "Reduction in air pollution levels during peak hours (PM2.5/PM10 concentration).",
+                "Number of private vehicles removed from roads during peak hours.",
+                "Public satisfaction rate with the free transportation initiative (%)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR MAO",
+        "cityName": "Manaus",
+        "region": "AM",
+        "regionName": "Amazonas",
         "actionId": "icare_0044",
         "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
-        "actionPriority": 9,
+        "actionPriority": 8,
         "action": {
             "ActionID": "icare_0044",
             "ActionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
@@ -544,69 +484,9 @@
         "cityName": "Manaus",
         "region": "AM",
         "regionName": "Amazonas",
-        "actionId": "icare_0025",
-        "actionName": "Promote energy-efficient low-income housing",
-        "actionPriority": 10,
-        "action": {
-            "ActionID": "icare_0025",
-            "ActionName": "Promote energy-efficient low-income housing",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "stationary_energy"
-            ],
-            "Subsector": [
-                "residential_buildings"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Develop and support housing projects that incorporate energy-efficient designs and technologies, reducing energy costs for low-income households.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 2,
-                "housing": 2,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": "60-79",
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Availability of funding or subsidies to support the development of energy-efficient housing for low-income households",
-                "Collaboration with architects, engineers, and contractors to design and implement energy-efficient technologies in housing projects",
-                "Development of policies and regulations to incentivize energy-efficient housing solutions and ensure affordability for low-income communities"
-            ],
-            "KeyPerformanceIndicators": [
-                "Number of energy-efficient housing units built or retrofitted.",
-                "Reduction in household energy consumption (kWh).",
-                "Decrease in energy bills for low-income households (USD)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR MAO",
-        "cityName": "Manaus",
-        "region": "AM",
-        "regionName": "Amazonas",
         "actionId": "icare_0092",
         "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
-        "actionPriority": 11,
+        "actionPriority": 9,
         "action": {
             "ActionID": "icare_0092",
             "ActionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
@@ -664,9 +544,69 @@
         "cityName": "Manaus",
         "region": "AM",
         "regionName": "Amazonas",
+        "actionId": "icare_0068",
+        "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
+        "actionPriority": 10,
+        "action": {
+            "ActionID": "icare_0068",
+            "ActionName": "Deploy on-demand transport systems with 100% electric fleets.",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "on-road"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "On-demand collective transport services, based on apps, optimize electric vehicle usage, reducing per-passenger emissions.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 2,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "80-100",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Development of digital platforms and apps to efficiently manage on-demand collective transport services.",
+                "Expansion of electric vehicle fleets tailored for shared transport solutions.",
+                "Implementation of policies and incentives to encourage the adoption and use of shared electric transport services."
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of active users of the on-demand electric fleet system.",
+                "Percentage of urban transport demand met by on-demand systems.",
+                "Reduction in noise pollution levels in urban areas"
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR MAO",
+        "cityName": "Manaus",
+        "region": "AM",
+        "regionName": "Amazonas",
         "actionId": "icare_0117",
         "actionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
-        "actionPriority": 12,
+        "actionPriority": 11,
         "action": {
             "ActionID": "icare_0117",
             "ActionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
@@ -724,9 +664,129 @@
         "cityName": "Manaus",
         "region": "AM",
         "regionName": "Amazonas",
+        "actionId": "icare_0025",
+        "actionName": "Promote energy-efficient low-income housing",
+        "actionPriority": 12,
+        "action": {
+            "ActionID": "icare_0025",
+            "ActionName": "Promote energy-efficient low-income housing",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "stationary_energy"
+            ],
+            "Subsector": [
+                "residential_buildings"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Develop and support housing projects that incorporate energy-efficient designs and technologies, reducing energy costs for low-income households.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 2,
+                "housing": 2,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": "60-79",
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Availability of funding or subsidies to support the development of energy-efficient housing for low-income households",
+                "Collaboration with architects, engineers, and contractors to design and implement energy-efficient technologies in housing projects",
+                "Development of policies and regulations to incentivize energy-efficient housing solutions and ensure affordability for low-income communities"
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of energy-efficient housing units built or retrofitted.",
+                "Reduction in household energy consumption (kWh).",
+                "Decrease in energy bills for low-income households (USD)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR MAO",
+        "cityName": "Manaus",
+        "region": "AM",
+        "regionName": "Amazonas",
+        "actionId": "icare_0042",
+        "actionName": "Encourage renewable energy policies at the municipal level",
+        "actionPriority": 13,
+        "action": {
+            "ActionID": "icare_0042",
+            "ActionName": "Encourage renewable energy policies at the municipal level",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "stationary_energy"
+            ],
+            "Subsector": [
+                "non-specified_sources"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Advocate for and implement policies that prioritize the development and integration of renewable energy systems in local government operations and planning.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 1,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": "80-100",
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Political will and leadership to prioritize renewable energy in local government policies and planning processes",
+                "Development of clear policies and regulatory frameworks that facilitate the integration of renewable energy systems into government operations",
+                "Availability of funding or financial mechanisms to support the transition to renewable energy in municipal infrastructure and operations"
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of renewable energy projects approved or initiated annually at the municipal level.",
+                "Percentage of municipal energy demand met by renewable sources (%).",
+                "Reduction in municipal carbon emissions due to --renewable energy adoption (tons CO\u2082e/year)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR MAO",
+        "cityName": "Manaus",
+        "region": "AM",
+        "regionName": "Amazonas",
         "actionId": "icare_0139",
         "actionName": "Implementation of urban toll.",
-        "actionPriority": 13,
+        "actionPriority": 14,
         "action": {
             "ActionID": "icare_0139",
             "ActionName": "Implementation of urban toll.",
@@ -783,9 +843,129 @@
         "cityName": "Manaus",
         "region": "AM",
         "regionName": "Amazonas",
+        "actionId": "icare_0024",
+        "actionName": "Integrate renewables into municipal water systems",
+        "actionPriority": 15,
+        "action": {
+            "ActionID": "icare_0024",
+            "ActionName": "Integrate renewables into municipal water systems",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "stationary_energy"
+            ],
+            "Subsector": [
+                "energy_generation_supplied_to_the_grid"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Implement renewable energy sources, such as solar or wind power, to drive water treatment, pumping, and distribution systems, reducing energy costs and emissions.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": "80-100",
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Availability of funding or financial incentives to integrate renewable energy sources like solar or wind power into water treatment and distribution systems",
+                "Technical expertise and infrastructure to retrofit existing systems with renewable energy solutions or design new facilities powered by renewables",
+                "Policy and regulatory support to encourage the use of clean energy in water systems and ensure its integration into municipal energy grids"
+            ],
+            "KeyPerformanceIndicators": [
+                "Percentage of municipal water systems powered by renewables.",
+                "Reduction in energy consumption from non-renewable sources (kWh/year).",
+                "GHG emissions avoided (tons CO\u2082e)"
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR MAO",
+        "cityName": "Manaus",
+        "region": "AM",
+        "regionName": "Amazonas",
+        "actionId": "icare_0133",
+        "actionName": "Promote Urban Reforestation and Green Corridors",
+        "actionPriority": 16,
+        "action": {
+            "ActionID": "icare_0133",
+            "ActionName": "Promote Urban Reforestation and Green Corridors",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "land"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Increase urban tree coverage to mitigate the urban heat island effect and enhance biodiversity.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 1,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 1,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "80-100"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Identification of priority areas and selection of native, climate-resilient species for tree planting.",
+                "Partnerships with local organizations and nurseries, and allocation of resources for planting and maintenance.",
+                "Community engagement to ensure long-term care and support."
+            ],
+            "KeyPerformanceIndicators": [
+                "Increase in urban tree canopy cover (%)",
+                "Total length of green corridors created or restored (kilometers)",
+                "Reduction in urban heat island effect temperatures (\u00b0C)"
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR MAO",
+        "cityName": "Manaus",
+        "region": "AM",
+        "regionName": "Amazonas",
         "actionId": "icare_0027",
         "actionName": "Create financing programs for local renewable energy projects",
-        "actionPriority": 14,
+        "actionPriority": 17,
         "action": {
             "ActionID": "icare_0027",
             "ActionName": "Create financing programs for local renewable energy projects",
@@ -843,69 +1023,9 @@
         "cityName": "Manaus",
         "region": "AM",
         "regionName": "Amazonas",
-        "actionId": "icare_0091",
-        "actionName": "Implementation of prioritized routes for sustainable vehicles.",
-        "actionPriority": 15,
-        "action": {
-            "ActionID": "icare_0091",
-            "ActionName": "Implementation of prioritized routes for sustainable vehicles.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Create priority lanes for electric, hybrid, and low-emission vehicles in urban centers to encourage their adoption and reduce pollution in high-traffic areas.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Implementation of traffic management systems to enforce and monitor the use of priority lanes.",
-                "Development of clear signage and public awareness campaigns to inform drivers about lane eligibility and usage.",
-                "Establishment of regulatory frameworks incentivizing the adoption of low-emission vehicles for eligibility in priority lanes."
-            ],
-            "KeyPerformanceIndicators": [
-                "Percentage of sustainable vehicles using prioritized routes.",
-                "Increase in delivery efficiency for goods transported via prioritized routes (%).",
-                "Public acceptance rate of prioritized routes for sustainable vehicles (%)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR MAO",
-        "cityName": "Manaus",
-        "region": "AM",
-        "regionName": "Amazonas",
         "actionId": "c40_0033",
         "actionName": "15/30-Minute Areas",
-        "actionPriority": 16,
+        "actionPriority": 18,
         "action": {
             "ActionID": "c40_0033",
             "ActionName": "15/30-Minute Areas",
@@ -971,69 +1091,9 @@
         "cityName": "Manaus",
         "region": "AM",
         "regionName": "Amazonas",
-        "actionId": "icare_0042",
-        "actionName": "Encourage renewable energy policies at the municipal level",
-        "actionPriority": 17,
-        "action": {
-            "ActionID": "icare_0042",
-            "ActionName": "Encourage renewable energy policies at the municipal level",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "stationary_energy"
-            ],
-            "Subsector": [
-                "non-specified_sources"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Advocate for and implement policies that prioritize the development and integration of renewable energy systems in local government operations and planning.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 1,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": "80-100",
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Political will and leadership to prioritize renewable energy in local government policies and planning processes",
-                "Development of clear policies and regulatory frameworks that facilitate the integration of renewable energy systems into government operations",
-                "Availability of funding or financial mechanisms to support the transition to renewable energy in municipal infrastructure and operations"
-            ],
-            "KeyPerformanceIndicators": [
-                "Number of renewable energy projects approved or initiated annually at the municipal level.",
-                "Percentage of municipal energy demand met by renewable sources (%).",
-                "Reduction in municipal carbon emissions due to --renewable energy adoption (tons CO\u2082e/year)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR MAO",
-        "cityName": "Manaus",
-        "region": "AM",
-        "regionName": "Amazonas",
         "actionId": "icare_0131",
         "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
-        "actionPriority": 18,
+        "actionPriority": 19,
         "action": {
             "ActionID": "icare_0131",
             "ActionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
@@ -1091,115 +1151,54 @@
         "cityName": "Manaus",
         "region": "AM",
         "regionName": "Amazonas",
-        "actionId": "icare_0099",
-        "actionName": "Support Agroecological Certification Programs",
-        "actionPriority": 19,
-        "action": {
-            "ActionID": "icare_0099",
-            "ActionName": "Support Agroecological Certification Programs",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Encourage the certification of agroecological products that meet sustainability criteria and have low environmental impact.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "20-39"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Development of clear and accessible certification standards for agroecological products that emphasize sustainability and low environmental impact.",
-                "Support for farmers and producers to meet certification requirements through training, financial assistance, or technical guidance.",
-                "Creation of marketing strategies and partnerships to increase the visibility and demand for certified agroecological products in local and global markets."
-            ],
-            "KeyPerformanceIndicators": [
-                "Number of farmers or producers obtaining agroecological certifications.",
-                "Percentage of certified agricultural products in the market (%).",
-                "Reduction in the use of synthetic inputs (e.g., fertilizers, pesticides)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR MAO",
-        "cityName": "Manaus",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "icare_0133",
-        "actionName": "Promote Urban Reforestation and Green Corridors",
+        "actionId": "icare_0038",
+        "actionName": "Promote community solar farms",
         "actionPriority": 20,
         "action": {
-            "ActionID": "icare_0133",
-            "ActionName": "Promote Urban Reforestation and Green Corridors",
+            "ActionID": "icare_0038",
+            "ActionName": "Promote community solar farms",
             "ActionType": [
                 "mitigation"
             ],
             "Hazard": null,
             "Sector": [
-                "afolu"
+                "stationary_energy"
             ],
             "Subsector": [
-                "land"
+                "energy_generation_supplied_to_the_grid"
             ],
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "Description": "Increase urban tree coverage to mitigate the urban heat island effect and enhance biodiversity.",
+            "Description": "Develop and encourage the adoption of shared solar energy projects, enabling communities to collectively benefit from clean, renewable power.",
             "CoBenefits": {
                 "air_quality": 2,
                 "water_quality": 1,
-                "habitat": 2,
+                "habitat": 0,
                 "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 1,
+                "housing": 1,
+                "mobility": 0,
                 "stakeholder_engagement": 1
             },
             "EquityAndInclusionConsiderations": null,
             "GHGReductionPotential": {
-                "stationary_energy": null,
+                "stationary_energy": "80-100",
                 "transportation": null,
                 "waste": null,
                 "ippu": null,
-                "afolu": "80-100"
+                "afolu": null
             },
             "AdaptationEffectiveness": null,
             "CostInvestmentNeeded": "medium",
             "TimelineForImplementation": "5-10 years",
             "Dependencies": [
-                "Identification of priority areas and selection of native, climate-resilient species for tree planting.",
-                "Partnerships with local organizations and nurseries, and allocation of resources for planting and maintenance.",
-                "Community engagement to ensure long-term care and support."
+                "Development of policies and regulatory frameworks to support community-based shared solar energy projects and ensure equitable access to clean energy",
+                "Availability of financial mechanisms or incentives to help communities invest in and maintain shared solar energy systems",
+                "Collaboration between local governments, energy providers, and community organizations to design and implement shared solar projects effectively"
             ],
             "KeyPerformanceIndicators": [
-                "Increase in urban tree canopy cover (%)",
-                "Total length of green corridors created or restored (kilometers)",
-                "Reduction in urban heat island effect temperatures (\u00b0C)"
+                "Number of households served by community solar projects.",
+                "GHG emissions avoided through solar energy production (tons CO\u2082e)"
             ],
             "PowersAndMandates": [
                 "local"

@@ -22,9 +22,18 @@
         "cityName": "Ji-Paran\u00e1",
         "region": "RO",
         "regionName": "Rond\u00f4nia",
+        "actionId": "icare_0133",
+        "actionName": "Promote Urban Reforestation and Green Corridors",
+        "actionPriority": 3
+    },
+    {
+        "locode": "BR JPR",
+        "cityName": "Ji-Paran\u00e1",
+        "region": "RO",
+        "regionName": "Rond\u00f4nia",
         "actionId": "icare_0121",
         "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
-        "actionPriority": 3
+        "actionPriority": 4
     },
     {
         "locode": "BR JPR",
@@ -33,34 +42,7 @@
         "regionName": "Rond\u00f4nia",
         "actionId": "icare_0092",
         "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
-        "actionPriority": 4
-    },
-    {
-        "locode": "BR JPR",
-        "cityName": "Ji-Paran\u00e1",
-        "region": "RO",
-        "regionName": "Rond\u00f4nia",
-        "actionId": "icare_0133",
-        "actionName": "Promote Urban Reforestation and Green Corridors",
         "actionPriority": 5
-    },
-    {
-        "locode": "BR JPR",
-        "cityName": "Ji-Paran\u00e1",
-        "region": "RO",
-        "regionName": "Rond\u00f4nia",
-        "actionId": "icare_0025",
-        "actionName": "Promote energy-efficient low-income housing",
-        "actionPriority": 6
-    },
-    {
-        "locode": "BR JPR",
-        "cityName": "Ji-Paran\u00e1",
-        "region": "RO",
-        "regionName": "Rond\u00f4nia",
-        "actionId": "icare_0094",
-        "actionName": "Adoption of biomethane in public fleets.",
-        "actionPriority": 7
     },
     {
         "locode": "BR JPR",
@@ -69,7 +51,7 @@
         "regionName": "Rond\u00f4nia",
         "actionId": "icare_0088",
         "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
-        "actionPriority": 8
+        "actionPriority": 6
     },
     {
         "locode": "BR JPR",
@@ -78,7 +60,16 @@
         "regionName": "Rond\u00f4nia",
         "actionId": "icare_0090",
         "actionName": "Adoption of electric drones for last-mile deliveries.",
-        "actionPriority": 9
+        "actionPriority": 7
+    },
+    {
+        "locode": "BR JPR",
+        "cityName": "Ji-Paran\u00e1",
+        "region": "RO",
+        "regionName": "Rond\u00f4nia",
+        "actionId": "icare_0094",
+        "actionName": "Adoption of biomethane in public fleets.",
+        "actionPriority": 8
     },
     {
         "locode": "BR JPR",
@@ -87,7 +78,7 @@
         "regionName": "Rond\u00f4nia",
         "actionId": "icare_0057",
         "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
-        "actionPriority": 10
+        "actionPriority": 9
     },
     {
         "locode": "BR JPR",
@@ -96,6 +87,15 @@
         "regionName": "Rond\u00f4nia",
         "actionId": "icare_0068",
         "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
+        "actionPriority": 10
+    },
+    {
+        "locode": "BR JPR",
+        "cityName": "Ji-Paran\u00e1",
+        "region": "RO",
+        "regionName": "Rond\u00f4nia",
+        "actionId": "icare_0025",
+        "actionName": "Promote energy-efficient low-income housing",
         "actionPriority": 11
     },
     {
@@ -121,8 +121,8 @@
         "cityName": "Ji-Paran\u00e1",
         "region": "RO",
         "regionName": "Rond\u00f4nia",
-        "actionId": "icare_0084",
-        "actionName": "Create Incentives for Agroforestry Practices in Livestock Systems",
+        "actionId": "icare_0117",
+        "actionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
         "actionPriority": 14
     },
     {
@@ -130,8 +130,8 @@
         "cityName": "Ji-Paran\u00e1",
         "region": "RO",
         "regionName": "Rond\u00f4nia",
-        "actionId": "icare_0117",
-        "actionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
+        "actionId": "c40_0033",
+        "actionName": "15/30-Minute Areas",
         "actionPriority": 15
     },
     {
@@ -139,8 +139,8 @@
         "cityName": "Ji-Paran\u00e1",
         "region": "RO",
         "regionName": "Rond\u00f4nia",
-        "actionId": "icare_0096",
-        "actionName": "Promote Organic Farming",
+        "actionId": "icare_0084",
+        "actionName": "Create Incentives for Agroforestry Practices in Livestock Systems",
         "actionPriority": 16
     },
     {
@@ -157,18 +157,9 @@
         "cityName": "Ji-Paran\u00e1",
         "region": "RO",
         "regionName": "Rond\u00f4nia",
-        "actionId": "icare_0100",
-        "actionName": "Support Regenerative Agriculture Practices",
+        "actionId": "icare_0136",
+        "actionName": "Support the Implementation of Ecological Fiscal Incentives",
         "actionPriority": 18
-    },
-    {
-        "locode": "BR JPR",
-        "cityName": "Ji-Paran\u00e1",
-        "region": "RO",
-        "regionName": "Rond\u00f4nia",
-        "actionId": "c40_0033",
-        "actionName": "15/30-Minute Areas",
-        "actionPriority": 19
     },
     {
         "locode": "BR JPR",
@@ -177,6 +168,15 @@
         "regionName": "Rond\u00f4nia",
         "actionId": "icare_0139",
         "actionName": "Implementation of urban toll.",
+        "actionPriority": 19
+    },
+    {
+        "locode": "BR JPR",
+        "cityName": "Ji-Paran\u00e1",
+        "region": "RO",
+        "regionName": "Rond\u00f4nia",
+        "actionId": "icare_0096",
+        "actionName": "Promote Organic Farming",
         "actionPriority": 20
     }
 ]

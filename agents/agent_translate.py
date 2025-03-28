@@ -23,7 +23,7 @@ If you cannot translate a specific word or phrase e.g. because it is a proper no
 </task>
 
 <input>
-text to translate: The input is the climate action implementation plan in the specified language.
+text to translate: The input is the climate action implementation plan in english.
 target language: The target language that the text should be translated into. It is a 2 letter ISO language code like "en", "es", "pt", etc.
 </input>
 

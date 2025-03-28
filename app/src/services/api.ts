@@ -67,6 +67,8 @@ export const api = createApi({
     "Organizations",
     "OrganizationInvite",
     "Projects",
+    "Organization",
+    "Project",
   ],
   baseQuery: fetchBaseQuery({ baseUrl: "/api/v0/", credentials: "include" }),
   endpoints: (builder) => {
@@ -836,6 +838,17 @@ export const api = createApi({
         },
         invalidatesTags: ["Organizations"],
       }),
+      updateOrganization: builder.mutation({
+        query: (data: { id: string; name: string; contactEmail: string }) => ({
+          url: `/organizations/${data.id}`,
+          method: "PATCH",
+          body: { name: data.name, contactEmail: data.contactEmail },
+        }),
+        transformResponse: (response: OrganizationResponse) => {
+          return response;
+        },
+        invalidatesTags: ["Organizations", "Organization"],
+      }),
       createProject: builder.mutation({
         query: (data: {
           organizationId: string;
@@ -854,12 +867,38 @@ export const api = createApi({
         transformResponse: (response: ProjectResponse) => response,
         invalidatesTags: ["Projects"],
       }),
+      editProject: builder.mutation({
+        query: (data: {
+          projectId: string;
+          name: string;
+          cityCountLimit: number;
+          description: string;
+        }) => ({
+          url: `/projects/${data.projectId}`,
+          method: "PATCH",
+          body: {
+            name: data.name,
+            cityCountLimit: data.cityCountLimit,
+            description: data.description,
+          },
+        }),
+        transformResponse: (response: ProjectResponse) => response,
+        invalidatesTags: ["Projects", "Project"],
+      }),
+      deleteProject: builder.mutation({
+        query: (projectId: string) => ({
+          url: `/projects/${projectId}`,
+          method: "DELETE",
+        }),
+        invalidatesTags: ["Projects", "Project"],
+      }),
       getProject: builder.query({
         query: (data: { projectId: string }) => ({
           url: `/projects/${data.projectId}`,
           method: "GET",
         }),
         transformResponse: (response: ProjectResponse) => response,
+        providesTags: ["Projects", "Project"],
       }),
       createOrganizationInvite: builder.mutation({
         query: (data: {
@@ -901,6 +940,14 @@ export const api = createApi({
         }),
         transformResponse: (response: ProjectWithCities[]) => response,
         providesTags: ["Projects"],
+      }),
+      getOrganization: builder.query({
+        query: (organizationId: string) => ({
+          method: "GET",
+          url: `/organizations/${organizationId}`,
+        }),
+        transformResponse: (response: OrganizationResponse) => response,
+        providesTags: ["Organizations", "Organization"],
       }),
     };
   },
@@ -986,5 +1033,9 @@ export const {
   useGetOrganizationsQuery,
   useGetProjectQuery,
   useGetProjectsQuery,
+  useGetOrganizationQuery,
+  useUpdateOrganizationMutation,
+  useEditProjectMutation,
+  useDeleteProjectMutation,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

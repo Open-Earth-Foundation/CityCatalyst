@@ -8,6 +8,7 @@ import { NextResponse } from "next/server";
 
 import UserService from "@/backend/UserService";
 import { randomUUID } from "node:crypto";
+import { db } from "@/models";
 
 export const POST = apiHandler(async (req, { params, session }) => {
   UserService.validateIsAdmin(session);

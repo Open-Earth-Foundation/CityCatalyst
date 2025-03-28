@@ -351,7 +351,7 @@ def single_elimination_bracket(actions, city):
     if not actions:
         return None, []
 
-    print(f"\n--- Starting bracket with {len(actions)} actions ---")
+    # print(f"\n--- Starting bracket with {len(actions)} actions ---")
 
     # Shuffle to randomize the pairs
     random.shuffle(actions)
@@ -360,9 +360,9 @@ def single_elimination_bracket(actions, city):
     wildcard = None
     if len(actions) % 2 == 1:
         wildcard = actions.pop()
-        print(
-            f"  Odd number of actions, wildcard: {wildcard.get('ActionID', 'Unknown')}"
-        )
+        # print(
+        #     f"  Odd number of actions, wildcard: {wildcard.get('ActionID', 'Unknown')}"
+        # )
 
     winners = []
     losers = []
@@ -394,19 +394,19 @@ def single_elimination_bracket(actions, city):
     # If there was a wildcard, it automatically advances
     if wildcard:
         winners.append(wildcard)
-        print(
-            f"  Wildcard {wildcard.get('ActionID', 'Unknown')} automatically advances"
-        )
+        # print(
+        #     f"  Wildcard {wildcard.get('ActionID', 'Unknown')} automatically advances"
+        # )
 
-    print(f"  Round complete. {len(winners)} winners advancing to next round")
+    # print(f"  Round complete. {len(winners)} winners advancing to next round")
 
     # If exactly one winner, we found the bracket winner
     if len(winners) == 1:
-        print(f"  Final winner of bracket: {winners[0].get('ActionID', 'Unknown')}")
+        # print(f"  Final winner of bracket: {winners[0].get('ActionID', 'Unknown')}")
         return winners[0], losers
     else:
         # Otherwise, recursively determine a single winner
-        print(f"  Moving to next round with {len(winners)} actions")
+        # print(f"  Moving to next round with {len(winners)} actions")
         # Recursive call to fihishn round
         final_winner, final_losers = single_elimination_bracket(winners, city)
         return final_winner, losers + final_losers
@@ -423,17 +423,17 @@ def final_bracket_for_ranking(actions, city):
     Returns:
       ranking (list): from best to worst among the given actions.
     """
-    print(
-        f"\n=== Starting final bracket for complete ranking with {len(actions)} actions ==="
-    )
+    # print(
+    #     f"\n=== Starting final bracket for complete ranking with {len(actions)} actions ==="
+    # )
     participants = actions[:]
     ranking = []
     rank = 1
 
     while participants:
-        print(
-            f"\n--- Finding #{rank} ranked action from {len(participants)} remaining ---"
-        )
+        # print(
+        #     f"\n--- Finding #{rank} ranked action from {len(participants)} remaining ---"
+        # )
         winner, losers = single_elimination_bracket(participants, city)
         if not winner:
             print("  No winner found, breaking")
@@ -464,9 +464,9 @@ def tournament_ranking(actions, city):
     current_rank = 1
 
     while remaining and current_rank <= 20:
-        print(
-            f"\n--- Running bracket for rank #{current_rank} with {len(remaining)} actions ---"
-        )
+        # print(
+        #     f"\n--- Running bracket for rank #{current_rank} with {len(remaining)} actions ---"
+        # )
         winner, losers = single_elimination_bracket(remaining, city)
 
         if not winner:
@@ -481,7 +481,7 @@ def tournament_ranking(actions, city):
 
         # Losers compete in the next bracket
         remaining = losers
-        print(f"{len(remaining)} actions will compete for rank #{current_rank}")
+        # print(f"{len(remaining)} actions will compete for rank #{current_rank}")
 
     print(
         f"\n========== TOURNAMENT RANKING COMPLETE. RANKED {len(full_ranking)} ACTIONS =========="

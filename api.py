@@ -77,6 +77,7 @@ task_storage = {}
 class PlanRequest(BaseModel):
     action: Dict[str, Any]
     city_name: str
+    language: str = "en"  # Default to English
 
 
 def load_city_data():
@@ -120,7 +121,9 @@ def _execute_plan_creation(task_uuid: str, request: PlanRequest):
         logger.info(
             f"Task {task_uuid}: Starting plan creation for action ID: {request.action.get('ActionID', 'unknown')}"
         )
-        logger.info(f"Task {task_uuid}: City name: {request.city_name}")
+        logger.info(
+            f"Task {task_uuid}: City name: {request.city_name}, Requested language: {request.language}"
+        )
 
         start_time = time.time()
 
@@ -154,6 +157,8 @@ def _execute_plan_creation(task_uuid: str, request: PlanRequest):
             response_agent_9=AIMessage(""),
             response_agent_10=AIMessage(""),
             response_agent_combine="",
+            response_agent_translate="",
+            language=request.language,
             messages=[],
         )
         logger.info(f"Task {task_uuid}: Agent state initialized successfully")
@@ -177,14 +182,13 @@ def _execute_plan_creation(task_uuid: str, request: PlanRequest):
         # 3. Save the plan
         timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M")
         action_id = request.action.get("ActionID", "unknown")
-        filename = f"{timestamp}_{action_id}_climate_action_implementation_plan.md"
+        filename = f"{timestamp}_{action_id}_{request.city_name.replace(' ', '_')}_{request.language}_climate_action_implementation_plan.md"
         output_path = output_dir / filename
-
         output_dir.mkdir(parents=True, exist_ok=True)
 
         logger.info(f"Task {task_uuid}: Saving plan to file: {output_path}")
         with open(output_path, "w", encoding="utf-8") as f:
-            f.write(result["response_agent_combine"])
+            f.write(result["response_agent_translate"])
         logger.info(f"Task {task_uuid}: Plan file saved successfully")
 
         # Store the result
@@ -213,6 +217,7 @@ async def start_plan_creation(request: PlanRequest):
     task_uuid = str(uuid.uuid4())
     logger.info(f"Received plan creation request, assigned task ID: {task_uuid}")
     logger.info(f"City name: {request.city_name}")
+    logger.info(f"Requested language: {request.language}")
 
     # Validate city name
     try:
@@ -310,6 +315,7 @@ async def create_plan(request: PlanRequest):
     action_id = request.action.get("ActionID", "unknown")
     logger.info(f"Starting plan creation for action ID: {action_id}")
     logger.info(f"City name: {request.city_name}")
+    logger.info(f"Requested language: {request.language}")
 
     try:
         # Get city data
@@ -340,6 +346,8 @@ async def create_plan(request: PlanRequest):
             response_agent_9=AIMessage(""),
             response_agent_10=AIMessage(""),
             response_agent_combine="",
+            response_agent_translate="",
+            language=request.language,
             messages=[],
         )
         logger.info("Agent state initialized successfully")
@@ -350,7 +358,7 @@ async def create_plan(request: PlanRequest):
             result = graph.invoke(input=initial_state)
             logger.info("Graph execution completed successfully")
             logger.debug(
-                f"Graph execution result length: {len(result['response_agent_combine'])}"
+                f"Graph execution result length: {len(result['response_agent_translate'])}"
             )
         except httpx.TimeoutException:
             logger.error("Timeout occurred during graph execution", exc_info=True)
@@ -365,14 +373,14 @@ async def create_plan(request: PlanRequest):
             )
         # 3. Save the plan
         timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M")
-        filename = f"{timestamp}_{action_id}_{request.city_name.replace(' ', '_')}_climate_action_implementation_plan.md"
+        filename = f"{timestamp}_{action_id}_{request.city_name.replace(' ', '_')}_{request.language}_climate_action_implementation_plan.md"
         output_path = output_dir / filename
 
         output_dir.mkdir(parents=True, exist_ok=True)
 
         logger.info(f"Saving plan to file: {output_path}")
         with open(output_path, "w", encoding="utf-8") as f:
-            f.write(result["response_agent_combine"])
+            f.write(result["response_agent_translate"])
         logger.info("Plan file saved successfully")
 
         process_time = time.time() - start_time

@@ -14,6 +14,7 @@ from agents.agent_8_adaptation import build_custom_agent_8
 from agents.agent_9_mitigation import build_custom_agent_9
 from agents.agent_10_sgds import build_custom_agent_10
 from agents.agent_combine import custom_agent_combine
+from agents.agent_translate import custom_agent_translate
 
 
 agent_1 = build_custom_agent_1()
@@ -27,6 +28,7 @@ agent_8 = build_custom_agent_8()
 agent_9 = build_custom_agent_9()
 agent_10 = build_custom_agent_10()
 agent_combine = custom_agent_combine
+agent_translate = custom_agent_translate
 
 
 def create_graph():
@@ -43,6 +45,7 @@ def create_graph():
     builder.add_node("agent_9", agent_9)
     builder.add_node("agent_10", agent_10)
     builder.add_node("agent_combine", agent_combine)
+    builder.add_node("agent_translate", agent_translate)
 
     # Define the edges
     builder.add_edge(START, "agent_1")
@@ -54,7 +57,8 @@ def create_graph():
     builder.add_edge("agent_8", "agent_9")
     builder.add_edge("agent_9", "agent_10")
     builder.add_edge("agent_10", "agent_combine")
-    builder.add_edge("agent_combine", END)
+    builder.add_edge("agent_combine", "agent_translate")
+    builder.add_edge("agent_translate", END)
 
     # Compile the graph
     compiled_graph = builder.compile()

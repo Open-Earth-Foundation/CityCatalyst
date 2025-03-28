@@ -19,4 +19,8 @@ class AgentState(TypedDict):
     response_agent_9: Annotated[AIMessage, "The response from Agent 9"]
     response_agent_10: Annotated[AIMessage, "The response from Agent 10"]
     response_agent_combine: Annotated[str, "The combined response from all agents"]
+    response_agent_translate: Annotated[
+        str, "The translated response from Agent combine"
+    ]
+    language: Annotated[str, "The language of the response"]
     messages: Annotated[list, "The list of messages exchanged between agents"]

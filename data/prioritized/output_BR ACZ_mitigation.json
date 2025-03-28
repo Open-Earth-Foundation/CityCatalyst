@@ -4,8 +4,8 @@
         "cityName": "Aracruz",
         "region": "ES",
         "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0046",
-        "actionName": "Make efforts to promote socioeconomic development and improve the quality of life in the city from the perspective of a circular economy and zero carbon emissions.",
+        "actionId": "icare_0118",
+        "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
         "actionPriority": 1
     },
     {
@@ -22,8 +22,8 @@
         "cityName": "Aracruz",
         "region": "ES",
         "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0102",
-        "actionName": "Promote Sustainable Agricultural Practices",
+        "actionId": "icare_0121",
+        "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
         "actionPriority": 3
     },
     {
@@ -31,8 +31,8 @@
         "cityName": "Aracruz",
         "region": "ES",
         "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0050",
-        "actionName": "Implement Agroforestry Systems",
+        "actionId": "icare_0094",
+        "actionName": "Adoption of biomethane in public fleets.",
         "actionPriority": 4
     },
     {
@@ -49,8 +49,8 @@
         "cityName": "Aracruz",
         "region": "ES",
         "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0068",
-        "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
+        "actionId": "icare_0092",
+        "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
         "actionPriority": 6
     },
     {
@@ -58,63 +58,9 @@
         "cityName": "Aracruz",
         "region": "ES",
         "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0006",
-        "actionName": "Expand rural electrification with renewable energy",
+        "actionId": "icare_0090",
+        "actionName": "Adoption of electric drones for last-mile deliveries.",
         "actionPriority": 7
-    },
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0049",
-        "actionName": "Develop regional hubs for renewable energy production",
-        "actionPriority": 8
-    },
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0084",
-        "actionName": "Create Incentives for Agroforestry Practices in Livestock Systems",
-        "actionPriority": 9
-    },
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0044",
-        "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
-        "actionPriority": 10
-    },
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0083",
-        "actionName": "Adopt cleaner production technologies",
-        "actionPriority": 11
-    },
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0132",
-        "actionName": "Encourage Local Agroecological Production and Short Supply Chains",
-        "actionPriority": 12
-    },
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0029",
-        "actionName": "Adopt policies for fossil fuel-free buildings",
-        "actionPriority": 13
     },
     {
         "locode": "BR ACZ",
@@ -123,25 +69,34 @@
         "regionName": "Esp\u00edrito Santo",
         "actionId": "icare_0057",
         "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
-        "actionPriority": 14
+        "actionPriority": 8
     },
     {
         "locode": "BR ACZ",
         "cityName": "Aracruz",
         "region": "ES",
         "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0027",
-        "actionName": "Create financing programs for local renewable energy projects",
-        "actionPriority": 15
+        "actionId": "icare_0025",
+        "actionName": "Promote energy-efficient low-income housing",
+        "actionPriority": 9
     },
     {
         "locode": "BR ACZ",
         "cityName": "Aracruz",
         "region": "ES",
         "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0118",
-        "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
-        "actionPriority": 16
+        "actionId": "icare_0099",
+        "actionName": "Support Agroecological Certification Programs",
+        "actionPriority": 10
+    },
+    {
+        "locode": "BR ACZ",
+        "cityName": "Aracruz",
+        "region": "ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0044",
+        "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
+        "actionPriority": 11
     },
     {
         "locode": "BR ACZ",
@@ -150,6 +105,51 @@
         "regionName": "Esp\u00edrito Santo",
         "actionId": "icare_0133",
         "actionName": "Promote Urban Reforestation and Green Corridors",
+        "actionPriority": 12
+    },
+    {
+        "locode": "BR ACZ",
+        "cityName": "Aracruz",
+        "region": "ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0117",
+        "actionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
+        "actionPriority": 13
+    },
+    {
+        "locode": "BR ACZ",
+        "cityName": "Aracruz",
+        "region": "ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0027",
+        "actionName": "Create financing programs for local renewable energy projects",
+        "actionPriority": 14
+    },
+    {
+        "locode": "BR ACZ",
+        "cityName": "Aracruz",
+        "region": "ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0139",
+        "actionName": "Implementation of urban toll.",
+        "actionPriority": 15
+    },
+    {
+        "locode": "BR ACZ",
+        "cityName": "Aracruz",
+        "region": "ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0068",
+        "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
+        "actionPriority": 16
+    },
+    {
+        "locode": "BR ACZ",
+        "cityName": "Aracruz",
+        "region": "ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0131",
+        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
         "actionPriority": 17
     },
     {
@@ -157,8 +157,8 @@
         "cityName": "Aracruz",
         "region": "ES",
         "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0121",
-        "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
+        "actionId": "icare_0042",
+        "actionName": "Encourage renewable energy policies at the municipal level",
         "actionPriority": 18
     },
     {
@@ -166,8 +166,8 @@
         "cityName": "Aracruz",
         "region": "ES",
         "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0074",
-        "actionName": "Support research into carbon-neutral manufacturing technologies",
+        "actionId": "icare_0084",
+        "actionName": "Create Incentives for Agroforestry Practices in Livestock Systems",
         "actionPriority": 19
     },
     {
@@ -175,8 +175,8 @@
         "cityName": "Aracruz",
         "region": "ES",
         "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0100",
-        "actionName": "Support Regenerative Agriculture Practices",
+        "actionId": "icare_0136",
+        "actionName": "Support the Implementation of Ecological Fiscal Incentives",
         "actionPriority": 20
     }
 ]

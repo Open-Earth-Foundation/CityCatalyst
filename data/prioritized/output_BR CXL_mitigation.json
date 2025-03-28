@@ -1,0 +1,182 @@
+[
+    {
+        "locode": "BR CXL",
+        "cityName": "Caxias do Sul",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0005",
+        "actionName": "Create credit lines for residential and community wind energy projects",
+        "actionPriority": 1
+    },
+    {
+        "locode": "BR CXL",
+        "cityName": "Caxias do Sul",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0052",
+        "actionName": "Develop projects for renewable energy and waste reuse",
+        "actionPriority": 2
+    },
+    {
+        "locode": "BR CXL",
+        "cityName": "Caxias do Sul",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0053",
+        "actionName": "Implement a project to support cooperatives of recyclabe material collectors",
+        "actionPriority": 3
+    },
+    {
+        "locode": "BR CXL",
+        "cityName": "Caxias do Sul",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0122",
+        "actionName": "Establish eco-parks.",
+        "actionPriority": 4
+    },
+    {
+        "locode": "BR CXL",
+        "cityName": "Caxias do Sul",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0121",
+        "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
+        "actionPriority": 5
+    },
+    {
+        "locode": "BR CXL",
+        "cityName": "Caxias do Sul",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "c40_0035",
+        "actionName": "Waste Efficiency",
+        "actionPriority": 6
+    },
+    {
+        "locode": "BR CXL",
+        "cityName": "Caxias do Sul",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "c40_0036",
+        "actionName": "Landfill Management",
+        "actionPriority": 7
+    },
+    {
+        "locode": "BR CXL",
+        "cityName": "Caxias do Sul",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0057",
+        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
+        "actionPriority": 8
+    },
+    {
+        "locode": "BR CXL",
+        "cityName": "Caxias do Sul",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0017",
+        "actionName": "Optimize the urban solid waste (USW) management system, aiming to expand collection and reduce illegal disposal.",
+        "actionPriority": 9
+    },
+    {
+        "locode": "BR CXL",
+        "cityName": "Caxias do Sul",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0119",
+        "actionName": "Maximize composting processes.",
+        "actionPriority": 10
+    },
+    {
+        "locode": "BR CXL",
+        "cityName": "Caxias do Sul",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0044",
+        "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
+        "actionPriority": 11
+    },
+    {
+        "locode": "BR CXL",
+        "cityName": "Caxias do Sul",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0068",
+        "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
+        "actionPriority": 12
+    },
+    {
+        "locode": "BR CXL",
+        "cityName": "Caxias do Sul",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0118",
+        "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
+        "actionPriority": 13
+    },
+    {
+        "locode": "BR CXL",
+        "cityName": "Caxias do Sul",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0088",
+        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
+        "actionPriority": 14
+    },
+    {
+        "locode": "BR CXL",
+        "cityName": "Caxias do Sul",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "ipcc_0080",
+        "actionName": "Avoiding, Minimising, and Recycling Waste",
+        "actionPriority": 15
+    },
+    {
+        "locode": "BR CXL",
+        "cityName": "Caxias do Sul",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0139",
+        "actionName": "Implementation of urban toll.",
+        "actionPriority": 16
+    },
+    {
+        "locode": "BR CXL",
+        "cityName": "Caxias do Sul",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0094",
+        "actionName": "Adoption of biomethane in public fleets.",
+        "actionPriority": 17
+    },
+    {
+        "locode": "BR CXL",
+        "cityName": "Caxias do Sul",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0110",
+        "actionName": "Regulate the Construction Waste Management Plan",
+        "actionPriority": 18
+    },
+    {
+        "locode": "BR CXL",
+        "cityName": "Caxias do Sul",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0117",
+        "actionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
+        "actionPriority": 19
+    },
+    {
+        "locode": "BR CXL",
+        "cityName": "Caxias do Sul",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0092",
+        "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
+        "actionPriority": 20
+    }
+]

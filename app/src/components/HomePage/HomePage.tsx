@@ -48,9 +48,6 @@ export default function HomePage({
   const { data: inventory, isLoading: isInventoryLoading } =
     api.useGetInventoryQuery((inventoryIdFromParam as string) || "default");
 
-  // TODO also add this to login logic or after email verification to prevent extra redirect?
-  // if the user doesn't have a default inventory or if path has a null inventory id, redirect to onboarding page
-
   useEffect(() => {
     if (!inventoryIdFromParam && !isInventoryLoading && inventory) {
       if (inventory.inventoryId) {
@@ -67,6 +64,8 @@ export default function HomePage({
         }
       } else {
         // fixes warning "Cannot update a component (`Router`) while rendering a different component (`Home`)"
+
+        // TODO - fetch the user access status
         setTimeout(() => router.push(`/onboarding`), 0);
       }
     }

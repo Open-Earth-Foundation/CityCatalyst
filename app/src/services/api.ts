@@ -34,7 +34,7 @@ import {
   ProjectWithCities,
   RequiredScopesResponse,
   ResultsResponse,
-  SectorBreakdownResponse,
+  SectorBreakdownResponse, UserAccessResponse,
   UserFileResponse,
   UserInfoResponse,
   UserInviteResponse,
@@ -69,6 +69,7 @@ export const api = createApi({
     "Projects",
     "Organization",
     "Project",
+    "UserAccessStatus"
   ],
   baseQuery: fetchBaseQuery({ baseUrl: "/api/v0/", credentials: "include" }),
   endpoints: (builder) => {
@@ -949,6 +950,14 @@ export const api = createApi({
         transformResponse: (response: OrganizationResponse) => response,
         providesTags: ["Organizations", "Organization"],
       }),
+      getUserAccessStatus: builder.query({
+        query: () => ({
+          method: "GET",
+          url: `/user/access-status`,
+        }),
+        transformResponse: (response: UserAccessResponse ) => response,
+        providesTags: ["UserAccessStatus"],
+      })
     };
   },
 });
@@ -1037,5 +1046,6 @@ export const {
   useUpdateOrganizationMutation,
   useEditProjectMutation,
   useDeleteProjectMutation,
+    useGetUserAccessStatusQuery
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

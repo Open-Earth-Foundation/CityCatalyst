@@ -1,0 +1,4 @@
+{
+  "no-access-heading": "You don’t have access to any cities yet.",
+  "no-access-description": "We recommend checking the email invitations for <bold>{{email}}</bold> to see & contact the admins of the projects you need access to."
+}

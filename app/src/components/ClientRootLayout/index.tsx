@@ -5,6 +5,7 @@ import {api, useGetUserAccessStatusQuery} from "@/services/api";
 import {usePathname} from "next/navigation";
 import ProgressLoader from "@/components/ProgressLoader";
 import NoAccess from "@/components/NoAccess";
+import {Roles} from "@/util/types";
 
 
 export function ClientRootLayout({
@@ -34,7 +35,7 @@ export function ClientRootLayout({
     }
 
 
-    if(userAccessStatus && !(userAccessStatus?.isProjectAdmin || userAccessStatus?.isOrgOwner || userAccessStatus?.isOrgOwner) ) {
+    if(userAccessStatus && !(userAccessStatus?.isProjectAdmin || userAccessStatus?.isOrgOwner || userAccessStatus?.isOrgOwner || userInfo?.role === Roles.Admin) ) {
         return (<NoAccess lng={lng} email={userInfo?.email as string} />)
     }
 

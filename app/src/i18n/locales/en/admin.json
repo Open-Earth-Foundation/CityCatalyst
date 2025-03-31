@@ -54,5 +54,14 @@
   "yes-i-understand": "Yes, I understand",
   "confirm-project-delete": "Are you sure you want to permanently delete <bold>{{name}}</bold>?",
   "delete-all-inventories-warning": "All inventories associated with this project will be deleted as well.",
-  "enter-project-name-confirmation": "Please enter <bold>{{name}}</bold> below to delete it"
+  "enter-project-name-confirmation": "Please enter <bold>{{name}}</bold> below to delete it",
+  "organizations": "Organizations",
+  "bulk-actions": "Bulk actions",
+  "bulk-actions-caption": "To build and get started faster and easier.",
+  "bulk-inventory-creation": "Bulk inventory creation",
+  "bulk-inventory-removing": "Bulk inventory removing",
+  "bulk-user-creation": "Bulk user creation",
+  "bulk-data-connection": "Bulk data connection",
+  "bulk-inventory-creation-caption": "Add cities, years, email addresses, scope and GWP of the inventories to be created.",
+  "city-input": "Cities UN/LOCODEs"
 }

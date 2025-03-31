@@ -12,7 +12,7 @@ export const GET = apiHandler(async (_req: Request, context) => {
 
     const userId = context.session.user.id;
 
-    const data = UserService.findUserAccessStatus(userId)
+    const data = await UserService.findUserAccessStatus(userId)
     if (!data) {
         throw new createHttpError.NotFound("User not found");
     }

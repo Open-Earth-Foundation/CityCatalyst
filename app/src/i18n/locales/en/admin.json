@@ -87,5 +87,10 @@
   "connectSources-input-required": "This field is required",
   "inventory-goal-required": "This field is required",
   "global-warming-potential-required": "This field is required",
-  "email-input-pattern": "Invalid email address"
+  "email-input-pattern": "Invalid email address",
+  "laoding": "Loading...",
+  "bulk-inventory-connection-success": "Data sources connected successfully",
+  "bulk-inventory-connection-error": "Data sources connection failed",
+  "success": "Success",
+  "bulk-inventory-creation-success": "Inventories created successfully"
 }

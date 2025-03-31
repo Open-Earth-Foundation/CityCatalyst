@@ -5,7 +5,7 @@ import {
   FieldErrors,
   UseFormRegister,
 } from "react-hook-form";
-import { BulkCreationInputs } from "../page";
+
 import { TFunction } from "i18next";
 import { MdInfoOutline, MdWarning } from "react-icons/md";
 

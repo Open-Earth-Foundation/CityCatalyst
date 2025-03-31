@@ -963,6 +963,18 @@ export const api = createApi({
         }),
         transformResponse: (response: any) => response,
       }),
+      connectDataSources: builder.mutation({
+        query: (data: {
+          userEmail: string;
+          cityLocodes: string[];
+          years: number[];
+        }) => ({
+          url: `/admin/connect-sources`,
+          method: "POST",
+          body: data,
+        }),
+        transformResponse: (response: any) => response,
+      }),
     };
   },
 });
@@ -1052,5 +1064,6 @@ export const {
   useEditProjectMutation,
   useDeleteProjectMutation,
   useCreateBulkInventoriesMutation,
+  useConnectDataSourcesMutation,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

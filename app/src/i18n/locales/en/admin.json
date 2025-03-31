@@ -63,5 +63,14 @@
   "bulk-user-creation": "Bulk user creation",
   "bulk-data-connection": "Bulk data connection",
   "bulk-inventory-creation-caption": "Add cities, years, email addresses, scope and GWP of the inventories to be created.",
-  "city-input": "Cities UN/LOCODEs"
+  "city-input-label": "Cities UN/LOCODEs",
+  "city-input-placeholder": "Enter cities UN/LOCODEs separated by commas",
+  "year-input-label": "Years",
+  "year-input-placeholder": "Enter years separated by commas",
+  "email-input-label": "Email addresses",
+  "email-input-placeholder": "Enter email addresses separated by commas",
+  "know-your-city-tip": "Know your cities' LOCODE",
+  "un-locode-link": "here",
+  "years-input-tip": "Each year will create one inventory for each of the cities listed above",
+  "emails-input-tip": "Only addresses registered in CityCatalyst will be created"
 }

@@ -6,6 +6,7 @@ import {
   Field,
   Fieldset,
   Heading,
+  HStack,
   Icon,
   IconButton,
   Input,
@@ -16,7 +17,7 @@ import {
 } from "@chakra-ui/react";
 import { useTranslation } from "@/i18n/client";
 import { BsPlus } from "react-icons/bs";
-import React, { FC, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import CreateOrganizationModal from "@/app/[lng]/admin/CreateOrganizationModal";
 import { api } from "@/services/api";
 import {
@@ -31,8 +32,18 @@ import {
   MenuRoot,
   MenuTrigger,
 } from "@/components/ui/menu";
-import { MdForwardToInbox, MdMoreVert, MdOutlineGroup } from "react-icons/md";
+import {
+  MdForwardToInbox,
+  MdInfoOutline,
+  MdMoreVert,
+  MdOutlineGroup,
+  MdWarning,
+} from "react-icons/md";
 import { useRouter } from "next/navigation";
+import { Trans } from "react-i18next";
+import { Controller, useForm } from "react-hook-form";
+import { RadioGroup } from "@/components/ui/radio";
+import CustomSelectableButton from "@/components/custom-selectable-buttons";
 
 interface OrgData {
   contactEmail: string;
@@ -42,6 +53,18 @@ interface OrgData {
   organizationId: string;
   status: "accepted" | "invite sent";
 }
+type CityDetails = {
+  cityName: string;
+  cityLocode: string;
+};
+interface BulkCreationInputs {
+  cities: CityDetails[];
+  year: string[];
+  emails: string[];
+  inventoryGoal: string;
+  globalWarmingPotential: string;
+  connectSources: boolean;
+}
 
 const AdminPage = ({ params: { lng } }: { params: { lng: string } }) => {
   const { t } = useTranslation(lng, "admin");
@@ -50,6 +73,14 @@ const AdminPage = ({ params: { lng } }: { params: { lng: string } }) => {
 
   const { data: organizationData, isLoading: isOrgDataLoading } =
     api.useGetOrganizationsQuery({});
+
+  // React hook form to manage form state
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+    setValue,
+  } = useForm<BulkCreationInputs>();
 
   const orgData = organizationData as OrgData[];
 
@@ -93,6 +124,22 @@ const AdminPage = ({ params: { lng } }: { params: { lng: string } }) => {
       </Tabs.Trigger>
     );
   };
+  const [selectedInventoryGoalValue, setSelectedInventoryGoalValue] =
+    useState("");
+  const [
+    selectedGlobalWarmingPotentialValue,
+    setSelectedGlobalWarmingPotentialValue,
+  ] = useState("");
+  let year;
+  const inventoryGoalOptions: string[] = ["gpc_basic", "gpc_basic_plus"];
+  const globalWarmingPotential: string[] = ["ar5", "ar6"];
+
+  // Handle inventory Goal Radio Input
+  // Set default inventory goal form value
+  useEffect(() => {
+    setValue("inventoryGoal", "gpc_basic");
+    setValue("globalWarmingPotential", "ar6");
+  }, [setValue]);
 
   return (
     <Box className="pt-16 pb-16  w-[1090px] mx-auto px-4">
@@ -360,18 +407,257 @@ const AdminPage = ({ params: { lng } }: { params: { lng: string } }) => {
                         <Field.Label fontFamily="heading">
                           {t("city-input-label")}
                         </Field.Label>
-                        <Input name="name" />
+                        <Input name="name" h="56px" boxShadow="1dp" />
+                        <Box
+                          display={"flex"}
+                          gap="8px"
+                          alignItems="center"
+                          fontSize="body.sm"
+                          color="content.tertiary"
+                          fontWeight="400"
+                        >
+                          <Icon as={MdInfoOutline} color="content.link" />
+                          <Text>{t("know-your-city-tip")}</Text>
+                          <Link
+                            href="https://unece.org/trade/cefact/unlocode-code-list-country-and-territory"
+                            textDecor="underline"
+                          >
+                            {t("un-locode-link")}
+                          </Link>
+                        </Box>
                       </Field.Root>
 
                       <Field.Root>
-                        <Field.Label>{t("years")}</Field.Label>
-                        <Input name="email" type="email" />
+                        <Field.Label fontFamily="heading">
+                          {t("year-input-label")}
+                        </Field.Label>
+                        <Input name="name" h="56px" boxShadow="1dp" />
+                        <Box
+                          display={"flex"}
+                          gap="8px"
+                          alignItems="center"
+                          fontSize="body.sm"
+                          color="content.tertiary"
+                          fontWeight="400"
+                        >
+                          <Icon as={MdInfoOutline} color="content.link" />
+                          <Text>{t("years-input-tip")}</Text>
+                        </Box>
                       </Field.Root>
 
                       <Field.Root>
-                        <Field.Label>{t("emails")}</Field.Label>
-                        <Input name="email" type="email" />
+                        <Field.Label fontFamily="heading">
+                          {t("email-input-label")}
+                        </Field.Label>
+                        <Input name="name" h="56px" boxShadow="1dp" />
+                        <Box
+                          display={"flex"}
+                          gap="8px"
+                          alignItems="center"
+                          fontSize="body.sm"
+                          color="content.tertiary"
+                          fontWeight="400"
+                        >
+                          <Icon as={MdInfoOutline} color="content.link" />
+                          <Text>{t("emails-input-tip")}</Text>
+                        </Box>
                       </Field.Root>
+                      {/* Inventory Goal */}
+                      <Box
+                        w="full"
+                        py="36px"
+                        borderBottomWidth="2px"
+                        borderColor="border.overlay"
+                      >
+                        <Box
+                          display="flex"
+                          w="full"
+                          alignItems="center"
+                          justifyContent="space-between"
+                        >
+                          <Box display="flex" flexDir="column" gap="16px">
+                            <Text
+                              fontFamily="heading"
+                              fontSize="title.md"
+                              fontStyle="normal"
+                              fontWeight="bold"
+                              lineHeight="24px"
+                            >
+                              {t("inventory-goal")}
+                            </Text>
+                            <Text
+                              fontSize="title.md"
+                              fontStyle="normal"
+                              lineHeight="24px"
+                              letterSpacing="wide"
+                              color="content.tertiary"
+                            >
+                              <Trans i18nKey="inventory-goal-description" t={t}>
+                                Want to learn more about these inventory
+                                formats?{" "}
+                                <Link
+                                  href="/"
+                                  fontFamily="heading"
+                                  fontWeight="bold"
+                                  color="content.link"
+                                  textDecorationLine="underline"
+                                >
+                                  Learn more
+                                </Link>{" "}
+                                about the GPC Framework.
+                              </Trans>
+                            </Text>
+                          </Box>
+                          <Box>
+                            <Controller
+                              name="inventoryGoal"
+                              control={control}
+                              rules={{
+                                required: t("inventory-goal-required"),
+                              }}
+                              render={({ field }) => (
+                                <>
+                                  <RadioGroup
+                                    value={field.value}
+                                    onValueChange={(e) =>
+                                      field.onChange(e.value)
+                                    }
+                                  >
+                                    <HStack gap="16px">
+                                      {inventoryGoalOptions.map((value) => {
+                                        return (
+                                          <CustomSelectableButton
+                                            field={field}
+                                            key={value}
+                                            value={value}
+                                            inputValue={
+                                              selectedInventoryGoalValue
+                                            }
+                                            inputValueFunction={
+                                              setSelectedInventoryGoalValue
+                                            }
+                                            t={t}
+                                          />
+                                        );
+                                      })}
+                                    </HStack>
+                                  </RadioGroup>
+                                </>
+                              )}
+                            />
+                            {errors.inventoryGoal && (
+                              <Box
+                                display="flex"
+                                gap="6px"
+                                alignItems="center"
+                                py="16px"
+                              >
+                                <MdWarning
+                                  color="sentiment.negativeDefault"
+                                  height="16px"
+                                  width="16px"
+                                />
+                                <Text
+                                  fontSize="body.md"
+                                  color="content.tertiary"
+                                  fontStyle="normal"
+                                >
+                                  {errors.inventoryGoal.message}
+                                </Text>
+                              </Box>
+                            )}
+                          </Box>
+                        </Box>
+                      </Box>
+                      {/* Global Warming Potential */}
+                      <Box
+                        w="full"
+                        py="36px"
+                        borderBottomWidth="2px"
+                        borderColor="border.overlay"
+                      >
+                        <Box
+                          display="flex"
+                          w="full"
+                          alignItems="center"
+                          justifyContent="space-between"
+                        >
+                          <Box display="flex" flexDir="column" gap="16px">
+                            <Text
+                              fontFamily="heading"
+                              fontSize="title.md"
+                              fontStyle="normal"
+                              fontWeight="bold"
+                              lineHeight="24px"
+                            >
+                              {t("gwp-heading")}
+                            </Text>
+                            <Text
+                              fontSize="title.md"
+                              fontStyle="normal"
+                              lineHeight="24px"
+                              letterSpacing="wide"
+                              color="content.tertiary"
+                            >
+                              <Trans i18nKey="gwp-description" t={t}>
+                                Want to learn more about these inventory
+                                formats?{" "}
+                                <Link
+                                  href="/"
+                                  fontFamily="heading"
+                                  fontWeight="bold"
+                                  color="content.link"
+                                  textDecorationLine="underline"
+                                >
+                                  Learn more
+                                </Link>{" "}
+                                about the GPC Framework.
+                              </Trans>
+                            </Text>
+                          </Box>
+                          <Box>
+                            <Controller
+                              name="globalWarmingPotential"
+                              control={control}
+                              rules={{
+                                required: t(
+                                  "global-warming-potential-required",
+                                ),
+                              }}
+                              render={({ field }) => (
+                                <RadioGroup
+                                  value={field.value}
+                                  onValueChange={(e) => {
+                                    field.onChange(e);
+                                    setSelectedGlobalWarmingPotentialValue(
+                                      e.value,
+                                    );
+                                  }}
+                                >
+                                  <HStack gap="16px">
+                                    {globalWarmingPotential.map((value) => {
+                                      return (
+                                        <CustomSelectableButton
+                                          field={field}
+                                          key={value}
+                                          value={value}
+                                          inputValue={
+                                            selectedGlobalWarmingPotentialValue
+                                          }
+                                          inputValueFunction={
+                                            setSelectedGlobalWarmingPotentialValue
+                                          }
+                                          t={t}
+                                        />
+                                      );
+                                    })}
+                                  </HStack>
+                                </RadioGroup>
+                              )}
+                            />
+                          </Box>
+                        </Box>
+                      </Box>
                     </Fieldset.Content>
 
                     <Button type="submit" alignSelf="flex-start">

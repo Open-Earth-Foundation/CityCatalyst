@@ -102,9 +102,13 @@ const AdminPage = ({ params: { lng } }: { params: { lng: string } }) => {
     );
   };
 
-  const BulkActionsTabTrigger: FC<{ title: string }> = ({ title }) => {
+  const BulkActionsTabTrigger: FC<{ title: string; disabled?: boolean }> = ({
+    title,
+    disabled,
+  }) => {
     return (
       <Tabs.Trigger
+        disabled={disabled}
         value={title}
         _selected={{
           fontFamily: "heading",
@@ -381,9 +385,12 @@ const AdminPage = ({ params: { lng } }: { params: { lng: string } }) => {
             >
               <Tabs.List bg="bg.muted" border="none" rounded="l3" p="1">
                 <BulkActionsTabTrigger title="bulk-inventory-creation" />
-                <BulkActionsTabTrigger title="bulk-data-connection" />
-                <BulkActionsTabTrigger title="bulk-user-creation" />
-                <BulkActionsTabTrigger title="bulk-inventory-removing" />
+                <BulkActionsTabTrigger title="bulk-data-connection" disabled />
+                <BulkActionsTabTrigger title="bulk-user-creation" disabled />
+                <BulkActionsTabTrigger
+                  title="bulk-inventory-removing"
+                  disabled
+                />
                 <Tabs.Indicator rounded="l2" />
               </Tabs.List>
               <Tabs.Content value="bulk-inventory-creation" px="60px" py="24px">
@@ -405,7 +412,11 @@ const AdminPage = ({ params: { lng } }: { params: { lng: string } }) => {
                 </Box>
                 <Box>
                   <Fieldset.Root size="lg" maxW="full" py="36px">
-                    <Fieldset.Content>
+                    <Fieldset.Content
+                      display="flex"
+                      flexDir="column"
+                      gap="36px"
+                    >
                       <Field.Root>
                         <Field.Label fontFamily="heading">
                           {t("city-input-label")}
@@ -484,12 +495,7 @@ const AdminPage = ({ params: { lng } }: { params: { lng: string } }) => {
                         </Box>
                       </Field.Root>
                       {/* Inventory Goal */}
-                      <Box
-                        w="full"
-                        py="36px"
-                        borderBottomWidth="2px"
-                        borderColor="border.overlay"
-                      >
+                      <Box w="full" py="36px">
                         <Box
                           display="flex"
                           w="full"
@@ -590,12 +596,7 @@ const AdminPage = ({ params: { lng } }: { params: { lng: string } }) => {
                         </Box>
                       </Box>
                       {/* Global Warming Potential */}
-                      <Box
-                        w="full"
-                        py="36px"
-                        borderBottomWidth="2px"
-                        borderColor="border.overlay"
-                      >
+                      <Box w="full" py="36px">
                         <Box
                           display="flex"
                           w="full"
@@ -716,14 +717,15 @@ const AdminPage = ({ params: { lng } }: { params: { lng: string } }) => {
                   </Fieldset.Root>
                 </Box>
               </Tabs.Content>
+              {/* TODO add more actions */}
               <Tabs.Content value="bulk-data-connection">
-                Export data
+                {/* Export data */}
               </Tabs.Content>
               <Tabs.Content value="bulk-user-creation">
-                Bulk actions
+                {/* Bulk actions */}
               </Tabs.Content>
               <Tabs.Content value="bulk-inventory-removing">
-                Bulk actions
+                {/* Bulk actions */}
               </Tabs.Content>
             </Tabs.Root>
           </Tabs.Content>

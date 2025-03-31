@@ -45,6 +45,7 @@ import { Trans } from "react-i18next";
 import { Controller, useForm } from "react-hook-form";
 import { RadioGroup } from "@/components/ui/radio";
 import CustomSelectableButton from "@/components/custom-selectable-buttons";
+import CommaSeperatedInput from "./bulk-inventory-actions/CommaSeperatedInput";
 
 interface OrgData {
   contactEmail: string;
@@ -58,7 +59,7 @@ type CityDetails = {
   cityName: string;
   cityLocode: string;
 };
-interface BulkCreationInputs {
+export interface BulkCreationInputs {
   cities: CityDetails[];
   years: string[];
   emails: string[];
@@ -426,153 +427,86 @@ const AdminPage = ({ params: { lng } }: { params: { lng: string } }) => {
                       flexDir="column"
                       gap="36px"
                     >
-                      <Field.Root invalid={!!errors.cities}>
-                        <Field.Label fontFamily="heading">
-                          {t("city-input-label")}
-                        </Field.Label>
-                        <Input
-                          h="56px"
-                          boxShadow="1dp"
-                          {...register("cities", {
-                            required: t("city-input-required"),
-                          })}
-                        />
-                        <Box
-                          display={"flex"}
-                          gap="8px"
-                          alignItems="center"
-                          fontSize="body.sm"
-                          color="content.tertiary"
-                          fontWeight="400"
-                        >
-                          <Icon
-                            as={MdInfoOutline}
-                            color="content.link"
-                            boxSize={4}
-                          />
-                          <Text>{t("know-your-city-tip")}</Text>
-                          <Link
-                            href="https://unece.org/trade/cefact/unlocode-code-list-country-and-territory"
-                            textDecor="underline"
+                      <CommaSeperatedInput
+                        field="cities"
+                        t={t}
+                        register={register}
+                        errors={errors}
+                        inputType="text"
+                        tipContent={
+                          <Box
+                            display={"flex"}
+                            gap="8px"
+                            alignItems="center"
+                            fontSize="body.sm"
+                            color="content.tertiary"
+                            fontWeight="400"
                           >
-                            {t("un-locode-link")}
-                          </Link>
-                        </Box>
-                        <Box>
-                          {errors.cities && (
-                            <Box
-                              display="flex"
-                              gap="6px"
-                              alignItems="center"
-                              py="16px"
-                              color="sentiment.negativeDefault"
+                            <Icon
+                              as={MdInfoOutline}
+                              color="content.link"
+                              boxSize={4}
+                            />
+                            <Text>{t("know-your-city-tip")}</Text>
+                            <Link
+                              href="https://unece.org/trade/cefact/unlocode-code-list-country-and-territory"
+                              textDecor="underline"
                             >
-                              <MdWarning height="16px" width="16px" />
-                              <Text fontSize="body.md" fontStyle="normal">
-                                {errors.cities.message}
-                              </Text>
-                            </Box>
-                          )}
-                        </Box>
-                      </Field.Root>
+                              {t("un-locode-link")}
+                            </Link>
+                          </Box>
+                        }
+                      />
 
-                      <Field.Root invalid={!!errors.years}>
-                        <Field.Label fontFamily="heading">
-                          {t("year-input-label")}
-                        </Field.Label>
-                        <Input
-                          h="56px"
-                          type="number"
-                          boxShadow="1dp"
-                          {...register("years", {
-                            required: t("year-input-required"),
-                            pattern: {
-                              value: /^[0-9]{4}$/,
-                              message: t("year-input-pattern"),
-                            },
-                          })}
-                        />
-                        <Box
-                          display={"flex"}
-                          gap="8px"
-                          alignItems="center"
-                          fontSize="body.sm"
-                          color="content.tertiary"
-                          fontWeight="400"
-                        >
-                          <Icon
-                            as={MdInfoOutline}
-                            color="content.link"
-                            boxSize={4}
-                          />
-                          <Text>{t("years-input-tip")}</Text>
-                        </Box>
-                        <Box>
-                          {errors.years && (
-                            <Box
-                              display="flex"
-                              gap="6px"
-                              alignItems="center"
-                              py="16px"
-                              color="sentiment.negativeDefault"
-                            >
-                              <MdWarning height="16px" width="16px" />
-                              <Text fontSize="body.md" fontStyle="normal">
-                                {errors.years.message}
-                              </Text>
-                            </Box>
-                          )}
-                        </Box>
-                      </Field.Root>
+                      <CommaSeperatedInput
+                        field="years"
+                        t={t}
+                        register={register}
+                        errors={errors}
+                        inputType="number"
+                        tipContent={
+                          <Box
+                            display={"flex"}
+                            gap="8px"
+                            alignItems="center"
+                            fontSize="body.sm"
+                            color="content.tertiary"
+                            fontWeight="400"
+                          >
+                            <Icon
+                              as={MdInfoOutline}
+                              color="content.link"
+                              boxSize={4}
+                            />
+                            <Text>{t("years-input-tip")}</Text>
+                          </Box>
+                        }
+                      />
 
-                      <Field.Root invalid={!!errors.emails}>
-                        <Field.Label fontFamily="heading">
-                          {t("email-input-label")}
-                        </Field.Label>
-                        <Input
-                          h="56px"
-                          boxShadow="1dp"
-                          {...register("emails", {
-                            required: t("emails-input-required"),
-                            pattern: {
-                              value:
-                                /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/i,
-                              message: t("email-input-pattern"),
-                            },
-                          })}
-                        />
-                        <Box
-                          display={"flex"}
-                          gap="8px"
-                          alignItems="center"
-                          fontSize="body.sm"
-                          color="content.tertiary"
-                          fontWeight="400"
-                        >
-                          <Icon
-                            as={MdInfoOutline}
-                            color="content.link"
-                            boxSize={4}
-                          />
-                          <Text>{t("emails-input-tip")}</Text>
-                        </Box>
-                        <Box>
-                          {errors.emails && (
-                            <Box
-                              display="flex"
-                              gap="6px"
-                              alignItems="center"
-                              py="16px"
-                              color="sentiment.negativeDefault"
-                            >
-                              <MdWarning height="16px" width="16px" />
-                              <Text fontSize="body.md" fontStyle="normal">
-                                {errors.emails.message}
-                              </Text>
-                            </Box>
-                          )}
-                        </Box>
-                      </Field.Root>
+                      <CommaSeperatedInput
+                        field="emails"
+                        t={t}
+                        register={register}
+                        errors={errors}
+                        inputType="email"
+                        tipContent={
+                          <Box
+                            display={"flex"}
+                            gap="8px"
+                            alignItems="center"
+                            fontSize="body.sm"
+                            color="content.tertiary"
+                            fontWeight="400"
+                          >
+                            <Icon
+                              as={MdInfoOutline}
+                              color="content.link"
+                              boxSize={4}
+                            />
+                            <Text>{t("emails-input-tip")}</Text>
+                          </Box>
+                        }
+                      />
                       {/* Inventory Goal */}
                       <Box w="full" py="36px">
                         <Box

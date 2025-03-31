@@ -44,9 +44,6 @@ export class ProjectInvite
   project!: Project;
   getProject!: Sequelize.BelongsToGetAssociationMixin<Project>;
   setProject!: Sequelize.BelongsToSetAssociationMixin<Project, string>;
-
-  //   ProjectInvite belongs to OrganizationInvite via projectId
-  //   OrganizationInvite belongs to User via userId
   user!: User;
   getUser!: Sequelize.BelongsToGetAssociationMixin<User>;
   setUser!: Sequelize.BelongsToSetAssociationMixin<User, UserId>;

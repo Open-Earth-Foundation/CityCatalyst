@@ -4,6 +4,7 @@ import { LuChevronDown } from "react-icons/lu";
 
 interface AccordionItemTriggerProps extends Accordion.ItemTriggerProps {
   indicatorPlacement?: "start" | "center" | "end";
+  /** When true, hides the chevron indicator completely */
   hideIndicator?: boolean;
 }
 
@@ -11,7 +12,12 @@ export const AccordionItemTrigger = React.forwardRef<
   HTMLButtonElement,
   AccordionItemTriggerProps
 >(function AccordionItemTrigger(props, ref) {
-  const { children, indicatorPlacement = "center", hideIndicator, ...rest } = props;
+  const {
+    children,
+    indicatorPlacement = "center",
+    hideIndicator,
+    ...rest
+  } = props;
   return (
     <Accordion.ItemTrigger {...rest} ref={ref} pr="16px">
       {indicatorPlacement === "start" && !hideIndicator && (

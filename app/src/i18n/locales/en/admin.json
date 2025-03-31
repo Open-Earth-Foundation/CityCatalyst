@@ -72,5 +72,13 @@
   "know-your-city-tip": "Know your cities' LOCODE",
   "un-locode-link": "here",
   "years-input-tip": "Each year will create one inventory for each of the cities listed above",
-  "emails-input-tip": "Only addresses registered in CityCatalyst will be created"
+  "emails-input-tip": "Only addresses registered in CityCatalyst will be created",
+  "reporting-level-heading": "Reporting level",
+  "reporting-level-description": "Want to learn more about these inventory reporting levels? <2>Learn more</2> about the GPC Framework.",
+  "gwp-heading": "Global Warming Potential (GWP)",
+  "gpc_basic": "GPC BASIC",
+  "gpc_basic_plus": "GPC BASIC PLUS",
+  "gwp-description": "We recommend using AR6 (latest version) for your inventory calculations. If you city has previous inventories, use the same version as before. <2>Learn more</2> about GWP",
+  "connect-datasources-label": "Automatically connect all available third-party data sources.",
+  "create-all": "Create all"
 }

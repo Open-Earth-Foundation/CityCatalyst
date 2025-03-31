@@ -3,6 +3,7 @@
 import {
   Box,
   Button,
+  Checkbox,
   Field,
   Fieldset,
   Heading,
@@ -77,6 +78,7 @@ const AdminPage = ({ params: { lng } }: { params: { lng: string } }) => {
   // React hook form to manage form state
   const {
     control,
+    register,
     handleSubmit,
     formState: { errors },
     setValue,
@@ -116,7 +118,8 @@ const AdminPage = ({ params: { lng } }: { params: { lng: string } }) => {
         css={{
           padding: "24px !important",
           mb: "12px",
-
+          textAlign: "left",
+          textWrap: "nowrap",
           fontFamily: "heading",
         }}
       >
@@ -407,7 +410,13 @@ const AdminPage = ({ params: { lng } }: { params: { lng: string } }) => {
                         <Field.Label fontFamily="heading">
                           {t("city-input-label")}
                         </Field.Label>
-                        <Input name="name" h="56px" boxShadow="1dp" />
+                        <Input
+                          h="56px"
+                          boxShadow="1dp"
+                          {...register("cities", {
+                            required: t("city-input-required"),
+                          })}
+                        />
                         <Box
                           display={"flex"}
                           gap="8px"
@@ -416,7 +425,11 @@ const AdminPage = ({ params: { lng } }: { params: { lng: string } }) => {
                           color="content.tertiary"
                           fontWeight="400"
                         >
-                          <Icon as={MdInfoOutline} color="content.link" />
+                          <Icon
+                            as={MdInfoOutline}
+                            color="content.link"
+                            boxSize={4}
+                          />
                           <Text>{t("know-your-city-tip")}</Text>
                           <Link
                             href="https://unece.org/trade/cefact/unlocode-code-list-country-and-territory"
@@ -440,7 +453,11 @@ const AdminPage = ({ params: { lng } }: { params: { lng: string } }) => {
                           color="content.tertiary"
                           fontWeight="400"
                         >
-                          <Icon as={MdInfoOutline} color="content.link" />
+                          <Icon
+                            as={MdInfoOutline}
+                            color="content.link"
+                            boxSize={4}
+                          />
                           <Text>{t("years-input-tip")}</Text>
                         </Box>
                       </Field.Root>
@@ -458,7 +475,11 @@ const AdminPage = ({ params: { lng } }: { params: { lng: string } }) => {
                           color="content.tertiary"
                           fontWeight="400"
                         >
-                          <Icon as={MdInfoOutline} color="content.link" />
+                          <Icon
+                            as={MdInfoOutline}
+                            color="content.link"
+                            boxSize={4}
+                          />
                           <Text>{t("emails-input-tip")}</Text>
                         </Box>
                       </Field.Root>
@@ -483,7 +504,7 @@ const AdminPage = ({ params: { lng } }: { params: { lng: string } }) => {
                               fontWeight="bold"
                               lineHeight="24px"
                             >
-                              {t("inventory-goal")}
+                              {t("reporting-level-heading")}
                             </Text>
                             <Text
                               fontSize="title.md"
@@ -493,8 +514,7 @@ const AdminPage = ({ params: { lng } }: { params: { lng: string } }) => {
                               color="content.tertiary"
                             >
                               <Trans i18nKey="inventory-goal-description" t={t}>
-                                Want to learn more about these inventory
-                                formats?{" "}
+                                Want to learn more about these inventory levels?{" "}
                                 <Link
                                   href="/"
                                   fontFamily="heading"
@@ -600,8 +620,9 @@ const AdminPage = ({ params: { lng } }: { params: { lng: string } }) => {
                               color="content.tertiary"
                             >
                               <Trans i18nKey="gwp-description" t={t}>
-                                Want to learn more about these inventory
-                                formats?{" "}
+                                We recommend using AR6 (latest version) for your
+                                inventory calculations. If you city has previous
+                                inventories, use the same version as before.{" "}
                                 <Link
                                   href="/"
                                   fontFamily="heading"
@@ -611,7 +632,7 @@ const AdminPage = ({ params: { lng } }: { params: { lng: string } }) => {
                                 >
                                   Learn more
                                 </Link>{" "}
-                                about the GPC Framework.
+                                about GWP.
                               </Trans>
                             </Text>
                           </Box>
@@ -658,11 +679,40 @@ const AdminPage = ({ params: { lng } }: { params: { lng: string } }) => {
                           </Box>
                         </Box>
                       </Box>
+                      {/* Connect datasources checkbox */}
+                      <Checkbox.Root defaultChecked>
+                        <Checkbox.HiddenInput />
+                        <Checkbox.Control />
+                        <Checkbox.Label
+                          fontSize="body.lg"
+                          color="content.secondary"
+                          letterSpacing="wide"
+                        >
+                          {t("connect-datasources-label")}
+                        </Checkbox.Label>
+                      </Checkbox.Root>
                     </Fieldset.Content>
 
-                    <Button type="submit" alignSelf="flex-start">
-                      Submit
-                    </Button>
+                    <Box
+                      display="flex"
+                      alignItems="center"
+                      mt="48px"
+                      w="full"
+                      gap="24px"
+                      justifyContent="right"
+                    >
+                      <Button
+                        type="submit"
+                        alignSelf="flex-start"
+                        variant="outline"
+                        p="32px"
+                      >
+                        {t("cancel")}
+                      </Button>
+                      <Button type="submit" alignSelf="flex-start" p="32px">
+                        {t("create-all")}
+                      </Button>
+                    </Box>
                   </Fieldset.Root>
                 </Box>
               </Tabs.Content>

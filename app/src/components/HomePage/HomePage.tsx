@@ -65,7 +65,6 @@ export default function HomePage({
       } else {
         // fixes warning "Cannot update a component (`Router`) while rendering a different component (`Home`)"
 
-        // TODO - fetch the user access status
         setTimeout(() => router.push(`/onboarding`), 0);
       }
     }

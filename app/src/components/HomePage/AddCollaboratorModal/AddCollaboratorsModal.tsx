@@ -5,6 +5,7 @@ import {
   CheckboxGroup,
   HStack,
   NativeSelectRoot,
+  ProgressCircle,
   Separator,
   Text,
 } from "@chakra-ui/react";
@@ -61,19 +62,16 @@ const AddCollaboratorsDialog = ({
 
   const { data: projectsData, isLoading } = useGetProjectsQuery(
     {
-      organizationId,
+      organizationId: organizationId as string,
     },
     {
       skip: !isAdmin || !organizationId,
     },
   );
 
-  const { data: citiesAndYears } = useGetCitiesAndYearsQuery(
-    {},
-    {
-      skip: isAdmin,
-    },
-  );
+  const { data: citiesAndYears } = useGetCitiesAndYearsQuery(undefined, {
+    skip: isAdmin,
+  });
   const [inviteUsers, { isLoading: isInviteUsersLoading }] =
     useInviteUsersMutation();
   const [emails, setEmails] = useState<string[]>([]);
@@ -117,21 +115,24 @@ const AddCollaboratorsDialog = ({
     }[]
   >(() => {
     if (!isAdmin) {
-      return citiesAndYears?.map(({ city }) => ({
-        cityId: city.cityId,
-        name: city.name,
-      }));
+      return (
+        citiesAndYears?.map(({ city }) => ({
+          cityId: city.cityId,
+          name: city.name as string,
+        })) ?? []
+      );
     }
     if (!selectedProject) return [];
 
     const project = projectsData?.find(
       (project) => project.projectId === selectedProject,
     );
-    console.log("selectedProject", selectedProject, project, "got here");
-    return project?.cities.map((city) => ({
-      cityId: city.cityId,
-      name: city.name,
-    }));
+    return (
+      project?.cities.map((city) => ({
+        cityId: city.cityId,
+        name: city.name,
+      })) ?? []
+    );
   }, [isAdmin, citiesAndYears, projectsData, selectedProject]);
 
   return (
@@ -156,33 +157,40 @@ const AddCollaboratorsDialog = ({
               <BodyLarge>
                 {t("select-project-to-invite-collaborators")}
               </BodyLarge>
-              <NativeSelectRoot
-                shadow="1dp"
-                borderRadius="4px"
-                border="inputBox"
-                fontSize="body.lg"
-                loading={isLoading}
-                h="full"
-                w="full"
-                _focus={{
-                  borderWidth: "1px",
-                  borderColor: "content.link",
-                  shadow: "none",
-                }}
-              >
-                <NativeSelectField
-                  placeholder={t("select-project")}
-                  onChange={(e) => {
-                    console.log("the e clicked", e.currentTarget.value);
-                    setSelectedProject(e.currentTarget.value);
+              {isLoading ? (
+                <ProgressCircle.Root value={null} size="sm">
+                  <ProgressCircle.Circle>
+                    <ProgressCircle.Track />
+                    <ProgressCircle.Range />
+                  </ProgressCircle.Circle>
+                </ProgressCircle.Root>
+              ) : (
+                <NativeSelectRoot
+                  shadow="1dp"
+                  borderRadius="4px"
+                  border="inputBox"
+                  fontSize="body.lg"
+                  h="full"
+                  w="full"
+                  _focus={{
+                    borderWidth: "1px",
+                    borderColor: "content.link",
+                    shadow: "none",
                   }}
-                  value={selectedProject}
-                  items={projectsData.map((project) => ({
-                    label: project.name,
-                    value: project.projectId,
-                  }))}
-                />
-              </NativeSelectRoot>
+                >
+                  <NativeSelectField
+                    placeholder={t("select-project")}
+                    onChange={(e) => {
+                      setSelectedProject(e.currentTarget.value);
+                    }}
+                    value={selectedProject as string}
+                    items={projectsData?.map((project) => ({
+                      label: project.name,
+                      value: project.projectId,
+                    }))}
+                  />
+                </NativeSelectRoot>
+              )}
             </Box>
           )}
           <Box>

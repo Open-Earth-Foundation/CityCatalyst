@@ -80,7 +80,7 @@ const AdminOrganizationTeamPage = ({
 
   const { data: projectUsers, isLoading: isLoadingProjectUsers } =
     useGetProjectUsersQuery(
-      selectedProject.length > 0 ? selectedProject[0] : null,
+      selectedProject.length > 0 ? selectedProject[0] : "",
       {
         skip: !(selectedProject.length > 0),
       },
@@ -98,8 +98,6 @@ const AdminOrganizationTeamPage = ({
     }
     return uniqBy(projectUsers, "email");
   }, [projectUsers, selectedCity]);
-
-  console.log(userList, "the user list");
 
   useEffect(() => {
     if (projectsData && projectsData.length > 0) {
@@ -189,7 +187,7 @@ const AdminOrganizationTeamPage = ({
             }}
           >
             {projectsData?.map((item) => (
-              <AccordionItem key={item} value={item.projectId}>
+              <AccordionItem key={item.projectId} value={item.projectId}>
                 <AccordionItemTrigger
                   onClick={() => {
                     setSelectedCity(null);
@@ -297,11 +295,7 @@ const AdminOrganizationTeamPage = ({
         </Box>
         <Box w="full">
           {isLoadingProjectUsers ? (
-            <ProgressLoader
-              size="sm"
-              color="content.secondary"
-              thickness="2px"
-            />
+            <ProgressLoader />
           ) : (
             <DataTable
               data={userList}

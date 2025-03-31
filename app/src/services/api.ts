@@ -41,6 +41,7 @@ import {
   UsersInvitesRequest,
   UsersInvitesResponse,
   YearOverYearResultsResponse,
+  ProjectUserResponse,
 } from "@/util/types";
 import type { GeoJSON } from "geojson";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
@@ -955,7 +956,7 @@ export const api = createApi({
           method: "GET",
           url: `/projects/${projectId}/users`,
         }),
-        transformResponse: (response: projectUserResponse[]) => response,
+        transformResponse: (response: ProjectUserResponse[]) => response,
         providesTags: ["ProjectUsers"],
       }),
     };

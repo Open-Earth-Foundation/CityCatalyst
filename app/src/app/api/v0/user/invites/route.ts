@@ -13,7 +13,6 @@ import { logger } from "@/services/logger";
 import { InviteStatus, Roles } from "@/util/types";
 
 import { subDays } from "date-fns";
-import { mockSession } from "next-auth/client/__tests__/helpers/mocks";
 
 export const GET = apiHandler(async (req, { params, session }) => {
   if (!session) {
@@ -76,7 +75,7 @@ export const POST = apiHandler(async (req, { params, session }) => {
   }
 
   const userCities = await db.models.CityUser.findAll({
-    where: whereConditions,
+    where: whereConditions as any,
   });
 
   if (userCities.length !== cityIds.length) {

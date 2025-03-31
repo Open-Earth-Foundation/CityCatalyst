@@ -60,7 +60,7 @@ type CityDetails = {
 };
 interface BulkCreationInputs {
   cities: CityDetails[];
-  year: string[];
+  years: string[];
   emails: string[];
   inventoryGoal: string;
   globalWarmingPotential: string;
@@ -82,6 +82,7 @@ const AdminPage = ({ params: { lng } }: { params: { lng: string } }) => {
     handleSubmit,
     formState: { errors },
     setValue,
+    reset,
   } = useForm<BulkCreationInputs>();
 
   const orgData = organizationData as OrgData[];
@@ -147,6 +148,14 @@ const AdminPage = ({ params: { lng } }: { params: { lng: string } }) => {
     setValue("inventoryGoal", "gpc_basic");
     setValue("globalWarmingPotential", "ar6");
   }, [setValue]);
+
+  const onSubmit = (data: BulkCreationInputs) => {
+    console.log(data);
+  };
+
+  const onCancel = () => {
+    reset();
+  };
 
   return (
     <Box className="pt-16 pb-16  w-[1090px] mx-auto px-4">
@@ -417,7 +426,7 @@ const AdminPage = ({ params: { lng } }: { params: { lng: string } }) => {
                       flexDir="column"
                       gap="36px"
                     >
-                      <Field.Root>
+                      <Field.Root invalid={!!errors.cities}>
                         <Field.Label fontFamily="heading">
                           {t("city-input-label")}
                         </Field.Label>
@@ -449,13 +458,40 @@ const AdminPage = ({ params: { lng } }: { params: { lng: string } }) => {
                             {t("un-locode-link")}
                           </Link>
                         </Box>
+                        <Box>
+                          {errors.cities && (
+                            <Box
+                              display="flex"
+                              gap="6px"
+                              alignItems="center"
+                              py="16px"
+                              color="sentiment.negativeDefault"
+                            >
+                              <MdWarning height="16px" width="16px" />
+                              <Text fontSize="body.md" fontStyle="normal">
+                                {errors.cities.message}
+                              </Text>
+                            </Box>
+                          )}
+                        </Box>
                       </Field.Root>
 
-                      <Field.Root>
+                      <Field.Root invalid={!!errors.years}>
                         <Field.Label fontFamily="heading">
                           {t("year-input-label")}
                         </Field.Label>
-                        <Input name="name" h="56px" boxShadow="1dp" />
+                        <Input
+                          h="56px"
+                          type="number"
+                          boxShadow="1dp"
+                          {...register("years", {
+                            required: t("year-input-required"),
+                            pattern: {
+                              value: /^[0-9]{4}$/,
+                              message: t("year-input-pattern"),
+                            },
+                          })}
+                        />
                         <Box
                           display={"flex"}
                           gap="8px"
@@ -471,13 +507,40 @@ const AdminPage = ({ params: { lng } }: { params: { lng: string } }) => {
                           />
                           <Text>{t("years-input-tip")}</Text>
                         </Box>
+                        <Box>
+                          {errors.years && (
+                            <Box
+                              display="flex"
+                              gap="6px"
+                              alignItems="center"
+                              py="16px"
+                              color="sentiment.negativeDefault"
+                            >
+                              <MdWarning height="16px" width="16px" />
+                              <Text fontSize="body.md" fontStyle="normal">
+                                {errors.years.message}
+                              </Text>
+                            </Box>
+                          )}
+                        </Box>
                       </Field.Root>
 
-                      <Field.Root>
+                      <Field.Root invalid={!!errors.emails}>
                         <Field.Label fontFamily="heading">
                           {t("email-input-label")}
                         </Field.Label>
-                        <Input name="name" h="56px" boxShadow="1dp" />
+                        <Input
+                          h="56px"
+                          boxShadow="1dp"
+                          {...register("emails", {
+                            required: t("emails-input-required"),
+                            pattern: {
+                              value:
+                                /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/i,
+                              message: t("email-input-pattern"),
+                            },
+                          })}
+                        />
                         <Box
                           display={"flex"}
                           gap="8px"
@@ -492,6 +555,22 @@ const AdminPage = ({ params: { lng } }: { params: { lng: string } }) => {
                             boxSize={4}
                           />
                           <Text>{t("emails-input-tip")}</Text>
+                        </Box>
+                        <Box>
+                          {errors.emails && (
+                            <Box
+                              display="flex"
+                              gap="6px"
+                              alignItems="center"
+                              py="16px"
+                              color="sentiment.negativeDefault"
+                            >
+                              <MdWarning height="16px" width="16px" />
+                              <Text fontSize="body.md" fontStyle="normal">
+                                {errors.emails.message}
+                              </Text>
+                            </Box>
+                          )}
                         </Box>
                       </Field.Root>
                       {/* Inventory Goal */}
@@ -577,17 +656,10 @@ const AdminPage = ({ params: { lng } }: { params: { lng: string } }) => {
                                 gap="6px"
                                 alignItems="center"
                                 py="16px"
+                                color="sentiment.negativeDefault"
                               >
-                                <MdWarning
-                                  color="sentiment.negativeDefault"
-                                  height="16px"
-                                  width="16px"
-                                />
-                                <Text
-                                  fontSize="body.md"
-                                  color="content.tertiary"
-                                  fontStyle="normal"
-                                >
+                                <MdWarning height="16px" width="16px" />
+                                <Text fontSize="body.md" fontStyle="normal">
                                   {errors.inventoryGoal.message}
                                 </Text>
                               </Box>
@@ -677,12 +749,33 @@ const AdminPage = ({ params: { lng } }: { params: { lng: string } }) => {
                                 </RadioGroup>
                               )}
                             />
+                            {errors.globalWarmingPotential && (
+                              <Box
+                                display="flex"
+                                gap="6px"
+                                alignItems="center"
+                                py="16px"
+                                color="sentiment.negativeDefault"
+                              >
+                                <MdWarning height="16px" width="16px" />
+                                <Text fontSize="body.md" fontStyle="normal">
+                                  {errors.globalWarmingPotential.message}
+                                </Text>
+                              </Box>
+                            )}
                           </Box>
                         </Box>
                       </Box>
                       {/* Connect datasources checkbox */}
-                      <Checkbox.Root defaultChecked>
-                        <Checkbox.HiddenInput />
+                      <Checkbox.Root
+                        defaultChecked
+                        invalid={!!errors.connectSources}
+                      >
+                        <Checkbox.HiddenInput
+                          {...register("connectSources", {
+                            required: t("connectSources-input-required"),
+                          })}
+                        />
                         <Checkbox.Control />
                         <Checkbox.Label
                           fontSize="body.lg"
@@ -691,6 +784,22 @@ const AdminPage = ({ params: { lng } }: { params: { lng: string } }) => {
                         >
                           {t("connect-datasources-label")}
                         </Checkbox.Label>
+                        <Box>
+                          {errors.connectSources && (
+                            <Box
+                              display="flex"
+                              gap="6px"
+                              alignItems="center"
+                              py="16px"
+                              color="sentiment.negativeDefault"
+                            >
+                              <MdWarning height="16px" width="16px" />
+                              <Text fontSize="body.md" fontStyle="normal">
+                                {errors.connectSources.message}
+                              </Text>
+                            </Box>
+                          )}
+                        </Box>
                       </Checkbox.Root>
                     </Fieldset.Content>
 
@@ -707,10 +816,16 @@ const AdminPage = ({ params: { lng } }: { params: { lng: string } }) => {
                         alignSelf="flex-start"
                         variant="outline"
                         p="32px"
+                        onClick={onCancel}
                       >
                         {t("cancel")}
                       </Button>
-                      <Button type="submit" alignSelf="flex-start" p="32px">
+                      <Button
+                        type="submit"
+                        alignSelf="flex-start"
+                        p="32px"
+                        onClick={handleSubmit(onSubmit)}
+                      >
                         {t("create-all")}
                       </Button>
                     </Box>

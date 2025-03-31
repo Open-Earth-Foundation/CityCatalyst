@@ -949,6 +949,20 @@ export const api = createApi({
         transformResponse: (response: OrganizationResponse) => response,
         providesTags: ["Organizations", "Organization"],
       }),
+      createBulkInventories: builder.mutation({
+        query: (data: {
+          emails: string[];
+          cityLocodes: string[];
+          years: number[];
+          scope: string;
+          gwp: string;
+        }) => ({
+          url: `/admin/bulk`,
+          method: "POST",
+          body: data,
+        }),
+        transformResponse: (response: any) => response,
+      }),
     };
   },
 });
@@ -1037,5 +1051,6 @@ export const {
   useUpdateOrganizationMutation,
   useEditProjectMutation,
   useDeleteProjectMutation,
+  useCreateBulkInventoriesMutation,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

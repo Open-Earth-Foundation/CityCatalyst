@@ -46,6 +46,7 @@ import { Controller, useForm } from "react-hook-form";
 import { RadioGroup } from "@/components/ui/radio";
 import CustomSelectableButton from "@/components/custom-selectable-buttons";
 import CommaSeperatedInput from "./bulk-inventory-actions/CommaSeperatedInput";
+import { Toaster, toaster } from "@/components/ui/toaster";
 
 interface OrgData {
   contactEmail: string;
@@ -60,8 +61,8 @@ type CityDetails = {
   cityLocode: string;
 };
 export interface BulkCreationInputs {
-  cities: CityDetails[];
-  years: string[];
+  cities: string[];
+  years: number[];
   emails: string[];
   inventoryGoal: string;
   globalWarmingPotential: string;
@@ -133,6 +134,27 @@ const AdminPage = ({ params: { lng } }: { params: { lng: string } }) => {
       </Tabs.Trigger>
     );
   };
+  // Local states to hold our comma separated arrays
+  const [citiesArray, setCitiesArray] = useState<string[]>([]);
+  const [yearsArray, setYearsArray] = useState<number[]>([]);
+  const [emailsArray, setEmailsArray] = useState<string[]>([]);
+
+  // When a user updates one of the fields, also update the react-hook-form value:
+  const handleCitiesChange = (values: string[]) => {
+    setCitiesArray(values);
+    setValue("cities", values);
+  };
+
+  const handleYearsChange = (values: string[]) => {
+    const numericYears = values.map((year) => +year);
+    setYearsArray(numericYears);
+    setValue("years", numericYears);
+  };
+
+  const handleEmailsChange = (values: string[]) => {
+    setEmailsArray(values);
+    setValue("emails", values);
+  };
   const [selectedInventoryGoalValue, setSelectedInventoryGoalValue] =
     useState("");
   const [
@@ -141,7 +163,7 @@ const AdminPage = ({ params: { lng } }: { params: { lng: string } }) => {
   ] = useState("");
   let year;
   const inventoryGoalOptions: string[] = ["gpc_basic", "gpc_basic_plus"];
-  const globalWarmingPotential: string[] = ["ar5", "ar6"];
+  const globalWarmingPotential: string[] = ["AR5", "AR6"];
 
   // Handle inventory Goal Radio Input
   // Set default inventory goal form value
@@ -150,12 +172,46 @@ const AdminPage = ({ params: { lng } }: { params: { lng: string } }) => {
     setValue("globalWarmingPotential", "ar6");
   }, [setValue]);
 
-  const onSubmit = (data: BulkCreationInputs) => {
-    console.log(data);
+  // create bulk inventories api
+  const [createBulkInventories, { isLoading, isError }] =
+    api.useCreateBulkInventoriesMutation();
+
+  const onSubmit = async (data: BulkCreationInputs) => {
+    await createBulkInventories({
+      cityLocodes: data.cities,
+      emails: data.emails,
+      years: data.years,
+      scope: data.inventoryGoal,
+      gwp: data.globalWarmingPotential,
+    });
+
+    if (isLoading) {
+      toaster.create({
+        type: "loading",
+        description: t("bulk-inventory-creation-loading"),
+      });
+    } else if (!isError) {
+      toaster.create({
+        type: "success",
+        description: t("bulk-inventory-creation-success"),
+      });
+    } else {
+      toaster.create({
+        type: "error",
+        description: t("bulk-inventory-creation-failure"),
+      });
+    }
+    reset();
+    setCitiesArray([]);
+    setYearsArray([]);
+    setEmailsArray([]);
   };
 
   const onCancel = () => {
     reset();
+    setCitiesArray([]);
+    setYearsArray([]);
+    setEmailsArray([]);
   };
 
   return (
@@ -427,85 +483,114 @@ const AdminPage = ({ params: { lng } }: { params: { lng: string } }) => {
                       flexDir="column"
                       gap="36px"
                     >
-                      <CommaSeperatedInput
-                        field="cities"
-                        t={t}
-                        register={register}
-                        errors={errors}
-                        inputType="text"
-                        tipContent={
-                          <Box
-                            display={"flex"}
-                            gap="8px"
-                            alignItems="center"
-                            fontSize="body.sm"
-                            color="content.tertiary"
-                            fontWeight="400"
-                          >
-                            <Icon
-                              as={MdInfoOutline}
-                              color="content.link"
-                              boxSize={4}
-                            />
-                            <Text>{t("know-your-city-tip")}</Text>
-                            <Link
-                              href="https://unece.org/trade/cefact/unlocode-code-list-country-and-territory"
-                              textDecor="underline"
-                            >
-                              {t("un-locode-link")}
-                            </Link>
-                          </Box>
-                        }
+                      <Controller
+                        name="cities"
+                        defaultValue={[]}
+                        control={control}
+                        rules={{
+                          required: t("cities-input-required"),
+                        }}
+                        render={({ field, fieldState: { error } }) => (
+                          <CommaSeperatedInput
+                            initialValues={field.value}
+                            onChange={handleCitiesChange}
+                            field="cities"
+                            t={t}
+                            errors={error}
+                            inputType="text"
+                            tipContent={
+                              <Box
+                                display={"flex"}
+                                gap="8px"
+                                alignItems="center"
+                                fontSize="body.sm"
+                                color="content.tertiary"
+                                fontWeight="400"
+                              >
+                                <Icon
+                                  as={MdInfoOutline}
+                                  color="content.link"
+                                  boxSize={4}
+                                />
+                                <Text>{t("know-your-city-tip")}</Text>
+                                <Link
+                                  href="https://unece.org/trade/cefact/unlocode-code-list-country-and-territory"
+                                  textDecor="underline"
+                                >
+                                  {t("un-locode-link")}
+                                </Link>
+                              </Box>
+                            }
+                          />
+                        )}
                       />
-
-                      <CommaSeperatedInput
-                        field="years"
-                        t={t}
-                        register={register}
-                        errors={errors}
-                        inputType="number"
-                        tipContent={
-                          <Box
-                            display={"flex"}
-                            gap="8px"
-                            alignItems="center"
-                            fontSize="body.sm"
-                            color="content.tertiary"
-                            fontWeight="400"
-                          >
-                            <Icon
-                              as={MdInfoOutline}
-                              color="content.link"
-                              boxSize={4}
-                            />
-                            <Text>{t("years-input-tip")}</Text>
-                          </Box>
-                        }
+                      <Controller
+                        name="years"
+                        defaultValue={[]}
+                        control={control}
+                        rules={{
+                          required: t("cities-input-required"),
+                        }}
+                        render={({ field, fieldState: { error } }) => (
+                          <CommaSeperatedInput
+                            onChange={handleYearsChange}
+                            field="years"
+                            t={t}
+                            errors={error}
+                            inputType="number"
+                            tipContent={
+                              <Box
+                                display={"flex"}
+                                gap="8px"
+                                alignItems="center"
+                                fontSize="body.sm"
+                                color="content.tertiary"
+                                fontWeight="400"
+                              >
+                                <Icon
+                                  as={MdInfoOutline}
+                                  color="content.link"
+                                  boxSize={4}
+                                />
+                                <Text>{t("years-input-tip")}</Text>
+                              </Box>
+                            }
+                          />
+                        )}
                       />
-
-                      <CommaSeperatedInput
-                        field="emails"
-                        t={t}
-                        register={register}
-                        errors={errors}
-                        inputType="email"
-                        tipContent={
-                          <Box
-                            display={"flex"}
-                            gap="8px"
-                            alignItems="center"
-                            fontSize="body.sm"
-                            color="content.tertiary"
-                            fontWeight="400"
-                          >
-                            <Icon
-                              as={MdInfoOutline}
-                              color="content.link"
-                              boxSize={4}
-                            />
-                            <Text>{t("emails-input-tip")}</Text>
-                          </Box>
-                        }
+                      <Controller
+                        name="emails"
+                        defaultValue={[]}
+                        control={control}
+                        rules={{
+                          required: t("cities-input-required"),
+                        }}
+                        render={({ field, fieldState: { error } }) => (
+                          <CommaSeperatedInput
+                            onChange={handleEmailsChange}
+                            field="emails"
+                            t={t}
+                            errors={error}
+                            inputType="email"
+                            tipContent={
+                              <Box
+                                display={"flex"}
+                                gap="8px"
+                                alignItems="center"
+                                fontSize="body.sm"
+                                color="content.tertiary"
+                                fontWeight="400"
+                              >
+                                <Icon
+                                  as={MdInfoOutline}
+                                  color="content.link"
+                                  boxSize={4}
+                                />
+                                <Text>{t("emails-input-tip")}</Text>
+                              </Box>
+                            }
+                          />
+                        )}
                       />
                       {/* Inventory Goal */}
                       <Box w="full" py="36px">
@@ -757,6 +842,7 @@ const AdminPage = ({ params: { lng } }: { params: { lng: string } }) => {
                       <Button
                         type="submit"
                         alignSelf="flex-start"
+                        loading={isLoading}
                         p="32px"
                         onClick={handleSubmit(onSubmit)}
                       >
@@ -787,6 +873,7 @@ const AdminPage = ({ params: { lng } }: { params: { lng: string } }) => {
         t={t}
         onOpenChange={setIsModalOpen}
       />
+      <Toaster />
     </Box>
   );
 };

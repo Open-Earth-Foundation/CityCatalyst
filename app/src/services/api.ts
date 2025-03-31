@@ -69,6 +69,7 @@ export const api = createApi({
     "Projects",
     "Organization",
     "Project",
+    "ProjectUsers",
   ],
   baseQuery: fetchBaseQuery({ baseUrl: "/api/v0/", credentials: "include" }),
   endpoints: (builder) => {
@@ -949,6 +950,14 @@ export const api = createApi({
         transformResponse: (response: OrganizationResponse) => response,
         providesTags: ["Organizations", "Organization"],
       }),
+      getProjectUsers: builder.query({
+        query: (projectId: string) => ({
+          method: "GET",
+          url: `/projects/${projectId}/users`,
+        }),
+        transformResponse: (response: projectUserResponse[]) => response,
+        providesTags: ["ProjectUsers"],
+      }),
     };
   },
 });
@@ -1037,5 +1046,6 @@ export const {
   useUpdateOrganizationMutation,
   useEditProjectMutation,
   useDeleteProjectMutation,
+  useGetProjectUsersQuery,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

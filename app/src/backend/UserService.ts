@@ -1,7 +1,12 @@
 import { db } from "@/models";
 import createHttpError from "http-errors";
 
-import { ProjectWithCitiesResponse, Roles } from "@/util/types";
+import {
+  InviteStatus,
+  OrganizationRole,
+  ProjectWithCitiesResponse,
+  Roles,
+} from "@/util/types";
 import { type AppSession } from "@/lib/auth";
 import { City } from "@/models/City";
 import { Inventory } from "@/models/Inventory";
@@ -358,5 +363,71 @@ export default class UserService {
     }
 
     return projectsAndCities.concat(Object.values(groupedByProject));
+  }
+
+  public static async findUsersInProject(projectId: string) {
+    const project = await Project.findByPk(projectId as string);
+    if (!project) {
+      throw new createHttpError.NotFound("project-not-found");
+    }
+
+    const users: {
+      email: string;
+      status: InviteStatus;
+      role: OrganizationRole;
+      cityId?: string;
+    }[] = [];
+
+    // org level users
+    const orgInvites = await db.models.OrganizationInvite.findAll({
+      where: { organizationId: project.organizationId },
+    });
+
+    users.push(
+      ...orgInvites.map((invite) => ({
+        email: invite?.email as string,
+        status: invite?.status as InviteStatus,
+        role: OrganizationRole.ORG_ADMIN,
+      })),
+    );
+
+    // project level users
+    const projectInvites = await db.models.ProjectInvite.findAll({
+      where: { projectId },
+    });
+    users.push(
+      ...projectInvites.map((invite) => ({
+        email: invite?.email as string,
+        status: invite?.status as InviteStatus,
+        role: OrganizationRole.ADMIN,
+      })),
+    );
+
+    // city collaborators level users -invites only.
+    const cities = await db.models.City.findAll({
+      where: { projectId },
+      include: [
+        {
+          model: db.models.CityInvite,
+          as: "cityInvites",
+          attributes: ["email", "status"],
+        },
+      ],
+    });
+
+    console.log(cities);
+
+    const cityInvites = cities.flatMap((city) =>
+      city.cityInvites.map((invite) => ({
+        email: invite?.email as string,
+        status: invite?.status as InviteStatus,
+        role: OrganizationRole.COLLABORATOR,
+        cityId: city.cityId as string,
+      })),
+    );
+
+    users.push(...cityInvites);
+
+    return users;
   }
 }

@@ -224,7 +224,7 @@ export enum InviteStatus {
 export enum OrganizationRole {
   COLLABORATOR = "collaborator",
   ADMIN = "admin",
-  ORG_ADMIN = "org_admin",
+  ORG_ADMIN = "owner",
 }
 
 export interface GetUserCityInvitesResponse {
@@ -424,3 +424,10 @@ export type ProjectWithCities = {
 };
 
 export type ProjectWithCitiesResponse = ProjectWithCities[];
+
+export type ProjectUserResponse = {
+  email: string;
+  role: OrganizationRole;
+  status: InviteStatus;
+  cityId?: string;
+};

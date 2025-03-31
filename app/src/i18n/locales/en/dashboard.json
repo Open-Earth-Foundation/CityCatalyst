@@ -179,5 +179,8 @@
   "manage-missing-subsectors": "Manage missing sub-sectors",
   "source-open-climate": "Source: OpenClimate",
   "n-a": "N/A",
-  "projects": "Projects"
+  "projects": "Projects",
+  "project": "Project",
+  "select-project": "Select a Project",
+  "select-project-to-invite-collaborators": "Select project to invite collaborators"
 }

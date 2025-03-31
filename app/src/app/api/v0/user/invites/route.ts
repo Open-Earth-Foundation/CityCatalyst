@@ -10,9 +10,10 @@ import { render } from "@react-email/components";
 import { InviteUserToMultipleCitiesTemplate } from "@/lib/emails/InviteUserToMultipleCitiesTemplate";
 import { Op } from "sequelize";
 import { logger } from "@/services/logger";
-import { InviteStatus } from "@/util/types";
+import { InviteStatus, Roles } from "@/util/types";
 
 import { subDays } from "date-fns";
+import { mockSession } from "next-auth/client/__tests__/helpers/mocks";
 
 export const GET = apiHandler(async (req, { params, session }) => {
   if (!session) {
@@ -60,8 +61,22 @@ export const POST = apiHandler(async (req, { params, session }) => {
   }
   const inviteRequest = CreateUsersInvite.parse(await req.json());
   const { emails, cityIds } = inviteRequest;
+
+  interface WhereConditions {
+    cityId: { [Op.in]: string[] };
+    userId?: string;
+  }
+
+  const whereConditions: WhereConditions = {
+    cityId: { [Op.in]: cityIds },
+  };
+
+  if (!(session.user.role === Roles.Admin)) {
+    whereConditions.userId = session.user.id;
+  }
+
   const userCities = await db.models.CityUser.findAll({
-    where: { cityId: { [Op.in]: cityIds }, userId: session?.user.id },
+    where: whereConditions,
   });
 
   if (userCities.length !== cityIds.length) {

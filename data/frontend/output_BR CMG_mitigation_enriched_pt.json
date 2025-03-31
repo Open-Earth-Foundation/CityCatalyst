@@ -1,0 +1,1205 @@
+[
+    {
+        "locode": "BR CMG",
+        "cityName": "Corumb\u00e1",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0133",
+        "actionName": "Promote Urban Reforestation and Green Corridors",
+        "actionPriority": 1,
+        "action": {
+            "ActionID": "icare_0133",
+            "ActionName": "Promover o Reflorestamento Urbano e Corredores Verdes",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "land"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Aumentar a cobertura arb\u00f3rea urbana para mitigar o efeito de ilha de calor urbano e melhorar a biodiversidade.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 1,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 1,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "80-100"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Identifica\u00e7\u00e3o de \u00e1reas priorit\u00e1rias e sele\u00e7\u00e3o de esp\u00e9cies nativas e resilientes ao clima para o plantio de \u00e1rvores.",
+                "Parcerias com organiza\u00e7\u00f5es locais e viveiros, e aloca\u00e7\u00e3o de recursos para plantio e manuten\u00e7\u00e3o.",
+                "Envolvimento da comunidade para garantir cuidado e apoio a longo prazo."
+            ],
+            "KeyPerformanceIndicators": [
+                "Aumento na cobertura de dossel arb\u00f3reo urbano (%)",
+                "Comprimento total de corredores verdes criados ou restaurados (quil\u00f4metros)",
+                "Redu\u00e7\u00e3o nas temperaturas do efeito de ilha de calor urbano (\u00b0C)"
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR CMG",
+        "cityName": "Corumb\u00e1",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0050",
+        "actionName": "Implement Agroforestry Systems",
+        "actionPriority": 2,
+        "action": {
+            "ActionID": "icare_0050",
+            "ActionName": "Implementar Sistemas Agroflorestais",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "agriculture_forestry_and_fishing_activities"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Promover sistemas agroflorestais integrando \u00e1rvores na produ\u00e7\u00e3o de alimentos e pastagens, aumentando a biodiversidade e a captura de carbono.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "80-100"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Fornecimento de apoio t\u00e9cnico e orienta\u00e7\u00e3o aos agricultores sobre o design e implementa\u00e7\u00e3o de sistemas agroflorestais.",
+                "Desenvolvimento de incentivos financeiros ou subs\u00eddios para tornar a agrofloresta mais economicamente atrativa.",
+                "Cria\u00e7\u00e3o de pol\u00edticas que integrem pr\u00e1ticas agroflorestais no planejamento do uso da terra agr\u00edcola e nos sistemas de posse de terra."
+            ],
+            "KeyPerformanceIndicators": [
+                "Percentagem de terras agr\u00edcolas convertidas em sistemas agroflorestais (%).",
+                "N\u00famero de novos projetos agroflorestais implementados.",
+                "Aumento na captura de carbono em sistemas agroflorestais (toneladas de CO\u2082e/ano)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR CMG",
+        "cityName": "Corumb\u00e1",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0134",
+        "actionName": "Strengthen Mechanisms for Deforestation Control",
+        "actionPriority": 3,
+        "action": {
+            "ActionID": "icare_0134",
+            "ActionName": "Fortalecer Mecanismos para o Controle do Desmatamento",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "land"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Aprimorar o monitoramento e a fiscaliza\u00e7\u00e3o para prevenir o desmatamento ilegal e promover o uso sustent\u00e1vel da terra.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "80-100"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Forte estrutura legal, tecnologias avan\u00e7adas de monitoramento (sat\u00e9lites e drones) e capacita\u00e7\u00e3o para as autoridades locais.",
+                "Colabora\u00e7\u00e3o com comunidades locais e financiamento adequado para os esfor\u00e7os de fiscaliza\u00e7\u00e3o.",
+                "Transpar\u00eancia e responsabilidade na elabora\u00e7\u00e3o de relat\u00f3rios para garantir a implementa\u00e7\u00e3o eficaz."
+            ],
+            "KeyPerformanceIndicators": [
+                "\u00c1rea total monitorada para desmatamento (hectares/ano).",
+                "Redu\u00e7\u00e3o na taxa anual de desmatamento (%).",
+                "Quantidade de emiss\u00f5es evitadas pela redu\u00e7\u00e3o do desmatamento (tCO\u2082e)."
+            ],
+            "PowersAndMandates": [
+                "national"
+            ]
+        }
+    },
+    {
+        "locode": "BR CMG",
+        "cityName": "Corumb\u00e1",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0084",
+        "actionName": "Create Incentives for Agroforestry Practices in Livestock Systems",
+        "actionPriority": 4,
+        "action": {
+            "ActionID": "icare_0084",
+            "ActionName": "Criar Incentivos para Pr\u00e1ticas de Agroflorestas em Sistemas de Pecu\u00e1ria",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "agriculture_forestry_and_fishing_activities"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Criar incentivos financeiros e t\u00e9cnicos para integrar pr\u00e1ticas de agrofloresta\u00e7\u00e3o em sistemas de pecu\u00e1ria, promovendo a captura de carbono, a prote\u00e7\u00e3o do solo e a melhoria da biodiversidade.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "60-79"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Desenvolvimento de programas de incentivos financeiros, como subs\u00eddios ou isen\u00e7\u00f5es fiscais, para apoiar os agricultores na integra\u00e7\u00e3o da agrofloresta com sistemas de pecu\u00e1ria.",
+                "Fornecimento de assist\u00eancia t\u00e9cnica e treinamento aos agricultores sobre as melhores pr\u00e1ticas para a integra\u00e7\u00e3o da agrofloresta nas opera\u00e7\u00f5es de pecu\u00e1ria.",
+                "Colabora\u00e7\u00e3o com organiza\u00e7\u00f5es agr\u00edcolas e ambientais para monitorar e avaliar os impactos das pr\u00e1ticas agroflorestais na captura de carbono, sa\u00fade do solo e biodiversidade."
+            ],
+            "KeyPerformanceIndicators": [
+                "N\u00famero de incentivos financeiros fornecidos para integrar a agrofloresta em sistemas de pecu\u00e1ria.",
+                "Aumento na qualidade do solo e cobertura vegetal em propriedades manejadas (%).",
+                "Crescimento da biodiversidade em \u00e1reas de agrofloresta (% de esp\u00e9cies identificadas)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR CMG",
+        "cityName": "Corumb\u00e1",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0100",
+        "actionName": "Support Regenerative Agriculture Practices",
+        "actionPriority": 5,
+        "action": {
+            "ActionID": "icare_0100",
+            "ActionName": "Apoiar Pr\u00e1ticas de Agricultura Regenerativa",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "agriculture_forestry_and_fishing_activities"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Apoiar pr\u00e1ticas agr\u00edcolas regenerativas que se concentrem na restaura\u00e7\u00e3o da sa\u00fade do solo e na redu\u00e7\u00e3o das emiss\u00f5es de carbono.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "60-79"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Desenvolvimento de programas de treinamento e recursos para educar os agricultores sobre t\u00e9cnicas agr\u00edcolas regenerativas, como cobertura vegetal e redu\u00e7\u00e3o do preparo do solo.",
+                "Implementa\u00e7\u00e3o de incentivos financeiros ou subs\u00eddios para apoiar a ado\u00e7\u00e3o de pr\u00e1ticas regenerativas.",
+                "Colabora\u00e7\u00e3o com institui\u00e7\u00f5es de pesquisa agr\u00edcola para monitorar e documentar a efic\u00e1cia das pr\u00e1ticas regenerativas na captura de carbono e na melhoria da sa\u00fade do solo."
+            ],
+            "KeyPerformanceIndicators": [
+                "Aumento nos n\u00edveis de carbono org\u00e2nico do solo (toneladas/hectare).",
+                "Redu\u00e7\u00e3o no uso de \u00e1gua por hectare na produ\u00e7\u00e3o agr\u00edcola (%).",
+                "N\u00famero de projetos piloto de agricultura regenerativa implementados."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR CMG",
+        "cityName": "Corumb\u00e1",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0102",
+        "actionName": "Promote Sustainable Agricultural Practices",
+        "actionPriority": 6,
+        "action": {
+            "ActionID": "icare_0102",
+            "ActionName": "Promover Pr\u00e1ticas Agr\u00edcolas Sustent\u00e1veis",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "agriculture_forestry_and_fishing_activities"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Incentivar pr\u00e1ticas agr\u00edcolas que reduzam as emiss\u00f5es de gases de efeito estufa, como o uso reduzido de fertilizantes e agroqu\u00edmicos.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "60-79"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Desenvolvimento de programas educacionais e recursos para promover pr\u00e1ticas agr\u00edcolas sustent\u00e1veis entre os agricultores.",
+                "Implementa\u00e7\u00e3o de pol\u00edticas que incentivem a redu\u00e7\u00e3o do uso de fertilizantes e agroqu\u00edmicos, como subs\u00eddios para insumos org\u00e2nicos ou t\u00e9cnicas de cultivo sustent\u00e1vel.",
+                "Colabora\u00e7\u00e3o com organiza\u00e7\u00f5es agr\u00edcolas para fornecer suporte t\u00e9cnico e orienta\u00e7\u00e3o sobre pr\u00e1ticas de redu\u00e7\u00e3o de emiss\u00f5es."
+            ],
+            "KeyPerformanceIndicators": [
+                "Percentagem de terras agr\u00edcolas adotando pr\u00e1ticas sustent\u00e1veis (% do total de terras agr\u00edcolas).",
+                "Aumento na produtividade das culturas por hectare (toneladas/hectare) devido a m\u00e9todos sustent\u00e1veis.",
+                "Redu\u00e7\u00e3o no uso de \u00e1gua para agricultura (litros ou m\u00b3/hectare/ano)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR CMG",
+        "cityName": "Corumb\u00e1",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0096",
+        "actionName": "Promote Organic Farming",
+        "actionPriority": 7,
+        "action": {
+            "ActionID": "icare_0096",
+            "ActionName": "Promover a Agricultura Org\u00e2nica",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "agriculture_forestry_and_fishing_activities"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Incentivar a ado\u00e7\u00e3o de pr\u00e1ticas de agricultura org\u00e2nica que evitem o uso de produtos qu\u00edmicos e contribuam para a sa\u00fade do solo e captura de carbono.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "60-79"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Fornecimento de incentivos financeiros, subs\u00eddios ou subs\u00eddios para apoiar a transi\u00e7\u00e3o para pr\u00e1ticas de agricultura org\u00e2nica.",
+                "Desenvolvimento de redes de treinamento e apoio para educar os agricultores sobre m\u00e9todos de agricultura org\u00e2nica e seus benef\u00edcios.",
+                "Estabelecimento de sistemas de certifica\u00e7\u00e3o e estrat\u00e9gias de acesso ao mercado para garantir a viabilidade econ\u00f4mica dos produtos org\u00e2nicos."
+            ],
+            "KeyPerformanceIndicators": [
+                "Percentagem de terras agr\u00edcolas sob pr\u00e1ticas de agricultura org\u00e2nica (%).",
+                "Aumento no teor de carbono org\u00e2nico do solo (toneladas de carbono por hectare).",
+                "Redu\u00e7\u00e3o no uso de fertilizantes qu\u00edmicos e pesticidas (quilogramas/hectare/ano)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR CMG",
+        "cityName": "Corumb\u00e1",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0129",
+        "actionName": "Facilitate Technology Transfer for Conservation Practices",
+        "actionPriority": 8,
+        "action": {
+            "ActionID": "icare_0129",
+            "ActionName": "Facilitar a Transfer\u00eancia de Tecnologia para Pr\u00e1ticas de Conserva\u00e7\u00e3o",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "agriculture_forestry_and_fishing_activities"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Promover a ado\u00e7\u00e3o de pr\u00e1ticas agr\u00edcolas sustent\u00e1veis por meio de treinamento, projetos piloto e demonstra\u00e7\u00f5es de tecnologia.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 1,
+                "habitat": 2,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "60-79"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Fornecimento de programas de treinamento e estabelecimento de projetos piloto para demonstrar pr\u00e1ticas sustent\u00e1veis.",
+                "Parcerias com institui\u00e7\u00f5es de pesquisa para desenvolvimento de tecnologia e incentivos financeiros para encorajar a ado\u00e7\u00e3o.",
+                "Acesso a assist\u00eancia t\u00e9cnica para implementa\u00e7\u00e3o bem-sucedida."
+            ],
+            "KeyPerformanceIndicators": [
+                "N\u00famero de tecnologias de conserva\u00e7\u00e3o transferidas e aplicadas em fazendas.",
+                "Percentual de produtores treinados para implementar pr\u00e1ticas de conserva\u00e7\u00e3o.",
+                "Redu\u00e7\u00e3o na degrada\u00e7\u00e3o do solo ou aumento na cobertura vegetal (hectares)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR CMG",
+        "cityName": "Corumb\u00e1",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0130",
+        "actionName": "Conduct Technical Assistance and Rural Extension (ATER) Actions",
+        "actionPriority": 9,
+        "action": {
+            "ActionID": "icare_0130",
+            "ActionName": "Conduzir A\u00e7\u00f5es de Assist\u00eancia T\u00e9cnica e Extens\u00e3o Rural (ATER)",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "agriculture_forestry_and_fishing_activities"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Fornecer suporte t\u00e9cnico e treinamento aos produtores rurais para a produ\u00e7\u00e3o agr\u00edcola sustent\u00e1vel.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "60-79"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Disponibilidade de pessoal t\u00e9cnico qualificado e programas de forma\u00e7\u00e3o personalizados.",
+                "Parcerias com institui\u00e7\u00f5es de pesquisa agr\u00edcola e aloca\u00e7\u00e3o de recursos para o desenvolvimento de capacidades.",
+                "Envolvimento com produtores rurais para garantir a participa\u00e7\u00e3o ativa."
+            ],
+            "KeyPerformanceIndicators": [
+                "N\u00famero de produtores beneficiados com assist\u00eancia t\u00e9cnica rural (% do total).",
+                "Percentual de participantes adotando pr\u00e1ticas resilientes ao clima.",
+                "Vulnerabilidade reduzida das propriedades ao risco clim\u00e1tico (%)."
+            ],
+            "PowersAndMandates": [
+                "state"
+            ]
+        }
+    },
+    {
+        "locode": "BR CMG",
+        "cityName": "Corumb\u00e1",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0101",
+        "actionName": "Encourage the Use of Low-Emission Agricultural Machinery",
+        "actionPriority": 10,
+        "action": {
+            "ActionID": "icare_0101",
+            "ActionName": "Incentivar o Uso de M\u00e1quinas Agr\u00edcolas de Baixa Emiss\u00e3o",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "agriculture_forestry_and_fishing_activities"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Promover o uso de maquin\u00e1rio agr\u00edcola de baixo carbono, como tratores e equipamentos movidos a biocombust\u00edveis ou energia solar.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "60-79"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Estabelecimento de programas de financiamento ou incentivos para que os agricultores adquiram m\u00e1quinas agr\u00edcolas de baixo carbono.",
+                "Desenvolvimento de parcerias com fabricantes de m\u00e1quinas para criar e distribuir solu\u00e7\u00f5es de equipamentos sustent\u00e1veis.",
+                "Implementa\u00e7\u00e3o de programas de treinamento e apoio para ajudar os agricultores a integrar e manter m\u00e1quinas agr\u00edcolas de baixo carbono."
+            ],
+            "KeyPerformanceIndicators": [
+                "Redu\u00e7\u00e3o nas emiss\u00f5es de m\u00e1quinas agr\u00edcolas (toneladas de CO\u2082e/ano).",
+                "N\u00famero de subs\u00eddios ou incentivos fornecidos para m\u00e1quinas de baixa emiss\u00e3o.",
+                "Percentual de agricultores treinados para operar m\u00e1quinas de baixa emiss\u00e3o."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR CMG",
+        "cityName": "Corumb\u00e1",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0131",
+        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
+        "actionPriority": 11,
+        "action": {
+            "ActionID": "icare_0131",
+            "ActionName": "Priorizar a Aquisi\u00e7\u00e3o de Produtos Agroecol\u00f3gicos Produzidos Localmente em Compras P\u00fablicas",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "agriculture_forestry_and_fishing_activities"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Concentre-se em comprar alimentos sustent\u00e1veis, produzidos localmente, para institui\u00e7\u00f5es p\u00fablicas.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "20-39"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Desenvolvimento de pol\u00edticas de aquisi\u00e7\u00e3o e identifica\u00e7\u00e3o de fornecedores locais confi\u00e1veis.",
+                "Parcerias com produtores e aloca\u00e7\u00e3o de financiamento para programas de aquisi\u00e7\u00e3o sustent\u00e1vel.",
+                "Estabelecimento de sistemas de monitoramento para garantir a conformidade com os crit\u00e9rios de sustentabilidade."
+            ],
+            "KeyPerformanceIndicators": [
+                "Percentagem do volume total de compras p\u00fablicas provenientes de produtores agroecol\u00f3gicos locais.",
+                "Quantidade de emiss\u00f5es de CO\u2082 evitadas devido \u00e0 redu\u00e7\u00e3o da dist\u00e2ncia de transporte (tCO\u2082e).",
+                "N\u00famero de produtores agroecol\u00f3gicos beneficiados pelas compras p\u00fablicas."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR CMG",
+        "cityName": "Corumb\u00e1",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0118",
+        "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
+        "actionPriority": 12,
+        "action": {
+            "ActionID": "icare_0118",
+            "ActionName": "Promover o uso de bicicletas como um modo regular de transporte atrav\u00e9s da expans\u00e3o da infraestrutura e estrat\u00e9gias de conscientiza\u00e7\u00e3o e comunica\u00e7\u00e3o.",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "on-road"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Incentivar a ado\u00e7\u00e3o de bicicletas como um modo regular de transporte atrav\u00e9s da expans\u00e3o da infraestrutura ciclovi\u00e1ria, como faixas exclusivas para bicicletas, instala\u00e7\u00f5es de estacionamento e esta\u00e7\u00f5es de reparo. Al\u00e9m disso, implementar campanhas de conscientiza\u00e7\u00e3o e estrat\u00e9gias de comunica\u00e7\u00e3o para destacar os benef\u00edcios ambientais, de sa\u00fade e econ\u00f4micos do ciclismo, visando aumentar a participa\u00e7\u00e3o p\u00fablica e tornar o ciclismo uma op\u00e7\u00e3o de transporte vi\u00e1vel e sustent\u00e1vel para o deslocamento di\u00e1rio.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 1,
+                "mobility": 2,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "60-79",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Expandir a infraestrutura para ciclismo, incluindo faixas exclusivas para bicicletas, instala\u00e7\u00f5es de estacionamento e esta\u00e7\u00f5es de reparo.",
+                "Implementar campanhas de conscientiza\u00e7\u00e3o para destacar os benef\u00edcios ambientais, de sa\u00fade e econ\u00f4micos do ciclismo.",
+                "Promover a participa\u00e7\u00e3o p\u00fablica por meio de estrat\u00e9gias de comunica\u00e7\u00e3o, tornando o ciclismo uma op\u00e7\u00e3o vi\u00e1vel e sustent\u00e1vel para o deslocamento di\u00e1rio."
+            ],
+            "KeyPerformanceIndicators": [
+                "Comprimento das novas ciclovias adicionadas \u00e0 rede urbana (km).",
+                "Aumento anual no n\u00famero de usu\u00e1rios de bicicleta em \u00e1reas urbanas.",
+                "Redu\u00e7\u00e3o estimada nas emiss\u00f5es de CO\u2082 equivalente devido \u00e0 mudan\u00e7a para o ciclismo."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR CMG",
+        "cityName": "Corumb\u00e1",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0005",
+        "actionName": "Create credit lines for residential and community wind energy projects",
+        "actionPriority": 13,
+        "action": {
+            "ActionID": "icare_0005",
+            "ActionName": "Criar linhas de cr\u00e9dito para projetos de energia e\u00f3lica residencial e comunit\u00e1ria",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "stationary_energy"
+            ],
+            "Subsector": [
+                "energy_generation_supplied_to_the_grid"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Estabelecer programas de financiamento acess\u00edveis para apoiar o desenvolvimento e a ado\u00e7\u00e3o de sistemas de energia e\u00f3lica em resid\u00eancias e projetos comunit\u00e1rios, possibilitando uma transi\u00e7\u00e3o para fontes de energia mais limpas.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 2,
+                "housing": 2,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": "60-79",
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Disponibilidade de programas financeiros, subs\u00eddios ou subven\u00e7\u00f5es para tornar os sistemas de energia e\u00f3lica acess\u00edveis para resid\u00eancias e projetos comunit\u00e1rios",
+                "Acesso a expertise t\u00e9cnica e recursos para orientar a instala\u00e7\u00e3o e manuten\u00e7\u00e3o de sistemas de energia e\u00f3lica em ambientes residenciais e comunit\u00e1rios",
+                "Apoio pol\u00edtico e regulat\u00f3rio para incentivar a ado\u00e7\u00e3o de energia e\u00f3lica, incluindo processos de licenciamento simplificados e incentivos para projetos de energia limpa"
+            ],
+            "KeyPerformanceIndicators": [
+                "N\u00famero de projetos de energia e\u00f3lica financiados anualmente.",
+                "Capacidade instalada de sistemas de energia e\u00f3lica de projetos apoiados por cr\u00e9dito (MW).",
+                "Redu\u00e7\u00e3o estimada nas emiss\u00f5es equivalentes de CO\u2082 pela ado\u00e7\u00e3o de energia e\u00f3lica."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR CMG",
+        "cityName": "Corumb\u00e1",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0128",
+        "actionName": "Establish Municipal Programs for Payment for Environmental Services (PES)",
+        "actionPriority": 14,
+        "action": {
+            "ActionID": "icare_0128",
+            "ActionName": "Estabelecer Programas Municipais de Pagamento por Servi\u00e7os Ambientais (PSA)",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "land"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Implementar programas que paguem aos propriet\u00e1rios de terras por manterem ou melhorarem as condi\u00e7\u00f5es ambientais em suas propriedades.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": -1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "60-79"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Cria\u00e7\u00e3o de mecanismos de financiamento e crit\u00e9rios de elegibilidade claros com indicadores de desempenho.",
+                "Parcerias com organiza\u00e7\u00f5es ambientais e campanhas de conscientiza\u00e7\u00e3o para incentivar a participa\u00e7\u00e3o.",
+                "Integra\u00e7\u00e3o com estruturas legais para garantir a sustentabilidade do programa."
+            ],
+            "KeyPerformanceIndicators": [
+                "N\u00famero de contratos ativos de Pagamento por Servi\u00e7os Ambientais (PSA) assinados.",
+                "\u00c1rea total sob pr\u00e1ticas de conserva\u00e7\u00e3o ou restaura\u00e7\u00e3o incentivadas (hectares).",
+                "Quantidade de carbono sequestrado ou emiss\u00f5es evitadas atrav\u00e9s de a\u00e7\u00f5es de PSA (tCO\u2082e/ano)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR CMG",
+        "cityName": "Corumb\u00e1",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0127",
+        "actionName": "Accelerate Environmental Regularization of Rural Properties",
+        "actionPriority": 15,
+        "action": {
+            "ActionID": "icare_0127",
+            "ActionName": "Acelerar a Regulariza\u00e7\u00e3o Ambiental de Propriedades Rurais",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "agriculture_forestry_and_fishing_activities"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Implementar programas para registrar propriedades no Cadastro Ambiental Rural (CAR) e aderir aos compromissos de restaura\u00e7\u00e3o ambiental.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 2,
+                "habitat": 1,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "60-79"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Acesso a plataformas digitais e treinamento t\u00e9cnico para processos de registro e restaura\u00e7\u00e3o de propriedades.",
+                "Incentivos financeiros e parcerias com ag\u00eancias ambientais para apoiar a implementa\u00e7\u00e3o.",
+                "Mecanismos de monitoramento e fiscaliza\u00e7\u00e3o para garantir o cumprimento dos compromissos de restaura\u00e7\u00e3o."
+            ],
+            "KeyPerformanceIndicators": [
+                "N\u00famero de propriedades rurais com Cadastro Ambiental Rural (CAR) regularizado.",
+                "\u00c1rea total de vegeta\u00e7\u00e3o nativa protegida ou restaurada em propriedades regularizadas (hectares).",
+                "Redu\u00e7\u00e3o anual nas emiss\u00f5es de gases de efeito estufa (tCO\u2082e) devido \u00e0 regulariza\u00e7\u00e3o."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    },
+    {
+        "locode": "BR CMG",
+        "cityName": "Corumb\u00e1",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0052",
+        "actionName": "Reduce Deforestation and Degradation",
+        "actionPriority": 16,
+        "action": {
+            "ActionID": "ipcc_0052",
+            "ActionName": "Reduzir o Desmatamento e a Degrada\u00e7\u00e3o",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "land"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Reduzir o desmatamento e a degrada\u00e7\u00e3o florestal conserva os reservat\u00f3rios de carbono na vegeta\u00e7\u00e3o e no solo das florestas, evitando a perda de cobertura arb\u00f3rea e dist\u00farbios. Isso envolve controlar os fatores que levam ao desmatamento, melhorar a governan\u00e7a florestal e apoiar a gest\u00e3o comunit\u00e1ria das florestas.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 1,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": "Promove a posse segura da terra, apoia a gest\u00e3o florestal comunit\u00e1ria e garante a participa\u00e7\u00e3o de grupos marginalizados e ind\u00edgenas nos processos de tomada de decis\u00e3o.",
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "60-79"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Requer uma governan\u00e7a melhorada",
+                "pol\u00edticas claras de posse de terra",
+                "financiamento para \u00e1reas protegidas",
+                "participa\u00e7\u00e3o da comunidade nos esfor\u00e7os de conserva\u00e7\u00e3o florestal"
+            ],
+            "KeyPerformanceIndicators": [
+                "Redu\u00e7\u00e3o nas taxas de desmatamento",
+                "aumento da cobertura florestal",
+                "a quantidade de emiss\u00f5es de GEE evitadas por ano"
+            ],
+            "PowersAndMandates": null
+        }
+    },
+    {
+        "locode": "BR CMG",
+        "cityName": "Corumb\u00e1",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "c40_0042",
+        "actionName": "Biodiversity Expansion",
+        "actionPriority": 17,
+        "action": {
+            "ActionID": "c40_0042",
+            "ActionName": "Expans\u00e3o da Biodiversidade",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "As iniciativas de \"Expans\u00e3o da Biodiversidade\" visam preservar e expandir os espa\u00e7os verdes, promovendo a biodiversidade dentro das \u00e1reas urbanas. Ao preservar habitats naturais, as cidades melhoram os servi\u00e7os ecossist\u00eamicos e criam ambientes resilientes que apoiam uma flora e fauna diversificadas.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": "As iniciativas de \"Expans\u00e3o da Biodiversidade\" promovem equidade e inclus\u00e3o ao garantir que comunidades carentes tenham acesso a espa\u00e7os verdes preservados, que muitas vezes s\u00e3o escassos em \u00e1reas urbanas. Ao focar no aumento da biodiversidade nesses bairros, a a\u00e7\u00e3o aborda a justi\u00e7a ambiental ao melhorar a qualidade de vida de popula\u00e7\u00f5es vulner\u00e1veis que podem enfrentar maior exposi\u00e7\u00e3o \u00e0 polui\u00e7\u00e3o e acesso limitado \u00e0 natureza. Al\u00e9m disso, a cria\u00e7\u00e3o de ambientes resilientes apoia uma flora e fauna diversificadas, o que pode melhorar os ecossistemas locais dos quais essas comunidades dependem para benef\u00edcios recreativos, culturais e econ\u00f4micos. No geral, a iniciativa promove um senso de propriedade comunit\u00e1ria e envolvimento na preserva\u00e7\u00e3o de habitats naturais, garantindo que as vozes de grupos marginalizados sejam inclu\u00eddas no planejamento urbano e na gest\u00e3o ambiental.",
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "40-59"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Disponibilidade de financiamento para projetos de espa\u00e7os verdes",
+                "Envolvimento e apoio da comunidade para iniciativas de biodiversidade",
+                "Colabora\u00e7\u00e3o com governos locais e organiza\u00e7\u00f5es ambientais",
+                "Acesso a pesquisas cient\u00edficas sobre ecossistemas locais",
+                "Estruturas regulat\u00f3rias que apoiam a conserva\u00e7\u00e3o de terras e o planejamento urbano"
+            ],
+            "KeyPerformanceIndicators": [
+                "Aumento na \u00e1rea de espa\u00e7os verdes (hectares)",
+                "N\u00famero de esp\u00e9cies nativas introduzidas",
+                "Melhoria no \u00edndice de biodiversidade",
+                "Percentagem de \u00e1reas urbanas com espa\u00e7os verdes acess\u00edveis",
+                "Envolvimento da comunidade em programas de biodiversidade",
+                "Redu\u00e7\u00e3o no efeito de ilha de calor urbano",
+                "Aumento nas popula\u00e7\u00f5es de polinizadores",
+                "Melhoria nos indicadores de qualidade do ar",
+                "N\u00famero de parcerias com organiza\u00e7\u00f5es locais de conserva\u00e7\u00e3o",
+                "M\u00e9tricas de conscientiza\u00e7\u00e3o e educa\u00e7\u00e3o p\u00fablica"
+            ],
+            "PowersAndMandates": null
+        }
+    },
+    {
+        "locode": "BR CMG",
+        "cityName": "Corumb\u00e1",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0061",
+        "actionName": "Soil Carbon Management in Croplands and Grasslands",
+        "actionPriority": 18,
+        "action": {
+            "ActionID": "ipcc_0061",
+            "ActionName": "Gest\u00e3o de Carbono do Solo em Terras Agr\u00edcolas e Pastagens",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "land"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Implementa\u00e7\u00e3o de pr\u00e1ticas de manejo sustent\u00e1vel do solo em terras agr\u00edcolas e pastagens para aumentar o carbono org\u00e2nico do solo. As pr\u00e1ticas incluem manejo melhorado de culturas e nutrientes, redu\u00e7\u00e3o do preparo do solo, reten\u00e7\u00e3o de res\u00edduos, manejo de \u00e1gua e arroz, aplica\u00e7\u00e3o de biochar, variedades de gram\u00edneas melhoradas, manejo de lota\u00e7\u00e3o de gado e manejo de inc\u00eandios. Essas atividades visam aumentar a mat\u00e9ria org\u00e2nica do solo, mitigar as emiss\u00f5es de GEE e proporcionar co-benef\u00edcios para a biodiversidade, fornecimento de \u00e1gua e seguran\u00e7a alimentar.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 1,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": "Promove a inclus\u00e3o de pequenos agricultores e comunidades com recursos limitados, fornecendo pr\u00e1ticas econ\u00f4micas e adapt\u00e1veis regionalmente que melhoram a produtividade agr\u00edcola e a resili\u00eancia \u00e0s mudan\u00e7as clim\u00e1ticas.",
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "60-79"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "O sucesso depende da disponibilidade de recursos para monitoramento e verifica\u00e7\u00e3o",
+                "adapta\u00e7\u00e3o regional de pr\u00e1ticas",
+                "enfrentamento de barreiras como satura\u00e7\u00e3o do solo e quest\u00f5es de perman\u00eancia"
+            ],
+            "KeyPerformanceIndicators": [
+                "Aumento do carbono org\u00e2nico do solo",
+                "redu\u00e7\u00e3o nas emiss\u00f5es de GEE",
+                "melhoria na produtividade agr\u00edcola",
+                "melhorias na biodiversidade"
+            ],
+            "PowersAndMandates": null
+        }
+    },
+    {
+        "locode": "BR CMG",
+        "cityName": "Corumb\u00e1",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0136",
+        "actionName": "Support the Implementation of Ecological Fiscal Incentives",
+        "actionPriority": 19,
+        "action": {
+            "ActionID": "icare_0136",
+            "ActionName": "Apoiar a Implementa\u00e7\u00e3o de Incentivos Fiscais Ecol\u00f3gicos",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "land"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Incentivar a aplica\u00e7\u00e3o de impostos ecol\u00f3gicos e incentivos para promover a conserva\u00e7\u00e3o ambiental.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 1,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "20-39"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Estabelecer um quadro regulat\u00f3rio claro com taxas de impostos justas e incentivos para a sustentabilidade.",
+                "Implementar sistemas de monitoramento eficazes para rastrear a conformidade e medir o impacto.",
+                "Promover a conscientiza\u00e7\u00e3o p\u00fablica e fomentar a colabora\u00e7\u00e3o entre governos, empresas e comunidades."
+            ],
+            "KeyPerformanceIndicators": [
+                "N\u00famero de munic\u00edpios que adotaram incentivos fiscais ambientais.",
+                "Percentual da receita tribut\u00e1ria gasta em pr\u00e1ticas sustent\u00e1veis.",
+                "\u00c1rea ou n\u00famero de propriedades beneficiadas por pr\u00e1ticas de conserva\u00e7\u00e3o como resultado de incentivos."
+            ],
+            "PowersAndMandates": [
+                "state"
+            ]
+        }
+    },
+    {
+        "locode": "BR CMG",
+        "cityName": "Corumb\u00e1",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0099",
+        "actionName": "Support Agroecological Certification Programs",
+        "actionPriority": 20,
+        "action": {
+            "ActionID": "icare_0099",
+            "ActionName": "Apoiar Programas de Certifica\u00e7\u00e3o Agroecol\u00f3gica",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "agriculture_forestry_and_fishing_activities"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Incentivar a certifica\u00e7\u00e3o de produtos agroecol\u00f3gicos que atendam a crit\u00e9rios de sustentabilidade e tenham baixo impacto ambiental.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 1,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "20-39"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Desenvolvimento de padr\u00f5es de certifica\u00e7\u00e3o claros e acess\u00edveis para produtos agroecol\u00f3gicos que enfatizem a sustentabilidade e o baixo impacto ambiental.",
+                "Apoio a agricultores e produtores para atender aos requisitos de certifica\u00e7\u00e3o por meio de treinamento, assist\u00eancia financeira ou orienta\u00e7\u00e3o t\u00e9cnica.",
+                "Cria\u00e7\u00e3o de estrat\u00e9gias de marketing e parcerias para aumentar a visibilidade e a demanda por produtos agroecol\u00f3gicos certificados nos mercados locais e globais."
+            ],
+            "KeyPerformanceIndicators": [
+                "N\u00famero de agricultores ou produtores obtendo certifica\u00e7\u00f5es agroecol\u00f3gicas.",
+                "Percentagem de produtos agr\u00edcolas certificados no mercado (%).",
+                "Redu\u00e7\u00e3o no uso de insumos sint\u00e9ticos (por exemplo, fertilizantes, pesticidas)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ]
+        }
+    }
+]

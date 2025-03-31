@@ -11,14 +11,12 @@ Outputs:
 
 The following fields are being used for the comparison:
 Actions:
-- ActionType
 - Hazard
 - CoBenefits
 - GHGReductionPotential
 - AdaptationEffectiveness
 - CostInvestmentNeeded
 - TimelineForImplementation
-- Biome
 
 City:
 - PopulationSize
@@ -67,9 +65,11 @@ After the transformation, the following fields are being used for the comparison
 Raises:
     The function will raise an error if the dataframe is empty due to missing values.
     The function will raise an error if the action types are not valid.
+
+Execute:
+python -m prioritizer.utils.ml_comparator
 """
 
-# import pickle
 import pandas as pd
 import xgboost as xgb
 from pathlib import Path
@@ -605,9 +605,23 @@ def ml_compare(city: dict, action_A: dict, action_B: dict) -> int:
         df.drop(columns=columns_to_drop, inplace=True)
         return df
 
-    def prepare_co_benefits_data(df) -> pd.DataFrame:
+    def prepare_co_benefits_data_single_diff(df) -> pd.DataFrame:
+        """
+        This function returns the difference between the co-benefits of actionA and actionB.
+        A positive value means action A is better.
+        A negative value means action B is better.
 
-        # Extract all unique CoBenefits keys
+        It takes the total difference into account.
+
+        Each co-benefit can have a score between -2 and 2.
+        There are 7 co-benefits:
+
+        air_quality, water_quality, habitat, cost_of_living, housing, mobility, stakeholder_engagement
+
+        Return values are between -14 amd 14.
+        """
+
+        # List of co-benefit keys
         co_benefits_keys = [
             "air_quality",
             "water_quality",
@@ -618,25 +632,60 @@ def ml_compare(city: dict, action_A: dict, action_B: dict) -> int:
             "stakeholder_engagement",
         ]
 
-        # Compute differences between Action A and Action B directly
-        for key in co_benefits_keys:
-            df[f"CoBenefits_Diff_{key}"] = df.apply(
-                lambda row: (
-                    (
-                        row["actionA_CoBenefits"].get(key, 0)
-                        - row["actionB_CoBenefits"].get(key, 0)
-                    )
-                    if isinstance(row["actionA_CoBenefits"], dict)
-                    and isinstance(row["actionB_CoBenefits"], dict)
-                    else 0
-                ),
-                axis=1,
-            )
+        def compare_total_benefit(row):
+            if isinstance(row["actionA_CoBenefits"], dict) and isinstance(
+                row["actionB_CoBenefits"], dict
+            ):
+                a_total = sum(
+                    row["actionA_CoBenefits"].get(k, 0) for k in co_benefits_keys
+                )
+                b_total = sum(
+                    row["actionB_CoBenefits"].get(k, 0) for k in co_benefits_keys
+                )
+                return a_total - b_total
+            else:
+                return
+
+        # Apply comparison
+        df["CoBenefits_Diff_total"] = df.apply(compare_total_benefit, axis=1)
 
         # Drop the original CoBenefits dictionary columns
         df.drop(columns=["actionA_CoBenefits", "actionB_CoBenefits"], inplace=True)
 
         return df
+
+    # def prepare_co_benefits_data(df) -> pd.DataFrame:
+
+    #     # Extract all unique CoBenefits keys
+    #     co_benefits_keys = [
+    #         "air_quality",
+    #         "water_quality",
+    #         "habitat",
+    #         "cost_of_living",
+    #         "housing",
+    #         "mobility",
+    #         "stakeholder_engagement",
+    #     ]
+
+    #     # Compute differences between Action A and Action B directly
+    #     for key in co_benefits_keys:
+    #         df[f"CoBenefits_Diff_{key}"] = df.apply(
+    #             lambda row: (
+    #                 (
+    #                     row["actionA_CoBenefits"].get(key, 0)
+    #                     - row["actionB_CoBenefits"].get(key, 0)
+    #                 )
+    #                 if isinstance(row["actionA_CoBenefits"], dict)
+    #                 and isinstance(row["actionB_CoBenefits"], dict)
+    #                 else 0
+    #             ),
+    #             axis=1,
+    #         )
+
+    #     # Drop the original CoBenefits dictionary columns
+    #     df.drop(columns=["actionA_CoBenefits", "actionB_CoBenefits"], inplace=True)
+
+    #     return df
 
     def prepare_biome_data(df) -> pd.DataFrame:
 
@@ -682,6 +731,10 @@ def ml_compare(city: dict, action_A: dict, action_B: dict) -> int:
                 "city_elevation",
                 "ActionA",
                 "ActionB",
+                "actionA_mitigation",
+                "actionB_mitigation",
+                "actionA_adaptation",
+                "actionB_adaptation",
                 "biome_desert",
                 "biome_grassland_savanna",
                 "biome_tundra",
@@ -724,17 +777,16 @@ def ml_compare(city: dict, action_A: dict, action_B: dict) -> int:
     df_transformed = df.copy()
 
     # Prepare the data for ML comparison (feature engineering)
-    # df_transformed = prepare_emission_reduction_data(df_transformed)
     df_transformed = prepare_emission_reduction_data_single_diff(df_transformed)
     df_transformed = prepare_action_type_data(df_transformed)
     df_transformed = prepare_cost_investment_needed_data(df_transformed)
     df_transformed = prepare_timeline_data(df_transformed)
     df_transformed = prepare_adaptation_effectiveness_data(df_transformed)
     df_transformed = process_ccra_hazards_adaptation_effectiveness(df_transformed)
-    df_transformed = prepare_co_benefits_data(df_transformed)
+    df_transformed = prepare_co_benefits_data_single_diff(df_transformed)
     df_transformed = prepare_biome_data(df_transformed)
 
-    # Final feature cleanup
+    # Final feature cleanup, removing all columns that are not used in the model
     df_transformed = prepare_final_features(df_transformed)
 
     # Before dropping rows, check which columns have missing values

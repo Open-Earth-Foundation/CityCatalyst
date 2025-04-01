@@ -34,7 +34,8 @@ import {
   ProjectWithCities,
   RequiredScopesResponse,
   ResultsResponse,
-  SectorBreakdownResponse, UserAccessResponse,
+  SectorBreakdownResponse,
+  UserAccessResponse,
   UserFileResponse,
   UserInfoResponse,
   UserInviteResponse,
@@ -71,7 +72,7 @@ export const api = createApi({
     "Organization",
     "Project",
     "ProjectUsers",
-    "UserAccessStatus"
+    "UserAccessStatus",
   ],
   baseQuery: fetchBaseQuery({ baseUrl: "/api/v0/", credentials: "include" }),
   endpoints: (builder) => {
@@ -957,6 +958,32 @@ export const api = createApi({
         transformResponse: (response: OrganizationResponse) => response,
         providesTags: ["Organizations", "Organization"],
       }),
+      createBulkInventories: builder.mutation({
+        query: (data: {
+          emails: string[];
+          cityLocodes: string[];
+          years: number[];
+          scope: string;
+          gwp: string;
+        }) => ({
+          url: `/admin/bulk`,
+          method: "POST",
+          body: data,
+        }),
+        transformResponse: (response: any) => response,
+      }),
+      connectDataSources: builder.mutation({
+        query: (data: {
+          userEmail: string;
+          cityLocodes: string[];
+          years: number[];
+        }) => ({
+          url: `/admin/connect-sources`,
+          method: "POST",
+          body: data,
+        }),
+        transformResponse: (response: any) => response,
+      }),
       getProjectUsers: builder.query({
         query: (projectId: string) => ({
           method: "GET",
@@ -994,9 +1021,9 @@ export const api = createApi({
           method: "GET",
           url: `/user/access-status`,
         }),
-        transformResponse: (response: UserAccessResponse ) => response,
+        transformResponse: (response: UserAccessResponse) => response,
         providesTags: ["UserAccessStatus"],
-      })
+      }),
     };
   },
 });
@@ -1085,7 +1112,9 @@ export const {
   useUpdateOrganizationMutation,
   useEditProjectMutation,
   useDeleteProjectMutation,
+  useCreateBulkInventoriesMutation,
+  useConnectDataSourcesMutation,
   useGetProjectUsersQuery,
-    useGetUserAccessStatusQuery
+  useGetUserAccessStatusQuery,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

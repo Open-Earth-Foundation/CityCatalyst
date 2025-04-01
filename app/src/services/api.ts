@@ -41,6 +41,7 @@ import {
   UsersInvitesRequest,
   UsersInvitesResponse,
   YearOverYearResultsResponse,
+  ProjectUserResponse,
 } from "@/util/types";
 import type { GeoJSON } from "geojson";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
@@ -69,6 +70,7 @@ export const api = createApi({
     "Projects",
     "Organization",
     "Project",
+    "ProjectUsers",
   ],
   baseQuery: fetchBaseQuery({ baseUrl: "/api/v0/", credentials: "include" }),
   endpoints: (builder) => {
@@ -629,6 +631,7 @@ export const api = createApi({
         transformResponse: (response: UsersInvitesResponse) => {
           return response;
         },
+        invalidatesTags: ["ProjectUsers", "Invites"],
       }),
       acceptInvite: builder.mutation<AcceptInviteResponse, AcceptInviteRequest>(
         {
@@ -915,7 +918,11 @@ export const api = createApi({
           },
         }),
         transformResponse: (response: any) => response,
-        invalidatesTags: ["OrganizationInvite", "Organizations"],
+        invalidatesTags: [
+          "OrganizationInvite",
+          "Organizations",
+          "ProjectUsers",
+        ],
       }),
       getOrganizations: builder.query({
         query: () => ({
@@ -948,6 +955,38 @@ export const api = createApi({
         }),
         transformResponse: (response: OrganizationResponse) => response,
         providesTags: ["Organizations", "Organization"],
+      }),
+      getProjectUsers: builder.query({
+        query: (projectId: string) => ({
+          method: "GET",
+          url: `/projects/${projectId}/users`,
+        }),
+        transformResponse: (response: ProjectUserResponse[]) => response,
+        providesTags: ["ProjectUsers"],
+      }),
+      deleteProjectUser: builder.mutation({
+        query: (data: { projectId: string; email: string }) => ({
+          method: "DELETE",
+          url: `/projects/${data.projectId}/users?email=${data.email}`,
+        }),
+        transformResponse: (response: any) => response,
+        invalidatesTags: ["ProjectUsers"],
+      }),
+      deleteCityUser: builder.mutation({
+        query: (data: { cityId: string; email: string }) => ({
+          method: "DELETE",
+          url: `/city/${data.cityId}/user?email=${data.email}`,
+        }),
+        transformResponse: (response: any) => response,
+        invalidatesTags: ["ProjectUsers"],
+      }),
+      deleteOrganizationAdminUser: builder.mutation({
+        query: (data: { organizationId: string; email: string }) => ({
+          method: "DELETE",
+          url: `/organizations/${data.organizationId}/users?email=${data.email}`,
+        }),
+        transformResponse: (response: any) => response,
+        invalidatesTags: ["ProjectUsers"],
       }),
     };
   },
@@ -1037,5 +1076,6 @@ export const {
   useUpdateOrganizationMutation,
   useEditProjectMutation,
   useDeleteProjectMutation,
+  useGetProjectUsersQuery,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

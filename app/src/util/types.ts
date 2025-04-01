@@ -424,3 +424,10 @@ export type ProjectWithCities = {
 };
 
 export type ProjectWithCitiesResponse = ProjectWithCities[];
+
+export type ProjectUserResponse = {
+  email: string;
+  role: OrganizationRole;
+  status: InviteStatus;
+  cityId?: string;
+};

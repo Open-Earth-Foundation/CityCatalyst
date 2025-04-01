@@ -560,4 +560,36 @@ export default class UserService {
       );
     }
   }
+
+  public static async findUserAccessStatus(userId: string) {
+    const responseObject = {
+      isOrgOwner: false,
+      isProjectAdmin: false,
+      isCollaborator: false,
+    };
+
+    const orgOwner = await db.models.OrganizationAdmin.findOne({
+      where: { userId },
+    });
+    if (orgOwner) {
+      responseObject.isOrgOwner = true;
+      return responseObject;
+    }
+    const projectAdmin = await db.models.ProjectAdmin.findOne({
+      where: { userId },
+    });
+    if (projectAdmin) {
+      responseObject.isProjectAdmin = true;
+      return responseObject;
+    }
+
+    const collaborator = await db.models.CityUser.findOne({
+      where: { userId },
+    });
+    if (collaborator) {
+      responseObject.isCollaborator = true;
+      return responseObject;
+    }
+    return responseObject;
+  }
 }

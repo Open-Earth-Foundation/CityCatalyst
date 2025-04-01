@@ -81,6 +81,7 @@ export interface UserInfoResponse {
   name: string;
   defaultInventoryId: string | null;
   role: Roles;
+  email?: string;
 }
 
 export type DataSource = DataSourceAttributes & {
@@ -431,3 +432,9 @@ export type ProjectUserResponse = {
   status: InviteStatus;
   cityId?: string;
 };
+
+export type UserAccessResponse = {
+  isOrgOwner: boolean,
+  isProjectAdmin: boolean,
+  isCollaborator: boolean,
+}

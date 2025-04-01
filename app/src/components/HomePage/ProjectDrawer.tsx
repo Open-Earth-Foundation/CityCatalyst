@@ -241,13 +241,13 @@ const ProjectDrawer = ({
   isOpen: boolean;
   onClose: () => void;
   onOpenChange: (val: OpenChangeDetails) => void;
-  organizationId: string;
-  currentInventoryId: string;
+  organizationId?: string;
+  currentInventoryId?: string;
 }) => {
   const { t } = useTranslation(lng, "dashboard");
   const { data: projectsData, isLoading } = useGetProjectsQuery(
     {
-      organizationId,
+      organizationId: organizationId!,
     },
     {
       skip: !organizationId,
@@ -314,7 +314,7 @@ const ProjectDrawer = ({
               selectProject={selectProject}
             />
           )}
-          {selectedProjectData && (
+          {selectedProjectData && currentInventoryId && (
             <SingleProjectView
               t={t}
               currentInventoryId={currentInventoryId}

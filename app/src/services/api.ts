@@ -972,6 +972,32 @@ export const api = createApi({
         transformResponse: (response: OrganizationResponse) => response,
         providesTags: ["Organizations", "Organization"],
       }),
+      createBulkInventories: builder.mutation({
+        query: (data: {
+          emails: string[];
+          cityLocodes: string[];
+          years: number[];
+          scope: string;
+          gwp: string;
+        }) => ({
+          url: `/admin/bulk`,
+          method: "POST",
+          body: data,
+        }),
+        transformResponse: (response: any) => response,
+      }),
+      connectDataSources: builder.mutation({
+        query: (data: {
+          userEmail: string;
+          cityLocodes: string[];
+          years: number[];
+        }) => ({
+          url: `/admin/connect-sources`,
+          method: "POST",
+          body: data,
+        }),
+        transformResponse: (response: any) => response,
+      }),
       getProjectUsers: builder.query({
         query: (projectId: string) => ({
           method: "GET",
@@ -1109,6 +1135,8 @@ export const {
   useUpdateOrganizationMutation,
   useEditProjectMutation,
   useDeleteProjectMutation,
+  useCreateBulkInventoriesMutation,
+  useConnectDataSourcesMutation,
   useGetProjectUsersQuery,
   useGetUserAccessStatusQuery,
 } = api;

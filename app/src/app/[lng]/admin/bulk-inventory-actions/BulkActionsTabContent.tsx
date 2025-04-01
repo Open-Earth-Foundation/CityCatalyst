@@ -143,10 +143,6 @@ const BulkActionsTabContent: FC<BulkActionsTabContentProps> = ({ t }) => {
         }
       });
     }
-    // reset();
-    // setCitiesArray([]);
-    // setYearsArray([]);
-    // setEmailsArray([]);
   };
 
   // Show toast notifications for connect sources

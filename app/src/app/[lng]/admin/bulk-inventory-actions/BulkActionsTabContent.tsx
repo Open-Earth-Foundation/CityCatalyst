@@ -168,7 +168,7 @@ const BulkActionsTabContent: FC<BulkActionsTabContentProps> = ({ t }) => {
           {t("bulk-inventory-creation")}
         </Heading>
         <Text color="content.tertiary" fontSize="body.lg">
-          {t("bulk-inventory-creation-caption")}{" "}
+          {t("bulk-inventory-creation-caption")}
         </Text>
       </Box>
       <Box>

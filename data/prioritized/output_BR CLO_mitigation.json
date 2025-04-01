@@ -1,182 +1,204 @@
-[
-    {
-        "locode": "BR CLO",
-        "cityName": "Campo Largo",
-        "region": "PR",
-        "regionName": "Paran\u00e1",
-        "actionId": "icare_0118",
-        "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
-        "actionPriority": 1
-    },
-    {
-        "locode": "BR CLO",
-        "cityName": "Campo Largo",
-        "region": "PR",
-        "regionName": "Paran\u00e1",
-        "actionId": "icare_0005",
-        "actionName": "Create credit lines for residential and community wind energy projects",
-        "actionPriority": 2
-    },
-    {
-        "locode": "BR CLO",
-        "cityName": "Campo Largo",
-        "region": "PR",
-        "regionName": "Paran\u00e1",
-        "actionId": "icare_0121",
-        "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
-        "actionPriority": 3
-    },
-    {
-        "locode": "BR CLO",
-        "cityName": "Campo Largo",
-        "region": "PR",
-        "regionName": "Paran\u00e1",
-        "actionId": "icare_0094",
-        "actionName": "Adoption of biomethane in public fleets.",
-        "actionPriority": 4
-    },
-    {
-        "locode": "BR CLO",
-        "cityName": "Campo Largo",
-        "region": "PR",
-        "regionName": "Paran\u00e1",
-        "actionId": "icare_0088",
-        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
-        "actionPriority": 5
-    },
-    {
-        "locode": "BR CLO",
-        "cityName": "Campo Largo",
-        "region": "PR",
-        "regionName": "Paran\u00e1",
-        "actionId": "icare_0092",
-        "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
-        "actionPriority": 6
-    },
-    {
-        "locode": "BR CLO",
-        "cityName": "Campo Largo",
-        "region": "PR",
-        "regionName": "Paran\u00e1",
-        "actionId": "icare_0057",
-        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
-        "actionPriority": 7
-    },
-    {
-        "locode": "BR CLO",
-        "cityName": "Campo Largo",
-        "region": "PR",
-        "regionName": "Paran\u00e1",
-        "actionId": "icare_0025",
-        "actionName": "Promote energy-efficient low-income housing",
-        "actionPriority": 8
-    },
-    {
-        "locode": "BR CLO",
-        "cityName": "Campo Largo",
-        "region": "PR",
-        "regionName": "Paran\u00e1",
-        "actionId": "icare_0090",
-        "actionName": "Adoption of electric drones for last-mile deliveries.",
-        "actionPriority": 9
-    },
-    {
-        "locode": "BR CLO",
-        "cityName": "Campo Largo",
-        "region": "PR",
-        "regionName": "Paran\u00e1",
-        "actionId": "icare_0133",
-        "actionName": "Promote Urban Reforestation and Green Corridors",
-        "actionPriority": 10
-    },
-    {
-        "locode": "BR CLO",
-        "cityName": "Campo Largo",
-        "region": "PR",
-        "regionName": "Paran\u00e1",
-        "actionId": "icare_0117",
-        "actionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
-        "actionPriority": 11
-    },
-    {
-        "locode": "BR CLO",
-        "cityName": "Campo Largo",
-        "region": "PR",
-        "regionName": "Paran\u00e1",
-        "actionId": "icare_0068",
-        "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
-        "actionPriority": 12
-    },
-    {
-        "locode": "BR CLO",
-        "cityName": "Campo Largo",
-        "region": "PR",
-        "regionName": "Paran\u00e1",
-        "actionId": "icare_0044",
-        "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
-        "actionPriority": 13
-    },
-    {
-        "locode": "BR CLO",
-        "cityName": "Campo Largo",
-        "region": "PR",
-        "regionName": "Paran\u00e1",
-        "actionId": "icare_0027",
-        "actionName": "Create financing programs for local renewable energy projects",
-        "actionPriority": 14
-    },
-    {
-        "locode": "BR CLO",
-        "cityName": "Campo Largo",
-        "region": "PR",
-        "regionName": "Paran\u00e1",
-        "actionId": "c40_0033",
-        "actionName": "15/30-Minute Areas",
-        "actionPriority": 15
-    },
-    {
-        "locode": "BR CLO",
-        "cityName": "Campo Largo",
-        "region": "PR",
-        "regionName": "Paran\u00e1",
-        "actionId": "icare_0042",
-        "actionName": "Encourage renewable energy policies at the municipal level",
-        "actionPriority": 16
-    },
-    {
-        "locode": "BR CLO",
-        "cityName": "Campo Largo",
-        "region": "PR",
-        "regionName": "Paran\u00e1",
-        "actionId": "icare_0131",
-        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
-        "actionPriority": 17
-    },
-    {
-        "locode": "BR CLO",
-        "cityName": "Campo Largo",
-        "region": "PR",
-        "regionName": "Paran\u00e1",
-        "actionId": "icare_0099",
-        "actionName": "Support Agroecological Certification Programs",
-        "actionPriority": 18
-    },
-    {
-        "locode": "BR CLO",
-        "cityName": "Campo Largo",
-        "region": "PR",
-        "regionName": "Paran\u00e1",
-        "actionId": "icare_0136",
-        "actionName": "Support the Implementation of Ecological Fiscal Incentives",
-        "actionPriority": 19
-    },
-    {
-        "locode": "BR CLO",
-        "cityName": "Campo Largo",
-        "region": "PR",
-        "regionName": "Paran\u00e1",
-        "actionId": "ipcc_0006",
-        "actionName": "Teleworking",
-        "actionPriority": 20
-    }
-]
+{
+    "actions": [
+        {
+            "locode": "LOC1",
+            "cityName": "Metropolis",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "A1",
+            "actionName": "New Building Standards",
+            "actionPriority": 1,
+            "explanation": "For the city Metropolis, the new building standards significantly contribute to reducing emissions by ensuring that new constructions adhere to advanced energy efficiency practices. This action is particularly suited to the high-density urban environment and targets the sector with notable energy consumption. It offers long-term benefits through enhanced urban resilience and improved air quality. The strategy aligns well with the city's capacity to implement modern building practices in line with sustainability goals."
+        },
+        {
+            "locode": "LOC2",
+            "cityName": "Metropolis",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "A2",
+            "actionName": "Bus Emissions Reduction",
+            "actionPriority": 2,
+            "explanation": "For the city Metropolis, the bus emissions reduction strategy is valued for its direct impact on mitigating greenhouse gas emissions within the transportation sector. It leverages the city's extensive public transit network and helps reduce urban air pollution. The action is designed with relatively few implementation dependencies, ensuring a cost-effective transition towards cleaner public transport. This approach also complements broader mobility improvements and risk reduction measures."
+        },
+        {
+            "locode": "LOC3",
+            "cityName": "Metropolis",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "A3",
+            "actionName": "Solar Energy Incentives",
+            "actionPriority": 3,
+            "explanation": "For the city Metropolis, solar energy incentives provide a forward-thinking approach to harnessing renewable energy in a manner well suited to local climatic conditions. This action promotes a diversification of the city’s energy mix while contributing to robust emissions reduction. It encourages community engagement and supports long-term sustainability regarding energy security. The initiative takes advantage of the city’s natural resources, aligning with its broader environmental management strategies."
+        },
+        {
+            "locode": "LOC4",
+            "cityName": "Metropolis",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "A4",
+            "actionName": "Green Roofs",
+            "actionPriority": 4,
+            "explanation": "For the city Metropolis, green roofs are recognized for enhancing building insulation and mitigating the urban heat island effect. This action not only contributes to lowered energy consumption but also improves stormwater management and urban biodiversity. It fits naturally within the city’s environmental framework and addresses unique urban density challenges. The measure is well-adapted to the local context and promises sustained improvements in urban quality of life."
+        },
+        {
+            "locode": "LOC5",
+            "cityName": "Metropolis",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "A5",
+            "actionName": "Urban Tree Planting",
+            "actionPriority": 5,
+            "explanation": "For the city Metropolis, urban tree planting is an effective action that aids in reducing local carbon levels while improving urban aesthetics and air quality. This strategy supports local environmental balance and resonates with the city's need to mitigate urban heat. It is relatively simple to implement and offers community-based benefits through enhanced green spaces. The initiative is well-aligned with the city's broader climate resilience efforts."
+        },
+        {
+            "locode": "LOC6",
+            "cityName": "Metropolis",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "A6",
+            "actionName": "Public Transit Improvements",
+            "actionPriority": 6,
+            "explanation": "For the city Metropolis, improvements in public transit are prioritized due to their positive impact on reducing greenhouse gas emissions from private vehicles. This action builds on the existing transit infrastructure of the city and addresses congestion while enhancing air quality. It also offers socio-economic benefits by promoting more inclusive urban mobility. The approach reflects a well-rounded strategy that combines environmental benefits with operational feasibility."
+        },
+        {
+            "locode": "LOC7",
+            "cityName": "Metropolis",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "A7",
+            "actionName": "Waste Management Enhancements",
+            "actionPriority": 7,
+            "explanation": "For the city Metropolis, waste management enhancements target emissions reductions associated with urban waste processes and improve overall environmental cleanliness. The action aligns with the city’s commitment to modernizing infrastructure while reducing public health risks related to waste mismanagement. It provides a structured approach to resource optimization and urban sustainability. This measure supports long-term resilience by addressing both environmental and social dimensions."
+        },
+        {
+            "locode": "LOC8",
+            "cityName": "Metropolis",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "A8",
+            "actionName": "Water Conservation Initiatives",
+            "actionPriority": 8,
+            "explanation": "For the city Metropolis, water conservation initiatives are highly pertinent given the urban need to manage water resources efficiently. This action contributes to the city’s strategy by promoting sustainable usage and mitigating risks associated with water scarcity. It supports community wellbeing and aligns with broader environmental management objectives. The approach is practical and builds on the city’s existing capacity to navigate resource constraints."
+        },
+        {
+            "locode": "LOC9",
+            "cityName": "Metropolis",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "A9",
+            "actionName": "Energy Efficiency Programs",
+            "actionPriority": 9,
+            "explanation": "For the city Metropolis, energy efficiency programs are designed to transform energy consumption patterns and lower overall emissions. This action successfully targets high-consumption sectors while delivering sustainable economic and environmental benefits. It is well-suited to the urban environment and leverages modern technologies supported by the city's capacities. The measure also addresses potential risks by promoting a systematic upgrade to existing infrastructures."
+        },
+        {
+            "locode": "LOC10",
+            "cityName": "Metropolis",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "A10",
+            "actionName": "Industrial Emission Controls",
+            "actionPriority": 10,
+            "explanation": "For the city Metropolis, industrial emission controls focus on mitigating high levels of greenhouse gas releases from critical industrial sectors. This initiative is specifically aligned with the city’s need to address areas with significant emissions challenges. It contributes to improved urban air quality while reinforcing regulatory efforts that support sustainable industrial practices. The strategy is integrated within the city’s broader framework to balance economic activity and environmental stewardship."
+        },
+        {
+            "locode": "LOC11",
+            "cityName": "Metropolis",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "A11",
+            "actionName": "Carbon Capture Systems",
+            "actionPriority": 11,
+            "explanation": "For the city Metropolis, carbon capture systems represent an innovative measure aimed at reducing residual emissions from hard-to-abate sectors. The action aligns with the city’s long-term vision of integrating advanced technology to complement traditional mitigation efforts. It offers a promising pathway towards addressing persistent emission challenges while fostering a culture of innovation. The initiative is designed to work within the city's existing technological and regulatory frameworks."
+        },
+        {
+            "locode": "LOC12",
+            "cityName": "Metropolis",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "A12",
+            "actionName": "Smart Grid Deployment",
+            "actionPriority": 12,
+            "explanation": "For the city Metropolis, smart grid deployment is an impactful action that modernizes energy distribution and enhances overall system efficiency. This strategy supports the integration of renewable energy sources and facilitates a responsive urban energy network. It aligns well with the city's capacity for technological innovation and urban planning. The action is designed to deliver both environmental and operational advantages with a strategic focus on sustainability."
+        },
+        {
+            "locode": "LOC13",
+            "cityName": "Metropolis",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "A13",
+            "actionName": "Sustainable Urban Drainage",
+            "actionPriority": 13,
+            "explanation": "For the city Metropolis, sustainable urban drainage systems are valued for their capacity to reduce flood risks and improve stormwater management. This approach is particularly well-matched with the city’s infrastructure challenges and frequent rainfall events. It not only supports effective water management but also helps enhance green urban spaces that can mitigate heat effects. The action is a practical solution that integrates seamlessly with long-term urban resilience plans."
+        },
+        {
+            "locode": "LOC14",
+            "cityName": "Metropolis",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "A14",
+            "actionName": "Cycling Infrastructure Development",
+            "actionPriority": 14,
+            "explanation": "For the city Metropolis, the development of cycling infrastructure promotes sustainable mobility by reducing reliance on motorized transport. This action fits well with the urban need to decongest streets and lower emissions from transportation. It encourages community engagement and improves public health outcomes by supporting active lifestyles. The strategy is both cost-effective and supportive of the city’s transition towards greener urban transit solutions."
+        },
+        {
+            "locode": "LOC15",
+            "cityName": "Metropolis",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "A15",
+            "actionName": "Renewable Energy Integration",
+            "actionPriority": 15,
+            "explanation": "For the city Metropolis, integrating renewable energy sources into the existing power system is a forward-looking initiative that supports long-term sustainability. This action smartly leverages local natural resources while reducing dependency on fossil fuels. It is well-aligned with the city’s environmental aspirations and risk reduction strategies. The approach is both strategic and well-supported by existing capacities for infrastructure adaptation and energy innovation."
+        },
+        {
+            "locode": "LOC16",
+            "cityName": "Metropolis",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "A16",
+            "actionName": "Electric Vehicle Adoption",
+            "actionPriority": 16,
+            "explanation": "For the city Metropolis, promoting electric vehicle adoption is a pragmatic step towards lowering transportation sector emissions. The action supports the city’s push for modern, clean mobility and aligns with broader initiatives to improve urban air quality. It utilizes the existing public interest in sustainable transportation and fosters economic opportunities in the green technology sector. The strategy is designed for ease of integration and offers complementary benefits that enhance public well-being."
+        },
+        {
+            "locode": "LOC17",
+            "cityName": "Metropolis",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "A17",
+            "actionName": "Flood Defense Systems",
+            "actionPriority": 17,
+            "explanation": "For the city Metropolis, flood defense systems are instrumental in mitigating climate-related water risks and protecting urban infrastructure. The strategy is precisely designed to address local vulnerabilities in flood-prone areas, ensuring enhanced community safety. It integrates well with broader urban planning initiatives and reinforces long-term resilience. The approach is practical and underscores the importance of proactive risk management in the face of climatic challenges."
+        },
+        {
+            "locode": "LOC18",
+            "cityName": "Metropolis",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "A18",
+            "actionName": "Urban Heat Island Mitigation",
+            "actionPriority": 18,
+            "explanation": "For the city Metropolis, measures targeting urban heat island mitigation are vital for enhancing the overall comfort and energy efficiency of dense urban areas. This action is well-tailored to address the localized climate challenges typical of metropolitan environments. It focuses on integrating natural and built solutions to improve thermal comfort and reduce energy demand. The strategy is both practical and aligns with the city’s objectives to foster a healthier urban climate."
+        },
+        {
+            "locode": "LOC19",
+            "cityName": "Metropolis",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "A19",
+            "actionName": "Community Awareness Programs",
+            "actionPriority": 19,
+            "explanation": "For the city Metropolis, community awareness programs are an essential complement to technical climate actions by engaging citizens in sustainable practices. The approach enhances understanding and cooperation among residents, thereby supporting long-term cultural change towards environmental responsibility. It is well-suited to the city’s diverse socio-demographic profile and facilitates the successful implementation of broader initiatives. The action is straightforward to implement and builds community resilience through education and participation."
+        },
+        {
+            "locode": "LOC20",
+            "cityName": "Metropolis",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "A20",
+            "actionName": "Coastal Resilience Measures",
+            "actionPriority": 20,
+            "explanation": "For the city Metropolis, coastal resilience measures are prioritized to safeguard urban areas from the impacts of sea-level rise and extreme weather events. This action is critically designed to protect vulnerable coastal regions while aligning with long-term urban planning and risk management. It combines effective adaptation strategies with community protection measures, offering a balanced approach to environmental challenges. The strategy reflects a comprehensive plan that harmonizes socio-economic factors with environmental priorities."
+        }
+    ]
+}

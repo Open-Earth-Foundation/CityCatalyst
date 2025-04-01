@@ -1,202 +1,204 @@
-[
-    {
-        "locode": "BR MOS",
-        "cityName": "Mossor\u00f3",
-        "region": "RN",
-        "regionName": "Rio Grande do Norte",
-        "actionId": "icare_0176",
-        "actionName": "Development of Climate Action Plan",
-        "actionPriority": 1,
-        "explanation": "Ranked #1 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR MOS",
-        "cityName": "Mossor\u00f3",
-        "region": "RN",
-        "regionName": "Rio Grande do Norte",
-        "actionId": "icare_0181",
-        "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
-        "actionPriority": 2,
-        "explanation": "Ranked #2 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR MOS",
-        "cityName": "Mossor\u00f3",
-        "region": "RN",
-        "regionName": "Rio Grande do Norte",
-        "actionId": "icare_0164",
-        "actionName": "Hydrological Monitoring System with Telemetry Stations",
-        "actionPriority": 3,
-        "explanation": "Ranked #3 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR MOS",
-        "cityName": "Mossor\u00f3",
-        "region": "RN",
-        "regionName": "Rio Grande do Norte",
-        "actionId": "icare_0151",
-        "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
-        "actionPriority": 4,
-        "explanation": "Ranked #4 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR MOS",
-        "cityName": "Mossor\u00f3",
-        "region": "RN",
-        "regionName": "Rio Grande do Norte",
-        "actionId": "icare_0169",
-        "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
-        "actionPriority": 5,
-        "explanation": "Ranked #5 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR MOS",
-        "cityName": "Mossor\u00f3",
-        "region": "RN",
-        "regionName": "Rio Grande do Norte",
-        "actionId": "ipcc_0097",
-        "actionName": "Food storage/distribution improvements",
-        "actionPriority": 6,
-        "explanation": "Ranked #6 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR MOS",
-        "cityName": "Mossor\u00f3",
-        "region": "RN",
-        "regionName": "Rio Grande do Norte",
-        "actionId": "icare_0162",
-        "actionName": "Strengthen programs for control and conservation of protected areas",
-        "actionPriority": 7,
-        "explanation": "Ranked #7 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR MOS",
-        "cityName": "Mossor\u00f3",
-        "region": "RN",
-        "regionName": "Rio Grande do Norte",
-        "actionId": "icare_0140",
-        "actionName": "Landslide Risk Assessment and Management",
-        "actionPriority": 8,
-        "explanation": "Ranked #8 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR MOS",
-        "cityName": "Mossor\u00f3",
-        "region": "RN",
-        "regionName": "Rio Grande do Norte",
-        "actionId": "icare_0154",
-        "actionName": "Cleaning and Unclogging of Channels with Installation of Eco-barriers",
-        "actionPriority": 9,
-        "explanation": "Ranked #9 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR MOS",
-        "cityName": "Mossor\u00f3",
-        "region": "RN",
-        "regionName": "Rio Grande do Norte",
-        "actionId": "icare_0175",
-        "actionName": "Recovery and preservation of green areas",
-        "actionPriority": 10,
-        "explanation": "Ranked #10 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR MOS",
-        "cityName": "Mossor\u00f3",
-        "region": "RN",
-        "regionName": "Rio Grande do Norte",
-        "actionId": "ipcc_0088",
-        "actionName": "Building codes",
-        "actionPriority": 11,
-        "explanation": "Ranked #11 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR MOS",
-        "cityName": "Mossor\u00f3",
-        "region": "RN",
-        "regionName": "Rio Grande do Norte",
-        "actionId": "icare_0149",
-        "actionName": "Encourage sustainable land use practices",
-        "actionPriority": 12,
-        "explanation": "Ranked #12 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR MOS",
-        "cityName": "Mossor\u00f3",
-        "region": "RN",
-        "regionName": "Rio Grande do Norte",
-        "actionId": "icare_0156",
-        "actionName": "Implementation of urban gardens",
-        "actionPriority": 13,
-        "explanation": "Ranked #13 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR MOS",
-        "cityName": "Mossor\u00f3",
-        "region": "RN",
-        "regionName": "Rio Grande do Norte",
-        "actionId": "icare_0148",
-        "actionName": "Create the Municipal Climate Change Forum",
-        "actionPriority": 14,
-        "explanation": "Ranked #14 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR MOS",
-        "cityName": "Mossor\u00f3",
-        "region": "RN",
-        "regionName": "Rio Grande do Norte",
-        "actionId": "ipcc_0086",
-        "actionName": "Ecosystem-based adaptation",
-        "actionPriority": 15,
-        "explanation": "Ranked #15 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR MOS",
-        "cityName": "Mossor\u00f3",
-        "region": "RN",
-        "regionName": "Rio Grande do Norte",
-        "actionId": "ipcc_0094",
-        "actionName": "Access to health care",
-        "actionPriority": 16,
-        "explanation": "Ranked #16 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR MOS",
-        "cityName": "Mossor\u00f3",
-        "region": "RN",
-        "regionName": "Rio Grande do Norte",
-        "actionId": "ipcc_0092",
-        "actionName": "Social safety nets",
-        "actionPriority": 17,
-        "explanation": "Ranked #17 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR MOS",
-        "cityName": "Mossor\u00f3",
-        "region": "RN",
-        "regionName": "Rio Grande do Norte",
-        "actionId": "ipcc_0095",
-        "actionName": "Disaster early warning",
-        "actionPriority": 18,
-        "explanation": "Ranked #18 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR MOS",
-        "cityName": "Mossor\u00f3",
-        "region": "RN",
-        "regionName": "Rio Grande do Norte",
-        "actionId": "ipcc_0096",
-        "actionName": "Farm/fishery improvements",
-        "actionPriority": 19,
-        "explanation": "Ranked #19 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR MOS",
-        "cityName": "Mossor\u00f3",
-        "region": "RN",
-        "regionName": "Rio Grande do Norte",
-        "actionId": "ipcc_0099",
-        "actionName": "Water capture/storage",
-        "actionPriority": 20,
-        "explanation": "Ranked #20 by tournament ranking algorithm"
-    }
-]
+{
+    "actions": [
+        {
+            "locode": "GC001",
+            "cityName": "Green City",
+            "region": "Region1",
+            "regionName": "Northern Territory",
+            "actionId": "ACT1",
+            "actionName": "Industrial Emissions Control",
+            "actionPriority": 1,
+            "explanation": "For Green City, Industrial Emissions Control is emphasized because it directly targets the primary sources of greenhouse gas emissions in the local industrial sector. This action aligns with the city's need to address high emission sectors and reduce overall climate risks. Furthermore, it presents a balanced approach by offering environmental benefits while being compatible with the city’s capacity for effective implementation."
+        },
+        {
+            "locode": "GC002",
+            "cityName": "Green City",
+            "region": "Region1",
+            "regionName": "Northern Territory",
+            "actionId": "ACT2",
+            "actionName": "Public Transportation Modernization",
+            "actionPriority": 2,
+            "explanation": "For Green City, Public Transportation Modernization is prioritized due to its strong potential to cut emissions by reducing reliance on individual vehicles. The action is particularly relevant to the urban fabric of the city, addressing both congestion and environmental concerns simultaneously. Its design is closely aligned with local sustainability goals and supports efficient implementation with noticeable co-benefits over time."
+        },
+        {
+            "locode": "GC003",
+            "cityName": "Green City",
+            "region": "Region1",
+            "regionName": "Northern Territory",
+            "actionId": "ACT3",
+            "actionName": "Renewable Energy Incentives",
+            "actionPriority": 3,
+            "explanation": "For Green City, Renewable Energy Incentives are favored as they pave the way for a substantial shift away from fossil fuels. The action taps into the city's potential for solar and wind resources, making it particularly suited to the local environment. Additionally, the incentives bolster cost-effectiveness and contribute to reducing long-term climate risks in a community-focused manner."
+        },
+        {
+            "locode": "GC004",
+            "cityName": "Green City",
+            "region": "Region1",
+            "regionName": "Northern Territory",
+            "actionId": "ACT4",
+            "actionName": "Urban Green Space Expansion",
+            "actionPriority": 4,
+            "explanation": "For Green City, Urban Green Space Expansion is valued for its dual benefits of reducing the urban heat island effect and enhancing local air quality. The action integrates well with the city’s environmental character, contributing to both community well-being and ecological balance. It stands out by offering social co-benefits along with its climate mitigation potential, making it an attractive option in the portfolio."
+        },
+        {
+            "locode": "GC005",
+            "cityName": "Green City",
+            "region": "Region1",
+            "regionName": "Northern Territory",
+            "actionId": "ACT5",
+            "actionName": "New Building Standards",
+            "actionPriority": 5,
+            "explanation": "For Green City, the implementation of New Building Standards is prioritized because it encourages energy efficiency and reduces emissions across new urban developments. The standards are aligned with the city's strategic vision of sustainable growth while mitigating long-term operational risks. Its integration into urban planning supports wider emission reduction goals and facilitates smoother, cost-effective adoption over time."
+        },
+        {
+            "locode": "GC006",
+            "cityName": "Green City",
+            "region": "Region1",
+            "regionName": "Northern Territory",
+            "actionId": "ACT6",
+            "actionName": "Waste Management Innovations",
+            "actionPriority": 6,
+            "explanation": "For Green City, Waste Management Innovations receive attention for their role in reducing methane emissions and other pollutants. This action is well-matched to the urban context by addressing both waste processing inefficiencies and environmental hazards. Its co-benefits in resource recovery and lower overall project dependencies enhance its appeal in the city's climate strategy."
+        },
+        {
+            "locode": "GC007",
+            "cityName": "Green City",
+            "region": "Region1",
+            "regionName": "Northern Territory",
+            "actionId": "ACT7",
+            "actionName": "Energy Efficiency Programs",
+            "actionPriority": 7,
+            "explanation": "For Green City, Energy Efficiency Programs are seen as a viable option to reduce energy use across commercial and residential sectors. The action is tailored to leverage existing urban infrastructure while opening avenues for cost-effective emission reductions. Its straightforward implementation path and alignment with local energy needs make it a sound component of the overall climate action plan."
+        },
+        {
+            "locode": "GC008",
+            "cityName": "Green City",
+            "region": "Region1",
+            "regionName": "Northern Territory",
+            "actionId": "ACT8",
+            "actionName": "Water Conservation Measures",
+            "actionPriority": 8,
+            "explanation": "For Green City, Water Conservation Measures are integrated into the climate strategy due to their ability to preserve vital resources and mitigate climate stress. This approach is particularly relevant given the city's susceptibility to water scarcity challenges. Alongside direct environmental benefits, the measures are designed to be cost-effective and support broader resilience goals."
+        },
+        {
+            "locode": "GC009",
+            "cityName": "Green City",
+            "region": "Region1",
+            "regionName": "Northern Territory",
+            "actionId": "ACT9",
+            "actionName": "Flood Defense Improvements",
+            "actionPriority": 9,
+            "explanation": "For Green City, Flood Defense Improvements are prioritized based on their capacity to protect vulnerable urban areas from climate-induced flooding. The action is particularly suited to the city’s geographical challenges and plays a key role in risk reduction. Its structural nature ensures timely benefits by enhancing safety and resilience, an important factor in the overall prioritization framework."
+        },
+        {
+            "locode": "GC010",
+            "cityName": "Green City",
+            "region": "Region1",
+            "regionName": "Northern Territory",
+            "actionId": "ACT10",
+            "actionName": "Air Quality Monitoring",
+            "actionPriority": 10,
+            "explanation": "For Green City, Air Quality Monitoring is recognized as a crucial action for tracking environmental improvements and targeting effective mitigation strategies. This action supports informed decision-making by pinpointing critical areas where emissions can be further reduced. Although it serves more as a supportive measure, its role in ongoing risk management makes it relevant to the city’s climate response strategy."
+        },
+        {
+            "locode": "GC011",
+            "cityName": "Green City",
+            "region": "Region1",
+            "regionName": "Northern Territory",
+            "actionId": "ACT11",
+            "actionName": "Climate Education & Awareness",
+            "actionPriority": 11,
+            "explanation": "For Green City, Climate Education & Awareness initiatives are important for fostering community engagement and long-term behavioral change. The action contributes to building a knowledgeable citizen base that can support and sustain other climate measures. In addition, its emphasis on socio-demographic suitability ensures that local communities are well-prepared to participate in broader climate resilience efforts."
+        },
+        {
+            "locode": "GC012",
+            "cityName": "Green City",
+            "region": "Region1",
+            "regionName": "Northern Territory",
+            "actionId": "ACT12",
+            "actionName": "Solar Panel Subsidies",
+            "actionPriority": 12,
+            "explanation": "For Green City, Solar Panel Subsidies offer a means to enhance renewable energy uptake in residential and commercial sectors. The action supports the city’s strategy of reducing dependency on non-renewable sources by providing accessible means for energy transition. Its cost-effectiveness and clear environmental benefits make it an attractive component of the overall climate action framework."
+        },
+        {
+            "locode": "GC013",
+            "cityName": "Green City",
+            "region": "Region1",
+            "regionName": "Northern Territory",
+            "actionId": "ACT13",
+            "actionName": "Bicycle Infrastructure Development",
+            "actionPriority": 13,
+            "explanation": "For Green City, Bicycle Infrastructure Development is valued for its role in promoting sustainable, low-emission transportation alternatives. This action contributes to decongesting urban areas and encourages healthier community lifestyles. Its relatively straightforward implementation and alignment with urban mobility goals make it a supportive measure within the city's broader climate strategy."
+        },
+        {
+            "locode": "GC014",
+            "cityName": "Green City",
+            "region": "Region1",
+            "regionName": "Northern Territory",
+            "actionId": "ACT14",
+            "actionName": "Electric Vehicle Charging Stations",
+            "actionPriority": 14,
+            "explanation": "For Green City, establishing Electric Vehicle Charging Stations is seen as a forward-looking measure to support the shift toward cleaner transportation. The action is well-suited to meet the growing demand from residents and businesses for sustainable mobility solutions. Its integration into existing infrastructure demonstrates its compatibility with local urban planning and energy transition goals."
+        },
+        {
+            "locode": "GC015",
+            "cityName": "Green City",
+            "region": "Region1",
+            "regionName": "Northern Territory",
+            "actionId": "ACT15",
+            "actionName": "Urban Tree Planting",
+            "actionPriority": 15,
+            "explanation": "For Green City, Urban Tree Planting is recognized for its role in enhancing urban biodiversity and mitigating heat effects. The action provides local environmental benefits such as improved air quality and aesthetic enhancements. Its community-centered approach and ease of integration with existing urban landscapes reinforce its relevance in the climate action mix."
+        },
+        {
+            "locode": "GC016",
+            "cityName": "Green City",
+            "region": "Region1",
+            "regionName": "Northern Territory",
+            "actionId": "ACT16",
+            "actionName": "Community Resilience Planning",
+            "actionPriority": 16,
+            "explanation": "For Green City, Community Resilience Planning is emphasized for its capacity to prepare local neighborhoods for the multifaceted risks posed by climate change. The action directly addresses socio-demographic and environmental challenges by fostering coordinated local responses. Its design ensures a tailored approach that builds on the city’s unique strengths and preparedness capacities."
+        },
+        {
+            "locode": "GC017",
+            "cityName": "Green City",
+            "region": "Region1",
+            "regionName": "Northern Territory",
+            "actionId": "ACT17",
+            "actionName": "Coastal Erosion Mitigation",
+            "actionPriority": 17,
+            "explanation": "For Green City, Coastal Erosion Mitigation is included as a targeted measure addressing the specific vulnerabilities of coastal zones. This action helps safeguard infrastructure and natural habitats along the shoreline while reducing long-term risks associated with climate change. Its complementary role in protecting both environmental and economic interests underlines its applicability in the local context."
+        },
+        {
+            "locode": "GC018",
+            "cityName": "Green City",
+            "region": "Region1",
+            "regionName": "Northern Territory",
+            "actionId": "ACT18",
+            "actionName": "Green Roof Initiatives",
+            "actionPriority": 18,
+            "explanation": "For Green City, Green Roof Initiatives are considered for their additional benefits of improving building insulation and urban biodiversity. The action fits well with the city's drive to enhance environmental compatibility and reduce energy consumption. Its relatively flexible implementation offers an innovative solution that supports broader climate adaptation objectives even if it plays a more supportive role."
+        },
+        {
+            "locode": "GC019",
+            "cityName": "Green City",
+            "region": "Region1",
+            "regionName": "Northern Territory",
+            "actionId": "ACT19",
+            "actionName": "Smart City Technologies",
+            "actionPriority": 19,
+            "explanation": "For Green City, Smart City Technologies are integrated as enablers that facilitate targeted climate interventions and efficient resource use. The action helps optimize existing urban systems while enhancing monitoring and management of climate-related data. Its adaptive nature and systemic benefits make it a strategic choice to complement direct mitigation efforts."
+        },
+        {
+            "locode": "GC020",
+            "cityName": "Green City",
+            "region": "Region1",
+            "regionName": "Northern Territory",
+            "actionId": "ACT20",
+            "actionName": "Sustainable Urban Farming",
+            "actionPriority": 20,
+            "explanation": "For Green City, Sustainable Urban Farming is promoted as a measure that not only reduces the carbon footprint of food supply chains but also strengthens local food security. The action blends environmental benefits with community empowerment, making it a multifaceted initiative. Its reliance on local participation and compatibility with urban settings underscore its role in the broader climate resilience framework."
+        }
+    ]
+}

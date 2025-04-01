@@ -1,202 +1,204 @@
-[
-    {
-        "locode": "BR CGR",
-        "cityName": "Campo Grande",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0176",
-        "actionName": "Development of Climate Action Plan",
-        "actionPriority": 1,
-        "explanation": "Ranked #1 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CGR",
-        "cityName": "Campo Grande",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0181",
-        "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
-        "actionPriority": 2,
-        "explanation": "Ranked #2 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CGR",
-        "cityName": "Campo Grande",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0169",
-        "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
-        "actionPriority": 3,
-        "explanation": "Ranked #3 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CGR",
-        "cityName": "Campo Grande",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0140",
-        "actionName": "Landslide Risk Assessment and Management",
-        "actionPriority": 4,
-        "explanation": "Ranked #4 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CGR",
-        "cityName": "Campo Grande",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0164",
-        "actionName": "Hydrological Monitoring System with Telemetry Stations",
-        "actionPriority": 5,
-        "explanation": "Ranked #5 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CGR",
-        "cityName": "Campo Grande",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0175",
-        "actionName": "Recovery and preservation of green areas",
-        "actionPriority": 6,
-        "explanation": "Ranked #6 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CGR",
-        "cityName": "Campo Grande",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0151",
-        "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
-        "actionPriority": 7,
-        "explanation": "Ranked #7 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CGR",
-        "cityName": "Campo Grande",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0088",
-        "actionName": "Building codes",
-        "actionPriority": 8,
-        "explanation": "Ranked #8 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CGR",
-        "cityName": "Campo Grande",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0097",
-        "actionName": "Food storage/distribution improvements",
-        "actionPriority": 9,
-        "explanation": "Ranked #9 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CGR",
-        "cityName": "Campo Grande",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0162",
-        "actionName": "Strengthen programs for control and conservation of protected areas",
-        "actionPriority": 10,
-        "explanation": "Ranked #10 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CGR",
-        "cityName": "Campo Grande",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0154",
-        "actionName": "Cleaning and Unclogging of Channels with Installation of Eco-barriers",
-        "actionPriority": 11,
-        "explanation": "Ranked #11 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CGR",
-        "cityName": "Campo Grande",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0094",
-        "actionName": "Access to health care",
-        "actionPriority": 12,
-        "explanation": "Ranked #12 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CGR",
-        "cityName": "Campo Grande",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0149",
-        "actionName": "Encourage sustainable land use practices",
-        "actionPriority": 13,
-        "explanation": "Ranked #13 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CGR",
-        "cityName": "Campo Grande",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0092",
-        "actionName": "Social safety nets",
-        "actionPriority": 14,
-        "explanation": "Ranked #14 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CGR",
-        "cityName": "Campo Grande",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0095",
-        "actionName": "Disaster early warning",
-        "actionPriority": 15,
-        "explanation": "Ranked #15 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CGR",
-        "cityName": "Campo Grande",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0156",
-        "actionName": "Implementation of urban gardens",
-        "actionPriority": 16,
-        "explanation": "Ranked #16 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CGR",
-        "cityName": "Campo Grande",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0148",
-        "actionName": "Create the Municipal Climate Change Forum",
-        "actionPriority": 17,
-        "explanation": "Ranked #17 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CGR",
-        "cityName": "Campo Grande",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0096",
-        "actionName": "Farm/fishery improvements",
-        "actionPriority": 18,
-        "explanation": "Ranked #18 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CGR",
-        "cityName": "Campo Grande",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0086",
-        "actionName": "Ecosystem-based adaptation",
-        "actionPriority": 19,
-        "explanation": "Ranked #19 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CGR",
-        "cityName": "Campo Grande",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0098",
-        "actionName": "Behaviour change in diets and food waste",
-        "actionPriority": 20,
-        "explanation": "Ranked #20 by tournament ranking algorithm"
-    }
-]
+{
+    "actions": [
+        {
+            "locode": "NYC",
+            "cityName": "New York",
+            "region": "NY",
+            "regionName": "New York State",
+            "actionId": "A1",
+            "actionName": "New Building Standards",
+            "actionPriority": 1,
+            "explanation": "For New York, New Building Standards tackle the significant energy and emission challenges posed by outdated infrastructure. They are tailored to reduce the environmental impact by promoting energy efficiency and aligning with local building practices. The initiative offers lasting benefits in reducing climate risks while supporting sustainable urban development."
+        },
+        {
+            "locode": "NYC",
+            "cityName": "New York",
+            "region": "NY",
+            "regionName": "New York State",
+            "actionId": "A2",
+            "actionName": "Bus Emissions Reduction",
+            "actionPriority": 2,
+            "explanation": "For New York, Bus Emissions Reduction is prioritized given the city's reliance on public transport and high urban density. By targeting a major emission source, this initiative helps lower transportation-related air pollution. It further contributes to improving public health outcomes and reducing climate-related risks in the urban environment."
+        },
+        {
+            "locode": "NYC",
+            "cityName": "New York",
+            "region": "NY",
+            "regionName": "New York State",
+            "actionId": "A3",
+            "actionName": "Renewable Energy Incentives",
+            "actionPriority": 3,
+            "explanation": "Renewable Energy Incentives are favored in New York as they encourage the adoption of cleaner energy sources across various sectors. This action leverages local environmental compatibility with abundant renewable resources while reducing reliance on fossil fuels. It presents long-term cost-effectiveness and helps lower the city's vulnerability to climate fluctuations."
+        },
+        {
+            "locode": "NYC",
+            "cityName": "New York",
+            "region": "NY",
+            "regionName": "New York State",
+            "actionId": "A4",
+            "actionName": "Urban Tree Planting",
+            "actionPriority": 4,
+            "explanation": "Urban Tree Planting in New York is recognized for its ability to lower urban temperatures and enhance air quality. This action contributes to building a healthier urban ecosystem by increasing green cover and supporting local biodiversity. It also offers additional benefits such as improved public spaces and mitigation of the urban heat island effect."
+        },
+        {
+            "locode": "NYC",
+            "cityName": "New York",
+            "region": "NY",
+            "regionName": "New York State",
+            "actionId": "A5",
+            "actionName": "Water Conservation Measures",
+            "actionPriority": 5,
+            "explanation": "In New York, Water Conservation Measures are prioritized to address challenges related to high urban demand and resource scarcity. This action is designed to optimize water usage efficiency and protect essential water reserves against climate-induced stress. It aligns closely with long-term sustainability goals and reduces environmental risk in densely populated areas."
+        },
+        {
+            "locode": "NYC",
+            "cityName": "New York",
+            "region": "NY",
+            "regionName": "New York State",
+            "actionId": "A6",
+            "actionName": "Waste Management Improvements",
+            "actionPriority": 6,
+            "explanation": "Waste Management Improvements in New York are highly valued for their role in reducing emissions from landfills and promoting recycling initiatives. This action is consistent with urban policies that aim to create cleaner and healthier communities. It also supports a circular economy and minimizes long-term environmental risks associated with waste accumulation."
+        },
+        {
+            "locode": "NYC",
+            "cityName": "New York",
+            "region": "NY",
+            "regionName": "New York State",
+            "actionId": "A7",
+            "actionName": "Industrial Efficiency Upgrades",
+            "actionPriority": 7,
+            "explanation": "Industrial Efficiency Upgrades are emphasized in New York due to their capacity to streamline energy use and lower emissions from key industrial sectors. This action is particularly effective in areas with significant industrial activity and can lead to both economic and environmental benefits. It directly addresses emission reduction while bolstering the city’s competitive edge in sustainability."
+        },
+        {
+            "locode": "NYC",
+            "cityName": "New York",
+            "region": "NY",
+            "regionName": "New York State",
+            "actionId": "A8",
+            "actionName": "Coastal Flood Defenses",
+            "actionPriority": 8,
+            "explanation": "Coastal Flood Defenses are vital for New York given its exposure to rising sea levels and extreme weather events. This action focuses on protecting critical infrastructure and reducing the risk of flood damage in coastal areas. It is a key component of long-term climate adaptation strategies that safeguard communities and urban assets."
+        },
+        {
+            "locode": "NYC",
+            "cityName": "New York",
+            "region": "NY",
+            "regionName": "New York State",
+            "actionId": "A9",
+            "actionName": "Green Roof Initiatives",
+            "actionPriority": 9,
+            "explanation": "Green Roof Initiatives in New York offer multiple benefits, including reduced energy consumption and improved stormwater management. This action enhances urban aesthetics and environmental quality by adding vegetation to building rooftops. It fits well within the city’s efforts to reduce heat island effects and promote sustainable building practices."
+        },
+        {
+            "locode": "NYC",
+            "cityName": "New York",
+            "region": "NY",
+            "regionName": "New York State",
+            "actionId": "A10",
+            "actionName": "Smart Grid Implementation",
+            "actionPriority": 10,
+            "explanation": "Smart Grid Implementation is embraced in New York as it modernizes the city's energy infrastructure and enhances system resilience. This action facilitates the integration of renewable energy sources and supports efficient energy distribution. Its adaptive and responsive nature makes it a crucial element in reducing long-term operational risks."
+        },
+        {
+            "locode": "NYC",
+            "cityName": "New York",
+            "region": "NY",
+            "regionName": "New York State",
+            "actionId": "A11",
+            "actionName": "Electric Vehicle Infrastructure",
+            "actionPriority": 11,
+            "explanation": "Electric Vehicle Infrastructure is a priority in New York because it directly supports the shift toward cleaner transportation options. By enabling widespread adoption of low-emission vehicles, this action helps lower overall transportation-sector emissions. It also aligns with urban sustainability goals and enhances public accessibility to modern transit solutions."
+        },
+        {
+            "locode": "NYC",
+            "cityName": "New York",
+            "region": "NY",
+            "regionName": "New York State",
+            "actionId": "A12",
+            "actionName": "Public Transit Expansion",
+            "actionPriority": 12,
+            "explanation": "Public Transit Expansion is considered critical in New York due to the city's heavy reliance on robust transportation systems. Enhancing public transit not only reduces the number of individual vehicles on the road, but also lowers emissions associated with transport. This action brings wider social benefits by improving accessibility and overall urban mobility."
+        },
+        {
+            "locode": "NYC",
+            "cityName": "New York",
+            "region": "NY",
+            "regionName": "New York State",
+            "actionId": "A13",
+            "actionName": "Energy Efficiency Retrofitting",
+            "actionPriority": 13,
+            "explanation": "Energy Efficiency Retrofitting in New York focuses on updating older buildings to reduce energy waste and lower overall emissions. The action is well-suited for the urban context, where aging infrastructure can benefit significantly from modern efficiency standards. It offers both environmental advantages and cost savings over time, contributing to a more resilient urban fabric."
+        },
+        {
+            "locode": "NYC",
+            "cityName": "New York",
+            "region": "NY",
+            "regionName": "New York State",
+            "actionId": "A14",
+            "actionName": "Climate Resilient Agriculture",
+            "actionPriority": 14,
+            "explanation": "Climate Resilient Agriculture, though more common in peri-urban or rural settings, supports the broader region around New York by enhancing local food systems. This action reduces the need for long-distance food transportation and supports sustainable practices in agriculture. It strengthens the connection between urban centers and surrounding areas, contributing to long-term regional resilience."
+        },
+        {
+            "locode": "NYC",
+            "cityName": "New York",
+            "region": "NY",
+            "regionName": "New York State",
+            "actionId": "A15",
+            "actionName": "Sustainable Land Use Planning",
+            "actionPriority": 15,
+            "explanation": "Sustainable Land Use Planning is crucial for New York as it negotiates the balance between urban growth and environmental conservation. This action integrates thoughtful spatial planning with the conservation of vital natural resources. It enables efficient use of land while mitigating long-term climate risks and promoting community well-being."
+        },
+        {
+            "locode": "NYC",
+            "cityName": "New York",
+            "region": "NY",
+            "regionName": "New York State",
+            "actionId": "A16",
+            "actionName": "Heatwave Preparedness Plans",
+            "actionPriority": 16,
+            "explanation": "Heatwave Preparedness Plans are prioritized in New York to address the increasing frequency of extreme temperature events in densely populated areas. This action focuses on reducing immediate health risks and ensuring the community is prepared for sudden heat stress. It is designed with the urban heat island effect in mind and integrates strategies for rapid, effective intervention."
+        },
+        {
+            "locode": "NYC",
+            "cityName": "New York",
+            "region": "NY",
+            "regionName": "New York State",
+            "actionId": "A17",
+            "actionName": "Air Quality Monitoring Networks",
+            "actionPriority": 17,
+            "explanation": "Air Quality Monitoring Networks in New York enhance the city’s capacity to detect and respond to pollution events in real time. This action supports the continuous evaluation of emission reduction measures and bolsters public health protection. It lays a solid foundation for informed decision-making and targeted climate action in the urban environment."
+        },
+        {
+            "locode": "NYC",
+            "cityName": "New York",
+            "region": "NY",
+            "regionName": "New York State",
+            "actionId": "A18",
+            "actionName": "Stormwater Management Systems",
+            "actionPriority": 18,
+            "explanation": "Stormwater Management Systems are critical for New York to mitigate the challenges of heavy rainfall and outdated urban drainage systems. This action reduces the risk of flooding and minimizes infrastructure damage by efficiently redirecting excess water. It aligns with broader climate adaptation efforts and enhances urban resilience against extreme weather patterns."
+        },
+        {
+            "locode": "NYC",
+            "cityName": "New York",
+            "region": "NY",
+            "regionName": "New York State",
+            "actionId": "A19",
+            "actionName": "Reforestation Projects",
+            "actionPriority": 19,
+            "explanation": "Reforestation Projects in the New York region contribute to long-term carbon sequestration and support ecosystem restoration. They help bolster biodiversity and provide enduring environmental benefits that align with local sustainability goals. This action offers community co-benefits through enhanced recreational spaces and improved air quality."
+        },
+        {
+            "locode": "NYC",
+            "cityName": "New York",
+            "region": "NY",
+            "regionName": "New York State",
+            "actionId": "A20",
+            "actionName": "Community Cooling Centers",
+            "actionPriority": 20,
+            "explanation": "Community Cooling Centers are prioritized in New York as essential support during periods of extreme heat. This action provides critical relief to vulnerable populations by offering safe, climate-controlled spaces during heat events. It complements broader adaptation strategies by directly enhancing urban public health and resilience."
+        }
+    ]
+}

@@ -1,202 +1,204 @@
-[
-    {
-        "locode": "BR SLO",
-        "cityName": "S\u00e3o Leopoldo",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0176",
-        "actionName": "Development of Climate Action Plan",
-        "actionPriority": 1,
-        "explanation": "Ranked #1 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR SLO",
-        "cityName": "S\u00e3o Leopoldo",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0140",
-        "actionName": "Landslide Risk Assessment and Management",
-        "actionPriority": 2,
-        "explanation": "Ranked #2 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR SLO",
-        "cityName": "S\u00e3o Leopoldo",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0164",
-        "actionName": "Hydrological Monitoring System with Telemetry Stations",
-        "actionPriority": 3,
-        "explanation": "Ranked #3 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR SLO",
-        "cityName": "S\u00e3o Leopoldo",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0181",
-        "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
-        "actionPriority": 4,
-        "explanation": "Ranked #4 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR SLO",
-        "cityName": "S\u00e3o Leopoldo",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0162",
-        "actionName": "Strengthen programs for control and conservation of protected areas",
-        "actionPriority": 5,
-        "explanation": "Ranked #5 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR SLO",
-        "cityName": "S\u00e3o Leopoldo",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0154",
-        "actionName": "Cleaning and Unclogging of Channels with Installation of Eco-barriers",
-        "actionPriority": 6,
-        "explanation": "Ranked #6 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR SLO",
-        "cityName": "S\u00e3o Leopoldo",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0151",
-        "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
-        "actionPriority": 7,
-        "explanation": "Ranked #7 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR SLO",
-        "cityName": "S\u00e3o Leopoldo",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0175",
-        "actionName": "Recovery and preservation of green areas",
-        "actionPriority": 8,
-        "explanation": "Ranked #8 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR SLO",
-        "cityName": "S\u00e3o Leopoldo",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0088",
-        "actionName": "Building codes",
-        "actionPriority": 9,
-        "explanation": "Ranked #9 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR SLO",
-        "cityName": "S\u00e3o Leopoldo",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0156",
-        "actionName": "Implementation of urban gardens",
-        "actionPriority": 10,
-        "explanation": "Ranked #10 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR SLO",
-        "cityName": "S\u00e3o Leopoldo",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0086",
-        "actionName": "Ecosystem-based adaptation",
-        "actionPriority": 11,
-        "explanation": "Ranked #11 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR SLO",
-        "cityName": "S\u00e3o Leopoldo",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0149",
-        "actionName": "Encourage sustainable land use practices",
-        "actionPriority": 12,
-        "explanation": "Ranked #12 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR SLO",
-        "cityName": "S\u00e3o Leopoldo",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0094",
-        "actionName": "Access to health care",
-        "actionPriority": 13,
-        "explanation": "Ranked #13 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR SLO",
-        "cityName": "S\u00e3o Leopoldo",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0169",
-        "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
-        "actionPriority": 14,
-        "explanation": "Ranked #14 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR SLO",
-        "cityName": "S\u00e3o Leopoldo",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0148",
-        "actionName": "Create the Municipal Climate Change Forum",
-        "actionPriority": 15,
-        "explanation": "Ranked #15 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR SLO",
-        "cityName": "S\u00e3o Leopoldo",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0097",
-        "actionName": "Food storage/distribution improvements",
-        "actionPriority": 16,
-        "explanation": "Ranked #16 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR SLO",
-        "cityName": "S\u00e3o Leopoldo",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0142",
-        "actionName": "Improvement of Water Supply and Sanitation Systems",
-        "actionPriority": 17,
-        "explanation": "Ranked #17 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR SLO",
-        "cityName": "S\u00e3o Leopoldo",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0099",
-        "actionName": "Water capture/storage",
-        "actionPriority": 18,
-        "explanation": "Ranked #18 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR SLO",
-        "cityName": "S\u00e3o Leopoldo",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0095",
-        "actionName": "Disaster early warning",
-        "actionPriority": 19,
-        "explanation": "Ranked #19 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR SLO",
-        "cityName": "S\u00e3o Leopoldo",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0084",
-        "actionName": "Restore/create natural areas",
-        "actionPriority": 20,
-        "explanation": "Ranked #20 by tournament ranking algorithm"
-    }
-]
+{
+    "actions": [
+        {
+            "locode": "EC01",
+            "cityName": "EcoCity",
+            "region": "GR",
+            "regionName": "Green State",
+            "actionId": "A1",
+            "actionName": "New Building Standards",
+            "actionPriority": 1,
+            "explanation": "For EcoCity, New Building Standards were prioritized because they directly tackle inordinate greenhouse gas emissions from the building sector, which is a major contributor to the city’s overall emissions. This action is well-aligned with the urban fabric and local environmental conditions, offering substantial long-term benefits in energy efficiency. Additionally, its capacity to reduce climate risks through improved infrastructure resilience further justifies its high ranking. The approach also leverages the city’s capacity to adapt, making it a strategic and cost-effective investment for the future."
+        },
+        {
+            "locode": "EC02",
+            "cityName": "EcoCity",
+            "region": "GR",
+            "regionName": "Green State",
+            "actionId": "A2",
+            "actionName": "Bus Emissions Reduction",
+            "actionPriority": 2,
+            "explanation": "For EcoCity, the Bus Emissions Reduction action is recognized for addressing emissions in the transit sector, which is essential for densely populated urban areas. Although its emissions reduction potential may be less pronounced compared to building sector interventions, it still plays a critical role in lowering urban pollutants. The action supports improved air quality and public health while complementing broader mobility strategies. Its implementation aligns well with the city’s needs, demonstrating a balanced mix of cost-effectiveness and risk reduction in the transportation domain."
+        },
+        {
+            "locode": "EC03",
+            "cityName": "EcoCity",
+            "region": "GR",
+            "regionName": "Green State",
+            "actionId": "A3",
+            "actionName": "Urban Tree Planting",
+            "actionPriority": 3,
+            "explanation": "Urban Tree Planting has been prioritized in EcoCity for its strong environmental compatibility and co-benefit potential. This action not only contributes to greenhouse gas absorption but also enhances urban aesthetics and quality of life. It is particularly effective in mitigating the urban heat island effect and offers a natural solution to improve air quality. The approach is well suited to the city’s capacity and socio-demographic context, making it an appealing choice despite its moderate emissions reduction capacity compared to highly technical interventions."
+        },
+        {
+            "locode": "EC04",
+            "cityName": "EcoCity",
+            "region": "GR",
+            "regionName": "Green State",
+            "actionId": "A4",
+            "actionName": "Renewable Energy Incentives",
+            "actionPriority": 4,
+            "explanation": "In EcoCity, Renewable Energy Incentives were carefully considered due to their ability to drive a major shift toward low-carbon power sources. This action is highly relevant for reducing sector-wide emissions, particularly in energy production. It aligns with the city’s environmental objectives and supports broader transitions to sustainable infrastructure. Despite requiring structured policy frameworks, the incentives are well positioned to provide long-term financial and environmental benefits."
+        },
+        {
+            "locode": "EC05",
+            "cityName": "EcoCity",
+            "region": "GR",
+            "regionName": "Green State",
+            "actionId": "A5",
+            "actionName": "Water Conservation Strategies",
+            "actionPriority": 5,
+            "explanation": "Water Conservation Strategies were given priority in EcoCity because they address the critical issue of water stress, a growing concern in many urban settings. This action is environmentally compatible with local climatic realities and supports resilience against drought and flood risks. By promoting efficient water use, it contributes indirectly to a reduction in energy consumption and greenhouse gas emissions. Its integration into city planning highlights a balanced approach between resource management and socio-economic needs."
+        },
+        {
+            "locode": "EC06",
+            "cityName": "EcoCity",
+            "region": "GR",
+            "regionName": "Green State",
+            "actionId": "A6",
+            "actionName": "Electric Vehicle Infrastructure",
+            "actionPriority": 6,
+            "explanation": "EcoCity’s decision to advance Electric Vehicle Infrastructure reflects a targeted effort to decarbonize urban mobility. The initiative supports the transition from fossil fuels and aligns well with reducing traffic-related emissions. It contributes significantly to urban air quality improvements and the reduction of climate risks associated with transportation. The action is also viable within the city’s resource framework and promises quicker benefits in public health and reduced operational costs over time."
+        },
+        {
+            "locode": "EC07",
+            "cityName": "EcoCity",
+            "region": "GR",
+            "regionName": "Green State",
+            "actionId": "A7",
+            "actionName": "Waste Management Improvements",
+            "actionPriority": 7,
+            "explanation": "For EcoCity, Waste Management Improvements have been highlighted due to their role in reducing greenhouse gases from waste decomposition and inefficient disposal. This action is particularly important in urban areas where population density magnifies waste management challenges. The strategy offers co-benefits by enhancing public health and reducing environmental contamination. It is seen as both a practical and beneficial approach that dovetails with the city's broader sustainability and risk reduction goals."
+        },
+        {
+            "locode": "EC08",
+            "cityName": "EcoCity",
+            "region": "GR",
+            "regionName": "Green State",
+            "actionId": "A8",
+            "actionName": "District Heating Systems",
+            "actionPriority": 8,
+            "explanation": "District Heating Systems were prioritized in EcoCity due to their capability to efficiently manage energy use across multiple buildings. The system’s design helps to lower fossil fuel dependency while supporting emissions reduction across the community. It fits well with the city’s climate adaptation strategies and urban infrastructure plans. Moreover, its cost-effectiveness and lower operational risks contribute to its comparative appeal despite requiring significant upfront planning and coordination."
+        },
+        {
+            "locode": "EC09",
+            "cityName": "EcoCity",
+            "region": "GR",
+            "regionName": "Green State",
+            "actionId": "A9",
+            "actionName": "Green Roof Initiatives",
+            "actionPriority": 9,
+            "explanation": "Green Roof Initiatives in EcoCity are recognized for their capacity to moderate building temperatures and improve stormwater management. This action not only provides environmental benefits but also enhances the urban aesthetic and reduces energy demands for cooling. It contributes indirectly to lowering greenhouse gas emissions while promoting local biodiversity. Though its impact might be more localized compared to broader infrastructural changes, it is an effective and innovative approach to urban adaptation."
+        },
+        {
+            "locode": "EC10",
+            "cityName": "EcoCity",
+            "region": "GR",
+            "regionName": "Green State",
+            "actionId": "A10",
+            "actionName": "Flood Defense Systems",
+            "actionPriority": 10,
+            "explanation": "Flood Defense Systems have been ranked to address immediate climate risks in EcoCity, where heavy rainfall events are becoming more frequent. This action is essential for protecting both people and economic assets from flood-related impacts. It is closely aligned with the city’s risk reduction strategies and enhances overall resilience. Even though the focus is more on adaptation, its long-term value in safeguarding the community is clearly recognized."
+        },
+        {
+            "locode": "EC11",
+            "cityName": "EcoCity",
+            "region": "GR",
+            "regionName": "Green State",
+            "actionId": "A11",
+            "actionName": "Solar Panel Installation",
+            "actionPriority": 11,
+            "explanation": "EcoCity has included Solar Panel Installation in its plan due to its direct contribution to reducing reliance on non-renewable energy sources. This action suits the city's environmental conditions by tapping into abundant solar resources, thereby reducing greenhouse gas emissions. It offers attractive long-term benefits and reduces operational costs associated with traditional energy. While implementation requires careful planning, the balance of sustainability and efficiency makes it a strategically valuable option."
+        },
+        {
+            "locode": "EC12",
+            "cityName": "EcoCity",
+            "region": "GR",
+            "regionName": "Green State",
+            "actionId": "A12",
+            "actionName": "Carbon Capture Projects",
+            "actionPriority": 12,
+            "explanation": "Carbon Capture Projects in EcoCity have been considered for their potential to sequester emissions from industrial and energy sectors. Although they involve complex technologies and dependencies, the action is evaluated for its capacity to mitigate climate risks. It aligns with long-term goals to reduce atmospheric greenhouse gas concentrations. Despite higher operational complexities, its role in complementing other mitigation efforts provides valuable environmental benefits."
+        },
+        {
+            "locode": "EC13",
+            "cityName": "EcoCity",
+            "region": "GR",
+            "regionName": "Green State",
+            "actionId": "A13",
+            "actionName": "Sustainable Public Transit",
+            "actionPriority": 13,
+            "explanation": "Sustainable Public Transit was selected in EcoCity due to its importance in modernizing urban mobility and reducing emissions associated with car dependency. The intervention supports cleaner air through a transition towards low-emission transportation methods. It also enhances social inclusivity by offering accessible mobility options to a broad segment of the population. The initiative is seen as a critical enabler for broader urban decarbonization efforts despite requiring coordinated implementation among multiple agencies."
+        },
+        {
+            "locode": "EC14",
+            "cityName": "EcoCity",
+            "region": "GR",
+            "regionName": "Green State",
+            "actionId": "A14",
+            "actionName": "Energy Efficient Appliances",
+            "actionPriority": 14,
+            "explanation": "Energy Efficient Appliances have been prioritized as a supportive measure in EcoCity’s broader strategy to reduce energy consumption. This action emphasizes cost-effectiveness by lowering household and commercial energy demands over time. It is well aligned with the city’s initiatives to reduce indirect greenhouse gas emissions and improve consumer savings. Although its direct impact on large-scale emissions is moderate, it contributes positively to overall energy efficiency and risk reduction."
+        },
+        {
+            "locode": "EC15",
+            "cityName": "EcoCity",
+            "region": "GR",
+            "regionName": "Green State",
+            "actionId": "A15",
+            "actionName": "Smart Grid Deployment",
+            "actionPriority": 15,
+            "explanation": "Smart Grid Deployment in EcoCity is valued for its potential to optimize energy distribution and integrate renewable energy sources efficiently. The action helps in reducing wastage and strategically managing demand, which contributes indirectly to emission reductions. It is designed to work within the city’s existing infrastructure, offering enhanced reliability and adaptability. While it requires considerable initial coordination, its long-term benefits in energy sustainability and grid resilience are well recognized."
+        },
+        {
+            "locode": "EC16",
+            "cityName": "EcoCity",
+            "region": "GR",
+            "regionName": "Green State",
+            "actionId": "A16",
+            "actionName": "Stormwater Management",
+            "actionPriority": 16,
+            "explanation": "Stormwater Management initiatives in EcoCity address both environmental and urban risk challenges by reducing flood and runoff impacts. The action is particularly important given the changing climate patterns and increased precipitation events. It supports a safer and more sustainable urban environment, reinforcing the city's overall risk reduction strategies. Although it primarily targets adaptation, its benefits extend to improving water quality and public safety within the community."
+        },
+        {
+            "locode": "EC17",
+            "cityName": "EcoCity",
+            "region": "GR",
+            "regionName": "Green State",
+            "actionId": "A17",
+            "actionName": "Urban Cooling Programs",
+            "actionPriority": 17,
+            "explanation": "Urban Cooling Programs have been incorporated into EcoCity’s action plan as a means to mitigate urban heat island effects and improve climate comfort. The intervention is designed to enhance local microclimates through various cooling techniques, which, in turn, reduces energy demands for air conditioning. It is a vital component for improving public health in densely populated areas, aligning with the city’s immediate risk reduction needs. Despite a more localized focus, the co-benefits to environmental and social well-being provide a solid justification for its inclusion."
+        },
+        {
+            "locode": "EC18",
+            "cityName": "EcoCity",
+            "region": "GR",
+            "regionName": "Green State",
+            "actionId": "A18",
+            "actionName": "Low-Emission Zones",
+            "actionPriority": 18,
+            "explanation": "Low-Emission Zones are implemented in EcoCity to control and reduce vehicular pollutants in high-density areas. This action effectively targets the transportation sector, curbing emissions through clear regulatory measures. Its focus on cutting down urban air pollution aligns with both environmental quality and public health goals. Even though the change is regulatory and gradual, it is a pragmatic step in lowering overall urban emissions and minimizing associated risks."
+        },
+        {
+            "locode": "EC19",
+            "cityName": "EcoCity",
+            "region": "GR",
+            "regionName": "Green State",
+            "actionId": "A19",
+            "actionName": "Recycling Programs",
+            "actionPriority": 19,
+            "explanation": "Recycling Programs were included in EcoCity’s strategy because they offer a manageable and community-driven approach to waste reduction. This action contributes to a cleaner environment by minimizing landfill use and lowering emission levels from waste decay. Its cost-effectiveness and ease of implementation make it particularly suitable for urban settings with active community participation. The approach also dovetails with broader efforts to enhance resource efficiency and reduce overall climate-related risks."
+        },
+        {
+            "locode": "EC20",
+            "cityName": "EcoCity",
+            "region": "GR",
+            "regionName": "Green State",
+            "actionId": "A20",
+            "actionName": "Community Energy Projects",
+            "actionPriority": 20,
+            "explanation": "Community Energy Projects in EcoCity emphasize collaborative and locally-driven efforts to promote renewable energy adoption. This action not only supports emissions reduction but also builds local capacity and engagement in sustainable practices. It is designed to be adaptable to the socio-economic context of the city, empowering residents while addressing climate challenges. Although the scale of impact is community-specific, the initiative offers substantial co-benefits, reinforcing social cohesion and long-term resilience."
+        }
+    ]
+}

@@ -1,182 +1,204 @@
-[
-    {
-        "locode": "BR SIN",
-        "cityName": "Sinop",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0121",
-        "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
-        "actionPriority": 1
-    },
-    {
-        "locode": "BR SIN",
-        "cityName": "Sinop",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0118",
-        "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
-        "actionPriority": 2
-    },
-    {
-        "locode": "BR SIN",
-        "cityName": "Sinop",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0005",
-        "actionName": "Create credit lines for residential and community wind energy projects",
-        "actionPriority": 3
-    },
-    {
-        "locode": "BR SIN",
-        "cityName": "Sinop",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0133",
-        "actionName": "Promote Urban Reforestation and Green Corridors",
-        "actionPriority": 4
-    },
-    {
-        "locode": "BR SIN",
-        "cityName": "Sinop",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0088",
-        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
-        "actionPriority": 5
-    },
-    {
-        "locode": "BR SIN",
-        "cityName": "Sinop",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0092",
-        "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
-        "actionPriority": 6
-    },
-    {
-        "locode": "BR SIN",
-        "cityName": "Sinop",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0057",
-        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
-        "actionPriority": 7
-    },
-    {
-        "locode": "BR SIN",
-        "cityName": "Sinop",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0090",
-        "actionName": "Adoption of electric drones for last-mile deliveries.",
-        "actionPriority": 8
-    },
-    {
-        "locode": "BR SIN",
-        "cityName": "Sinop",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0094",
-        "actionName": "Adoption of biomethane in public fleets.",
-        "actionPriority": 9
-    },
-    {
-        "locode": "BR SIN",
-        "cityName": "Sinop",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0117",
-        "actionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
-        "actionPriority": 10
-    },
-    {
-        "locode": "BR SIN",
-        "cityName": "Sinop",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0068",
-        "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
-        "actionPriority": 11
-    },
-    {
-        "locode": "BR SIN",
-        "cityName": "Sinop",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0044",
-        "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
-        "actionPriority": 12
-    },
-    {
-        "locode": "BR SIN",
-        "cityName": "Sinop",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "c40_0033",
-        "actionName": "15/30-Minute Areas",
-        "actionPriority": 13
-    },
-    {
-        "locode": "BR SIN",
-        "cityName": "Sinop",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0131",
-        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
-        "actionPriority": 14
-    },
-    {
-        "locode": "BR SIN",
-        "cityName": "Sinop",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0091",
-        "actionName": "Implementation of prioritized routes for sustainable vehicles.",
-        "actionPriority": 15
-    },
-    {
-        "locode": "BR SIN",
-        "cityName": "Sinop",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0139",
-        "actionName": "Implementation of urban toll.",
-        "actionPriority": 16
-    },
-    {
-        "locode": "BR SIN",
-        "cityName": "Sinop",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0050",
-        "actionName": "Implement Agroforestry Systems",
-        "actionPriority": 17
-    },
-    {
-        "locode": "BR SIN",
-        "cityName": "Sinop",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0096",
-        "actionName": "Promote Organic Farming",
-        "actionPriority": 18
-    },
-    {
-        "locode": "BR SIN",
-        "cityName": "Sinop",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0136",
-        "actionName": "Support the Implementation of Ecological Fiscal Incentives",
-        "actionPriority": 19
-    },
-    {
-        "locode": "BR SIN",
-        "cityName": "Sinop",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0099",
-        "actionName": "Support Agroecological Certification Programs",
-        "actionPriority": 20
-    }
-]
+{
+    "actions": [
+        {
+            "locode": "MET001",
+            "cityName": "Metropolis",
+            "region": "Northeast",
+            "regionName": "Northeast Region",
+            "actionId": "action_1",
+            "actionName": "New Building Standards",
+            "actionPriority": 1,
+            "explanation": "For the city Metropolis, the new building standards are prioritized because they offer a strategic way to reduce emissions by improving energy efficiency in a key sector. This approach aligns well with the city’s urban development and climate resilience objectives. The measure also balances cost-effectiveness with manageable implementation challenges, making it a high-priority initiative."
+        },
+        {
+            "locode": "MET001",
+            "cityName": "Metropolis",
+            "region": "Northeast",
+            "regionName": "Northeast Region",
+            "actionId": "action_2",
+            "actionName": "Bus Emissions",
+            "actionPriority": 2,
+            "explanation": "For the city Metropolis, addressing bus emissions is recognized for its ability to target a significant source of urban pollution in the transportation sector. The action is well-suited to the city’s dense transit network and contributes to reducing local climate risks. Its emphasis on risk reduction and moderate implementation challenges justifies its ranking as an important initiative."
+        },
+        {
+            "locode": "MET001",
+            "cityName": "Metropolis",
+            "region": "Northeast",
+            "regionName": "Northeast Region",
+            "actionId": "action_3",
+            "actionName": "Renewable Energy Incentives",
+            "actionPriority": 3,
+            "explanation": "For the city Metropolis, renewable energy incentives are valued for their strong potential to shift the energy mix towards cleaner sources and reduce overall emissions. This action is in alignment with the city’s broader energy transition plans and stimulates sustainable economic growth. Its balance of environmental benefits with cost-effectiveness makes it a well-justified priority."
+        },
+        {
+            "locode": "MET001",
+            "cityName": "Metropolis",
+            "region": "Northeast",
+            "regionName": "Northeast Region",
+            "actionId": "action_4",
+            "actionName": "Urban Tree Planting",
+            "actionPriority": 4,
+            "explanation": "For the city Metropolis, urban tree planting is emphasized for its multifaceted benefits including improved air quality and stormwater management. The action reinforces the city’s green space strategy and supports long-term climate adaptation. Its contribution to urban cooling and risk reduction complements other high-priority measures."
+        },
+        {
+            "locode": "MET001",
+            "cityName": "Metropolis",
+            "region": "Northeast",
+            "regionName": "Northeast Region",
+            "actionId": "action_5",
+            "actionName": "Water Conservation Measures",
+            "actionPriority": 5,
+            "explanation": "For the city Metropolis, water conservation measures are a critical response to anticipated water scarcity and local environmental challenges. This action enhances the city’s resilience by optimizing existing water resources and reducing future risks. Its ease of public acceptance and supportive integration with other initiatives underpins its solid ranking."
+        },
+        {
+            "locode": "MET001",
+            "cityName": "Metropolis",
+            "region": "Northeast",
+            "regionName": "Northeast Region",
+            "actionId": "action_6",
+            "actionName": "Coastal Flood Defenses",
+            "actionPriority": 6,
+            "explanation": "For the city Metropolis, coastal flood defenses are instrumental in protecting vulnerable coastal areas from rising sea levels and extreme weather events. The action integrates well with the city’s adaptation strategy and addresses critical climate risks. Although it involves significant planning, its potential for risk reduction makes it a prioritized measure."
+        },
+        {
+            "locode": "MET001",
+            "cityName": "Metropolis",
+            "region": "Northeast",
+            "regionName": "Northeast Region",
+            "actionId": "action_7",
+            "actionName": "Energy Efficiency Upgrades",
+            "actionPriority": 7,
+            "explanation": "For the city Metropolis, energy efficiency upgrades are recognized for their practical approach to reducing emissions by modernizing existing infrastructure. This action directly targets urban hotspots of energy use and supports local sustainability efforts. Its strong cost-effectiveness and relative ease of integration justify its favorable ranking."
+        },
+        {
+            "locode": "MET001",
+            "cityName": "Metropolis",
+            "region": "Northeast",
+            "regionName": "Northeast Region",
+            "actionId": "action_8",
+            "actionName": "Public Transportation Expansion",
+            "actionPriority": 8,
+            "explanation": "For the city Metropolis, expanding public transportation is a vital initiative due to its capacity to reduce reliance on private vehicles and lower overall emissions. The action addresses the city’s mobility needs and supports a more sustainable urban environment. Its broad socio-economic benefits, along with decreased congestion and pollution, affirm its strong position in the ranking."
+        },
+        {
+            "locode": "MET001",
+            "cityName": "Metropolis",
+            "region": "Northeast",
+            "regionName": "Northeast Region",
+            "actionId": "action_9",
+            "actionName": "Waste Management Improvements",
+            "actionPriority": 9,
+            "explanation": "For the city Metropolis, waste management improvements are essential for reducing methane emissions and improving urban cleanliness. The action aligns with the city's sustainability goals and leverages existing municipal systems for smoother implementation. Its role in lowering greenhouse gas emissions while reducing operational risks supports its ranking."
+        },
+        {
+            "locode": "MET001",
+            "cityName": "Metropolis",
+            "region": "Northeast",
+            "regionName": "Northeast Region",
+            "actionId": "action_10",
+            "actionName": "Green Infrastructure Development",
+            "actionPriority": 10,
+            "explanation": "For the city Metropolis, green infrastructure development is a key strategy in integrating natural processes with the urban fabric. This action enhances ecosystem services while contributing to emissions reduction and climate adaptation. Its multifunctional benefits and compatibility with existing urban planning efforts justify its prioritized status."
+        },
+        {
+            "locode": "MET001",
+            "cityName": "Metropolis",
+            "region": "Northeast",
+            "regionName": "Northeast Region",
+            "actionId": "action_11",
+            "actionName": "District Cooling Systems",
+            "actionPriority": 11,
+            "explanation": "For the city Metropolis, district cooling systems offer a centralized solution to manage and reduce energy consumption in densely populated areas. This action supports the efficiency of urban energy systems and mitigates associated emissions. Its integration into sustainable urban development frameworks reinforces its relevance despite being a more specialized measure."
+        },
+        {
+            "locode": "MET001",
+            "cityName": "Metropolis",
+            "region": "Northeast",
+            "regionName": "Northeast Region",
+            "actionId": "action_12",
+            "actionName": "Solar Panel Subsidies",
+            "actionPriority": 12,
+            "explanation": "For the city Metropolis, solar panel subsidies are focused on accelerating the uptake of renewable energy at the community level. This measure not only reduces dependence on fossil fuels but also supports local economic activity through green job creation. Its emphasis on both environmental and social co-benefits explains its steady placement in the ranking."
+        },
+        {
+            "locode": "MET001",
+            "cityName": "Metropolis",
+            "region": "Northeast",
+            "regionName": "Northeast Region",
+            "actionId": "action_13",
+            "actionName": "Electric Vehicle Adoption",
+            "actionPriority": 13,
+            "explanation": "For the city Metropolis, encouraging electric vehicle adoption targets reductions in tailpipe emissions and transforms urban transportation landscapes. The initiative complements the city’s efforts to improve air quality and reduce climate risks associated with traffic. Its forward-looking approach and compatibility with modern transit trends validate its considerate ranking."
+        },
+        {
+            "locode": "MET001",
+            "cityName": "Metropolis",
+            "region": "Northeast",
+            "regionName": "Northeast Region",
+            "actionId": "action_14",
+            "actionName": "High-Speed Rail Implementation",
+            "actionPriority": 14,
+            "explanation": "For the city Metropolis, the implementation of high-speed rail is seen as a transformative action with the potential to reshape regional transportation dynamics. It offers an attractive alternative to car and short-haul air travel, aligning with broader environmental and socio-economic objectives. Despite the need for sophisticated infrastructure development, its long-term benefits support its inclusion in the action prioritization."
+        },
+        {
+            "locode": "MET001",
+            "cityName": "Metropolis",
+            "region": "Northeast",
+            "regionName": "Northeast Region",
+            "actionId": "action_15",
+            "actionName": "Recycling Enhancement",
+            "actionPriority": 15,
+            "explanation": "For the city Metropolis, enhancing recycling processes is recognized for its role in decreasing waste-related emissions and improving overall environmental quality. This action is practical, leveraging current municipal infrastructure while promoting sustainable resource management. Its clear contribution to reducing greenhouse gases and operational simplicity explains its moderate ranking."
+        },
+        {
+            "locode": "MET001",
+            "cityName": "Metropolis",
+            "region": "Northeast",
+            "regionName": "Northeast Region",
+            "actionId": "action_16",
+            "actionName": "Zero-Emission Zones",
+            "actionPriority": 16,
+            "explanation": "For the city Metropolis, the introduction of zero-emission zones aims to drastically reduce localized air pollution by promoting cleaner transportation alternatives. This action supports the city's sustainability goals and public health objectives while directly addressing urban emission hotspots. Its strategic alignment with overall environmental policy and community benefits underpins its placement in the ranking."
+        },
+        {
+            "locode": "MET001",
+            "cityName": "Metropolis",
+            "region": "Northeast",
+            "regionName": "Northeast Region",
+            "actionId": "action_17",
+            "actionName": "Community Awareness Programs",
+            "actionPriority": 17,
+            "explanation": "For the city Metropolis, community awareness programs are essential in building public support for climate initiatives and fostering sustainable behavior changes. This action indirectly contributes to emissions reduction by encouraging community-led practices and informed decision-making. Its role in strengthening other measures and enhancing local capacity justifies its thoughtful ranking."
+        },
+        {
+            "locode": "MET001",
+            "cityName": "Metropolis",
+            "region": "Northeast",
+            "regionName": "Northeast Region",
+            "actionId": "action_18",
+            "actionName": "Stormwater Management",
+            "actionPriority": 18,
+            "explanation": "For the city Metropolis, effective stormwater management is critical for reducing urban flood risks and improving water quality. This action supports the city’s adaptation strategy by addressing the practical challenges associated with heavy rainfall and infrastructure strain. Its integration with broader resilience measures explains its ranked position among climate actions."
+        },
+        {
+            "locode": "MET001",
+            "cityName": "Metropolis",
+            "region": "Northeast",
+            "regionName": "Northeast Region",
+            "actionId": "action_19",
+            "actionName": "Renewable Heat Incentives",
+            "actionPriority": 19,
+            "explanation": "For the city Metropolis, renewable heat incentives are a focused measure aimed at reducing emissions from the heating sector by promoting cleaner energy alternatives. This action is tailored to address local energy needs and transition challenges while offering environmental benefits. Its compatibility with existing systems and incremental benefits justify its ranking as a supportive initiative."
+        },
+        {
+            "locode": "MET001",
+            "cityName": "Metropolis",
+            "region": "Northeast",
+            "regionName": "Northeast Region",
+            "actionId": "action_20",
+            "actionName": "Sustainable Agriculture Practices",
+            "actionPriority": 20,
+            "explanation": "For the city Metropolis, sustainable agriculture practices are valued for their potential to reduce emissions in peri-urban zones and improve local food security. This action not only promotes environmental stewardship but also supports socio-economic resilience in surrounding rural communities. Its long-term benefits and alignment with regional environmental priorities contribute to its place in the overall ranking."
+        }
+    ]
+}

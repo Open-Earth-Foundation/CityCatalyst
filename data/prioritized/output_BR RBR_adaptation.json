@@ -1,202 +1,204 @@
-[
-    {
-        "locode": "BR RBR",
-        "cityName": "Rio Branco",
-        "region": "AC",
-        "regionName": "Acre",
-        "actionId": "icare_0176",
-        "actionName": "Development of Climate Action Plan",
-        "actionPriority": 1,
-        "explanation": "Ranked #1 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR RBR",
-        "cityName": "Rio Branco",
-        "region": "AC",
-        "regionName": "Acre",
-        "actionId": "icare_0181",
-        "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
-        "actionPriority": 2,
-        "explanation": "Ranked #2 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR RBR",
-        "cityName": "Rio Branco",
-        "region": "AC",
-        "regionName": "Acre",
-        "actionId": "icare_0154",
-        "actionName": "Cleaning and Unclogging of Channels with Installation of Eco-barriers",
-        "actionPriority": 3,
-        "explanation": "Ranked #3 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR RBR",
-        "cityName": "Rio Branco",
-        "region": "AC",
-        "regionName": "Acre",
-        "actionId": "icare_0169",
-        "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
-        "actionPriority": 4,
-        "explanation": "Ranked #4 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR RBR",
-        "cityName": "Rio Branco",
-        "region": "AC",
-        "regionName": "Acre",
-        "actionId": "icare_0140",
-        "actionName": "Landslide Risk Assessment and Management",
-        "actionPriority": 5,
-        "explanation": "Ranked #5 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR RBR",
-        "cityName": "Rio Branco",
-        "region": "AC",
-        "regionName": "Acre",
-        "actionId": "icare_0164",
-        "actionName": "Hydrological Monitoring System with Telemetry Stations",
-        "actionPriority": 6,
-        "explanation": "Ranked #6 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR RBR",
-        "cityName": "Rio Branco",
-        "region": "AC",
-        "regionName": "Acre",
-        "actionId": "icare_0151",
-        "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
-        "actionPriority": 7,
-        "explanation": "Ranked #7 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR RBR",
-        "cityName": "Rio Branco",
-        "region": "AC",
-        "regionName": "Acre",
-        "actionId": "ipcc_0088",
-        "actionName": "Building codes",
-        "actionPriority": 8,
-        "explanation": "Ranked #8 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR RBR",
-        "cityName": "Rio Branco",
-        "region": "AC",
-        "regionName": "Acre",
-        "actionId": "ipcc_0094",
-        "actionName": "Access to health care",
-        "actionPriority": 9,
-        "explanation": "Ranked #9 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR RBR",
-        "cityName": "Rio Branco",
-        "region": "AC",
-        "regionName": "Acre",
-        "actionId": "icare_0148",
-        "actionName": "Create the Municipal Climate Change Forum",
-        "actionPriority": 10,
-        "explanation": "Ranked #10 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR RBR",
-        "cityName": "Rio Branco",
-        "region": "AC",
-        "regionName": "Acre",
-        "actionId": "ipcc_0097",
-        "actionName": "Food storage/distribution improvements",
-        "actionPriority": 11,
-        "explanation": "Ranked #11 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR RBR",
-        "cityName": "Rio Branco",
-        "region": "AC",
-        "regionName": "Acre",
-        "actionId": "ipcc_0095",
-        "actionName": "Disaster early warning",
-        "actionPriority": 12,
-        "explanation": "Ranked #12 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR RBR",
-        "cityName": "Rio Branco",
-        "region": "AC",
-        "regionName": "Acre",
-        "actionId": "icare_0162",
-        "actionName": "Strengthen programs for control and conservation of protected areas",
-        "actionPriority": 13,
-        "explanation": "Ranked #13 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR RBR",
-        "cityName": "Rio Branco",
-        "region": "AC",
-        "regionName": "Acre",
-        "actionId": "icare_0175",
-        "actionName": "Recovery and preservation of green areas",
-        "actionPriority": 14,
-        "explanation": "Ranked #14 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR RBR",
-        "cityName": "Rio Branco",
-        "region": "AC",
-        "regionName": "Acre",
-        "actionId": "icare_0156",
-        "actionName": "Implementation of urban gardens",
-        "actionPriority": 15,
-        "explanation": "Ranked #15 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR RBR",
-        "cityName": "Rio Branco",
-        "region": "AC",
-        "regionName": "Acre",
-        "actionId": "icare_0149",
-        "actionName": "Encourage sustainable land use practices",
-        "actionPriority": 16,
-        "explanation": "Ranked #16 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR RBR",
-        "cityName": "Rio Branco",
-        "region": "AC",
-        "regionName": "Acre",
-        "actionId": "ipcc_0092",
-        "actionName": "Social safety nets",
-        "actionPriority": 17,
-        "explanation": "Ranked #17 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR RBR",
-        "cityName": "Rio Branco",
-        "region": "AC",
-        "regionName": "Acre",
-        "actionId": "ipcc_0086",
-        "actionName": "Ecosystem-based adaptation",
-        "actionPriority": 18,
-        "explanation": "Ranked #18 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR RBR",
-        "cityName": "Rio Branco",
-        "region": "AC",
-        "regionName": "Acre",
-        "actionId": "ipcc_0098",
-        "actionName": "Behaviour change in diets and food waste",
-        "actionPriority": 19,
-        "explanation": "Ranked #19 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR RBR",
-        "cityName": "Rio Branco",
-        "region": "AC",
-        "regionName": "Acre",
-        "actionId": "ipcc_0099",
-        "actionName": "Water capture/storage",
-        "actionPriority": 20,
-        "explanation": "Ranked #20 by tournament ranking algorithm"
-    }
-]
+{
+    "actions": [
+        {
+            "locode": "SC001",
+            "cityName": "Sample City",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "A1",
+            "actionName": "New Building Standards",
+            "actionPriority": 1,
+            "explanation": "For Sample City, New Building Standards is prioritized as it directly targets the reduction of emissions from the building sector and improves energy performance. It addresses the city's rapid urban growth and density challenges with a focus on long-term mitigation benefits. The action presents a balanced approach with enhanced climate risk reduction and aligns with local building practices, ensuring smooth adoption and community support."
+        },
+        {
+            "locode": "SC001",
+            "cityName": "Sample City",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "A2",
+            "actionName": "Bus Emissions",
+            "actionPriority": 2,
+            "explanation": "For Sample City, Bus Emissions mitigation is valued because it addresses a key urban transport challenge by reducing pollutants in high-density areas. This action improves air quality and contributes to public health while being well-suited to the city's transportation infrastructure. Its implementation is straightforward, supporting rapid benefits and aligning closely with socio-demographic priorities."
+        },
+        {
+            "locode": "SC001",
+            "cityName": "Sample City",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "A3",
+            "actionName": "Renewable Energy Expansion",
+            "actionPriority": 3,
+            "explanation": "For Sample City, Renewable Energy Expansion is prioritized because it shifts energy production to cleaner sources, significantly curtailing greenhouse gas emissions. This initiative leverages the city’s existing infrastructure to produce sustainable benefits and reduce reliance on fossil fuels. The action offers additional community advantages through improved air quality and enhanced energy independence, making it a strong component of the city’s climate strategy."
+        },
+        {
+            "locode": "SC001",
+            "cityName": "Sample City",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "A4",
+            "actionName": "Green Urban Spaces",
+            "actionPriority": 4,
+            "explanation": "For Sample City, developing Green Urban Spaces is viewed favorably because it offers multiple co-benefits such as urban cooling, improved air quality, and enhanced biodiversity. The action is compatible with local environmental conditions and aids in creating livable urban environments. It also supports community well-being and resilience by integrating nature into the urban fabric, making it a cost-effective and sustainable approach."
+        },
+        {
+            "locode": "SC001",
+            "cityName": "Sample City",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "A5",
+            "actionName": "Waste Management Upgrades",
+            "actionPriority": 5,
+            "explanation": "For Sample City, Waste Management Upgrades are prioritized due to their strong potential to reduce pollutants and mitigate methane emissions. This action is especially relevant in a dense urban setting, where efficient waste processing can lead to significant environmental and public health improvements. It effectively leverages existing municipal capacities to bring long-term climate and community benefits, aligning with sustainable urban practices."
+        },
+        {
+            "locode": "SC001",
+            "cityName": "Sample City",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "A6",
+            "actionName": "Energy Efficient Street Lighting",
+            "actionPriority": 6,
+            "explanation": "For Sample City, Energy Efficient Street Lighting is recognized for its ability to reduce energy consumption and lower the city’s overall carbon footprint. The action integrates efficiently with existing urban infrastructure, providing immediate enhancements in public safety and energy management. Its swift deployment and cost-effectiveness contribute to both environmental and socio-economic benefits."
+        },
+        {
+            "locode": "SC001",
+            "cityName": "Sample City",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "A7",
+            "actionName": "Sustainable Transportation Infrastructure",
+            "actionPriority": 7,
+            "explanation": "For Sample City, Sustainable Transportation Infrastructure is important because it encourages a shift away from high-emission vehicles toward cleaner mobility options. This action addresses core urban mobility challenges and fits well with the city’s demographic and spatial layout. By promoting accessible and resilient transport systems, it supports broader climate and community health goals while enhancing long-term urban sustainability."
+        },
+        {
+            "locode": "SC001",
+            "cityName": "Sample City",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "A8",
+            "actionName": "Urban Tree Planting",
+            "actionPriority": 8,
+            "explanation": "For Sample City, Urban Tree Planting is valued for its numerous environmental benefits including natural air purification and urban cooling. The initiative fits seamlessly into the city's strategy to combat heat islands and enhance ecosystem services. It is an accessible and community-driven approach that strengthens local resilience while contributing to a greener urban landscape."
+        },
+        {
+            "locode": "SC001",
+            "cityName": "Sample City",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "A9",
+            "actionName": "Water Conservation Measures",
+            "actionPriority": 9,
+            "explanation": "For Sample City, Water Conservation Measures are favored because they promote the efficient use of critical water resources and reduce related energy consumption. The action aligns with the city’s focus on risk reduction amid climate variability, ensuring sustainable resource management. It supports long-term urban resilience by integrating conservation practices into daily municipal operations in an accessible manner."
+        },
+        {
+            "locode": "SC001",
+            "cityName": "Sample City",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "A10",
+            "actionName": "Green Roofs Initiative",
+            "actionPriority": 10,
+            "explanation": "For Sample City, the Green Roofs Initiative is appealing due to its ability to improve building energy performance and reduce heat absorption in urban areas. This action brings added advantages such as better stormwater management and aesthetic improvements, which are relevant to the local environment. Its design complements existing infrastructure and offers a practical pathway toward enhancing urban climate resilience."
+        },
+        {
+            "locode": "SC001",
+            "cityName": "Sample City",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "A11",
+            "actionName": "Flood Defense Improvements",
+            "actionPriority": 11,
+            "explanation": "For Sample City, Flood Defense Improvements are prioritized because they directly address vulnerabilities and reduce risks associated with severe weather events. The action is tailored to protect critical urban assets and safeguard communities from potential climate-induced damage. It aligns with local risk management priorities and supports long-term resilience planning without heavy dependency complications."
+        },
+        {
+            "locode": "SC001",
+            "cityName": "Sample City",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "A12",
+            "actionName": "Smart Grid Implementation",
+            "actionPriority": 12,
+            "explanation": "For Sample City, Smart Grid Implementation is seen as a strategic action to modernize energy distribution and increase system efficiency. The technology supports the integration of renewable energy sources, thus reducing emissions and enhancing grid resilience. Its approach is adaptable to the city’s current infrastructure, promising not only environmental benefits but also economic and operational improvements in the long run."
+        },
+        {
+            "locode": "SC001",
+            "cityName": "Sample City",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "A13",
+            "actionName": "Bicycle Infrastructure",
+            "actionPriority": 13,
+            "explanation": "For Sample City, Bicycle Infrastructure is embraced as it promotes low-emission travel and supports healthier urban living. This action encourages a shift in commuting habits, reducing reliance on motorized transport while lowering overall emissions. Its integration within the city plan is both practical and community-friendly, enhancing urban livability and contributing to sustainable mobility."
+        },
+        {
+            "locode": "SC001",
+            "cityName": "Sample City",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "A14",
+            "actionName": "Community Solar Programs",
+            "actionPriority": 14,
+            "explanation": "For Sample City, Community Solar Programs are valued as they provide an inclusive approach to adopt renewable energy at the local level. This action empowers residents to contribute to clean energy generation, thereby reducing overall emissions. It fosters community engagement and aligns with sustainable energy goals, making it a supportive complement to broader climate initiatives."
+        },
+        {
+            "locode": "SC001",
+            "cityName": "Sample City",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "A15",
+            "actionName": "Industrial Emission Controls",
+            "actionPriority": 15,
+            "explanation": "For Sample City, Industrial Emission Controls are prioritized for their targeted approach to reduce pollutants from major emission sources in the industrial sector. This action focuses on key contributors to the city’s overall emissions profile and supports improved environmental quality. It provides a clear path for risk reduction and aligns with the operational realities of local industries while ensuring cost-effective implementation."
+        },
+        {
+            "locode": "SC001",
+            "cityName": "Sample City",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "A16",
+            "actionName": "Sustainable Land Use Planning",
+            "actionPriority": 16,
+            "explanation": "For Sample City, Sustainable Land Use Planning is essential as it guides urban expansion in an environmentally responsible manner. This action helps maintain green spaces and minimizes future infrastructure risks by integrating smart growth principles. It addresses long-term socio-demographic goals and ensures that development occurs in harmony with natural ecosystems, strengthening the city’s overall resilience."
+        },
+        {
+            "locode": "SC001",
+            "cityName": "Sample City",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "A17",
+            "actionName": "Carbon Capture and Storage",
+            "actionPriority": 17,
+            "explanation": "For Sample City, Carbon Capture and Storage is recognized as a specialized action aimed at mitigating residual emissions from challenging sources. This technology-oriented measure addresses key emission hotspots and complements broader decarbonization strategies. It is designed as a strategic tool to bolster environmental outcomes, while its implementation depends on existing local technological capabilities and future scaling potential."
+        },
+        {
+            "locode": "SC001",
+            "cityName": "Sample City",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "A18",
+            "actionName": "Climate Education Programs",
+            "actionPriority": 18,
+            "explanation": "For Sample City, Climate Education Programs are valued for laying the groundwork for long-term behavioral change and heightened public awareness of environmental challenges. This action cultivates a community-oriented approach to sustainability that supports other technical interventions. While it does not directly reduce emissions, its role in fostering a culture of resilience and proactive climate action is considered crucial."
+        },
+        {
+            "locode": "SC001",
+            "cityName": "Sample City",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "A19",
+            "actionName": "Public Transit Expansion",
+            "actionPriority": 19,
+            "explanation": "For Sample City, Public Transit Expansion is prioritized as it offers a robust way to shift commuters away from high-emission personal vehicles. This initiative supports cleaner urban mobility, reduces congestion, and enhances overall energy efficiency. Its focus on accessibility and scalability makes it well-suited to the city’s densely populated areas, contributing significantly to environmental and societal goals."
+        },
+        {
+            "locode": "SC001",
+            "cityName": "Sample City",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "A20",
+            "actionName": "Ecological Restoration",
+            "actionPriority": 20,
+            "explanation": "For Sample City, Ecological Restoration is appreciated for its role in reviving natural landscapes and enhancing local ecosystem services. This action works to restore urban natural habitats, indirectly contributing to carbon sequestration and overall environmental quality. It synergizes with local conservation objectives and supports long-term resilience, offering meaningful benefits for both the community and natural environments."
+        }
+    ]
+}

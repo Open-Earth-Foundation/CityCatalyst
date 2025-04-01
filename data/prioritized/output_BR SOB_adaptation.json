@@ -1,202 +1,204 @@
-[
-    {
-        "locode": "BR SOB",
-        "cityName": "Sobral",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0176",
-        "actionName": "Development of Climate Action Plan",
-        "actionPriority": 1,
-        "explanation": "Ranked #1 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR SOB",
-        "cityName": "Sobral",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0181",
-        "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
-        "actionPriority": 2,
-        "explanation": "Ranked #2 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR SOB",
-        "cityName": "Sobral",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0162",
-        "actionName": "Strengthen programs for control and conservation of protected areas",
-        "actionPriority": 3,
-        "explanation": "Ranked #3 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR SOB",
-        "cityName": "Sobral",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0151",
-        "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
-        "actionPriority": 4,
-        "explanation": "Ranked #4 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR SOB",
-        "cityName": "Sobral",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0169",
-        "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
-        "actionPriority": 5,
-        "explanation": "Ranked #5 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR SOB",
-        "cityName": "Sobral",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "ipcc_0097",
-        "actionName": "Food storage/distribution improvements",
-        "actionPriority": 6,
-        "explanation": "Ranked #6 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR SOB",
-        "cityName": "Sobral",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0140",
-        "actionName": "Landslide Risk Assessment and Management",
-        "actionPriority": 7,
-        "explanation": "Ranked #7 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR SOB",
-        "cityName": "Sobral",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0154",
-        "actionName": "Cleaning and Unclogging of Channels with Installation of Eco-barriers",
-        "actionPriority": 8,
-        "explanation": "Ranked #8 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR SOB",
-        "cityName": "Sobral",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0164",
-        "actionName": "Hydrological Monitoring System with Telemetry Stations",
-        "actionPriority": 9,
-        "explanation": "Ranked #9 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR SOB",
-        "cityName": "Sobral",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "ipcc_0088",
-        "actionName": "Building codes",
-        "actionPriority": 10,
-        "explanation": "Ranked #10 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR SOB",
-        "cityName": "Sobral",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "ipcc_0095",
-        "actionName": "Disaster early warning",
-        "actionPriority": 11,
-        "explanation": "Ranked #11 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR SOB",
-        "cityName": "Sobral",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0175",
-        "actionName": "Recovery and preservation of green areas",
-        "actionPriority": 12,
-        "explanation": "Ranked #12 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR SOB",
-        "cityName": "Sobral",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0149",
-        "actionName": "Encourage sustainable land use practices",
-        "actionPriority": 13,
-        "explanation": "Ranked #13 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR SOB",
-        "cityName": "Sobral",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "ipcc_0094",
-        "actionName": "Access to health care",
-        "actionPriority": 14,
-        "explanation": "Ranked #14 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR SOB",
-        "cityName": "Sobral",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0156",
-        "actionName": "Implementation of urban gardens",
-        "actionPriority": 15,
-        "explanation": "Ranked #15 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR SOB",
-        "cityName": "Sobral",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "ipcc_0092",
-        "actionName": "Social safety nets",
-        "actionPriority": 16,
-        "explanation": "Ranked #16 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR SOB",
-        "cityName": "Sobral",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "ipcc_0086",
-        "actionName": "Ecosystem-based adaptation",
-        "actionPriority": 17,
-        "explanation": "Ranked #17 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR SOB",
-        "cityName": "Sobral",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0148",
-        "actionName": "Create the Municipal Climate Change Forum",
-        "actionPriority": 18,
-        "explanation": "Ranked #18 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR SOB",
-        "cityName": "Sobral",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "ipcc_0099",
-        "actionName": "Water capture/storage",
-        "actionPriority": 19,
-        "explanation": "Ranked #19 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR SOB",
-        "cityName": "Sobral",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "ipcc_0098",
-        "actionName": "Behaviour change in diets and food waste",
-        "actionPriority": 20,
-        "explanation": "Ranked #20 by tournament ranking algorithm"
-    }
-]
+{
+    "actions": [
+        {
+            "locode": "MTV",
+            "cityName": "Metroville",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "action_01",
+            "actionName": "Bus Emissions",
+            "actionPriority": 1,
+            "explanation": "For Metroville, the Bus Emissions action is highly valued because it directly targets a key source of urban greenhouse gas emissions from the transportation sector. It aligns very well with the city’s dense transit network and addresses urban air quality concerns. Moreover, by reducing harmful pollutants and operating within existing transit frameworks, the action proves both effective and feasible given local resources."
+        },
+        {
+            "locode": "MTV",
+            "cityName": "Metroville",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "action_02",
+            "actionName": "New Building Standards",
+            "actionPriority": 2,
+            "explanation": "This action is prioritized because it modernizes construction practices to significantly lower energy usage in buildings. It is well-suited to Metroville’s rapid urban development while also aiming to mitigate long-term emissions. The strategy leverages local construction capabilities and offers the co-benefit of improved indoor environments, making it both resilient and adaptable."
+        },
+        {
+            "locode": "MTV",
+            "cityName": "Metroville",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "action_03",
+            "actionName": "Renewable Energy Installations",
+            "actionPriority": 3,
+            "explanation": "This action is recognized for its strong potential to decarbonize Metroville’s energy supply by integrating renewable sources. It effectively reduces dependency on fossil fuels and aligns with the city's environmental goals, ensuring compatibility with its climate and resource profile. Additionally, utilizing renewable energy supports long-term sustainability and builds local resilience against future energy risks."
+        },
+        {
+            "locode": "MTV",
+            "cityName": "Metroville",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "action_04",
+            "actionName": "Urban Green Spaces",
+            "actionPriority": 4,
+            "explanation": "Urban Green Spaces are prioritized because they not only help in absorbing carbon emissions but also deliver important co-benefits like improved air quality and enhanced community well-being. The strategy is well-matched to Metroville’s urban layout, where integrating green areas can mitigate urban heat island effects. Its implementation also leverages local partnerships and fosters a healthier environment through natural solutions."
+        },
+        {
+            "locode": "MTV",
+            "cityName": "Metroville",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "action_05",
+            "actionName": "Energy Efficiency Retrofits",
+            "actionPriority": 5,
+            "explanation": "This action stands out as it focuses on upgrading existing infrastructure to dramatically reduce energy consumption. It fits well with Metroville’s blend of older and newer buildings, ensuring a smoother transition towards a lower-emission future. The approach also offers cost-effective benefits by lowering operational expenses while enhancing indoor comfort and reducing long-term risks."
+        },
+        {
+            "locode": "MTV",
+            "cityName": "Metroville",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "action_06",
+            "actionName": "Waste Management Improvements",
+            "actionPriority": 6,
+            "explanation": "Waste Management Improvements are prioritized due to their ability to reduce emissions from waste decomposition and manage urban waste streams sustainably. The action leverages local waste processing capacities and aligns with Metroville’s environmental and public health goals. It also contributes to a greener urban ecosystem by turning waste challenges into resource opportunities."
+        },
+        {
+            "locode": "MTV",
+            "cityName": "Metroville",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "action_07",
+            "actionName": "Water Conservation",
+            "actionPriority": 7,
+            "explanation": "Water Conservation is an important action that addresses both environmental sustainability and resource security. In Metroville, where water demand is high, this approach ensures that the city's water resources are managed efficiently, reducing environmental stress. The action is also beneficial in minimizing associated energy use in water supply systems, contributing to broader climate resilience."
+        },
+        {
+            "locode": "MTV",
+            "cityName": "Metroville",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "action_08",
+            "actionName": "Cycling Infrastructure",
+            "actionPriority": 8,
+            "explanation": "Cycling Infrastructure is favored because it promotes low-emission transportation and supports healthier lifestyles for residents. The action is highly compatible with Metroville’s urban design and helps decentralize traffic congestion while lowering overall carbon outputs. Its implementation can be achieved swiftly with community involvement, further enhancing its value in urban mobility planning."
+        },
+        {
+            "locode": "MTV",
+            "cityName": "Metroville",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "action_09",
+            "actionName": "Public Awareness Campaign",
+            "actionPriority": 9,
+            "explanation": "The Public Awareness Campaign plays an important role by engaging residents and promoting sustainable behaviors that contribute to lower emissions. In Metroville’s diverse socio-economic context, such campaigns build community support and empower citizens to act on climate concerns. Its design is cost-effective and adaptable, ensuring that positive social and environmental messages resonate throughout the city."
+        },
+        {
+            "locode": "MTV",
+            "cityName": "Metroville",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "action_10",
+            "actionName": "Electrification of Public Transit",
+            "actionPriority": 10,
+            "explanation": "Electrification of Public Transit is prioritized for its direct impact on reducing transportation-related greenhouse gas emissions. This action is well-matched to Metroville’s commitment to cleaner urban mobility and offers co-benefits such as lower operational noise and improved air quality. Its integration within the existing transit framework enhances overall cost-effectiveness and urban resilience."
+        },
+        {
+            "locode": "MTV",
+            "cityName": "Metroville",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "action_11",
+            "actionName": "Sustainable Urban Inventory",
+            "actionPriority": 11,
+            "explanation": "The Sustainable Urban Inventory focuses on assessing and managing environmental risks within the city's infrastructure. This action supports Metroville’s long-term planning by identifying key vulnerabilities and guiding future investments toward climate resilience. Its systematic approach makes it an effective tool in aligning urban development with sustainability targets."
+        },
+        {
+            "locode": "MTV",
+            "cityName": "Metroville",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "action_12",
+            "actionName": "District Heating Systems",
+            "actionPriority": 12,
+            "explanation": "District Heating Systems are recognized for their ability to centralize energy management and improve overall efficiency in urban settings. In Metroville, this action leverages existing infrastructure to deliver consistent heating while reducing reliance on individual fossil fuel-based systems. Its consideration of local energy demand and cost-effectiveness adds to its strategic value in enhancing community climate resilience."
+        },
+        {
+            "locode": "MTV",
+            "cityName": "Metroville",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "action_13",
+            "actionName": "Urban Tree Planting",
+            "actionPriority": 13,
+            "explanation": "Urban Tree Planting is advantageous as it naturally sequesters carbon while enhancing local biodiversity in Metroville. The action contributes to cooling urban areas and improving air quality through natural processes. It is well-suited to community-led initiatives and has the added benefit of beautifying urban landscapes, making the environment more livable."
+        },
+        {
+            "locode": "MTV",
+            "cityName": "Metroville",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "action_14",
+            "actionName": "Industrial Emission Controls",
+            "actionPriority": 14,
+            "explanation": "Industrial Emission Controls are critical as they target significant sources of greenhouse gas outputs from the manufacturing sector. This action is well-aligned with Metroville’s industrial profile and is designed to reduce environmental and health risks associated with heavy emissions. Its robust approach emphasizes both efficiency and regulation, ensuring safer industrial practices over time."
+        },
+        {
+            "locode": "MTV",
+            "cityName": "Metroville",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "action_15",
+            "actionName": "Smart Grid Implementation",
+            "actionPriority": 15,
+            "explanation": "Smart Grid Implementation is valued for modernizing the energy distribution network and enhancing grid reliability in Metroville. The action supports more efficient energy use and enables rapid integration of renewable sources. Its forward-looking design strengthens the city’s capacity to manage energy demand while reducing waste and emissions."
+        },
+        {
+            "locode": "MTV",
+            "cityName": "Metroville",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "action_16",
+            "actionName": "Building Energy Efficiency",
+            "actionPriority": 16,
+            "explanation": "Building Energy Efficiency improvements focus on reducing the energy demand of residential and commercial properties in Metroville. This action complements the city’s broader climate strategy by lowering operational costs and minimizing environmental footprints. Its integration into building practices is both practical and sustainable, ensuring long-term benefits for community well-being."
+        },
+        {
+            "locode": "MTV",
+            "cityName": "Metroville",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "action_17",
+            "actionName": "Low Emission Zones",
+            "actionPriority": 17,
+            "explanation": "The establishment of Low Emission Zones is a strategic measure to limit high-emission vehicles in densely populated urban areas like Metroville. This action directly contributes to improved air quality and supports the city’s overall efforts in reducing transport-related emissions. With clear boundaries and enforcement strategies, it offers a practical approach to mitigating urban pollution while protecting public health."
+        },
+        {
+            "locode": "MTV",
+            "cityName": "Metroville",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "action_18",
+            "actionName": "Rooftop Solar Installations",
+            "actionPriority": 18,
+            "explanation": "Rooftop Solar Installations capitalize on available urban space to generate clean energy and reduce dependency on centralized fossil fuel sources. This action is particularly fitting for Metroville, as it utilizes existing building structures for a decentralized energy solution. Its focus on renewable energy through accessible technology makes it an attractive option for sustainable urban development."
+        },
+        {
+            "locode": "MTV",
+            "cityName": "Metroville",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "action_19",
+            "actionName": "Resilient Infrastructure",
+            "actionPriority": 19,
+            "explanation": "Resilient Infrastructure is pursued to ensure that Metroville’s critical systems withstand the challenges posed by climate change. This action focuses on reinforcing physical assets, reducing vulnerability to extreme weather events, and promoting long-term community safety. Its comprehensive approach aligns with strategic planning efforts aimed at secure and sustainable urban growth."
+        },
+        {
+            "locode": "MTV",
+            "cityName": "Metroville",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "action_20",
+            "actionName": "Flood Management",
+            "actionPriority": 20,
+            "explanation": "Flood Management is designed to address the increasing risk of water-related hazards in Metroville. By early planning and integration of both structural and non-structural measures, this action safeguards communities against potential flood events. Its emphasis on risk mitigation and adaptive capacity makes it a critical component of the city's climate resilience strategy."
+        }
+    ]
+}

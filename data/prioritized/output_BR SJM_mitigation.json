@@ -1,182 +1,204 @@
-[
-    {
-        "locode": "BR SJM",
-        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0118",
-        "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
-        "actionPriority": 1
-    },
-    {
-        "locode": "BR SJM",
-        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0005",
-        "actionName": "Create credit lines for residential and community wind energy projects",
-        "actionPriority": 2
-    },
-    {
-        "locode": "BR SJM",
-        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0121",
-        "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
-        "actionPriority": 3
-    },
-    {
-        "locode": "BR SJM",
-        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0094",
-        "actionName": "Adoption of biomethane in public fleets.",
-        "actionPriority": 4
-    },
-    {
-        "locode": "BR SJM",
-        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0088",
-        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
-        "actionPriority": 5
-    },
-    {
-        "locode": "BR SJM",
-        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0092",
-        "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
-        "actionPriority": 6
-    },
-    {
-        "locode": "BR SJM",
-        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0090",
-        "actionName": "Adoption of electric drones for last-mile deliveries.",
-        "actionPriority": 7
-    },
-    {
-        "locode": "BR SJM",
-        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0057",
-        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
-        "actionPriority": 8
-    },
-    {
-        "locode": "BR SJM",
-        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0025",
-        "actionName": "Promote energy-efficient low-income housing",
-        "actionPriority": 9
-    },
-    {
-        "locode": "BR SJM",
-        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0044",
-        "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
-        "actionPriority": 10
-    },
-    {
-        "locode": "BR SJM",
-        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0133",
-        "actionName": "Promote Urban Reforestation and Green Corridors",
-        "actionPriority": 11
-    },
-    {
-        "locode": "BR SJM",
-        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0117",
-        "actionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
-        "actionPriority": 12
-    },
-    {
-        "locode": "BR SJM",
-        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0042",
-        "actionName": "Encourage renewable energy policies at the municipal level",
-        "actionPriority": 13
-    },
-    {
-        "locode": "BR SJM",
-        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0068",
-        "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
-        "actionPriority": 14
-    },
-    {
-        "locode": "BR SJM",
-        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0131",
-        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
-        "actionPriority": 15
-    },
-    {
-        "locode": "BR SJM",
-        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "c40_0033",
-        "actionName": "15/30-Minute Areas",
-        "actionPriority": 16
-    },
-    {
-        "locode": "BR SJM",
-        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0136",
-        "actionName": "Support the Implementation of Ecological Fiscal Incentives",
-        "actionPriority": 17
-    },
-    {
-        "locode": "BR SJM",
-        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0099",
-        "actionName": "Support Agroecological Certification Programs",
-        "actionPriority": 18
-    },
-    {
-        "locode": "BR SJM",
-        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0132",
-        "actionName": "Encourage Local Agroecological Production and Short Supply Chains",
-        "actionPriority": 19
-    },
-    {
-        "locode": "BR SJM",
-        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0027",
-        "actionName": "Create financing programs for local renewable energy projects",
-        "actionPriority": 20
-    }
-]
+{
+    "actions": [
+        {
+            "locode": "CTY001",
+            "cityName": "Cityville",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "act1",
+            "actionName": "New Building Standards",
+            "actionPriority": 1,
+            "explanation": "For Cityville, New Building Standards is prioritized because it directly addresses emissions from one of the most significant sectors impacting urban energy use. The action is designed to improve efficiency and reduce the carbon footprint by enforcing enhanced construction practices. It aligns well with the local environment and offers additional benefits such as improved indoor air quality and long-term risk reduction, making it a strategically sound choice."
+        },
+        {
+            "locode": "CTY001",
+            "cityName": "Cityville",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "act2",
+            "actionName": "Bus Emissions",
+            "actionPriority": 2,
+            "explanation": "In Cityville, Bus Emissions is valued for its capacity to reduce pollutants in a dense urban transit network. The action emphasizes mitigation in the transportation sector, which is critical given the city’s high commuter volume. Its focus on cost-effective technology upgrades and operational improvements ensures that environmental benefits are achieved without undue strain on local resources."
+        },
+        {
+            "locode": "CTY001",
+            "cityName": "Cityville",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "act3",
+            "actionName": "Renewable Energy Installation",
+            "actionPriority": 3,
+            "explanation": "This action stands out in Cityville due to its strong potential to shift the energy mix towards cleaner sources. It tackles the root cause of emissions by reducing reliance on fossil fuels and enhancing energy security. With its robust alignment with local renewable resources, the installation offers significant environmental and economic co-benefits."
+        },
+        {
+            "locode": "CTY001",
+            "cityName": "Cityville",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "act4",
+            "actionName": "Urban Greening",
+            "actionPriority": 4,
+            "explanation": "The Urban Greening initiative is well-suited for Cityville as it not only mitigates environmental heat and improves air quality but also enhances overall urban livability. Its design supports nature-based solutions that work in harmony with the local climate and ecosystem. By fostering both ecological restoration and community well-being, the action is a balanced and forward-looking option."
+        },
+        {
+            "locode": "CTY001",
+            "cityName": "Cityville",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "act5",
+            "actionName": "Waste Management Improvements",
+            "actionPriority": 5,
+            "explanation": "Cityville benefits from Waste Management Improvements as this action significantly reduces methane and other harmful emissions generated from waste. The initiative is designed to integrate sustainable practices into existing systems, enhancing overall cost-effectiveness and environmental impact. It resonates with the city's commitment to improving infrastructure while addressing associated public health considerations."
+        },
+        {
+            "locode": "CTY001",
+            "cityName": "Cityville",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "act6",
+            "actionName": "Flood Defense Systems",
+            "actionPriority": 6,
+            "explanation": "Flood Defense Systems is prioritized for Cityville due to its critical role in adapting to increasing climate variability. This action not only protects infrastructure and citizens from flood risks but also contributes to long-term urban resilience. Its integration into the city's planning framework makes it an essential component for safeguarding the community against climate-related hazards."
+        },
+        {
+            "locode": "CTY001",
+            "cityName": "Cityville",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "act7",
+            "actionName": "Heat Mitigation",
+            "actionPriority": 7,
+            "explanation": "The Heat Mitigation action is well-aligned with Cityville’s need to counteract urban heat island effects. It provides rapid benefits by lowering ambient temperatures and reducing associated health risks, especially for vulnerable populations. By effectively addressing both environmental and social risks, this action supports a more resilient urban climate strategy."
+        },
+        {
+            "locode": "CTY001",
+            "cityName": "Cityville",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "act8",
+            "actionName": "Sustainable Transport",
+            "actionPriority": 8,
+            "explanation": "Sustainable Transport is designed to optimize Cityville’s transit networks, reducing emissions associated with conventional transport methods. It enhances mobility while delivering environmental benefits by easing congestion and promoting energy-efficient alternatives. The action fits well within the socio-demographic profile of the city, supporting both economic activity and public health improvements."
+        },
+        {
+            "locode": "CTY001",
+            "cityName": "Cityville",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "act9",
+            "actionName": "Water Conservation",
+            "actionPriority": 9,
+            "explanation": "Water Conservation in Cityville is an important action as it ensures the sustainable management of a vital resource. The focus on efficient water use helps to maintain ecosystem balance and supports adaptation to potential droughts. Its implementation is responsive to local environmental conditions, contributing to overall urban resilience and resource security."
+        },
+        {
+            "locode": "CTY001",
+            "cityName": "Cityville",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "act10",
+            "actionName": "Industrial Emissions",
+            "actionPriority": 10,
+            "explanation": "Targeting Industrial Emissions is crucial for Cityville as it significantly addresses the largest sources of urban greenhouse gas outputs. This action is tailored to bring improvements in sectors with high energy intensity, supporting both economic efficiency and environmental well-being. Its design also works to reduce broader risks by focusing on systemic changes within industrial operations."
+        },
+        {
+            "locode": "CTY001",
+            "cityName": "Cityville",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "act11",
+            "actionName": "Energy Efficiency Retrofits",
+            "actionPriority": 11,
+            "explanation": "Energy Efficiency Retrofits are favored in Cityville for their ability to upgrade existing infrastructure with minimal disruption. The action emphasizes lowering energy consumption through enhanced building performance, thereby reducing the city's overall emissions profile. It also brings ancillary benefits like increased occupant comfort and long-term cost savings, which are important for sustainable urban development."
+        },
+        {
+            "locode": "CTY001",
+            "cityName": "Cityville",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "act12",
+            "actionName": "Smart Grid Implementation",
+            "actionPriority": 12,
+            "explanation": "Smart Grid Implementation is pertinent to Cityville as it promises a more resilient and efficient energy distribution system. By facilitating better integration of renewable sources and reducing energy losses, this action supports both environmental goals and economic stability. Its progressive design helps the city manage demand more effectively while paving the way for future technological upgrades."
+        },
+        {
+            "locode": "CTY001",
+            "cityName": "Cityville",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "act13",
+            "actionName": "Ecosystem Restoration",
+            "actionPriority": 13,
+            "explanation": "For Cityville, Ecosystem Restoration is valuable as it contributes to long-term environmental stability by reviving natural habitats. This action enhances carbon sequestration and biodiversity, aligning closely with the city’s efforts to mitigate climate change naturally. The integrated benefits of ecological balance and increased community well-being make it an important consideration in the overall climate strategy."
+        },
+        {
+            "locode": "CTY001",
+            "cityName": "Cityville",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "act14",
+            "actionName": "Carbon Pricing",
+            "actionPriority": 14,
+            "explanation": "Carbon Pricing is recognized in Cityville for creating economic incentives that steer both businesses and consumers towards low-carbon alternatives. The approach encourages broader industry shifts by internalizing environmental costs. Its policy-driven nature helps to promote sustainable investments while supporting the overall reduction of greenhouse emissions."
+        },
+        {
+            "locode": "CTY001",
+            "cityName": "Cityville",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "act15",
+            "actionName": "Adaptation Planning",
+            "actionPriority": 15,
+            "explanation": "Adaptation Planning is an integral action for Cityville as it lays out comprehensive measures to handle future climate-related uncertainties. This initiative focuses on preparing critical infrastructure and communities for potential risks, aligning with both socio-economic and environmental resilience goals. Its systematic approach to risk management makes it a thoughtful strategy for long-term urban sustainability."
+        },
+        {
+            "locode": "CTY001",
+            "cityName": "Cityville",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "act16",
+            "actionName": "Public Awareness Campaign",
+            "actionPriority": 16,
+            "explanation": "The Public Awareness Campaign in Cityville is designed to empower citizens with knowledge and foster behavioral changes that contribute to climate action. It leverages community engagement to amplify the overall impact of other mitigation and adaptation measures. With its low cost and broad reach, this action supports the creation of an informed and resilient community."
+        },
+        {
+            "locode": "CTY001",
+            "cityName": "Cityville",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "act17",
+            "actionName": "Urban Mobility Upgrade",
+            "actionPriority": 17,
+            "explanation": "Urban Mobility Upgrade is tailored for Cityville and emphasizes improvements to the transportation infrastructure that collectively enhance efficiency and cut emissions. The action targets congestion reduction and better connectivity among city residents, which is essential for daily operations. Its implementation supports both the environmental and social dimensions of urban planning by focusing on accessible and sustainable transit options."
+        },
+        {
+            "locode": "CTY001",
+            "cityName": "Cityville",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "act18",
+            "actionName": "Green Infrastructure",
+            "actionPriority": 18,
+            "explanation": "Green Infrastructure serves Cityville by incorporating nature-based solutions into urban development, thereby improving ecological functions and public spaces. This action reduces environmental risks while enhancing community resilience through better stormwater management and thermal regulation. The focus on integrating natural systems with urban settings makes this a valuable part of the city’s holistic climate response strategy."
+        },
+        {
+            "locode": "CTY001",
+            "cityName": "Cityville",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "act19",
+            "actionName": "Tree Planting",
+            "actionPriority": 19,
+            "explanation": "Tree Planting in Cityville is recognized for its ability to gradually improve air quality and sequester carbon, while also offering aesthetic and recreational benefits. The action is easy to integrate into existing urban landscapes and can enhance community well-being. Its long-term environmental benefits, combined with minimal implementation complications, justify its inclusion within the city's climate strategies."
+        },
+        {
+            "locode": "CTY001",
+            "cityName": "Cityville",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "act20",
+            "actionName": "Solar Panel Subsidies",
+            "actionPriority": 20,
+            "explanation": "Solar Panel Subsidies are prioritized for Cityville by promoting the adoption of clean and renewable energy at the residential and commercial levels. The initiative supports a transition away from fossil fuels by reducing financial barriers to solar energy investments. It fits the city’s push for cost-effective, scalable solutions that not only lower emissions but also foster long-term energy resilience."
+        }
+    ]
+}

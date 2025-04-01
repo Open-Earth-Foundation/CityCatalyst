@@ -1,182 +1,204 @@
-[
-    {
-        "locode": "BR TSE",
-        "cityName": "Tangar\u00e1 da Serra",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0118",
-        "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
-        "actionPriority": 1
-    },
-    {
-        "locode": "BR TSE",
-        "cityName": "Tangar\u00e1 da Serra",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0005",
-        "actionName": "Create credit lines for residential and community wind energy projects",
-        "actionPriority": 2
-    },
-    {
-        "locode": "BR TSE",
-        "cityName": "Tangar\u00e1 da Serra",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0121",
-        "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
-        "actionPriority": 3
-    },
-    {
-        "locode": "BR TSE",
-        "cityName": "Tangar\u00e1 da Serra",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0133",
-        "actionName": "Promote Urban Reforestation and Green Corridors",
-        "actionPriority": 4
-    },
-    {
-        "locode": "BR TSE",
-        "cityName": "Tangar\u00e1 da Serra",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0088",
-        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
-        "actionPriority": 5
-    },
-    {
-        "locode": "BR TSE",
-        "cityName": "Tangar\u00e1 da Serra",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0092",
-        "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
-        "actionPriority": 6
-    },
-    {
-        "locode": "BR TSE",
-        "cityName": "Tangar\u00e1 da Serra",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0102",
-        "actionName": "Promote Sustainable Agricultural Practices",
-        "actionPriority": 7
-    },
-    {
-        "locode": "BR TSE",
-        "cityName": "Tangar\u00e1 da Serra",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0025",
-        "actionName": "Promote energy-efficient low-income housing",
-        "actionPriority": 8
-    },
-    {
-        "locode": "BR TSE",
-        "cityName": "Tangar\u00e1 da Serra",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0131",
-        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
-        "actionPriority": 9
-    },
-    {
-        "locode": "BR TSE",
-        "cityName": "Tangar\u00e1 da Serra",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0094",
-        "actionName": "Adoption of biomethane in public fleets.",
-        "actionPriority": 10
-    },
-    {
-        "locode": "BR TSE",
-        "cityName": "Tangar\u00e1 da Serra",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0099",
-        "actionName": "Support Agroecological Certification Programs",
-        "actionPriority": 11
-    },
-    {
-        "locode": "BR TSE",
-        "cityName": "Tangar\u00e1 da Serra",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0136",
-        "actionName": "Support the Implementation of Ecological Fiscal Incentives",
-        "actionPriority": 12
-    },
-    {
-        "locode": "BR TSE",
-        "cityName": "Tangar\u00e1 da Serra",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0057",
-        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
-        "actionPriority": 13
-    },
-    {
-        "locode": "BR TSE",
-        "cityName": "Tangar\u00e1 da Serra",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0090",
-        "actionName": "Adoption of electric drones for last-mile deliveries.",
-        "actionPriority": 14
-    },
-    {
-        "locode": "BR TSE",
-        "cityName": "Tangar\u00e1 da Serra",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0117",
-        "actionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
-        "actionPriority": 15
-    },
-    {
-        "locode": "BR TSE",
-        "cityName": "Tangar\u00e1 da Serra",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0068",
-        "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
-        "actionPriority": 16
-    },
-    {
-        "locode": "BR TSE",
-        "cityName": "Tangar\u00e1 da Serra",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0100",
-        "actionName": "Support Regenerative Agriculture Practices",
-        "actionPriority": 17
-    },
-    {
-        "locode": "BR TSE",
-        "cityName": "Tangar\u00e1 da Serra",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0084",
-        "actionName": "Create Incentives for Agroforestry Practices in Livestock Systems",
-        "actionPriority": 18
-    },
-    {
-        "locode": "BR TSE",
-        "cityName": "Tangar\u00e1 da Serra",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0027",
-        "actionName": "Create financing programs for local renewable energy projects",
-        "actionPriority": 19
-    },
-    {
-        "locode": "BR TSE",
-        "cityName": "Tangar\u00e1 da Serra",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "c40_0033",
-        "actionName": "15/30-Minute Areas",
-        "actionPriority": 20
-    }
-]
+{
+    "actions": [
+        {
+            "locode": "US-SPR",
+            "cityName": "Springfield",
+            "region": "US",
+            "regionName": "Midwest",
+            "actionId": "action1",
+            "actionName": "New Building Standards",
+            "actionPriority": 1,
+            "explanation": "For the city Springfield, this action is prioritized because it targets the core emission sources associated with outdated building infrastructure. It effectively reduces emissions by promoting efficient design and construction practices. Further, the action aligns with local urban development goals and offers long‐term sustainability benefits while reducing climate risks."
+        },
+        {
+            "locode": "US-SPR",
+            "cityName": "Springfield",
+            "region": "US",
+            "regionName": "Midwest",
+            "actionId": "action2",
+            "actionName": "Renewable Energy Incentives",
+            "actionPriority": 2,
+            "explanation": "For the city Springfield, this action is favored because it leverages local renewable potential to diminish reliance on fossil fuels. It strategically addresses key emission sectors by encouraging clean energy adoption in a cost-effective manner. Additionally, the initiative supports rapid implementation and strengthens community socio-economic stability."
+        },
+        {
+            "locode": "US-SPR",
+            "cityName": "Springfield",
+            "region": "US",
+            "regionName": "Midwest",
+            "actionId": "action3",
+            "actionName": "Urban Green Spaces Expansion",
+            "actionPriority": 3,
+            "explanation": "For the city Springfield, this action is appealing as it enhances urban ecological resilience and improves air quality. It is particularly suitable given the city’s high population density and limited green areas, providing valuable co-benefits for public health. By integrating environmental improvement with social benefits, this measure supports both immediate and long-term urban sustainability."
+        },
+        {
+            "locode": "US-SPR",
+            "cityName": "Springfield",
+            "region": "US",
+            "regionName": "Midwest",
+            "actionId": "action4",
+            "actionName": "Public Transit Electrification",
+            "actionPriority": 4,
+            "explanation": "For the city Springfield, this action stands out because it significantly reduces emissions in the transport sector by modernizing the public transit system. It directly targets a critical area affecting urban air quality and supports a transition to cleaner energy sources. The measure is also aligned with the city’s capacity for rapid infrastructure upgrades and long-term risk reduction."
+        },
+        {
+            "locode": "US-SPR",
+            "cityName": "Springfield",
+            "region": "US",
+            "regionName": "Midwest",
+            "actionId": "action5",
+            "actionName": "Waste Management Improvements",
+            "actionPriority": 5,
+            "explanation": "For the city Springfield, this action is valued for addressing emissions from waste processes and promoting environmentally responsible disposal methods. It contributes to overall sustainability by mitigating potential hazards from waste management practices. The approach is practical and integrates well with the city’s resource capabilities and risk management strategies."
+        },
+        {
+            "locode": "US-SPR",
+            "cityName": "Springfield",
+            "region": "US",
+            "regionName": "Midwest",
+            "actionId": "action6",
+            "actionName": "Water Conservation Programs",
+            "actionPriority": 6,
+            "explanation": "For the city Springfield, this action is prioritized because it focuses on resource sustainability and addresses vulnerabilities related to water scarcity. The initiative is well suited to the local environmental context, fostering resilience against climate-induced water stress. Additionally, it is designed for efficient implementation and offers significant community benefits over time."
+        },
+        {
+            "locode": "US-SPR",
+            "cityName": "Springfield",
+            "region": "US",
+            "regionName": "Midwest",
+            "actionId": "action7",
+            "actionName": "Flood Resilience Projects",
+            "actionPriority": 7,
+            "explanation": "For the city Springfield, this action is favored because it directly addresses potential flooding risks exacerbated by climate change. It is carefully tailored to the local hydrological and urban conditions, enhancing overall public safety. The action provides a balanced approach to risk reduction while promoting cost-effective mitigation efforts with timely benefits."
+        },
+        {
+            "locode": "US-SPR",
+            "cityName": "Springfield",
+            "region": "US",
+            "regionName": "Midwest",
+            "actionId": "action8",
+            "actionName": "Air Quality Monitoring Systems",
+            "actionPriority": 8,
+            "explanation": "For the city Springfield, this action is prioritized because it improves the monitoring and management of key emission sources affecting air quality. It offers critical data that supports timely responses and adaptive management of environmental risks. The initiative complements existing infrastructure and promotes informed decision-making for sustainable urban development."
+        },
+        {
+            "locode": "US-SPR",
+            "cityName": "Springfield",
+            "region": "US",
+            "regionName": "Midwest",
+            "actionId": "action9",
+            "actionName": "Cycling Infrastructure Development",
+            "actionPriority": 9,
+            "explanation": "For the city Springfield, this action is compelling as it encourages sustainable transportation through enhanced cycling infrastructure. It effectively reduces reliance on high-emission transport options and promotes healthier lifestyles. The measure is well adapted to the city’s urban layout while offering straightforward, community-driven benefits."
+        },
+        {
+            "locode": "US-SPR",
+            "cityName": "Springfield",
+            "region": "US",
+            "regionName": "Midwest",
+            "actionId": "action10",
+            "actionName": "Solar Panel Subsidies",
+            "actionPriority": 10,
+            "explanation": "For the city Springfield, this action is considered beneficial because it stimulates clean energy adoption by making solar power more accessible. It leverages the city’s favorable conditions for solar energy and supports a reduction in carbon emissions. The initiative allows for rapid uptake by residents and aligns with broader sustainability objectives."
+        },
+        {
+            "locode": "US-SPR",
+            "cityName": "Springfield",
+            "region": "US",
+            "regionName": "Midwest",
+            "actionId": "action11",
+            "actionName": "Energy Efficiency Retrofits",
+            "actionPriority": 11,
+            "explanation": "For the city Springfield, this action is prioritized for its ability to enhance existing building efficiency and manage energy demand more effectively. It aligns with the city’s urban sustainability goals by reducing unnecessary emissions. The measure also supports long-term cost savings and risk reduction through improved energy management practices."
+        },
+        {
+            "locode": "US-SPR",
+            "cityName": "Springfield",
+            "region": "US",
+            "regionName": "Midwest",
+            "actionId": "action12",
+            "actionName": "Green Roof Installation",
+            "actionPriority": 12,
+            "explanation": "For the city Springfield, this action is valued for its contribution to urban cooling and increased building insulation while enhancing local biodiversity. It is a fitting solution for dense urban areas facing heat island effects. The initiative also supports effective stormwater management and provides cost-effective environmental benefits over time."
+        },
+        {
+            "locode": "US-SPR",
+            "cityName": "Springfield",
+            "region": "US",
+            "regionName": "Midwest",
+            "actionId": "action13",
+            "actionName": "Climate Risk Assessment",
+            "actionPriority": 13,
+            "explanation": "For the city Springfield, this action is essential as it provides decision makers with critical insights into potential climate hazards. It informs the planning and implementation of future adaptation measures based on local environmental vulnerabilities. By building a strong foundation for targeted interventions, the initiative ultimately contributes to more resilient urban management."
+        },
+        {
+            "locode": "US-SPR",
+            "cityName": "Springfield",
+            "region": "US",
+            "regionName": "Midwest",
+            "actionId": "action14",
+            "actionName": "Smart Grid Deployment",
+            "actionPriority": 14,
+            "explanation": "For the city Springfield, this action is prioritized because it modernizes energy distribution and facilitates the integration of renewable sources. It addresses emission reductions through increased grid efficiency and resilience. The measure is also designed for cost-effectiveness and quick deployment, aligning with the city’s long-term sustainability objectives."
+        },
+        {
+            "locode": "US-SPR",
+            "cityName": "Springfield",
+            "region": "US",
+            "regionName": "Midwest",
+            "actionId": "action15",
+            "actionName": "Sustainable Urban Drainage",
+            "actionPriority": 15,
+            "explanation": "For the city Springfield, this action is attractive due to its responsiveness to urban water management challenges and flood risks. It enhances the city's capacity to handle intense rainfall events while reducing environmental hazards. The initiative is well integrated with local environmental objectives and designed for effective, cost-conscious implementation."
+        },
+        {
+            "locode": "US-SPR",
+            "cityName": "Springfield",
+            "region": "US",
+            "regionName": "Midwest",
+            "actionId": "action16",
+            "actionName": "Heat Island Mitigation",
+            "actionPriority": 16,
+            "explanation": "For the city Springfield, this action targets urban areas suffering from elevated temperatures, thereby reducing energy demand and health risks. It supports local efforts to alleviate micro-climatic challenges while enhancing overall environmental comfort. The approach is both adaptable to urban settings and effective in delivering long-term climate resilience."
+        },
+        {
+            "locode": "US-SPR",
+            "cityName": "Springfield",
+            "region": "US",
+            "regionName": "Midwest",
+            "actionId": "action17",
+            "actionName": "Community Awareness Campaigns",
+            "actionPriority": 17,
+            "explanation": "For the city Springfield, this action is instrumental in raising public understanding of sustainable practices and climate change impacts. It plays a key role in facilitating community engagement and long-term behavioral change. While its direct emissions reduction impact may be modest, the social and educational co-benefits support broader resilience goals."
+        },
+        {
+            "locode": "US-SPR",
+            "cityName": "Springfield",
+            "region": "US",
+            "regionName": "Midwest",
+            "actionId": "action18",
+            "actionName": "Biodiversity Protection Initiatives",
+            "actionPriority": 18,
+            "explanation": "For the city Springfield, this action contributes to preserving local ecosystems and supports environmental stability. It is carefully aligned with the region's unique ecological features and offers significant co-benefits for community well-being. The initiative reinforces a balanced approach to climate action by integrating natural habitat preservation into broader sustainability efforts."
+        },
+        {
+            "locode": "US-SPR",
+            "cityName": "Springfield",
+            "region": "US",
+            "regionName": "Midwest",
+            "actionId": "action19",
+            "actionName": "Coastal Erosion Prevention",
+            "actionPriority": 19,
+            "explanation": "For the city Springfield, this action is noted for its focus on long-term risk reduction against erosion, even though the city is not directly coastal. It emphasizes the importance of preventative measures that can be adapted from broader regional insights. While its immediate relevance may be limited, the strategy underscores proactive risk management and environmental preparedness."
+        },
+        {
+            "locode": "US-SPR",
+            "cityName": "Springfield",
+            "region": "US",
+            "regionName": "Midwest",
+            "actionId": "action20",
+            "actionName": "Tree Planting Programs",
+            "actionPriority": 20,
+            "explanation": "For the city Springfield, this action offers important ecological co-benefits by promoting carbon sequestration and urban cooling. It enhances local biodiversity and contributes to sustainable urban development over time. Although the full benefits may unfold gradually, the initiative is valuable for its long-term positive impact on the urban climate."
+        }
+    ]
+}

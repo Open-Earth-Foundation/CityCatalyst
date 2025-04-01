@@ -1,182 +1,204 @@
-[
-    {
-        "locode": "BR SLO",
-        "cityName": "S\u00e3o Leopoldo",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0118",
-        "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
-        "actionPriority": 1
-    },
-    {
-        "locode": "BR SLO",
-        "cityName": "S\u00e3o Leopoldo",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0121",
-        "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
-        "actionPriority": 2
-    },
-    {
-        "locode": "BR SLO",
-        "cityName": "S\u00e3o Leopoldo",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0005",
-        "actionName": "Create credit lines for residential and community wind energy projects",
-        "actionPriority": 3
-    },
-    {
-        "locode": "BR SLO",
-        "cityName": "S\u00e3o Leopoldo",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0094",
-        "actionName": "Adoption of biomethane in public fleets.",
-        "actionPriority": 4
-    },
-    {
-        "locode": "BR SLO",
-        "cityName": "S\u00e3o Leopoldo",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0057",
-        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
-        "actionPriority": 5
-    },
-    {
-        "locode": "BR SLO",
-        "cityName": "S\u00e3o Leopoldo",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0092",
-        "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
-        "actionPriority": 6
-    },
-    {
-        "locode": "BR SLO",
-        "cityName": "S\u00e3o Leopoldo",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0090",
-        "actionName": "Adoption of electric drones for last-mile deliveries.",
-        "actionPriority": 7
-    },
-    {
-        "locode": "BR SLO",
-        "cityName": "S\u00e3o Leopoldo",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0044",
-        "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
-        "actionPriority": 8
-    },
-    {
-        "locode": "BR SLO",
-        "cityName": "S\u00e3o Leopoldo",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0088",
-        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
-        "actionPriority": 9
-    },
-    {
-        "locode": "BR SLO",
-        "cityName": "S\u00e3o Leopoldo",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0068",
-        "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
-        "actionPriority": 10
-    },
-    {
-        "locode": "BR SLO",
-        "cityName": "S\u00e3o Leopoldo",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "c40_0033",
-        "actionName": "15/30-Minute Areas",
-        "actionPriority": 11
-    },
-    {
-        "locode": "BR SLO",
-        "cityName": "S\u00e3o Leopoldo",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0042",
-        "actionName": "Encourage renewable energy policies at the municipal level",
-        "actionPriority": 12
-    },
-    {
-        "locode": "BR SLO",
-        "cityName": "S\u00e3o Leopoldo",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0025",
-        "actionName": "Promote energy-efficient low-income housing",
-        "actionPriority": 13
-    },
-    {
-        "locode": "BR SLO",
-        "cityName": "S\u00e3o Leopoldo",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0133",
-        "actionName": "Promote Urban Reforestation and Green Corridors",
-        "actionPriority": 14
-    },
-    {
-        "locode": "BR SLO",
-        "cityName": "S\u00e3o Leopoldo",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0131",
-        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
-        "actionPriority": 15
-    },
-    {
-        "locode": "BR SLO",
-        "cityName": "S\u00e3o Leopoldo",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0136",
-        "actionName": "Support the Implementation of Ecological Fiscal Incentives",
-        "actionPriority": 16
-    },
-    {
-        "locode": "BR SLO",
-        "cityName": "S\u00e3o Leopoldo",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0016",
-        "actionName": "Eco-driving",
-        "actionPriority": 17
-    },
-    {
-        "locode": "BR SLO",
-        "cityName": "S\u00e3o Leopoldo",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0099",
-        "actionName": "Support Agroecological Certification Programs",
-        "actionPriority": 18
-    },
-    {
-        "locode": "BR SLO",
-        "cityName": "S\u00e3o Leopoldo",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0117",
-        "actionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
-        "actionPriority": 19
-    },
-    {
-        "locode": "BR SLO",
-        "cityName": "S\u00e3o Leopoldo",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0027",
-        "actionName": "Create financing programs for local renewable energy projects",
-        "actionPriority": 20
-    }
-]
+{
+    "actions": [
+        {
+            "locode": "CTY001",
+            "cityName": "Metropolis",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "ACT001",
+            "actionName": "New Building Standards",
+            "actionPriority": 1,
+            "explanation": "For the city Metropolis, New Building Standards was prioritized because it directly targets a major source of emissions by enhancing energy efficiency in buildings. This approach leverages the city's strong potential to achieve long-term environmental and social benefits. It also aligns with local construction practices, reducing risks and fostering a sustainable urban environment."
+        },
+        {
+            "locode": "CTY002",
+            "cityName": "Metropolis",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "ACT002",
+            "actionName": "Bus Emissions",
+            "actionPriority": 2,
+            "explanation": "For the city Metropolis, reducing Bus Emissions was highlighted as it concentrates on lowering transportation-related emissions in a densely populated urban area. This action is finely tuned to the needs of an extensive public transit network, thereby enhancing air quality and public health. Its clear focus on a major emission sector makes it a strategically valuable component of the city’s climate action plan."
+        },
+        {
+            "locode": "CTY003",
+            "cityName": "Metropolis",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "ACT003",
+            "actionName": "Solar Panel Installation",
+            "actionPriority": 3,
+            "explanation": "For the city Metropolis, Solar Panel Installation was prioritized because it effectively harnesses renewable energy to substantially reduce dependence on fossil fuels. The initiative is in harmony with the local climate, taking advantage of abundant sunlight to drive sustainable energy practices. Additionally, it supports long-term energy security while spurring local job growth in the renewable sector."
+        },
+        {
+            "locode": "CTY004",
+            "cityName": "Metropolis",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "ACT004",
+            "actionName": "Green Roof Initiatives",
+            "actionPriority": 4,
+            "explanation": "For the city Metropolis, Green Roof Initiatives were valued for their multiple benefits, including improved insulation and mitigation of urban heat effects. This action is well suited to dense urban environments, reducing energy needs while enhancing biodiversity. It also contributes to better stormwater management, which is critical for maintaining urban resilience."
+        },
+        {
+            "locode": "CTY005",
+            "cityName": "Metropolis",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "ACT005",
+            "actionName": "Urban Tree Planting",
+            "actionPriority": 5,
+            "explanation": "For the city Metropolis, Urban Tree Planting was prioritized due to its role in sequestering carbon and enhancing urban air quality. The action fits naturally within the city’s landscape, providing cooling effects and reducing the urban heat island effect. Its co-benefits extend to community well-being by providing aesthetic and recreational advantages."
+        },
+        {
+            "locode": "CTY006",
+            "cityName": "Metropolis",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "ACT006",
+            "actionName": "Wind Energy Project",
+            "actionPriority": 6,
+            "explanation": "For Metropolis, the Wind Energy Project was given priority due to its strong potential to generate clean energy and lower greenhouse gas emissions. This action takes advantage of local wind corridors to diversify the city's energy mix and reduce dependency on non-renewable sources. Its implementation not only supports environmental sustainability but also enhances energy resilience over time."
+        },
+        {
+            "locode": "CTY007",
+            "cityName": "Metropolis",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "ACT007",
+            "actionName": "Energy Efficiency Retrofits",
+            "actionPriority": 7,
+            "explanation": "For Metropolis, Energy Efficiency Retrofits were prioritized as they directly decrease energy consumption in existing buildings, leading to lower emissions. This initiative is cost-effective, offering benefits in reduced operational expenses while improving building performance. It also aligns well with the city’s broader goals of enhancing infrastructure resilience and sustainability."
+        },
+        {
+            "locode": "CTY008",
+            "cityName": "Metropolis",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "ACT008",
+            "actionName": "Water Conservation Measures",
+            "actionPriority": 8,
+            "explanation": "For Metropolis, Water Conservation Measures were prioritized as they address critical resource management challenges in an urban context. This action plays a key role in reducing the energy expenditures tied to water processing and distribution. It further helps in mitigating climate-related water scarcity issues, thereby supporting long-term urban sustainability."
+        },
+        {
+            "locode": "CTY009",
+            "cityName": "Metropolis",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "ACT009",
+            "actionName": "Waste Management Improvements",
+            "actionPriority": 9,
+            "explanation": "For Metropolis, Waste Management Improvements were prioritized because they focus on reducing emissions from waste decomposition processes. This action is essential to managing urban waste in an environmentally responsible way, thereby lowering the release of harmful greenhouse gases. Its benefits extend to improved public health and the overall cleanliness of the city."
+        },
+        {
+            "locode": "CTY010",
+            "cityName": "Metropolis",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "ACT010",
+            "actionName": "Public Bicycle Infrastructure",
+            "actionPriority": 10,
+            "explanation": "For Metropolis, Public Bicycle Infrastructure was prioritized due to its ability to provide a sustainable and low-emission alternative to traditional motorized transport. This action supports efforts to reduce urban congestion while promoting healthier lifestyles among residents. The relatively quick implementation timeline also makes it a compelling strategy within the broader climate action framework."
+        },
+        {
+            "locode": "CTY011",
+            "cityName": "Metropolis",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "ACT011",
+            "actionName": "Flood Defense Systems",
+            "actionPriority": 11,
+            "explanation": "For Metropolis, Flood Defense Systems were prioritized because they directly address vulnerabilities to extreme weather events. This action strengthens the city’s ability to withstand heavy rainfall and flood-related damages, ensuring community safety. Its comprehensive risk reduction benefits make it a crucial part of the city’s long-term climate resilience strategy."
+        },
+        {
+            "locode": "CTY012",
+            "cityName": "Metropolis",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "ACT012",
+            "actionName": "Coastal Erosion Mitigation",
+            "actionPriority": 12,
+            "explanation": "For Metropolis, Coastal Erosion Mitigation was considered important given the specific risks associated with coastal areas. This action works to preserve critical ecosystems and prevent land loss, thus protecting urban infrastructure. Its strategic focus on high-risk environmental zones enhances the city’s overall adaptation measures against climate impacts."
+        },
+        {
+            "locode": "CTY013",
+            "cityName": "Metropolis",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "ACT013",
+            "actionName": "Smart Grid Implementation",
+            "actionPriority": 13,
+            "explanation": "For Metropolis, Smart Grid Implementation was prioritized because it modernizes energy infrastructure and facilitates the integration of renewable sources. This action supports a more efficient and adaptable energy distribution system that can respond quickly to demand changes. It further strengthens the city’s sustainability efforts by reducing overall energy losses and enhancing risk management."
+        },
+        {
+            "locode": "CTY014",
+            "cityName": "Metropolis",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "ACT014",
+            "actionName": "Urban Heat Island Mitigation",
+            "actionPriority": 14,
+            "explanation": "For Metropolis, Urban Heat Island Mitigation was given attention as it directly addresses the challenges of rising urban temperatures. This action is designed to lessen the intensity of heat in dense areas, thereby reducing the need for excessive cooling and its associated emissions. Its benefits extend to improving urban livability and promoting better public health outcomes."
+        },
+        {
+            "locode": "CTY015",
+            "cityName": "Metropolis",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "ACT015",
+            "actionName": "Air Quality Monitoring System",
+            "actionPriority": 15,
+            "explanation": "For Metropolis, implementing an Air Quality Monitoring System was prioritized for its role in providing timely information to manage urban air pollution. This action enables effective tracking and response to emission sources, thereby supporting proactive climate risk management. It also builds a foundation for informed policy actions that protect public health and the environment."
+        },
+        {
+            "locode": "CTY016",
+            "cityName": "Metropolis",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "ACT016",
+            "actionName": "Sustainable Agriculture Practices",
+            "actionPriority": 16,
+            "explanation": "For Metropolis, Sustainable Agriculture Practices were prioritized as they promote locally produced, low-emission food systems. This action supports environmental stewardship by reducing the transportation and processing emissions typical of large-scale agriculture. It also fosters community engagement and enhances local resilience through sustainable land management."
+        },
+        {
+            "locode": "CTY017",
+            "cityName": "Metropolis",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "ACT017",
+            "actionName": "Electric Vehicle Incentives",
+            "actionPriority": 17,
+            "explanation": "For Metropolis, Electric Vehicle Incentives were considered important because they promote a transition away from fossil fuel-based transportation. This initiative encourages widespread adoption of cleaner vehicles, directly contributing to lower urban emissions. Its focus on leveraging behavioral change within the transportation sector makes it a strategically sound climate action."
+        },
+        {
+            "locode": "CTY018",
+            "cityName": "Metropolis",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "ACT018",
+            "actionName": "Carbon Capture Utilization",
+            "actionPriority": 18,
+            "explanation": "For Metropolis, Carbon Capture Utilization was prioritized due to its innovative approach to reducing atmospheric greenhouse gases. This action directly engages with sectors that are difficult to decarbonize, offering a pathway to mitigate emissions through technology. Its long-term potential in revolutionizing industrial practices underpins its strategic relevance to the city’s climate goals."
+        },
+        {
+            "locode": "CTY019",
+            "cityName": "Metropolis",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "ACT019",
+            "actionName": "Reforestation Programs",
+            "actionPriority": 19,
+            "explanation": "For Metropolis, Reforestation Programs were valued for their role in sequestering carbon and restoring natural ecosystems. This action offers significant environmental co-benefits, including enhanced biodiversity and improved air quality. Its integration into urban planning reinforces long-term ecological balance and resilience in the face of climate challenges."
+        },
+        {
+            "locode": "CTY020",
+            "cityName": "Metropolis",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "ACT020",
+            "actionName": "Climate Resilience Planning",
+            "actionPriority": 20,
+            "explanation": "For Metropolis, Climate Resilience Planning was prioritized for its comprehensive approach to preparing the city for future climate challenges. This action enables coordinated strategies that address infrastructural vulnerabilities and enhance community preparedness. Its broad-based benefits make it a cornerstone strategy for ensuring sustainable urban development over the long term."
+        }
+    ]
+}

@@ -1,182 +1,204 @@
-[
-    {
-        "locode": "BR COX",
-        "cityName": "Coxim",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0005",
-        "actionName": "Create credit lines for residential and community wind energy projects",
-        "actionPriority": 1
-    },
-    {
-        "locode": "BR COX",
-        "cityName": "Coxim",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0121",
-        "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
-        "actionPriority": 2
-    },
-    {
-        "locode": "BR COX",
-        "cityName": "Coxim",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0118",
-        "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
-        "actionPriority": 3
-    },
-    {
-        "locode": "BR COX",
-        "cityName": "Coxim",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0094",
-        "actionName": "Adoption of biomethane in public fleets.",
-        "actionPriority": 4
-    },
-    {
-        "locode": "BR COX",
-        "cityName": "Coxim",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0092",
-        "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
-        "actionPriority": 5
-    },
-    {
-        "locode": "BR COX",
-        "cityName": "Coxim",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0088",
-        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
-        "actionPriority": 6
-    },
-    {
-        "locode": "BR COX",
-        "cityName": "Coxim",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0057",
-        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
-        "actionPriority": 7
-    },
-    {
-        "locode": "BR COX",
-        "cityName": "Coxim",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0025",
-        "actionName": "Promote energy-efficient low-income housing",
-        "actionPriority": 8
-    },
-    {
-        "locode": "BR COX",
-        "cityName": "Coxim",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0133",
-        "actionName": "Promote Urban Reforestation and Green Corridors",
-        "actionPriority": 9
-    },
-    {
-        "locode": "BR COX",
-        "cityName": "Coxim",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0068",
-        "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
-        "actionPriority": 10
-    },
-    {
-        "locode": "BR COX",
-        "cityName": "Coxim",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "c40_0033",
-        "actionName": "15/30-Minute Areas",
-        "actionPriority": 11
-    },
-    {
-        "locode": "BR COX",
-        "cityName": "Coxim",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0090",
-        "actionName": "Adoption of electric drones for last-mile deliveries.",
-        "actionPriority": 12
-    },
-    {
-        "locode": "BR COX",
-        "cityName": "Coxim",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0131",
-        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
-        "actionPriority": 13
-    },
-    {
-        "locode": "BR COX",
-        "cityName": "Coxim",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0044",
-        "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
-        "actionPriority": 14
-    },
-    {
-        "locode": "BR COX",
-        "cityName": "Coxim",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0091",
-        "actionName": "Implementation of prioritized routes for sustainable vehicles.",
-        "actionPriority": 15
-    },
-    {
-        "locode": "BR COX",
-        "cityName": "Coxim",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0136",
-        "actionName": "Support the Implementation of Ecological Fiscal Incentives",
-        "actionPriority": 16
-    },
-    {
-        "locode": "BR COX",
-        "cityName": "Coxim",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0117",
-        "actionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
-        "actionPriority": 17
-    },
-    {
-        "locode": "BR COX",
-        "cityName": "Coxim",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0099",
-        "actionName": "Support Agroecological Certification Programs",
-        "actionPriority": 18
-    },
-    {
-        "locode": "BR COX",
-        "cityName": "Coxim",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0096",
-        "actionName": "Promote Organic Farming",
-        "actionPriority": 19
-    },
-    {
-        "locode": "BR COX",
-        "cityName": "Coxim",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0084",
-        "actionName": "Create Incentives for Agroforestry Practices in Livestock Systems",
-        "actionPriority": 20
-    }
-]
+{
+    "actions": [
+        {
+            "locode": "EC-001",
+            "cityName": "EcoCity",
+            "region": "EC",
+            "regionName": "Eco Region",
+            "actionId": "A001",
+            "actionName": "Renewable Energy Expansion",
+            "actionPriority": 1,
+            "explanation": "For the city EcoCity, Renewable Energy Expansion was prioritized because it directly targets the primary emission sources by shifting energy production to sustainable resources. This action is especially relevant given the city's emphasis on reducing its carbon footprint and modernizing its energy infrastructure. The approach also offers notable co-benefits by creating a more resilient and environmentally compatible urban setting."
+        },
+        {
+            "locode": "EC-001",
+            "cityName": "EcoCity",
+            "region": "EC",
+            "regionName": "Eco Region",
+            "actionId": "A002",
+            "actionName": "Energy Efficiency Upgrades",
+            "actionPriority": 1,
+            "explanation": "For the city EcoCity, Energy Efficiency Upgrades were prioritized because they provide a cost-effective route to reducing greenhouse gas emissions, particularly in the building and industrial sectors. The action aligns with local priorities by improving infrastructure while lowering energy consumption. It also minimizes implementation dependencies, fostering quicker realization of benefits across the community."
+        },
+        {
+            "locode": "EC-001",
+            "cityName": "EcoCity",
+            "region": "EC",
+            "regionName": "Eco Region",
+            "actionId": "A003",
+            "actionName": "Urban Greening Initiatives",
+            "actionPriority": 1,
+            "explanation": "For the city EcoCity, Urban Greening Initiatives were prioritized because they contribute to carbon sequestration and directly enhance local environmental quality. This action is particularly well suited to the city’s dense urban setting and offers supplementary benefits like improved air quality and heat mitigation. Its compatibility with existing urban layouts makes it a strategically sound choice."
+        },
+        {
+            "locode": "EC-001",
+            "cityName": "EcoCity",
+            "region": "EC",
+            "regionName": "Eco Region",
+            "actionId": "A004",
+            "actionName": "Public Transit Enhancement",
+            "actionPriority": 1,
+            "explanation": "For the city EcoCity, Public Transit Enhancement was prioritized because it targets significant emission reductions by shifting commuters away from private vehicles. This approach not only supports the city’s efforts to lower pollution but also improves urban mobility and social equity. The initiative fits well with the city's capacity to implement rapid transit solutions while offering long-term climate benefits."
+        },
+        {
+            "locode": "EC-001",
+            "cityName": "EcoCity",
+            "region": "EC",
+            "regionName": "Eco Region",
+            "actionId": "A005",
+            "actionName": "Waste Management Improvement",
+            "actionPriority": 1,
+            "explanation": "For the city EcoCity, Waste Management Improvement was prioritized due to its role in reducing methane and other harmful emissions from landfills. It effectively integrates environmental protection with public health benefits by promoting recycling and proper disposal practices. Overall, the action demonstrates a strong alignment with the city's sustainability and efficiency targets."
+        },
+        {
+            "locode": "EC-001",
+            "cityName": "EcoCity",
+            "region": "EC",
+            "regionName": "Eco Region",
+            "actionId": "A006",
+            "actionName": "Sustainable Water Use",
+            "actionPriority": 1,
+            "explanation": "For the city EcoCity, Sustainable Water Use was prioritized because it addresses vital local needs by optimizing water resources in a changing climate. This action supports a resilient framework that helps maintain ecosystem balance and lowers overall environmental strain. It is also compatible with the city's long-term planning, ensuring benefits for both resource conservation and community well-being."
+        },
+        {
+            "locode": "EC-001",
+            "cityName": "EcoCity",
+            "region": "EC",
+            "regionName": "Eco Region",
+            "actionId": "A007",
+            "actionName": "Climate Resilient Infrastructure",
+            "actionPriority": 1,
+            "explanation": "For the city EcoCity, Climate Resilient Infrastructure was prioritized because it effectively reduces risks associated with severe weather and climate impacts. The action is tailored to protect critical systems while promoting safe and sustainable urban growth. Its strategic design minimizes dependencies, making it a robust and forward-thinking approach for long-term resilience."
+        },
+        {
+            "locode": "EC-001",
+            "cityName": "EcoCity",
+            "region": "EC",
+            "regionName": "Eco Region",
+            "actionId": "A008",
+            "actionName": "Coastal Protection Programs",
+            "actionPriority": -1,
+            "explanation": "For the city EcoCity, Coastal Protection Programs were given a lower priority as the city's location and environmental context do not expose it to significant coastal risks. While beneficial in areas prone to sea level rise, this action is less relevant for a city with primarily inland characteristics. The approach also requires specific preconditions that are not as immediately pressing for EcoCity's current climate challenges."
+        },
+        {
+            "locode": "EC-001",
+            "cityName": "EcoCity",
+            "region": "EC",
+            "regionName": "Eco Region",
+            "actionId": "A009",
+            "actionName": "Urban Heat Island Mitigation",
+            "actionPriority": 1,
+            "explanation": "For the city EcoCity, Urban Heat Island Mitigation was prioritized because it addresses localized overheating issues that exacerbate energy consumption and affect public health. This action leverages both natural solutions and built environment modifications to improve comfort levels in densely populated areas. Its focus on directly lowering the urban temperature makes it highly compatible with EcoCity’s immediate environmental needs."
+        },
+        {
+            "locode": "EC-001",
+            "cityName": "EcoCity",
+            "region": "EC",
+            "regionName": "Eco Region",
+            "actionId": "A010",
+            "actionName": "Smart Grid Implementation",
+            "actionPriority": 1,
+            "explanation": "For the city EcoCity, Smart Grid Implementation was prioritized because it modernizes the energy network and facilitates efficient energy distribution. This action is strategically important for enhancing the city's ability to integrate renewable energy sources while offering improved service reliability. The approach also positions EcoCity as forward-thinking in its adaptation to future energy challenges."
+        },
+        {
+            "locode": "EC-001",
+            "cityName": "EcoCity",
+            "region": "EC",
+            "regionName": "Eco Region",
+            "actionId": "A011",
+            "actionName": "Industrial Process Optimization",
+            "actionPriority": -1,
+            "explanation": "For the city EcoCity, Industrial Process Optimization received a lower priority because the city's economic activities are not heavily centered on high-emission industrial processes. Although this action can yield environmental benefits, its sector relevance is less pronounced compared to other initiatives that target urban emissions more directly. The approach also involves complex dependencies that make immediate implementation more challenging."
+        },
+        {
+            "locode": "EC-001",
+            "cityName": "EcoCity",
+            "region": "EC",
+            "regionName": "Eco Region",
+            "actionId": "A012",
+            "actionName": "Afforestation Projects",
+            "actionPriority": 1,
+            "explanation": "For the city EcoCity, Afforestation Projects were prioritized because they enhance natural carbon sinks and improve local air quality. This action is particularly compatible with the city's environmental context and contributes to a healthier urban ecosystem. Its focus on long-term sustainability and ecosystem restoration makes it an appealing and strategic option."
+        },
+        {
+            "locode": "EC-001",
+            "cityName": "EcoCity",
+            "region": "EC",
+            "regionName": "Eco Region",
+            "actionId": "A013",
+            "actionName": "School and Community Education on Climate",
+            "actionPriority": -1,
+            "explanation": "For the city EcoCity, School and Community Education on Climate was assigned a lower priority in this comparison as the immediate focus is on actions that directly reduce emissions. While fostering public awareness is important, this action does not address the key emission sectors as directly as some of the alternative approaches. It remains valuable for long-term community engagement, though its short-term climate impact is less pronounced."
+        },
+        {
+            "locode": "EC-001",
+            "cityName": "EcoCity",
+            "region": "EC",
+            "regionName": "Eco Region",
+            "actionId": "A014",
+            "actionName": "Urban Mobility Solutions",
+            "actionPriority": 1,
+            "explanation": "For the city EcoCity, Urban Mobility Solutions were prioritized because they directly contribute to reducing transportation-related emissions by encouraging cleaner travel options. This approach fits well with the city's demographic context and offers benefits like reduced traffic congestion and improved air quality. Its ability to quickly transform urban transport makes it a practical and impactful strategy."
+        },
+        {
+            "locode": "EC-001",
+            "cityName": "EcoCity",
+            "region": "EC",
+            "regionName": "Eco Region",
+            "actionId": "A015",
+            "actionName": "Carbon Capture Storage",
+            "actionPriority": -1,
+            "explanation": "For the city EcoCity, Carbon Capture Storage was given a lower priority because it comes with significant implementation dependencies and higher cost uncertainties. Although it offers a route to mitigating emissions, its complexity and resource demands make it less immediately viable compared to other options. This action is more suitable for contexts where industrial emissions dominate and where the technical infrastructure is robust."
+        },
+        {
+            "locode": "EC-001",
+            "cityName": "EcoCity",
+            "region": "EC",
+            "regionName": "Eco Region",
+            "actionId": "A016",
+            "actionName": "Sustainable Agriculture Practices",
+            "actionPriority": -1,
+            "explanation": "For the city EcoCity, Sustainable Agriculture Practices were given lower priority because the urban context has limited direct engagement with large-scale agricultural emissions. While this action is beneficial for broader environmental goals, its immediate impact on the city's emission profile is minimal. The focus here is on measures that directly address urban emission challenges and build on existing infrastructure."
+        },
+        {
+            "locode": "EC-001",
+            "cityName": "EcoCity",
+            "region": "EC",
+            "regionName": "Eco Region",
+            "actionId": "A017",
+            "actionName": "Flood Risk Management",
+            "actionPriority": -1,
+            "explanation": "For the city EcoCity, Flood Risk Management was assigned a lower priority because, although it is critical for community safety, the city's primary climate challenge is related to emissions rather than flooding. This action involves extensive planning and implementation dependencies that make it less immediately impactful on emission reduction targets. It remains an important long-term adaptation strategy but does not align as directly with the current priority of emissions control."
+        },
+        {
+            "locode": "EC-001",
+            "cityName": "EcoCity",
+            "region": "EC",
+            "regionName": "Eco Region",
+            "actionId": "A018",
+            "actionName": "Green Roof Installation",
+            "actionPriority": 1,
+            "explanation": "For the city EcoCity, Green Roof Installation was prioritized because it offers an innovative means to reduce urban temperatures and enhance building energy efficiency. This measure aligns well with the city's efforts to mitigate the urban heat island effect while contributing to overall emission reductions. Its ease of implementation and compatibility with existing urban structures make it a strategically attractive option."
+        },
+        {
+            "locode": "EC-001",
+            "cityName": "EcoCity",
+            "region": "EC",
+            "regionName": "Eco Region",
+            "actionId": "A019",
+            "actionName": "Low-Emission Zone Implementation",
+            "actionPriority": 1,
+            "explanation": "For the city EcoCity, Low-Emission Zone Implementation was prioritized because it directly targets vehicular emissions by restricting the most polluting vehicles in dense urban areas. This action is well-matched to the city’s goal of improving air quality and reducing traffic-related environmental impacts. Its straightforward regulatory approach and significant potential benefits make it an effective component of the city’s overall climate strategy."
+        },
+        {
+            "locode": "EC-001",
+            "cityName": "EcoCity",
+            "region": "EC",
+            "regionName": "Eco Region",
+            "actionId": "A020",
+            "actionName": "Tree Planting Campaign",
+            "actionPriority": 1,
+            "explanation": "For the city EcoCity, the Tree Planting Campaign was prioritized because it plays a vital role in enhancing urban green spaces and serving as a natural carbon sink. The action is closely aligned with the city’s broader environmental goals and improves community well-being through increased aesthetic and ecological benefits. Its simplicity in execution and clear long-term advantages make it an attractive strategy for sustainable urban development."
+        }
+    ]
+}

@@ -1,182 +1,204 @@
-[
-    {
-        "locode": "BR CMA",
-        "cityName": "Camet\u00e1",
-        "region": "PA",
-        "regionName": "Par\u00e1",
-        "actionId": "icare_0121",
-        "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
-        "actionPriority": 1
-    },
-    {
-        "locode": "BR CMA",
-        "cityName": "Camet\u00e1",
-        "region": "PA",
-        "regionName": "Par\u00e1",
-        "actionId": "icare_0118",
-        "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
-        "actionPriority": 2
-    },
-    {
-        "locode": "BR CMA",
-        "cityName": "Camet\u00e1",
-        "region": "PA",
-        "regionName": "Par\u00e1",
-        "actionId": "icare_0090",
-        "actionName": "Adoption of electric drones for last-mile deliveries.",
-        "actionPriority": 3
-    },
-    {
-        "locode": "BR CMA",
-        "cityName": "Camet\u00e1",
-        "region": "PA",
-        "regionName": "Par\u00e1",
-        "actionId": "icare_0005",
-        "actionName": "Create credit lines for residential and community wind energy projects",
-        "actionPriority": 4
-    },
-    {
-        "locode": "BR CMA",
-        "cityName": "Camet\u00e1",
-        "region": "PA",
-        "regionName": "Par\u00e1",
-        "actionId": "icare_0133",
-        "actionName": "Promote Urban Reforestation and Green Corridors",
-        "actionPriority": 5
-    },
-    {
-        "locode": "BR CMA",
-        "cityName": "Camet\u00e1",
-        "region": "PA",
-        "regionName": "Par\u00e1",
-        "actionId": "icare_0094",
-        "actionName": "Adoption of biomethane in public fleets.",
-        "actionPriority": 6
-    },
-    {
-        "locode": "BR CMA",
-        "cityName": "Camet\u00e1",
-        "region": "PA",
-        "regionName": "Par\u00e1",
-        "actionId": "icare_0092",
-        "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
-        "actionPriority": 7
-    },
-    {
-        "locode": "BR CMA",
-        "cityName": "Camet\u00e1",
-        "region": "PA",
-        "regionName": "Par\u00e1",
-        "actionId": "icare_0088",
-        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
-        "actionPriority": 8
-    },
-    {
-        "locode": "BR CMA",
-        "cityName": "Camet\u00e1",
-        "region": "PA",
-        "regionName": "Par\u00e1",
-        "actionId": "icare_0057",
-        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
-        "actionPriority": 9
-    },
-    {
-        "locode": "BR CMA",
-        "cityName": "Camet\u00e1",
-        "region": "PA",
-        "regionName": "Par\u00e1",
-        "actionId": "icare_0131",
-        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
-        "actionPriority": 10
-    },
-    {
-        "locode": "BR CMA",
-        "cityName": "Camet\u00e1",
-        "region": "PA",
-        "regionName": "Par\u00e1",
-        "actionId": "icare_0025",
-        "actionName": "Promote energy-efficient low-income housing",
-        "actionPriority": 11
-    },
-    {
-        "locode": "BR CMA",
-        "cityName": "Camet\u00e1",
-        "region": "PA",
-        "regionName": "Par\u00e1",
-        "actionId": "icare_0117",
-        "actionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
-        "actionPriority": 12
-    },
-    {
-        "locode": "BR CMA",
-        "cityName": "Camet\u00e1",
-        "region": "PA",
-        "regionName": "Par\u00e1",
-        "actionId": "icare_0044",
-        "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
-        "actionPriority": 13
-    },
-    {
-        "locode": "BR CMA",
-        "cityName": "Camet\u00e1",
-        "region": "PA",
-        "regionName": "Par\u00e1",
-        "actionId": "icare_0068",
-        "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
-        "actionPriority": 14
-    },
-    {
-        "locode": "BR CMA",
-        "cityName": "Camet\u00e1",
-        "region": "PA",
-        "regionName": "Par\u00e1",
-        "actionId": "icare_0027",
-        "actionName": "Create financing programs for local renewable energy projects",
-        "actionPriority": 15
-    },
-    {
-        "locode": "BR CMA",
-        "cityName": "Camet\u00e1",
-        "region": "PA",
-        "regionName": "Par\u00e1",
-        "actionId": "icare_0099",
-        "actionName": "Support Agroecological Certification Programs",
-        "actionPriority": 16
-    },
-    {
-        "locode": "BR CMA",
-        "cityName": "Camet\u00e1",
-        "region": "PA",
-        "regionName": "Par\u00e1",
-        "actionId": "icare_0136",
-        "actionName": "Support the Implementation of Ecological Fiscal Incentives",
-        "actionPriority": 17
-    },
-    {
-        "locode": "BR CMA",
-        "cityName": "Camet\u00e1",
-        "region": "PA",
-        "regionName": "Par\u00e1",
-        "actionId": "icare_0042",
-        "actionName": "Encourage renewable energy policies at the municipal level",
-        "actionPriority": 18
-    },
-    {
-        "locode": "BR CMA",
-        "cityName": "Camet\u00e1",
-        "region": "PA",
-        "regionName": "Par\u00e1",
-        "actionId": "ipcc_0006",
-        "actionName": "Teleworking",
-        "actionPriority": 19
-    },
-    {
-        "locode": "BR CMA",
-        "cityName": "Camet\u00e1",
-        "region": "PA",
-        "regionName": "Par\u00e1",
-        "actionId": "icare_0091",
-        "actionName": "Implementation of prioritized routes for sustainable vehicles.",
-        "actionPriority": 20
-    }
-]
+{
+    "actions": [
+        {
+            "locode": "SPF",
+            "cityName": "Springfield",
+            "region": "R1",
+            "regionName": "Region One",
+            "actionId": "A2",
+            "actionName": "Bus Emissions",
+            "actionPriority": 1,
+            "explanation": "For Springfield, Bus Emissions directly tackles a major source of urban pollutants by leveraging the existing public transportation network. This measure is designed to yield timely improvements in air quality and public health. It is highly aligned with the city's immediate climate mitigation needs and cost-effectiveness criteria. The approach fits well with available infrastructure and enhances overall urban sustainability."
+        },
+        {
+            "locode": "SPF",
+            "cityName": "Springfield",
+            "region": "R1",
+            "regionName": "Region One",
+            "actionId": "A3",
+            "actionName": "Renewable Energy Initiative",
+            "actionPriority": 2,
+            "explanation": "This initiative promotes the transition from fossil fuels by tapping into local renewable energy resources. It is strategically designed to lower greenhouse gas emissions over the long term while enhancing energy security. The approach is well suited to Springfield’s environmental and infrastructural context, ensuring smooth integration with current systems. It offers significant co-benefits including potential cost savings and increased resilience."
+        },
+        {
+            "locode": "SPF",
+            "cityName": "Springfield",
+            "region": "R1",
+            "regionName": "Region One",
+            "actionId": "A4",
+            "actionName": "Urban Green Spaces",
+            "actionPriority": 3,
+            "explanation": "Expanding urban green spaces contributes to reducing the urban heat island effect and improving air quality in Springfield. This action uses nature-based solutions that are both cost-effective and community friendly. It enhances ecological balance while providing recreational and social benefits. The initiative is well-aligned with the city’s environmental goals and urban design strategies."
+        },
+        {
+            "locode": "SPF",
+            "cityName": "Springfield",
+            "region": "R1",
+            "regionName": "Region One",
+            "actionId": "A8",
+            "actionName": "Climate Education Program",
+            "actionPriority": 4,
+            "explanation": "The Climate Education Program empowers the community by raising awareness about sustainable practices and climate risks. It is designed to drive long-term behavioral changes that support overall environmental goals. The initiative is cost-efficient and leverages local institutions effectively while enhancing community resilience. It serves as a foundational element for broad-based climate action within Springfield."
+        },
+        {
+            "locode": "SPF",
+            "cityName": "Springfield",
+            "region": "R1",
+            "regionName": "Region One",
+            "actionId": "A9",
+            "actionName": "Flood Defense Infrastructure",
+            "actionPriority": 5,
+            "explanation": "Flood Defense Infrastructure is tailored to address Springfield’s vulnerability to water-related hazards. The action integrates engineering and nature-based solutions to manage flood risks efficiently. It provides essential protective benefits for the community and urban assets. The approach is designed for timely implementation and aligns with the city’s resilience-building objectives."
+        },
+        {
+            "locode": "SPF",
+            "cityName": "Springfield",
+            "region": "R1",
+            "regionName": "Region One",
+            "actionId": "A10",
+            "actionName": "Heat Wave Preparedness",
+            "actionPriority": 6,
+            "explanation": "Heat Wave Preparedness focuses on mitigating the dangers posed by extreme temperature events in Springfield. It includes adaptive measures that reduce urban heat and protect vulnerable populations. The initiative is crafted for swift implementation and enhances public health outcomes. Its design supports both immediate relief and long-term climate adaptation strategies."
+        },
+        {
+            "locode": "SPF",
+            "cityName": "Springfield",
+            "region": "R1",
+            "regionName": "Region One",
+            "actionId": "A11",
+            "actionName": "Public Transit Expansion",
+            "actionPriority": 7,
+            "explanation": "Public Transit Expansion aims to create a more efficient and sustainable transportation network, reducing the dependence on private vehicles. This action supports a reduction in emissions while enhancing mobility for residents. Its comprehensive design factors in infrastructure readiness and community demand. The initiative also brings co-benefits such as lower traffic congestion and improved urban air quality."
+        },
+        {
+            "locode": "SPF",
+            "cityName": "Springfield",
+            "region": "R1",
+            "regionName": "Region One",
+            "actionId": "A12",
+            "actionName": "Energy Efficiency Incentives",
+            "actionPriority": 8,
+            "explanation": "Energy Efficiency Incentives encourage improvements in residential and commercial energy performance across the city. By promoting upgrades and better practices, the action effectively contributes to reducing overall emissions. It is structured to be both cost-effective and adaptable within Springfield’s existing frameworks. This measure not only lowers energy costs but also strengthens the city’s long-term sustainability."
+        },
+        {
+            "locode": "SPF",
+            "cityName": "Springfield",
+            "region": "R1",
+            "regionName": "Region One",
+            "actionId": "A13",
+            "actionName": "Smart Grid Implementation",
+            "actionPriority": 9,
+            "explanation": "Smart Grid Implementation modernizes the city’s energy network, facilitating better integration of renewable sources. This action enhances energy distribution efficiency and reduces power losses. Its technology-driven approach is tailored to Springfield’s capacity for innovation and infrastructure upgrades. The resulting system is more resilient and better suited for the evolving demands of sustainable urban living."
+        },
+        {
+            "locode": "SPF",
+            "cityName": "Springfield",
+            "region": "R1",
+            "regionName": "Region One",
+            "actionId": "A1",
+            "actionName": "New Building Standards",
+            "actionPriority": 10,
+            "explanation": "New Building Standards improve urban sustainability by promoting energy-efficient construction and retrofitting practices. This action is designed to lower long-term emissions by transforming the built environment. Although it requires coordinated efforts and a longer implementation timeline, it establishes essential foundations for future progress. The measure aligns with Springfield’s broader goals of environmental resilience and quality infrastructure development."
+        },
+        {
+            "locode": "SPF",
+            "cityName": "Springfield",
+            "region": "R1",
+            "regionName": "Region One",
+            "actionId": "A14",
+            "actionName": "Sustainable Agriculture Practices",
+            "actionPriority": 11,
+            "explanation": "Sustainable Agriculture Practices encourage farming methods that reduce environmental impacts and improve resource use efficiency. This action supports the integration of rural and urban systems by lowering the carbon footprint of local food production. It emphasizes long-term soil health, water conservation, and economic resilience for nearby communities. The approach is complementary to other climate measures in Springfield, fostering overall sustainability."
+        },
+        {
+            "locode": "SPF",
+            "cityName": "Springfield",
+            "region": "R1",
+            "regionName": "Region One",
+            "actionId": "A15",
+            "actionName": "Eco-Friendly Urban Planning",
+            "actionPriority": 12,
+            "explanation": "Eco-Friendly Urban Planning incorporates sustainable principles into the physical development of the city. This action promotes designs that minimize environmental impact while optimizing land use and transportation. It is structured to enhance climate resilience and improve the livability of urban spaces over time. The initiative supports a balanced integration of infrastructure development and ecological preservation."
+        },
+        {
+            "locode": "SPF",
+            "cityName": "Springfield",
+            "region": "R1",
+            "regionName": "Region One",
+            "actionId": "A16",
+            "actionName": "Carbon Pricing Policy",
+            "actionPriority": 13,
+            "explanation": "A Carbon Pricing Policy introduces an economic mechanism to incentivize reductions in greenhouse gas emissions. By assigning a cost to carbon outputs, the policy encourages cleaner technologies and smarter consumption practices. Its market-based approach is designed to be transparent and efficient in mobilizing emission reductions. The measure fits within Springfield’s broader portfolio of innovative sustainability strategies."
+        },
+        {
+            "locode": "SPF",
+            "cityName": "Springfield",
+            "region": "R1",
+            "regionName": "Region One",
+            "actionId": "A17",
+            "actionName": "Green Construction Incentives",
+            "actionPriority": 14,
+            "explanation": "Green Construction Incentives support the adoption of environmentally responsible building practices. This action is intended to reduce the carbon footprint associated with construction and renovation projects. It offers economic benefits by lowering operational costs and fostering sustainable material usage. The incentives are well matched to Springfield’s long-term development goals for a healthier urban environment."
+        },
+        {
+            "locode": "SPF",
+            "cityName": "Springfield",
+            "region": "R1",
+            "regionName": "Region One",
+            "actionId": "A18",
+            "actionName": "Community Solar Projects",
+            "actionPriority": 15,
+            "explanation": "Community Solar Projects aim to broaden access to renewable energy through shared solar installations. This action fosters community involvement and reduces fossil fuel dependency at the local level. It is designed to be cost-sharing and easily scalable, ensuring broad economic and environmental benefits. The project aligns with Springfield’s commitment to equitable and sustainable energy solutions."
+        },
+        {
+            "locode": "SPF",
+            "cityName": "Springfield",
+            "region": "R1",
+            "regionName": "Region One",
+            "actionId": "A19",
+            "actionName": "Electric Vehicle Support",
+            "actionPriority": 16,
+            "explanation": "Electric Vehicle Support focuses on accelerating the adoption of cleaner transportation alternatives. This action provides infrastructure and incentives that make electric mobility more accessible to residents. It directly contributes to reducing urban emissions and improving air quality. The initiative is forward-thinking and is designed to complement the city’s overall strategy for sustainable transit."
+        },
+        {
+            "locode": "SPF",
+            "cityName": "Springfield",
+            "region": "R1",
+            "regionName": "Region One",
+            "actionId": "A20",
+            "actionName": "Urban Cooling Strategies",
+            "actionPriority": 17,
+            "explanation": "Urban Cooling Strategies are developed to alleviate the heat buildup common in dense urban areas. This action employs innovative solutions like reflective surfaces and green roofs to moderate city temperatures. It directly enhances public comfort and reduces energy demand during extreme heat events. The measure is integrated into broader urban planning efforts to boost resilience against climate change."
+        },
+        {
+            "locode": "SPF",
+            "cityName": "Springfield",
+            "region": "R1",
+            "regionName": "Region One",
+            "actionId": "A6",
+            "actionName": "Water Conservation Measures",
+            "actionPriority": 18,
+            "explanation": "Water Conservation Measures aim to optimize usage and minimize waste across Springfield. This action supports sustainable resource management, especially important during periods of drought. It combines technological upgrades with community awareness to achieve cost-effective water savings. The initiative is well integrated with the city’s overarching environmental strategies and resilience planning."
+        },
+        {
+            "locode": "SPF",
+            "cityName": "Springfield",
+            "region": "R1",
+            "regionName": "Region One",
+            "actionId": "A7",
+            "actionName": "Waste Recycling Program",
+            "actionPriority": 19,
+            "explanation": "The Waste Recycling Program is designed to improve resource efficiency and reduce landfill dependency in Springfield. By promoting better waste segregation and recycling practices, it indirectly contributes to lowering greenhouse gas emissions. The action is both scalable and economically viable, fitting well within the city’s environmental management plans. It fosters a circular economy while reducing overall environmental pollution."
+        },
+        {
+            "locode": "SPF",
+            "cityName": "Springfield",
+            "region": "R1",
+            "regionName": "Region One",
+            "actionId": "A5",
+            "actionName": "Tree Planting Campaign",
+            "actionPriority": 20,
+            "explanation": "The Tree Planting Campaign enhances urban biodiversity and improves air quality by increasing green cover. This action contributes to natural carbon sequestration and offers cooling benefits that complement other climate measures. It also delivers social benefits by beautifying neighborhoods and engaging the community. The campaign represents a long-term investment in the city’s environmental health and resilience."
+        }
+    ]
+}

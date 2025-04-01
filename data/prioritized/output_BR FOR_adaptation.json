@@ -1,202 +1,204 @@
-[
-    {
-        "locode": "BR FOR",
-        "cityName": "Fortaleza",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0176",
-        "actionName": "Development of Climate Action Plan",
-        "actionPriority": 1,
-        "explanation": "Ranked #1 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR FOR",
-        "cityName": "Fortaleza",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0181",
-        "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
-        "actionPriority": 2,
-        "explanation": "Ranked #2 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR FOR",
-        "cityName": "Fortaleza",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0164",
-        "actionName": "Hydrological Monitoring System with Telemetry Stations",
-        "actionPriority": 3,
-        "explanation": "Ranked #3 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR FOR",
-        "cityName": "Fortaleza",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0151",
-        "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
-        "actionPriority": 4,
-        "explanation": "Ranked #4 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR FOR",
-        "cityName": "Fortaleza",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0169",
-        "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
-        "actionPriority": 5,
-        "explanation": "Ranked #5 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR FOR",
-        "cityName": "Fortaleza",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0140",
-        "actionName": "Landslide Risk Assessment and Management",
-        "actionPriority": 6,
-        "explanation": "Ranked #6 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR FOR",
-        "cityName": "Fortaleza",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "ipcc_0094",
-        "actionName": "Access to health care",
-        "actionPriority": 7,
-        "explanation": "Ranked #7 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR FOR",
-        "cityName": "Fortaleza",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "ipcc_0097",
-        "actionName": "Food storage/distribution improvements",
-        "actionPriority": 8,
-        "explanation": "Ranked #8 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR FOR",
-        "cityName": "Fortaleza",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0175",
-        "actionName": "Recovery and preservation of green areas",
-        "actionPriority": 9,
-        "explanation": "Ranked #9 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR FOR",
-        "cityName": "Fortaleza",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0154",
-        "actionName": "Cleaning and Unclogging of Channels with Installation of Eco-barriers",
-        "actionPriority": 10,
-        "explanation": "Ranked #10 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR FOR",
-        "cityName": "Fortaleza",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0156",
-        "actionName": "Implementation of urban gardens",
-        "actionPriority": 11,
-        "explanation": "Ranked #11 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR FOR",
-        "cityName": "Fortaleza",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "ipcc_0088",
-        "actionName": "Building codes",
-        "actionPriority": 12,
-        "explanation": "Ranked #12 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR FOR",
-        "cityName": "Fortaleza",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "ipcc_0092",
-        "actionName": "Social safety nets",
-        "actionPriority": 13,
-        "explanation": "Ranked #13 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR FOR",
-        "cityName": "Fortaleza",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0162",
-        "actionName": "Strengthen programs for control and conservation of protected areas",
-        "actionPriority": 14,
-        "explanation": "Ranked #14 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR FOR",
-        "cityName": "Fortaleza",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "ipcc_0095",
-        "actionName": "Disaster early warning",
-        "actionPriority": 15,
-        "explanation": "Ranked #15 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR FOR",
-        "cityName": "Fortaleza",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "ipcc_0086",
-        "actionName": "Ecosystem-based adaptation",
-        "actionPriority": 16,
-        "explanation": "Ranked #16 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR FOR",
-        "cityName": "Fortaleza",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0149",
-        "actionName": "Encourage sustainable land use practices",
-        "actionPriority": 17,
-        "explanation": "Ranked #17 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR FOR",
-        "cityName": "Fortaleza",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0148",
-        "actionName": "Create the Municipal Climate Change Forum",
-        "actionPriority": 18,
-        "explanation": "Ranked #18 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR FOR",
-        "cityName": "Fortaleza",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "ipcc_0099",
-        "actionName": "Water capture/storage",
-        "actionPriority": 19,
-        "explanation": "Ranked #19 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR FOR",
-        "cityName": "Fortaleza",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "ipcc_0098",
-        "actionName": "Behaviour change in diets and food waste",
-        "actionPriority": 20,
-        "explanation": "Ranked #20 by tournament ranking algorithm"
-    }
-]
+{
+    "actions": [
+        {
+            "locode": "GF",
+            "cityName": "Greenfield",
+            "region": "R1",
+            "regionName": "Northern Region",
+            "actionId": "A1",
+            "actionName": "Energy Efficiency Upgrades",
+            "actionPriority": 1,
+            "explanation": "For Greenfield, Energy Efficiency Upgrades have been prioritized because they offer a strong opportunity to reduce energy use and lower greenhouse gas emissions in key industrial sectors. The action leverages cost-effective technologies that suit the city's urban and industrial settings. Moreover, it aligns well with local risk management efforts and fits the city’s capacity for rapid implementation."
+        },
+        {
+            "locode": "GF",
+            "cityName": "Greenfield",
+            "region": "R1",
+            "regionName": "Northern Region",
+            "actionId": "A2",
+            "actionName": "Public Transit Improvements",
+            "actionPriority": 2,
+            "explanation": "Public Transit Improvements were highly ranked because they directly target transportation emissions, a significant contributor to Greenfield’s air quality challenges. This intervention is well-suited to the city's dense urban environment, enhancing mobility while reducing congestion. It also presents a timely opportunity to improve community well-being and urban resilience."
+        },
+        {
+            "locode": "GF",
+            "cityName": "Greenfield",
+            "region": "R1",
+            "regionName": "Northern Region",
+            "actionId": "A3",
+            "actionName": "Renewable Energy Integration",
+            "actionPriority": 3,
+            "explanation": "Renewable Energy Integration is valued for its transformative potential to shift away from fossil fuels and lower overall emissions in Greenfield. The approach aligns well with the local environment and long-term sustainability objectives. Its design also lends itself to efficient execution with minimal dependency on complex preliminary actions."
+        },
+        {
+            "locode": "GF",
+            "cityName": "Greenfield",
+            "region": "R1",
+            "regionName": "Northern Region",
+            "actionId": "A4",
+            "actionName": "Urban Forestry Initiatives",
+            "actionPriority": 4,
+            "explanation": "Urban Forestry Initiatives stand out by offering natural solutions that improve air quality and mitigate urban heat effects in Greenfield. This action fits well within the local environmental context by reinforcing ecological balance. It also provides significant co-benefits such as enhanced community well-being and reduced climatic risks."
+        },
+        {
+            "locode": "GF",
+            "cityName": "Greenfield",
+            "region": "R1",
+            "regionName": "Northern Region",
+            "actionId": "A5",
+            "actionName": "Water Conservation Program",
+            "actionPriority": 5,
+            "explanation": "The Water Conservation Program was ranked in consideration of Greenfield’s vulnerability to water-related stresses. It promotes sustainable management of a vital resource, assuring better alignment with the city’s environmental needs. In doing so, it offers effective risk mitigation and supports overall socio-economic stability."
+        },
+        {
+            "locode": "GF",
+            "cityName": "Greenfield",
+            "region": "R1",
+            "regionName": "Northern Region",
+            "actionId": "A6",
+            "actionName": "Waste Management Improvements",
+            "actionPriority": 6,
+            "explanation": "Waste Management Improvements have been prioritized for their capacity to reduce methane emissions and promote a cleaner urban environment in Greenfield. This action is particularly suited to the city’s high-density challenges and contributes positively to public health. It also provides an effective, cost-conscious pathway to managing environmental impacts."
+        },
+        {
+            "locode": "GF",
+            "cityName": "Greenfield",
+            "region": "R1",
+            "regionName": "Northern Region",
+            "actionId": "A7",
+            "actionName": "Green Building Standards",
+            "actionPriority": 7,
+            "explanation": "Green Building Standards have been advanced as a measure to promote energy efficiency in new developments throughout Greenfield. This action integrates well with urban planning strategies and supports long-term emissions reduction. It also aids in reducing environmental risks by ensuring sustainable construction practices right from the outset."
+        },
+        {
+            "locode": "GF",
+            "cityName": "Greenfield",
+            "region": "R1",
+            "regionName": "Northern Region",
+            "actionId": "A8",
+            "actionName": "Electric Vehicle Incentives",
+            "actionPriority": 8,
+            "explanation": "Electric Vehicle Incentives are recognized for accelerating a transition away from fossil-fuel based transportation in Greenfield. By encouraging the adoption of cleaner vehicles, this action helps improve air quality while addressing a key urban emission source. It is also well-aligned with the city's capacity for adopting innovative technologies and practices."
+        },
+        {
+            "locode": "GF",
+            "cityName": "Greenfield",
+            "region": "R1",
+            "regionName": "Northern Region",
+            "actionId": "A9",
+            "actionName": "Solar Panel Incentives",
+            "actionPriority": 9,
+            "explanation": "Solar Panel Incentives are valued for promoting decentralized renewable energy resources within Greenfield. The initiative is particularly suited to the region’s solar potential and supports the city’s sustainability goals. It offers a straightforward implementation route while contributing to a broader reduction in urban emissions."
+        },
+        {
+            "locode": "GF",
+            "cityName": "Greenfield",
+            "region": "R1",
+            "regionName": "Northern Region",
+            "actionId": "A10",
+            "actionName": "Coastal Barrier Restoration",
+            "actionPriority": 10,
+            "explanation": "Coastal Barrier Restoration has been emphasized for its role in protecting vulnerable low-lying areas of Greenfield from potential flooding and storm surges. This action is well-integrated with the city's environmental conditions and enhances resilience against climate-related hazards. It balances risk reduction with long-term environmental protection despite its complex implementation requirements."
+        },
+        {
+            "locode": "GF",
+            "cityName": "Greenfield",
+            "region": "R1",
+            "regionName": "Northern Region",
+            "actionId": "A11",
+            "actionName": "Floodplain Management",
+            "actionPriority": 11,
+            "explanation": "Floodplain Management is crucial for mitigating the impact of extreme weather events in Greenfield. By focusing on protecting high-risk areas, the action directly addresses climate hazards that threaten local infrastructure. Its balanced design reflects an effective integration of risk reduction and sustainable resource planning."
+        },
+        {
+            "locode": "GF",
+            "cityName": "Greenfield",
+            "region": "R1",
+            "regionName": "Northern Region",
+            "actionId": "A12",
+            "actionName": "Eco-Friendly Industrial Practices",
+            "actionPriority": 12,
+            "explanation": "Eco-Friendly Industrial Practices were ranked to address one of the city’s significant emission sources by encouraging cleaner production methods. This action aligns closely with Greenfield’s economic activities and supports environmental quality improvements. It also delivers benefits by reducing industrial risks and aligning with cost-effective operational improvements."
+        },
+        {
+            "locode": "GF",
+            "cityName": "Greenfield",
+            "region": "R1",
+            "regionName": "Northern Region",
+            "actionId": "A13",
+            "actionName": "Community Outreach & Education",
+            "actionPriority": 13,
+            "explanation": "Community Outreach & Education plays an important role in empowering residents of Greenfield to engage with climate challenges. This initiative supports broader sustainability by building awareness and driving local participation in emission reduction activities. Although it does not directly curb emissions, it establishes a strong foundation for supportive community-led action."
+        },
+        {
+            "locode": "GF",
+            "cityName": "Greenfield",
+            "region": "R1",
+            "regionName": "Northern Region",
+            "actionId": "A14",
+            "actionName": "Smart Grid Implementation",
+            "actionPriority": 14,
+            "explanation": "Smart Grid Implementation is designed to enhance the efficiency of energy distribution systems in Greenfield. By modernizing the infrastructure, the action helps reduce energy losses and supports a greater integration of renewables. It is a forward-thinking measure that aligns well with emerging technologies and long-term environmental planning."
+        },
+        {
+            "locode": "GF",
+            "cityName": "Greenfield",
+            "region": "R1",
+            "regionName": "Northern Region",
+            "actionId": "A15",
+            "actionName": "Bike Lane Expansion",
+            "actionPriority": 15,
+            "explanation": "Bike Lane Expansion offers a practical means to reduce reliance on motor vehicles in Greenfield, thereby helping to lower transportation-related emissions. The initiative supports healthier lifestyle choices and contributes to easing traffic congestion. It is a complementary strategy that enriches the urban fabric while enhancing environmental quality."
+        },
+        {
+            "locode": "GF",
+            "cityName": "Greenfield",
+            "region": "R1",
+            "regionName": "Northern Region",
+            "actionId": "A16",
+            "actionName": "Sustainable Agriculture Practices",
+            "actionPriority": 16,
+            "explanation": "Sustainable Agriculture Practices have been identified as a means to modernize farming techniques around Greenfield, reducing emissions from traditional agriculture. This approach supports local economies while improving land use efficiency and environmental sustainability. It also enhances food security and adapts to shifting climatic conditions with manageable implementation requirements."
+        },
+        {
+            "locode": "GF",
+            "cityName": "Greenfield",
+            "region": "R1",
+            "regionName": "Northern Region",
+            "actionId": "A17",
+            "actionName": "Tree Planting Program",
+            "actionPriority": 17,
+            "explanation": "The Tree Planting Program contributes to absorbing carbon dioxide and enhancing urban green spaces in Greenfield. This nature-based solution aligns with efforts to improve air quality and reduce heat island effects. While its benefits typically accumulate over time, it supports long-term community health and ecological balance."
+        },
+        {
+            "locode": "GF",
+            "cityName": "Greenfield",
+            "region": "R1",
+            "regionName": "Northern Region",
+            "actionId": "A18",
+            "actionName": "Urban Cooling Initiatives",
+            "actionPriority": 18,
+            "explanation": "Urban Cooling Initiatives have been selected to address the challenges of rising temperatures in dense parts of Greenfield. This action is designed to alleviate heat stress and improve the comfort of urban residents. It is well-conceived to deliver timely benefits, making it a supportive measure in the context of broader climate adaptation efforts."
+        },
+        {
+            "locode": "GF",
+            "cityName": "Greenfield",
+            "region": "R1",
+            "regionName": "Northern Region",
+            "actionId": "A19",
+            "actionName": "Rainwater Harvesting",
+            "actionPriority": 19,
+            "explanation": "Rainwater Harvesting has been recognized for its potential to supplement traditional water sources in Greenfield. This action supports sustainable water management by capturing and using rainwater effectively. Its focus on resource conservation makes it a practical addition to the city’s overall climate resilience strategy."
+        },
+        {
+            "locode": "GF",
+            "cityName": "Greenfield",
+            "region": "R1",
+            "regionName": "Northern Region",
+            "actionId": "A20",
+            "actionName": "Green Roof Installation",
+            "actionPriority": 20,
+            "explanation": "Green Roof Installation is valued in Greenfield for its role in enhancing building efficiency and mitigating urban heat island effects. The action provides additional benefits such as improved stormwater management and energy savings. It is a practical intervention that supports sustainable urban development while offering localized climate benefits."
+        }
+    ]
+}

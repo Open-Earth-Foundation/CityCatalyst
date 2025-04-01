@@ -1,182 +1,204 @@
-[
-    {
-        "locode": "BR CCX",
-        "cityName": "C\u00e1ceres",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0118",
-        "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
-        "actionPriority": 1
-    },
-    {
-        "locode": "BR CCX",
-        "cityName": "C\u00e1ceres",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0057",
-        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
-        "actionPriority": 2
-    },
-    {
-        "locode": "BR CCX",
-        "cityName": "C\u00e1ceres",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0005",
-        "actionName": "Create credit lines for residential and community wind energy projects",
-        "actionPriority": 3
-    },
-    {
-        "locode": "BR CCX",
-        "cityName": "C\u00e1ceres",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0121",
-        "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
-        "actionPriority": 4
-    },
-    {
-        "locode": "BR CCX",
-        "cityName": "C\u00e1ceres",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0133",
-        "actionName": "Promote Urban Reforestation and Green Corridors",
-        "actionPriority": 5
-    },
-    {
-        "locode": "BR CCX",
-        "cityName": "C\u00e1ceres",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0088",
-        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
-        "actionPriority": 6
-    },
-    {
-        "locode": "BR CCX",
-        "cityName": "C\u00e1ceres",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0092",
-        "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
-        "actionPriority": 7
-    },
-    {
-        "locode": "BR CCX",
-        "cityName": "C\u00e1ceres",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0099",
-        "actionName": "Support Agroecological Certification Programs",
-        "actionPriority": 8
-    },
-    {
-        "locode": "BR CCX",
-        "cityName": "C\u00e1ceres",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0090",
-        "actionName": "Adoption of electric drones for last-mile deliveries.",
-        "actionPriority": 9
-    },
-    {
-        "locode": "BR CCX",
-        "cityName": "C\u00e1ceres",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0131",
-        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
-        "actionPriority": 10
-    },
-    {
-        "locode": "BR CCX",
-        "cityName": "C\u00e1ceres",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0136",
-        "actionName": "Support the Implementation of Ecological Fiscal Incentives",
-        "actionPriority": 11
-    },
-    {
-        "locode": "BR CCX",
-        "cityName": "C\u00e1ceres",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0096",
-        "actionName": "Promote Organic Farming",
-        "actionPriority": 12
-    },
-    {
-        "locode": "BR CCX",
-        "cityName": "C\u00e1ceres",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0068",
-        "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
-        "actionPriority": 13
-    },
-    {
-        "locode": "BR CCX",
-        "cityName": "C\u00e1ceres",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0050",
-        "actionName": "Implement Agroforestry Systems",
-        "actionPriority": 14
-    },
-    {
-        "locode": "BR CCX",
-        "cityName": "C\u00e1ceres",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0094",
-        "actionName": "Adoption of biomethane in public fleets.",
-        "actionPriority": 15
-    },
-    {
-        "locode": "BR CCX",
-        "cityName": "C\u00e1ceres",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "c40_0033",
-        "actionName": "15/30-Minute Areas",
-        "actionPriority": 16
-    },
-    {
-        "locode": "BR CCX",
-        "cityName": "C\u00e1ceres",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0117",
-        "actionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
-        "actionPriority": 17
-    },
-    {
-        "locode": "BR CCX",
-        "cityName": "C\u00e1ceres",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0044",
-        "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
-        "actionPriority": 18
-    },
-    {
-        "locode": "BR CCX",
-        "cityName": "C\u00e1ceres",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0102",
-        "actionName": "Promote Sustainable Agricultural Practices",
-        "actionPriority": 19
-    },
-    {
-        "locode": "BR CCX",
-        "cityName": "C\u00e1ceres",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0084",
-        "actionName": "Create Incentives for Agroforestry Practices in Livestock Systems",
-        "actionPriority": 20
-    }
-]
+{
+    "actions": [
+        {
+            "locode": "GC001",
+            "cityName": "GreenCity",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "A001",
+            "actionName": "New Building Standards",
+            "actionPriority": 1,
+            "explanation": "For GreenCity, New Building Standards are highly prioritized because they effectively reduce emissions by ensuring that new constructions incorporate cutting-edge energy efficiency measures. This action is well-aligned with the city's core sectors and environmental conditions, addressing the substantial energy demands of a growing urban population. It also offers long-term socio-economic benefits by lowering operational costs and mitigating future climate-related risks. Overall, its strategic importance in promoting sustainable urban development makes it a preferred choice."
+        },
+        {
+            "locode": "GC002",
+            "cityName": "GreenCity",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "A002",
+            "actionName": "Bus Emissions",
+            "actionPriority": 2,
+            "explanation": "This action targets the transportation sector, which is central to reducing urban greenhouse gas emissions in GreenCity. It offers clear improvements in air quality and public health while addressing key operational risks associated with aging transit infrastructure. The focus on cost-effective retrofitting and rapid implementation makes it very relevant to the city’s immediate climate needs. Its alignment with the socio-demographic context further reinforces its importance in the city’s sustainability strategy."
+        },
+        {
+            "locode": "GC003",
+            "cityName": "GreenCity",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "A003",
+            "actionName": "Renewable Energy Implementation",
+            "actionPriority": 3,
+            "explanation": "Renewable Energy Implementation is favored in GreenCity for its strong potential to replace fossil fuel dependency with cleaner alternatives. It plays an essential role in reducing overall emissions and enhances the environmental compatibility of the urban energy mix. The action is well-suited to the city's abundant natural resources and supports long-term cost-effectiveness by decreasing energy expenditures over time. Additionally, it contributes to risk reduction by stabilizing energy supply and reducing vulnerability to fuel price fluctuations."
+        },
+        {
+            "locode": "GC004",
+            "cityName": "GreenCity",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "A004",
+            "actionName": "Urban Tree Planting",
+            "actionPriority": 4,
+            "explanation": "Urban Tree Planting is prioritized for its ability to enhance local air quality and sequester carbon, making it an effective supplementary measure in climate mitigation. The action provides environmental and socio-demographic benefits by improving urban livability and greening the landscape. It is particularly suitable given GreenCity's urban density and offers resilience against urban heat island effects. Although its impact on emissions is gradual, it creates lasting co-benefits that support broader sustainability goals."
+        },
+        {
+            "locode": "GC005",
+            "cityName": "GreenCity",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "A005",
+            "actionName": "Water Conservation Measures",
+            "actionPriority": 5,
+            "explanation": "Water Conservation Measures are highly relevant for GreenCity as they address critical environmental pressures related to water scarcity and quality. This action not only helps in preserving a vital resource but also reduces the energy intensity associated with water processing and distribution. It is well-adapted to the city’s environmental conditions and offers cost-effective benefits over time. Implementing these measures also lowers the risk associated with future water-related climate challenges."
+        },
+        {
+            "locode": "GC006",
+            "cityName": "GreenCity",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "A006",
+            "actionName": "Waste Recycling Initiatives",
+            "actionPriority": 6,
+            "explanation": "Waste Recycling Initiatives are important for GreenCity because they help reduce landfill emissions and support a circular economy. The action creates multiple benefits including reduced greenhouse gas emissions, better resource management, and diminished operational risks linked to waste treatment. It fits well within the city’s socio-demographic context by encouraging community participation and sustainable habits. Moreover, the relatively straightforward implementation process adds to its overall cost-effectiveness and environmental compatibility."
+        },
+        {
+            "locode": "GC007",
+            "cityName": "GreenCity",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "A007",
+            "actionName": "Flood Defense Systems",
+            "actionPriority": 7,
+            "explanation": "Flood Defense Systems have been prioritized in light of the increasing risk of climate-induced flooding in GreenCity. This action not only protects critical infrastructure but also reduces the socio-economic impacts of potential flood events. It is highly relevant to a city facing increasing weather extremes and aligns with efforts to bolster urban resilience. The focused implementation and proven track record in risk reduction further justify its prioritized status."
+        },
+        {
+            "locode": "GC008",
+            "cityName": "GreenCity",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "A008",
+            "actionName": "Energy Efficient Street Lighting",
+            "actionPriority": 8,
+            "explanation": "Energy Efficient Street Lighting is favored for its immediate cost-effectiveness and potential for lowering urban energy consumption in GreenCity. It contributes to emissions reduction by replacing older lighting systems with more energy-saving alternatives. The action is particularly well-suited to the city, requiring minimal infrastructure changes while yielding significant environmental benefits. Its straightforward implementation process complements the city’s ongoing efforts to modernize infrastructure efficiently."
+        },
+        {
+            "locode": "GC009",
+            "cityName": "GreenCity",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "A009",
+            "actionName": "Green Roof Initiatives",
+            "actionPriority": 9,
+            "explanation": "Green Roof Initiatives are appreciated in GreenCity for their ability to improve urban microclimates and reduce energy demand in buildings. They positively impact the environment by enhancing insulation, reducing runoff, and mitigating the urban heat island effect. This action aligns with the city’s sustainability and aesthetic goals while offering additional benefits like improved air quality. The integration of green roofs into urban planning demonstrates a balanced approach to environmental compatibility and innovation."
+        },
+        {
+            "locode": "GC010",
+            "cityName": "GreenCity",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "A010",
+            "actionName": "Public Transportation Expansion",
+            "actionPriority": 10,
+            "explanation": "Expanding Public Transportation in GreenCity addresses pressing urban emissions by reducing car dependency and easing traffic congestion. It aligns with key socio-demographic needs by providing accessible mobility options in densely populated areas. The action supports environmental sustainability by cutting emissions and promoting a shift towards greener commuting habits. Additionally, it lays the groundwork for long-term economic benefits through enhanced connectivity and reduced operational risks."
+        },
+        {
+            "locode": "GC011",
+            "cityName": "GreenCity",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "A011",
+            "actionName": "Solar Panel Subsidies",
+            "actionPriority": 11,
+            "explanation": "Solar Panel Subsidies are recognized for fostering renewable energy adoption at the household and commercial levels in GreenCity. By reducing reliance on non-renewable energy, the action directly contributes to emission reductions. It is very much in tune with local environmental conditions and supports cost-effective energy solutions. The measure also builds community resilience and encourages sustainable practices across various sectors."
+        },
+        {
+            "locode": "GC012",
+            "cityName": "GreenCity",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "A012",
+            "actionName": "Wind Energy Projects",
+            "actionPriority": 12,
+            "explanation": "Wind Energy Projects are particularly suited for GreenCity given the favorable natural conditions in some surrounding areas. This action supports significant emissions reduction by harnessing renewable wind power and diversifying the energy portfolio. It is environmentally compatible and offers a robust approach to long-term cost savings in energy procurement. The associated risk reduction through decreased reliance on fossil fuels reinforces its position in the overall climate strategy."
+        },
+        {
+            "locode": "GC013",
+            "cityName": "GreenCity",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "A013",
+            "actionName": "Climate Resilient Infrastructure",
+            "actionPriority": 13,
+            "explanation": "Investing in Climate Resilient Infrastructure is crucial for GreenCity as it addresses the structural vulnerabilities posed by climate change. The action targets key urban systems and ensures long-term continuity of services during extreme weather events. Its strategic planning harmonizes with the city's environmental conditions and urban development goals. This balanced approach not only minimizes risks but also contributes to sustainable growth over time."
+        },
+        {
+            "locode": "GC014",
+            "cityName": "GreenCity",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "A014",
+            "actionName": "Urban Cooling Strategies",
+            "actionPriority": 14,
+            "explanation": "Urban Cooling Strategies are important in mitigating heat stress and reducing energy demand for cooling in GreenCity. This action is tailored to address the challenges posed by rising urban temperatures and intensified heat islands. It enhances local environmental quality and lowers associated health risks, making it a wise addition to climate adaptation plans. The plan also complements existing urban infrastructure while being mindful of socio-demographic needs."
+        },
+        {
+            "locode": "GC015",
+            "cityName": "GreenCity",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "A015",
+            "actionName": "Coastal Restoration",
+            "actionPriority": 15,
+            "explanation": "Coastal Restoration is highly relevant for GreenCity, particularly if its coastal areas are vulnerable to erosion and sea-level rise. The action emphasizes natural resilience by rehabilitating ecosystems that act as protective barriers. It is designed to work in harmony with the local environment and provides added benefits in terms of biodiversity and community safety. The approach addresses the climate risks associated with coastal degradation while reinforcing sustainable land use."
+        },
+        {
+            "locode": "GC016",
+            "cityName": "GreenCity",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "A016",
+            "actionName": "Green Urban Planning",
+            "actionPriority": 16,
+            "explanation": "Green Urban Planning is an integrative measure that ensures future developments in GreenCity adhere to sustainable practices from the outset. It supports emissions reduction by influencing urban design and promoting compact, efficient layouts. The action benefits the socio-demographic fabric by creating healthier, walkable neighborhoods. Its strategic focus on long-term resilience and environmental compatibility makes it a valuable component of the city’s planning initiatives."
+        },
+        {
+            "locode": "GC017",
+            "cityName": "GreenCity",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "A017",
+            "actionName": "Bicycle Lane Development",
+            "actionPriority": 17,
+            "explanation": "Bicycle Lane Development is promoted for its ability to encourage low-emission transportation and active mobility in GreenCity. The measure addresses not only environmental benefits but also public health objectives by fostering a more active lifestyle. It is particularly effective in densely populated areas where reducing vehicle traffic is essential. The simplicity of its implementation coupled with its positive social impact supports its placement in the ranking."
+        },
+        {
+            "locode": "GC018",
+            "cityName": "GreenCity",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "A018",
+            "actionName": "Rainwater Harvesting",
+            "actionPriority": 18,
+            "explanation": "Rainwater Harvesting is valued in GreenCity for its role in enhancing water management and reducing the stress on municipal water supply systems. The action is environmentally compatible and contributes indirectly to energy savings, as treated water needs are lowered. It is also a flexible measure that can be adapted to various urban and suburban settings, enhancing resilience against drought conditions. Its practical approach and ease of integration with existing structures bolster its relevance in the city's climate strategy."
+        },
+        {
+            "locode": "GC019",
+            "cityName": "GreenCity",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "A019",
+            "actionName": "Sustainable Agriculture Practices",
+            "actionPriority": 19,
+            "explanation": "Sustainable Agriculture Practices are important for peripheral regions of GreenCity where local food production plays a role in community sustainability. The focus on reducing agricultural emissions and promoting eco-friendly practices ties directly into broader climate goals. This action enhances local food security and aligns with the city’s environmental compatibility objectives. Its role in stabilizing local economies and reducing climate risks further supports its prioritized ranking."
+        },
+        {
+            "locode": "GC020",
+            "cityName": "GreenCity",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "A020",
+            "actionName": "Electric Vehicle Incentives",
+            "actionPriority": 20,
+            "explanation": "Electric Vehicle Incentives aim to accelerate the transition away from fossil fuel-powered transportation modes in GreenCity. The measure supports significant emissions reductions by encouraging cleaner mobility solutions. It is highly relevant given the growing urban population and the need for effective risk mitigation related to air quality. The action also promotes innovation and accessibility, making it a noteworthy part of the city's integrated climate strategy."
+        }
+    ]
+}

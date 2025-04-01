@@ -1,202 +1,204 @@
-[
-    {
-        "locode": "BR PIN",
-        "cityName": "Parintins",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "icare_0176",
-        "actionName": "Development of Climate Action Plan",
-        "actionPriority": 1,
-        "explanation": "Ranked #1 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR PIN",
-        "cityName": "Parintins",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "icare_0181",
-        "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
-        "actionPriority": 2,
-        "explanation": "Ranked #2 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR PIN",
-        "cityName": "Parintins",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "icare_0140",
-        "actionName": "Landslide Risk Assessment and Management",
-        "actionPriority": 3,
-        "explanation": "Ranked #3 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR PIN",
-        "cityName": "Parintins",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "icare_0169",
-        "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
-        "actionPriority": 4,
-        "explanation": "Ranked #4 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR PIN",
-        "cityName": "Parintins",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "icare_0164",
-        "actionName": "Hydrological Monitoring System with Telemetry Stations",
-        "actionPriority": 5,
-        "explanation": "Ranked #5 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR PIN",
-        "cityName": "Parintins",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "icare_0151",
-        "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
-        "actionPriority": 6,
-        "explanation": "Ranked #6 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR PIN",
-        "cityName": "Parintins",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "icare_0154",
-        "actionName": "Cleaning and Unclogging of Channels with Installation of Eco-barriers",
-        "actionPriority": 7,
-        "explanation": "Ranked #7 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR PIN",
-        "cityName": "Parintins",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "icare_0175",
-        "actionName": "Recovery and preservation of green areas",
-        "actionPriority": 8,
-        "explanation": "Ranked #8 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR PIN",
-        "cityName": "Parintins",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "ipcc_0097",
-        "actionName": "Food storage/distribution improvements",
-        "actionPriority": 9,
-        "explanation": "Ranked #9 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR PIN",
-        "cityName": "Parintins",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "ipcc_0088",
-        "actionName": "Building codes",
-        "actionPriority": 10,
-        "explanation": "Ranked #10 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR PIN",
-        "cityName": "Parintins",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "ipcc_0094",
-        "actionName": "Access to health care",
-        "actionPriority": 11,
-        "explanation": "Ranked #11 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR PIN",
-        "cityName": "Parintins",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "icare_0149",
-        "actionName": "Encourage sustainable land use practices",
-        "actionPriority": 12,
-        "explanation": "Ranked #12 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR PIN",
-        "cityName": "Parintins",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "icare_0156",
-        "actionName": "Implementation of urban gardens",
-        "actionPriority": 13,
-        "explanation": "Ranked #13 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR PIN",
-        "cityName": "Parintins",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "icare_0162",
-        "actionName": "Strengthen programs for control and conservation of protected areas",
-        "actionPriority": 14,
-        "explanation": "Ranked #14 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR PIN",
-        "cityName": "Parintins",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "ipcc_0092",
-        "actionName": "Social safety nets",
-        "actionPriority": 15,
-        "explanation": "Ranked #15 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR PIN",
-        "cityName": "Parintins",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "ipcc_0095",
-        "actionName": "Disaster early warning",
-        "actionPriority": 16,
-        "explanation": "Ranked #16 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR PIN",
-        "cityName": "Parintins",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "ipcc_0086",
-        "actionName": "Ecosystem-based adaptation",
-        "actionPriority": 17,
-        "explanation": "Ranked #17 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR PIN",
-        "cityName": "Parintins",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "icare_0148",
-        "actionName": "Create the Municipal Climate Change Forum",
-        "actionPriority": 18,
-        "explanation": "Ranked #18 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR PIN",
-        "cityName": "Parintins",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "ipcc_0099",
-        "actionName": "Water capture/storage",
-        "actionPriority": 19,
-        "explanation": "Ranked #19 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR PIN",
-        "cityName": "Parintins",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "ipcc_0096",
-        "actionName": "Farm/fishery improvements",
-        "actionPriority": 20,
-        "explanation": "Ranked #20 by tournament ranking algorithm"
-    }
-]
+{
+    "actions": [
+        {
+            "locode": "SC01",
+            "cityName": "Sample City",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "act-001",
+            "actionName": "New Building Standards",
+            "actionPriority": 1,
+            "explanation": "For Sample City, New Building Standards are prioritized because they effectively target major emission sources within the building sector. The approach aligns with the city’s need for improved energy efficiency and better climate risk management. It also supports long-term economic and environmental benefits through enhanced sustainability standards."
+        },
+        {
+            "locode": "SC01",
+            "cityName": "Sample City",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "act-002",
+            "actionName": "Bus Emissions",
+            "actionPriority": 2,
+            "explanation": "In Sample City, addressing bus emissions is valued for its direct impact on reducing urban greenhouse gases. This action leverages existing infrastructure and offers a practical route to cleaner public transit. It is seen as an effective way to improve air quality while supporting the city’s broader mobility goals."
+        },
+        {
+            "locode": "SC01",
+            "cityName": "Sample City",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "act-003",
+            "actionName": "Green Roof Installations",
+            "actionPriority": 3,
+            "explanation": "For Sample City, Green Roof Installations are appreciated for their capacity to mitigate urban heat and manage stormwater effectively. The action is well-suited to dense urban settings and brings valuable ecological benefits to the community. It enhances local resilience while complementing broader emission reduction efforts."
+        },
+        {
+            "locode": "SC01",
+            "cityName": "Sample City",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "act-004",
+            "actionName": "Solar Panel Expansion",
+            "actionPriority": 4,
+            "explanation": "The Solar Panel Expansion initiative in Sample City is recognized for its role in advancing renewable energy adoption. It reduces dependence on fossil fuels and supports the city's clean energy goals. Its straightforward implementation and compatibility with local climate conditions make it a strategically viable option."
+        },
+        {
+            "locode": "SC01",
+            "cityName": "Sample City",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "act-005",
+            "actionName": "Urban Tree Planting",
+            "actionPriority": 5,
+            "explanation": "Urban Tree Planting in Sample City is valued for the multiple benefits it brings, including improved air quality and urban cooling. The action aligns with local environmental contexts and enhances community well-being. Its broader ecological impact and contribution to a healthier urban ecosystem underscore its importance in climate planning."
+        },
+        {
+            "locode": "SC01",
+            "cityName": "Sample City",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "act-006",
+            "actionName": "Energy Efficiency Retrofits",
+            "actionPriority": 6,
+            "explanation": "Energy Efficiency Retrofits are highlighted in Sample City for their ability to reduce energy consumption and lower emissions swiftly. This action is cost-effective and fits well with strategies to modernize existing building stocks. It also reduces vulnerability to climate risks, making it a pragmatic choice for urban improvement."
+        },
+        {
+            "locode": "SC01",
+            "cityName": "Sample City",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "act-007",
+            "actionName": "Waste Management Improvements",
+            "actionPriority": 7,
+            "explanation": "For Sample City, improving waste management is strategically important as it minimizes emissions associated with landfill and waste processing. This approach encourages resource recovery and aligns with local environmental priorities. Its practical and sustainable framework makes it a beneficial initiative for the urban setting."
+        },
+        {
+            "locode": "SC01",
+            "cityName": "Sample City",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "act-008",
+            "actionName": "Water Conservation Programs",
+            "actionPriority": 8,
+            "explanation": "Water Conservation Programs are essential in Sample City, addressing both water scarcity concerns and climate stress. The action contributes to resource efficiency and strengthens the resilience of local ecosystems. It is a well-suited intervention that complements other climate strategies within the urban context."
+        },
+        {
+            "locode": "SC01",
+            "cityName": "Sample City",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "act-009",
+            "actionName": "Public Transit Electrification",
+            "actionPriority": 9,
+            "explanation": "Public Transit Electrification in Sample City is prioritized for its clear impact on reducing carbon emissions from the transportation sector. The initiative modernizes mobility infrastructure by integrating cleaner technology. Its alignment with the city’s sustainability goals makes it a forward-thinking approach to environmental improvement."
+        },
+        {
+            "locode": "SC01",
+            "cityName": "Sample City",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "act-010",
+            "actionName": "Cycling Infrastructure",
+            "actionPriority": 10,
+            "explanation": "In Sample City, investing in Cycling Infrastructure supports a shift towards active, low-carbon mobility options. This action is both cost-effective and enhances public health by reducing vehicular dependency. It is well adapted to the urban fabric and contributes to a sustainable and inclusive transportation system."
+        },
+        {
+            "locode": "SC01",
+            "cityName": "Sample City",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "act-011",
+            "actionName": "District Heating Modernization",
+            "actionPriority": 11,
+            "explanation": "District Heating Modernization is designed to improve energy efficiency in Sample City by upgrading existing heating systems. The action reduces emissions and supports a more sustainable energy distribution network. Its focus on enhancing infrastructure efficiency makes it a sensible addition to the city's climate strategy."
+        },
+        {
+            "locode": "SC01",
+            "cityName": "Sample City",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "act-012",
+            "actionName": "Flood Defenses",
+            "actionPriority": 12,
+            "explanation": "Flood Defenses are recognized in Sample City for their critical role in protecting urban areas from climate-induced risks. The action is tailored to address local vulnerabilities to heavy rainfall and flooding events. By enhancing community safety and resilience, it reinforces overall climate adaptation efforts."
+        },
+        {
+            "locode": "SC01",
+            "cityName": "Sample City",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "act-013",
+            "actionName": "Heat Wave Preparedness",
+            "actionPriority": 13,
+            "explanation": "Heat Wave Preparedness in Sample City is important due to the increasing occurrence of extreme temperature events. This action provides measures that protect public health and reduce the adverse impacts of urban heat. Its proactive approach reinforces the city’s overall strategy for managing climate risks."
+        },
+        {
+            "locode": "SC01",
+            "cityName": "Sample City",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "act-014",
+            "actionName": "Air Quality Monitoring",
+            "actionPriority": 14,
+            "explanation": "Air Quality Monitoring is valued in Sample City for its role in supporting informed climate policy decisions. The continuous tracking of pollutant levels aids in understanding and managing local emissions. This action, while supportive in nature, strengthens the city's capacity to respond effectively to evolving environmental challenges."
+        },
+        {
+            "locode": "SC01",
+            "cityName": "Sample City",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "act-015",
+            "actionName": "Renewable Energy Investment",
+            "actionPriority": 15,
+            "explanation": "Renewable Energy Investment is a key action in Sample City as it fosters a transition away from fossil fuels. The initiative supports long-term sustainable growth and reduces the city’s overall carbon footprint. Its strategic relevance is enhanced by its potential to drive economic as well as environmental benefits."
+        },
+        {
+            "locode": "SC01",
+            "cityName": "Sample City",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "act-016",
+            "actionName": "Suburban Greening",
+            "actionPriority": 16,
+            "explanation": "Suburban Greening initiatives in Sample City extend environmental benefits beyond the urban core by enhancing biodiversity and moderating local temperatures. This action aligns well with regional land use policies and improves quality of life. Its comprehensive ecological benefits make it a valuable part of the overall climate strategy."
+        },
+        {
+            "locode": "SC01",
+            "cityName": "Sample City",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "act-017",
+            "actionName": "Industrial Emission Controls",
+            "actionPriority": 17,
+            "explanation": "Industrial Emission Controls are significant for Sample City, especially in areas with concentrated industrial activity. This action helps mitigate high levels of emissions from key economic sectors and improves overall air quality. Its focused approach on reducing pollution in critical zones underscores its relevance in the city’s mitigation efforts."
+        },
+        {
+            "locode": "SC01",
+            "cityName": "Sample City",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "act-018",
+            "actionName": "Carbon Capture Implementation",
+            "actionPriority": 18,
+            "explanation": "Carbon Capture Implementation is a forward-looking action in Sample City aimed at offsetting emissions from hard-to-abate sources. The innovative approach complements existing mitigation strategies and offers a pathway for long-term climate benefits. Its integration with other emission reduction measures highlights its potential within a comprehensive strategy."
+        },
+        {
+            "locode": "SC01",
+            "cityName": "Sample City",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "act-019",
+            "actionName": "Coastal Restoration",
+            "actionPriority": 19,
+            "explanation": "Coastal Restoration is prioritized in Sample City for its ability to enhance natural coastal defenses and support ecosystem health. The action makes good use of the local coastal context, providing benefits such as erosion control and habitat restoration. Its multidimensional contributions to both mitigation and adaptation make it an integral part of climate resilience planning."
+        },
+        {
+            "locode": "SC01",
+            "cityName": "Sample City",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "act-020",
+            "actionName": "Community Climate Resilience Plans",
+            "actionPriority": 20,
+            "explanation": "Community Climate Resilience Plans are valued in Sample City for fostering local engagement and building adaptive capacities across diverse sectors. This action takes a comprehensive approach by integrating infrastructure, health, and social measures to manage climate risks. Its collaborative nature ensures that resilience efforts are well-aligned with the community’s unique needs."
+        }
+    ]
+}

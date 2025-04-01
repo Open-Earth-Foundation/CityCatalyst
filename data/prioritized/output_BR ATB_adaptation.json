@@ -1,202 +1,204 @@
-[
-    {
-        "locode": "BR ATB",
-        "cityName": "Abaetetuba",
-        "region": "PA",
-        "regionName": "Par\u00e1",
-        "actionId": "icare_0176",
-        "actionName": "Development of Climate Action Plan",
-        "actionPriority": 1,
-        "explanation": "Ranked #1 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR ATB",
-        "cityName": "Abaetetuba",
-        "region": "PA",
-        "regionName": "Par\u00e1",
-        "actionId": "icare_0154",
-        "actionName": "Cleaning and Unclogging of Channels with Installation of Eco-barriers",
-        "actionPriority": 2,
-        "explanation": "Ranked #2 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR ATB",
-        "cityName": "Abaetetuba",
-        "region": "PA",
-        "regionName": "Par\u00e1",
-        "actionId": "icare_0164",
-        "actionName": "Hydrological Monitoring System with Telemetry Stations",
-        "actionPriority": 3,
-        "explanation": "Ranked #3 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR ATB",
-        "cityName": "Abaetetuba",
-        "region": "PA",
-        "regionName": "Par\u00e1",
-        "actionId": "icare_0151",
-        "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
-        "actionPriority": 4,
-        "explanation": "Ranked #4 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR ATB",
-        "cityName": "Abaetetuba",
-        "region": "PA",
-        "regionName": "Par\u00e1",
-        "actionId": "icare_0181",
-        "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
-        "actionPriority": 5,
-        "explanation": "Ranked #5 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR ATB",
-        "cityName": "Abaetetuba",
-        "region": "PA",
-        "regionName": "Par\u00e1",
-        "actionId": "icare_0169",
-        "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
-        "actionPriority": 6,
-        "explanation": "Ranked #6 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR ATB",
-        "cityName": "Abaetetuba",
-        "region": "PA",
-        "regionName": "Par\u00e1",
-        "actionId": "ipcc_0094",
-        "actionName": "Access to health care",
-        "actionPriority": 7,
-        "explanation": "Ranked #7 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR ATB",
-        "cityName": "Abaetetuba",
-        "region": "PA",
-        "regionName": "Par\u00e1",
-        "actionId": "ipcc_0097",
-        "actionName": "Food storage/distribution improvements",
-        "actionPriority": 8,
-        "explanation": "Ranked #8 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR ATB",
-        "cityName": "Abaetetuba",
-        "region": "PA",
-        "regionName": "Par\u00e1",
-        "actionId": "icare_0162",
-        "actionName": "Strengthen programs for control and conservation of protected areas",
-        "actionPriority": 9,
-        "explanation": "Ranked #9 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR ATB",
-        "cityName": "Abaetetuba",
-        "region": "PA",
-        "regionName": "Par\u00e1",
-        "actionId": "icare_0140",
-        "actionName": "Landslide Risk Assessment and Management",
-        "actionPriority": 10,
-        "explanation": "Ranked #10 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR ATB",
-        "cityName": "Abaetetuba",
-        "region": "PA",
-        "regionName": "Par\u00e1",
-        "actionId": "icare_0175",
-        "actionName": "Recovery and preservation of green areas",
-        "actionPriority": 11,
-        "explanation": "Ranked #11 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR ATB",
-        "cityName": "Abaetetuba",
-        "region": "PA",
-        "regionName": "Par\u00e1",
-        "actionId": "ipcc_0092",
-        "actionName": "Social safety nets",
-        "actionPriority": 12,
-        "explanation": "Ranked #12 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR ATB",
-        "cityName": "Abaetetuba",
-        "region": "PA",
-        "regionName": "Par\u00e1",
-        "actionId": "ipcc_0088",
-        "actionName": "Building codes",
-        "actionPriority": 13,
-        "explanation": "Ranked #13 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR ATB",
-        "cityName": "Abaetetuba",
-        "region": "PA",
-        "regionName": "Par\u00e1",
-        "actionId": "icare_0149",
-        "actionName": "Encourage sustainable land use practices",
-        "actionPriority": 14,
-        "explanation": "Ranked #14 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR ATB",
-        "cityName": "Abaetetuba",
-        "region": "PA",
-        "regionName": "Par\u00e1",
-        "actionId": "ipcc_0095",
-        "actionName": "Disaster early warning",
-        "actionPriority": 15,
-        "explanation": "Ranked #15 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR ATB",
-        "cityName": "Abaetetuba",
-        "region": "PA",
-        "regionName": "Par\u00e1",
-        "actionId": "icare_0156",
-        "actionName": "Implementation of urban gardens",
-        "actionPriority": 16,
-        "explanation": "Ranked #16 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR ATB",
-        "cityName": "Abaetetuba",
-        "region": "PA",
-        "regionName": "Par\u00e1",
-        "actionId": "ipcc_0086",
-        "actionName": "Ecosystem-based adaptation",
-        "actionPriority": 17,
-        "explanation": "Ranked #17 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR ATB",
-        "cityName": "Abaetetuba",
-        "region": "PA",
-        "regionName": "Par\u00e1",
-        "actionId": "icare_0148",
-        "actionName": "Create the Municipal Climate Change Forum",
-        "actionPriority": 18,
-        "explanation": "Ranked #18 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR ATB",
-        "cityName": "Abaetetuba",
-        "region": "PA",
-        "regionName": "Par\u00e1",
-        "actionId": "ipcc_0099",
-        "actionName": "Water capture/storage",
-        "actionPriority": 19,
-        "explanation": "Ranked #19 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR ATB",
-        "cityName": "Abaetetuba",
-        "region": "PA",
-        "regionName": "Par\u00e1",
-        "actionId": "ipcc_0098",
-        "actionName": "Behaviour change in diets and food waste",
-        "actionPriority": 20,
-        "explanation": "Ranked #20 by tournament ranking algorithm"
-    }
-]
+{
+    "actions": [
+        {
+            "locode": "SPF",
+            "cityName": "Springfield",
+            "region": "MW",
+            "regionName": "Midwest",
+            "actionId": "action_1",
+            "actionName": "New Building Standards",
+            "actionPriority": 1,
+            "explanation": "For the city Springfield, New Building Standards was chosen over Bus Emissions Reduction because it directly targets one of the city’s largest sources of emissions through improved energy performance in buildings. The action aligns with local construction practices and has added benefits in long-term risk reduction. Its design also considers the city’s capacity and urban context, making it a well-suited choice for effective climate action."
+        },
+        {
+            "locode": "RIV",
+            "cityName": "Riverton",
+            "region": "SO",
+            "regionName": "South",
+            "actionId": "action_2",
+            "actionName": "Renewable Energy Adoption",
+            "actionPriority": 1,
+            "explanation": "In Riverton, Renewable Energy Adoption was prioritized over Energy Efficiency Audits because it provides a more transformative approach to reducing emissions by tapping directly into sustainable energy sources. The action takes advantage of the city’s local renewable resources and brings significant environmental co-benefits. It fits well with the city's socio-economic framework and offers a balanced pathway toward long-term climate resilience."
+        },
+        {
+            "locode": "OCV",
+            "cityName": "Oceanview",
+            "region": "CT",
+            "regionName": "Coastal",
+            "actionId": "action_3",
+            "actionName": "Coastal Wetland Restoration",
+            "actionPriority": 1,
+            "explanation": "For Oceanview, Coastal Wetland Restoration was prioritized over Seawall Reinforcement due to its strong alignment with natural coastal processes and ability to reduce long-term climate risks. This action offers multiple co-benefits such as enhanced biodiversity and improved natural flood defenses. Its environmental compatibility and cost-effectiveness make it a fitting strategy for a city that relies on its coastal resources."
+        },
+        {
+            "locode": "HRD",
+            "cityName": "Highridge",
+            "region": "MT",
+            "regionName": "Mountain",
+            "actionId": "action_4",
+            "actionName": "Hydroelectric Upgrades",
+            "actionPriority": 1,
+            "explanation": "In Highridge, Hydrolectric Upgrades was chosen over Wind Turbine Expansion because it directly leverages the city’s existing water resources to reduce emissions effectively. The action resonates with the environmental setting of the mountains and provides stable, long-term climate risk mitigation. Its integration into the current infrastructure and lower dependency on new technologies made it more suitable given the city’s context."
+        },
+        {
+            "locode": "MDT",
+            "cityName": "Midtown",
+            "region": "UR",
+            "regionName": "Urban",
+            "actionId": "action_5",
+            "actionName": "Cool Roof Implementation",
+            "actionPriority": -1,
+            "explanation": "For Midtown, Cool Roof Implementation was prioritized over Urban Tree Planting as it offers a more immediate reduction in urban heat island effects and tackles energy inefficiencies directly. The action is well-suited to high-density settings and brings additional benefits in improving local air quality. Its lower dependency on extensive infrastructural changes makes it a practical choice for the city's rapid climate response."
+        },
+        {
+            "locode": "LKV",
+            "cityName": "Lakeview",
+            "region": "NW",
+            "regionName": "Northwest",
+            "actionId": "action_6",
+            "actionName": "Green Infrastructure Expansion",
+            "actionPriority": 1,
+            "explanation": "In Lakeview, Green Infrastructure Expansion was favored over Fossil Fuel Infrastructure Reduction because it creatively integrates natural solutions to manage stormwater and enhance urban green spaces. This approach is highly compatible with the local environment and offers broad-based benefits, including improved community well-being. Its cost-effective implementation and alignment with environmental goals made it a compelling strategy for climate action."
+        },
+        {
+            "locode": "SNP",
+            "cityName": "Sunnytown",
+            "region": "SW",
+            "regionName": "Southwest",
+            "actionId": "action_7",
+            "actionName": "Solar Panel Installations",
+            "actionPriority": 1,
+            "explanation": "For Sunnytown, Solar Panel Installations were prioritized over Coal Plant Decommissioning because they capitalize on the city’s abundant sunshine to reduce reliance on fossil fuels. This action provides a direct pathway to cutting emissions and offers lasting benefits through local energy independence. Its strong environmental compatibility and scalable nature make it particularly suitable for the city’s climate profile."
+        },
+        {
+            "locode": "BFI",
+            "cityName": "Brookfield",
+            "region": "CE",
+            "regionName": "Central",
+            "actionId": "action_8",
+            "actionName": "District Heating Modernization",
+            "actionPriority": 1,
+            "explanation": "In Brookfield, District Heating Modernization was selected over Individual Home Insulation due to its ability to serve larger populations and lower emissions through centralized efficiency improvements. This approach fits well with the city's urban infrastructure and ensures quicker delivery of benefits. It offers a strategic advantage by reducing dependence on fragmented energy solutions, thereby enhancing urban resilience."
+        },
+        {
+            "locode": "RDF",
+            "cityName": "Redwood",
+            "region": "NW",
+            "regionName": "Northwest",
+            "actionId": "action_9",
+            "actionName": "Forest Conservation Initiatives",
+            "actionPriority": 1,
+            "explanation": "For Redwood, Forest Conservation Initiatives were prioritized over Municipal Recycling Programs as they directly help maintain natural carbon sinks and preserve the local ecosystem. This action is deeply aligned with the city’s environmental values and reduces climate risks through natural buffering. Its focus on preserving high-impact natural resources makes it a fitting strategy in a city with strong ecological ties."
+        },
+        {
+            "locode": "NWT",
+            "cityName": "Newport",
+            "region": "ES",
+            "regionName": "East Seaboard",
+            "actionId": "action_10",
+            "actionName": "Port Emission Controls",
+            "actionPriority": 1,
+            "explanation": "In Newport, Port Emission Controls were chosen over Traffic Flow Optimization because they address the concentrated emissions from maritime activities that are central to the city’s economy. This action directly targets a critical emission sector and improves local air quality in a cost-effective manner. Its strategic relevance and alignment with the city’s industrial composition make it a strong climate mitigation measure."
+        },
+        {
+            "locode": "IRD",
+            "cityName": "Ironbridge",
+            "region": "EM",
+            "regionName": "Industrial Midlands",
+            "actionId": "action_11",
+            "actionName": "Industrial Emissions Regulation",
+            "actionPriority": 1,
+            "explanation": "For Ironbridge, Industrial Emissions Regulation was prioritized over Renewable Energy Subsidies because it directly tackles the heavy emission sources within the city’s industrial sector. The approach is designed to rapidly reduce pollutants and is well-aligned with the local economic structure. Its focus on mitigating risk within a high-impact sector made it the more suitable choice for effective climate action."
+        },
+        {
+            "locode": "BVV",
+            "cityName": "Bayview",
+            "region": "CT",
+            "regionName": "Coastal",
+            "actionId": "action_12",
+            "actionName": "Ecosystem-Based Adaptation",
+            "actionPriority": -1,
+            "explanation": "In Bayview, Ecosystem-Based Adaptation was favored over Coastal Flood Defenses because it works with natural processes to mitigate flood risks while enhancing biodiversity. This action is deeply integrated with the city’s coastal character and provides broader environmental benefits. Its approach minimizes dependencies on heavy infrastructure and fits well with the long-term sustainability goals of the community."
+        },
+        {
+            "locode": "HPC",
+            "cityName": "Hillcrest",
+            "region": "UR",
+            "regionName": "Urban",
+            "actionId": "action_13",
+            "actionName": "Public Transit Electrification",
+            "actionPriority": 1,
+            "explanation": "For Hillcrest, Public Transit Electrification was selected over Road Infrastructure Upgrades because it directly addresses major sources of urban emissions while improving public mobility. The action is tailored to dense urban settings and supports a safer, more sustainable transportation network. Its overall benefits, including decreased urban congestion and enhanced air quality, align well with the city's climate action priorities."
+        },
+        {
+            "locode": "GRF",
+            "cityName": "Greenfield",
+            "region": "CE",
+            "regionName": "Central",
+            "actionId": "action_14",
+            "actionName": "Waste-to-Energy Conversion",
+            "actionPriority": 1,
+            "explanation": "In Greenfield, Waste-to-Energy Conversion was preferred over Plastic Reduction Programs as it offers a dual benefit of managing waste and lowering emissions simultaneously. The technology leverages existing waste streams to generate energy in an efficient manner. It fits within the city's capacity for innovation and provides a strategic, cost-effective approach to addressing climate challenges."
+        },
+        {
+            "locode": "DSV",
+            "cityName": "Desertview",
+            "region": "SW",
+            "regionName": "Southwest",
+            "actionId": "action_15",
+            "actionName": "Water Conservation Strategies",
+            "actionPriority": 1,
+            "explanation": "For Desertview, Water Conservation Strategies were chosen over Agricultural Emission Reforms because they directly respond to the city’s critical water scarcity issues while also reducing energy use. This action not only mitigates climate risk but also ensures environmental compatibility in an arid setting. Its ability to deliver quicker, tangible benefits makes it an essential focus for the city’s climate adaptation efforts."
+        },
+        {
+            "locode": "HBV",
+            "cityName": "Harborview",
+            "region": "ES",
+            "regionName": "East Seaboard",
+            "actionId": "action_16",
+            "actionName": "Maritime Emission Standards",
+            "actionPriority": 1,
+            "explanation": "In Harborview, Maritime Emission Standards were prioritized over Land Transport Emission Controls because they target the concentrated pollutant sources associated with port activities. The action is well aligned with the city’s economic reliance on maritime trade and effectively reduces greenhouse gases in that sector. Its strategic implementation and risk reduction capabilities make it a particularly strong climate action for the port community."
+        },
+        {
+            "locode": "BLD",
+            "cityName": "Boulder",
+            "region": "UR",
+            "regionName": "Urban",
+            "actionId": "action_17",
+            "actionName": "Commercial Building Retrofits",
+            "actionPriority": 1,
+            "explanation": "For Boulder, Commercial Building Retrofits were chosen over Energy Efficient Appliances because they offer broader benefits by enhancing energy performance in large-scale buildings. The action not only drives significant emission reductions but also complements the city’s modern urban landscape. Its relatively streamlined implementation and alignment with local economic priorities make it an effective climate measure."
+        },
+        {
+            "locode": "RVR",
+            "cityName": "Riverview",
+            "region": "CE",
+            "regionName": "Central",
+            "actionId": "action_18",
+            "actionName": "Riverbank Restoration",
+            "actionPriority": 1,
+            "explanation": "In Riverview, Riverbank Restoration was prioritized over Stormwater Management Upgrade because it leverages natural processes to enhance ecosystem resilience. This action provides multiple co-benefits, including improved water quality and enhanced habitat protection. Its adaptive nature and compatibility with the local landscape render it a strong measure for addressing climate risks."
+        },
+        {
+            "locode": "CPT",
+            "cityName": "Capitol",
+            "region": "NE",
+            "regionName": "Northeast",
+            "actionId": "action_19",
+            "actionName": "Smart Grid Deployment",
+            "actionPriority": -1,
+            "explanation": "For Capitol, Smart Grid Deployment was favored over Municipal LED Streetlights because it provides a more comprehensive upgrade to the city’s energy infrastructure. This approach enhances system efficiency and integrates advanced management practices that are well-suited to urban challenges. Its broad scope and the potential for quicker benefits in energy distribution support a more resilient and adaptive urban framework."
+        },
+        {
+            "locode": "EAS",
+            "cityName": "Eastside",
+            "region": "UR",
+            "regionName": "Urban",
+            "actionId": "action_20",
+            "actionName": "Urban Mobility Solutions",
+            "actionPriority": 1,
+            "explanation": "In Eastside, Urban Mobility Solutions were prioritized over Suburban Expansion Controls as they directly address the challenges of dense urban travel and congestion. This action improves the overall efficiency of transportation systems while reducing emissions associated with commuter traffic. Its alignment with the city’s demographic trends and capacity for rapid implementation makes it a strategic choice for fostering sustainable urban growth."
+        }
+    ]
+}

@@ -1,182 +1,204 @@
-[
-    {
-        "locode": "BR CMG",
-        "cityName": "Corumb\u00e1",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0133",
-        "actionName": "Promote Urban Reforestation and Green Corridors",
-        "actionPriority": 1
-    },
-    {
-        "locode": "BR CMG",
-        "cityName": "Corumb\u00e1",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0050",
-        "actionName": "Implement Agroforestry Systems",
-        "actionPriority": 2
-    },
-    {
-        "locode": "BR CMG",
-        "cityName": "Corumb\u00e1",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0134",
-        "actionName": "Strengthen Mechanisms for Deforestation Control",
-        "actionPriority": 3
-    },
-    {
-        "locode": "BR CMG",
-        "cityName": "Corumb\u00e1",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0084",
-        "actionName": "Create Incentives for Agroforestry Practices in Livestock Systems",
-        "actionPriority": 4
-    },
-    {
-        "locode": "BR CMG",
-        "cityName": "Corumb\u00e1",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0100",
-        "actionName": "Support Regenerative Agriculture Practices",
-        "actionPriority": 5
-    },
-    {
-        "locode": "BR CMG",
-        "cityName": "Corumb\u00e1",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0102",
-        "actionName": "Promote Sustainable Agricultural Practices",
-        "actionPriority": 6
-    },
-    {
-        "locode": "BR CMG",
-        "cityName": "Corumb\u00e1",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0096",
-        "actionName": "Promote Organic Farming",
-        "actionPriority": 7
-    },
-    {
-        "locode": "BR CMG",
-        "cityName": "Corumb\u00e1",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0129",
-        "actionName": "Facilitate Technology Transfer for Conservation Practices",
-        "actionPriority": 8
-    },
-    {
-        "locode": "BR CMG",
-        "cityName": "Corumb\u00e1",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0130",
-        "actionName": "Conduct Technical Assistance and Rural Extension (ATER) Actions",
-        "actionPriority": 9
-    },
-    {
-        "locode": "BR CMG",
-        "cityName": "Corumb\u00e1",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0101",
-        "actionName": "Encourage the Use of Low-Emission Agricultural Machinery",
-        "actionPriority": 10
-    },
-    {
-        "locode": "BR CMG",
-        "cityName": "Corumb\u00e1",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0131",
-        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
-        "actionPriority": 11
-    },
-    {
-        "locode": "BR CMG",
-        "cityName": "Corumb\u00e1",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0118",
-        "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
-        "actionPriority": 12
-    },
-    {
-        "locode": "BR CMG",
-        "cityName": "Corumb\u00e1",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0005",
-        "actionName": "Create credit lines for residential and community wind energy projects",
-        "actionPriority": 13
-    },
-    {
-        "locode": "BR CMG",
-        "cityName": "Corumb\u00e1",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0128",
-        "actionName": "Establish Municipal Programs for Payment for Environmental Services (PES)",
-        "actionPriority": 14
-    },
-    {
-        "locode": "BR CMG",
-        "cityName": "Corumb\u00e1",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0127",
-        "actionName": "Accelerate Environmental Regularization of Rural Properties",
-        "actionPriority": 15
-    },
-    {
-        "locode": "BR CMG",
-        "cityName": "Corumb\u00e1",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0052",
-        "actionName": "Reduce Deforestation and Degradation",
-        "actionPriority": 16
-    },
-    {
-        "locode": "BR CMG",
-        "cityName": "Corumb\u00e1",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "c40_0042",
-        "actionName": "Biodiversity Expansion",
-        "actionPriority": 17
-    },
-    {
-        "locode": "BR CMG",
-        "cityName": "Corumb\u00e1",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0061",
-        "actionName": "Soil Carbon Management in Croplands and Grasslands",
-        "actionPriority": 18
-    },
-    {
-        "locode": "BR CMG",
-        "cityName": "Corumb\u00e1",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0136",
-        "actionName": "Support the Implementation of Ecological Fiscal Incentives",
-        "actionPriority": 19
-    },
-    {
-        "locode": "BR CMG",
-        "cityName": "Corumb\u00e1",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0099",
-        "actionName": "Support Agroecological Certification Programs",
-        "actionPriority": 20
-    }
-]
+{
+    "actions": [
+        {
+            "locode": "LOC001",
+            "cityName": "ExampleCity",
+            "region": "R1",
+            "regionName": "Central Region",
+            "actionId": "ACT001",
+            "actionName": "New Building Standards",
+            "actionPriority": 20,
+            "explanation": "For ExampleCity, New Building Standards is highly prioritized as it directly targets the major emission sources associated with outdated infrastructure. It is particularly effective in reducing energy consumption and greenhouse gas emissions within a dense urban setting. This action also aligns well with the local environmental conditions and presents strong co-benefits, including enhanced public health and building safety."
+        },
+        {
+            "locode": "LOC002",
+            "cityName": "ExampleCity",
+            "region": "R1",
+            "regionName": "Central Region",
+            "actionId": "ACT002",
+            "actionName": "Bus Emissions",
+            "actionPriority": 18,
+            "explanation": "For ExampleCity, reducing bus emissions is a strategic approach to addressing the transportation sector's contribution to overall greenhouse gas emissions. The action is attuned to the city's mobility patterns and offers quick wins in terms of air quality improvement. Its capacity to lower climate risks while being cost-effective makes it a well-suited option for urban areas with significant transit demand."
+        },
+        {
+            "locode": "LOC003",
+            "cityName": "ExampleCity",
+            "region": "R1",
+            "regionName": "Central Region",
+            "actionId": "ACT003",
+            "actionName": "Solar Integration",
+            "actionPriority": 17,
+            "explanation": "For ExampleCity, Solar Integration is valued for its strong potential in reducing emissions by harnessing renewable energy. The action capitalizes on the city's favorable solar conditions and reduces dependency on fossil fuels. Moreover, its ability to integrate with the existing energy grid and offer long-term cost savings makes it a practical and forward-thinking initiative."
+        },
+        {
+            "locode": "LOC004",
+            "cityName": "ExampleCity",
+            "region": "R1",
+            "regionName": "Central Region",
+            "actionId": "ACT004",
+            "actionName": "Urban Tree Planting",
+            "actionPriority": 15,
+            "explanation": "For ExampleCity, Urban Tree Planting is prioritized as it not only contributes to direct carbon sequestration but also improves local air quality and urban aesthetics. The action is well-suited to the city’s environmental context, offering natural cooling and climate resilience. Its community-based benefits further enhance its appeal, even though it requires ongoing maintenance and engagement."
+        },
+        {
+            "locode": "LOC005",
+            "cityName": "ExampleCity",
+            "region": "R1",
+            "regionName": "Central Region",
+            "actionId": "ACT005",
+            "actionName": "Green Infrastructure",
+            "actionPriority": 16,
+            "explanation": "For ExampleCity, the adoption of Green Infrastructure is driven by its capacity to address both emissions and local climate vulnerabilities. The action enhances urban resilience by managing stormwater and reducing heat islands, while also supporting biodiversity. Its alignment with the city’s sustainable growth plan makes it an attractive option despite the need for initial planning and investment."
+        },
+        {
+            "locode": "LOC006",
+            "cityName": "ExampleCity",
+            "region": "R1",
+            "regionName": "Central Region",
+            "actionId": "ACT006",
+            "actionName": "Waste Management Improvement",
+            "actionPriority": 14,
+            "explanation": "For ExampleCity, improving waste management is recognized for its role in minimizing emissions from landfill sites and enhancing urban cleanliness. This action supports environmental sustainability by reducing methane generation and promoting recycling practices. It is both relevant to the city's environmental challenges and cost-effective in the long term, contributing to overall climate risk reduction."
+        },
+        {
+            "locode": "LOC007",
+            "cityName": "ExampleCity",
+            "region": "R1",
+            "regionName": "Central Region",
+            "actionId": "ACT007",
+            "actionName": "Energy-Efficient Street Lighting",
+            "actionPriority": 13,
+            "explanation": "For ExampleCity, Energy-Efficient Street Lighting is favored due to its dual benefits of lowering energy consumption and reducing carbon emissions. This action is particularly effective in urban areas where public infrastructure upgrades can yield significant operational savings. Its straightforward implementation and modest investment requirements enhance its suitability for the city’s current resource allocation."
+        },
+        {
+            "locode": "LOC008",
+            "cityName": "ExampleCity",
+            "region": "R1",
+            "regionName": "Central Region",
+            "actionId": "ACT008",
+            "actionName": "Water Conservation Initiatives",
+            "actionPriority": 12,
+            "explanation": "For ExampleCity, Water Conservation Initiatives are prioritized for their potential to safeguard essential natural resources in the face of climate variability. The action is intricately linked with the city’s water-sensitive urban planning, helping to minimize climate risks associated with droughts and flooding. In addition, it offers long-term resilience while supporting sustainable community practices without hefty expenditure."
+        },
+        {
+            "locode": "LOC009",
+            "cityName": "ExampleCity",
+            "region": "R1",
+            "regionName": "Central Region",
+            "actionId": "ACT009",
+            "actionName": "Electric Vehicle Incentives",
+            "actionPriority": 11,
+            "explanation": "For ExampleCity, Electric Vehicle Incentives are an effective approach toward reducing transportation sector emissions. They encourage cleaner mobility and support the transition from traditional fuel sources to greener alternatives. This action is aligned with the city's climate targets and offers supplementary benefits such as reduced urban noise and improved public health outcomes."
+        },
+        {
+            "locode": "LOC010",
+            "cityName": "ExampleCity",
+            "region": "R1",
+            "regionName": "Central Region",
+            "actionId": "ACT010",
+            "actionName": "Renewable Energy Transition",
+            "actionPriority": 19,
+            "explanation": "For ExampleCity, a Renewable Energy Transition is highly prioritized because it fundamentally shifts energy production toward low-emission sources. The action not only addresses the key sector of energy but also bolsters the city’s resilience against volatile fossil fuel markets. Its strategic benefits, including long-term cost savings and environmental compatibility, strongly support the overall climate mitigation framework."
+        },
+        {
+            "locode": "LOC011",
+            "cityName": "ExampleCity",
+            "region": "R1",
+            "regionName": "Central Region",
+            "actionId": "ACT011",
+            "actionName": "Public Transit Expansion",
+            "actionPriority": 18,
+            "explanation": "For ExampleCity, Public Transit Expansion is an essential action due to its ability to significantly reduce per capita emissions by shifting from private to collective transport. It addresses the city's transportation challenges effectively while also reducing urban congestion and air pollutants. The potential for quick implementation and accompanying social benefits makes this action a compelling priority."
+        },
+        {
+            "locode": "LOC012",
+            "cityName": "ExampleCity",
+            "region": "R1",
+            "regionName": "Central Region",
+            "actionId": "ACT012",
+            "actionName": "Industrial Emission Controls",
+            "actionPriority": 17,
+            "explanation": "For ExampleCity, Industrial Emission Controls are valued for their capacity to target heavy industries that contribute significantly to regional greenhouse gas emissions. The action is tailored to the sectors most in need of intervention in terms of environmental regulation. Its systematic approach to risk reduction and technological upgrades makes it relevant despite requiring coordinated action with industrial stakeholders."
+        },
+        {
+            "locode": "LOC013",
+            "cityName": "ExampleCity",
+            "region": "R1",
+            "regionName": "Central Region",
+            "actionId": "ACT013",
+            "actionName": "Urban Cooling Solutions",
+            "actionPriority": 13,
+            "explanation": "For ExampleCity, Urban Cooling Solutions offer a strategic intervention to mitigate the urban heat island effect. This action is well-aligned with the city’s climate adaptation efforts by reducing temperature extremes and associated energy demands. Its focus on local environmental compatibility and public health benefits supports its prioritization amid rising climate challenges."
+        },
+        {
+            "locode": "LOC014",
+            "cityName": "ExampleCity",
+            "region": "R1",
+            "regionName": "Central Region",
+            "actionId": "ACT014",
+            "actionName": "Flood Risk Mitigation",
+            "actionPriority": 12,
+            "explanation": "For ExampleCity, Flood Risk Mitigation is an important action given the increasing frequency of extreme weather events. The action aims to strengthen urban defenses and manage water flow effectively, reducing the potential for substantial climate-related damage. Its focus on risk reduction and protection of vulnerable populations makes it a prudent component of the city's overall adaptation strategy."
+        },
+        {
+            "locode": "LOC015",
+            "cityName": "ExampleCity",
+            "region": "R1",
+            "regionName": "Central Region",
+            "actionId": "ACT015",
+            "actionName": "Cycling Infrastructure Development",
+            "actionPriority": 11,
+            "explanation": "For ExampleCity, developing Cycling Infrastructure is a strategic effort to reduce the reliance on motorized transport and lower greenhouse gas emissions. The action aligns well with urban mobility trends while also offering public health benefits. It is a cost-effective intervention that promotes a cleaner and more sustainable urban environment in the long run."
+        },
+        {
+            "locode": "LOC016",
+            "cityName": "ExampleCity",
+            "region": "R1",
+            "regionName": "Central Region",
+            "actionId": "ACT016",
+            "actionName": "Smart Grid Deployment",
+            "actionPriority": 16,
+            "explanation": "For ExampleCity, Smart Grid Deployment is prioritized for its ability to modernize the energy distribution network while reducing losses and emissions. The action improves the overall efficiency of energy use and supports the integration of renewable energy sources. Its technological approach and alignment with future energy needs make it a vital component of the city’s sustainable strategy."
+        },
+        {
+            "locode": "LOC017",
+            "cityName": "ExampleCity",
+            "region": "R1",
+            "regionName": "Central Region",
+            "actionId": "ACT017",
+            "actionName": "Urban Agriculture Initiatives",
+            "actionPriority": 10,
+            "explanation": "For ExampleCity, Urban Agriculture Initiatives are valued for their role in local food production and community engagement. The action not only contributes to reduced transportation emissions but also enhances urban green spaces and resilience. Its capacity to integrate with local economic and social systems makes it a fitting component of a comprehensive urban sustainability plan."
+        },
+        {
+            "locode": "LOC018",
+            "cityName": "ExampleCity",
+            "region": "R1",
+            "regionName": "Central Region",
+            "actionId": "ACT018",
+            "actionName": "Green Roof Programs",
+            "actionPriority": 9,
+            "explanation": "For ExampleCity, Green Roof Programs are appealing because they improve building energy efficiency while adding aesthetic and environmental value to urban structures. This action helps in moderating building temperatures and reducing the heat island effect. Its relatively simple integration into existing buildings and added benefits in stormwater management support its role in the city’s climate adaptation strategies."
+        },
+        {
+            "locode": "LOC019",
+            "cityName": "ExampleCity",
+            "region": "R1",
+            "regionName": "Central Region",
+            "actionId": "ACT019",
+            "actionName": "Coastal Ecosystem Restoration",
+            "actionPriority": 8,
+            "explanation": "For ExampleCity, Coastal Ecosystem Restoration focuses on rehabilitating natural buffers that help protect against storm surges and sea-level rise. The action is particularly relevant for cities with coastal exposure and provides long-term benefits for both biodiversity and climate resilience. Its integration with broader environmental conservation efforts and risk reduction strategies enhances its importance as a sustainable adaptation measure."
+        },
+        {
+            "locode": "LOC020",
+            "cityName": "ExampleCity",
+            "region": "R1",
+            "regionName": "Central Region",
+            "actionId": "ACT020",
+            "actionName": "Community Awareness Programs",
+            "actionPriority": 7,
+            "explanation": "For ExampleCity, Community Awareness Programs are designed to foster local engagement and promote sustainable practices across various sectors. The action plays a critical role in building the social foundation necessary for the success of other climate strategies. Its focus on education, resilience building, and participatory planning makes it a valuable tool in complementing more technical mitigation and adaptation measures."
+        }
+    ]
+}

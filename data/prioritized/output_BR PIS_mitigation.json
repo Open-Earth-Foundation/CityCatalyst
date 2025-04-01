@@ -1,182 +1,204 @@
-[
-    {
-        "locode": "BR PIS",
-        "cityName": "Palmeira dos \u00cdndios",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "icare_0118",
-        "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
-        "actionPriority": 1
-    },
-    {
-        "locode": "BR PIS",
-        "cityName": "Palmeira dos \u00cdndios",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "icare_0121",
-        "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
-        "actionPriority": 2
-    },
-    {
-        "locode": "BR PIS",
-        "cityName": "Palmeira dos \u00cdndios",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "icare_0005",
-        "actionName": "Create credit lines for residential and community wind energy projects",
-        "actionPriority": 3
-    },
-    {
-        "locode": "BR PIS",
-        "cityName": "Palmeira dos \u00cdndios",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "icare_0090",
-        "actionName": "Adoption of electric drones for last-mile deliveries.",
-        "actionPriority": 4
-    },
-    {
-        "locode": "BR PIS",
-        "cityName": "Palmeira dos \u00cdndios",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "icare_0025",
-        "actionName": "Promote energy-efficient low-income housing",
-        "actionPriority": 5
-    },
-    {
-        "locode": "BR PIS",
-        "cityName": "Palmeira dos \u00cdndios",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "icare_0094",
-        "actionName": "Adoption of biomethane in public fleets.",
-        "actionPriority": 6
-    },
-    {
-        "locode": "BR PIS",
-        "cityName": "Palmeira dos \u00cdndios",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "icare_0092",
-        "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
-        "actionPriority": 7
-    },
-    {
-        "locode": "BR PIS",
-        "cityName": "Palmeira dos \u00cdndios",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "icare_0068",
-        "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
-        "actionPriority": 8
-    },
-    {
-        "locode": "BR PIS",
-        "cityName": "Palmeira dos \u00cdndios",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "icare_0057",
-        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
-        "actionPriority": 9
-    },
-    {
-        "locode": "BR PIS",
-        "cityName": "Palmeira dos \u00cdndios",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "icare_0133",
-        "actionName": "Promote Urban Reforestation and Green Corridors",
-        "actionPriority": 10
-    },
-    {
-        "locode": "BR PIS",
-        "cityName": "Palmeira dos \u00cdndios",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "icare_0088",
-        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
-        "actionPriority": 11
-    },
-    {
-        "locode": "BR PIS",
-        "cityName": "Palmeira dos \u00cdndios",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "icare_0044",
-        "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
-        "actionPriority": 12
-    },
-    {
-        "locode": "BR PIS",
-        "cityName": "Palmeira dos \u00cdndios",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "icare_0042",
-        "actionName": "Encourage renewable energy policies at the municipal level",
-        "actionPriority": 13
-    },
-    {
-        "locode": "BR PIS",
-        "cityName": "Palmeira dos \u00cdndios",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "c40_0033",
-        "actionName": "15/30-Minute Areas",
-        "actionPriority": 14
-    },
-    {
-        "locode": "BR PIS",
-        "cityName": "Palmeira dos \u00cdndios",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "icare_0131",
-        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
-        "actionPriority": 15
-    },
-    {
-        "locode": "BR PIS",
-        "cityName": "Palmeira dos \u00cdndios",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "icare_0102",
-        "actionName": "Promote Sustainable Agricultural Practices",
-        "actionPriority": 16
-    },
-    {
-        "locode": "BR PIS",
-        "cityName": "Palmeira dos \u00cdndios",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "icare_0091",
-        "actionName": "Implementation of prioritized routes for sustainable vehicles.",
-        "actionPriority": 17
-    },
-    {
-        "locode": "BR PIS",
-        "cityName": "Palmeira dos \u00cdndios",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "icare_0136",
-        "actionName": "Support the Implementation of Ecological Fiscal Incentives",
-        "actionPriority": 18
-    },
-    {
-        "locode": "BR PIS",
-        "cityName": "Palmeira dos \u00cdndios",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "icare_0117",
-        "actionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
-        "actionPriority": 19
-    },
-    {
-        "locode": "BR PIS",
-        "cityName": "Palmeira dos \u00cdndios",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "icare_0099",
-        "actionName": "Support Agroecological Certification Programs",
-        "actionPriority": 20
-    }
-]
+{
+    "actions": [
+        {
+            "locode": "ECO1",
+            "cityName": "EcoVille",
+            "region": "CA",
+            "regionName": "California",
+            "actionId": "A1",
+            "actionName": "New Building Standards",
+            "actionPriority": 1,
+            "explanation": "This action is prioritized for its strong potential to lower urban emissions by improving energy efficiency in new constructions. It supports EcoVille’s sustainable urban development goals by reducing long-term energy demands and associated climate risks. Moreover, it is designed to be cost-effective and aligns well with local construction practices and environmental settings."
+        },
+        {
+            "locode": "ECO2",
+            "cityName": "EcoVille",
+            "region": "CA",
+            "regionName": "California",
+            "actionId": "A2",
+            "actionName": "Bus Emissions Reductions",
+            "actionPriority": 2,
+            "explanation": "This action is recognized for its capacity to significantly reduce emissions from the urban transportation sector, an area of high relevance in EcoVille. It leverages existing public transit systems to improve air quality and lower greenhouse gas outputs. The measures proposed are practical with a timeline that supports quick benefits while being well-suited to the city’s current infrastructure."
+        },
+        {
+            "locode": "ECO3",
+            "cityName": "EcoVille",
+            "region": "CA",
+            "regionName": "California",
+            "actionId": "A3",
+            "actionName": "Renewable Energy Expansion",
+            "actionPriority": 3,
+            "explanation": "This action focuses on transitioning to renewable energy sources, which is crucial for reducing the city’s carbon footprint. It leverages the local environmental advantages and abundant solar exposure in EcoVille, making it a naturally congruent choice. Its implementation is seen as cost-effective in the long term, delivering benefits that extend beyond emissions reduction."
+        },
+        {
+            "locode": "ECO4",
+            "cityName": "EcoVille",
+            "region": "CA",
+            "regionName": "California",
+            "actionId": "A4",
+            "actionName": "Urban Tree Canopy Increase",
+            "actionPriority": 4,
+            "explanation": "This action involves expanding the urban tree canopy, which contributes to cooling urban environments and absorbing carbon dioxide. It is highly compatible with EcoVille’s green space initiatives and enhances local biodiversity. The approach provides multiple co-benefits, including improved air quality and community well-being, with practical implementation steps."
+        },
+        {
+            "locode": "ECO5",
+            "cityName": "EcoVille",
+            "region": "CA",
+            "regionName": "California",
+            "actionId": "A5",
+            "actionName": "Water Conservation Programs",
+            "actionPriority": 5,
+            "explanation": "This action addresses climate resilience by promoting water conservation, essential in a region prone to variability in water supply. It not only aids in reducing energy consumption associated with water treatment but also supports ecosystem stability. Its focus on community engagement and resource efficiency makes it well-matched to the local socio-demographic context."
+        },
+        {
+            "locode": "ECO6",
+            "cityName": "EcoVille",
+            "region": "CA",
+            "regionName": "California",
+            "actionId": "A6",
+            "actionName": "Coastal Flood Defenses",
+            "actionPriority": 6,
+            "explanation": "This action is designed to protect the city from rising sea levels and extreme weather events by strengthening coastal defenses. It directly addresses the climate risks that impact coastal communities and infrastructure in EcoVille. The planning and implementation are aligned with long-term environmental compatibility and risk reduction objectives."
+        },
+        {
+            "locode": "ECO7",
+            "cityName": "EcoVille",
+            "region": "CA",
+            "regionName": "California",
+            "actionId": "A7",
+            "actionName": "Public Transit Enhancements",
+            "actionPriority": 7,
+            "explanation": "Public Transit Enhancements aim to reduce reliance on private vehicles and lower overall urban emissions. This approach is particularly relevant in densely populated areas of EcoVille, where efficient transit systems can yield substantial benefits. It is appreciated for its potential to improve urban mobility while contributing to environmental and social objectives."
+        },
+        {
+            "locode": "ECO8",
+            "cityName": "EcoVille",
+            "region": "CA",
+            "regionName": "California",
+            "actionId": "A8",
+            "actionName": "Energy Efficient Street Lighting",
+            "actionPriority": 8,
+            "explanation": "This action improves urban energy use by replacing older street lighting with more efficient technologies. It supports EcoVille’s sustainability agenda by reducing electricity consumption and related emissions in public spaces. Its implementation is straightforward and offers quick environmental rewards along with reduced operational costs."
+        },
+        {
+            "locode": "ECO9",
+            "cityName": "EcoVille",
+            "region": "CA",
+            "regionName": "California",
+            "actionId": "A9",
+            "actionName": "Waste-to-Energy Initiatives",
+            "actionPriority": 9,
+            "explanation": "The waste-to-energy initiative is designed to manage urban waste sustainably while generating energy. It turns a potential environmental liability into a resource, aligning with EcoVille’s circular economy principles. This action is also valued for reducing landfill pressures and lowering the overall emission footprint."
+        },
+        {
+            "locode": "ECO10",
+            "cityName": "EcoVille",
+            "region": "CA",
+            "regionName": "California",
+            "actionId": "A10",
+            "actionName": "Smart Grid Implementation",
+            "actionPriority": 10,
+            "explanation": "Smart Grid Implementation is focused on enhancing energy distribution efficiency and integrating renewable energy sources within the city. It promotes a more resilient and adaptable energy system that is essential for effective climate adaptation. The initiative is well-suited to EcoVille’s technological capabilities and future-oriented infrastructure goals."
+        },
+        {
+            "locode": "ECO11",
+            "cityName": "EcoVille",
+            "region": "CA",
+            "regionName": "California",
+            "actionId": "A11",
+            "actionName": "Cycle Infrastructure Development",
+            "actionPriority": 11,
+            "explanation": "This action targets the development of bicycle lanes and related infrastructure to promote sustainable mobility. It is particularly fit for EcoVille’s urban layout and can alleviate traffic congestion while reducing transportation emissions. Additionally, it supports a healthier lifestyle and lower urban pollution through active commuting options."
+        },
+        {
+            "locode": "ECO12",
+            "cityName": "EcoVille",
+            "region": "CA",
+            "regionName": "California",
+            "actionId": "A12",
+            "actionName": "Green Roof Incentives",
+            "actionPriority": 12,
+            "explanation": "Green Roof Incentives encourage the adoption of vegetation on rooftops, which can help mitigate the urban heat island effect. This initiative is compatible with EcoVille’s climate adaptation strategies and offers the dual benefits of energy savings and enhanced urban aesthetics. It is a flexible action that can be integrated into existing policies to promote environmental resilience."
+        },
+        {
+            "locode": "ECO13",
+            "cityName": "EcoVille",
+            "region": "CA",
+            "regionName": "California",
+            "actionId": "A13",
+            "actionName": "Industrial Process Optimization",
+            "actionPriority": 13,
+            "explanation": "Industrial Process Optimization aims to reduce greenhouse gas emissions from manufacturing and industrial sectors. Its focus on improving efficiency meets the city's need to address emissions in heavy sectors while also ensuring economic benefits. This action is aligned with EcoVille’s efforts to balance industrial productivity with environmental responsibility."
+        },
+        {
+            "locode": "ECO14",
+            "cityName": "EcoVille",
+            "region": "CA",
+            "regionName": "California",
+            "actionId": "A14",
+            "actionName": "Urban Heat Island Mitigation",
+            "actionPriority": 14,
+            "explanation": "This action addresses the urban heat island effect, which is a growing concern in denser areas of EcoVille. It improves local climate conditions by incorporating reflective surfaces, increased vegetation, and smart urban design. The measure is seen as a proactive adaptation strategy, enhancing public comfort and reducing heat-related risks."
+        },
+        {
+            "locode": "ECO15",
+            "cityName": "EcoVille",
+            "region": "CA",
+            "regionName": "California",
+            "actionId": "A15",
+            "actionName": "Electric Vehicle Incentives",
+            "actionPriority": 15,
+            "explanation": "Electric Vehicle Incentives promote the adoption of cleaner transportation options within the city. This action contributes to reducing dependence on fossil fuels and lowers emissions from the transportation sector over time. It is designed to be both practical and appealing to residents, enhancing the city’s overall sustainability portfolio."
+        },
+        {
+            "locode": "ECO16",
+            "cityName": "EcoVille",
+            "region": "CA",
+            "regionName": "California",
+            "actionId": "A16",
+            "actionName": "Stormwater Management Upgrades",
+            "actionPriority": 16,
+            "explanation": "Stormwater Management Upgrades are essential for mitigating flood risks and protecting urban infrastructure in EcoVille. The action improves water quality and helps in managing extreme weather situations effectively. Its design integrates well with existing urban systems and underscores the city's commitment to climate resilience."
+        },
+        {
+            "locode": "ECO17",
+            "cityName": "EcoVille",
+            "region": "CA",
+            "regionName": "California",
+            "actionId": "A17",
+            "actionName": "Climate Resilient Agriculture",
+            "actionPriority": 17,
+            "explanation": "This action supports agricultural adaptation practices that enhance resilience in the face of climate change. It is tailored to maintain productivity while reducing environmental impacts, which is vital for surrounding rural areas linked to EcoVille. The approach integrates sustainable practices with local resource management strategies."
+        },
+        {
+            "locode": "ECO18",
+            "cityName": "EcoVille",
+            "region": "CA",
+            "regionName": "California",
+            "actionId": "A18",
+            "actionName": "Renewable Heating and Cooling",
+            "actionPriority": 18,
+            "explanation": "Renewable Heating and Cooling focuses on transitioning building climate systems to sustainable energy sources. It decreases reliance on conventional energy systems and offers long-term benefits in reducing operational emissions. The action is well-aligned with EcoVille’s policies and supports improved climate adaptation in building management."
+        },
+        {
+            "locode": "ECO19",
+            "cityName": "EcoVille",
+            "region": "CA",
+            "regionName": "California",
+            "actionId": "A19",
+            "actionName": "Emission Trading Schemes",
+            "actionPriority": 19,
+            "explanation": "Emission Trading Schemes are designed to incentivize reductions in greenhouse gas emissions through market-driven mechanisms. This action aids companies in adopting cleaner technologies while aligning economic activities with environmental objectives. Its structure supports a flexible pathway for gradual emissions reduction adapted to EcoVille’s economic context."
+        },
+        {
+            "locode": "ECO20",
+            "cityName": "EcoVille",
+            "region": "CA",
+            "regionName": "California",
+            "actionId": "A20",
+            "actionName": "Community Climate Awareness Programs",
+            "actionPriority": 20,
+            "explanation": "Community Climate Awareness Programs aim to enhance public understanding and engagement in climate action. It builds local capacity by educating residents on sustainable practices and raising awareness about environmental issues. This grassroots approach supports long-term behavioral changes and reinforces the city's overall resilience strategy."
+        }
+    ]
+}

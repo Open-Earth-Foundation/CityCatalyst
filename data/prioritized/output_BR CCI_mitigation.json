@@ -1,182 +1,204 @@
-[
-    {
-        "locode": "BR CCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0075",
-        "actionName": "Set carbon emissions reduction targets for industrial sectors",
-        "actionPriority": 1
-    },
-    {
-        "locode": "BR CCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0121",
-        "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
-        "actionPriority": 2
-    },
-    {
-        "locode": "BR CCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0118",
-        "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
-        "actionPriority": 3
-    },
-    {
-        "locode": "BR CCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0078",
-        "actionName": "Develop and implement industrial waste management programs",
-        "actionPriority": 4
-    },
-    {
-        "locode": "BR CCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0074",
-        "actionName": "Support research into carbon-neutral manufacturing technologies",
-        "actionPriority": 5
-    },
-    {
-        "locode": "BR CCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0005",
-        "actionName": "Create credit lines for residential and community wind energy projects",
-        "actionPriority": 6
-    },
-    {
-        "locode": "BR CCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0082",
-        "actionName": "Transition to renewable energy for industrial operations",
-        "actionPriority": 7
-    },
-    {
-        "locode": "BR CCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0088",
-        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
-        "actionPriority": 8
-    },
-    {
-        "locode": "BR CCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0081",
-        "actionName": "Enhance material recycling in manufacturing",
-        "actionPriority": 9
-    },
-    {
-        "locode": "BR CCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0073",
-        "actionName": "Support the transition to low-emission industrial refrigeration",
-        "actionPriority": 10
-    },
-    {
-        "locode": "BR CCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0076",
-        "actionName": "Encourage the use of low-emission fuels in industrial processes",
-        "actionPriority": 11
-    },
-    {
-        "locode": "BR CCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0068",
-        "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
-        "actionPriority": 12
-    },
-    {
-        "locode": "BR CCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0052",
-        "actionName": "Develop projects for renewable energy and waste reuse",
-        "actionPriority": 13
-    },
-    {
-        "locode": "BR CCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0094",
-        "actionName": "Adoption of biomethane in public fleets.",
-        "actionPriority": 14
-    },
-    {
-        "locode": "BR CCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0079",
-        "actionName": "Implement energy audits in industrial plants",
-        "actionPriority": 15
-    },
-    {
-        "locode": "BR CCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "c40_0035",
-        "actionName": "Waste Efficiency",
-        "actionPriority": 16
-    },
-    {
-        "locode": "BR CCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "c40_0036",
-        "actionName": "Landfill Management",
-        "actionPriority": 17
-    },
-    {
-        "locode": "BR CCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0044",
-        "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
-        "actionPriority": 18
-    },
-    {
-        "locode": "BR CCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0057",
-        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
-        "actionPriority": 19
-    },
-    {
-        "locode": "BR CCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0139",
-        "actionName": "Implementation of urban toll.",
-        "actionPriority": 20
-    }
-]
+{
+    "actions": [
+        {
+            "locode": "ECV01",
+            "cityName": "EcoVille",
+            "region": "RG01",
+            "regionName": "Green Region",
+            "actionId": "ACT01",
+            "actionName": "New Building Standards",
+            "actionPriority": 1,
+            "explanation": "For EcoVille, New Building Standards are prioritized because they directly address the city's main source of energy inefficiency and emissions through improved construction practices. This action is well-aligned with the local climate, ensuring buildings are resilient and energy-efficient. Its clear benefits in reducing greenhouse gas emissions while enhancing living quality make it a strategically effective choice."
+        },
+        {
+            "locode": "ECV01",
+            "cityName": "EcoVille",
+            "region": "RG01",
+            "regionName": "Green Region",
+            "actionId": "ACT02",
+            "actionName": "Bus Emissions Reduction",
+            "actionPriority": 2,
+            "explanation": "For EcoVille, the initiative focusing on reducing bus emissions is highly valued because it directly tackles a major urban emission source. It fits well with the city's dense transportation network and enhances public health by reducing air pollutants. The action is also considered cost-effective and timely, reducing risks associated with vehicular pollution."
+        },
+        {
+            "locode": "ECV01",
+            "cityName": "EcoVille",
+            "region": "RG01",
+            "regionName": "Green Region",
+            "actionId": "ACT03",
+            "actionName": "Renewable Energy Incentives",
+            "actionPriority": 3,
+            "explanation": "EcoVille benefits significantly from Renewable Energy Incentives since they promote a shift away from fossil-fuel dependence. This action targets the energy sector, offering a sustainable alternative that aligns with the city’s long-term climate goals. The incentives also provide broader economic and environmental benefits, making the shift both practical and forward-thinking."
+        },
+        {
+            "locode": "ECV01",
+            "cityName": "EcoVille",
+            "region": "RG01",
+            "regionName": "Green Region",
+            "actionId": "ACT04",
+            "actionName": "Urban Tree Planting",
+            "actionPriority": 4,
+            "explanation": "Urban Tree Planting has been recognized in EcoVille for its multiple co-benefits, including air quality improvement and enhanced urban cooling. This nature-based solution not only mitigates greenhouse gas levels but also contributes to community well-being and biodiversity. Its alignment with local environmental conditions and relatively straightforward implementation add to its appeal."
+        },
+        {
+            "locode": "ECV01",
+            "cityName": "EcoVille",
+            "region": "RG01",
+            "regionName": "Green Region",
+            "actionId": "ACT05",
+            "actionName": "Electric Vehicle Incentives",
+            "actionPriority": 5,
+            "explanation": "In EcoVille, Electric Vehicle Incentives are valued for promoting cleaner transportation options that reduce dependency on conventional fuels. This action supports the city’s commitment to lower emissions while also generating social benefits through improved urban mobility. Its focus on a key sector of urban transit makes it particularly relevant to the city's needs."
+        },
+        {
+            "locode": "ECV01",
+            "cityName": "EcoVille",
+            "region": "RG01",
+            "regionName": "Green Region",
+            "actionId": "ACT06",
+            "actionName": "Waste Management Improvements",
+            "actionPriority": 6,
+            "explanation": "Waste Management Improvements are highlighted for EcoVille as they address both environmental and public health challenges. By mitigating the release of harmful emissions from waste processing, the action is key in reducing the overall carbon footprint. Its practical implementation and benefits in managing urban waste streams also contribute to its favorable prioritization."
+        },
+        {
+            "locode": "ECV01",
+            "cityName": "EcoVille",
+            "region": "RG01",
+            "regionName": "Green Region",
+            "actionId": "ACT07",
+            "actionName": "Flood Defense Infrastructure",
+            "actionPriority": 7,
+            "explanation": "EcoVille’s focus on Flood Defense Infrastructure stems from the need to protect vulnerable urban areas against increasing climate risks. This action is important because it addresses immediate hazards while also contributing to the city’s long-term resilience strategies. Its integration with existing urban planning systems and emphasis on risk reduction make it an effective choice."
+        },
+        {
+            "locode": "ECV01",
+            "cityName": "EcoVille",
+            "region": "RG01",
+            "regionName": "Green Region",
+            "actionId": "ACT08",
+            "actionName": "Water Conservation Programs",
+            "actionPriority": 8,
+            "explanation": "Given EcoVille's environmental conditions, Water Conservation Programs are crucial to ensure sustainable use of local water resources. The action is environmentally compatible and supports adaptation by reducing strain on the city’s water supply. Its strategic focus on a critical resource underlines its potential for lasting impact."
+        },
+        {
+            "locode": "ECV01",
+            "cityName": "EcoVille",
+            "region": "RG01",
+            "regionName": "Green Region",
+            "actionId": "ACT09",
+            "actionName": "Energy Efficient Street Lighting",
+            "actionPriority": 9,
+            "explanation": "Energy Efficient Street Lighting is an attractive option for EcoVille because it offers a practical and cost-effective means to reduce energy consumption. This action targets everyday urban infrastructure, yielding both environmental and operational benefits. Its relatively short implementation timeline and low dependency requirements further enhance its appeal."
+        },
+        {
+            "locode": "ECV01",
+            "cityName": "EcoVille",
+            "region": "RG01",
+            "regionName": "Green Region",
+            "actionId": "ACT10",
+            "actionName": "Industrial Emissions Regulations",
+            "actionPriority": 10,
+            "explanation": "Industrial Emissions Regulations have been given priority due to their potential to significantly reduce greenhouse gas outputs from one of the highest emission sectors in EcoVille. The action is tailored to the specific needs of the city's industrial landscape and enhances overall environmental compatibility. It also offers benefits by reducing health risks and improving local air quality."
+        },
+        {
+            "locode": "ECV01",
+            "cityName": "EcoVille",
+            "region": "RG01",
+            "regionName": "Green Region",
+            "actionId": "ACT11",
+            "actionName": "Green Roof Installation",
+            "actionPriority": 11,
+            "explanation": "Green Roof Installation is recognized for its potential to improve building insulation and urban biodiversity in EcoVille. This action not only contributes to energy savings but also aids in mitigating urban heat island effects, aligning well with local environmental conditions. Its benefits in both energy efficiency and risk reduction support its moderate ranking."
+        },
+        {
+            "locode": "ECV01",
+            "cityName": "EcoVille",
+            "region": "RG01",
+            "regionName": "Green Region",
+            "actionId": "ACT12",
+            "actionName": "Public Transit Expansion",
+            "actionPriority": 12,
+            "explanation": "The expansion of public transit in EcoVille is deemed beneficial as it promotes a reduction in private vehicle use and overall emissions. This action directly addresses the city's transportation-related challenges through increased accessibility and efficiency. Its alignment with urban mobility objectives and potential to ease congestion support its prioritization."
+        },
+        {
+            "locode": "ECV01",
+            "cityName": "EcoVille",
+            "region": "RG01",
+            "regionName": "Green Region",
+            "actionId": "ACT13",
+            "actionName": "Solar Panel Subsidies",
+            "actionPriority": 13,
+            "explanation": "Solar Panel Subsidies are favored in EcoVille due to their direct contribution to enhancing renewable energy adoption. The initiative not only reduces reliance on fossil fuels but also leverages the city's favorable solar potential. Its broad appeal and ability to incentivize community participation add value to its overall ranking."
+        },
+        {
+            "locode": "ECV01",
+            "cityName": "EcoVille",
+            "region": "RG01",
+            "regionName": "Green Region",
+            "actionId": "ACT14",
+            "actionName": "Community Energy Efficiency Workshops",
+            "actionPriority": 14,
+            "explanation": "Community Energy Efficiency Workshops are appreciated in EcoVille for their role in raising public awareness and promoting sustainable practices at the grassroots level. This action helps build local capacity and encourages collective efforts in reducing energy waste. Although its direct emissions reduction impact may be less immediate, its long-term benefits in behavioral change are notable."
+        },
+        {
+            "locode": "ECV01",
+            "cityName": "EcoVille",
+            "region": "RG01",
+            "regionName": "Green Region",
+            "actionId": "ACT15",
+            "actionName": "Sustainable Urban Drainage Systems",
+            "actionPriority": 15,
+            "explanation": "Sustainable Urban Drainage Systems offer EcoVille a proactive approach to managing flood risks while enhancing urban green infrastructure. The action is tailored to improve water management and complements the city’s broader adaptation strategies. Its integration with current urban systems and multiple co-benefits make it a sound, though moderately prioritized, choice."
+        },
+        {
+            "locode": "ECV01",
+            "cityName": "EcoVille",
+            "region": "RG01",
+            "regionName": "Green Region",
+            "actionId": "ACT16",
+            "actionName": "Bicycle Infrastructure Development",
+            "actionPriority": 16,
+            "explanation": "Bicycle Infrastructure Development in EcoVille is valued for offering an accessible, low-emission transportation alternative. The action effectively addresses urban mobility challenges and promotes healthier lifestyles among residents. Its relatively simple implementation and positive environmental impact contribute to a reasonable ranking within the portfolio of climate actions."
+        },
+        {
+            "locode": "ECV01",
+            "cityName": "EcoVille",
+            "region": "RG01",
+            "regionName": "Green Region",
+            "actionId": "ACT17",
+            "actionName": "Air Quality Monitoring Enhancement",
+            "actionPriority": 17,
+            "explanation": "Enhancing Air Quality Monitoring in EcoVille is instrumental for understanding and managing emissions across the city. This action supports more informed decision-making regarding other climate-related initiatives and public health measures. Its role in risk reduction and environmental management underscores its importance, despite being more of a supportive measure."
+        },
+        {
+            "locode": "ECV01",
+            "cityName": "EcoVille",
+            "region": "RG01",
+            "regionName": "Green Region",
+            "actionId": "ACT18",
+            "actionName": "Heatwave Preparedness",
+            "actionPriority": 18,
+            "explanation": "Heatwave Preparedness is critical for EcoVille, especially given the increasing frequency of extreme heat events. This action focuses on risk reduction and safeguarding vulnerable populations while enhancing overall urban resilience. Although it does not directly lower emissions, its alignment with the socio-demographic needs and risk management makes it an essential component of the climate strategy."
+        },
+        {
+            "locode": "ECV01",
+            "cityName": "EcoVille",
+            "region": "RG01",
+            "regionName": "Green Region",
+            "actionId": "ACT19",
+            "actionName": "Climate Resilient Agriculture",
+            "actionPriority": 19,
+            "explanation": "Climate Resilient Agriculture is considered for EcoVille due to its potential role in adapting local food systems to climate variability. The action emphasizes both environmental compatibility and economic sustainability for rural areas connected to the city. Its implementation supports broader resilience, even though its direct impact on urban emissions may be limited."
+        },
+        {
+            "locode": "ECV01",
+            "cityName": "EcoVille",
+            "region": "RG01",
+            "regionName": "Green Region",
+            "actionId": "ACT20",
+            "actionName": "Coastal Erosion Mitigation",
+            "actionPriority": 20,
+            "explanation": "Coastal Erosion Mitigation is prioritized in EcoVille for regions where coastline sustainability is a growing concern. This action is aligned with the city’s need to protect its coastal assets and maintain environmental integrity. While its direct impact on emissions is secondary, it plays a pivotal role in reducing long-term climate risks and preserving urban infrastructure."
+        }
+    ]
+}

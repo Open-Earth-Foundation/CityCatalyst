@@ -1,182 +1,204 @@
-[
-    {
-        "locode": "BR CXL",
-        "cityName": "Caxias do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0053",
-        "actionName": "Implement a project to support cooperatives of recyclabe material collectors",
-        "actionPriority": 1
-    },
-    {
-        "locode": "BR CXL",
-        "cityName": "Caxias do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0122",
-        "actionName": "Establish eco-parks.",
-        "actionPriority": 2
-    },
-    {
-        "locode": "BR CXL",
-        "cityName": "Caxias do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0052",
-        "actionName": "Develop projects for renewable energy and waste reuse",
-        "actionPriority": 3
-    },
-    {
-        "locode": "BR CXL",
-        "cityName": "Caxias do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0121",
-        "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
-        "actionPriority": 4
-    },
-    {
-        "locode": "BR CXL",
-        "cityName": "Caxias do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0057",
-        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
-        "actionPriority": 5
-    },
-    {
-        "locode": "BR CXL",
-        "cityName": "Caxias do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0080",
-        "actionName": "Avoiding, Minimising, and Recycling Waste",
-        "actionPriority": 6
-    },
-    {
-        "locode": "BR CXL",
-        "cityName": "Caxias do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0118",
-        "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
-        "actionPriority": 7
-    },
-    {
-        "locode": "BR CXL",
-        "cityName": "Caxias do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0094",
-        "actionName": "Adoption of biomethane in public fleets.",
-        "actionPriority": 8
-    },
-    {
-        "locode": "BR CXL",
-        "cityName": "Caxias do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "c40_0035",
-        "actionName": "Waste Efficiency",
-        "actionPriority": 9
-    },
-    {
-        "locode": "BR CXL",
-        "cityName": "Caxias do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0092",
-        "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
-        "actionPriority": 10
-    },
-    {
-        "locode": "BR CXL",
-        "cityName": "Caxias do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0044",
-        "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
-        "actionPriority": 11
-    },
-    {
-        "locode": "BR CXL",
-        "cityName": "Caxias do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0088",
-        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
-        "actionPriority": 12
-    },
-    {
-        "locode": "BR CXL",
-        "cityName": "Caxias do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "c40_0036",
-        "actionName": "Landfill Management",
-        "actionPriority": 13
-    },
-    {
-        "locode": "BR CXL",
-        "cityName": "Caxias do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0119",
-        "actionName": "Maximize composting processes.",
-        "actionPriority": 14
-    },
-    {
-        "locode": "BR CXL",
-        "cityName": "Caxias do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0005",
-        "actionName": "Create credit lines for residential and community wind energy projects",
-        "actionPriority": 15
-    },
-    {
-        "locode": "BR CXL",
-        "cityName": "Caxias do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0068",
-        "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
-        "actionPriority": 16
-    },
-    {
-        "locode": "BR CXL",
-        "cityName": "Caxias do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0017",
-        "actionName": "Optimize the urban solid waste (USW) management system, aiming to expand collection and reduce illegal disposal.",
-        "actionPriority": 17
-    },
-    {
-        "locode": "BR CXL",
-        "cityName": "Caxias do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0110",
-        "actionName": "Regulate the Construction Waste Management Plan",
-        "actionPriority": 18
-    },
-    {
-        "locode": "BR CXL",
-        "cityName": "Caxias do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0139",
-        "actionName": "Implementation of urban toll.",
-        "actionPriority": 19
-    },
-    {
-        "locode": "BR CXL",
-        "cityName": "Caxias do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0117",
-        "actionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
-        "actionPriority": 20
-    }
-]
+{
+    "actions": [
+        {
+            "locode": "GC001",
+            "cityName": "GreenCity",
+            "region": "R1",
+            "regionName": "Alpha Region",
+            "actionId": "ACT1",
+            "actionName": "Bus Emissions",
+            "actionPriority": 1,
+            "explanation": "For the city GreenCity, the Bus Emissions action was prioritized given the significant contribution of urban transportation to the city’s overall emissions. It directly targets a key source of greenhouse gases and offers rapid improvements in air quality. Additionally, its focus on immediate public health and urban mobility needs makes it a strong contender in reducing climate risk effectively."
+        },
+        {
+            "locode": "GC001",
+            "cityName": "GreenCity",
+            "region": "R1",
+            "regionName": "Alpha Region",
+            "actionId": "ACT2",
+            "actionName": "Renewable Energy Integration",
+            "actionPriority": 2,
+            "explanation": "For GreenCity, integrating renewable energy sources is highly regarded because it reduces reliance on fossil fuels and aligns well with the city’s natural endowments. This action leverages local resources in a way that is both environmentally and economically sustainable. Its design offers long-term benefits in emissions reduction while enhancing the city’s energy security."
+        },
+        {
+            "locode": "GC001",
+            "cityName": "GreenCity",
+            "region": "R1",
+            "regionName": "Alpha Region",
+            "actionId": "ACT3",
+            "actionName": "Urban Greening Initiatives",
+            "actionPriority": 3,
+            "explanation": "Urban Greening Initiatives are valued in GreenCity for their ability to reduce urban heat, improve air quality, and enhance the overall livability of neighborhoods. They contribute to a more resilient urban ecosystem and mitigate local climate impacts. The approach also promotes community engagement and supports biodiversity, which is essential for long-term sustainability."
+        },
+        {
+            "locode": "GC001",
+            "cityName": "GreenCity",
+            "region": "R1",
+            "regionName": "Alpha Region",
+            "actionId": "ACT4",
+            "actionName": "Waste-to-Energy Conversion",
+            "actionPriority": 4,
+            "explanation": "For the city, Waste-to-Energy Conversion is a strategic measure that simultaneously addresses waste management and energy production. This dual benefit reduces the environmental footprint while contributing to the sustainable energy mix. It is a cost-effective solution that helps lower greenhouse gas emissions and supports circular economy principles."
+        },
+        {
+            "locode": "GC001",
+            "cityName": "GreenCity",
+            "region": "R1",
+            "regionName": "Alpha Region",
+            "actionId": "ACT5",
+            "actionName": "Energy Efficiency in Industries",
+            "actionPriority": 5,
+            "explanation": "Enhancing energy efficiency in industries is a key action for GreenCity as it targets a significant source of emissions within the urban economic landscape. This measure improves productivity while curtailing unnecessary energy consumption. It is well suited to the city's industrial profile and helps in achieving both environmental and economic objectives."
+        },
+        {
+            "locode": "GC001",
+            "cityName": "GreenCity",
+            "region": "R1",
+            "regionName": "Alpha Region",
+            "actionId": "ACT6",
+            "actionName": "Solar Rooftop Programs",
+            "actionPriority": 6,
+            "explanation": "Solar Rooftop Programs in GreenCity were prioritized due to their ability to harness renewable energy within urban settings without requiring new land. The initiative makes efficient use of existing rooftop spaces and contributes to distributed energy generation. This action is both environmentally compatible and cost-effective, supporting faster integration of clean energy solutions."
+        },
+        {
+            "locode": "GC001",
+            "cityName": "GreenCity",
+            "region": "R1",
+            "regionName": "Alpha Region",
+            "actionId": "ACT7",
+            "actionName": "Electric Vehicle Incentives",
+            "actionPriority": 7,
+            "explanation": "Providing incentives for electric vehicles is an attractive action for GreenCity as it supports the transition from fossil-fuel based transportation to cleaner alternatives. It addresses urban air quality issues and reduces the city’s overall carbon footprint. The measure is tailored to the local infrastructure and consumer trends, making it an effective strategy for sustainable urban mobility."
+        },
+        {
+            "locode": "GC001",
+            "cityName": "GreenCity",
+            "region": "R1",
+            "regionName": "Alpha Region",
+            "actionId": "ACT8",
+            "actionName": "District Heating and Cooling",
+            "actionPriority": 8,
+            "explanation": "District Heating and Cooling systems are valued in GreenCity for their capacity to optimize energy distribution across large urban areas. Such systems offer consistent performance and enhance energy efficiency by reducing distribution losses. They also integrate well with renewable energy sources, contributing to a more resilient and sustainable energy framework."
+        },
+        {
+            "locode": "GC001",
+            "cityName": "GreenCity",
+            "region": "R1",
+            "regionName": "Alpha Region",
+            "actionId": "ACT9",
+            "actionName": "Water Conservation Measures",
+            "actionPriority": 9,
+            "explanation": "For GreenCity, water conservation measures have been prioritized because managing water resources is fundamental to climate resilience. The action reduces the risk of water scarcity and supports sustainable use of local supplies. It is particularly pertinent in the context of urban growth and environmental stress, offering practical benefits for long-term adaptation."
+        },
+        {
+            "locode": "GC001",
+            "cityName": "GreenCity",
+            "region": "R1",
+            "regionName": "Alpha Region",
+            "actionId": "ACT10",
+            "actionName": "Sustainable Urban Drainage",
+            "actionPriority": 10,
+            "explanation": "Sustainable Urban Drainage has been emphasized in GreenCity to manage stormwater effectively and mitigate flood risks. This approach improves urban resilience by ensuring that drainage systems are designed with climate variability in mind. It provides a balanced solution that addresses both immediate hazard reduction and long-term environmental health."
+        },
+        {
+            "locode": "GC001",
+            "cityName": "GreenCity",
+            "region": "R1",
+            "regionName": "Alpha Region",
+            "actionId": "ACT11",
+            "actionName": "Public Awareness Campaigns",
+            "actionPriority": 11,
+            "explanation": "Public Awareness Campaigns are central to GreenCity's strategy as they mobilize community support for climate initiatives. This action builds understanding and drives behavioral change, which is essential for the success of more technical measures. It serves as an enabler for broader participation in sustainability efforts, reinforcing the city's long-term climate goals."
+        },
+        {
+            "locode": "GC001",
+            "cityName": "GreenCity",
+            "region": "R1",
+            "regionName": "Alpha Region",
+            "actionId": "ACT12",
+            "actionName": "New Building Standards",
+            "actionPriority": 12,
+            "explanation": "In GreenCity, new building standards are recognized for their role in reducing energy consumption in the construction sector over the long term. However, they require comprehensive adjustments in planning and can involve more complex implementation processes. While important, this measure is considered to have a longer timeline for reaping benefits compared to more immediate actions targeting urban emissions."
+        },
+        {
+            "locode": "GC001",
+            "cityName": "GreenCity",
+            "region": "R1",
+            "regionName": "Alpha Region",
+            "actionId": "ACT13",
+            "actionName": "Biodiversity Conservation",
+            "actionPriority": 13,
+            "explanation": "Biodiversity Conservation in GreenCity is a critical action that promotes ecological balance and enhances the overall quality of urban life. This initiative supports green spaces and helps maintain natural habitats amidst urban development. It indirectly contributes to climate resilience by fostering a healthier environment, which is essential for long-term sustainability."
+        },
+        {
+            "locode": "GC001",
+            "cityName": "GreenCity",
+            "region": "R1",
+            "regionName": "Alpha Region",
+            "actionId": "ACT14",
+            "actionName": "Smart Grid Implementation",
+            "actionPriority": 14,
+            "explanation": "Smart Grid Implementation is viewed as a forward-looking measure for GreenCity, offering enhanced management of energy resources. This action improves the integration of renewable energy sources and optimizes overall energy distribution. Its modernized infrastructure reduces wastage and supports the city's ambitions for a more efficient and resilient energy system."
+        },
+        {
+            "locode": "GC001",
+            "cityName": "GreenCity",
+            "region": "R1",
+            "regionName": "Alpha Region",
+            "actionId": "ACT15",
+            "actionName": "Resilience Planning for Flooding",
+            "actionPriority": 15,
+            "explanation": "Resilience Planning for Flooding is crucial for GreenCity as it directly addresses the risks associated with extreme weather events. This action enhances the city’s preparedness by safeguarding vital infrastructures and communities. It represents a proactive strategy that balances future uncertainties with immediate protective measures."
+        },
+        {
+            "locode": "GC001",
+            "cityName": "GreenCity",
+            "region": "R1",
+            "regionName": "Alpha Region",
+            "actionId": "ACT16",
+            "actionName": "Climate Adaptation Research",
+            "actionPriority": 16,
+            "explanation": "Investing in Climate Adaptation Research is an integral action for GreenCity because it informs policymaking with scientifically grounded insights. This initiative aids in understanding local climate vulnerabilities and informs adaptive measures. Its long-term perspective is essential for developing evidence-based strategies that enhance the city’s overall resilience."
+        },
+        {
+            "locode": "GC001",
+            "cityName": "GreenCity",
+            "region": "R1",
+            "regionName": "Alpha Region",
+            "actionId": "ACT17",
+            "actionName": "Coastal Flood Defenses",
+            "actionPriority": 17,
+            "explanation": "For GreenCity, Coastal Flood Defenses are a targeted response to safeguard urban areas against rising sea levels and storm surges. This action is particularly aligned with the environmental challenges faced by coastal regions, offering a shield against potential flood hazards. It emphasizes strategic risk reduction even though it may require significant planning and coordination."
+        },
+        {
+            "locode": "GC001",
+            "cityName": "GreenCity",
+            "region": "R1",
+            "regionName": "Alpha Region",
+            "actionId": "ACT18",
+            "actionName": "Urban Heat Island Mitigation",
+            "actionPriority": 18,
+            "explanation": "Urban Heat Island Mitigation in GreenCity aims to alleviate excessive heat in densely built environments. This action is critical in improving local microclimates and reducing the need for excessive energy use in cooling. It promotes the incorporation of green spaces and reflective surfaces that enhance both public health and environmental sustainability."
+        },
+        {
+            "locode": "GC001",
+            "cityName": "GreenCity",
+            "region": "R1",
+            "regionName": "Alpha Region",
+            "actionId": "ACT19",
+            "actionName": "Retrofitting Public Infrastructure",
+            "actionPriority": 19,
+            "explanation": "Retrofitting Public Infrastructure in GreenCity is a practical approach to upgrade existing assets for improved energy efficiency and climate resilience. The action addresses aging infrastructure challenges while boosting overall performance and reducing long-term risks. It strikes a balance between necessary upgrades and sustainable development, ensuring public assets are better prepared for future climate impacts."
+        },
+        {
+            "locode": "GC001",
+            "cityName": "GreenCity",
+            "region": "R1",
+            "regionName": "Alpha Region",
+            "actionId": "ACT20",
+            "actionName": "Sustainable Transportation Modal Shift",
+            "actionPriority": 20,
+            "explanation": "A Sustainable Transportation Modal Shift is acknowledged in GreenCity as an important long-term measure to create a cleaner urban mobility framework. It encourages a gradual change in travel behavior by promoting alternatives to high-emission transport options. Although it requires systemic transformation and broader public buy-in, the action supports sustained improvements in urban air quality and overall sustainability."
+        }
+    ]
+}

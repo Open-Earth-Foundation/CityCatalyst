@@ -1,202 +1,204 @@
-[
-    {
-        "locode": "BR MOC",
-        "cityName": "Montes Claros",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "icare_0176",
-        "actionName": "Development of Climate Action Plan",
-        "actionPriority": 1,
-        "explanation": "Ranked #1 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR MOC",
-        "cityName": "Montes Claros",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "icare_0181",
-        "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
-        "actionPriority": 2,
-        "explanation": "Ranked #2 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR MOC",
-        "cityName": "Montes Claros",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "icare_0140",
-        "actionName": "Landslide Risk Assessment and Management",
-        "actionPriority": 3,
-        "explanation": "Ranked #3 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR MOC",
-        "cityName": "Montes Claros",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "icare_0164",
-        "actionName": "Hydrological Monitoring System with Telemetry Stations",
-        "actionPriority": 4,
-        "explanation": "Ranked #4 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR MOC",
-        "cityName": "Montes Claros",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "icare_0151",
-        "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
-        "actionPriority": 5,
-        "explanation": "Ranked #5 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR MOC",
-        "cityName": "Montes Claros",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "icare_0169",
-        "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
-        "actionPriority": 6,
-        "explanation": "Ranked #6 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR MOC",
-        "cityName": "Montes Claros",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "icare_0162",
-        "actionName": "Strengthen programs for control and conservation of protected areas",
-        "actionPriority": 7,
-        "explanation": "Ranked #7 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR MOC",
-        "cityName": "Montes Claros",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "ipcc_0097",
-        "actionName": "Food storage/distribution improvements",
-        "actionPriority": 8,
-        "explanation": "Ranked #8 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR MOC",
-        "cityName": "Montes Claros",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "icare_0154",
-        "actionName": "Cleaning and Unclogging of Channels with Installation of Eco-barriers",
-        "actionPriority": 9,
-        "explanation": "Ranked #9 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR MOC",
-        "cityName": "Montes Claros",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "icare_0156",
-        "actionName": "Implementation of urban gardens",
-        "actionPriority": 10,
-        "explanation": "Ranked #10 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR MOC",
-        "cityName": "Montes Claros",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "ipcc_0088",
-        "actionName": "Building codes",
-        "actionPriority": 11,
-        "explanation": "Ranked #11 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR MOC",
-        "cityName": "Montes Claros",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "icare_0175",
-        "actionName": "Recovery and preservation of green areas",
-        "actionPriority": 12,
-        "explanation": "Ranked #12 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR MOC",
-        "cityName": "Montes Claros",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "icare_0149",
-        "actionName": "Encourage sustainable land use practices",
-        "actionPriority": 13,
-        "explanation": "Ranked #13 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR MOC",
-        "cityName": "Montes Claros",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "ipcc_0094",
-        "actionName": "Access to health care",
-        "actionPriority": 14,
-        "explanation": "Ranked #14 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR MOC",
-        "cityName": "Montes Claros",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "ipcc_0092",
-        "actionName": "Social safety nets",
-        "actionPriority": 15,
-        "explanation": "Ranked #15 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR MOC",
-        "cityName": "Montes Claros",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "ipcc_0095",
-        "actionName": "Disaster early warning",
-        "actionPriority": 16,
-        "explanation": "Ranked #16 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR MOC",
-        "cityName": "Montes Claros",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "ipcc_0086",
-        "actionName": "Ecosystem-based adaptation",
-        "actionPriority": 17,
-        "explanation": "Ranked #17 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR MOC",
-        "cityName": "Montes Claros",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "icare_0148",
-        "actionName": "Create the Municipal Climate Change Forum",
-        "actionPriority": 18,
-        "explanation": "Ranked #18 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR MOC",
-        "cityName": "Montes Claros",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "ipcc_0099",
-        "actionName": "Water capture/storage",
-        "actionPriority": 19,
-        "explanation": "Ranked #19 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR MOC",
-        "cityName": "Montes Claros",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "ipcc_0096",
-        "actionName": "Farm/fishery improvements",
-        "actionPriority": 20,
-        "explanation": "Ranked #20 by tournament ranking algorithm"
-    }
-]
+{
+    "actions": [
+        {
+            "locode": "US001",
+            "cityName": "Metropolis",
+            "region": "NA",
+            "regionName": "Northern America",
+            "actionId": "act01",
+            "actionName": "New Building Standards",
+            "actionPriority": 1,
+            "explanation": "For the city Metropolis, New Building Standards were prioritized because they directly target energy efficiency in buildings, a significant area for reducing urban emissions. The standards are aligned with the city's commitment to sustainable urban development, offering improvements in indoor environmental quality while reducing climate risks. Their implementation leverages existing construction practices, making the transition smoother and cost-effective for the community."
+        },
+        {
+            "locode": "US001",
+            "cityName": "Metropolis",
+            "region": "NA",
+            "regionName": "Northern America",
+            "actionId": "act02",
+            "actionName": "Bus Emissions Reduction",
+            "actionPriority": 2,
+            "explanation": "For Metropolis, the Bus Emissions Reduction action is valued because it targets the heavy-emission public transport sector, which is central to the city’s daily operations. The initiative enhances air quality and reduces greenhouse gas emissions where population density is highest. Its design also supports improvements in public health and efficient transit operations."
+        },
+        {
+            "locode": "US001",
+            "cityName": "Metropolis",
+            "region": "NA",
+            "regionName": "Northern America",
+            "actionId": "act03",
+            "actionName": "Renewable Energy Incentives",
+            "actionPriority": 3,
+            "explanation": "In Metropolis, Renewable Energy Incentives are prioritized because they encourage a shift away from fossil fuels, leading to substantial emission reductions in the energy sector. The action aligns with the local climate and natural resources, helping the city harness cleaner energy sources. Additionally, it lays the foundation for long term economic and environmental benefits by fostering local renewable energy markets."
+        },
+        {
+            "locode": "US001",
+            "cityName": "Metropolis",
+            "region": "NA",
+            "regionName": "Northern America",
+            "actionId": "act04",
+            "actionName": "Urban Green Spaces Expansion",
+            "actionPriority": 4,
+            "explanation": "For Metropolis, expanding urban green spaces is valued because it significantly enhances environmental compatibility and improves local air quality. The initiative provides cooling benefits and helps mitigate urban heat islands, contributing to a more resilient urban environment. Its community-centered approach supports social well-being and fosters sustainable urban planning."
+        },
+        {
+            "locode": "US001",
+            "cityName": "Metropolis",
+            "region": "NA",
+            "regionName": "Northern America",
+            "actionId": "act05",
+            "actionName": "Flood Defenses Improvement",
+            "actionPriority": 5,
+            "explanation": "Flood Defenses Improvement has been ranked highly in Metropolis due to its strong role in reducing climate-related risks, particularly for areas vulnerable to extreme weather events. The action enhances the city's capacity to manage flood risks and protect critical infrastructure. It is aligned with the city’s broader strategy of building long-term resilience and ensuring community safety."
+        },
+        {
+            "locode": "US001",
+            "cityName": "Metropolis",
+            "region": "NA",
+            "regionName": "Northern America",
+            "actionId": "act06",
+            "actionName": "Water Conservation Initiatives",
+            "actionPriority": 6,
+            "explanation": "For Metropolis, Water Conservation Initiatives are important as they address the sustainability of vital water resources in the face of environmental stress. The action supports efficient water use and reduces potential conflicts over limited resources, supporting a resilient urban ecosystem. Its design also complements broader environmental goals by promoting low-impact practices."
+        },
+        {
+            "locode": "US001",
+            "cityName": "Metropolis",
+            "region": "NA",
+            "regionName": "Northern America",
+            "actionId": "act07",
+            "actionName": "Waste Management Upgrades",
+            "actionPriority": 7,
+            "explanation": "Waste Management Upgrades in Metropolis directly address emission sources from waste decomposition and incineration. This action reduces environmental pollutants while improving public health outcomes through cleaner waste processing practices. It is well-aligned with the city's infrastructure capabilities and supports cost-effective management of urban waste."
+        },
+        {
+            "locode": "US001",
+            "cityName": "Metropolis",
+            "region": "NA",
+            "regionName": "Northern America",
+            "actionId": "act08",
+            "actionName": "Electric Vehicle Infrastructure",
+            "actionPriority": 8,
+            "explanation": "In Metropolis, developing Electric Vehicle Infrastructure is seen as a key action to transition towards low-emission transportation. It fits naturally within the city's efforts to reduce reliance on fossil fuels while enhancing mobility options. The infrastructure expansion is designed to create immediate benefits in urban air quality and support the growth of a sustainable transportation network."
+        },
+        {
+            "locode": "US001",
+            "cityName": "Metropolis",
+            "region": "NA",
+            "regionName": "Northern America",
+            "actionId": "act09",
+            "actionName": "Carbon Pricing Strategies",
+            "actionPriority": 9,
+            "explanation": "Carbon Pricing Strategies have been emphasized in Metropolis as a market-based approach to stimulate emission reductions across various sectors. This action reinforces cost-effective decision-making by aligning economic incentives with environmental performance. It is structured to support gradual yet steady progress in curbing greenhouse gas emissions within the city."
+        },
+        {
+            "locode": "US001",
+            "cityName": "Metropolis",
+            "region": "NA",
+            "regionName": "Northern America",
+            "actionId": "act10",
+            "actionName": "Energy Efficiency Programs",
+            "actionPriority": 10,
+            "explanation": "Energy Efficiency Programs are valued in Metropolis because they contribute directly to lowering energy consumption across residential and commercial sectors. The action supports emissions reduction by optimizing energy use while reducing operational costs. Its broad applicability makes it a practical and sustainable option that aligns well with the city's overall climate objectives."
+        },
+        {
+            "locode": "US001",
+            "cityName": "Metropolis",
+            "region": "NA",
+            "regionName": "Northern America",
+            "actionId": "act11",
+            "actionName": "Urban Tree Planting",
+            "actionPriority": 11,
+            "explanation": "Urban Tree Planting is an attractive option for Metropolis as it enhances local air quality and contributes to cooling and aesthetic improvements in the urban setting. The initiative also combats urban heat islands and supports biodiversity within the city. It is an accessible measure that promotes community participation and long-term environmental health."
+        },
+        {
+            "locode": "US001",
+            "cityName": "Metropolis",
+            "region": "NA",
+            "regionName": "Northern America",
+            "actionId": "act12",
+            "actionName": "Public Transit Modernization",
+            "actionPriority": 12,
+            "explanation": "Public Transit Modernization has been prioritized in Metropolis for its substantial potential to reduce emissions while addressing urban mobility challenges. By updating transit systems, the city can offer a more efficient and attractive alternative to private vehicles. This action supports improved air quality and contributes to broader socio-economic benefits for the community."
+        },
+        {
+            "locode": "US001",
+            "cityName": "Metropolis",
+            "region": "NA",
+            "regionName": "Northern America",
+            "actionId": "act13",
+            "actionName": "Smart Grid Implementation",
+            "actionPriority": 13,
+            "explanation": "Smart Grid Implementation in Metropolis is important because it modernizes the energy distribution network to optimize energy use and integrate renewable sources seamlessly. The action supports a more responsive power system that can better accommodate fluctuations in energy demand. Its adaptive nature ensures fewer dependencies and aligns with the city’s goals for a resilient energy future."
+        },
+        {
+            "locode": "US001",
+            "cityName": "Metropolis",
+            "region": "NA",
+            "regionName": "Northern America",
+            "actionId": "act14",
+            "actionName": "Rooftop Solar Panels",
+            "actionPriority": 14,
+            "explanation": "Rooftop Solar Panels are promoted in Metropolis as they enable decentralized renewable energy generation, reducing reliance on centralized power plants. The initiative supports local emissions reduction while providing financial savings on energy bills. Its approach is well-suited to urban landscapes, leveraging available rooftop space for sustainable energy production."
+        },
+        {
+            "locode": "US001",
+            "cityName": "Metropolis",
+            "region": "NA",
+            "regionName": "Northern America",
+            "actionId": "act15",
+            "actionName": "Industrial Emissions Regulation",
+            "actionPriority": 15,
+            "explanation": "Industrial Emissions Regulation is valued for its role in curbing high pollutant outputs from the industrial sector, a significant part of Metropolis’s economic activity. The action emphasizes stricter standards and regular monitoring to ensure compliance with environmental goals. It contributes to long-term public health improvements by addressing emissions where they are most concentrated."
+        },
+        {
+            "locode": "US001",
+            "cityName": "Metropolis",
+            "region": "NA",
+            "regionName": "Northern America",
+            "actionId": "act16",
+            "actionName": "Coastal Restoration",
+            "actionPriority": 16,
+            "explanation": "Coastal Restoration has been selected in Metropolis to strengthen natural buffers against climate impacts, especially important for coastal areas. This action enhances resilience by protecting against storm surges and erosion while restoring vital ecosystems. It is an integrative measure that supports long-term environmental stability and risk reduction."
+        },
+        {
+            "locode": "US001",
+            "cityName": "Metropolis",
+            "region": "NA",
+            "regionName": "Northern America",
+            "actionId": "act17",
+            "actionName": "Sustainable Agriculture Practices",
+            "actionPriority": 17,
+            "explanation": "Sustainable Agriculture Practices are significant in Metropolis as they promote lower emissions in the food production sector and improve soil health. The action dovetails with broader environmental strategies by enhancing sustainability in peri-urban agricultural zones. It offers additional socio-economic benefits by supporting local producers and strengthening food security."
+        },
+        {
+            "locode": "US001",
+            "cityName": "Metropolis",
+            "region": "NA",
+            "regionName": "Northern America",
+            "actionId": "act18",
+            "actionName": "Bicycle Infrastructure",
+            "actionPriority": 18,
+            "explanation": "Investments in Bicycle Infrastructure are prioritized in Metropolis because they promote active, low-emission transportation, reducing reliance on motorized vehicles. This action addresses urban mobility challenges while enhancing community health and reducing traffic congestion. It is an affordable and accessible intervention that supports sustainable urban design."
+        },
+        {
+            "locode": "US001",
+            "cityName": "Metropolis",
+            "region": "NA",
+            "regionName": "Northern America",
+            "actionId": "act19",
+            "actionName": "Heatwave Early Warning Systems",
+            "actionPriority": 19,
+            "explanation": "Heatwave Early Warning Systems have been developed in Metropolis to ensure the community is prepared for extreme temperature events. This action plays a critical role in risk reduction, helping to safeguard public health during heatwaves. Its timely alerts empower residents and local authorities to take preventative measures, reinforcing urban resilience."
+        },
+        {
+            "locode": "US001",
+            "cityName": "Metropolis",
+            "region": "NA",
+            "regionName": "Northern America",
+            "actionId": "act20",
+            "actionName": "Community Climate Education",
+            "actionPriority": 20,
+            "explanation": "Community Climate Education is designed to build local capacity and awareness about pressing climate issues in Metropolis. This action fosters informed and proactive community engagement, empowering residents to contribute to broader climate resilience. By strengthening public understanding and participation, it supports long-term sustainable change in the urban environment."
+        }
+    ]
+}

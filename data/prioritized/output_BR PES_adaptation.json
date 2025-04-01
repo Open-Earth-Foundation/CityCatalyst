@@ -1,202 +1,204 @@
-[
-    {
-        "locode": "BR PES",
-        "cityName": "Petr\u00f3polis",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0176",
-        "actionName": "Development of Climate Action Plan",
-        "actionPriority": 1,
-        "explanation": "Ranked #1 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR PES",
-        "cityName": "Petr\u00f3polis",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0151",
-        "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
-        "actionPriority": 2,
-        "explanation": "Ranked #2 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR PES",
-        "cityName": "Petr\u00f3polis",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0169",
-        "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
-        "actionPriority": 3,
-        "explanation": "Ranked #3 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR PES",
-        "cityName": "Petr\u00f3polis",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0140",
-        "actionName": "Landslide Risk Assessment and Management",
-        "actionPriority": 4,
-        "explanation": "Ranked #4 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR PES",
-        "cityName": "Petr\u00f3polis",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0164",
-        "actionName": "Hydrological Monitoring System with Telemetry Stations",
-        "actionPriority": 5,
-        "explanation": "Ranked #5 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR PES",
-        "cityName": "Petr\u00f3polis",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0181",
-        "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
-        "actionPriority": 6,
-        "explanation": "Ranked #6 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR PES",
-        "cityName": "Petr\u00f3polis",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "ipcc_0097",
-        "actionName": "Food storage/distribution improvements",
-        "actionPriority": 7,
-        "explanation": "Ranked #7 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR PES",
-        "cityName": "Petr\u00f3polis",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "ipcc_0088",
-        "actionName": "Building codes",
-        "actionPriority": 8,
-        "explanation": "Ranked #8 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR PES",
-        "cityName": "Petr\u00f3polis",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0162",
-        "actionName": "Strengthen programs for control and conservation of protected areas",
-        "actionPriority": 9,
-        "explanation": "Ranked #9 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR PES",
-        "cityName": "Petr\u00f3polis",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0175",
-        "actionName": "Recovery and preservation of green areas",
-        "actionPriority": 10,
-        "explanation": "Ranked #10 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR PES",
-        "cityName": "Petr\u00f3polis",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0154",
-        "actionName": "Cleaning and Unclogging of Channels with Installation of Eco-barriers",
-        "actionPriority": 11,
-        "explanation": "Ranked #11 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR PES",
-        "cityName": "Petr\u00f3polis",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "ipcc_0095",
-        "actionName": "Disaster early warning",
-        "actionPriority": 12,
-        "explanation": "Ranked #12 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR PES",
-        "cityName": "Petr\u00f3polis",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0156",
-        "actionName": "Implementation of urban gardens",
-        "actionPriority": 13,
-        "explanation": "Ranked #13 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR PES",
-        "cityName": "Petr\u00f3polis",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0149",
-        "actionName": "Encourage sustainable land use practices",
-        "actionPriority": 14,
-        "explanation": "Ranked #14 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR PES",
-        "cityName": "Petr\u00f3polis",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "ipcc_0092",
-        "actionName": "Social safety nets",
-        "actionPriority": 15,
-        "explanation": "Ranked #15 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR PES",
-        "cityName": "Petr\u00f3polis",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0148",
-        "actionName": "Create the Municipal Climate Change Forum",
-        "actionPriority": 16,
-        "explanation": "Ranked #16 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR PES",
-        "cityName": "Petr\u00f3polis",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "ipcc_0094",
-        "actionName": "Access to health care",
-        "actionPriority": 17,
-        "explanation": "Ranked #17 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR PES",
-        "cityName": "Petr\u00f3polis",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "ipcc_0086",
-        "actionName": "Ecosystem-based adaptation",
-        "actionPriority": 18,
-        "explanation": "Ranked #18 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR PES",
-        "cityName": "Petr\u00f3polis",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "ipcc_0099",
-        "actionName": "Water capture/storage",
-        "actionPriority": 19,
-        "explanation": "Ranked #19 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR PES",
-        "cityName": "Petr\u00f3polis",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "ipcc_0096",
-        "actionName": "Farm/fishery improvements",
-        "actionPriority": 20,
-        "explanation": "Ranked #20 by tournament ranking algorithm"
-    }
-]
+{
+    "actions": [
+        {
+            "locode": "MT001",
+            "cityName": "Metropolis",
+            "region": "R1",
+            "regionName": "Central Region",
+            "actionId": "A01",
+            "actionName": "New Building Standards",
+            "actionPriority": 1,
+            "explanation": "For the city Metropolis, New Building Standards is prioritized as it directly addresses high energy consumption in the building sector. This action supports the city’s goal to significantly reduce greenhouse gas emissions and improve energy efficiency. Its focus on modern construction techniques ensures strong compatibility with urban development plans and long-term resilience. The strategic approach emphasizes cost-effectiveness along with minimal dependencies, making it a robust climate action."
+        },
+        {
+            "locode": "MT002",
+            "cityName": "Metropolis",
+            "region": "R1",
+            "regionName": "Central Region",
+            "actionId": "A02",
+            "actionName": "Renewable Energy Incentives",
+            "actionPriority": 2,
+            "explanation": "For the city Metropolis, Renewable Energy Incentives offer expansive opportunities to lower carbon emissions by promoting solar and wind technologies. This action is highly relevant to the city’s energy sector and leverages locally available natural resources effectively. It facilitates a shift towards sustainable power generation while also reducing the risk of supply disruptions. The measure aligns well with both environmental compatibility and the city’s capacity for efficient implementation."
+        },
+        {
+            "locode": "MT003",
+            "cityName": "Metropolis",
+            "region": "R1",
+            "regionName": "Central Region",
+            "actionId": "A03",
+            "actionName": "Public Transit Expansion",
+            "actionPriority": 3,
+            "explanation": "For the city Metropolis, Public Transit Expansion is valued for its direct impact on reducing emissions from private vehicles and easing traffic congestion. It specifically targets the transportation sector, one of the major contributors to local emissions. The action is designed to support urban mobility while addressing environmental challenges. Its integrated approach also considers operational efficiency and reliability, ensuring timely benefits for the community."
+        },
+        {
+            "locode": "MT004",
+            "cityName": "Metropolis",
+            "region": "R1",
+            "regionName": "Central Region",
+            "actionId": "A04",
+            "actionName": "Bicycle Infrastructure Improvement",
+            "actionPriority": 4,
+            "explanation": "For the city Metropolis, Bicycle Infrastructure Improvement is effective for decreasing reliance on motorized transport and lowering emissions. It is well suited to the city's dense urban fabric, promoting a healthier lifestyle and sustainable mobility. By facilitating non-motorized transportation, this action contributes to reducing overall fossil fuel use. The measure is particularly appealing for its simplicity in implementation and strong alignment with local environmental goals."
+        },
+        {
+            "locode": "MT005",
+            "cityName": "Metropolis",
+            "region": "R1",
+            "regionName": "Central Region",
+            "actionId": "A05",
+            "actionName": "Urban Green Spaces and Reforestation",
+            "actionPriority": 5,
+            "explanation": "For the city Metropolis, Urban Green Spaces and Reforestation contribute significantly to improving air quality and enhancing urban resilience. This action employs natural solutions that are well aligned with the local ecological context. It not only aids in sequestering carbon but also improves overall urban livability and biodiversity. Although it may require a longer timeline to realize full benefits, its long-term environmental advantages are considerable."
+        },
+        {
+            "locode": "MT006",
+            "cityName": "Metropolis",
+            "region": "R1",
+            "regionName": "Central Region",
+            "actionId": "A06",
+            "actionName": "Waste-to-Energy Programs",
+            "actionPriority": 6,
+            "explanation": "For the city Metropolis, Waste-to-Energy Programs offer a dual benefit by addressing both waste management and energy production simultaneously. This integrated approach is well aligned with local infrastructural capacities and environmental priorities. By converting waste into energy, the action helps reduce greenhouse gas emissions from landfills while supplying an alternative energy source. Its ability to meet multiple climate goals makes it a valuable component of the city's strategy."
+        },
+        {
+            "locode": "MT007",
+            "cityName": "Metropolis",
+            "region": "R1",
+            "regionName": "Central Region",
+            "actionId": "A07",
+            "actionName": "Energy Efficiency Retrofits",
+            "actionPriority": 7,
+            "explanation": "For the city Metropolis, Energy Efficiency Retrofits are focused on upgrading existing buildings to minimize energy wastage and curb emissions. This action has a strong relevance for improving the performance of current infrastructure and aligns with ongoing urban renewal efforts. Its design promotes rapid implementation and emphasizes cost-effective benefits. Additionally, it is well matched to the city’s socio-economic conditions, ensuring that climate actions are both practical and impactful."
+        },
+        {
+            "locode": "MT008",
+            "cityName": "Metropolis",
+            "region": "R1",
+            "regionName": "Central Region",
+            "actionId": "A08",
+            "actionName": "Smart Grid Upgrade",
+            "actionPriority": 8,
+            "explanation": "For the city Metropolis, a Smart Grid Upgrade plays a key role in modernizing the energy distribution system and enhancing overall efficiency. This action improves the resilience and responsiveness of the energy network, aligning with the city’s growing demand for sustainable solutions. It supports the optimization of energy use while reducing emissions associated with inefficient power distribution. The initiative is designed to enable further innovations in energy management with minimal additional dependencies."
+        },
+        {
+            "locode": "MT009",
+            "cityName": "Metropolis",
+            "region": "R1",
+            "regionName": "Central Region",
+            "actionId": "A09",
+            "actionName": "Water Conservation Programs",
+            "actionPriority": 9,
+            "explanation": "For the city Metropolis, Water Conservation Programs are integrated into the climate strategy to ensure sustainable resource management amidst environmental challenges. This action addresses both the efficient use of water and the reduction of related environmental risks. It harmonizes with the city’s broader goals to protect natural resources and manage climate risks effectively. The focus on long-term resilience and community welfare underlines its importance despite a gradual rollout."
+        },
+        {
+            "locode": "MT010",
+            "cityName": "Metropolis",
+            "region": "R1",
+            "regionName": "Central Region",
+            "actionId": "A10",
+            "actionName": "Sustainable Agriculture Practices",
+            "actionPriority": 10,
+            "explanation": "For the city Metropolis, Sustainable Agriculture Practices are valued for their potential to reduce emissions in the food production sector while fostering local economic development. This action blends environmental mitigation with socio-economic growth by promoting resource-efficient farming techniques. It contributes to the reduction of greenhouse gases and supports community resilience in rural areas. The holistic approach of integrating environmental and development benefits makes it an important addition to the overall strategy."
+        },
+        {
+            "locode": "MT011",
+            "cityName": "Metropolis",
+            "region": "R1",
+            "regionName": "Central Region",
+            "actionId": "A11",
+            "actionName": "Electric Vehicle Adoption Incentives",
+            "actionPriority": 11,
+            "explanation": "For the city Metropolis, Electric Vehicle Adoption Incentives are instrumental in reducing emissions from the highly impactful transportation sector. This measure encourages a shift away from traditional fuel-based vehicles, aligning closely with urban emission reduction goals. It delivers both environmental and societal benefits by promoting cleaner, modern transportation alternatives. The strategy is also designed to be in line with the city’s capacity for swift, effective change."
+        },
+        {
+            "locode": "MT012",
+            "cityName": "Metropolis",
+            "region": "R1",
+            "regionName": "Central Region",
+            "actionId": "A12",
+            "actionName": "Climate Resilient Infrastructure",
+            "actionPriority": 12,
+            "explanation": "For the city Metropolis, Climate Resilient Infrastructure is essential for safeguarding urban systems against future climate-related hazards. The action is well aligned with the city’s need to enhance the durability and adaptability of its critical infrastructure. It supports robust risk reduction measures and is integrated into broader urban planning initiatives. Its focus on long-term resilience and operational efficiency makes it an integral part of the strategic climate response."
+        },
+        {
+            "locode": "MT013",
+            "cityName": "Metropolis",
+            "region": "R1",
+            "regionName": "Central Region",
+            "actionId": "A13",
+            "actionName": "Coastal Defense Enhancements",
+            "actionPriority": 13,
+            "explanation": "For the city Metropolis, Coastal Defense Enhancements are essential in addressing vulnerabilities related to rising sea levels and storm surges. This action aligns with the environmental risks posed by coastal conditions, ensuring the protection of critical urban assets. It is particularly designed to bolster the city’s capacity to withstand natural hazards while promoting sustainable urban planning. The long-term benefits in protecting communities make it a key consideration despite the inherent complexities of implementation."
+        },
+        {
+            "locode": "MT014",
+            "cityName": "Metropolis",
+            "region": "R1",
+            "regionName": "Central Region",
+            "actionId": "A14",
+            "actionName": "Flood Management Initiatives",
+            "actionPriority": 14,
+            "explanation": "For the city Metropolis, Flood Management Initiatives directly tackle the recurring risk of urban flooding. This action is tailored to address local vulnerabilities by integrating with existing emergency and urban planning frameworks. It is designed to protect vulnerable communities while maintaining continuity in city operations during adverse events. The focus on risk mitigation and community protection makes this initiative particularly pertinent."
+        },
+        {
+            "locode": "MT015",
+            "cityName": "Metropolis",
+            "region": "R1",
+            "regionName": "Central Region",
+            "actionId": "A15",
+            "actionName": "Heatwave Preparedness Plans",
+            "actionPriority": 15,
+            "explanation": "For the city Metropolis, Heatwave Preparedness Plans are significant in managing the increasing effects of extreme temperature events. This action is geared towards safeguarding public health and improving the city’s responsiveness to emerging climate-related risks. It is designed for timely interventions, thus ensuring that vulnerable populations are well-protected during heatwaves. The focus on prevention and rapid response underlines its role in a comprehensive climate strategy."
+        },
+        {
+            "locode": "MT016",
+            "cityName": "Metropolis",
+            "region": "R1",
+            "regionName": "Central Region",
+            "actionId": "A16",
+            "actionName": "Community Solar Projects",
+            "actionPriority": 16,
+            "explanation": "For the city Metropolis, Community Solar Projects are recognized for expanding access to renewable energy at a neighborhood level. This action is particularly effective in engaging local communities and distributing the benefits of clean energy. It fosters a sense of ownership and directly contributes to reducing urban emissions. The initiative’s inclusive approach and adaptability align with the local socio-economic context."
+        },
+        {
+            "locode": "MT017",
+            "cityName": "Metropolis",
+            "region": "R1",
+            "regionName": "Central Region",
+            "actionId": "A17",
+            "actionName": "Carbon Capture Technology Pilot",
+            "actionPriority": 17,
+            "explanation": "For the city Metropolis, the Carbon Capture Technology Pilot is valued for its innovative approach to mitigating industrial emissions. This action presents a forward-thinking strategy capable of integrating emerging technologies with existing industrial processes. It prioritizes long-term environmental risk reduction and provides insights for future scalability. Although it involves experimental elements, it opens a channel for technology-driven climate solutions within the city's framework."
+        },
+        {
+            "locode": "MT018",
+            "cityName": "Metropolis",
+            "region": "R1",
+            "regionName": "Central Region",
+            "actionId": "A18",
+            "actionName": "Air Quality Monitoring Systems",
+            "actionPriority": 18,
+            "explanation": "For the city Metropolis, Air Quality Monitoring Systems are crucial for establishing an informed basis for climate action. This action enhances the city’s ability to track environmental health and swiftly address emission hotspots. It supports data-driven decision-making and reinforces accountability in urban planning efforts. The system's role in underpinning broader adaptive strategies makes it a valuable supportive measure."
+        },
+        {
+            "locode": "MT019",
+            "cityName": "Metropolis",
+            "region": "R1",
+            "regionName": "Central Region",
+            "actionId": "A19",
+            "actionName": "Demand Response Programs",
+            "actionPriority": 19,
+            "explanation": "For the city Metropolis, Demand Response Programs are instrumental in optimizing energy use during peak demand periods. This action is tailored to enhance grid reliability and reduce emissions associated with energy peaks. It works by aligning consumption patterns with available renewable energy, thereby supporting overall energy efficiency. The strategy is notable for its capacity to adjust dynamically to urban energy demands and infrastructure capabilities."
+        },
+        {
+            "locode": "MT020",
+            "cityName": "Metropolis",
+            "region": "R1",
+            "regionName": "Central Region",
+            "actionId": "A20",
+            "actionName": "Industrial Emission Controls",
+            "actionPriority": 20,
+            "explanation": "For the city Metropolis, Industrial Emission Controls are critical for addressing emissions from the manufacturing and industrial sectors. This action is targeted at a major source of greenhouse gases and is coherent with the city’s aim to improve air quality and public health. It balances regulatory measures with operational efficiency, ensuring that industrial productivity aligns with environmental standards. The approach is well integrated with local capacities and stands as a responsible measure in the comprehensive climate action portfolio."
+        }
+    ]
+}

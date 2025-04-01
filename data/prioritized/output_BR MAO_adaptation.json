@@ -1,202 +1,204 @@
-[
-    {
-        "locode": "BR MAO",
-        "cityName": "Manaus",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "icare_0176",
-        "actionName": "Development of Climate Action Plan",
-        "actionPriority": 1,
-        "explanation": "Ranked #1 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR MAO",
-        "cityName": "Manaus",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "icare_0140",
-        "actionName": "Landslide Risk Assessment and Management",
-        "actionPriority": 2,
-        "explanation": "Ranked #2 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR MAO",
-        "cityName": "Manaus",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "icare_0162",
-        "actionName": "Strengthen programs for control and conservation of protected areas",
-        "actionPriority": 3,
-        "explanation": "Ranked #3 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR MAO",
-        "cityName": "Manaus",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "icare_0181",
-        "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
-        "actionPriority": 4,
-        "explanation": "Ranked #4 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR MAO",
-        "cityName": "Manaus",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "icare_0164",
-        "actionName": "Hydrological Monitoring System with Telemetry Stations",
-        "actionPriority": 5,
-        "explanation": "Ranked #5 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR MAO",
-        "cityName": "Manaus",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "icare_0151",
-        "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
-        "actionPriority": 6,
-        "explanation": "Ranked #6 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR MAO",
-        "cityName": "Manaus",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "icare_0169",
-        "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
-        "actionPriority": 7,
-        "explanation": "Ranked #7 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR MAO",
-        "cityName": "Manaus",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "ipcc_0097",
-        "actionName": "Food storage/distribution improvements",
-        "actionPriority": 8,
-        "explanation": "Ranked #8 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR MAO",
-        "cityName": "Manaus",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "icare_0154",
-        "actionName": "Cleaning and Unclogging of Channels with Installation of Eco-barriers",
-        "actionPriority": 9,
-        "explanation": "Ranked #9 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR MAO",
-        "cityName": "Manaus",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "ipcc_0088",
-        "actionName": "Building codes",
-        "actionPriority": 10,
-        "explanation": "Ranked #10 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR MAO",
-        "cityName": "Manaus",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "ipcc_0094",
-        "actionName": "Access to health care",
-        "actionPriority": 11,
-        "explanation": "Ranked #11 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR MAO",
-        "cityName": "Manaus",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "icare_0175",
-        "actionName": "Recovery and preservation of green areas",
-        "actionPriority": 12,
-        "explanation": "Ranked #12 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR MAO",
-        "cityName": "Manaus",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "ipcc_0095",
-        "actionName": "Disaster early warning",
-        "actionPriority": 13,
-        "explanation": "Ranked #13 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR MAO",
-        "cityName": "Manaus",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "icare_0149",
-        "actionName": "Encourage sustainable land use practices",
-        "actionPriority": 14,
-        "explanation": "Ranked #14 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR MAO",
-        "cityName": "Manaus",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "icare_0156",
-        "actionName": "Implementation of urban gardens",
-        "actionPriority": 15,
-        "explanation": "Ranked #15 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR MAO",
-        "cityName": "Manaus",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "ipcc_0086",
-        "actionName": "Ecosystem-based adaptation",
-        "actionPriority": 16,
-        "explanation": "Ranked #16 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR MAO",
-        "cityName": "Manaus",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "icare_0148",
-        "actionName": "Create the Municipal Climate Change Forum",
-        "actionPriority": 17,
-        "explanation": "Ranked #17 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR MAO",
-        "cityName": "Manaus",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "ipcc_0096",
-        "actionName": "Farm/fishery improvements",
-        "actionPriority": 18,
-        "explanation": "Ranked #18 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR MAO",
-        "cityName": "Manaus",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "ipcc_0092",
-        "actionName": "Social safety nets",
-        "actionPriority": 19,
-        "explanation": "Ranked #19 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR MAO",
-        "cityName": "Manaus",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "ipcc_0098",
-        "actionName": "Behaviour change in diets and food waste",
-        "actionPriority": 20,
-        "explanation": "Ranked #20 by tournament ranking algorithm"
-    }
-]
+{
+    "actions": [
+        {
+            "locode": "LOC001",
+            "cityName": "Greenvale",
+            "region": "NR",
+            "regionName": "Northern Region",
+            "actionId": "ACT1",
+            "actionName": "New Building Standards",
+            "actionPriority": 1,
+            "explanation": "For the city Greenvale, New Building Standards are a key measure to reduce urban emissions, especially as buildings contribute significantly to energy use. This action leverages improved design and construction techniques which align well with the city's climate goals. Its approach ensures that energy efficiency and safety are enhanced over the long term, making it a strategic priority for sustainable urban development."
+        },
+        {
+            "locode": "LOC002",
+            "cityName": "Greenvale",
+            "region": "NR",
+            "regionName": "Northern Region",
+            "actionId": "ACT2",
+            "actionName": "Bus Emissions",
+            "actionPriority": 2,
+            "explanation": "For the city Greenvale, addressing Bus Emissions is crucial given the heavy reliance on public transit and the challenges posed by urban congestion. This initiative focuses on modernizing the bus fleet with cleaner technologies, directly contributing to improved local air quality. Its relevance to the city's dense traffic conditions and commitment to public health underpins its prioritized status."
+        },
+        {
+            "locode": "LOC003",
+            "cityName": "Greenvale",
+            "region": "NR",
+            "regionName": "Northern Region",
+            "actionId": "ACT3",
+            "actionName": "Renewable Energy Incentives",
+            "actionPriority": 3,
+            "explanation": "In Greenvale, Renewable Energy Incentives pave the way for reducing dependence on fossil fuels by encouraging clean energy investments. This action supports the city’s strategic shift towards sustainability, aligning with long-term environmental goals. Its approach promotes a diversified energy portfolio while offering economic and community engagement benefits."
+        },
+        {
+            "locode": "LOC004",
+            "cityName": "Greenvale",
+            "region": "NR",
+            "regionName": "Northern Region",
+            "actionId": "ACT4",
+            "actionName": "Urban Tree Planting",
+            "actionPriority": 4,
+            "explanation": "For Greenvale, Urban Tree Planting offers a nature-based solution that not only sequesters carbon but also enhances local biodiversity. This action contributes to improved air quality and provides natural cooling benefits, important in an urban setting. Its straightforward implementation and co-benefits for community well-being make it a highly relevant initiative."
+        },
+        {
+            "locode": "LOC005",
+            "cityName": "Greenvale",
+            "region": "NR",
+            "regionName": "Northern Region",
+            "actionId": "ACT5",
+            "actionName": "Energy Efficiency Programs",
+            "actionPriority": 5,
+            "explanation": "In Greenvale, Energy Efficiency Programs are instrumental for lowering overall energy consumption in residential and commercial buildings. This measure targets the reduction of wasteful energy use, supporting significant emissions mitigation over time. Its cost-effective and adaptable nature makes it an attractive option for both short-term and long-term environmental strategies."
+        },
+        {
+            "locode": "LOC006",
+            "cityName": "Greenvale",
+            "region": "NR",
+            "regionName": "Northern Region",
+            "actionId": "ACT6",
+            "actionName": "Coastal Flood Defenses",
+            "actionPriority": 6,
+            "explanation": "Given Greenvale's exposure to coastal weather challenges, Coastal Flood Defenses are essential for building resilience against sea-level rise and storm surge. This action provides robust protection for critical infrastructure and enhances the city's preparedness for extreme events. Its alignment with long-term urban planning and risk reduction strategies underscores its significance."
+        },
+        {
+            "locode": "LOC007",
+            "cityName": "Greenvale",
+            "region": "NR",
+            "regionName": "Northern Region",
+            "actionId": "ACT7",
+            "actionName": "Water Conservation Measures",
+            "actionPriority": 7,
+            "explanation": "For the city of Greenvale, Water Conservation Measures are designed to manage precious water resources efficiently in the face of variable climate conditions. This approach minimizes wastage and promotes sustainable usage practices, which are critical for both the environment and local communities. Its compatibility with the city's socio-demographic needs ensures that water security remains a priority."
+        },
+        {
+            "locode": "LOC008",
+            "cityName": "Greenvale",
+            "region": "NR",
+            "regionName": "Northern Region",
+            "actionId": "ACT8",
+            "actionName": "Waste Management Initiatives",
+            "actionPriority": 8,
+            "explanation": "Greenvale benefits from Waste Management Initiatives that focus on enhancing recycling processes and reducing landfill waste. This action helps lower emissions derived from waste decomposition and supports cleaner urban environments. Its practical approach and alignment with broader sustainability goals make it an important component of the city’s environmental strategy."
+        },
+        {
+            "locode": "LOC009",
+            "cityName": "Greenvale",
+            "region": "NR",
+            "regionName": "Northern Region",
+            "actionId": "ACT9",
+            "actionName": "Public Transit Improvements",
+            "actionPriority": 9,
+            "explanation": "Improving Public Transit in Greenvale addresses the twin challenges of reducing reliance on private vehicles and lowering urban emissions. This action enhances system efficiency and connectivity, making transportation more accessible and environmentally friendly. Its focus on reducing congestion and bolstering mobility supports the city’s efforts to create a sustainable urban ecosystem."
+        },
+        {
+            "locode": "LOC010",
+            "cityName": "Greenvale",
+            "region": "NR",
+            "regionName": "Northern Region",
+            "actionId": "ACT10",
+            "actionName": "Green Infrastructure Development",
+            "actionPriority": 10,
+            "explanation": "For Greenvale, Green Infrastructure Development integrates natural systems into urban planning to address environmental challenges effectively. This initiative enhances stormwater management, mitigates urban heat, and promotes biodiversity. The multi-benefit approach of this action underscores its role in advancing both resilience and ecological quality in the city."
+        },
+        {
+            "locode": "LOC011",
+            "cityName": "Greenvale",
+            "region": "NR",
+            "regionName": "Northern Region",
+            "actionId": "ACT11",
+            "actionName": "Industrial Emissions Regulation",
+            "actionPriority": 11,
+            "explanation": "Industrial Emissions Regulation in Greenvale is a targeted measure to control pollutants from key manufacturing sectors. This approach ensures that industrial activities align with environmental standards, significantly contributing to overall emission reductions. By balancing economic considerations with ecological responsibilities, this action supports sustainable industrial practices within the city."
+        },
+        {
+            "locode": "LOC012",
+            "cityName": "Greenvale",
+            "region": "NR",
+            "regionName": "Northern Region",
+            "actionId": "ACT12",
+            "actionName": "Community Climate Resilience Education",
+            "actionPriority": 12,
+            "explanation": "In Greenvale, Community Climate Resilience Education empowers residents by fostering awareness of climate challenges and encouraging proactive adaptation measures. This initiative builds local capacity and strengthens community ties through knowledge sharing and engagement. Its emphasis on education and preparedness enhances the city’s overall resilience and sustainability."
+        },
+        {
+            "locode": "LOC013",
+            "cityName": "Greenvale",
+            "region": "NR",
+            "regionName": "Northern Region",
+            "actionId": "ACT13",
+            "actionName": "Sustainable Agriculture Practices",
+            "actionPriority": 13,
+            "explanation": "Greenvale's Sustainable Agriculture Practices focus on reducing emissions from food production while promoting efficient land use. This action supports both environmental sustainability and local food security through improved farming techniques. Its integration of economic, ecological, and community factors makes it a well-rounded strategy for rural and peri-urban areas."
+        },
+        {
+            "locode": "LOC014",
+            "cityName": "Greenvale",
+            "region": "NR",
+            "regionName": "Northern Region",
+            "actionId": "ACT14",
+            "actionName": "River Restoration Projects",
+            "actionPriority": 14,
+            "explanation": "For Greenvale, River Restoration Projects enhance the natural capacity of waterways to manage flood risks and improve water quality. This nature-based intervention not only benefits local ecosystems but also provides recreational and aesthetic improvements for the community. The action’s focus on ecological regeneration and risk reduction supports a holistic approach to urban sustainability."
+        },
+        {
+            "locode": "LOC015",
+            "cityName": "Greenvale",
+            "region": "NR",
+            "regionName": "Northern Region",
+            "actionId": "ACT15",
+            "actionName": "Electric Vehicle Adoption Programs",
+            "actionPriority": 15,
+            "explanation": "Greenvale's Electric Vehicle Adoption Programs are designed to facilitate a shift towards cleaner transportation by encouraging the integration of electric vehicles. This approach aids in reducing urban air pollution and supports a modern, energy-efficient mobility framework. Its relevance to current technological trends and infrastructure capabilities makes it an important component of the city’s transition strategy."
+        },
+        {
+            "locode": "LOC016",
+            "cityName": "Greenvale",
+            "region": "NR",
+            "regionName": "Northern Region",
+            "actionId": "ACT16",
+            "actionName": "Air Quality Monitoring Systems",
+            "actionPriority": 16,
+            "explanation": "Implementing Air Quality Monitoring Systems in Greenvale enables the city to continuously track environmental conditions and identify pollution hotspots. This data-driven approach supports informed decision-making for public health and climate risk management. Its effectiveness in enabling proactive policy adjustments makes it a vital tool for fostering urban resilience."
+        },
+        {
+            "locode": "LOC017",
+            "cityName": "Greenvale",
+            "region": "NR",
+            "regionName": "Northern Region",
+            "actionId": "ACT17",
+            "actionName": "Urban Heat Island Mitigation",
+            "actionPriority": 17,
+            "explanation": "In Greenvale, Urban Heat Island Mitigation strategies focus on reducing elevated temperatures in densely built areas through measures such as reflective surfaces and increased vegetation. This approach directly improves urban comfort and reduces energy demands by mitigating heat extremes. Its design is well-suited to the city's climate challenges and provides a pathway for enhancing overall public health."
+        },
+        {
+            "locode": "LOC018",
+            "cityName": "Greenvale",
+            "region": "NR",
+            "regionName": "Northern Region",
+            "actionId": "ACT18",
+            "actionName": "Floodplain Restoration Efforts",
+            "actionPriority": 18,
+            "explanation": "For Greenvale, Floodplain Restoration Efforts aim to naturally manage flood risks by revitalizing areas prone to flooding. This nature-based solution enhances the capacity of ecosystems to absorb excess water, thereby protecting communities and infrastructure. Its emphasis on working with natural processes makes it a resilient and contextually appropriate initiative."
+        },
+        {
+            "locode": "LOC019",
+            "cityName": "Greenvale",
+            "region": "NR",
+            "regionName": "Northern Region",
+            "actionId": "ACT19",
+            "actionName": "High-Speed Rail Investments",
+            "actionPriority": 19,
+            "explanation": "Greenvale's High-Speed Rail Investments are focused on providing efficient, low-emission transport alternatives that reduce reliance on road-based travel. This initiative enhances regional connectivity and contributes to lowering urban congestion and its associated emissions. Its forward-thinking approach supports sustainable mobility and aligns well with the city’s long-term infrastructure plans."
+        },
+        {
+            "locode": "LOC020",
+            "cityName": "Greenvale",
+            "region": "NR",
+            "regionName": "Northern Region",
+            "actionId": "ACT20",
+            "actionName": "Smart Grid Implementation",
+            "actionPriority": 20,
+            "explanation": "For Greenvale, Smart Grid Implementation modernizes energy distribution to better integrate renewable sources and optimize consumption. This action enhances system reliability and efficiency while supporting the city’s transition to a low-carbon future. Its strategic role in managing energy demand underscores its importance for a resilient and forward-looking urban infrastructure."
+        }
+    ]
+}

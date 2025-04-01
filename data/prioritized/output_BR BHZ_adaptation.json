@@ -1,202 +1,204 @@
-[
-    {
-        "locode": "BR BHZ",
-        "cityName": "Belo Horizonte",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "icare_0176",
-        "actionName": "Development of Climate Action Plan",
-        "actionPriority": 1,
-        "explanation": "Ranked #1 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR BHZ",
-        "cityName": "Belo Horizonte",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "icare_0154",
-        "actionName": "Cleaning and Unclogging of Channels with Installation of Eco-barriers",
-        "actionPriority": 2,
-        "explanation": "Ranked #2 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR BHZ",
-        "cityName": "Belo Horizonte",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "icare_0164",
-        "actionName": "Hydrological Monitoring System with Telemetry Stations",
-        "actionPriority": 3,
-        "explanation": "Ranked #3 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR BHZ",
-        "cityName": "Belo Horizonte",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "ipcc_0097",
-        "actionName": "Food storage/distribution improvements",
-        "actionPriority": 4,
-        "explanation": "Ranked #4 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR BHZ",
-        "cityName": "Belo Horizonte",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "icare_0181",
-        "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
-        "actionPriority": 5,
-        "explanation": "Ranked #5 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR BHZ",
-        "cityName": "Belo Horizonte",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "ipcc_0094",
-        "actionName": "Access to health care",
-        "actionPriority": 6,
-        "explanation": "Ranked #6 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR BHZ",
-        "cityName": "Belo Horizonte",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "icare_0175",
-        "actionName": "Recovery and preservation of green areas",
-        "actionPriority": 7,
-        "explanation": "Ranked #7 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR BHZ",
-        "cityName": "Belo Horizonte",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "icare_0151",
-        "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
-        "actionPriority": 8,
-        "explanation": "Ranked #8 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR BHZ",
-        "cityName": "Belo Horizonte",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "ipcc_0095",
-        "actionName": "Disaster early warning",
-        "actionPriority": 9,
-        "explanation": "Ranked #9 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR BHZ",
-        "cityName": "Belo Horizonte",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "ipcc_0096",
-        "actionName": "Farm/fishery improvements",
-        "actionPriority": 10,
-        "explanation": "Ranked #10 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR BHZ",
-        "cityName": "Belo Horizonte",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "ipcc_0092",
-        "actionName": "Social safety nets",
-        "actionPriority": 11,
-        "explanation": "Ranked #11 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR BHZ",
-        "cityName": "Belo Horizonte",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "ipcc_0098",
-        "actionName": "Behaviour change in diets and food waste",
-        "actionPriority": 12,
-        "explanation": "Ranked #12 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR BHZ",
-        "cityName": "Belo Horizonte",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "icare_0169",
-        "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
-        "actionPriority": 13,
-        "explanation": "Ranked #13 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR BHZ",
-        "cityName": "Belo Horizonte",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "icare_0156",
-        "actionName": "Implementation of urban gardens",
-        "actionPriority": 14,
-        "explanation": "Ranked #14 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR BHZ",
-        "cityName": "Belo Horizonte",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "ipcc_0086",
-        "actionName": "Ecosystem-based adaptation",
-        "actionPriority": 15,
-        "explanation": "Ranked #15 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR BHZ",
-        "cityName": "Belo Horizonte",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "ipcc_0088",
-        "actionName": "Building codes",
-        "actionPriority": 16,
-        "explanation": "Ranked #16 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR BHZ",
-        "cityName": "Belo Horizonte",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "icare_0148",
-        "actionName": "Create the Municipal Climate Change Forum",
-        "actionPriority": 17,
-        "explanation": "Ranked #17 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR BHZ",
-        "cityName": "Belo Horizonte",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "ipcc_0099",
-        "actionName": "Water capture/storage",
-        "actionPriority": 18,
-        "explanation": "Ranked #18 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR BHZ",
-        "cityName": "Belo Horizonte",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "icare_0162",
-        "actionName": "Strengthen programs for control and conservation of protected areas",
-        "actionPriority": 19,
-        "explanation": "Ranked #19 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR BHZ",
-        "cityName": "Belo Horizonte",
-        "region": "MG",
-        "regionName": "Minas Gerais",
-        "actionId": "ipcc_0093",
-        "actionName": "Availability of health infrastructure",
-        "actionPriority": 20,
-        "explanation": "Ranked #20 by tournament ranking algorithm"
-    }
-]
+{
+    "actions": [
+        {
+            "locode": "GRN1",
+            "cityName": "Greenopolis",
+            "region": "R1",
+            "regionName": "North Green",
+            "actionId": "A1",
+            "actionName": "Renewable Energy Expansion",
+            "actionPriority": 1,
+            "explanation": "For Greenopolis, Renewable Energy Expansion is prioritized because it directly tackles the city's largest emission source by transitioning away from fossil fuels. This action capitalizes on the region's natural endowments, offering a sustainable and environmentally compatible solution. It provides significant co-benefits such as job creation in the green sector while aligning with long-term emissions reduction goals."
+        },
+        {
+            "locode": "GRN1",
+            "cityName": "Greenopolis",
+            "region": "R1",
+            "regionName": "North Green",
+            "actionId": "A2",
+            "actionName": "Energy-efficient Public Transport Improvement",
+            "actionPriority": 2,
+            "explanation": "For Greenopolis, Energy-efficient Public Transport Improvement is given high priority because it targets the dense urban mobility sector which is a significant contributor to emissions. The initiative brings benefits beyond emission reduction, such as easing traffic congestion and improving air quality. Its alignment with the city's infrastructure and socio-demographic needs makes it both practical and beneficial over the long term."
+        },
+        {
+            "locode": "GRN1",
+            "cityName": "Greenopolis",
+            "region": "R1",
+            "regionName": "North Green",
+            "actionId": "A3",
+            "actionName": "Building Energy Retrofitting",
+            "actionPriority": 3,
+            "explanation": "For Greenopolis, Building Energy Retrofitting is prioritized as it directly reduces energy waste in older structures, helping lower greenhouse gas emissions in residential and commercial areas. This initiative leverages existing building stock, making it a cost-effective solution that enhances energy efficiency. It also contributes to improved indoor comfort and long-term operational savings, aligning well with city sustainability goals."
+        },
+        {
+            "locode": "GRN1",
+            "cityName": "Greenopolis",
+            "region": "R1",
+            "regionName": "North Green",
+            "actionId": "A4",
+            "actionName": "Urban Green Space Expansion",
+            "actionPriority": 4,
+            "explanation": "For Greenopolis, Urban Green Space Expansion is valued for its role in mitigating urban heat islands and improving overall air quality. This approach supports climate resilience by enhancing community spaces and natural cooling effects in built-up areas. The action not only addresses environmental concerns but also offers social benefits by creating healthier, more livable neighborhoods."
+        },
+        {
+            "locode": "GRN1",
+            "cityName": "Greenopolis",
+            "region": "R1",
+            "regionName": "North Green",
+            "actionId": "A5",
+            "actionName": "Waste Management Optimization",
+            "actionPriority": 5,
+            "explanation": "For Greenopolis, Waste Management Optimization is an essential action that reduces methane emissions from landfills and encourages recycling practices. The initiative fits well with the city's efforts to minimize pollution while promoting resource efficiency. It is seen as a supportive pillar for overall climate risk reduction, further strengthening the city's environmental strategies."
+        },
+        {
+            "locode": "GRN1",
+            "cityName": "Greenopolis",
+            "region": "R1",
+            "regionName": "North Green",
+            "actionId": "A6",
+            "actionName": "Water Conservation and Efficiency",
+            "actionPriority": 6,
+            "explanation": "For Greenopolis, Water Conservation and Efficiency is prioritized to better manage water resources amid changing climate patterns. This action not only helps in reducing the energy required for water treatment but also mitigates the risk of water scarcity. Its alignment with local environmental challenges makes it a practical and resilient choice for the city's climate adaptation portfolio."
+        },
+        {
+            "locode": "GRN1",
+            "cityName": "Greenopolis",
+            "region": "R1",
+            "regionName": "North Green",
+            "actionId": "A7",
+            "actionName": "Stormwater Management Improvements",
+            "actionPriority": 7,
+            "explanation": "For Greenopolis, Stormwater Management Improvements are critical as they reduce the risk of flooding and protect vital urban infrastructure during intense rainfall events. The action works seamlessly with existing urban systems to bolster the city's resilience against climate-induced extremes. Its focus on risk reduction and environmental compatibility makes it a well-rounded climate adaptation strategy."
+        },
+        {
+            "locode": "GRN1",
+            "cityName": "Greenopolis",
+            "region": "R1",
+            "regionName": "North Green",
+            "actionId": "A8",
+            "actionName": "Solar Panel Incentive Programs",
+            "actionPriority": 8,
+            "explanation": "For Greenopolis, Solar Panel Incentive Programs are prioritized for their ability to decentralize energy production and reduce reliance on traditional power sources. The policy leverages the city's exposure to ample sunlight, promoting clean energy adoption at the community level. This initiative also offers co-benefits in reducing energy bills and enhancing local energy independence."
+        },
+        {
+            "locode": "GRN1",
+            "cityName": "Greenopolis",
+            "region": "R1",
+            "regionName": "North Green",
+            "actionId": "A9",
+            "actionName": "Electric Vehicle Infrastructure Development",
+            "actionPriority": 9,
+            "explanation": "For Greenopolis, Electric Vehicle Infrastructure Development directly supports the transition to cleaner transportation by creating a network for EVs. This action is well-matched to the city’s modern urban layout and rising public demand for sustainable mobility options. By facilitating lower transportation emissions, it contributes significantly to the city’s broader climate goals."
+        },
+        {
+            "locode": "GRN1",
+            "cityName": "Greenopolis",
+            "region": "R1",
+            "regionName": "North Green",
+            "actionId": "A10",
+            "actionName": "District Heating Modernization",
+            "actionPriority": 10,
+            "explanation": "For Greenopolis, District Heating Modernization is valued as it revamps outdated heating systems to deliver energy more efficiently with a reduced environmental footprint. The action is particularly effective in colder urban zones, ensuring reliable and sustainable heating. Its integration into existing networks also supports long-term cost savings and reduced operational risks."
+        },
+        {
+            "locode": "GRN1",
+            "cityName": "Greenopolis",
+            "region": "R1",
+            "regionName": "North Green",
+            "actionId": "A11",
+            "actionName": "District Cooling Enhancement",
+            "actionPriority": 11,
+            "explanation": "For Greenopolis, District Cooling Enhancement is focused on reducing energy consumption in cooling systems while alleviating urban heat islands. This measure is particularly pertinent in densely populated areas where cooling demand is high. The initiative integrates smoothly with urban infrastructure improvements, enhancing both resilience and sustainability."
+        },
+        {
+            "locode": "GRN1",
+            "cityName": "Greenopolis",
+            "region": "R1",
+            "regionName": "North Green",
+            "actionId": "A12",
+            "actionName": "Carbon Capture and Storage Pilot",
+            "actionPriority": 12,
+            "explanation": "For Greenopolis, the Carbon Capture and Storage Pilot is pursued to explore innovative technologies that mitigate industrial emissions. Although the approach is in the early stages, its potential to complement other emission reduction strategies is recognized. This forward-looking action reflects the city's readiness to invest in advanced solutions for long-term climate benefits."
+        },
+        {
+            "locode": "GRN1",
+            "cityName": "Greenopolis",
+            "region": "R1",
+            "regionName": "North Green",
+            "actionId": "A13",
+            "actionName": "Smart Grid Implementation",
+            "actionPriority": 13,
+            "explanation": "For Greenopolis, Smart Grid Implementation is prioritized to enhance the efficiency of energy distribution and facilitate higher integration of renewable energy. This modern approach not only improves grid stability but also supports sustainable energy management practices. It is a strategic move that aligns with the city's modernization and emissions reduction aspirations."
+        },
+        {
+            "locode": "GRN1",
+            "cityName": "Greenopolis",
+            "region": "R1",
+            "regionName": "North Green",
+            "actionId": "A14",
+            "actionName": "Electric Heating Transition",
+            "actionPriority": 14,
+            "explanation": "For Greenopolis, the Electric Heating Transition is pursued as a key component for decarbonizing residential energy use. This initiative shifts reliance from high-emission heating systems to cleaner electric alternatives. It fits well with the city’s gradual transformation towards a low-carbon future while providing improved indoor air quality."
+        },
+        {
+            "locode": "GRN1",
+            "cityName": "Greenopolis",
+            "region": "R1",
+            "regionName": "North Green",
+            "actionId": "A15",
+            "actionName": "Green Roof Implementation",
+            "actionPriority": 15,
+            "explanation": "For Greenopolis, Green Roof Implementation is a strategic action aimed at reducing building energy demands and mitigating urban heat. The enhanced insulation provided by green roofs offers natural cooling benefits, supporting the city’s broader efforts in environmental sustainability. It also adds aesthetic value and improves the micro-climate in densely built environments."
+        },
+        {
+            "locode": "GRN1",
+            "cityName": "Greenopolis",
+            "region": "R1",
+            "regionName": "North Green",
+            "actionId": "A16",
+            "actionName": "Urban Tree Canopy Expansion",
+            "actionPriority": 16,
+            "explanation": "For Greenopolis, Urban Tree Canopy Expansion is recognized for its multiple benefits including air quality improvement and natural cooling effects. The action is well-suited to the city’s urban environment and supports broader biodiversity and ecological balance goals. In addition, it aids in stormwater management and enhances the overall well-being of the community."
+        },
+        {
+            "locode": "GRN1",
+            "cityName": "Greenopolis",
+            "region": "R1",
+            "regionName": "North Green",
+            "actionId": "A17",
+            "actionName": "Resilient Infrastructure Upgrades",
+            "actionPriority": 17,
+            "explanation": "For Greenopolis, Resilient Infrastructure Upgrades focus on strengthening essential urban systems against climate-related risks. This action is designed to address vulnerabilities in both transportation and buildings, ensuring long-term sustainability. Its emphasis on risk reduction and adaptive benefits makes it a critical component of the city's climate resilience strategy."
+        },
+        {
+            "locode": "GRN1",
+            "cityName": "Greenopolis",
+            "region": "R1",
+            "regionName": "North Green",
+            "actionId": "A18",
+            "actionName": "Public Awareness and Engagement Campaigns",
+            "actionPriority": 18,
+            "explanation": "For Greenopolis, Public Awareness and Engagement Campaigns are prioritized as they play a vital role in ensuring community participation in climate initiatives. This approach supports the effective implementation of technical actions by fostering a well-informed public who can contribute to sustainable practices. It serves as an important complement to more infrastructure-focused strategies by enhancing socio-demographic readiness."
+        },
+        {
+            "locode": "GRN1",
+            "cityName": "Greenopolis",
+            "region": "R1",
+            "regionName": "North Green",
+            "actionId": "A19",
+            "actionName": "Green Innovation and Technology Incubators",
+            "actionPriority": 19,
+            "explanation": "For Greenopolis, Green Innovation and Technology Incubators are valued for encouraging the development of forward-thinking solutions tailored to local climate challenges. This initiative fosters a supportive ecosystem for startups and research collaborations, driving sustainable technological advances. Its role in promoting creative, localized solutions complements the city’s broader climate strategy while spurring economic diversification."
+        },
+        {
+            "locode": "GRN1",
+            "cityName": "Greenopolis",
+            "region": "R1",
+            "regionName": "North Green",
+            "actionId": "A20",
+            "actionName": "Sustainable Urban Planning Reforms",
+            "actionPriority": 20,
+            "explanation": "For Greenopolis, Sustainable Urban Planning Reforms are implemented to integrate climate resilience into the city’s long-term development strategy. The action ensures that land use, transportation, and infrastructure are aligned with environmental sustainability goals. This broad, systemic approach lays a solid foundation for future initiatives while balancing both mitigation and adaptation needs."
+        }
+    ]
+}

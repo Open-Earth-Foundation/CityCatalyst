@@ -1,202 +1,204 @@
-[
-    {
-        "locode": "BR SER",
-        "cityName": "Serra",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0176",
-        "actionName": "Development of Climate Action Plan",
-        "actionPriority": 1,
-        "explanation": "Ranked #1 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR SER",
-        "cityName": "Serra",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0169",
-        "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
-        "actionPriority": 2,
-        "explanation": "Ranked #2 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR SER",
-        "cityName": "Serra",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0151",
-        "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
-        "actionPriority": 3,
-        "explanation": "Ranked #3 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR SER",
-        "cityName": "Serra",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0164",
-        "actionName": "Hydrological Monitoring System with Telemetry Stations",
-        "actionPriority": 4,
-        "explanation": "Ranked #4 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR SER",
-        "cityName": "Serra",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0181",
-        "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
-        "actionPriority": 5,
-        "explanation": "Ranked #5 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR SER",
-        "cityName": "Serra",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "ipcc_0097",
-        "actionName": "Food storage/distribution improvements",
-        "actionPriority": 6,
-        "explanation": "Ranked #6 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR SER",
-        "cityName": "Serra",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0154",
-        "actionName": "Cleaning and Unclogging of Channels with Installation of Eco-barriers",
-        "actionPriority": 7,
-        "explanation": "Ranked #7 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR SER",
-        "cityName": "Serra",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0140",
-        "actionName": "Landslide Risk Assessment and Management",
-        "actionPriority": 8,
-        "explanation": "Ranked #8 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR SER",
-        "cityName": "Serra",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "ipcc_0088",
-        "actionName": "Building codes",
-        "actionPriority": 9,
-        "explanation": "Ranked #9 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR SER",
-        "cityName": "Serra",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0162",
-        "actionName": "Strengthen programs for control and conservation of protected areas",
-        "actionPriority": 10,
-        "explanation": "Ranked #10 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR SER",
-        "cityName": "Serra",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "ipcc_0094",
-        "actionName": "Access to health care",
-        "actionPriority": 11,
-        "explanation": "Ranked #11 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR SER",
-        "cityName": "Serra",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "ipcc_0086",
-        "actionName": "Ecosystem-based adaptation",
-        "actionPriority": 12,
-        "explanation": "Ranked #12 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR SER",
-        "cityName": "Serra",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "ipcc_0095",
-        "actionName": "Disaster early warning",
-        "actionPriority": 13,
-        "explanation": "Ranked #13 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR SER",
-        "cityName": "Serra",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0149",
-        "actionName": "Encourage sustainable land use practices",
-        "actionPriority": 14,
-        "explanation": "Ranked #14 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR SER",
-        "cityName": "Serra",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0175",
-        "actionName": "Recovery and preservation of green areas",
-        "actionPriority": 15,
-        "explanation": "Ranked #15 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR SER",
-        "cityName": "Serra",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0156",
-        "actionName": "Implementation of urban gardens",
-        "actionPriority": 16,
-        "explanation": "Ranked #16 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR SER",
-        "cityName": "Serra",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "ipcc_0092",
-        "actionName": "Social safety nets",
-        "actionPriority": 17,
-        "explanation": "Ranked #17 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR SER",
-        "cityName": "Serra",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0148",
-        "actionName": "Create the Municipal Climate Change Forum",
-        "actionPriority": 18,
-        "explanation": "Ranked #18 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR SER",
-        "cityName": "Serra",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "ipcc_0096",
-        "actionName": "Farm/fishery improvements",
-        "actionPriority": 19,
-        "explanation": "Ranked #19 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR SER",
-        "cityName": "Serra",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "ipcc_0099",
-        "actionName": "Water capture/storage",
-        "actionPriority": 20,
-        "explanation": "Ranked #20 by tournament ranking algorithm"
-    }
-]
+{
+    "actions": [
+        {
+            "locode": "SMP",
+            "cityName": "SampleCity",
+            "region": "SR",
+            "regionName": "SampleRegion",
+            "actionId": "A1",
+            "actionName": "New Building Standards",
+            "actionPriority": 1,
+            "explanation": "For the city SampleCity, New Building Standards was prioritized because it targets the building sector, which is a major contributor to the city’s emissions. This action promotes energy-efficient designs and long-term sustainable infrastructure improvements, making it highly relevant for urban densification. It also enhances risk reduction against issues such as urban heat and energy inefficiency, fitting well with the city’s technical capacities and economic context."
+        },
+        {
+            "locode": "SMP",
+            "cityName": "SampleCity",
+            "region": "SR",
+            "regionName": "SampleRegion",
+            "actionId": "A2",
+            "actionName": "Bus Emissions",
+            "actionPriority": 2,
+            "explanation": "In SampleCity, addressing Bus Emissions is critical due to the significant role the transportation sector plays in local air quality challenges. This action is designed to reduce harmful emissions from urban transit, thereby improving the overall quality of the urban environment. It aligns with broader strategies to modernize the city’s public transport system while being straightforward to implement with existing infrastructure."
+        },
+        {
+            "locode": "SMP",
+            "cityName": "SampleCity",
+            "region": "SR",
+            "regionName": "SampleRegion",
+            "actionId": "A3",
+            "actionName": "Solar Panel Installations",
+            "actionPriority": 3,
+            "explanation": "For SampleCity, Solar Panel Installations stand out for their ability to harness renewable energy and reduce dependence on fossil fuels. The action supports an effective transition towards sustainable energy generation that fits the local climate conditions. Its scalability and adaptability to different urban settings make it a beneficial investment in long-term energy resilience and environmental sustainability."
+        },
+        {
+            "locode": "SMP",
+            "cityName": "SampleCity",
+            "region": "SR",
+            "regionName": "SampleRegion",
+            "actionId": "A4",
+            "actionName": "Urban Green Spaces",
+            "actionPriority": 4,
+            "explanation": "Urban Green Spaces are valued in SampleCity for their capacity to improve urban air quality and support public health. This action aids in mitigating the urban heat island effect while also enhancing community well-being. It is well-aligned with the city’s vision of sustainable development and provides added environmental and social benefits with relatively straightforward implementation."
+        },
+        {
+            "locode": "SMP",
+            "cityName": "SampleCity",
+            "region": "SR",
+            "regionName": "SampleRegion",
+            "actionId": "A5",
+            "actionName": "Electric Vehicle Incentives",
+            "actionPriority": 5,
+            "explanation": "For SampleCity, Electric Vehicle Incentives are prioritized as they promote a shift towards cleaner transportation methods. This action addresses the critical need to reduce emissions in the transportation sector and supports a gradual shift in public behavior. It leverages current trends in mobility while aligning with the city’s efforts to enhance accessibility and environmental quality."
+        },
+        {
+            "locode": "SMP",
+            "cityName": "SampleCity",
+            "region": "SR",
+            "regionName": "SampleRegion",
+            "actionId": "A6",
+            "actionName": "Wind Energy Investments",
+            "actionPriority": 6,
+            "explanation": "In SampleCity, Wind Energy Investments were considered for their potential to diversify the renewable energy mix. The action is well-suited to the city’s geographic characteristics, allowing it to tap into local wind resources effectively. Its contribution to long-term energy resilience and cost-effectiveness complements the city’s strategic emphasis on sustainable development."
+        },
+        {
+            "locode": "SMP",
+            "cityName": "SampleCity",
+            "region": "SR",
+            "regionName": "SampleRegion",
+            "actionId": "A7",
+            "actionName": "Public Transport Expansion",
+            "actionPriority": 7,
+            "explanation": "Public Transport Expansion in SampleCity is seen as a critical measure to reduce reliance on personal vehicles and lower overall urban emissions. The action enhances mobility efficiency and supports a more inclusive and sustainable transit network. It fits well with the city’s demographic needs and offers broad socio-economic benefits, making it a valuable component of the climate strategy."
+        },
+        {
+            "locode": "SMP",
+            "cityName": "SampleCity",
+            "region": "SR",
+            "regionName": "SampleRegion",
+            "actionId": "A8",
+            "actionName": "Water Efficiency Measures",
+            "actionPriority": 8,
+            "explanation": "In SampleCity, Water Efficiency Measures are crucial given the growing need to balance urban water demand with sustainable resource management. This action improves conservation efforts while reducing associated energy use in the water sector. It aligns well with the city's environmental objectives and offers a straightforward path toward enhancing overall sustainability."
+        },
+        {
+            "locode": "SMP",
+            "cityName": "SampleCity",
+            "region": "SR",
+            "regionName": "SampleRegion",
+            "actionId": "A9",
+            "actionName": "Waste Management Improvement",
+            "actionPriority": 9,
+            "explanation": "For SampleCity, Waste Management Improvement focuses on reducing environmental pollution and mitigating greenhouse gas emissions from landfills. This action supports efficient resource recovery and environmental hygiene. It is especially relevant in urban settings where efficient waste handling directly translates into improved city resilience and cleaner air quality."
+        },
+        {
+            "locode": "SMP",
+            "cityName": "SampleCity",
+            "region": "SR",
+            "regionName": "SampleRegion",
+            "actionId": "A10",
+            "actionName": "Recycling Programs",
+            "actionPriority": 10,
+            "explanation": "Recycling Programs in SampleCity are promoted for their role in diverting waste from landfills and reducing the environmental footprint. The initiative encourages community participation while underpinning broader waste reduction strategies. It is seen as a cost-effective approach that offers tangible environmental benefits through improved resource efficiency and sustainability."
+        },
+        {
+            "locode": "SMP",
+            "cityName": "SampleCity",
+            "region": "SR",
+            "regionName": "SampleRegion",
+            "actionId": "A11",
+            "actionName": "Infrastructure Resilience",
+            "actionPriority": 11,
+            "explanation": "For SampleCity, Infrastructure Resilience is a key action aimed at strengthening the city’s ability to withstand climate-related hazards. This initiative supports the protection of essential services and mitigates risks associated with extreme events. It is a forward-thinking measure that reinforces long-term urban stability and adapts to the challenges posed by a changing climate."
+        },
+        {
+            "locode": "SMP",
+            "cityName": "SampleCity",
+            "region": "SR",
+            "regionName": "SampleRegion",
+            "actionId": "A12",
+            "actionName": "Flood Defenses",
+            "actionPriority": 12,
+            "explanation": "Flood Defenses in SampleCity address the immediate risks associated with increasing extreme weather events. This action is designed to protect vulnerable areas and ensure the continuity of urban services during potential flooding incidents. It plays a critical role in the city’s overall risk reduction strategy, adapting infrastructure plans to meet emerging climate challenges."
+        },
+        {
+            "locode": "SMP",
+            "cityName": "SampleCity",
+            "region": "SR",
+            "regionName": "SampleRegion",
+            "actionId": "A13",
+            "actionName": "Heatwave Response",
+            "actionPriority": 13,
+            "explanation": "For SampleCity, a Heatwave Response is an essential action that focuses on protecting residents during periods of extreme temperature. The initiative prioritizes rapid risk reduction measures and community health protection, ensuring that vulnerable groups receive necessary support. It reflects the city’s proactive planning in adapting to climate variability and enhancing public safety."
+        },
+        {
+            "locode": "SMP",
+            "cityName": "SampleCity",
+            "region": "SR",
+            "regionName": "SampleRegion",
+            "actionId": "A14",
+            "actionName": "Urban Tree Planting",
+            "actionPriority": 14,
+            "explanation": "Urban Tree Planting has been prioritized in SampleCity for its wide-ranging environmental benefits, including carbon sequestration and local cooling effects. This action not only improves air quality but also enhances urban aesthetics and community well-being. Its low implementation complexity and multiple co-benefits support the overall climate action strategy of the city."
+        },
+        {
+            "locode": "SMP",
+            "cityName": "SampleCity",
+            "region": "SR",
+            "regionName": "SampleRegion",
+            "actionId": "A15",
+            "actionName": "Carbon Capture Technology",
+            "actionPriority": 15,
+            "explanation": "In SampleCity, Carbon Capture Technology is recognized for its innovative approach to mitigating industrial emissions directly at the source. While the implementation of this action may involve complex processes, its potential to substantially remove atmospheric carbon aligns with long-term environmental goals. The action is envisioned as a forward-looking measure that, despite requiring significant initial effort, promises meaningful contributions to emission reduction."
+        },
+        {
+            "locode": "SMP",
+            "cityName": "SampleCity",
+            "region": "SR",
+            "regionName": "SampleRegion",
+            "actionId": "A16",
+            "actionName": "Hydro Energy",
+            "actionPriority": 16,
+            "explanation": "For SampleCity, Hydro Energy is explored as a renewable energy option that leverages available water resources effectively. This action is particularly compatible with the city's geographical characteristics and offers a reliable energy supply. Its steady performance contributes to long-term energy sustainability and supports the city’s broader environmental objectives."
+        },
+        {
+            "locode": "SMP",
+            "cityName": "SampleCity",
+            "region": "SR",
+            "regionName": "SampleRegion",
+            "actionId": "A17",
+            "actionName": "Cycling Infrastructure",
+            "actionPriority": 17,
+            "explanation": "In SampleCity, Cycling Infrastructure is valued for encouraging a healthier and more sustainable mode of transportation. This action helps reduce vehicular emissions and enhances the quality of urban mobility by promoting eco-friendly commuting options. Its benefits extend to public health improvements and reduced traffic congestion, fitting well with local urban planning strategies."
+        },
+        {
+            "locode": "SMP",
+            "cityName": "SampleCity",
+            "region": "SR",
+            "regionName": "SampleRegion",
+            "actionId": "A18",
+            "actionName": "Rainwater Harvesting",
+            "actionPriority": 18,
+            "explanation": "For SampleCity, Rainwater Harvesting is an action that focuses on capturing and utilizing a valuable water resource more efficiently. It is particularly relevant as the city seeks to optimize water sustainability and reduce dependency on centralized supply systems. The initiative supports both risk reduction and resource conservation, making it a practical component of the local climate adaptation portfolio."
+        },
+        {
+            "locode": "SMP",
+            "cityName": "SampleCity",
+            "region": "SR",
+            "regionName": "SampleRegion",
+            "actionId": "A19",
+            "actionName": "Energy Efficiency Retrofits",
+            "actionPriority": 19,
+            "explanation": "Energy Efficiency Retrofits have been prioritized in SampleCity owing to their strong potential to reduce overall energy consumption across the urban building stock. This action is particularly relevant as older infrastructures are upgraded to meet modern sustainability standards. By reducing energy demand and lowering emissions, it offers immediate benefits while improving long-term economic efficiency and resilience."
+        },
+        {
+            "locode": "SMP",
+            "cityName": "SampleCity",
+            "region": "SR",
+            "regionName": "SampleRegion",
+            "actionId": "A20",
+            "actionName": "Sustainable Agriculture Support",
+            "actionPriority": 20,
+            "explanation": "In SampleCity, Sustainable Agriculture Support has been included to address key environmental challenges in peri-urban and rural areas connected to the city. This action promotes practices that reduce emissions while enhancing local food security and resource management. Although its direct impact is more diffuse in urban zones, it contributes to a holistic approach towards sustainability and overall climate resilience."
+        }
+    ]
+}

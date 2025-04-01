@@ -1,202 +1,204 @@
-[
-    {
-        "locode": "BR CAT",
-        "cityName": "Crato",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0176",
-        "actionName": "Development of Climate Action Plan",
-        "actionPriority": 1,
-        "explanation": "Ranked #1 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CAT",
-        "cityName": "Crato",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0181",
-        "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
-        "actionPriority": 2,
-        "explanation": "Ranked #2 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CAT",
-        "cityName": "Crato",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0169",
-        "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
-        "actionPriority": 3,
-        "explanation": "Ranked #3 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CAT",
-        "cityName": "Crato",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0164",
-        "actionName": "Hydrological Monitoring System with Telemetry Stations",
-        "actionPriority": 4,
-        "explanation": "Ranked #4 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CAT",
-        "cityName": "Crato",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0151",
-        "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
-        "actionPriority": 5,
-        "explanation": "Ranked #5 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CAT",
-        "cityName": "Crato",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "ipcc_0097",
-        "actionName": "Food storage/distribution improvements",
-        "actionPriority": 6,
-        "explanation": "Ranked #6 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CAT",
-        "cityName": "Crato",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0154",
-        "actionName": "Cleaning and Unclogging of Channels with Installation of Eco-barriers",
-        "actionPriority": 7,
-        "explanation": "Ranked #7 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CAT",
-        "cityName": "Crato",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0140",
-        "actionName": "Landslide Risk Assessment and Management",
-        "actionPriority": 8,
-        "explanation": "Ranked #8 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CAT",
-        "cityName": "Crato",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0175",
-        "actionName": "Recovery and preservation of green areas",
-        "actionPriority": 9,
-        "explanation": "Ranked #9 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CAT",
-        "cityName": "Crato",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "ipcc_0088",
-        "actionName": "Building codes",
-        "actionPriority": 10,
-        "explanation": "Ranked #10 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CAT",
-        "cityName": "Crato",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0149",
-        "actionName": "Encourage sustainable land use practices",
-        "actionPriority": 11,
-        "explanation": "Ranked #11 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CAT",
-        "cityName": "Crato",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "ipcc_0086",
-        "actionName": "Ecosystem-based adaptation",
-        "actionPriority": 12,
-        "explanation": "Ranked #12 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CAT",
-        "cityName": "Crato",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "ipcc_0094",
-        "actionName": "Access to health care",
-        "actionPriority": 13,
-        "explanation": "Ranked #13 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CAT",
-        "cityName": "Crato",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "ipcc_0092",
-        "actionName": "Social safety nets",
-        "actionPriority": 14,
-        "explanation": "Ranked #14 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CAT",
-        "cityName": "Crato",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0162",
-        "actionName": "Strengthen programs for control and conservation of protected areas",
-        "actionPriority": 15,
-        "explanation": "Ranked #15 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CAT",
-        "cityName": "Crato",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "ipcc_0095",
-        "actionName": "Disaster early warning",
-        "actionPriority": 16,
-        "explanation": "Ranked #16 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CAT",
-        "cityName": "Crato",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0148",
-        "actionName": "Create the Municipal Climate Change Forum",
-        "actionPriority": 17,
-        "explanation": "Ranked #17 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CAT",
-        "cityName": "Crato",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0156",
-        "actionName": "Implementation of urban gardens",
-        "actionPriority": 18,
-        "explanation": "Ranked #18 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CAT",
-        "cityName": "Crato",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "ipcc_0099",
-        "actionName": "Water capture/storage",
-        "actionPriority": 19,
-        "explanation": "Ranked #19 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CAT",
-        "cityName": "Crato",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "ipcc_0096",
-        "actionName": "Farm/fishery improvements",
-        "actionPriority": 20,
-        "explanation": "Ranked #20 by tournament ranking algorithm"
-    }
-]
+{
+    "actions": [
+        {
+            "locode": "LOC001",
+            "cityName": "EcoCity",
+            "region": "R1",
+            "regionName": "Region Alpha",
+            "actionId": "ACT001",
+            "actionName": "New Building Standards",
+            "actionPriority": 1,
+            "explanation": "For EcoCity, New Building Standards are prioritized because this action targets a key sector responsible for high energy usage and emissions, directly contributing to substantial climate mitigation. The approach is well aligned with the urban fabric of the city and provides long-term benefits through increased energy efficiency. Additionally, it offers secondary advantages such as improved indoor environmental quality and reduced operational risks, which supports sustainable urban growth."
+        },
+        {
+            "locode": "LOC002",
+            "cityName": "EcoCity",
+            "region": "R1",
+            "regionName": "Region Alpha",
+            "actionId": "ACT002",
+            "actionName": "Bus Emissions Reduction",
+            "actionPriority": 2,
+            "explanation": "For EcoCity, Bus Emissions Reduction is highly valued because it addresses emissions originating from the transportation sector, a significant contributor to the city’s overall emissions profile. The action is particularly relevant to the city’s dense urban areas, where improvements in air quality and public health are essential. Its streamlined implementation pathway further supports effective reduction in urban pollution and climate risks."
+        },
+        {
+            "locode": "LOC003",
+            "cityName": "EcoCity",
+            "region": "R1",
+            "regionName": "Region Alpha",
+            "actionId": "ACT003",
+            "actionName": "Renewable Energy Implementation",
+            "actionPriority": 3,
+            "explanation": "For EcoCity, Renewable Energy Implementation is emphasized as it directly confronts high emissions from traditional energy sources by promoting cleaner alternatives. The action is well matched with the regional resource availability, aligning with the city’s environmental conditions and energy demand patterns. Its integration into the city's energy framework ensures long-term emission reductions and bolsters resilience against future climate challenges."
+        },
+        {
+            "locode": "LOC004",
+            "cityName": "EcoCity",
+            "region": "R1",
+            "regionName": "Region Alpha",
+            "actionId": "ACT004",
+            "actionName": "Urban Green Spaces Expansion",
+            "actionPriority": 4,
+            "explanation": "For EcoCity, Urban Green Spaces Expansion is recognized for delivering multiple benefits, including the enhancement of urban air quality and the moderation of local climate effects. This action harmonizes with the city's natural landscape by integrating green infrastructure into densely built environments. Such expansion provides both environmental and social advantages, thereby strengthening community resilience while addressing climate adaptation needs."
+        },
+        {
+            "locode": "LOC005",
+            "cityName": "EcoCity",
+            "region": "R1",
+            "regionName": "Region Alpha",
+            "actionId": "ACT005",
+            "actionName": "Energy Efficiency Retrofits",
+            "actionPriority": 5,
+            "explanation": "For EcoCity, Energy Efficiency Retrofits are prioritized as they significantly lower emissions by modernizing existing buildings and infrastructure. The action is especially relevant in an urban setting where energy consumption is high, making it a cost-effective measure to reduce operational risks. By optimizing energy use, the approach not only contributes to a reduction in greenhouse gas emissions but also enhances long-term urban sustainability."
+        },
+        {
+            "locode": "LOC006",
+            "cityName": "EcoCity",
+            "region": "R1",
+            "regionName": "Region Alpha",
+            "actionId": "ACT006",
+            "actionName": "Public Transit Expansion",
+            "actionPriority": 6,
+            "explanation": "For EcoCity, Public Transit Expansion is ranked prominently as it addresses major emission sources within the transportation sector. The shift towards an efficient public transit system can substantially alleviate traffic congestion and lower urban pollution. This action also aligns with the city’s demographic profile and urban density, offering both environmental and social benefits that enhance overall climate resilience."
+        },
+        {
+            "locode": "LOC007",
+            "cityName": "EcoCity",
+            "region": "R1",
+            "regionName": "Region Alpha",
+            "actionId": "ACT007",
+            "actionName": "Solar Panel Incentives",
+            "actionPriority": 7,
+            "explanation": "For EcoCity, Solar Panel Incentives are valued due to their direct contribution to clean energy adoption and reduction of fossil fuel dependence. The initiative is well suited to the city’s environmental conditions and harnesses natural resources effectively. By promoting renewable energy at a local level, the action reinforces cost-effectiveness and addresses long-term climate risks without encountering substantial implementation barriers."
+        },
+        {
+            "locode": "LOC008",
+            "cityName": "EcoCity",
+            "region": "R1",
+            "regionName": "Region Alpha",
+            "actionId": "ACT008",
+            "actionName": "Electric Vehicle Adoption",
+            "actionPriority": 8,
+            "explanation": "For EcoCity, Electric Vehicle Adoption is a strategic measure aimed at transforming the urban transportation landscape. The action directly reduces tailpipe emissions by encouraging a shift from conventional vehicles to cleaner alternatives. Its compatibility with the city’s infrastructure and the additional public health benefits further support its prioritization in local climate plans."
+        },
+        {
+            "locode": "LOC009",
+            "cityName": "EcoCity",
+            "region": "R1",
+            "regionName": "Region Alpha",
+            "actionId": "ACT009",
+            "actionName": "Industrial Emission Controls",
+            "actionPriority": 9,
+            "explanation": "For EcoCity, Industrial Emission Controls are important because they focus on mitigating emissions from industrial activities that are significant within the regional economic landscape. The action is particularly suitable in areas where industrial and urban zones intersect, ensuring that emissions reductions are both effective and strategically placed. By addressing inherent risks in industrial sectors, it contributes to overall urban and environmental safety."
+        },
+        {
+            "locode": "LOC010",
+            "cityName": "EcoCity",
+            "region": "R1",
+            "regionName": "Region Alpha",
+            "actionId": "ACT010",
+            "actionName": "Community Awareness Programs",
+            "actionPriority": 10,
+            "explanation": "For EcoCity, Community Awareness Programs are valued for their role in fostering public understanding and support for broader climate initiatives. This action builds a foundation for community-led improvements in sustainability by promoting environmentally friendly behaviors. While it may not directly lower emissions, its capacity to enhance socio-demographic suitability and empower local stakeholders is a critical supporting measure in the overall climate strategy."
+        },
+        {
+            "locode": "LOC011",
+            "cityName": "EcoCity",
+            "region": "R1",
+            "regionName": "Region Alpha",
+            "actionId": "ACT011",
+            "actionName": "Waste Management Improvements",
+            "actionPriority": 11,
+            "explanation": "For EcoCity, Waste Management Improvements are important for mitigating emissions from decomposing waste and reducing environmental pollutants. This action aligns with the city's need to manage urban density and supports cleaner public spaces. Its multifaceted benefits, including risk reduction and improved urban hygiene, enhance the overall sustainability and resilience of the community."
+        },
+        {
+            "locode": "LOC012",
+            "cityName": "EcoCity",
+            "region": "R1",
+            "regionName": "Region Alpha",
+            "actionId": "ACT012",
+            "actionName": "Water Conservation Strategies",
+            "actionPriority": 12,
+            "explanation": "For EcoCity, Water Conservation Strategies are essential given the challenges of managing limited water resources in an urban setting. By promoting sustainable water usage and reducing waste, this action aligns with the environmental and socio-economic contexts of the city. Its contribution to risk reduction—especially in the face of climate-induced water scarcity—further emphasizes its value in the broader climate action framework."
+        },
+        {
+            "locode": "LOC013",
+            "cityName": "EcoCity",
+            "region": "R1",
+            "regionName": "Region Alpha",
+            "actionId": "ACT013",
+            "actionName": "Coastal Resilience Measures",
+            "actionPriority": 13,
+            "explanation": "For EcoCity, Coastal Resilience Measures are prioritized due to the city's vulnerability to sea-level rise and extreme weather events. This action focuses on protecting critical urban infrastructure and natural buffers in coastal zones. It not only reduces potential risks associated with climate change but also boosts long-term sustainability by strengthening the city’s adaptive capacity."
+        },
+        {
+            "locode": "LOC014",
+            "cityName": "EcoCity",
+            "region": "R1",
+            "regionName": "Region Alpha",
+            "actionId": "ACT014",
+            "actionName": "Stormwater Management",
+            "actionPriority": 14,
+            "explanation": "For EcoCity, Stormwater Management is emphasized because it directly addresses urban flooding and related risks during extreme weather events. The action streamlines the management of excess rainfall, thereby protecting both infrastructure and public spaces. Its relevance to the city’s dense urban core and manageable implementation challenges make it a practical component of the climate resilience strategy."
+        },
+        {
+            "locode": "LOC015",
+            "cityName": "EcoCity",
+            "region": "R1",
+            "regionName": "Region Alpha",
+            "actionId": "ACT015",
+            "actionName": "Cycling Infrastructure Development",
+            "actionPriority": 15,
+            "explanation": "For EcoCity, Cycling Infrastructure Development is recognized for its ability to promote low-emission transport options while enhancing urban mobility. The action supports healthier lifestyle choices and reduces dependency on high-emission vehicles. Its compatibility with the city's layout and potential to lower urban congestion further solidify its place in the climate action priorities."
+        },
+        {
+            "locode": "LOC016",
+            "cityName": "EcoCity",
+            "region": "R1",
+            "regionName": "Region Alpha",
+            "actionId": "ACT016",
+            "actionName": "Tree Planting Initiatives",
+            "actionPriority": 16,
+            "explanation": "For EcoCity, Tree Planting Initiatives are valued as a nature-based solution to enhance carbon sequestration and combat urban heat island effects. The action works naturally with the local environment to improve air quality and overall urban aesthetics. Its role in mitigating localized climate risks and boosting biodiversity adds a vital layer to the city’s climate resilience efforts."
+        },
+        {
+            "locode": "LOC017",
+            "cityName": "EcoCity",
+            "region": "R1",
+            "regionName": "Region Alpha",
+            "actionId": "ACT017",
+            "actionName": "Heat Wave Preparedness",
+            "actionPriority": 17,
+            "explanation": "For EcoCity, Heat Wave Preparedness is prioritized because it directly safeguards vulnerable populations against extreme temperature events. The action emphasizes rapid-response measures and bolsters the city’s adaptive capacity in the short term. By addressing immediate climate threats through community support systems and infrastructure upgrades, it plays a crucial role in minimizing health and safety risks."
+        },
+        {
+            "locode": "LOC018",
+            "cityName": "EcoCity",
+            "region": "R1",
+            "regionName": "Region Alpha",
+            "actionId": "ACT018",
+            "actionName": "Waste-to-Energy Programs",
+            "actionPriority": 18,
+            "explanation": "For EcoCity, Waste-to-Energy Programs are recognized for their dual function of reducing waste and generating renewable energy. The action creatively transforms a waste management challenge into an opportunity for sustainable power production. Its alignment with cost-effective municipal services and potential for lowering landfill-associated emissions make it a robust strategy within the urban climate action plan."
+        },
+        {
+            "locode": "LOC019",
+            "cityName": "EcoCity",
+            "region": "R1",
+            "regionName": "Region Alpha",
+            "actionId": "ACT019",
+            "actionName": "Agricultural Best Practices",
+            "actionPriority": 19,
+            "explanation": "For EcoCity, Agricultural Best Practices are valued for promoting sustainable methods in peri-urban and rural areas that support the city’s food systems. The action encourages efficient resource use and minimizes the environmental footprint of agricultural activities. In doing so, it strengthens regional climate resilience and provides balanced benefits in terms of environmental protection and risk reduction."
+        },
+        {
+            "locode": "LOC020",
+            "cityName": "EcoCity",
+            "region": "R1",
+            "regionName": "Region Alpha",
+            "actionId": "ACT020",
+            "actionName": "Urban Cooling Solutions",
+            "actionPriority": 20,
+            "explanation": "For EcoCity, Urban Cooling Solutions are prioritized for their capacity to mitigate the urban heat island effect and improve overall ambient temperatures. This action effectively reduces the city’s reliance on energy-intensive cooling measures while enhancing public comfort. Its comprehensive approach addresses both immediate climate challenges and broader adaptation goals, making it a valuable addition to the city's climate strategy."
+        }
+    ]
+}

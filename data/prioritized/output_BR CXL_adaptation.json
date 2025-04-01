@@ -1,202 +1,204 @@
-[
-    {
-        "locode": "BR CXL",
-        "cityName": "Caxias do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0176",
-        "actionName": "Development of Climate Action Plan",
-        "actionPriority": 1,
-        "explanation": "Ranked #1 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CXL",
-        "cityName": "Caxias do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0140",
-        "actionName": "Landslide Risk Assessment and Management",
-        "actionPriority": 2,
-        "explanation": "Ranked #2 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CXL",
-        "cityName": "Caxias do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0181",
-        "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
-        "actionPriority": 3,
-        "explanation": "Ranked #3 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CXL",
-        "cityName": "Caxias do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0154",
-        "actionName": "Cleaning and Unclogging of Channels with Installation of Eco-barriers",
-        "actionPriority": 4,
-        "explanation": "Ranked #4 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CXL",
-        "cityName": "Caxias do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0164",
-        "actionName": "Hydrological Monitoring System with Telemetry Stations",
-        "actionPriority": 5,
-        "explanation": "Ranked #5 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CXL",
-        "cityName": "Caxias do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0151",
-        "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
-        "actionPriority": 6,
-        "explanation": "Ranked #6 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CXL",
-        "cityName": "Caxias do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0169",
-        "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
-        "actionPriority": 7,
-        "explanation": "Ranked #7 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CXL",
-        "cityName": "Caxias do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0156",
-        "actionName": "Implementation of urban gardens",
-        "actionPriority": 8,
-        "explanation": "Ranked #8 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CXL",
-        "cityName": "Caxias do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0175",
-        "actionName": "Recovery and preservation of green areas",
-        "actionPriority": 9,
-        "explanation": "Ranked #9 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CXL",
-        "cityName": "Caxias do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0088",
-        "actionName": "Building codes",
-        "actionPriority": 10,
-        "explanation": "Ranked #10 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CXL",
-        "cityName": "Caxias do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0097",
-        "actionName": "Food storage/distribution improvements",
-        "actionPriority": 11,
-        "explanation": "Ranked #11 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CXL",
-        "cityName": "Caxias do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0094",
-        "actionName": "Access to health care",
-        "actionPriority": 12,
-        "explanation": "Ranked #12 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CXL",
-        "cityName": "Caxias do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0162",
-        "actionName": "Strengthen programs for control and conservation of protected areas",
-        "actionPriority": 13,
-        "explanation": "Ranked #13 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CXL",
-        "cityName": "Caxias do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0149",
-        "actionName": "Encourage sustainable land use practices",
-        "actionPriority": 14,
-        "explanation": "Ranked #14 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CXL",
-        "cityName": "Caxias do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0142",
-        "actionName": "Improvement of Water Supply and Sanitation Systems",
-        "actionPriority": 15,
-        "explanation": "Ranked #15 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CXL",
-        "cityName": "Caxias do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0086",
-        "actionName": "Ecosystem-based adaptation",
-        "actionPriority": 16,
-        "explanation": "Ranked #16 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CXL",
-        "cityName": "Caxias do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0095",
-        "actionName": "Disaster early warning",
-        "actionPriority": 17,
-        "explanation": "Ranked #17 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CXL",
-        "cityName": "Caxias do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0092",
-        "actionName": "Social safety nets",
-        "actionPriority": 18,
-        "explanation": "Ranked #18 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CXL",
-        "cityName": "Caxias do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0148",
-        "actionName": "Create the Municipal Climate Change Forum",
-        "actionPriority": 19,
-        "explanation": "Ranked #19 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CXL",
-        "cityName": "Caxias do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0099",
-        "actionName": "Water capture/storage",
-        "actionPriority": 20,
-        "explanation": "Ranked #20 by tournament ranking algorithm"
-    }
-]
+{
+    "actions": [
+        {
+            "locode": "MT001",
+            "cityName": "Metropolis",
+            "region": "NR",
+            "regionName": "Northern Region",
+            "actionId": "ACT001",
+            "actionName": "Renewable Energy Integration",
+            "actionPriority": 1,
+            "explanation": "For Metropolis, Renewable Energy Integration is given top priority because it directly addresses the city's major energy-related emissions by shifting reliance away from fossil fuels. This action aligns well with the city’s environmental aspirations and takes advantage of locally abundant renewable resources. Moreover, it supports a sustainable economic transformation while reducing long-term climate risks, making it an ideal fit for the city's high demand for clean power."
+        },
+        {
+            "locode": "MT001",
+            "cityName": "Metropolis",
+            "region": "NR",
+            "regionName": "Northern Region",
+            "actionId": "ACT002",
+            "actionName": "Energy Efficiency Retrofits",
+            "actionPriority": 2,
+            "explanation": "Energy Efficiency Retrofits are prioritized to reduce energy waste in a city known for its dense building stock. This action improves the performance of existing infrastructure, lowering emissions and operating costs over time. The focus on efficient energy use complements the city's broader environmental goals while minimizing disruptions during implementation."
+        },
+        {
+            "locode": "MT001",
+            "cityName": "Metropolis",
+            "region": "NR",
+            "regionName": "Northern Region",
+            "actionId": "ACT003",
+            "actionName": "Public Transportation Expansion",
+            "actionPriority": 3,
+            "explanation": "The expansion of public transportation is ranked highly because it targets one of the city’s largest emission sources—private vehicle use—by providing efficient alternatives for its dense population. This action supports social inclusion while reducing urban congestion and air pollution. Its alignment with the city’s infrastructure capacity and the potential for quick benefits solidify its importance."
+        },
+        {
+            "locode": "MT001",
+            "cityName": "Metropolis",
+            "region": "NR",
+            "regionName": "Northern Region",
+            "actionId": "ACT004",
+            "actionName": "Urban Greening Initiatives",
+            "actionPriority": 4,
+            "explanation": "Urban Greening Initiatives have been prioritized due to their dual role in mitigating heat island effects and enhancing carbon sequestration. These actions contribute to improving local microclimates and offer recreational benefits for communities. They are well-suited to Metropolis' urban landscape, providing environmental, social, and aesthetic value despite requiring sustained planning efforts."
+        },
+        {
+            "locode": "MT001",
+            "cityName": "Metropolis",
+            "region": "NR",
+            "regionName": "Northern Region",
+            "actionId": "ACT005",
+            "actionName": "Waste-to-Energy Conversion",
+            "actionPriority": 5,
+            "explanation": "Waste-to-Energy Conversion is favored as it turns local waste challenges into opportunities for clean energy production. This action not only reduces greenhouse gas emissions from landfills but also contributes to a circular economy. Its implementation leverages existing waste management practices in Metropolis while adding a valuable energy recovery component."
+        },
+        {
+            "locode": "MT001",
+            "cityName": "Metropolis",
+            "region": "NR",
+            "regionName": "Northern Region",
+            "actionId": "ACT006",
+            "actionName": "Smart Grid Implementation",
+            "actionPriority": 6,
+            "explanation": "Smart Grid Implementation is an important action as it modernizes the city’s power network, enhancing the efficiency and reliability of energy distribution. This improvement aids in better integrating renewable energy sources and managing peak demands. Its technological focus aligns with Metropolis' capacity for innovation, even though it requires significant coordination among stakeholders."
+        },
+        {
+            "locode": "MT001",
+            "cityName": "Metropolis",
+            "region": "NR",
+            "regionName": "Northern Region",
+            "actionId": "ACT007",
+            "actionName": "Sustainable Water Management",
+            "actionPriority": 7,
+            "explanation": "Sustainable Water Management is prioritized for its comprehensive approach in addressing water scarcity and quality issues that indirectly affect the city’s climate resilience. This action supports both conservation efforts and adaptation to climate variability. The approach is well integrated with local environmental conditions and bolsters the overall sustainability framework of Metropolis."
+        },
+        {
+            "locode": "MT001",
+            "cityName": "Metropolis",
+            "region": "NR",
+            "regionName": "Northern Region",
+            "actionId": "ACT008",
+            "actionName": "Electric Vehicle Incentives",
+            "actionPriority": 8,
+            "explanation": "Electric Vehicle Incentives are appreciated for their role in transforming the transportation sector by encouraging a shift from fossil fuels to cleaner mobility options. This action leverages existing urban infrastructure while reducing both local air pollution and noise. It fits well with the socio-demographic profile of Metropolis by offering practical benefits for daily commuters."
+        },
+        {
+            "locode": "MT001",
+            "cityName": "Metropolis",
+            "region": "NR",
+            "regionName": "Northern Region",
+            "actionId": "ACT009",
+            "actionName": "Office Building Modernization",
+            "actionPriority": 9,
+            "explanation": "Office Building Modernization is valued due to its focus on retrofitting high-usage commercial buildings, thereby addressing significant emission sources within the urban fabric. This action not only improves energy performance but also creates safer and more comfortable environments for workers. Its relevance is underscored by the city’s strong service sector and modern urban structure."
+        },
+        {
+            "locode": "MT001",
+            "cityName": "Metropolis",
+            "region": "NR",
+            "regionName": "Northern Region",
+            "actionId": "ACT010",
+            "actionName": "Green Roof Programs",
+            "actionPriority": 10,
+            "explanation": "The Green Roof Programs are recognized for their capacity to moderate building temperatures and improve stormwater management in densely built areas. This action contributes to mitigating urban heat island effects while promoting biodiversity. It is particularly compatible with Metropolis’ architectural profile, adding localized environmental benefits."
+        },
+        {
+            "locode": "MT001",
+            "cityName": "Metropolis",
+            "region": "NR",
+            "regionName": "Northern Region",
+            "actionId": "ACT011",
+            "actionName": "Community Solar Projects",
+            "actionPriority": 11,
+            "explanation": "Community Solar Projects are important because they democratize access to renewable energy and can be tailored to local community needs. They encourage participatory energy solutions and lower reliance on centralized power generation. This action is well-suited to Metropolis’ diverse population, promoting inclusive growth and environmental awareness."
+        },
+        {
+            "locode": "MT001",
+            "cityName": "Metropolis",
+            "region": "NR",
+            "regionName": "Northern Region",
+            "actionId": "ACT012",
+            "actionName": "Carbon Capture Deployment",
+            "actionPriority": 12,
+            "explanation": "Carbon Capture Deployment is noted for its technological innovation aimed at reducing industrial emissions and enhancing urban air quality. Although it requires advanced infrastructure and expertise, its targeted impact on high-emission sectors makes it relevant for the city's long-term climate strategy. The action is particularly favorable for industries concentrated in Metropolis and supports broader decarbonization goals."
+        },
+        {
+            "locode": "MT001",
+            "cityName": "Metropolis",
+            "region": "NR",
+            "regionName": "Northern Region",
+            "actionId": "ACT013",
+            "actionName": "Coastal Flood Defenses",
+            "actionPriority": 13,
+            "explanation": "Coastal Flood Defenses are considered due to their critical role in protecting vulnerable urban areas from rising water levels. This adaptation action mitigates risks associated with extreme weather and sea-level rise, ensuring the safety of livelihoods. While it involves complex planning and high upfront coordination, it is essential for building resilience in climate-sensitive zones of Metropolis."
+        },
+        {
+            "locode": "MT001",
+            "cityName": "Metropolis",
+            "region": "NR",
+            "regionName": "Northern Region",
+            "actionId": "ACT014",
+            "actionName": "Tree Planting Campaigns",
+            "actionPriority": 14,
+            "explanation": "Tree Planting Campaigns are valued for their ability to improve local air quality and enhance urban aesthetics. They also contribute to carbon sequestration in a manner that is easily understandable for the community. Though this action may offer more gradual benefits in terms of emissions reduction, it importantly strengthens community engagement and environmental stewardship in Metropolis."
+        },
+        {
+            "locode": "MT001",
+            "cityName": "Metropolis",
+            "region": "NR",
+            "regionName": "Northern Region",
+            "actionId": "ACT015",
+            "actionName": "Local Food Systems Support",
+            "actionPriority": 15,
+            "explanation": "Local Food Systems Support has been ranked to boost community resilience and reduce the energy load associated with long-distance food transport. This action enhances local economies and can promote a reduction in overall carbon footprints through shorter supply chains. Its socio-demographic benefits and supportive role in mitigating broader environmental impacts make it a constructive choice for Metropolis."
+        },
+        {
+            "locode": "MT001",
+            "cityName": "Metropolis",
+            "region": "NR",
+            "regionName": "Northern Region",
+            "actionId": "ACT016",
+            "actionName": "Industrial Emissions Monitoring",
+            "actionPriority": 16,
+            "explanation": "Industrial Emissions Monitoring is included to ensure that high-emission sectors are continuously observed and managed. This action plays a critical role in enforcing existing emission reduction targets, thereby contributing to the city's accountability measures. Although it serves mainly as an oversight tool, its integration with industrial practices is key for long-term environmental management in Metropolis."
+        },
+        {
+            "locode": "MT001",
+            "cityName": "Metropolis",
+            "region": "NR",
+            "regionName": "Northern Region",
+            "actionId": "ACT017",
+            "actionName": "Eco-District Development",
+            "actionPriority": 17,
+            "explanation": "Eco-District Development is focused on creating neighborhoods that integrate sustainable design and infrastructure. The action emphasizes local adaptability and community-driven initiatives which lower environmental impacts. Its implementation ties together emissions reductions with increased quality of life, although it requires coordinated planning across multiple sectors."
+        },
+        {
+            "locode": "MT001",
+            "cityName": "Metropolis",
+            "region": "NR",
+            "regionName": "Northern Region",
+            "actionId": "ACT018",
+            "actionName": "Urban Heat Island Mitigation",
+            "actionPriority": 18,
+            "explanation": "Urban Heat Island Mitigation is designed to address localized temperature spikes that negatively affect public health and energy use in the city. This action includes measures such as reflective surfaces and increased vegetation, making it particularly relevant to densely populated areas. Its emphasis on improving microclimatic conditions makes it a valuable, though more localized, adaptation strategy for Metropolis."
+        },
+        {
+            "locode": "MT001",
+            "cityName": "Metropolis",
+            "region": "NR",
+            "regionName": "Northern Region",
+            "actionId": "ACT019",
+            "actionName": "Flood Risk Management",
+            "actionPriority": 19,
+            "explanation": "Flood Risk Management is prioritized for its capacity to proactively safeguard urban areas from the impacts of heavy rainfall and storm surges. It supports the city's resilience efforts by improving emergency preparedness and reducing potential economic disruption. Although implementation can be complex, it is key for protecting vulnerable districts and ensuring long-term sustainability."
+        },
+        {
+            "locode": "MT001",
+            "cityName": "Metropolis",
+            "region": "NR",
+            "regionName": "Northern Region",
+            "actionId": "ACT020",
+            "actionName": "Air Quality Monitoring",
+            "actionPriority": 20,
+            "explanation": "Air Quality Monitoring is included as a foundational action to guide and validate the effectiveness of other climate measures in the city. It plays a vital role in identifying pollution hotspots and informing precision interventions. This action complements the broader suite of strategies by ensuring that Metropolis is continuously learning about its environmental performance and adapting accordingly."
+        }
+    ]
+}

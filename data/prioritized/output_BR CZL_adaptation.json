@@ -1,202 +1,204 @@
-[
-    {
-        "locode": "BR CZL",
-        "cityName": "Cruzeiro do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0154",
-        "actionName": "Cleaning and Unclogging of Channels with Installation of Eco-barriers",
-        "actionPriority": 1,
-        "explanation": "Ranked #1 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CZL",
-        "cityName": "Cruzeiro do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0140",
-        "actionName": "Landslide Risk Assessment and Management",
-        "actionPriority": 2,
-        "explanation": "Ranked #2 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CZL",
-        "cityName": "Cruzeiro do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0164",
-        "actionName": "Hydrological Monitoring System with Telemetry Stations",
-        "actionPriority": 3,
-        "explanation": "Ranked #3 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CZL",
-        "cityName": "Cruzeiro do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0176",
-        "actionName": "Development of Climate Action Plan",
-        "actionPriority": 4,
-        "explanation": "Ranked #4 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CZL",
-        "cityName": "Cruzeiro do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0181",
-        "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
-        "actionPriority": 5,
-        "explanation": "Ranked #5 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CZL",
-        "cityName": "Cruzeiro do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0151",
-        "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
-        "actionPriority": 6,
-        "explanation": "Ranked #6 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CZL",
-        "cityName": "Cruzeiro do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0163",
-        "actionName": "Creation of a First Response Brigade for Fire Fighting",
-        "actionPriority": 7,
-        "explanation": "Ranked #7 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CZL",
-        "cityName": "Cruzeiro do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0156",
-        "actionName": "Implementation of urban gardens",
-        "actionPriority": 8,
-        "explanation": "Ranked #8 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CZL",
-        "cityName": "Cruzeiro do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0175",
-        "actionName": "Recovery and preservation of green areas",
-        "actionPriority": 9,
-        "explanation": "Ranked #9 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CZL",
-        "cityName": "Cruzeiro do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0088",
-        "actionName": "Building codes",
-        "actionPriority": 10,
-        "explanation": "Ranked #10 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CZL",
-        "cityName": "Cruzeiro do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0142",
-        "actionName": "Improvement of Water Supply and Sanitation Systems",
-        "actionPriority": 11,
-        "explanation": "Ranked #11 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CZL",
-        "cityName": "Cruzeiro do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0086",
-        "actionName": "Ecosystem-based adaptation",
-        "actionPriority": 12,
-        "explanation": "Ranked #12 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CZL",
-        "cityName": "Cruzeiro do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0097",
-        "actionName": "Food storage/distribution improvements",
-        "actionPriority": 13,
-        "explanation": "Ranked #13 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CZL",
-        "cityName": "Cruzeiro do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0099",
-        "actionName": "Water capture/storage",
-        "actionPriority": 14,
-        "explanation": "Ranked #14 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CZL",
-        "cityName": "Cruzeiro do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0149",
-        "actionName": "Encourage sustainable land use practices",
-        "actionPriority": 15,
-        "explanation": "Ranked #15 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CZL",
-        "cityName": "Cruzeiro do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0141",
-        "actionName": "Implementation of Wetlands",
-        "actionPriority": 16,
-        "explanation": "Ranked #16 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CZL",
-        "cityName": "Cruzeiro do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0172",
-        "actionName": "Develop and implement the Municipal Risk Reduction Plan (PMRR) and identify population groups vulnerable to climate risks.",
-        "actionPriority": 17,
-        "explanation": "Ranked #17 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CZL",
-        "cityName": "Cruzeiro do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0094",
-        "actionName": "Access to health care",
-        "actionPriority": 18,
-        "explanation": "Ranked #18 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CZL",
-        "cityName": "Cruzeiro do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0182",
-        "actionName": "Urban Afforestation and Green Spaces Implementation",
-        "actionPriority": 19,
-        "explanation": "Ranked #19 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CZL",
-        "cityName": "Cruzeiro do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0183",
-        "actionName": "Intense Rain and Landslide Early Warning System",
-        "actionPriority": 20,
-        "explanation": "Ranked #20 by tournament ranking algorithm"
-    }
-]
+{
+    "actions": [
+        {
+            "locode": "GF01",
+            "cityName": "Greenfield",
+            "region": "NR",
+            "regionName": "Northern Region",
+            "actionId": "ACT1",
+            "actionName": "Renewable Energy Transition",
+            "actionPriority": 1,
+            "explanation": "For the city Greenfield, the Renewable Energy Transition was prioritized because it offers a transformative shift towards sustainable energy sources that significantly lower greenhouse gas emissions. It targets a critical sector, ensuring the action is well aligned with local environmental conditions and long-term sustainability goals. The measure also brings multiple co-benefits, such as enhanced air quality and energy security, while addressing climate-related risks with a forward-thinking approach."
+        },
+        {
+            "locode": "GF02",
+            "cityName": "Greenfield",
+            "region": "NR",
+            "regionName": "Northern Region",
+            "actionId": "ACT2",
+            "actionName": "Public Transport Electrification",
+            "actionPriority": 2,
+            "explanation": "In Greenfield, Public Transport Electrification was favored because it directly reduces emissions from the urban mobility sector, which is crucial for a densely populated city. This action improves daily commutes by minimizing air pollution, thereby enhancing public health and social well-being. Its design supports cost-effectiveness and risk management by transitioning to cleaner technologies with fewer dependencies."
+        },
+        {
+            "locode": "GF03",
+            "cityName": "Greenfield",
+            "region": "NR",
+            "regionName": "Northern Region",
+            "actionId": "ACT3",
+            "actionName": "Energy Efficient Retrofitting",
+            "actionPriority": 3,
+            "explanation": "Greenfield's focus on Energy Efficient Retrofitting addresses the potential for reducing energy consumption in existing buildings. The action is relevant given the city's established urban infrastructure, targeting a major source of energy demand and emissions. It integrates well with local construction practices while also offering economic and environmental benefits, such as improved energy security and reduced operational risks."
+        },
+        {
+            "locode": "GF04",
+            "cityName": "Greenfield",
+            "region": "NR",
+            "regionName": "Northern Region",
+            "actionId": "ACT4",
+            "actionName": "Urban Green Space Expansion",
+            "actionPriority": 4,
+            "explanation": "Urban Green Space Expansion in Greenfield was prioritized due to its ability to offset urban heat and contribute to carbon sequestration. It is well tailored to the city's landscape, providing essential recreational areas while enhancing the microclimate. The action also supports community well-being and reduces environmental vulnerabilities, making it a balanced choice in the climate action strategy."
+        },
+        {
+            "locode": "GF05",
+            "cityName": "Greenfield",
+            "region": "NR",
+            "regionName": "Northern Region",
+            "actionId": "ACT5",
+            "actionName": "Flood Defense Upgrades",
+            "actionPriority": 5,
+            "explanation": "Flood Defense Upgrades were prioritized in Greenfield as they directly mitigate the risks posed by extreme weather events. This action strengthens the city's resilience by protecting critical infrastructure and communities. Its design reflects local environmental challenges and ensures that risk management is integrated into broader sustainability efforts."
+        },
+        {
+            "locode": "GF06",
+            "cityName": "Greenfield",
+            "region": "NR",
+            "regionName": "Northern Region",
+            "actionId": "ACT6",
+            "actionName": "Waste-to-Energy Projects",
+            "actionPriority": 6,
+            "explanation": "Greenfield’s Waste-to-Energy Projects were favored because they simultaneously address waste management challenges and reduce carbon emissions. By converting waste into energy, the action fosters a circular economy while contributing to sustainable power generation. Its implementation is seen as both environmentally beneficial and cost-effective, thereby mitigating risks related to waste disposal."
+        },
+        {
+            "locode": "GF07",
+            "cityName": "Greenfield",
+            "region": "NR",
+            "regionName": "Northern Region",
+            "actionId": "ACT7",
+            "actionName": "Sustainable Agriculture",
+            "actionPriority": 7,
+            "explanation": "Sustainable Agriculture was prioritized for regions around Greenfield because it addresses emissions from the agricultural sector while promoting local food security. This action supports socio-economic stability by encouraging community-based practices that are environmentally sound. Its focus on long-term sustainability and risk reduction strengthens its relevance within the broader climate action framework."
+        },
+        {
+            "locode": "GF08",
+            "cityName": "Greenfield",
+            "region": "NR",
+            "regionName": "Northern Region",
+            "actionId": "ACT8",
+            "actionName": "Building Standards Improvement",
+            "actionPriority": 8,
+            "explanation": "For Greenfield, Building Standards Improvement is a strategic action aimed at enhancing energy efficiency during new construction. It embeds environmental best practices into urban development, ensuring that buildings contribute less to emissions. The action also balances economic considerations with long-term risk reduction, making it compatible with the city's development plans."
+        },
+        {
+            "locode": "GF09",
+            "cityName": "Greenfield",
+            "region": "NR",
+            "regionName": "Northern Region",
+            "actionId": "ACT9",
+            "actionName": "Water Conservation Measures",
+            "actionPriority": 9,
+            "explanation": "Water Conservation Measures in Greenfield have been prioritized because they secure essential water resources amid climate variability challenges. This action underscores the city’s commitment to sustainable resource management while supporting environmental stability. It is integrated into existing practices, thereby offering a practical solution that also mitigates potential climate risks."
+        },
+        {
+            "locode": "GF10",
+            "cityName": "Greenfield",
+            "region": "NR",
+            "regionName": "Northern Region",
+            "actionId": "ACT10",
+            "actionName": "Stormwater Management",
+            "actionPriority": 10,
+            "explanation": "Stormwater Management was chosen for Greenfield as it directly addresses urban flooding and improves drainage systems. The action is well suited to the city’s infrastructure challenges, offering protection for both natural and built environments. Its effectiveness in reducing short-term risks and its compatibility with local urban planning make it a prudent choice."
+        },
+        {
+            "locode": "GF11",
+            "cityName": "Greenfield",
+            "region": "NR",
+            "regionName": "Northern Region",
+            "actionId": "ACT11",
+            "actionName": "Smart Grid Implementation",
+            "actionPriority": 11,
+            "explanation": "In Greenfield, Smart Grid Implementation is seen as a forward-looking measure to modernize energy distribution and optimize the use of renewable resources. This action supports efficient energy management, making it integral to reducing emissions in the power sector. It also offers added benefits by enhancing system reliability and resilience, with a design that aligns well with current technological trends."
+        },
+        {
+            "locode": "GF12",
+            "cityName": "Greenfield",
+            "region": "NR",
+            "regionName": "Northern Region",
+            "actionId": "ACT12",
+            "actionName": "Community Awareness Campaign",
+            "actionPriority": 12,
+            "explanation": "The Community Awareness Campaign in Greenfield was prioritized as it empowers residents with the knowledge needed to support sustainable practices across various sectors. It fosters a sense of collective responsibility that is essential for the successful implementation of climate actions. By supporting behavioral changes and risk reduction, this action complements technical measures and ensures broader acceptance of sustainability initiatives."
+        },
+        {
+            "locode": "GF13",
+            "cityName": "Greenfield",
+            "region": "NR",
+            "regionName": "Northern Region",
+            "actionId": "ACT13",
+            "actionName": "Carbon Pricing Strategy",
+            "actionPriority": 13,
+            "explanation": "The Carbon Pricing Strategy for Greenfield was advanced due to its potential to drive market-based shifts towards low-emission practices. It encourages enterprises and individuals to adopt sustainable behaviors by aligning economic incentives with environmental objectives. This approach not only supports emissions reduction but also reinforces long-term cost-effectiveness and risk management within the city."
+        },
+        {
+            "locode": "GF14",
+            "cityName": "Greenfield",
+            "region": "NR",
+            "regionName": "Northern Region",
+            "actionId": "ACT14",
+            "actionName": "Forest Conservation Initiatives",
+            "actionPriority": 14,
+            "explanation": "Forest Conservation Initiatives were included in Greenfield’s climate action plan for their role in sequestering carbon and preserving local biodiversity. This action contributes significantly to environmental stability by enhancing natural ecosystems. The measure not only reduces emissions but also integrates seamlessly into broader land management and risk reduction strategies."
+        },
+        {
+            "locode": "GF15",
+            "cityName": "Greenfield",
+            "region": "NR",
+            "regionName": "Northern Region",
+            "actionId": "ACT15",
+            "actionName": "Coastal Resilience Planning",
+            "actionPriority": 15,
+            "explanation": "While Coastal Resilience Planning is primarily applicable to coastal areas, its principles can inform risk management strategies even in cities like Greenfield facing similar climate uncertainties. This action prepares communities for potential extreme weather events and fosters long-term resilience. Its adoption reflects a proactive approach to aligning infrastructure with anticipated environmental changes."
+        },
+        {
+            "locode": "GF16",
+            "cityName": "Greenfield",
+            "region": "NR",
+            "regionName": "Northern Region",
+            "actionId": "ACT16",
+            "actionName": "Green Roof Incentives",
+            "actionPriority": 16,
+            "explanation": "Green Roof Incentives in Greenfield were highlighted for their capacity to reduce urban heat effects and improve building energy performance. This innovative measure not only provides environmental benefits by lowering ambient temperatures but also enhances aesthetic and functional aspects of urban architecture. Its adaptable design and contribution to risk reduction make it a valuable, though more localized, climate action."
+        },
+        {
+            "locode": "GF17",
+            "cityName": "Greenfield",
+            "region": "NR",
+            "regionName": "Northern Region",
+            "actionId": "ACT17",
+            "actionName": "Air Quality Enhancement Programs",
+            "actionPriority": 17,
+            "explanation": "Air Quality Enhancement Programs were prioritized in Greenfield because they directly improve public health by reducing pollutant levels in densely populated areas. This action effectively targets local emissions and supports community well-being through cleaner air. Its focus on environmental compatibility and risk reduction makes it an integral part of the overall sustainability strategy."
+        },
+        {
+            "locode": "GF18",
+            "cityName": "Greenfield",
+            "region": "NR",
+            "regionName": "Northern Region",
+            "actionId": "ACT18",
+            "actionName": "District Heating Systems",
+            "actionPriority": 18,
+            "explanation": "District Heating Systems were selected for Greenfield as a means to improve energy distribution and enhance efficiency in heating solutions. This approach leverages centralized infrastructure to reduce emissions from conventional heating, aligning with the city’s sustainability goals. Its strategic design contributes to both operational cost savings and effective risk management in an urban context."
+        },
+        {
+            "locode": "GF19",
+            "cityName": "Greenfield",
+            "region": "NR",
+            "regionName": "Northern Region",
+            "actionId": "ACT19",
+            "actionName": "Electric Vehicle Infrastructure",
+            "actionPriority": 19,
+            "explanation": "Electric Vehicle Infrastructure was prioritized in Greenfield because it directly supports the clean transition in the transportation sector. This action is aligned with the city’s objective of reducing reliance on fossil fuels and improving urban air quality. By fostering sustainable mobility options and lowering transportation risks, it adds substantial value to the overall climate action plan."
+        },
+        {
+            "locode": "GF20",
+            "cityName": "Greenfield",
+            "region": "NR",
+            "regionName": "Northern Region",
+            "actionId": "ACT20",
+            "actionName": "Urban Cooling Strategies",
+            "actionPriority": 20,
+            "explanation": "Urban Cooling Strategies in Greenfield address the growing challenge of elevated urban temperatures by mitigating heat island effects. This action enhances public comfort and reduces energy demand by integrating innovative cooling solutions into the urban design. Its focus on immediate risk reduction and long-term environmental compatibility makes it a supportive measure within the wider climate resilience framework."
+        }
+    ]
+}

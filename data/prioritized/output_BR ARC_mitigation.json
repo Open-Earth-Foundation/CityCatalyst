@@ -1,182 +1,204 @@
-[
-    {
-        "locode": "BR ARC",
-        "cityName": "Arapiraca",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "icare_0118",
-        "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
-        "actionPriority": 1
-    },
-    {
-        "locode": "BR ARC",
-        "cityName": "Arapiraca",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "icare_0005",
-        "actionName": "Create credit lines for residential and community wind energy projects",
-        "actionPriority": 2
-    },
-    {
-        "locode": "BR ARC",
-        "cityName": "Arapiraca",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "icare_0121",
-        "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
-        "actionPriority": 3
-    },
-    {
-        "locode": "BR ARC",
-        "cityName": "Arapiraca",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "icare_0057",
-        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
-        "actionPriority": 4
-    },
-    {
-        "locode": "BR ARC",
-        "cityName": "Arapiraca",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "icare_0088",
-        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
-        "actionPriority": 5
-    },
-    {
-        "locode": "BR ARC",
-        "cityName": "Arapiraca",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "icare_0025",
-        "actionName": "Promote energy-efficient low-income housing",
-        "actionPriority": 6
-    },
-    {
-        "locode": "BR ARC",
-        "cityName": "Arapiraca",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "icare_0094",
-        "actionName": "Adoption of biomethane in public fleets.",
-        "actionPriority": 7
-    },
-    {
-        "locode": "BR ARC",
-        "cityName": "Arapiraca",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "icare_0092",
-        "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
-        "actionPriority": 8
-    },
-    {
-        "locode": "BR ARC",
-        "cityName": "Arapiraca",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "icare_0090",
-        "actionName": "Adoption of electric drones for last-mile deliveries.",
-        "actionPriority": 9
-    },
-    {
-        "locode": "BR ARC",
-        "cityName": "Arapiraca",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "icare_0133",
-        "actionName": "Promote Urban Reforestation and Green Corridors",
-        "actionPriority": 10
-    },
-    {
-        "locode": "BR ARC",
-        "cityName": "Arapiraca",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "icare_0117",
-        "actionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
-        "actionPriority": 11
-    },
-    {
-        "locode": "BR ARC",
-        "cityName": "Arapiraca",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "icare_0044",
-        "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
-        "actionPriority": 12
-    },
-    {
-        "locode": "BR ARC",
-        "cityName": "Arapiraca",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "icare_0068",
-        "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
-        "actionPriority": 13
-    },
-    {
-        "locode": "BR ARC",
-        "cityName": "Arapiraca",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "icare_0027",
-        "actionName": "Create financing programs for local renewable energy projects",
-        "actionPriority": 14
-    },
-    {
-        "locode": "BR ARC",
-        "cityName": "Arapiraca",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "icare_0042",
-        "actionName": "Encourage renewable energy policies at the municipal level",
-        "actionPriority": 15
-    },
-    {
-        "locode": "BR ARC",
-        "cityName": "Arapiraca",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "icare_0131",
-        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
-        "actionPriority": 16
-    },
-    {
-        "locode": "BR ARC",
-        "cityName": "Arapiraca",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "c40_0033",
-        "actionName": "15/30-Minute Areas",
-        "actionPriority": 17
-    },
-    {
-        "locode": "BR ARC",
-        "cityName": "Arapiraca",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "icare_0099",
-        "actionName": "Support Agroecological Certification Programs",
-        "actionPriority": 18
-    },
-    {
-        "locode": "BR ARC",
-        "cityName": "Arapiraca",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "icare_0139",
-        "actionName": "Implementation of urban toll.",
-        "actionPriority": 19
-    },
-    {
-        "locode": "BR ARC",
-        "cityName": "Arapiraca",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "icare_0100",
-        "actionName": "Support Regenerative Agriculture Practices",
-        "actionPriority": 20
-    }
-]
+{
+    "actions": [
+        {
+            "locode": "CITY001",
+            "cityName": "Metroville",
+            "region": "REG1",
+            "regionName": "Central Region",
+            "actionId": "A1",
+            "actionName": "Renewable Energy Integration",
+            "actionPriority": 1,
+            "explanation": "For the city Metroville, Renewable Energy Integration is prioritized because it directly addresses major greenhouse gas emissions by transitioning to cleaner energy sources. The action is well-aligned with the local environment and leverages existing resource capacities, making it particularly cost-effective and practical. Its design not only reduces long-term risks associated with fossil fuels but also supports the city’s sustainable growth strategy."
+        },
+        {
+            "locode": "CITY001",
+            "cityName": "Metroville",
+            "region": "REG1",
+            "regionName": "Central Region",
+            "actionId": "A2",
+            "actionName": "Urban Green Infrastructure",
+            "actionPriority": 2,
+            "explanation": "For Metroville, Urban Green Infrastructure is highly valued for its ability to enhance local environmental conditions and reduce urban heat and pollution. The action fits naturally with the city’s existing urban fabric while offering additional benefits through improved air quality and enhanced community spaces. It is also designed to address climate risks in a cost-effective manner with straightforward implementation strategies."
+        },
+        {
+            "locode": "CITY001",
+            "cityName": "Metroville",
+            "region": "REG1",
+            "regionName": "Central Region",
+            "actionId": "A3",
+            "actionName": "Enhanced Public Transit",
+            "actionPriority": 3,
+            "explanation": "Metroville has prioritized Enhanced Public Transit because it directly reduces emissions by curbing the number of private vehicles on the road. This action is well adapted to the city’s densely populated context and improves overall air quality while reducing urban congestion. The clear benefits in terms of cost efficiency and reduced dependency on fossil fuels support its favorable prioritization."
+        },
+        {
+            "locode": "CITY001",
+            "cityName": "Metroville",
+            "region": "REG1",
+            "regionName": "Central Region",
+            "actionId": "A4",
+            "actionName": "Energy Efficiency Retrofits",
+            "actionPriority": 4,
+            "explanation": "Within Metroville, Energy Efficiency Retrofits have been ranked highly because this action can substantially reduce energy consumption and greenhouse gas emissions in key urban buildings. It harmonizes with the local climate by lessening the strain on infrastructure during peak periods. The approach is recognized for its balanced benefits of cost-effectiveness and risk mitigation, making it a solid choice for sustainable adaptation."
+        },
+        {
+            "locode": "CITY001",
+            "cityName": "Metroville",
+            "region": "REG1",
+            "regionName": "Central Region",
+            "actionId": "A5",
+            "actionName": "High-Efficiency Appliance Standards",
+            "actionPriority": 5,
+            "explanation": "For Metroville, High-Efficiency Appliance Standards have been prioritized as they offer a reliable reduction in energy use and emissions across residential and commercial sectors. The action is particularly suited to the city's demographic trends and increasing consumer energy demands. Additionally, its feasible implementation and moderate dependency on other initiatives enhance its overall appeal."
+        },
+        {
+            "locode": "CITY001",
+            "cityName": "Metroville",
+            "region": "REG1",
+            "regionName": "Central Region",
+            "actionId": "A6",
+            "actionName": "Electric Vehicle Incentives",
+            "actionPriority": 6,
+            "explanation": "In Metroville, Electric Vehicle Incentives are favored for their potential to shift transportation toward a more sustainable future. The action targets a key emissions sector and is well-matched with the city’s modern infrastructure and evolving consumer behavior. Its design supports effective risk reduction by lowering urban air pollution while being implemented with manageable investments."
+        },
+        {
+            "locode": "CITY001",
+            "cityName": "Metroville",
+            "region": "REG1",
+            "regionName": "Central Region",
+            "actionId": "A7",
+            "actionName": "Smart Grid Solutions",
+            "actionPriority": 7,
+            "explanation": "Metroville values Smart Grid Solutions for their ability to optimize energy distribution and enhance the resilience of the power infrastructure. This action addresses the challenge of energy losses and supports a more responsive grid that can adjust to fluctuations in renewable energy supply. Its compatibility with the city’s technological capacity and effective risk mitigation profile further justify its prioritization."
+        },
+        {
+            "locode": "CITY001",
+            "cityName": "Metroville",
+            "region": "REG1",
+            "regionName": "Central Region",
+            "actionId": "A8",
+            "actionName": "Sustainable Land Use Planning",
+            "actionPriority": 8,
+            "explanation": "Sustainable Land Use Planning is prioritized in Metroville due to its strong alignment with long-term environmental and socio-demographic objectives. The action is capable of guiding development in a way that minimizes emissions, preserves green spaces, and protects local ecosystems. Its integrated approach to urban planning and climate resilience makes it a key component of the city’s sustainability strategy."
+        },
+        {
+            "locode": "CITY001",
+            "cityName": "Metroville",
+            "region": "REG1",
+            "regionName": "Central Region",
+            "actionId": "A9",
+            "actionName": "Climate Resilient Infrastructure",
+            "actionPriority": 9,
+            "explanation": "For Metroville, investing in Climate Resilient Infrastructure is crucial because it strengthens the city's ability to adapt to climate uncertainties and extreme weather events. This action ensures that critical facilities are better prepared to handle environmental stress while reducing long-term maintenance risks. Its emphasis on durability and tailored protection for vulnerable sectors aligns well with the city’s adaptation needs."
+        },
+        {
+            "locode": "CITY001",
+            "cityName": "Metroville",
+            "region": "REG1",
+            "regionName": "Central Region",
+            "actionId": "A10",
+            "actionName": "Waste-to-Energy Programs",
+            "actionPriority": 10,
+            "explanation": "Waste-to-Energy Programs are recognized in Metroville for their ability to transform waste management challenges into opportunities for clean energy generation. The action supports both emissions reduction and improved urban sanitation, making it a multifaceted approach in an urban setting. Its balance of environmental compatibility and practical implementation underscores its position in the prioritized list."
+        },
+        {
+            "locode": "CITY001",
+            "cityName": "Metroville",
+            "region": "REG1",
+            "regionName": "Central Region",
+            "actionId": "A11",
+            "actionName": "Water Conservation Initiatives",
+            "actionPriority": 11,
+            "explanation": "Metroville emphasizes Water Conservation Initiatives because they address critical local vulnerabilities associated with water scarcity and quality degradation. This action is designed to fit into the city’s environmental context and socio-demographic needs while contributing indirectly to emission reductions. Its potential to improve overall urban resilience through efficient resource management supports its ranking."
+        },
+        {
+            "locode": "CITY001",
+            "cityName": "Metroville",
+            "region": "REG1",
+            "regionName": "Central Region",
+            "actionId": "A12",
+            "actionName": "Industrial Process Optimization",
+            "actionPriority": 12,
+            "explanation": "Industrial Process Optimization is considered important for Metroville as it dramatically improves the energy efficiency of key industrial sectors. The action is directly linked to reducing emissions from industrial activities while promoting economic efficiency. Additionally, its adaptability to existing infrastructures makes it a forward-thinking choice for risk reduction and long-term sustainability."
+        },
+        {
+            "locode": "CITY001",
+            "cityName": "Metroville",
+            "region": "REG1",
+            "regionName": "Central Region",
+            "actionId": "A13",
+            "actionName": "Reforestation Projects",
+            "actionPriority": 13,
+            "explanation": "For Metroville, Reforestation Projects are appreciated for their role in sequestering carbon and enhancing urban biodiversity. The action is well-suited to the city’s environmental conditions, offering benefits such as improved air quality and community well-being. Its long-term contribution to climate mitigation supports its placement in the overall priority, despite requiring sustained commitment over time."
+        },
+        {
+            "locode": "CITY001",
+            "cityName": "Metroville",
+            "region": "REG1",
+            "regionName": "Central Region",
+            "actionId": "A14",
+            "actionName": "Coastal Protection Measures",
+            "actionPriority": 14,
+            "explanation": "In Metroville, Coastal Protection Measures are valued for their targeted approach to mitigating risks posed by sea-level rise and storm surges. The strategy is tailored to safeguard critical urban areas, ensuring that environmental vulnerabilities are proactively addressed. Its focus on risk reduction and alignment with local conditions justify its inclusion, even if its benefits manifest over a longer period."
+        },
+        {
+            "locode": "CITY001",
+            "cityName": "Metroville",
+            "region": "REG1",
+            "regionName": "Central Region",
+            "actionId": "A15",
+            "actionName": "Urban Heat Island Mitigation",
+            "actionPriority": 15,
+            "explanation": "Urban Heat Island Mitigation in Metroville is recognized for its ability to reduce local temperature extremes and improve overall urban comfort. The action aligns with the city’s environmental challenges and is designed to ease public health risks associated with heat. Its approach, which often includes increased vegetation and reflective surfaces, supports a more balanced urban climate."
+        },
+        {
+            "locode": "CITY001",
+            "cityName": "Metroville",
+            "region": "REG1",
+            "regionName": "Central Region",
+            "actionId": "A16",
+            "actionName": "Sustainable Agriculture Practices",
+            "actionPriority": 16,
+            "explanation": "Sustainable Agriculture Practices are valued in Metroville for their role in reducing emissions and preserving natural resources in peri-urban areas. This action supports local food security through practices that are environmentally sensitive and cost-effective. Its emphasis on reducing climate risks in agriculture while fostering community engagement has been key in its ranking."
+        },
+        {
+            "locode": "CITY001",
+            "cityName": "Metroville",
+            "region": "REG1",
+            "regionName": "Central Region",
+            "actionId": "A17",
+            "actionName": "Flood Defense Improvements",
+            "actionPriority": 17,
+            "explanation": "Flood Defense Improvements have been ranked for Metroville because they address imminent risks associated with extreme weather events and heavy rainfall. The action is designed to protect vital infrastructure and communities, ensuring that urban systems remain resilient. Its strategic importance for risk reduction and its compatibility with ongoing urban development plans support its prioritization."
+        },
+        {
+            "locode": "CITY001",
+            "cityName": "Metroville",
+            "region": "REG1",
+            "regionName": "Central Region",
+            "actionId": "A18",
+            "actionName": "Air Quality Improvement Programs",
+            "actionPriority": 18,
+            "explanation": "For Metroville, Air Quality Improvement Programs are implemented to directly address pollution challenges and public health concerns. The action is closely linked to reducing hazardous emissions while supporting the city’s broader environmental objectives. Its modular design allows for gradual implementation, making it a practical component of the overall climate action plan."
+        },
+        {
+            "locode": "CITY001",
+            "cityName": "Metroville",
+            "region": "REG1",
+            "regionName": "Central Region",
+            "actionId": "A19",
+            "actionName": "Clean Cooking Solutions",
+            "actionPriority": 19,
+            "explanation": "Clean Cooking Solutions in Metroville are prioritized for their role in reducing indoor air pollution and associated greenhouse gas emissions. The action is particularly suited to communities where traditional cooking methods impose health and environmental risks. Its focus on cost-effectiveness and local capacity-building has been essential in justifying its rank in the overall climate strategy."
+        },
+        {
+            "locode": "CITY001",
+            "cityName": "Metroville",
+            "region": "REG1",
+            "regionName": "Central Region",
+            "actionId": "A20",
+            "actionName": "Biomass Energy Development",
+            "actionPriority": 20,
+            "explanation": "In Metroville, Biomass Energy Development is recognized for its potential to convert organic waste into a renewable energy source. While the action supports emissions reduction and local waste management, its reliance on consistent biomass supply and infrastructure upgrades has affected its ranking. Nevertheless, it remains a viable complementary strategy within the broader sustainability framework."
+        }
+    ]
+}

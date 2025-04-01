@@ -1,202 +1,204 @@
-[
-    {
-        "locode": "BR GRA",
-        "cityName": "Gravata\u00ed",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0176",
-        "actionName": "Development of Climate Action Plan",
-        "actionPriority": 1,
-        "explanation": "Ranked #1 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR GRA",
-        "cityName": "Gravata\u00ed",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0140",
-        "actionName": "Landslide Risk Assessment and Management",
-        "actionPriority": 2,
-        "explanation": "Ranked #2 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR GRA",
-        "cityName": "Gravata\u00ed",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0154",
-        "actionName": "Cleaning and Unclogging of Channels with Installation of Eco-barriers",
-        "actionPriority": 3,
-        "explanation": "Ranked #3 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR GRA",
-        "cityName": "Gravata\u00ed",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0181",
-        "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
-        "actionPriority": 4,
-        "explanation": "Ranked #4 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR GRA",
-        "cityName": "Gravata\u00ed",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0164",
-        "actionName": "Hydrological Monitoring System with Telemetry Stations",
-        "actionPriority": 5,
-        "explanation": "Ranked #5 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR GRA",
-        "cityName": "Gravata\u00ed",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0151",
-        "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
-        "actionPriority": 6,
-        "explanation": "Ranked #6 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR GRA",
-        "cityName": "Gravata\u00ed",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0156",
-        "actionName": "Implementation of urban gardens",
-        "actionPriority": 7,
-        "explanation": "Ranked #7 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR GRA",
-        "cityName": "Gravata\u00ed",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0088",
-        "actionName": "Building codes",
-        "actionPriority": 8,
-        "explanation": "Ranked #8 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR GRA",
-        "cityName": "Gravata\u00ed",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0097",
-        "actionName": "Food storage/distribution improvements",
-        "actionPriority": 9,
-        "explanation": "Ranked #9 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR GRA",
-        "cityName": "Gravata\u00ed",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0142",
-        "actionName": "Improvement of Water Supply and Sanitation Systems",
-        "actionPriority": 10,
-        "explanation": "Ranked #10 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR GRA",
-        "cityName": "Gravata\u00ed",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0175",
-        "actionName": "Recovery and preservation of green areas",
-        "actionPriority": 11,
-        "explanation": "Ranked #11 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR GRA",
-        "cityName": "Gravata\u00ed",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0086",
-        "actionName": "Ecosystem-based adaptation",
-        "actionPriority": 12,
-        "explanation": "Ranked #12 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR GRA",
-        "cityName": "Gravata\u00ed",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0092",
-        "actionName": "Social safety nets",
-        "actionPriority": 13,
-        "explanation": "Ranked #13 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR GRA",
-        "cityName": "Gravata\u00ed",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0162",
-        "actionName": "Strengthen programs for control and conservation of protected areas",
-        "actionPriority": 14,
-        "explanation": "Ranked #14 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR GRA",
-        "cityName": "Gravata\u00ed",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0149",
-        "actionName": "Encourage sustainable land use practices",
-        "actionPriority": 15,
-        "explanation": "Ranked #15 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR GRA",
-        "cityName": "Gravata\u00ed",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0169",
-        "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
-        "actionPriority": 16,
-        "explanation": "Ranked #16 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR GRA",
-        "cityName": "Gravata\u00ed",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0095",
-        "actionName": "Disaster early warning",
-        "actionPriority": 17,
-        "explanation": "Ranked #17 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR GRA",
-        "cityName": "Gravata\u00ed",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0180",
-        "actionName": "Implement permeable pavements and increase green areas in roadways",
-        "actionPriority": 18,
-        "explanation": "Ranked #18 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR GRA",
-        "cityName": "Gravata\u00ed",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0099",
-        "actionName": "Water capture/storage",
-        "actionPriority": 19,
-        "explanation": "Ranked #19 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR GRA",
-        "cityName": "Gravata\u00ed",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0148",
-        "actionName": "Create the Municipal Climate Change Forum",
-        "actionPriority": 20,
-        "explanation": "Ranked #20 by tournament ranking algorithm"
-    }
-]
+{
+    "actions": [
+        {
+            "locode": "US-MET",
+            "cityName": "Metropolis",
+            "region": "NE",
+            "regionName": "North East",
+            "actionId": "A1",
+            "actionName": "New Building Standards",
+            "actionPriority": 1,
+            "explanation": "For the city Metropolis, New Building Standards is prioritized due to its strong potential in reducing emissions from residential and commercial sectors. This action directly addresses the urban density challenges and enhances energy efficiency. It also contributes positively to long-term environmental resilience while providing broader community benefits."
+        },
+        {
+            "locode": "US-MET",
+            "cityName": "Metropolis",
+            "region": "NE",
+            "regionName": "North East",
+            "actionId": "A2",
+            "actionName": "Bus Emissions",
+            "actionPriority": 2,
+            "explanation": "For the city Metropolis, the Bus Emissions reduction action is recognized for its ability to target one of the major sources of urban pollution. Its focus on the transportation sector aligns well with the dense urban layout and the pressing need to improve air quality. The approach supports sustainable public transit improvements and offers clear climate risk reduction benefits."
+        },
+        {
+            "locode": "US-GRN",
+            "cityName": "Greenfield",
+            "region": "MW",
+            "regionName": "Central",
+            "actionId": "A3",
+            "actionName": "Urban Tree Planting",
+            "actionPriority": 3,
+            "explanation": "For the city Greenfield, Urban Tree Planting is appealing because it enhances urban cooling, improves air quality, and supports overall community well-being. The action integrates well with existing green spaces and local environmental features. Its low infrastructural dependency and multiple co-benefits make it a robust solution for sustainable urban development."
+        },
+        {
+            "locode": "US-GRN",
+            "cityName": "Greenfield",
+            "region": "MW",
+            "regionName": "Central",
+            "actionId": "A4",
+            "actionName": "Solar Panel Installations",
+            "actionPriority": 4,
+            "explanation": "For the city Greenfield, Solar Panel Installations are highly prioritized because they tap into renewable energy potentials and help reduce reliance on fossil fuels. This action is well-aligned with local energy needs and contributes to enhanced sustainability. Its integration within existing infrastructure further strengthens its role as a forward-looking climate measure."
+        },
+        {
+            "locode": "US-CST",
+            "cityName": "Coastview",
+            "region": "SE",
+            "regionName": "South East",
+            "actionId": "A5",
+            "actionName": "Coastal Defense Mechanisms",
+            "actionPriority": 5,
+            "explanation": "For the city Coastview, Coastal Defense Mechanisms are given priority due to the region's vulnerability to sea-level rise and storm surges. The action is tailored to the unique maritime climate, providing protection for critical infrastructure. Its focus on reducing coastal hazards aligns with local needs to safeguard both the environment and livelihoods."
+        },
+        {
+            "locode": "US-CST",
+            "cityName": "Coastview",
+            "region": "SE",
+            "regionName": "South East",
+            "actionId": "A6",
+            "actionName": "Water Conservation Program",
+            "actionPriority": 6,
+            "explanation": "For the city Coastview, a Water Conservation Program is especially relevant in addressing challenges related to both occasional droughts and saltwater intrusion. This action ensures a more efficient use of local water resources and supports sustainable practices. Its design not only reinforces climate adaptation but also promotes overall community resource resilience."
+        },
+        {
+            "locode": "US-HLT",
+            "cityName": "Hilltown",
+            "region": "NW",
+            "regionName": "North West",
+            "actionId": "A7",
+            "actionName": "Renewable Energy Incentives",
+            "actionPriority": 7,
+            "explanation": "For the city Hilltown, Renewable Energy Incentives are prioritized because they stimulate clean energy adoption and reduce dependency on fossil fuels. This action takes advantage of local geographic conditions favorable for renewable energy. It provides strong co-benefits in terms of boosting local economic opportunities while promoting environmental sustainability."
+        },
+        {
+            "locode": "US-HLT",
+            "cityName": "Hilltown",
+            "region": "NW",
+            "regionName": "North West",
+            "actionId": "A8",
+            "actionName": "Public Transit Expansion",
+            "actionPriority": 8,
+            "explanation": "For the city Hilltown, Public Transit Expansion is regarded as an effective climate action because it directly addresses urban mobility challenges and reduces vehicular emissions. The strategy is well-suited to improving accessibility and decreasing traffic congestion. Its comprehensive approach supports both environmental and social benefits through better connectivity and reduced climate impact."
+        },
+        {
+            "locode": "US-RIV",
+            "cityName": "Riverdale",
+            "region": "SW",
+            "regionName": "South West",
+            "actionId": "A9",
+            "actionName": "Waste Management Overhaul",
+            "actionPriority": 9,
+            "explanation": "For the city Riverdale, a Waste Management Overhaul is seen as critical because it addresses emissions and environmental hazards linked to unmanaged waste. This action promotes efficient resource recovery and reduces the risk of pollution-related challenges. Its broad environmental benefits help foster a healthier urban ecosystem and contribute to long-term sustainability."
+        },
+        {
+            "locode": "US-RIV",
+            "cityName": "Riverdale",
+            "region": "SW",
+            "regionName": "South West",
+            "actionId": "A10",
+            "actionName": "Energy Efficiency Retrofits",
+            "actionPriority": 10,
+            "explanation": "For the city Riverdale, Energy Efficiency Retrofits are welcomed for their ability to enhance the performance of existing buildings. The action not only reduces energy consumption but also contributes to significant emissions reduction over time. Its practical approach to upgrading outdated infrastructure makes it a valuable asset in the city's sustainability strategy."
+        },
+        {
+            "locode": "US-LKS",
+            "cityName": "Lakeside",
+            "region": "MW",
+            "regionName": "Midwest",
+            "actionId": "A11",
+            "actionName": "Flood Risk Assessment",
+            "actionPriority": 11,
+            "explanation": "For the city Lakeside, Flood Risk Assessment is a crucial climate action as it helps identify vulnerabilities and supports proactive measures against flooding. The action is well-aligned with concerns over changing precipitation patterns and water management challenges. It lays the groundwork for targeted interventions that can enhance long-term community resilience."
+        },
+        {
+            "locode": "US-LKS",
+            "cityName": "Lakeside",
+            "region": "MW",
+            "regionName": "Midwest",
+            "actionId": "A12",
+            "actionName": "Green Roofs",
+            "actionPriority": 12,
+            "explanation": "For the city Lakeside, Green Roofs are valued for their ability to moderate building temperatures, reduce stormwater runoff, and enhance urban biodiversity. The action fits neatly into the city’s urban development vision and environmental priorities. It serves as an innovative approach to improve both aesthetic and functional aspects of the urban landscape."
+        },
+        {
+            "locode": "US-SNV",
+            "cityName": "Sunville",
+            "region": "SW",
+            "regionName": "South West",
+            "actionId": "A13",
+            "actionName": "Rainwater Harvesting",
+            "actionPriority": 13,
+            "explanation": "For the city Sunville, Rainwater Harvesting is highlighted for its role in diversifying water resources and reducing reliance on traditional supplies. This action aligns with local climate variability concerns and supports efficient water management practices. Its implementation contributes significantly to overall community resilience and sustainable resource use."
+        },
+        {
+            "locode": "US-SNV",
+            "cityName": "Sunville",
+            "region": "SW",
+            "regionName": "South West",
+            "actionId": "A14",
+            "actionName": "Industrial Emission Controls",
+            "actionPriority": 14,
+            "explanation": "For the city Sunville, Industrial Emission Controls are prioritized as they effectively address a major source of local emissions and pollution. The initiative is tailored to the city's industrial dynamics and holds the promise of substantial environmental improvement. Its targeted measures contribute to both enhanced air quality and a safer public health environment."
+        },
+        {
+            "locode": "US-CLR",
+            "cityName": "Clearview",
+            "region": "NE",
+            "regionName": "North East",
+            "actionId": "A15",
+            "actionName": "Electric Vehicle Incentives",
+            "actionPriority": 15,
+            "explanation": "For the city Clearview, Electric Vehicle Incentives are favored for their ability to encourage a transition to cleaner transportation options. This action supports the city's commitment to reducing urban emissions and improving air quality. Its approach is designed to be cost-effective and well-suited to the city's modern infrastructure, making it an attractive climate solution."
+        },
+        {
+            "locode": "US-CLR",
+            "cityName": "Clearview",
+            "region": "NE",
+            "regionName": "North East",
+            "actionId": "A16",
+            "actionName": "Riverbank Restoration",
+            "actionPriority": 16,
+            "explanation": "For the city Clearview, Riverbank Restoration is an attractive action due to its capacity to enhance natural ecosystems and improve urban recreational spaces. This intervention not only aids in flood mitigation but also boosts biodiversity along local waterways. Its focus on recovering natural landscapes directly supports the city’s environmental and community resilience objectives."
+        },
+        {
+            "locode": "US-TCT",
+            "cityName": "Techton",
+            "region": "SW",
+            "regionName": "South West",
+            "actionId": "A17",
+            "actionName": "Smart Grid Deployment",
+            "actionPriority": 17,
+            "explanation": "For the city Techton, Smart Grid Deployment is prioritized as it modernizes energy distribution and improves overall grid efficiency. This action enables the seamless integration of renewable energy sources, aligning with the city's technological strengths. Its forward-thinking approach helps address both current energy demands and future climate challenges."
+        },
+        {
+            "locode": "US-TCT",
+            "cityName": "Techton",
+            "region": "SW",
+            "regionName": "South West",
+            "actionId": "A18",
+            "actionName": "Biomass Energy Projects",
+            "actionPriority": 18,
+            "explanation": "For the city Techton, Biomass Energy Projects are valued for transforming local organic waste into a sustainable energy source. This action leverages available resources to reduce waste while promoting renewable energy generation. Its innovative approach enhances environmental compatibility and supports long-term waste management and energy strategies."
+        },
+        {
+            "locode": "US-SMV",
+            "cityName": "Smallville",
+            "region": "MW",
+            "regionName": "Midwest",
+            "actionId": "A19",
+            "actionName": "Community Awareness Programs",
+            "actionPriority": 19,
+            "explanation": "For the city Smallville, Community Awareness Programs are seen as essential for equipping residents with the knowledge to tackle climate challenges. This action fosters community engagement and enables a grounded approach to climate adaptation. Its focus on empowering individuals contributes to a collective resilience that is well-suited to the city's socio-demographic context."
+        },
+        {
+            "locode": "US-SMV",
+            "cityName": "Smallville",
+            "region": "MW",
+            "regionName": "Midwest",
+            "actionId": "A20",
+            "actionName": "Storm Drain Upgrades",
+            "actionPriority": 20,
+            "explanation": "For the city Smallville, Storm Drain Upgrades are prioritized as they address critical infrastructure vulnerabilities associated with heavy rainfall. This action supports efforts to reduce urban flooding risks and enhances public safety. Its targeted focus on essential infrastructure improvements reinforces the city's overall resilience to climate impacts."
+        }
+    ]
+}

@@ -1,182 +1,204 @@
-[
-    {
-        "locode": "BR MOS",
-        "cityName": "Mossor\u00f3",
-        "region": "RN",
-        "regionName": "Rio Grande do Norte",
-        "actionId": "icare_0118",
-        "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
-        "actionPriority": 1
-    },
-    {
-        "locode": "BR MOS",
-        "cityName": "Mossor\u00f3",
-        "region": "RN",
-        "regionName": "Rio Grande do Norte",
-        "actionId": "icare_0005",
-        "actionName": "Create credit lines for residential and community wind energy projects",
-        "actionPriority": 2
-    },
-    {
-        "locode": "BR MOS",
-        "cityName": "Mossor\u00f3",
-        "region": "RN",
-        "regionName": "Rio Grande do Norte",
-        "actionId": "icare_0121",
-        "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
-        "actionPriority": 3
-    },
-    {
-        "locode": "BR MOS",
-        "cityName": "Mossor\u00f3",
-        "region": "RN",
-        "regionName": "Rio Grande do Norte",
-        "actionId": "icare_0094",
-        "actionName": "Adoption of biomethane in public fleets.",
-        "actionPriority": 4
-    },
-    {
-        "locode": "BR MOS",
-        "cityName": "Mossor\u00f3",
-        "region": "RN",
-        "regionName": "Rio Grande do Norte",
-        "actionId": "icare_0088",
-        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
-        "actionPriority": 5
-    },
-    {
-        "locode": "BR MOS",
-        "cityName": "Mossor\u00f3",
-        "region": "RN",
-        "regionName": "Rio Grande do Norte",
-        "actionId": "icare_0092",
-        "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
-        "actionPriority": 6
-    },
-    {
-        "locode": "BR MOS",
-        "cityName": "Mossor\u00f3",
-        "region": "RN",
-        "regionName": "Rio Grande do Norte",
-        "actionId": "icare_0057",
-        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
-        "actionPriority": 7
-    },
-    {
-        "locode": "BR MOS",
-        "cityName": "Mossor\u00f3",
-        "region": "RN",
-        "regionName": "Rio Grande do Norte",
-        "actionId": "icare_0044",
-        "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
-        "actionPriority": 8
-    },
-    {
-        "locode": "BR MOS",
-        "cityName": "Mossor\u00f3",
-        "region": "RN",
-        "regionName": "Rio Grande do Norte",
-        "actionId": "icare_0025",
-        "actionName": "Promote energy-efficient low-income housing",
-        "actionPriority": 9
-    },
-    {
-        "locode": "BR MOS",
-        "cityName": "Mossor\u00f3",
-        "region": "RN",
-        "regionName": "Rio Grande do Norte",
-        "actionId": "icare_0090",
-        "actionName": "Adoption of electric drones for last-mile deliveries.",
-        "actionPriority": 10
-    },
-    {
-        "locode": "BR MOS",
-        "cityName": "Mossor\u00f3",
-        "region": "RN",
-        "regionName": "Rio Grande do Norte",
-        "actionId": "icare_0068",
-        "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
-        "actionPriority": 11
-    },
-    {
-        "locode": "BR MOS",
-        "cityName": "Mossor\u00f3",
-        "region": "RN",
-        "regionName": "Rio Grande do Norte",
-        "actionId": "icare_0133",
-        "actionName": "Promote Urban Reforestation and Green Corridors",
-        "actionPriority": 12
-    },
-    {
-        "locode": "BR MOS",
-        "cityName": "Mossor\u00f3",
-        "region": "RN",
-        "regionName": "Rio Grande do Norte",
-        "actionId": "icare_0117",
-        "actionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
-        "actionPriority": 13
-    },
-    {
-        "locode": "BR MOS",
-        "cityName": "Mossor\u00f3",
-        "region": "RN",
-        "regionName": "Rio Grande do Norte",
-        "actionId": "icare_0042",
-        "actionName": "Encourage renewable energy policies at the municipal level",
-        "actionPriority": 14
-    },
-    {
-        "locode": "BR MOS",
-        "cityName": "Mossor\u00f3",
-        "region": "RN",
-        "regionName": "Rio Grande do Norte",
-        "actionId": "c40_0033",
-        "actionName": "15/30-Minute Areas",
-        "actionPriority": 15
-    },
-    {
-        "locode": "BR MOS",
-        "cityName": "Mossor\u00f3",
-        "region": "RN",
-        "regionName": "Rio Grande do Norte",
-        "actionId": "icare_0131",
-        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
-        "actionPriority": 16
-    },
-    {
-        "locode": "BR MOS",
-        "cityName": "Mossor\u00f3",
-        "region": "RN",
-        "regionName": "Rio Grande do Norte",
-        "actionId": "icare_0050",
-        "actionName": "Implement Agroforestry Systems",
-        "actionPriority": 17
-    },
-    {
-        "locode": "BR MOS",
-        "cityName": "Mossor\u00f3",
-        "region": "RN",
-        "regionName": "Rio Grande do Norte",
-        "actionId": "icare_0136",
-        "actionName": "Support the Implementation of Ecological Fiscal Incentives",
-        "actionPriority": 18
-    },
-    {
-        "locode": "BR MOS",
-        "cityName": "Mossor\u00f3",
-        "region": "RN",
-        "regionName": "Rio Grande do Norte",
-        "actionId": "icare_0100",
-        "actionName": "Support Regenerative Agriculture Practices",
-        "actionPriority": 19
-    },
-    {
-        "locode": "BR MOS",
-        "cityName": "Mossor\u00f3",
-        "region": "RN",
-        "regionName": "Rio Grande do Norte",
-        "actionId": "icare_0099",
-        "actionName": "Support Agroecological Certification Programs",
-        "actionPriority": 20
-    }
-]
+{
+    "actions": [
+        {
+            "locode": "MP1",
+            "cityName": "Metropolis",
+            "region": "Central",
+            "regionName": "Central Region",
+            "actionId": "A1",
+            "actionName": "New Building Standards",
+            "actionPriority": 1,
+            "explanation": "For the city Metropolis, New Building Standards is prioritized as it directly reduces greenhouse gas emissions by setting higher energy efficiency requirements in the construction sector. This action aligns with the urban context where high-density development demands sustainable building practices. It offers long-term benefits by reducing climate risks associated with outdated infrastructure. Moreover, it strengthens urban resilience and leverages local capacity for implementation."
+        },
+        {
+            "locode": "MP1",
+            "cityName": "Metropolis",
+            "region": "Central",
+            "regionName": "Central Region",
+            "actionId": "A2",
+            "actionName": "Retrofitting Existing Buildings",
+            "actionPriority": 2,
+            "explanation": "For the city Metropolis, Retrofitting Existing Buildings is seen as a crucial intervention that enhances energy efficiency across the current building stock. It effectively targets emissions by reducing energy consumption in structures already in use. The action is well-suited to the urban profile and supports long-term climate risk mitigation through modernization. Its integration into current infrastructure planning further emphasizes its relevance in the city's sustainability strategy."
+        },
+        {
+            "locode": "MP1",
+            "cityName": "Metropolis",
+            "region": "Central",
+            "regionName": "Central Region",
+            "actionId": "A3",
+            "actionName": "Expansion of Public Transit",
+            "actionPriority": 3,
+            "explanation": "For the city Metropolis, the Expansion of Public Transit is valued for its ability to lower urban emissions by shifting dependence away from private vehicles. This measure directly addresses a significant emission sector and contributes to improved air quality. It aligns well with the city's density and mobility patterns, while also offering benefits in terms of reduced congestion and enhanced public health. The action’s focus on efficient urban transport makes it a strong candidate in the city’s climate action portfolio."
+        },
+        {
+            "locode": "MP1",
+            "cityName": "Metropolis",
+            "region": "Central",
+            "regionName": "Central Region",
+            "actionId": "A4",
+            "actionName": "Electric Vehicle Incentives",
+            "actionPriority": 4,
+            "explanation": "For the city Metropolis, Electric Vehicle Incentives are prioritized for their direct role in reducing emissions within the transportation sector. This action supports a shift towards cleaner technologies and reduces the environmental impact of urban mobility. It is well-aligned with the city’s efforts to modernize its transport infrastructure, providing co-benefits that include improved air quality. The minimal dependency on additional infrastructure makes it an adaptable and cost-effective strategy."
+        },
+        {
+            "locode": "MP1",
+            "cityName": "Metropolis",
+            "region": "Central",
+            "regionName": "Central Region",
+            "actionId": "A5",
+            "actionName": "Renewable Energy Installations",
+            "actionPriority": 5,
+            "explanation": "For the city Metropolis, Renewable Energy Installations are highly regarded as they offer a direct pathway to replacing fossil fuel-based energy systems. This action promotes a sustainable energy mix and supports broad reductions in greenhouse gas emissions. It is also environmentally compatible with the local climate and provides lasting benefits by improving energy security. Its integration with existing infrastructure makes it a strategic investment for long-term urban resilience."
+        },
+        {
+            "locode": "MP1",
+            "cityName": "Metropolis",
+            "region": "Central",
+            "regionName": "Central Region",
+            "actionId": "A6",
+            "actionName": "Urban Green Spaces Development",
+            "actionPriority": 6,
+            "explanation": "For the city Metropolis, Urban Green Spaces Development is a transformative action that enhances urban environmental quality. It not only mitigates heat island effects but also improves air quality and provides essential recreational areas. The initiative aligns well with the city’s need for more ecological integration in dense urban zones. Additionally, it contributes to community well-being and supports broader sustainability goals through enhanced biodiversity."
+        },
+        {
+            "locode": "MP1",
+            "cityName": "Metropolis",
+            "region": "Central",
+            "regionName": "Central Region",
+            "actionId": "A7",
+            "actionName": "Stormwater Management Systems",
+            "actionPriority": 7,
+            "explanation": "For the city Metropolis, Stormwater Management Systems are prioritized for their role in addressing the risks associated with extreme weather events and flooding. This action is particularly relevant in urban areas where heavy precipitation can overwhelm existing drainage systems. It enhances the city's resilience against climate-induced water hazards while safeguarding infrastructure. The strategic focus on risk reduction makes it a key component of wider climate adaptation measures."
+        },
+        {
+            "locode": "MP1",
+            "cityName": "Metropolis",
+            "region": "Central",
+            "regionName": "Central Region",
+            "actionId": "A8",
+            "actionName": "Coastal Flood Defenses",
+            "actionPriority": 8,
+            "explanation": "For the city Metropolis, Coastal Flood Defenses are essential due to potential exposure to flooding and storm surges. The action is designed to protect critical infrastructure and communities by mitigating risks from rising water levels. It is well-aligned with local environmental conditions and priority risk areas. This targeted focus on resilience reinforces the overall effectiveness of the city's climate adaptation strategy."
+        },
+        {
+            "locode": "MP1",
+            "cityName": "Metropolis",
+            "region": "Central",
+            "regionName": "Central Region",
+            "actionId": "A9",
+            "actionName": "Water Conservation Programs",
+            "actionPriority": 9,
+            "explanation": "For the city Metropolis, Water Conservation Programs are implemented to address resource stresses and promote sustainable water use. This action is particularly relevant in urban areas where water demand competes with other essential services. It encourages efficient water management practices and supports long-term environmental sustainability. The program is adaptable and cost-effective, making it a practical choice for addressing localized water challenges."
+        },
+        {
+            "locode": "MP1",
+            "cityName": "Metropolis",
+            "region": "Central",
+            "regionName": "Central Region",
+            "actionId": "A10",
+            "actionName": "Smart Grid Implementation",
+            "actionPriority": 10,
+            "explanation": "For the city Metropolis, Smart Grid Implementation is valued for its role in modernizing energy distribution systems. This action supports the integration of renewable energy sources and optimizes electricity usage, leading to better emissions management. It is particularly suitable for the city's evolving infrastructure needs and enhances operational efficiency. Additionally, the scalability of smart grid technologies makes this a forward-looking investment in urban resilience."
+        },
+        {
+            "locode": "MP1",
+            "cityName": "Metropolis",
+            "region": "Central",
+            "regionName": "Central Region",
+            "actionId": "A11",
+            "actionName": "Waste-to-Energy Conversion",
+            "actionPriority": 11,
+            "explanation": "For the city Metropolis, Waste-to-Energy Conversion is recognized for its dual benefit of managing urban waste and generating renewable energy. The action effectively reduces landfill accumulation and lowers greenhouse gas emissions by repurposing waste. It aligns with sustainability targets and encourages efficient resource use. This innovative approach not only addresses environmental challenges but also promotes economic efficiency by transforming waste into a valuable asset."
+        },
+        {
+            "locode": "MP1",
+            "cityName": "Metropolis",
+            "region": "Central",
+            "regionName": "Central Region",
+            "actionId": "A12",
+            "actionName": "Energy-Efficient Street Lighting",
+            "actionPriority": 12,
+            "explanation": "For the city Metropolis, Energy-Efficient Street Lighting is prioritized for its immediate impact on reducing municipal energy consumption. The action optimizes public infrastructure by replacing outdated systems, thereby lowering operational costs and emissions. It aligns well with urban sustainability goals and is straightforward to implement within existing frameworks. Its cost-effectiveness and quick deployment add significant value to the city's environmental strategy."
+        },
+        {
+            "locode": "MP1",
+            "cityName": "Metropolis",
+            "region": "Central",
+            "regionName": "Central Region",
+            "actionId": "A13",
+            "actionName": "Sustainable Waste Management",
+            "actionPriority": 13,
+            "explanation": "For the city Metropolis, Sustainable Waste Management is valued for addressing the environmental impacts of urban waste. The action promotes comprehensive and efficient waste processing practices, reducing both emissions and environmental hazards. It is designed to align with local sustainability targets and resource management goals. Emphasizing long-term urban health, this approach integrates waste reduction with broader climate resilience planning."
+        },
+        {
+            "locode": "MP1",
+            "cityName": "Metropolis",
+            "region": "Central",
+            "regionName": "Central Region",
+            "actionId": "A14",
+            "actionName": "Bicycle Infrastructure Expansion",
+            "actionPriority": 14,
+            "explanation": "For the city Metropolis, Bicycle Infrastructure Expansion is a key action that promotes low-emission transportation modes. By encouraging cycling, it reduces reliance on motorized vehicles and improves overall urban air quality. This action aligns with the city’s dense urban design and offers significant health and congestion benefits. Its relatively simple implementation and community benefits contribute to its overall priority within the climate action framework."
+        },
+        {
+            "locode": "MP1",
+            "cityName": "Metropolis",
+            "region": "Central",
+            "regionName": "Central Region",
+            "actionId": "A15",
+            "actionName": "Affordable Housing Energy Upgrades",
+            "actionPriority": 15,
+            "explanation": "For the city Metropolis, Affordable Housing Energy Upgrades are prioritized due to their impact on reducing energy consumption in densely populated residential areas. This action not only cuts emissions but also supports vulnerable populations by lowering energy costs and improving living conditions. It is well-integrated with local socio-demographic needs and addresses corporate as well as community resilience. The synergistic benefits reinforce its importance within the city’s broader sustainability initiatives."
+        },
+        {
+            "locode": "MP1",
+            "cityName": "Metropolis",
+            "region": "Central",
+            "regionName": "Central Region",
+            "actionId": "A16",
+            "actionName": "Green Roof Incentives",
+            "actionPriority": 16,
+            "explanation": "For the city Metropolis, Green Roof Incentives are valued for enhancing urban greenery and reducing building energy demands. This action not only contributes to lower rooftop temperatures but also helps manage stormwater and improve air quality. It fits well with the city’s environmental context, offering aesthetic and ecological co-benefits. The initiative is a practical measure that supports overall urban sustainability through multiple interconnected benefits."
+        },
+        {
+            "locode": "MP1",
+            "cityName": "Metropolis",
+            "region": "Central",
+            "regionName": "Central Region",
+            "actionId": "A17",
+            "actionName": "Carbon Capture and Storage",
+            "actionPriority": 17,
+            "explanation": "For the city Metropolis, Carbon Capture and Storage is recognized as a sophisticated intervention aimed at directly reducing industrial emissions. This action addresses critical sources of greenhouse gases and fits into a broader strategy for long-term climate mitigation. Despite its complexity, its potential to substantially lower emissions makes it a notable addition to the portfolio. The technology is considered transformative, especially when integrated with other emission reduction measures."
+        },
+        {
+            "locode": "MP1",
+            "cityName": "Metropolis",
+            "region": "Central",
+            "regionName": "Central Region",
+            "actionId": "A18",
+            "actionName": "R&D in Clean Technologies",
+            "actionPriority": 18,
+            "explanation": "For the city Metropolis, R&D in Clean Technologies is prioritized for its capacity to drive innovative solutions that address future climate challenges. This action sets the stage for breakthrough developments that can enhance efficiency across multiple sectors. It aligns with long-term strategic goals by fostering partnerships and supporting local technological capacity. Though its benefits may unfold over a longer time horizon, the investment positions the city as a leader in sustainable innovation."
+        },
+        {
+            "locode": "MP1",
+            "cityName": "Metropolis",
+            "region": "Central",
+            "regionName": "Central Region",
+            "actionId": "A19",
+            "actionName": "Community Climate Action Planning",
+            "actionPriority": 19,
+            "explanation": "For the city Metropolis, Community Climate Action Planning is appreciated for its inclusive approach to engaging local stakeholders in sustainable development. This action empowers residents and ensures that climate measures are tailored to meet local needs and characteristics. By integrating diverse perspectives, it helps build resilient communities and address vulnerabilities. The collaborative nature of this planning process enhances overall capacity to manage climate risks effectively."
+        },
+        {
+            "locode": "MP1",
+            "cityName": "Metropolis",
+            "region": "Central",
+            "regionName": "Central Region",
+            "actionId": "A20",
+            "actionName": "Climate Resilience Education Programs",
+            "actionPriority": 20,
+            "explanation": "For the city Metropolis, Climate Resilience Education Programs are valued for their role in equipping the community with the knowledge needed to adapt to changing climatic conditions. This action fosters sustainable practices and behavioral change by raising public awareness about climate challenges. It is aligned with the city’s efforts to build long-term resilience and ensure community engagement in climate initiatives. By promoting informed decision-making, the program lays the groundwork for a more adaptable urban society."
+        }
+    ]
+}

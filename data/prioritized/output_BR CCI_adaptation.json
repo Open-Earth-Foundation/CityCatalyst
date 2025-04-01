@@ -1,202 +1,204 @@
-[
-    {
-        "locode": "BR CCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0176",
-        "actionName": "Development of Climate Action Plan",
-        "actionPriority": 1,
-        "explanation": "Ranked #1 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0169",
-        "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
-        "actionPriority": 2,
-        "explanation": "Ranked #2 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0154",
-        "actionName": "Cleaning and Unclogging of Channels with Installation of Eco-barriers",
-        "actionPriority": 3,
-        "explanation": "Ranked #3 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "ipcc_0097",
-        "actionName": "Food storage/distribution improvements",
-        "actionPriority": 4,
-        "explanation": "Ranked #4 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0140",
-        "actionName": "Landslide Risk Assessment and Management",
-        "actionPriority": 5,
-        "explanation": "Ranked #5 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0164",
-        "actionName": "Hydrological Monitoring System with Telemetry Stations",
-        "actionPriority": 6,
-        "explanation": "Ranked #6 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0181",
-        "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
-        "actionPriority": 7,
-        "explanation": "Ranked #7 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0151",
-        "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
-        "actionPriority": 8,
-        "explanation": "Ranked #8 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0162",
-        "actionName": "Strengthen programs for control and conservation of protected areas",
-        "actionPriority": 9,
-        "explanation": "Ranked #9 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0175",
-        "actionName": "Recovery and preservation of green areas",
-        "actionPriority": 10,
-        "explanation": "Ranked #10 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "ipcc_0088",
-        "actionName": "Building codes",
-        "actionPriority": 11,
-        "explanation": "Ranked #11 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "ipcc_0086",
-        "actionName": "Ecosystem-based adaptation",
-        "actionPriority": 12,
-        "explanation": "Ranked #12 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0149",
-        "actionName": "Encourage sustainable land use practices",
-        "actionPriority": 13,
-        "explanation": "Ranked #13 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "ipcc_0094",
-        "actionName": "Access to health care",
-        "actionPriority": 14,
-        "explanation": "Ranked #14 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0156",
-        "actionName": "Implementation of urban gardens",
-        "actionPriority": 15,
-        "explanation": "Ranked #15 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "ipcc_0092",
-        "actionName": "Social safety nets",
-        "actionPriority": 16,
-        "explanation": "Ranked #16 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "ipcc_0095",
-        "actionName": "Disaster early warning",
-        "actionPriority": 17,
-        "explanation": "Ranked #17 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0148",
-        "actionName": "Create the Municipal Climate Change Forum",
-        "actionPriority": 18,
-        "explanation": "Ranked #18 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "ipcc_0099",
-        "actionName": "Water capture/storage",
-        "actionPriority": 19,
-        "explanation": "Ranked #19 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CCI",
-        "cityName": "Cama\u00e7ari",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "ipcc_0096",
-        "actionName": "Farm/fishery improvements",
-        "actionPriority": 20,
-        "explanation": "Ranked #20 by tournament ranking algorithm"
-    }
-]
+{
+    "actions": [
+        {
+            "locode": "MT001",
+            "cityName": "Metropolis",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "A001",
+            "actionName": "New Building Standards",
+            "actionPriority": 1,
+            "explanation": "For the city Metropolis, New Building Standards was prioritized because it addresses the largest emission sources within the urban built environment and promotes significant energy efficiency improvements. This action is well aligned with the city’s climate resilience efforts and leverages local expertise effectively. It offers a balanced approach by reducing climate risks while generating additional benefits such as improved indoor environmental quality."
+        },
+        {
+            "locode": "MT002",
+            "cityName": "Metropolis",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "A002",
+            "actionName": "Bus Emissions",
+            "actionPriority": 2,
+            "explanation": "For the city Metropolis, Bus Emissions was valued for its focused reduction of pollutants from public transportation, a key contributor to urban air quality challenges. It aligns well with environmental sustainability objectives and supports public health benefits. The strategy also presents an effective risk reduction pathway by addressing traffic-related emissions and congestion."
+        },
+        {
+            "locode": "MT003",
+            "cityName": "Metropolis",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "A003",
+            "actionName": "Renewable Energy Investment",
+            "actionPriority": 3,
+            "explanation": "For the city Metropolis, Renewable Energy Investment was prioritized due to its strong potential in substantially lowering the city's carbon footprint. The action supports a transition towards cleaner energy while fostering economic opportunities through job creation. It fits well with the city’s long-term sustainability and energy security plans."
+        },
+        {
+            "locode": "MT004",
+            "cityName": "Metropolis",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "A004",
+            "actionName": "Improved Public Transit Infrastructure",
+            "actionPriority": 4,
+            "explanation": "For the city Metropolis, Improved Public Transit Infrastructure is recognized for its capacity to reduce reliance on fossil-fuel powered vehicles and cut urban emissions. It is particularly relevant given the city's dense, urban setting and offers broad environmental benefits including reduced congestion and enhanced mobility. The action also demonstrates compatibility with existing urban planning initiatives."
+        },
+        {
+            "locode": "MT005",
+            "cityName": "Metropolis",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "A005",
+            "actionName": "Urban Green Spaces Expansion",
+            "actionPriority": 5,
+            "explanation": "For the city Metropolis, Urban Green Spaces Expansion was prioritized as it helps mitigate urban heat island effects and improves the overall environmental quality. The action enhances community well-being through better air quality and recreational areas while contributing to carbon sequestration. Its design is well matched to address local climate vulnerabilities in densely populated regions."
+        },
+        {
+            "locode": "MT006",
+            "cityName": "Metropolis",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "A006",
+            "actionName": "Water Conservation Technologies",
+            "actionPriority": 6,
+            "explanation": "For the city Metropolis, Water Conservation Technologies is highlighted for its ability to manage limited water resources more efficiently, reducing energy usage in water supply systems. This action is especially important given the city's environmental sensitivity and supports prompt risk mitigation measures. It aligns with cost-effective strategies to enhance community resilience."
+        },
+        {
+            "locode": "MT007",
+            "cityName": "Metropolis",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "A007",
+            "actionName": "Waste-to-Energy Initiatives",
+            "actionPriority": 7,
+            "explanation": "For the city Metropolis, Waste-to-Energy Initiatives are valued for converting municipal waste into a resource for energy production, thus tackling both waste management and emissions reduction simultaneously. The initiative takes advantage of existing waste systems and contributes to a circular economy. It fits the local context by providing environmental and economic co-benefits."
+        },
+        {
+            "locode": "MT008",
+            "cityName": "Metropolis",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "A008",
+            "actionName": "Electric Vehicle (EV) Promotion",
+            "actionPriority": 8,
+            "explanation": "For the city Metropolis, Electric Vehicle Promotion has been prioritized because it directly addresses transportation emissions and supports a shift towards sustainable mobility. It improves urban air quality and reduces noise pollution, offering benefits that extend across public health and environmental quality. Additionally, the approach is adaptable to existing infrastructure with relatively moderate adjustments."
+        },
+        {
+            "locode": "MT009",
+            "cityName": "Metropolis",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "A009",
+            "actionName": "Smart Grid Implementation",
+            "actionPriority": 9,
+            "explanation": "For the city Metropolis, Smart Grid Implementation is considered beneficial as it enhances energy distribution and integrates renewable sources more efficiently. The action supports long-term energy resilience and aligns with evolving urban technological trends. Its implementation is seen as a strategic move to optimize overall energy performance while bolstering grid reliability."
+        },
+        {
+            "locode": "MT010",
+            "cityName": "Metropolis",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "A010",
+            "actionName": "Climate Resilient Infrastructure",
+            "actionPriority": 10,
+            "explanation": "For the city Metropolis, Climate Resilient Infrastructure is recognized for directly addressing vulnerabilities to climate extremes. This action enhances structural durability and community safety by incorporating risk reduction measures, making it appropriate for the urban environment. It is well designed to meet long-term adaptation needs while preparing the city for future climate shocks."
+        },
+        {
+            "locode": "MT011",
+            "cityName": "Metropolis",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "A011",
+            "actionName": "Energy Efficiency Retrofits",
+            "actionPriority": 11,
+            "explanation": "For the city Metropolis, Energy Efficiency Retrofits are valued for their targeted approach to reducing energy consumption in existing buildings. The action provides immediate benefits and is particularly well-suited to urban areas with older infrastructure. It is appreciated for its cost-effectiveness and for generating quick improvements in energy performance and emissions reduction."
+        },
+        {
+            "locode": "MT012",
+            "cityName": "Metropolis",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "A012",
+            "actionName": "Green Roofs Initiative",
+            "actionPriority": 12,
+            "explanation": "For the city Metropolis, the Green Roofs Initiative is seen as a strategic adaptation measure that contributes to natural cooling and improved stormwater management. It enhances the urban microclimate and addresses localized environmental stresses while adding aesthetic and social benefits. The approach offers a creative solution to urban density challenges with relatively low infrastructural disruptions."
+        },
+        {
+            "locode": "MT013",
+            "cityName": "Metropolis",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "A013",
+            "actionName": "Cycling Infrastructure Development",
+            "actionPriority": 13,
+            "explanation": "For the city Metropolis, Cycling Infrastructure Development is valued for its capacity to reduce reliance on motorized transport and lower greenhouse gas emissions. This action supports healthier lifestyles and complements existing urban road networks with minimal disruptions. It is an effective measure to improve urban mobility while also contributing to improved air quality."
+        },
+        {
+            "locode": "MT014",
+            "cityName": "Metropolis",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "A014",
+            "actionName": "Solar Panel Subsidies",
+            "actionPriority": 14,
+            "explanation": "For the city Metropolis, Solar Panel Subsidies are prioritized as they encourage a broader switch to renewable energy within residential and commercial sectors. The initiative facilitates energy efficiency and supports local economic growth by stimulating the renewable energy market. It stands as a feasible strategy that aligns well with both environmental and socio-economic objectives."
+        },
+        {
+            "locode": "MT015",
+            "cityName": "Metropolis",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "A015",
+            "actionName": "Flood Defense Systems",
+            "actionPriority": 15,
+            "explanation": "For the city Metropolis, Flood Defense Systems are noted for addressing immediate risks from climate-induced flooding and protecting valuable urban infrastructure. The action is carefully tailored to mitigate extreme weather impacts and enhance community safety. It serves as a crucial resilience measure that aligns with the city’s vulnerability profile and long-term adaptation needs."
+        },
+        {
+            "locode": "MT016",
+            "cityName": "Metropolis",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "A016",
+            "actionName": "Heatwave Preparedness Programs",
+            "actionPriority": 16,
+            "explanation": "For the city Metropolis, Heatwave Preparedness Programs have been prioritized for their role in enhancing community resilience against extreme temperature events. The measure is well-suited to protect public health and mitigate the urban impacts of heat stress. It offers a proactive approach by ensuring rapid response and community engagement in risk reduction efforts."
+        },
+        {
+            "locode": "MT017",
+            "cityName": "Metropolis",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "A017",
+            "actionName": "Urban Tree Canopy Expansion",
+            "actionPriority": 17,
+            "explanation": "For the city Metropolis, Urban Tree Canopy Expansion is regarded as a valuable strategy to improve air quality and moderate urban temperatures. The initiative supports overall environmental quality and community well-being through increased green cover. It is considered both socially beneficial and relatively easy to integrate into the urban fabric."
+        },
+        {
+            "locode": "MT018",
+            "cityName": "Metropolis",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "A018",
+            "actionName": "Carbon Pricing Mechanisms",
+            "actionPriority": 18,
+            "explanation": "For the city Metropolis, Carbon Pricing Mechanisms are acknowledged for their comprehensive approach to encouraging emissions reduction across multiple sectors. This action creates market-based incentives that drive sustainable practices without relying solely on direct regulations. It fits within a broader climate policy framework that can mobilize both industry and public engagement."
+        },
+        {
+            "locode": "MT019",
+            "cityName": "Metropolis",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "A019",
+            "actionName": "Industrial Emissions Regulations",
+            "actionPriority": 19,
+            "explanation": "For the city Metropolis, Industrial Emissions Regulations are prioritized because they directly target major sources of greenhouse gases from industrial activities. The approach is carefully designed to balance environmental needs with the city’s capacity for regulatory enforcement. It emphasizes reducing overall emissions and enhancing long-term environmental health while addressing industrial risks."
+        },
+        {
+            "locode": "MT020",
+            "cityName": "Metropolis",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "A020",
+            "actionName": "Stormwater Management Improvements",
+            "actionPriority": 20,
+            "explanation": "For the city Metropolis, Stormwater Management Improvements are highlighted for their role in reducing flood risks and enhancing local water quality. The action is tailored to the city’s specific climate challenges and urban layout, offering a clear path towards improved resilience. It is valued for its capacity to integrate with existing infrastructural systems and provide sustainable long-term benefits."
+        }
+    ]
+}

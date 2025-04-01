@@ -1,182 +1,204 @@
-[
-    {
-        "locode": "BR CII",
-        "cityName": "Cariacica",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0005",
-        "actionName": "Create credit lines for residential and community wind energy projects",
-        "actionPriority": 1
-    },
-    {
-        "locode": "BR CII",
-        "cityName": "Cariacica",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0121",
-        "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
-        "actionPriority": 2
-    },
-    {
-        "locode": "BR CII",
-        "cityName": "Cariacica",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0118",
-        "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
-        "actionPriority": 3
-    },
-    {
-        "locode": "BR CII",
-        "cityName": "Cariacica",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0088",
-        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
-        "actionPriority": 4
-    },
-    {
-        "locode": "BR CII",
-        "cityName": "Cariacica",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0094",
-        "actionName": "Adoption of biomethane in public fleets.",
-        "actionPriority": 5
-    },
-    {
-        "locode": "BR CII",
-        "cityName": "Cariacica",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0092",
-        "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
-        "actionPriority": 6
-    },
-    {
-        "locode": "BR CII",
-        "cityName": "Cariacica",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0057",
-        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
-        "actionPriority": 7
-    },
-    {
-        "locode": "BR CII",
-        "cityName": "Cariacica",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0025",
-        "actionName": "Promote energy-efficient low-income housing",
-        "actionPriority": 8
-    },
-    {
-        "locode": "BR CII",
-        "cityName": "Cariacica",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0044",
-        "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
-        "actionPriority": 9
-    },
-    {
-        "locode": "BR CII",
-        "cityName": "Cariacica",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0090",
-        "actionName": "Adoption of electric drones for last-mile deliveries.",
-        "actionPriority": 10
-    },
-    {
-        "locode": "BR CII",
-        "cityName": "Cariacica",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0068",
-        "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
-        "actionPriority": 11
-    },
-    {
-        "locode": "BR CII",
-        "cityName": "Cariacica",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0027",
-        "actionName": "Create financing programs for local renewable energy projects",
-        "actionPriority": 12
-    },
-    {
-        "locode": "BR CII",
-        "cityName": "Cariacica",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0133",
-        "actionName": "Promote Urban Reforestation and Green Corridors",
-        "actionPriority": 13
-    },
-    {
-        "locode": "BR CII",
-        "cityName": "Cariacica",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "c40_0033",
-        "actionName": "15/30-Minute Areas",
-        "actionPriority": 14
-    },
-    {
-        "locode": "BR CII",
-        "cityName": "Cariacica",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0042",
-        "actionName": "Encourage renewable energy policies at the municipal level",
-        "actionPriority": 15
-    },
-    {
-        "locode": "BR CII",
-        "cityName": "Cariacica",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0131",
-        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
-        "actionPriority": 16
-    },
-    {
-        "locode": "BR CII",
-        "cityName": "Cariacica",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0136",
-        "actionName": "Support the Implementation of Ecological Fiscal Incentives",
-        "actionPriority": 17
-    },
-    {
-        "locode": "BR CII",
-        "cityName": "Cariacica",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0117",
-        "actionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
-        "actionPriority": 18
-    },
-    {
-        "locode": "BR CII",
-        "cityName": "Cariacica",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0099",
-        "actionName": "Support Agroecological Certification Programs",
-        "actionPriority": 19
-    },
-    {
-        "locode": "BR CII",
-        "cityName": "Cariacica",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "ipcc_0016",
-        "actionName": "Eco-driving",
-        "actionPriority": 20
-    }
-]
+{
+    "actions": [
+        {
+            "locode": "GV001",
+            "cityName": "GreenVille",
+            "region": "R1",
+            "regionName": "North District",
+            "actionId": "A01",
+            "actionName": "New Building Standards",
+            "actionPriority": 1,
+            "explanation": "For GreenVille, New Building Standards was prioritized due to its strong potential in reducing greenhouse gas emissions by improving energy efficiency in buildings. The action aligns well with the city's urban density and addresses significant emission sources. It also enhances long-term resilience by reducing climate risks and contributes to healthier living conditions. Its cost-effectiveness and compatibility with existing infrastructure make it a strategic choice for the city's development."
+        },
+        {
+            "locode": "GV002",
+            "cityName": "GreenVille",
+            "region": "R1",
+            "regionName": "North District",
+            "actionId": "A02",
+            "actionName": "Bus Emissions",
+            "actionPriority": 2,
+            "explanation": "For GreenVille, Bus Emissions was highlighted as a valuable action because it directly addresses air quality concerns in busy urban transport corridors. This strategy is well-suited to the city's high-density areas and targets a crucial emission sector. It offers swift implementation with immediate benefits to public health and urban mobility. The action is supported by clear improvements in risk reduction and cost-effectiveness within the transportation sector."
+        },
+        {
+            "locode": "EC001",
+            "cityName": "EcoCity",
+            "region": "R2",
+            "regionName": "Central Zone",
+            "actionId": "A03",
+            "actionName": "New Building Standards",
+            "actionPriority": 3,
+            "explanation": "For EcoCity, New Building Standards was favored thanks to its comprehensive approach in cutting energy usage in urban structures. The focus on building efficiency is particularly relevant given the city's emphasis on sustainable urban growth. It contributes to reducing overall emissions and fortifying the city's resilience against climate-related risks. Additionally, its alignment with economic feasibility and infrastructural compatibility underscores its strategic importance."
+        },
+        {
+            "locode": "EC002",
+            "cityName": "EcoCity",
+            "region": "R2",
+            "regionName": "Central Zone",
+            "actionId": "A04",
+            "actionName": "Bus Emissions",
+            "actionPriority": 4,
+            "explanation": "For EcoCity, Bus Emissions was prioritized as it targets the dense urban transportation network where emissions are concentrated. The action significantly improves air quality and reduces public health risks in congested areas. Its rapid implementation makes it a practical solution in addressing pressing environmental challenges. Furthermore, the approach is compatible with existing transit systems, promoting efficient resource utilization."
+        },
+        {
+            "locode": "SV001",
+            "cityName": "SustainVille",
+            "region": "R3",
+            "regionName": "East Side",
+            "actionId": "A05",
+            "actionName": "New Building Standards",
+            "actionPriority": 5,
+            "explanation": "For SustainVille, New Building Standards was chosen for its robust approach to lowering carbon emissions through energy-efficient construction practices. It is especially relevant for the city's growth given the increasing demand for sustainable housing. The action adds value by enhancing urban resilience and reducing long-term climate risks. Its implementation is considered both cost-effective and well-aligned with the city's infrastructural plans."
+        },
+        {
+            "locode": "SV002",
+            "cityName": "SustainVille",
+            "region": "R3",
+            "regionName": "East Side",
+            "actionId": "A06",
+            "actionName": "Bus Emissions",
+            "actionPriority": 6,
+            "explanation": "For SustainVille, Bus Emissions was singled out due to its direct impact on reducing emissions in the transportation sector. The action perfectly aligns with the city’s need to tackle urban congestion and improve air quality. Its focus on quickly lowering emissions makes it an appealing option. Moreover, its integration with current transit infrastructure supports a smoother transition and efficient risk management."
+        },
+        {
+            "locode": "CL001",
+            "cityName": "ClearWater",
+            "region": "R4",
+            "regionName": "Southwest",
+            "actionId": "A07",
+            "actionName": "New Building Standards",
+            "actionPriority": 7,
+            "explanation": "For ClearWater, New Building Standards was prioritized as it addresses key emission sources by improving the energy performance of urban buildings. This action is particularly compatible with the city’s architectural landscape and climatic conditions. It reinforces long-term sustainability by reducing energy consumption and associated risks. The benefits extend to enhanced urban comfort and resilience, making it a well-aligned strategic action."
+        },
+        {
+            "locode": "CL002",
+            "cityName": "ClearWater",
+            "region": "R4",
+            "regionName": "Southwest",
+            "actionId": "A08",
+            "actionName": "Bus Emissions",
+            "actionPriority": 8,
+            "explanation": "For ClearWater, Bus Emissions was emphasized as it provides immediate improvements to urban air quality and reduces localized greenhouse gas concentrations. The focus on upgrading bus emissions directly impacts a heavily used transport sector in the city. Its timely execution and practical benefits make it a favorable option. Additionally, the action supports improved public health and reduced environmental risks in congested areas."
+        },
+        {
+            "locode": "BC001",
+            "cityName": "BrightCity",
+            "region": "R5",
+            "regionName": "East Borough",
+            "actionId": "A09",
+            "actionName": "New Building Standards",
+            "actionPriority": 9,
+            "explanation": "For BrightCity, New Building Standards was prioritized given its strategy to enhance energy efficiency and reduce emissions through improved construction practices. The initiative is highly relevant considering the city's dense urban settings and modern development trends. It contributes to long-term sustainability and mitigates climate risks effectively. The action is also recognized for its ability to integrate well with planned urban infrastructure upgrades."
+        },
+        {
+            "locode": "BC002",
+            "cityName": "BrightCity",
+            "region": "R5",
+            "regionName": "East Borough",
+            "actionId": "A10",
+            "actionName": "Bus Emissions",
+            "actionPriority": 10,
+            "explanation": "For BrightCity, Bus Emissions was selected because it directly targets air pollution from urban transit systems, which is a significant concern in densely populated areas. The strategy offers quick benefits in terms of improved public health and reduced greenhouse gas emissions. It is well suited to address the city's particular challenges associated with transportation. Additionally, its streamlined implementation approach makes it a practical and efficient solution."
+        },
+        {
+            "locode": "WF001",
+            "cityName": "WindFalls",
+            "region": "R6",
+            "regionName": "Western Plains",
+            "actionId": "A11",
+            "actionName": "New Building Standards",
+            "actionPriority": 11,
+            "explanation": "For WindFalls, New Building Standards was chosen for its ability to reduce greenhouse gas emissions by improving energy efficiency in building design. Its alignment with local environmental conditions and urban growth makes it particularly relevant. The action contributes significantly to enhancing urban resilience and reducing long-term climate risks. Overall, its sustainable focus and cost-effective implementation render it a thoughtfully considered measure for the city."
+        },
+        {
+            "locode": "WF002",
+            "cityName": "WindFalls",
+            "region": "R6",
+            "regionName": "Western Plains",
+            "actionId": "A12",
+            "actionName": "Bus Emissions",
+            "actionPriority": 12,
+            "explanation": "For WindFalls, Bus Emissions was prioritized because it offers a direct method to curb emissions in the city's transportation sector. The focus on reducing pollutants in bus operations is particularly relevant in areas with significant commuter traffic. This action promises faster observable benefits in terms of air quality and public health. Its integration with existing transit systems and low dependency on further infrastructural changes support its effectiveness."
+        },
+        {
+            "locode": "MR001",
+            "cityName": "MetroRise",
+            "region": "R7",
+            "regionName": "Uptown",
+            "actionId": "A13",
+            "actionName": "New Building Standards",
+            "actionPriority": 13,
+            "explanation": "For MetroRise, New Building Standards was favored because it effectively addresses emission reductions through modern, energy-efficient design practices in urban buildings. The action resonates well with the city’s developmental priorities and capacity for sustainable growth. It strengthens urban resilience by mitigating long-term climate risks and aligns with infrastructural improvements. This comprehensive approach makes it a well-integrated strategy for improving the urban landscape."
+        },
+        {
+            "locode": "MR002",
+            "cityName": "MetroRise",
+            "region": "R7",
+            "regionName": "Uptown",
+            "actionId": "A14",
+            "actionName": "Bus Emissions",
+            "actionPriority": 14,
+            "explanation": "For MetroRise, Bus Emissions was chosen for its capacity to deliver rapid improvements in air quality within dense transit corridors. The action directly tackles a major emission source in the city's transportation network, providing immediate environmental benefits. Its focus on reducing urban pollution supports both public health and sustainability objectives. Additionally, the streamlined integration with existing transit infrastructures enhances its appeal."
+        },
+        {
+            "locode": "PL001",
+            "cityName": "Plenum",
+            "region": "R8",
+            "regionName": "Downtown",
+            "actionId": "A15",
+            "actionName": "New Building Standards",
+            "actionPriority": 15,
+            "explanation": "For Plenum, New Building Standards was prioritized as it offers a holistic approach to reducing emissions by enhancing building efficiency. The strategy is highly compatible with the city's ongoing urban development and modern architectural trends. It strengthens long-term resilience by lowering energy consumption and mitigating climate risks. In addition, its practical implementation aligns well with current construction practices, supporting sustained urban improvements."
+        },
+        {
+            "locode": "PL002",
+            "cityName": "Plenum",
+            "region": "R8",
+            "regionName": "Downtown",
+            "actionId": "A16",
+            "actionName": "Bus Emissions",
+            "actionPriority": 16,
+            "explanation": "For Plenum, Bus Emissions was favored due to its targeted approach to reducing pollutants in the city's transportation system. It directly addresses issues surrounding urban air quality and congested transit routes. The action promises prompt improvements with a focus on reducing climate risks associated with high-density travel. Its ability to integrate seamlessly with existing infrastructure further reinforces its feasibility."
+        },
+        {
+            "locode": "HB001",
+            "cityName": "Harmony Bay",
+            "region": "R9",
+            "regionName": "Seaside",
+            "actionId": "A17",
+            "actionName": "New Building Standards",
+            "actionPriority": 17,
+            "explanation": "For Harmony Bay, New Building Standards was selected for its effective focus on reducing emissions by modernizing the energy efficiency of buildings. The strategy aligns well with the city’s coastal climate and urban layout, enhancing overall resilience. It contributes to long-term sustainability and reduces climate-related hazards over time. The approach also complements existing infrastructure developments, making it a balanced and strategic initiative."
+        },
+        {
+            "locode": "HB002",
+            "cityName": "Harmony Bay",
+            "region": "R9",
+            "regionName": "Seaside",
+            "actionId": "A18",
+            "actionName": "Bus Emissions",
+            "actionPriority": 18,
+            "explanation": "For Harmony Bay, Bus Emissions was prioritized as it offers an immediate impact on reducing emissions from the transportation sector. This action directly benefits the coastal urban environment by lowering pollutants and improving public health. Its rapid implementation makes it suitable for addressing urgent environmental challenges. Additionally, the ease of integrating it with the existing bus network supports its short-term effectiveness and operational feasibility."
+        },
+        {
+            "locode": "RL001",
+            "cityName": "RiverLodge",
+            "region": "R10",
+            "regionName": "Lakeside",
+            "actionId": "A19",
+            "actionName": "New Building Standards",
+            "actionPriority": 19,
+            "explanation": "For RiverLodge, New Building Standards was emphasized for its capacity to lower carbon emissions through updated and energy-efficient building practices. The action is particularly relevant given the city's focus on sustainable urban growth and improving infrastructure. It supports long-term climate resiliency by addressing key emission sources and reducing potential risks. Its balanced integration with local development plans makes it a strategically sound initiative."
+        },
+        {
+            "locode": "RL002",
+            "cityName": "RiverLodge",
+            "region": "R10",
+            "regionName": "Lakeside",
+            "actionId": "A20",
+            "actionName": "Bus Emissions",
+            "actionPriority": 20,
+            "explanation": "For RiverLodge, Bus Emissions was highlighted because it directly targets emission reductions in the transportation sector, which is critical in dense urban areas. The approach offers prompt benefits by improving air quality and reducing health risks associated with urban transit. Its integration with existing systems reduces dependencies and facilitates swift implementation. Overall, the action is well-aligned with the city’s immediate environmental and operational needs."
+        }
+    ]
+}

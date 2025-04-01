@@ -1,202 +1,204 @@
-[
-    {
-        "locode": "BR CLO",
-        "cityName": "Campo Largo",
-        "region": "PR",
-        "regionName": "Paran\u00e1",
-        "actionId": "icare_0176",
-        "actionName": "Development of Climate Action Plan",
-        "actionPriority": 1,
-        "explanation": "Ranked #1 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CLO",
-        "cityName": "Campo Largo",
-        "region": "PR",
-        "regionName": "Paran\u00e1",
-        "actionId": "icare_0169",
-        "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
-        "actionPriority": 2,
-        "explanation": "Ranked #2 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CLO",
-        "cityName": "Campo Largo",
-        "region": "PR",
-        "regionName": "Paran\u00e1",
-        "actionId": "icare_0164",
-        "actionName": "Hydrological Monitoring System with Telemetry Stations",
-        "actionPriority": 3,
-        "explanation": "Ranked #3 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CLO",
-        "cityName": "Campo Largo",
-        "region": "PR",
-        "regionName": "Paran\u00e1",
-        "actionId": "icare_0151",
-        "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
-        "actionPriority": 4,
-        "explanation": "Ranked #4 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CLO",
-        "cityName": "Campo Largo",
-        "region": "PR",
-        "regionName": "Paran\u00e1",
-        "actionId": "icare_0154",
-        "actionName": "Cleaning and Unclogging of Channels with Installation of Eco-barriers",
-        "actionPriority": 5,
-        "explanation": "Ranked #5 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CLO",
-        "cityName": "Campo Largo",
-        "region": "PR",
-        "regionName": "Paran\u00e1",
-        "actionId": "icare_0140",
-        "actionName": "Landslide Risk Assessment and Management",
-        "actionPriority": 6,
-        "explanation": "Ranked #6 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CLO",
-        "cityName": "Campo Largo",
-        "region": "PR",
-        "regionName": "Paran\u00e1",
-        "actionId": "icare_0181",
-        "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
-        "actionPriority": 7,
-        "explanation": "Ranked #7 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CLO",
-        "cityName": "Campo Largo",
-        "region": "PR",
-        "regionName": "Paran\u00e1",
-        "actionId": "ipcc_0097",
-        "actionName": "Food storage/distribution improvements",
-        "actionPriority": 8,
-        "explanation": "Ranked #8 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CLO",
-        "cityName": "Campo Largo",
-        "region": "PR",
-        "regionName": "Paran\u00e1",
-        "actionId": "icare_0162",
-        "actionName": "Strengthen programs for control and conservation of protected areas",
-        "actionPriority": 9,
-        "explanation": "Ranked #9 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CLO",
-        "cityName": "Campo Largo",
-        "region": "PR",
-        "regionName": "Paran\u00e1",
-        "actionId": "icare_0175",
-        "actionName": "Recovery and preservation of green areas",
-        "actionPriority": 10,
-        "explanation": "Ranked #10 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CLO",
-        "cityName": "Campo Largo",
-        "region": "PR",
-        "regionName": "Paran\u00e1",
-        "actionId": "icare_0156",
-        "actionName": "Implementation of urban gardens",
-        "actionPriority": 11,
-        "explanation": "Ranked #11 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CLO",
-        "cityName": "Campo Largo",
-        "region": "PR",
-        "regionName": "Paran\u00e1",
-        "actionId": "ipcc_0088",
-        "actionName": "Building codes",
-        "actionPriority": 12,
-        "explanation": "Ranked #12 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CLO",
-        "cityName": "Campo Largo",
-        "region": "PR",
-        "regionName": "Paran\u00e1",
-        "actionId": "ipcc_0086",
-        "actionName": "Ecosystem-based adaptation",
-        "actionPriority": 13,
-        "explanation": "Ranked #13 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CLO",
-        "cityName": "Campo Largo",
-        "region": "PR",
-        "regionName": "Paran\u00e1",
-        "actionId": "icare_0149",
-        "actionName": "Encourage sustainable land use practices",
-        "actionPriority": 14,
-        "explanation": "Ranked #14 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CLO",
-        "cityName": "Campo Largo",
-        "region": "PR",
-        "regionName": "Paran\u00e1",
-        "actionId": "ipcc_0095",
-        "actionName": "Disaster early warning",
-        "actionPriority": 15,
-        "explanation": "Ranked #15 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CLO",
-        "cityName": "Campo Largo",
-        "region": "PR",
-        "regionName": "Paran\u00e1",
-        "actionId": "ipcc_0099",
-        "actionName": "Water capture/storage",
-        "actionPriority": 16,
-        "explanation": "Ranked #16 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CLO",
-        "cityName": "Campo Largo",
-        "region": "PR",
-        "regionName": "Paran\u00e1",
-        "actionId": "ipcc_0092",
-        "actionName": "Social safety nets",
-        "actionPriority": 17,
-        "explanation": "Ranked #17 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CLO",
-        "cityName": "Campo Largo",
-        "region": "PR",
-        "regionName": "Paran\u00e1",
-        "actionId": "ipcc_0094",
-        "actionName": "Access to health care",
-        "actionPriority": 18,
-        "explanation": "Ranked #18 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CLO",
-        "cityName": "Campo Largo",
-        "region": "PR",
-        "regionName": "Paran\u00e1",
-        "actionId": "ipcc_0084",
-        "actionName": "Restore/create natural areas",
-        "actionPriority": 19,
-        "explanation": "Ranked #19 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR CLO",
-        "cityName": "Campo Largo",
-        "region": "PR",
-        "regionName": "Paran\u00e1",
-        "actionId": "icare_0163",
-        "actionName": "Creation of a First Response Brigade for Fire Fighting",
-        "actionPriority": 20,
-        "explanation": "Ranked #20 by tournament ranking algorithm"
-    }
-]
+{
+    "actions": [
+        {
+            "locode": "MT123",
+            "cityName": "Metropolis",
+            "region": "Capital Region",
+            "regionName": "Northern Capital",
+            "actionId": "A1",
+            "actionName": "New Building Standards",
+            "actionPriority": 1,
+            "explanation": "For the city Metropolis, New Building Standards is prioritized because it directly targets a major source of greenhouse gas emissions from the built environment. This action is well aligned with local sector priorities, enabling energy efficiency improvements and reducing long-term emissions. Its implementation takes advantage of existing regulatory frameworks and provides additional benefits like improved indoor comfort and health outcomes."
+        },
+        {
+            "locode": "MT123",
+            "cityName": "Metropolis",
+            "region": "Capital Region",
+            "regionName": "Northern Capital",
+            "actionId": "A2",
+            "actionName": "Bus Emissions Upgrade",
+            "actionPriority": 2,
+            "explanation": "In Metropolis, Bus Emissions Upgrade is recognized for its potential to reduce transportation sector emissions significantly. The action aligns with the city’s commitment to sustainable mobility by addressing a concentrated source of pollutants. It benefits public health and improves urban air quality while being compatible with existing transit infrastructure."
+        },
+        {
+            "locode": "MT123",
+            "cityName": "Metropolis",
+            "region": "Capital Region",
+            "regionName": "Northern Capital",
+            "actionId": "A3",
+            "actionName": "Urban Tree Planting",
+            "actionPriority": 3,
+            "explanation": "Urban Tree Planting is prioritized in Metropolis as it not only sequesters carbon but also enhances urban biodiversity and cooling effects. This action is tailored to the city’s environmental context, mitigating urban heat island effects and improving air quality. It supports community well-being while requiring minimal dependencies for implementation."
+        },
+        {
+            "locode": "MT123",
+            "cityName": "Metropolis",
+            "region": "Capital Region",
+            "regionName": "Northern Capital",
+            "actionId": "A4",
+            "actionName": "Renewable Energy Incentives",
+            "actionPriority": 4,
+            "explanation": "Renewable Energy Incentives in Metropolis focus on shifting the energy mix towards cleaner sources. The action holds significant promise for reducing overall emissions and is well-suited to the city’s available resources and infrastructure. It also offers long-term economic benefits by promoting energy independence and lowering operational costs."
+        },
+        {
+            "locode": "MT123",
+            "cityName": "Metropolis",
+            "region": "Capital Region",
+            "regionName": "Northern Capital",
+            "actionId": "A5",
+            "actionName": "Waste-to-Energy Conversion",
+            "actionPriority": 5,
+            "explanation": "The Waste-to-Energy Conversion action is valued in Metropolis because it transforms waste management challenges into opportunities for clean energy production. This approach helps reduce landfill emissions and supports a circular economy. Its integration into existing urban waste systems makes it a pragmatic and cost-effective climate solution for the city."
+        },
+        {
+            "locode": "MT123",
+            "cityName": "Metropolis",
+            "region": "Capital Region",
+            "regionName": "Northern Capital",
+            "actionId": "A6",
+            "actionName": "Green Roof Installation",
+            "actionPriority": 6,
+            "explanation": "Green Roof Installation is prioritized for its dual capacity to improve building energy performance and manage stormwater. It contributes to emission reduction by lowering cooling loads and enhances urban resilience. The action is especially compatible with Metropolis’ urban fabric and offers additional aesthetic and community benefits."
+        },
+        {
+            "locode": "MT123",
+            "cityName": "Metropolis",
+            "region": "Capital Region",
+            "regionName": "Northern Capital",
+            "actionId": "A7",
+            "actionName": "District Cooling Systems",
+            "actionPriority": 7,
+            "explanation": "District Cooling Systems are valued for their ability to provide efficient energy solutions that reduce building emissions. In Metropolis, this action targets the need for scalable and environmentally sustainable cooling options. It is designed to work within existing urban infrastructure, minimizing risks associated with new technology adoptions."
+        },
+        {
+            "locode": "MT123",
+            "cityName": "Metropolis",
+            "region": "Capital Region",
+            "regionName": "Northern Capital",
+            "actionId": "A8",
+            "actionName": "Urban Flood Defenses",
+            "actionPriority": 8,
+            "explanation": "Urban Flood Defenses address critical climate risks in Metropolis by reducing vulnerability to extreme weather events. This adaptation measure is aligned with the city’s environmental hazards and offers timely protective benefits. By mitigating the potential for flood damage, it supports both infrastructure resilience and community safety."
+        },
+        {
+            "locode": "MT123",
+            "cityName": "Metropolis",
+            "region": "Capital Region",
+            "regionName": "Northern Capital",
+            "actionId": "A9",
+            "actionName": "Water Conservation Campaign",
+            "actionPriority": 9,
+            "explanation": "The Water Conservation Campaign is important for Metropolis as it promotes sustainable water use in the face of growing demand and climate variability. It aligns with the city’s socio-demographic needs and environmental stewardship goals. The action is cost-effective and encourages community engagement, making it a valuable climate adaptation initiative."
+        },
+        {
+            "locode": "MT123",
+            "cityName": "Metropolis",
+            "region": "Capital Region",
+            "regionName": "Northern Capital",
+            "actionId": "A10",
+            "actionName": "Energy-efficient Street Lighting",
+            "actionPriority": 10,
+            "explanation": "Energy-efficient Street Lighting is recognized for its ability to reduce energy consumption and support urban sustainability in Metropolis. It is a practical measure that improves public safety while cutting greenhouse gas emissions. The action leverages existing urban networks, ensuring a smoother implementation process with tangible co-benefits."
+        },
+        {
+            "locode": "MT123",
+            "cityName": "Metropolis",
+            "region": "Capital Region",
+            "regionName": "Northern Capital",
+            "actionId": "A11",
+            "actionName": "Smart Grid Implementation",
+            "actionPriority": 11,
+            "explanation": "Smart Grid Implementation is seen as a forward-looking initiative to enhance energy distribution efficiency in Metropolis. It plays a key role in optimizing renewable energy integration and reducing losses in the power system. The action is adaptable to evolving urban energy demands and supports a more resilient energy infrastructure."
+        },
+        {
+            "locode": "MT123",
+            "cityName": "Metropolis",
+            "region": "Capital Region",
+            "regionName": "Northern Capital",
+            "actionId": "A12",
+            "actionName": "Electric Vehicle Infrastructure",
+            "actionPriority": 12,
+            "explanation": "Electric Vehicle Infrastructure is prioritized as it supports a shift away from fossil-fueled transportation in Metropolis. The action not only reduces emissions but also encourages sustainable mobility options among residents. Its integration is supported by existing urban planning initiatives, which enhances overall cost-effectiveness and risk reduction."
+        },
+        {
+            "locode": "MT123",
+            "cityName": "Metropolis",
+            "region": "Capital Region",
+            "regionName": "Northern Capital",
+            "actionId": "A13",
+            "actionName": "Sustainable Urban Mobility Plan",
+            "actionPriority": 13,
+            "explanation": "The Sustainable Urban Mobility Plan is designed to create a comprehensive approach to reducing transportation emissions in Metropolis. This action emphasizes integrated planning that connects different transit modes while prioritizing environmental compatibility. It is well-suited to the city’s demographic trends and offers a balanced mix of short-term and long-term benefits."
+        },
+        {
+            "locode": "MT123",
+            "cityName": "Metropolis",
+            "region": "Capital Region",
+            "regionName": "Northern Capital",
+            "actionId": "A14",
+            "actionName": "Heat Island Mitigation",
+            "actionPriority": 14,
+            "explanation": "Heat Island Mitigation is particularly relevant for Metropolis, where dense urban areas exacerbate heat accumulation. The action works by incorporating strategies that reduce local temperatures and improve overall livability. It is an effective risk reduction measure that also enhances environmental comfort and urban resilience."
+        },
+        {
+            "locode": "MT123",
+            "cityName": "Metropolis",
+            "region": "Capital Region",
+            "regionName": "Northern Capital",
+            "actionId": "A15",
+            "actionName": "Carbon Capture Demonstration",
+            "actionPriority": 15,
+            "explanation": "Carbon Capture Demonstration is acknowledged for its innovative approach to lowering emissions from hard-to-abate sectors in Metropolis. Although it represents a more experimental measure, it offers valuable insights into future scalable solutions. The action complements the city’s broader strategy of integrating advanced technologies while mitigating climate risks."
+        },
+        {
+            "locode": "MT123",
+            "cityName": "Metropolis",
+            "region": "Capital Region",
+            "regionName": "Northern Capital",
+            "actionId": "A16",
+            "actionName": "Community Solar Projects",
+            "actionPriority": 16,
+            "explanation": "Community Solar Projects are valued in Metropolis for their ability to democratize access to renewable energy. This action not only aids in emissions reduction but also empowers local communities by creating shared energy resources. It is tailored to the city’s socio-economic context, ensuring practical implementation with wide-reaching co-benefits."
+        },
+        {
+            "locode": "MT123",
+            "cityName": "Metropolis",
+            "region": "Capital Region",
+            "regionName": "Northern Capital",
+            "actionId": "A17",
+            "actionName": "Bicycle Infrastructure Development",
+            "actionPriority": 17,
+            "explanation": "Bicycle Infrastructure Development in Metropolis is prioritized for its potential to reduce dependence on fossil-fueled transport. This action contributes to lower urban congestion and enhances public health through active mobility. It is especially effective given the city’s compact layout and supports a sustainable transition in transportation habits."
+        },
+        {
+            "locode": "MT123",
+            "cityName": "Metropolis",
+            "region": "Capital Region",
+            "regionName": "Northern Capital",
+            "actionId": "A18",
+            "actionName": "Urban Reforestation",
+            "actionPriority": 18,
+            "explanation": "Urban Reforestation helps improve air quality and provides natural cooling benefits in Metropolis. The action is well suited to areas requiring ecological restoration and enhances overall urban resilience. It also supports biodiversity and creates spaces for community engagement, making it a favorable choice given the city’s environmental needs."
+        },
+        {
+            "locode": "MT123",
+            "cityName": "Metropolis",
+            "region": "Capital Region",
+            "regionName": "Northern Capital",
+            "actionId": "A19",
+            "actionName": "Industrial Emission Controls",
+            "actionPriority": 19,
+            "explanation": "Industrial Emission Controls are important in Metropolis because they target a sector with significant contributions to greenhouse gas emissions. This action offers focused measures to reduce harmful pollutants through better regulatory and technological interventions. It is a targeted approach that aligns with the city’s overall emissions reduction strategy while managing associated risks effectively."
+        },
+        {
+            "locode": "MT123",
+            "cityName": "Metropolis",
+            "region": "Capital Region",
+            "regionName": "Northern Capital",
+            "actionId": "A20",
+            "actionName": "Stormwater Management Systems",
+            "actionPriority": 20,
+            "explanation": "Stormwater Management Systems are prioritized for their role in protecting Metropolis from the impacts of extreme weather. This action not only reduces flood risks but also improves water quality and urban sustainability. Its design is tailored to the city’s infrastructure capabilities, ensuring that implementation is both feasible and effective in reducing climate-related hazards."
+        }
+    ]
+}

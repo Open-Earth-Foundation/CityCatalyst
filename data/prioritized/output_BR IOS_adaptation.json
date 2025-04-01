@@ -1,202 +1,204 @@
-[
-    {
-        "locode": "BR IOS",
-        "cityName": "Ilh\u00e9us",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0176",
-        "actionName": "Development of Climate Action Plan",
-        "actionPriority": 1,
-        "explanation": "Ranked #1 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR IOS",
-        "cityName": "Ilh\u00e9us",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0181",
-        "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
-        "actionPriority": 2,
-        "explanation": "Ranked #2 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR IOS",
-        "cityName": "Ilh\u00e9us",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0151",
-        "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
-        "actionPriority": 3,
-        "explanation": "Ranked #3 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR IOS",
-        "cityName": "Ilh\u00e9us",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0169",
-        "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
-        "actionPriority": 4,
-        "explanation": "Ranked #4 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR IOS",
-        "cityName": "Ilh\u00e9us",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0140",
-        "actionName": "Landslide Risk Assessment and Management",
-        "actionPriority": 5,
-        "explanation": "Ranked #5 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR IOS",
-        "cityName": "Ilh\u00e9us",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "ipcc_0097",
-        "actionName": "Food storage/distribution improvements",
-        "actionPriority": 6,
-        "explanation": "Ranked #6 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR IOS",
-        "cityName": "Ilh\u00e9us",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0164",
-        "actionName": "Hydrological Monitoring System with Telemetry Stations",
-        "actionPriority": 7,
-        "explanation": "Ranked #7 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR IOS",
-        "cityName": "Ilh\u00e9us",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "ipcc_0094",
-        "actionName": "Access to health care",
-        "actionPriority": 8,
-        "explanation": "Ranked #8 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR IOS",
-        "cityName": "Ilh\u00e9us",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0154",
-        "actionName": "Cleaning and Unclogging of Channels with Installation of Eco-barriers",
-        "actionPriority": 9,
-        "explanation": "Ranked #9 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR IOS",
-        "cityName": "Ilh\u00e9us",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0156",
-        "actionName": "Implementation of urban gardens",
-        "actionPriority": 10,
-        "explanation": "Ranked #10 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR IOS",
-        "cityName": "Ilh\u00e9us",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "ipcc_0088",
-        "actionName": "Building codes",
-        "actionPriority": 11,
-        "explanation": "Ranked #11 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR IOS",
-        "cityName": "Ilh\u00e9us",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0162",
-        "actionName": "Strengthen programs for control and conservation of protected areas",
-        "actionPriority": 12,
-        "explanation": "Ranked #12 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR IOS",
-        "cityName": "Ilh\u00e9us",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0149",
-        "actionName": "Encourage sustainable land use practices",
-        "actionPriority": 13,
-        "explanation": "Ranked #13 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR IOS",
-        "cityName": "Ilh\u00e9us",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0175",
-        "actionName": "Recovery and preservation of green areas",
-        "actionPriority": 14,
-        "explanation": "Ranked #14 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR IOS",
-        "cityName": "Ilh\u00e9us",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "ipcc_0092",
-        "actionName": "Social safety nets",
-        "actionPriority": 15,
-        "explanation": "Ranked #15 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR IOS",
-        "cityName": "Ilh\u00e9us",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "ipcc_0095",
-        "actionName": "Disaster early warning",
-        "actionPriority": 16,
-        "explanation": "Ranked #16 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR IOS",
-        "cityName": "Ilh\u00e9us",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "icare_0148",
-        "actionName": "Create the Municipal Climate Change Forum",
-        "actionPriority": 17,
-        "explanation": "Ranked #17 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR IOS",
-        "cityName": "Ilh\u00e9us",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "ipcc_0098",
-        "actionName": "Behaviour change in diets and food waste",
-        "actionPriority": 18,
-        "explanation": "Ranked #18 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR IOS",
-        "cityName": "Ilh\u00e9us",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "ipcc_0086",
-        "actionName": "Ecosystem-based adaptation",
-        "actionPriority": 19,
-        "explanation": "Ranked #19 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR IOS",
-        "cityName": "Ilh\u00e9us",
-        "region": "BA",
-        "regionName": "Bahia",
-        "actionId": "ipcc_0096",
-        "actionName": "Farm/fishery improvements",
-        "actionPriority": 20,
-        "explanation": "Ranked #20 by tournament ranking algorithm"
-    }
-]
+{
+    "actions": [
+        {
+            "locode": "US-NY",
+            "cityName": "New York",
+            "region": "NY",
+            "regionName": "New York State",
+            "actionId": "A001",
+            "actionName": "New Building Standards",
+            "actionPriority": 1,
+            "explanation": "For New York, the New Building Standards are prioritized because they set a strong framework for reducing emissions within the construction sector. This action is well aligned with the city's dense urban fabric and contributes significantly to long‐term energy efficiency. Its design supports reducing operational costs and environmental impacts while fitting well with local capacity and strategic sustainability goals."
+        },
+        {
+            "locode": "US-NY",
+            "cityName": "New York",
+            "region": "NY",
+            "regionName": "New York State",
+            "actionId": "A002",
+            "actionName": "Bus Emissions",
+            "actionPriority": 2,
+            "explanation": "In New York, the emphasis on Bus Emissions mitigation addresses one of the vital urban transportation challenges. The action is key to lowering greenhouse gas levels in a sector that directly affects urban air quality. It is compatible with the city's infrastructure and offers a clear pathway for reducing climate risks, even as it may require careful integration with established bus systems."
+        },
+        {
+            "locode": "US-CA",
+            "cityName": "Los Angeles",
+            "region": "CA",
+            "regionName": "California",
+            "actionId": "A003",
+            "actionName": "Renewable Energy Incentives",
+            "actionPriority": 1,
+            "explanation": "For Los Angeles, Renewable Energy Incentives serve as a robust mechanism to transition away from fossil fuels. This approach effectively targets the city’s significant energy sector emissions and aligns closely with California’s progressive environmental policies. The action offers benefits in promoting cleaner energy while being mindful of the costs and infrastructure needs."
+        },
+        {
+            "locode": "US-CA",
+            "cityName": "Los Angeles",
+            "region": "CA",
+            "regionName": "California",
+            "actionId": "A004",
+            "actionName": "Urban Greening",
+            "actionPriority": 2,
+            "explanation": "Urban Greening in Los Angeles is a valuable action that enhances climate resilience through natural solutions. It improves local air quality, mitigates urban heat island effects, and adds aesthetic and recreational value to the city. This action is well suited to complement traditional mitigation measures, even if its direct impact on emissions is more gradual."
+        },
+        {
+            "locode": "US-FL",
+            "cityName": "Miami",
+            "region": "FL",
+            "regionName": "Florida",
+            "actionId": "A005",
+            "actionName": "Flood Mitigation",
+            "actionPriority": 1,
+            "explanation": "In Miami, Flood Mitigation is given priority due to the city’s vulnerability to sea level rise and extreme weather events. This action directly addresses significant climate risks while enhancing community safety. Its implementation is aligned with local environmental characteristics and builds resilience in a way that is both effective and adaptable to evolving climate scenarios."
+        },
+        {
+            "locode": "US-FL",
+            "cityName": "Miami",
+            "region": "FL",
+            "regionName": "Florida",
+            "actionId": "A006",
+            "actionName": "Water Conservation",
+            "actionPriority": 2,
+            "explanation": "Water Conservation in Miami is an important action reflecting the need to manage valuable water resources under changing climatic conditions. It is designed to optimize the city’s water use while reducing the risks associated with water scarcity. The action is also tailored to the local demographic and environmental context, making it a viable long-term solution despite requiring ongoing community engagement."
+        },
+        {
+            "locode": "US-IL",
+            "cityName": "Chicago",
+            "region": "IL",
+            "regionName": "Illinois",
+            "actionId": "A007",
+            "actionName": "Energy Efficiency Retrofit",
+            "actionPriority": 1,
+            "explanation": "For Chicago, Energy Efficiency Retrofit is prioritized as it directly contributes to lowering operational emissions across many buildings in the city. This action leverages the existing urban structure to improve energy performance and reduce costs over time. Its adaptability to various building types and compatibility with local capacity makes it a strong candidate for sustainable change."
+        },
+        {
+            "locode": "US-IL",
+            "cityName": "Chicago",
+            "region": "IL",
+            "regionName": "Illinois",
+            "actionId": "A008",
+            "actionName": "Waste Management Improvement",
+            "actionPriority": 2,
+            "explanation": "Waste Management Improvement in Chicago is focused on reducing emissions resulting from waste decomposition and inefficient processing. The action enhances environmental benefits by mitigating potential climate risks through better resource recovery and recycling practices. Its design is thoughtful in terms of aligning with city infrastructure while supporting broader sustainability efforts over the longer term."
+        },
+        {
+            "locode": "US-OR",
+            "cityName": "Portland",
+            "region": "OR",
+            "regionName": "Oregon",
+            "actionId": "A009",
+            "actionName": "Cycling Infrastructure",
+            "actionPriority": 1,
+            "explanation": "In Portland, Cycling Infrastructure is prioritized due to its strong potential to reduce reliance on motorized transport. This action improves urban mobility, directly cuts greenhouse gas emissions, and promotes healthier lifestyles. It is well suited to the city's eco-friendly culture and offers tangible environmental and community benefits, making it a sensible investment for the future."
+        },
+        {
+            "locode": "US-OR",
+            "cityName": "Portland",
+            "region": "OR",
+            "regionName": "Oregon",
+            "actionId": "A010",
+            "actionName": "Public Transport Expansion",
+            "actionPriority": 2,
+            "explanation": "Public Transport Expansion in Portland is a key action aimed at reducing traffic congestion and related emissions. While its benefits are significant in terms of creating a more sustainable mobility network, the action requires extensive planning and coordination. This measure still aligns well with the city’s investment in green infrastructure by promoting shared and efficient transport solutions."
+        },
+        {
+            "locode": "US-WA",
+            "cityName": "Seattle",
+            "region": "WA",
+            "regionName": "Washington",
+            "actionId": "A011",
+            "actionName": "Tree Planting",
+            "actionPriority": 1,
+            "explanation": "For Seattle, Tree Planting is prioritized as it brings multiple benefits including carbon sequestration and enhanced urban biodiversity. The action is particularly well aligned with the city’s natural environment and climate resilience goals. It provides a dual advantage of improving air quality and mitigating local temperature extremes while engaging community participation."
+        },
+        {
+            "locode": "US-WA",
+            "cityName": "Seattle",
+            "region": "WA",
+            "regionName": "Washington",
+            "actionId": "A012",
+            "actionName": "Smart Grid Implementation",
+            "actionPriority": 2,
+            "explanation": "Smart Grid Implementation in Seattle is aimed at optimizing energy distribution and increasing the efficiency of the overall power system. The action’s strength lies in its capacity to integrate renewable energy sources and enhance grid resilience. Although it requires sophisticated technology and planning, it effectively supports the city’s strategic transition towards a more sustainable energy future."
+        },
+        {
+            "locode": "US-CA",
+            "cityName": "San Francisco",
+            "region": "CA",
+            "regionName": "California",
+            "actionId": "A013",
+            "actionName": "Solar Panel Subsidies",
+            "actionPriority": 1,
+            "explanation": "For San Francisco, Solar Panel Subsidies are prioritized because they directly encourage the adoption of renewable energy at the residential and commercial levels. The action effectively reduces dependency on non-renewable energy sources and benefits from the city’s favorable solar resources. Its implementation aligns well with local policies and market dynamics, offering a cost-effective route to lower emissions."
+        },
+        {
+            "locode": "US-CA",
+            "cityName": "San Francisco",
+            "region": "CA",
+            "regionName": "California",
+            "actionId": "A014",
+            "actionName": "Rainwater Harvesting",
+            "actionPriority": 2,
+            "explanation": "Rainwater Harvesting in San Francisco is an important measure that enhances water efficiency and supports sustainable resource management. This action is designed to complement existing water supply systems and reduce dependency on external water sources. It fits well within the city’s eco-conscious framework, even though its overall impact on emission reductions is more indirect compared to energy-focused actions."
+        },
+        {
+            "locode": "US-CO",
+            "cityName": "Denver",
+            "region": "CO",
+            "regionName": "Colorado",
+            "actionId": "A015",
+            "actionName": "Community Awareness Programs",
+            "actionPriority": 1,
+            "explanation": "In Denver, Community Awareness Programs are prioritized because they lay the foundation for widespread public engagement in climate initiatives. By raising awareness and educating citizens, the action helps mobilize community efforts to support broader mitigation measures. This socially tailored approach complements technical solutions and strengthens the overall resilience of the city."
+        },
+        {
+            "locode": "US-CO",
+            "cityName": "Denver",
+            "region": "CO",
+            "regionName": "Colorado",
+            "actionId": "A016",
+            "actionName": "Green Roof Installations",
+            "actionPriority": 2,
+            "explanation": "Green Roof Installations in Denver have been recognized for their role in reducing urban heat and improving energy efficiency within buildings. This action is particularly suitable for dense urban areas where optimizing rooftop space brings added environmental and aesthetic benefits. It not only contributes to emission reduction but also enhances local climate resilience and provides additional community co-benefits."
+        },
+        {
+            "locode": "US-MA",
+            "cityName": "Boston",
+            "region": "MA",
+            "regionName": "Massachusetts",
+            "actionId": "A017",
+            "actionName": "District Heating Networks",
+            "actionPriority": 1,
+            "explanation": "For Boston, District Heating Networks are prioritized because they offer an efficient way to manage energy distribution across urban areas. This approach is well-integrated with existing infrastructure and is particularly effective in reducing overall emissions through centralized energy management. The action also addresses urban climate risks and is supported by the city's capacity for coordinated development."
+        },
+        {
+            "locode": "US-MA",
+            "cityName": "Boston",
+            "region": "MA",
+            "regionName": "Massachusetts",
+            "actionId": "A018",
+            "actionName": "Bicycle Sharing Programs",
+            "actionPriority": 2,
+            "explanation": "Bicycle Sharing Programs in Boston are a practical measure aimed at reducing reliance on personal vehicles and alleviating urban congestion. The action enhances mobility options while supporting a reduction in greenhouse gas emissions and necessary shifts in commuter behavior. It is a community-friendly solution that adds value to urban life even though its implementation requires integration with broader transportation planning."
+        },
+        {
+            "locode": "US-TX",
+            "cityName": "Austin",
+            "region": "TX",
+            "regionName": "Texas",
+            "actionId": "A019",
+            "actionName": "LED Street Lighting",
+            "actionPriority": 1,
+            "explanation": "In Austin, LED Street Lighting is prioritized for its ability to significantly enhance energy efficiency and reduce electricity consumption across the city. This measure is well suited to the urban environment, offering immediate benefits in lowering operational costs and carbon emissions. Its straightforward implementation and compatibility with existing urban infrastructure make it an effective and practical solution."
+        },
+        {
+            "locode": "US-TX",
+            "cityName": "Austin",
+            "region": "TX",
+            "regionName": "Texas",
+            "actionId": "A020",
+            "actionName": "Climate Resilient Zoning",
+            "actionPriority": 2,
+            "explanation": "Climate Resilient Zoning in Austin is designed to guide development in a way that minimizes exposure to climate threats. This action supports smart urban planning by integrating environmental risk assessments into zoning policies. It contributes to long-term climate resilience by ensuring new developments are aligned with the city’s sustainability objectives and risk reduction strategies."
+        }
+    ]
+}

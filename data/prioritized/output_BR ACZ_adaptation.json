@@ -1,202 +1,204 @@
-[
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0176",
-        "actionName": "Development of Climate Action Plan",
-        "actionPriority": 1,
-        "explanation": "Ranked #1 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0154",
-        "actionName": "Cleaning and Unclogging of Channels with Installation of Eco-barriers",
-        "actionPriority": 2,
-        "explanation": "Ranked #2 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0164",
-        "actionName": "Hydrological Monitoring System with Telemetry Stations",
-        "actionPriority": 3,
-        "explanation": "Ranked #3 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0140",
-        "actionName": "Landslide Risk Assessment and Management",
-        "actionPriority": 4,
-        "explanation": "Ranked #4 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0181",
-        "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
-        "actionPriority": 5,
-        "explanation": "Ranked #5 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0151",
-        "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
-        "actionPriority": 6,
-        "explanation": "Ranked #6 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "ipcc_0088",
-        "actionName": "Building codes",
-        "actionPriority": 7,
-        "explanation": "Ranked #7 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "ipcc_0097",
-        "actionName": "Food storage/distribution improvements",
-        "actionPriority": 8,
-        "explanation": "Ranked #8 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "ipcc_0094",
-        "actionName": "Access to health care",
-        "actionPriority": 9,
-        "explanation": "Ranked #9 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "ipcc_0095",
-        "actionName": "Disaster early warning",
-        "actionPriority": 10,
-        "explanation": "Ranked #10 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0175",
-        "actionName": "Recovery and preservation of green areas",
-        "actionPriority": 11,
-        "explanation": "Ranked #11 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "ipcc_0086",
-        "actionName": "Ecosystem-based adaptation",
-        "actionPriority": 12,
-        "explanation": "Ranked #12 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0169",
-        "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
-        "actionPriority": 13,
-        "explanation": "Ranked #13 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0156",
-        "actionName": "Implementation of urban gardens",
-        "actionPriority": 14,
-        "explanation": "Ranked #14 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "ipcc_0098",
-        "actionName": "Behaviour change in diets and food waste",
-        "actionPriority": 15,
-        "explanation": "Ranked #15 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "ipcc_0092",
-        "actionName": "Social safety nets",
-        "actionPriority": 16,
-        "explanation": "Ranked #16 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "ipcc_0099",
-        "actionName": "Water capture/storage",
-        "actionPriority": 17,
-        "explanation": "Ranked #17 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0148",
-        "actionName": "Create the Municipal Climate Change Forum",
-        "actionPriority": 18,
-        "explanation": "Ranked #18 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "ipcc_0096",
-        "actionName": "Farm/fishery improvements",
-        "actionPriority": 19,
-        "explanation": "Ranked #19 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0162",
-        "actionName": "Strengthen programs for control and conservation of protected areas",
-        "actionPriority": 20,
-        "explanation": "Ranked #20 by tournament ranking algorithm"
-    }
-]
+{
+    "actions": [
+        {
+            "locode": "MT001",
+            "cityName": "Metropolis",
+            "region": "NR",
+            "regionName": "Northern Region",
+            "actionId": "A1",
+            "actionName": "New Building Standards",
+            "actionPriority": 1,
+            "explanation": "For the city Metropolis, New Building Standards is prioritized because it directly targets one of the most significant sources of emissions in the built environment. This action is well aligned with the city's urban infrastructure and consistently supports substantial greenhouse gas reductions. The approach is practical and adaptable to local construction contexts, offering enduring environmental benefits despite its complex implementation process."
+        },
+        {
+            "locode": "MT001",
+            "cityName": "Metropolis",
+            "region": "NR",
+            "regionName": "Northern Region",
+            "actionId": "A2",
+            "actionName": "Bus Emissions",
+            "actionPriority": 5,
+            "explanation": "For the city Metropolis, the action targeting Bus Emissions faced a lower ranking because it involves intricate dependencies that may delay the realization of benefits. Although it has the potential to improve air quality, the implementation is more challenging due to required coordination across multiple stakeholders. As a result, its overall impact on rapid emissions reduction and risk mitigation is less pronounced in the current urban context."
+        },
+        {
+            "locode": "MT001",
+            "cityName": "Metropolis",
+            "region": "NR",
+            "regionName": "Northern Region",
+            "actionId": "A3",
+            "actionName": "Renewable Energy Incentives",
+            "actionPriority": 2,
+            "explanation": "Renewable Energy Incentives are valued for their continuous contribution to lowering emissions by promoting sustainable power sources. This action aligns with the city's resource availability and economic capacity to support new energy technologies. Its implementation benefits from moderate dependencies and offers long-term environmental advantages that complement overall sustainability goals."
+        },
+        {
+            "locode": "MT001",
+            "cityName": "Metropolis",
+            "region": "NR",
+            "regionName": "Northern Region",
+            "actionId": "A4",
+            "actionName": "Urban Tree Planting",
+            "actionPriority": 4,
+            "explanation": "Urban Tree Planting is appreciated for generating multiple benefits, including improved air quality and urban cooling effects. The strategy is highly compatible with Metropolis’s urban landscape and encourages community involvement. It supports emission reduction indirectly while enhancing the aesthetic and environmental quality of city spaces."
+        },
+        {
+            "locode": "MT001",
+            "cityName": "Metropolis",
+            "region": "NR",
+            "regionName": "Northern Region",
+            "actionId": "A5",
+            "actionName": "Flood Defense Systems",
+            "actionPriority": 3,
+            "explanation": "Flood Defense Systems are essential for protecting the community against climate-induced flooding hazards. The action is particularly suited to areas where the risk of severe weather events is significant and requires robust infrastructure. Its design emphasizes long-term resilience, even though coordinated implementation is vital for success."
+        },
+        {
+            "locode": "MT001",
+            "cityName": "Metropolis",
+            "region": "NR",
+            "regionName": "Northern Region",
+            "actionId": "A6",
+            "actionName": "Green Infrastructure",
+            "actionPriority": 6,
+            "explanation": "Green Infrastructure integrates nature-based solutions to address urban challenges while offering benefits like improved air and water quality. It aligns with the city's objectives of sustainable development and community well-being. Despite an initial planning phase, the long-term environmental gains and social benefits make this action appealing."
+        },
+        {
+            "locode": "MT001",
+            "cityName": "Metropolis",
+            "region": "NR",
+            "regionName": "Northern Region",
+            "actionId": "A7",
+            "actionName": "Carbon Pricing",
+            "actionPriority": 8,
+            "explanation": "Carbon Pricing is recognized for its ability to influence market behaviors and incentivize lower greenhouse gas emissions across industries. It plays a critical role in driving innovation and shifting economic activities toward more sustainable practices. While its effectiveness hinges on strong policy support, it remains a valuable tool for gradually reshaping emission-intensive sectors."
+        },
+        {
+            "locode": "MT001",
+            "cityName": "Metropolis",
+            "region": "NR",
+            "regionName": "Northern Region",
+            "actionId": "A8",
+            "actionName": "Waste Recycling",
+            "actionPriority": 7,
+            "explanation": "Waste Recycling contributes indirectly to emission reductions by minimizing the environmental impacts of waste processing and disposal. It reinforces existing waste management practices and encourages a circular economy. The action is pragmatic in its approach and offers notable improvements in local environmental health."
+        },
+        {
+            "locode": "MT001",
+            "cityName": "Metropolis",
+            "region": "NR",
+            "regionName": "Northern Region",
+            "actionId": "A9",
+            "actionName": "Public Transport Expansion",
+            "actionPriority": 9,
+            "explanation": "Public Transport Expansion is designed to reduce individual vehicle use, thereby lowering overall emissions and easing traffic congestion. This action is well-suited for a densely populated city like Metropolis and enhances both urban mobility and environmental quality. It involves significant infrastructure development but promises long-term sustainable benefits."
+        },
+        {
+            "locode": "MT001",
+            "cityName": "Metropolis",
+            "region": "NR",
+            "regionName": "Northern Region",
+            "actionId": "A10",
+            "actionName": "Cool Roof Program",
+            "actionPriority": 10,
+            "explanation": "The Cool Roof Program targets urban heat island effects by reducing the amount of heat absorbed by buildings. It offers a straightforward, cost-effective approach that can alleviate energy demand during warmer periods. This action fits well within the broader strategy to improve energy efficiency and sustainable urban planning."
+        },
+        {
+            "locode": "MT001",
+            "cityName": "Metropolis",
+            "region": "NR",
+            "regionName": "Northern Region",
+            "actionId": "A11",
+            "actionName": "Electric Vehicle Adoption",
+            "actionPriority": 11,
+            "explanation": "Promoting Electric Vehicle Adoption directly supports the transition to cleaner urban transportation. It is an important step for reducing emissions in a sector that significantly contributes to urban air pollution. This initiative depends on the development of supportive infrastructure and policy measures to maximize its positive environmental impact."
+        },
+        {
+            "locode": "MT001",
+            "cityName": "Metropolis",
+            "region": "NR",
+            "regionName": "Northern Region",
+            "actionId": "A12",
+            "actionName": "Water Conservation Measures",
+            "actionPriority": 12,
+            "explanation": "Water Conservation Measures are vital for sustainable resource management in environments facing climate-induced water stress. The action not only helps to lower energy consumption associated with water treatment but also promotes efficient water use across sectors. Its integrative approach makes it a practical addition to broader urban sustainability efforts."
+        },
+        {
+            "locode": "MT001",
+            "cityName": "Metropolis",
+            "region": "NR",
+            "regionName": "Northern Region",
+            "actionId": "A13",
+            "actionName": "Smart Grid Deployment",
+            "actionPriority": 13,
+            "explanation": "Smart Grid Deployment enhances the efficiency and reliability of urban energy systems by facilitating better integration of renewable sources. It contributes to significant long-term emission reductions and supports modernized energy management. While it requires advanced technology adoption, its strategic benefits are well aligned with sustainable urban development goals."
+        },
+        {
+            "locode": "MT001",
+            "cityName": "Metropolis",
+            "region": "NR",
+            "regionName": "Northern Region",
+            "actionId": "A14",
+            "actionName": "Industrial Emission Controls",
+            "actionPriority": 14,
+            "explanation": "Industrial Emission Controls focus on mitigating emissions from major manufacturing sources within the city. This action is crucial for areas with heavy industrial activity and can yield significant improvements in local air quality. Although its execution may be complex, careful management of the implementation process can lead to substantial environmental benefits."
+        },
+        {
+            "locode": "MT001",
+            "cityName": "Metropolis",
+            "region": "NR",
+            "regionName": "Northern Region",
+            "actionId": "A15",
+            "actionName": "Building Retrofits",
+            "actionPriority": 15,
+            "explanation": "Building Retrofits aim to enhance energy efficiency in existing structures, thereby reducing overall emissions and improving indoor comfort. This action aligns with long-term sustainability strategies by addressing inefficiencies in older building stocks. While initial investments and planning are required, the resultant benefits in reduced energy demand and emissions make it a significant initiative."
+        },
+        {
+            "locode": "MT001",
+            "cityName": "Metropolis",
+            "region": "NR",
+            "regionName": "Northern Region",
+            "actionId": "A16",
+            "actionName": "Sustainable Urban Mobility",
+            "actionPriority": 16,
+            "explanation": "Sustainable Urban Mobility focuses on reducing dependency on private vehicles through the promotion of cleaner and more efficient transport alternatives. This action is particularly relevant for a bustling urban center, aiming to lower emissions while improving urban transit systems. Its implementation involves coordinated policy and infrastructure improvements that gradually enhance urban livability."
+        },
+        {
+            "locode": "MT001",
+            "cityName": "Metropolis",
+            "region": "NR",
+            "regionName": "Northern Region",
+            "actionId": "A17",
+            "actionName": "Community Solar Initiatives",
+            "actionPriority": 17,
+            "explanation": "Community Solar Initiatives empower local neighborhoods to access renewable energy resources collectively. By fostering community involvement and energy independence, this action contributes to broader sustainable energy goals. It requires supportive regulatory frameworks, yet its shared benefits help to strengthen local resilience and environmental stewardship."
+        },
+        {
+            "locode": "MT001",
+            "cityName": "Metropolis",
+            "region": "NR",
+            "regionName": "Northern Region",
+            "actionId": "A18",
+            "actionName": "Energy Efficiency Programs",
+            "actionPriority": 18,
+            "explanation": "Energy Efficiency Programs are designed to reduce energy consumption across residential and commercial sectors, aiding in overall emission reduction. The measures are adaptable to diverse urban settings and offer noticeable cost savings over time. With their focus on incremental improvements and system integration, these programs support sustainable city operations."
+        },
+        {
+            "locode": "MT001",
+            "cityName": "Metropolis",
+            "region": "NR",
+            "regionName": "Northern Region",
+            "actionId": "A19",
+            "actionName": "Agricultural Best Practices",
+            "actionPriority": 19,
+            "explanation": "Agricultural Best Practices encourage sustainable farming techniques that lower the carbon footprint of the agricultural sector. This action is especially beneficial in peri-urban areas where agriculture plays a significant role economically and ecologically. Although the benefits may take time to emerge, improved soil health and climate resilience are important long-term outcomes."
+        },
+        {
+            "locode": "MT001",
+            "cityName": "Metropolis",
+            "region": "NR",
+            "regionName": "Northern Region",
+            "actionId": "A20",
+            "actionName": "Coastal Restoration",
+            "actionPriority": 20,
+            "explanation": "Coastal Restoration is focused on rehabilitating natural coastal barriers to protect against the impacts of sea-level rise and erosion. The action is particularly relevant for cities facing significant coastal vulnerabilities, ensuring enhanced long-term environmental resilience. Although it involves complex ecosystem management, its role in safeguarding communities and natural habitats is a critical component of overall climate adaptation strategies."
+        }
+    ]
+}

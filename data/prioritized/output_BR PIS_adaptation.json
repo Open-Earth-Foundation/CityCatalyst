@@ -1,202 +1,204 @@
-[
-    {
-        "locode": "BR PIS",
-        "cityName": "Palmeira dos \u00cdndios",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "icare_0176",
-        "actionName": "Development of Climate Action Plan",
-        "actionPriority": 1,
-        "explanation": "Ranked #1 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR PIS",
-        "cityName": "Palmeira dos \u00cdndios",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "icare_0162",
-        "actionName": "Strengthen programs for control and conservation of protected areas",
-        "actionPriority": 2,
-        "explanation": "Ranked #2 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR PIS",
-        "cityName": "Palmeira dos \u00cdndios",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "icare_0181",
-        "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
-        "actionPriority": 3,
-        "explanation": "Ranked #3 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR PIS",
-        "cityName": "Palmeira dos \u00cdndios",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "icare_0175",
-        "actionName": "Recovery and preservation of green areas",
-        "actionPriority": 4,
-        "explanation": "Ranked #4 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR PIS",
-        "cityName": "Palmeira dos \u00cdndios",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "icare_0151",
-        "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
-        "actionPriority": 5,
-        "explanation": "Ranked #5 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR PIS",
-        "cityName": "Palmeira dos \u00cdndios",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "icare_0169",
-        "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
-        "actionPriority": 6,
-        "explanation": "Ranked #6 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR PIS",
-        "cityName": "Palmeira dos \u00cdndios",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "icare_0140",
-        "actionName": "Landslide Risk Assessment and Management",
-        "actionPriority": 7,
-        "explanation": "Ranked #7 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR PIS",
-        "cityName": "Palmeira dos \u00cdndios",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "icare_0156",
-        "actionName": "Implementation of urban gardens",
-        "actionPriority": 8,
-        "explanation": "Ranked #8 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR PIS",
-        "cityName": "Palmeira dos \u00cdndios",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "icare_0154",
-        "actionName": "Cleaning and Unclogging of Channels with Installation of Eco-barriers",
-        "actionPriority": 9,
-        "explanation": "Ranked #9 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR PIS",
-        "cityName": "Palmeira dos \u00cdndios",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "icare_0164",
-        "actionName": "Hydrological Monitoring System with Telemetry Stations",
-        "actionPriority": 10,
-        "explanation": "Ranked #10 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR PIS",
-        "cityName": "Palmeira dos \u00cdndios",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "ipcc_0088",
-        "actionName": "Building codes",
-        "actionPriority": 11,
-        "explanation": "Ranked #11 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR PIS",
-        "cityName": "Palmeira dos \u00cdndios",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "ipcc_0086",
-        "actionName": "Ecosystem-based adaptation",
-        "actionPriority": 12,
-        "explanation": "Ranked #12 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR PIS",
-        "cityName": "Palmeira dos \u00cdndios",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "ipcc_0097",
-        "actionName": "Food storage/distribution improvements",
-        "actionPriority": 13,
-        "explanation": "Ranked #13 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR PIS",
-        "cityName": "Palmeira dos \u00cdndios",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "icare_0142",
-        "actionName": "Improvement of Water Supply and Sanitation Systems",
-        "actionPriority": 14,
-        "explanation": "Ranked #14 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR PIS",
-        "cityName": "Palmeira dos \u00cdndios",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "icare_0149",
-        "actionName": "Encourage sustainable land use practices",
-        "actionPriority": 15,
-        "explanation": "Ranked #15 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR PIS",
-        "cityName": "Palmeira dos \u00cdndios",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "ipcc_0094",
-        "actionName": "Access to health care",
-        "actionPriority": 16,
-        "explanation": "Ranked #16 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR PIS",
-        "cityName": "Palmeira dos \u00cdndios",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "icare_0182",
-        "actionName": "Urban Afforestation and Green Spaces Implementation",
-        "actionPriority": 17,
-        "explanation": "Ranked #17 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR PIS",
-        "cityName": "Palmeira dos \u00cdndios",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "ipcc_0092",
-        "actionName": "Social safety nets",
-        "actionPriority": 18,
-        "explanation": "Ranked #18 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR PIS",
-        "cityName": "Palmeira dos \u00cdndios",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "ipcc_0095",
-        "actionName": "Disaster early warning",
-        "actionPriority": 19,
-        "explanation": "Ranked #19 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR PIS",
-        "cityName": "Palmeira dos \u00cdndios",
-        "region": "AL",
-        "regionName": "Alagoas",
-        "actionId": "icare_0180",
-        "actionName": "Implement permeable pavements and increase green areas in roadways",
-        "actionPriority": 20,
-        "explanation": "Ranked #20 by tournament ranking algorithm"
-    }
-]
+{
+    "actions": [
+        {
+            "locode": "SC001",
+            "cityName": "Sample City",
+            "region": "REG1",
+            "regionName": "Metropolitan Region",
+            "actionId": "ACT01",
+            "actionName": "Renewable Energy Deployment",
+            "actionPriority": 1,
+            "explanation": "For Sample City, Renewable Energy Deployment is prioritized due to its significant potential to reduce greenhouse gas emissions by transitioning away from fossil fuels. The action is particularly relevant given the city's high energy demand and current reliance on conventional energy sources. It aligns well with local environmental goals and promotes cleaner air. Additionally, this measure builds capacity for sustainable growth while offering cost-effective long-term benefits."
+        },
+        {
+            "locode": "SC001",
+            "cityName": "Sample City",
+            "region": "REG1",
+            "regionName": "Metropolitan Region",
+            "actionId": "ACT02",
+            "actionName": "New Building Standards",
+            "actionPriority": 2,
+            "explanation": "For Sample City, New Building Standards are considered crucial in reducing energy consumption and improving urban energy performance. The action addresses emissions by ensuring new constructions adhere to higher sustainability benchmarks. It is well-suited to the city's dense urban environment and helps mitigate climate risks. Moreover, the standards encourage innovation in design and can be implemented with moderate investment."
+        },
+        {
+            "locode": "SC001",
+            "cityName": "Sample City",
+            "region": "REG1",
+            "regionName": "Metropolitan Region",
+            "actionId": "ACT03",
+            "actionName": "Energy Efficiency Retrofits",
+            "actionPriority": 3,
+            "explanation": "For Sample City, Energy Efficiency Retrofits are prioritized as they directly reduce energy use in existing buildings. This action helps lower greenhouse gas emissions while enhancing living conditions. It fits the city's urban fabric and existing infrastructure, making implementation more feasible. The retrofits also offer economic savings over time and reduce long-term operational risks."
+        },
+        {
+            "locode": "SC001",
+            "cityName": "Sample City",
+            "region": "REG1",
+            "regionName": "Metropolitan Region",
+            "actionId": "ACT04",
+            "actionName": "Public Transportation Expansion",
+            "actionPriority": 4,
+            "explanation": "For Sample City, expanding Public Transportation is prioritized due to its ability to significantly reduce traffic-related emissions. It directly targets urban mobility challenges and offers co-benefits such as decreased road congestion and improved air quality. The action is well-aligned with the city’s commuting culture and infrastructure capacity. Its broader social and environmental benefits further justify its prioritized status."
+        },
+        {
+            "locode": "SC001",
+            "cityName": "Sample City",
+            "region": "REG1",
+            "regionName": "Metropolitan Region",
+            "actionId": "ACT05",
+            "actionName": "Industrial Emissions Regulation",
+            "actionPriority": 5,
+            "explanation": "For Sample City, Industrial Emissions Regulation is prioritized because it targets one of the leading contributors to urban greenhouse gas emissions. The action is carefully designed to address sectors with high pollution levels, ensuring environmental compatibility. It supports the city's broader climate goals by reducing industrial risks and improving air quality. The approach also leverages existing regulatory frameworks to facilitate rapid adoption."
+        },
+        {
+            "locode": "SC001",
+            "cityName": "Sample City",
+            "region": "REG1",
+            "regionName": "Metropolitan Region",
+            "actionId": "ACT06",
+            "actionName": "Waste Management Optimization",
+            "actionPriority": 6,
+            "explanation": "For Sample City, Waste Management Optimization is recognized for its role in mitigating emissions from waste decomposition and energy inefficiency. The action mitigates climate risks by promoting recycling and improved waste handling. It is particularly relevant to the city’s growing population and urban density challenges. The benefits extend beyond emission reductions to enhanced public health and urban hygiene."
+        },
+        {
+            "locode": "SC001",
+            "cityName": "Sample City",
+            "region": "REG1",
+            "regionName": "Metropolitan Region",
+            "actionId": "ACT07",
+            "actionName": "Urban Green Space Development",
+            "actionPriority": 7,
+            "explanation": "For Sample City, Urban Green Space Development is prioritized due to its multiple benefits including urban cooling, improved air quality, and carbon sequestration. This action reinforces the city's environmental compatibility by integrating natural landscapes into its urban structure. It contributes to community well-being and provides resilience against heat-related risks. Moreover, the creation of green spaces supports biodiversity and enhances urban aesthetics."
+        },
+        {
+            "locode": "SC001",
+            "cityName": "Sample City",
+            "region": "REG1",
+            "regionName": "Metropolitan Region",
+            "actionId": "ACT08",
+            "actionName": "Sustainable Water Management",
+            "actionPriority": 8,
+            "explanation": "For Sample City, Sustainable Water Management is prioritized for its role in enhancing resource efficiency and reducing climate-induced water risks. The action is well-suited to address both urban water demand and potential environmental stressors. It integrates modern practices to ensure water conservation, aligning with the city’s long-term sustainability objectives. Additionally, it supports community resilience by improving water quality and distribution."
+        },
+        {
+            "locode": "SC001",
+            "cityName": "Sample City",
+            "region": "REG1",
+            "regionName": "Metropolitan Region",
+            "actionId": "ACT09",
+            "actionName": "Coastal Defense Infrastructure",
+            "actionPriority": 9,
+            "explanation": "For Sample City, Coastal Defense Infrastructure is prioritized due to its importance in protecting the urban area from climate-related ocean risks. The action is critical for sustaining the city's economic and social vitality in coastal situations. It aligns with a proactive approach to environmental hazards and helps safeguard residents against extreme weather events. The integration of such infrastructure enhances resilience while supporting long-term urban planning."
+        },
+        {
+            "locode": "SC001",
+            "cityName": "Sample City",
+            "region": "REG1",
+            "regionName": "Metropolitan Region",
+            "actionId": "ACT10",
+            "actionName": "Climate-Resilient Housing",
+            "actionPriority": 10,
+            "explanation": "For Sample City, Climate-Resilient Housing is emphasized for its capability to adapt living spaces to evolving climate challenges. The action reinforces safety and preparedness by integrating features that withstand environmental stresses. It is especially pertinent for densely populated urban settings where vulnerability is higher. The measure not only bolsters housing durability but also contributes to overall urban sustainability."
+        },
+        {
+            "locode": "SC001",
+            "cityName": "Sample City",
+            "region": "REG1",
+            "regionName": "Metropolitan Region",
+            "actionId": "ACT11",
+            "actionName": "Tree Planting Initiatives",
+            "actionPriority": 11,
+            "explanation": "For Sample City, Tree Planting Initiatives are valued for their contribution to urban greening and natural carbon capture. This action is compatible with the city’s efforts to enhance its environmental quality and mitigate urban heat islands. The initiative also promotes community engagement and improves local biodiversity. While implementation is gradual, its long-term benefits to both climate and quality of life are substantial."
+        },
+        {
+            "locode": "SC001",
+            "cityName": "Sample City",
+            "region": "REG1",
+            "regionName": "Metropolitan Region",
+            "actionId": "ACT12",
+            "actionName": "Soil Carbon Enhancement",
+            "actionPriority": 12,
+            "explanation": "For Sample City, Soil Carbon Enhancement is prioritized for its innovative approach to sequestering carbon in urban and peri-urban areas. The action reflects a commitment to natural solutions that complement conventional emissions reduction strategies. It is well-aligned with local research and sustainable land management practices. In doing so, it also offers benefits in terms of improved soil health and support for urban agriculture initiatives."
+        },
+        {
+            "locode": "SC001",
+            "cityName": "Sample City",
+            "region": "REG1",
+            "regionName": "Metropolitan Region",
+            "actionId": "ACT13",
+            "actionName": "Sustainable Agriculture Practices",
+            "actionPriority": 13,
+            "explanation": "For Sample City, Sustainable Agriculture Practices are considered important in reducing the carbon footprint associated with local food production. The action promotes efficient land use and aligns with the region’s climatic and socio-economic context. It supports local food security while encouraging practices that are environmentally sound. Moreover, the approach has positive ripple effects on rural communities and sustainable economic development."
+        },
+        {
+            "locode": "SC001",
+            "cityName": "Sample City",
+            "region": "REG1",
+            "regionName": "Metropolitan Region",
+            "actionId": "ACT14",
+            "actionName": "Community Climate Education",
+            "actionPriority": 14,
+            "explanation": "For Sample City, Community Climate Education is valued as a crucial enabler for informed public action and sustainable lifestyle choices. The action builds awareness, fostering community engagement and preparedness for climate impacts. Its indirect benefits in promoting long-term sustainable behaviors amplify its importance. This initiative lays the groundwork for a more resilient urban population by empowering citizens with knowledge."
+        },
+        {
+            "locode": "SC001",
+            "cityName": "Sample City",
+            "region": "REG1",
+            "regionName": "Metropolitan Region",
+            "actionId": "ACT15",
+            "actionName": "Urban Electrification",
+            "actionPriority": 15,
+            "explanation": "For Sample City, Urban Electrification is prioritized for its role in shifting the energy mix towards cleaner power sources in densely populated areas. The action aligns with municipal plans to modernize infrastructure and reduce reliance on fossil fuels. It facilitates the integration of renewable energy sources, thereby enhancing energy security and environmental performance. Its focus on efficiency makes it an integral part of the city's sustainable future."
+        },
+        {
+            "locode": "SC001",
+            "cityName": "Sample City",
+            "region": "REG1",
+            "regionName": "Metropolitan Region",
+            "actionId": "ACT16",
+            "actionName": "Electric Vehicle Incentives",
+            "actionPriority": 16,
+            "explanation": "For Sample City, Electric Vehicle Incentives are important for reducing transportation emissions and promoting cleaner urban mobility. The action supports the transition to low-emission vehicles by addressing key urban transit challenges. It is relatively simple to implement within existing infrastructure, encouraging a gradual market shift. In addition, this initiative contributes to reduced noise and improved urban air quality."
+        },
+        {
+            "locode": "SC001",
+            "cityName": "Sample City",
+            "region": "REG1",
+            "regionName": "Metropolitan Region",
+            "actionId": "ACT17",
+            "actionName": "Smart Grid Implementation",
+            "actionPriority": 17,
+            "explanation": "For Sample City, Smart Grid Implementation is prioritized as it enhances the efficiency of energy distribution and supports the integration of renewable resources. This action strengthens energy reliability and reduces losses through advanced technology. It offers economic benefits by optimizing power distribution and supports modern urban infrastructure needs. The scalable nature of smart grid solutions makes it a forward-thinking investment for the city."
+        },
+        {
+            "locode": "SC001",
+            "cityName": "Sample City",
+            "region": "REG1",
+            "regionName": "Metropolitan Region",
+            "actionId": "ACT18",
+            "actionName": "Flood Risk Management",
+            "actionPriority": 18,
+            "explanation": "For Sample City, Flood Risk Management is valued for its critical role in mitigating the impacts of heavy rainfall and potential flooding. The action directly addresses climate vulnerabilities and enhances urban safety. It is tailored to manage flood risks in areas most susceptible to climate-induced events. Adopting such measures bolsters the city’s resilience and protects vital infrastructure."
+        },
+        {
+            "locode": "SC001",
+            "cityName": "Sample City",
+            "region": "REG1",
+            "regionName": "Metropolitan Region",
+            "actionId": "ACT19",
+            "actionName": "Adaptation Infrastructure Investment",
+            "actionPriority": 19,
+            "explanation": "For Sample City, Adaptation Infrastructure Investment targets long-term climate resilience by reinforcing critical urban systems. The action is designed to address future environmental uncertainties and minimize disruptions from climate-related events. It aligns with the city’s strategic planning for risk mitigation through integrated adaptation measures. While its implementation may be phased, the long-term benefits in enhancing urban resilience are clear."
+        },
+        {
+            "locode": "SC001",
+            "cityName": "Sample City",
+            "region": "REG1",
+            "regionName": "Metropolitan Region",
+            "actionId": "ACT20",
+            "actionName": "Emergency Preparedness Systems",
+            "actionPriority": 20,
+            "explanation": "For Sample City, Emergency Preparedness Systems are considered essential for rapid response in climate-induced emergencies. The action focuses on protecting public safety by improving coordination and readiness during extreme weather events. It enhances the city’s capacity to respond quickly to crises, reducing potential damages. This proactive approach builds overall community resilience and ensures continuity of services during critical times."
+        }
+    ]
+}

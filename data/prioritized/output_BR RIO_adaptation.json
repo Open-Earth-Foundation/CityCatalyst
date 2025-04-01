@@ -1,202 +1,204 @@
-[
-    {
-        "locode": "BR RIO",
-        "cityName": "Rio de Janeiro",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0176",
-        "actionName": "Development of Climate Action Plan",
-        "actionPriority": 1,
-        "explanation": "Ranked #1 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR RIO",
-        "cityName": "Rio de Janeiro",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0169",
-        "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
-        "actionPriority": 2,
-        "explanation": "Ranked #2 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR RIO",
-        "cityName": "Rio de Janeiro",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0151",
-        "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
-        "actionPriority": 3,
-        "explanation": "Ranked #3 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR RIO",
-        "cityName": "Rio de Janeiro",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0140",
-        "actionName": "Landslide Risk Assessment and Management",
-        "actionPriority": 4,
-        "explanation": "Ranked #4 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR RIO",
-        "cityName": "Rio de Janeiro",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0164",
-        "actionName": "Hydrological Monitoring System with Telemetry Stations",
-        "actionPriority": 5,
-        "explanation": "Ranked #5 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR RIO",
-        "cityName": "Rio de Janeiro",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0181",
-        "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
-        "actionPriority": 6,
-        "explanation": "Ranked #6 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR RIO",
-        "cityName": "Rio de Janeiro",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "ipcc_0088",
-        "actionName": "Building codes",
-        "actionPriority": 7,
-        "explanation": "Ranked #7 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR RIO",
-        "cityName": "Rio de Janeiro",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0154",
-        "actionName": "Cleaning and Unclogging of Channels with Installation of Eco-barriers",
-        "actionPriority": 8,
-        "explanation": "Ranked #8 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR RIO",
-        "cityName": "Rio de Janeiro",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "ipcc_0097",
-        "actionName": "Food storage/distribution improvements",
-        "actionPriority": 9,
-        "explanation": "Ranked #9 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR RIO",
-        "cityName": "Rio de Janeiro",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "ipcc_0094",
-        "actionName": "Access to health care",
-        "actionPriority": 10,
-        "explanation": "Ranked #10 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR RIO",
-        "cityName": "Rio de Janeiro",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0162",
-        "actionName": "Strengthen programs for control and conservation of protected areas",
-        "actionPriority": 11,
-        "explanation": "Ranked #11 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR RIO",
-        "cityName": "Rio de Janeiro",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0156",
-        "actionName": "Implementation of urban gardens",
-        "actionPriority": 12,
-        "explanation": "Ranked #12 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR RIO",
-        "cityName": "Rio de Janeiro",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0149",
-        "actionName": "Encourage sustainable land use practices",
-        "actionPriority": 13,
-        "explanation": "Ranked #13 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR RIO",
-        "cityName": "Rio de Janeiro",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0175",
-        "actionName": "Recovery and preservation of green areas",
-        "actionPriority": 14,
-        "explanation": "Ranked #14 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR RIO",
-        "cityName": "Rio de Janeiro",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "ipcc_0092",
-        "actionName": "Social safety nets",
-        "actionPriority": 15,
-        "explanation": "Ranked #15 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR RIO",
-        "cityName": "Rio de Janeiro",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "ipcc_0095",
-        "actionName": "Disaster early warning",
-        "actionPriority": 16,
-        "explanation": "Ranked #16 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR RIO",
-        "cityName": "Rio de Janeiro",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "ipcc_0086",
-        "actionName": "Ecosystem-based adaptation",
-        "actionPriority": 17,
-        "explanation": "Ranked #17 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR RIO",
-        "cityName": "Rio de Janeiro",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "ipcc_0096",
-        "actionName": "Farm/fishery improvements",
-        "actionPriority": 18,
-        "explanation": "Ranked #18 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR RIO",
-        "cityName": "Rio de Janeiro",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "ipcc_0084",
-        "actionName": "Restore/create natural areas",
-        "actionPriority": 19,
-        "explanation": "Ranked #19 by tournament ranking algorithm"
-    },
-    {
-        "locode": "BR RIO",
-        "cityName": "Rio de Janeiro",
-        "region": "RJ",
-        "regionName": "Rio de Janeiro",
-        "actionId": "icare_0148",
-        "actionName": "Create the Municipal Climate Change Forum",
-        "actionPriority": 20,
-        "explanation": "Ranked #20 by tournament ranking algorithm"
-    }
-]
+{
+    "actions": [
+        {
+            "locode": "US-SPF",
+            "cityName": "Springfield",
+            "region": "US",
+            "regionName": "Midwest",
+            "actionId": "A1",
+            "actionName": "New Building Standards",
+            "actionPriority": 1,
+            "explanation": "For Springfield, New Building Standards were prioritized because they significantly reduce emissions from the construction sector while boosting energy efficiency. This measure aligns with the city’s commitment to sustainable urban development and offers long-term climate risk reduction. It also complements ongoing local initiatives aimed at promoting healthier, more energy‐efficient living environments."
+        },
+        {
+            "locode": "US-SPF",
+            "cityName": "Springfield",
+            "region": "US",
+            "regionName": "Midwest",
+            "actionId": "A2",
+            "actionName": "Bus Emissions Reduction",
+            "actionPriority": 2,
+            "explanation": "For Springfield, Bus Emissions Reduction was chosen because it directly targets a key source of urban greenhouse gas emissions. It not only improves air quality but also enhances the efficiency of the public transportation system. This action is especially relevant for densely populated city areas where transportation plays a vital role in daily life."
+        },
+        {
+            "locode": "US-SPF",
+            "cityName": "Springfield",
+            "region": "US",
+            "regionName": "Midwest",
+            "actionId": "A3",
+            "actionName": "Renewable Energy Investment",
+            "actionPriority": 3,
+            "explanation": "For Springfield, Renewable Energy Investment was prioritized because it leverages local renewable resources to cut reliance on fossil fuels. It is a forward-thinking measure that complements the city’s broader emissions reduction strategy. The action is well-aligned with both environmental goals and the city's capacity to manage scalable energy projects."
+        },
+        {
+            "locode": "US-SPF",
+            "cityName": "Springfield",
+            "region": "US",
+            "regionName": "Midwest",
+            "actionId": "A4",
+            "actionName": "Urban Green Spaces Expansion",
+            "actionPriority": 4,
+            "explanation": "For Springfield, Urban Green Spaces Expansion was selected as it enhances carbon sequestration and mitigates urban heat islands. This nature-based solution also contributes to improved community well-being and environmental quality. The initiative supports local biodiversity and aligns with the city’s sustainable development framework."
+        },
+        {
+            "locode": "US-SPF",
+            "cityName": "Springfield",
+            "region": "US",
+            "regionName": "Midwest",
+            "actionId": "A5",
+            "actionName": "Energy Efficiency Retrofits",
+            "actionPriority": 5,
+            "explanation": "For Springfield, Energy Efficiency Retrofits are valued for their ability to decrease overall energy demand by modernizing existing infrastructures. This action fits seamlessly within the city's immediate sustainability objectives and offers timely benefits. It reduces emissions while also lowering operational costs over time, making it a practical intervention."
+        },
+        {
+            "locode": "US-SPF",
+            "cityName": "Springfield",
+            "region": "US",
+            "regionName": "Midwest",
+            "actionId": "A6",
+            "actionName": "Waste Management Improvements",
+            "actionPriority": 6,
+            "explanation": "For Springfield, Waste Management Improvements address emissions from waste decomposition, particularly methane release, which is a significant climate concern. The action enhances urban sanitation and supports overall environmental health. It is an effective way to manage waste while reducing long-term climate risks."
+        },
+        {
+            "locode": "US-SPF",
+            "cityName": "Springfield",
+            "region": "US",
+            "regionName": "Midwest",
+            "actionId": "A7",
+            "actionName": "Electric Vehicle Charging Infrastructure",
+            "actionPriority": 7,
+            "explanation": "For Springfield, developing Electric Vehicle Charging Infrastructure was prioritized as it catalyzes the shift to low-carbon transportation. The action supports cleaner, more efficient travel and integrates easily with existing urban infrastructural developments. It prepares the city for a future where sustainable mobility is a key component of daily life."
+        },
+        {
+            "locode": "US-SPF",
+            "cityName": "Springfield",
+            "region": "US",
+            "regionName": "Midwest",
+            "actionId": "A8",
+            "actionName": "Flood Defense Enhancements",
+            "actionPriority": 8,
+            "explanation": "For Springfield, Flood Defense Enhancements are vital as they directly address the increasing risk of climate-induced flooding. This action strengthens infrastructure resilience and helps mitigate potential damages from severe weather events. It also aligns with the city's broader commitment to safeguard communities and critical assets."
+        },
+        {
+            "locode": "US-SPF",
+            "cityName": "Springfield",
+            "region": "US",
+            "regionName": "Midwest",
+            "actionId": "A9",
+            "actionName": "Coastal Erosion Protection",
+            "actionPriority": 9,
+            "explanation": "For Springfield, Coastal Erosion Protection was considered important in areas vulnerable to shoreline changes, ensuring that critical infrastructure is safeguarded. The measure is carefully designed to match local environmental conditions. This action contributes to preserving both natural habitats and urban assets while reducing long-term risks."
+        },
+        {
+            "locode": "US-SPF",
+            "cityName": "Springfield",
+            "region": "US",
+            "regionName": "Midwest",
+            "actionId": "A10",
+            "actionName": "Water Conservation Programs",
+            "actionPriority": 10,
+            "explanation": "For Springfield, Water Conservation Programs were favored as they help manage resource scarcity exacerbated by climate fluctuations. This action supports sustainable water use and preserves quality in times of stress. It fits well with the city’s long-term planning efforts for resilient and sustainable water management."
+        },
+        {
+            "locode": "US-SPF",
+            "cityName": "Springfield",
+            "region": "US",
+            "regionName": "Midwest",
+            "actionId": "A11",
+            "actionName": "Heatwave Response Planning",
+            "actionPriority": 11,
+            "explanation": "For Springfield, Heatwave Response Planning is critical in preparing communities for rising temperatures and associated health challenges. The action focuses on proactive measures, ensuring community readiness and resilience. It is an essential part of the city’s risk reduction strategy in a warming climate."
+        },
+        {
+            "locode": "US-SPF",
+            "cityName": "Springfield",
+            "region": "US",
+            "regionName": "Midwest",
+            "actionId": "A12",
+            "actionName": "Sustainable Land Use Practices",
+            "actionPriority": 12,
+            "explanation": "For Springfield, Sustainable Land Use Practices were prioritized because they promote carbon sequestration through improved land management. This initiative supports the city’s balance between urban development and environmental conservation. It contributes to long-term sustainability by integrating eco-friendly practices into planning processes."
+        },
+        {
+            "locode": "US-SPF",
+            "cityName": "Springfield",
+            "region": "US",
+            "regionName": "Midwest",
+            "actionId": "A13",
+            "actionName": "Storm-Resilient Infrastructure",
+            "actionPriority": 13,
+            "explanation": "For Springfield, Storm-Resilient Infrastructure was chosen to address vulnerabilities in the urban fabric against severe weather events. This action enhances the durability of critical systems and aligns with a proactive risk management approach. It ensures that the city can maintain functionality even during extreme weather conditions."
+        },
+        {
+            "locode": "US-SPF",
+            "cityName": "Springfield",
+            "region": "US",
+            "regionName": "Midwest",
+            "actionId": "A14",
+            "actionName": "Public Awareness Campaigns on Climate Change",
+            "actionPriority": 14,
+            "explanation": "For Springfield, Public Awareness Campaigns on Climate Change are valued for their role in strengthening community engagement and preparedness. This action empowers residents by providing information crucial for sustainable practices. It fosters a culture of proactive climate action that supports wider municipal initiatives."
+        },
+        {
+            "locode": "US-SPF",
+            "cityName": "Springfield",
+            "region": "US",
+            "regionName": "Midwest",
+            "actionId": "A15",
+            "actionName": "Industrial Emissions Control",
+            "actionPriority": 15,
+            "explanation": "For Springfield, Industrial Emissions Control targets a key contributor to local greenhouse gas levels. This action is tailored to the city’s industrial profile and helps curb emissions from heavy polluting processes. It contributes to improved public health and environmental quality while aligning with economic modernization trends."
+        },
+        {
+            "locode": "US-SPF",
+            "cityName": "Springfield",
+            "region": "US",
+            "regionName": "Midwest",
+            "actionId": "A16",
+            "actionName": "Urban Mobility Electrification",
+            "actionPriority": 16,
+            "explanation": "For Springfield, Urban Mobility Electrification is prioritized because it promotes cleaner transportation alternatives and reduces urban congestion. The action supports the transition to electric-powered systems, which is in line with the city’s environmental and planning goals. It offers both ecological and lifestyle benefits, making it a transformative approach for urban transit."
+        },
+        {
+            "locode": "US-SPF",
+            "cityName": "Springfield",
+            "region": "US",
+            "regionName": "Midwest",
+            "actionId": "A17",
+            "actionName": "Renewable Heating Solutions",
+            "actionPriority": 17,
+            "explanation": "For Springfield, Renewable Heating Solutions were selected because they replace conventional fossil fuel systems with sustainable alternatives. This initiative addresses energy use in heating while aligning with the city’s environmental objectives. It presents a balanced approach that mitigates emissions and provides manageable implementation pathways."
+        },
+        {
+            "locode": "US-SPF",
+            "cityName": "Springfield",
+            "region": "US",
+            "regionName": "Midwest",
+            "actionId": "A18",
+            "actionName": "Energy Storage Deployment",
+            "actionPriority": 18,
+            "explanation": "For Springfield, Energy Storage Deployment is critical for overcoming the intermittency challenges of renewable energy sources. The action secures a steady supply of clean energy by efficiently managing peak demands and storage capabilities. It complements the city’s renewable initiatives and supports a more resilient energy infrastructure."
+        },
+        {
+            "locode": "US-SPF",
+            "cityName": "Springfield",
+            "region": "US",
+            "regionName": "Midwest",
+            "actionId": "A19",
+            "actionName": "Community Solar Projects",
+            "actionPriority": 19,
+            "explanation": "For Springfield, Community Solar Projects were prioritized for their ability to democratize access to renewable energy and engage local stakeholders. This initiative fosters a sense of community while contributing to the city's clean energy targets. It offers a cost-effective and inclusive approach to expanding renewable energy resources."
+        },
+        {
+            "locode": "US-SPF",
+            "cityName": "Springfield",
+            "region": "US",
+            "regionName": "Midwest",
+            "actionId": "A20",
+            "actionName": "Climate Resilient Urban Design",
+            "actionPriority": 20,
+            "explanation": "For Springfield, Climate Resilient Urban Design is valued for its forward-looking integration of climate adaptation strategies into city planning. The action ensures that new urban developments are better equipped to handle future climate challenges. It supports long-term sustainability by embedding resilience into the fabric of urban growth."
+        }
+    ]
+}

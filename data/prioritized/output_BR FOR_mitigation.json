@@ -1,182 +1,204 @@
-[
-    {
-        "locode": "BR FOR",
-        "cityName": "Fortaleza",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0121",
-        "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
-        "actionPriority": 1
-    },
-    {
-        "locode": "BR FOR",
-        "cityName": "Fortaleza",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0118",
-        "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
-        "actionPriority": 2
-    },
-    {
-        "locode": "BR FOR",
-        "cityName": "Fortaleza",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0094",
-        "actionName": "Adoption of biomethane in public fleets.",
-        "actionPriority": 3
-    },
-    {
-        "locode": "BR FOR",
-        "cityName": "Fortaleza",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0005",
-        "actionName": "Create credit lines for residential and community wind energy projects",
-        "actionPriority": 4
-    },
-    {
-        "locode": "BR FOR",
-        "cityName": "Fortaleza",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0068",
-        "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
-        "actionPriority": 5
-    },
-    {
-        "locode": "BR FOR",
-        "cityName": "Fortaleza",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0057",
-        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
-        "actionPriority": 6
-    },
-    {
-        "locode": "BR FOR",
-        "cityName": "Fortaleza",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0025",
-        "actionName": "Promote energy-efficient low-income housing",
-        "actionPriority": 7
-    },
-    {
-        "locode": "BR FOR",
-        "cityName": "Fortaleza",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0088",
-        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
-        "actionPriority": 8
-    },
-    {
-        "locode": "BR FOR",
-        "cityName": "Fortaleza",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0044",
-        "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
-        "actionPriority": 9
-    },
-    {
-        "locode": "BR FOR",
-        "cityName": "Fortaleza",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0092",
-        "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
-        "actionPriority": 10
-    },
-    {
-        "locode": "BR FOR",
-        "cityName": "Fortaleza",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0090",
-        "actionName": "Adoption of electric drones for last-mile deliveries.",
-        "actionPriority": 11
-    },
-    {
-        "locode": "BR FOR",
-        "cityName": "Fortaleza",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0117",
-        "actionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
-        "actionPriority": 12
-    },
-    {
-        "locode": "BR FOR",
-        "cityName": "Fortaleza",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0027",
-        "actionName": "Create financing programs for local renewable energy projects",
-        "actionPriority": 13
-    },
-    {
-        "locode": "BR FOR",
-        "cityName": "Fortaleza",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0042",
-        "actionName": "Encourage renewable energy policies at the municipal level",
-        "actionPriority": 14
-    },
-    {
-        "locode": "BR FOR",
-        "cityName": "Fortaleza",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0091",
-        "actionName": "Implementation of prioritized routes for sustainable vehicles.",
-        "actionPriority": 15
-    },
-    {
-        "locode": "BR FOR",
-        "cityName": "Fortaleza",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0024",
-        "actionName": "Integrate renewables into municipal water systems",
-        "actionPriority": 16
-    },
-    {
-        "locode": "BR FOR",
-        "cityName": "Fortaleza",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0131",
-        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
-        "actionPriority": 17
-    },
-    {
-        "locode": "BR FOR",
-        "cityName": "Fortaleza",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0139",
-        "actionName": "Implementation of urban toll.",
-        "actionPriority": 18
-    },
-    {
-        "locode": "BR FOR",
-        "cityName": "Fortaleza",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0038",
-        "actionName": "Promote community solar farms",
-        "actionPriority": 19
-    },
-    {
-        "locode": "BR FOR",
-        "cityName": "Fortaleza",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0136",
-        "actionName": "Support the Implementation of Ecological Fiscal Incentives",
-        "actionPriority": 20
-    }
-]
+{
+    "actions": [
+        {
+            "locode": "US-NYC",
+            "cityName": "New York",
+            "region": "NY",
+            "regionName": "New York",
+            "actionId": "A01",
+            "actionName": "Renewable Energy Expansion",
+            "actionPriority": 1,
+            "explanation": "In New York, Renewable Energy Expansion is prioritized because it has the potential to substantially reduce greenhouse gas emissions in the power sector, a key area of concern for the city. It integrates well with existing energy infrastructures and leverages local opportunities for sustainable energy development. Furthermore, this action strengthens long-term environmental resilience and helps reduce dependency on fossil fuels."
+        },
+        {
+            "locode": "US-LAX",
+            "cityName": "Los Angeles",
+            "region": "CA",
+            "regionName": "California",
+            "actionId": "A02",
+            "actionName": "Building Energy Efficiency",
+            "actionPriority": 2,
+            "explanation": "Los Angeles prioritizes Building Energy Efficiency because it directly addresses high energy consumption in a densely populated urban environment. The approach is well aligned with the city’s climate conditions and building typologies, promoting improved indoor environmental quality. Its effective balance between emission reduction and cost-effective implementation makes it a strong candidate for immediate action."
+        },
+        {
+            "locode": "US-CHI",
+            "cityName": "Chicago",
+            "region": "IL",
+            "regionName": "Illinois",
+            "actionId": "A03",
+            "actionName": "Urban Greening Initiatives",
+            "actionPriority": 3,
+            "explanation": "Chicago values Urban Greening Initiatives for their multifaceted benefits in improving air quality and reducing the urban heat island effect. This action not only enhances local biodiversity but also provides significant climate risk reduction by mitigating extreme temperature events. Its community-driven nature fits well with the city's sustainability goals."
+        },
+        {
+            "locode": "US-HOU",
+            "cityName": "Houston",
+            "region": "TX",
+            "regionName": "Texas",
+            "actionId": "A04",
+            "actionName": "Public Transport Electrification",
+            "actionPriority": 4,
+            "explanation": "Houston emphasizes Public Transport Electrification because it directly targets the transportation sector, which is a significant source of local emissions. This action supports improved urban mobility while also reducing air pollution. Its capacity to integrate with existing infrastructure and enhance sustainability over time contributes to its favorable ranking."
+        },
+        {
+            "locode": "US-PHX",
+            "cityName": "Phoenix",
+            "region": "AZ",
+            "regionName": "Arizona",
+            "actionId": "A05",
+            "actionName": "Waste-to-Energy Conversion",
+            "actionPriority": 5,
+            "explanation": "Phoenix has prioritized Waste-to-Energy Conversion as it effectively addresses waste management issues while generating clean energy. This dual-purpose action contributes to reducing landfill dependency and mitigating local air quality concerns. Its compatibility with the city's environmental strategy makes it a strong and balanced climate action."
+        },
+        {
+            "locode": "US-PHL",
+            "cityName": "Philadelphia",
+            "region": "PA",
+            "regionName": "Pennsylvania",
+            "actionId": "A06",
+            "actionName": "Water Conservation Measures",
+            "actionPriority": 6,
+            "explanation": "Philadelphia focuses on Water Conservation Measures to address the challenges of efficient resource management in an urban setting. The action is well-suited to enhance resilience against water scarcity while supporting local ecosystems. Its strategic emphasis on sustainability and climate risk reduction underpins its relatively higher ranking in the city's environmental agenda."
+        },
+        {
+            "locode": "US-MIA",
+            "cityName": "Miami",
+            "region": "FL",
+            "regionName": "Florida",
+            "actionId": "A07",
+            "actionName": "Green Infrastructure for Flood Management",
+            "actionPriority": 7,
+            "explanation": "Miami values Green Infrastructure for Flood Management because it addresses both environmental sustainability and the practical need to reduce flood risks in a coastal setting. This action not only strengthens natural defenses against storms but also enhances urban livability through increased green spaces. Its alignment with the city's coastal realities and risk reduction strategy makes it a noteworthy option."
+        },
+        {
+            "locode": "US-DTW",
+            "cityName": "Detroit",
+            "region": "MI",
+            "regionName": "Michigan",
+            "actionId": "A08",
+            "actionName": "Industrial Emission Controls",
+            "actionPriority": 8,
+            "explanation": "Detroit prioritizes Industrial Emission Controls because they play a vital role in reducing harmful pollutants from the manufacturing sector. This action is especially relevant in an industrial hub where improving air quality can yield significant public health benefits. It is a targeted measure that enhances operational safety and aligns with local economic and environmental conditions."
+        },
+        {
+            "locode": "US-SF",
+            "cityName": "San Francisco",
+            "region": "CA",
+            "regionName": "California",
+            "actionId": "A09",
+            "actionName": "Waste Reduction Programs",
+            "actionPriority": 9,
+            "explanation": "San Francisco advances Waste Reduction Programs because they effectively minimize the city’s waste output and environmental footprint. This approach promotes responsible resource use and complements broader sustainable urban practices. Its emphasis on environmental compatibility and operational efficiency is in line with the city’s green initiatives."
+        },
+        {
+            "locode": "US-SEA",
+            "cityName": "Seattle",
+            "region": "WA",
+            "regionName": "Washington",
+            "actionId": "A10",
+            "actionName": "Energy-Efficient Public Lighting",
+            "actionPriority": 10,
+            "explanation": "Seattle is investing in Energy-Efficient Public Lighting as it supports reductions in energy consumption across public spaces. The measure complements existing sustainability efforts and provides cost-effective improvements to urban infrastructure. Its relative ease of implementation and positive impact on overall energy efficiency make it a pragmatic choice for the city."
+        },
+        {
+            "locode": "US-AUS",
+            "cityName": "Austin",
+            "region": "TX",
+            "regionName": "Texas",
+            "actionId": "A11",
+            "actionName": "Smart Grid Deployment",
+            "actionPriority": 11,
+            "explanation": "Austin prioritizes Smart Grid Deployment for its ability to seamlessly integrate renewable energy sources into the city's power network. This action enhances the reliability and operational efficiency of the energy system while reducing transmission losses. Its forward-thinking approach supports the city's broader objectives for energy innovation and resilience."
+        },
+        {
+            "locode": "US-DEN",
+            "cityName": "Denver",
+            "region": "CO",
+            "regionName": "Colorado",
+            "actionId": "A12",
+            "actionName": "Sustainable Urban Mobility",
+            "actionPriority": 12,
+            "explanation": "Denver promotes Sustainable Urban Mobility as it directly addresses the environmental impacts of urban transport and caters to a growing population. This action is tailored to the city’s topography and climate, ensuring effective integration into existing transit systems. Its balanced approach toward reducing emissions and enhancing connectivity adds value to the city's overall sustainability plan."
+        },
+        {
+            "locode": "US-CHS",
+            "cityName": "Charleston",
+            "region": "SC",
+            "regionName": "South Carolina",
+            "actionId": "A13",
+            "actionName": "Coastal Ecosystem Restoration",
+            "actionPriority": 13,
+            "explanation": "Charleston places emphasis on Coastal Ecosystem Restoration due to the critical role natural buffers play in protecting against sea-level rise and storm surges. The initiative is well matched to the city’s coastal environment and strengthens ecological integrity. It delivers valuable risk reduction benefits while supporting biodiversity and long-term environmental resilience."
+        },
+        {
+            "locode": "US-BOS",
+            "cityName": "Boston",
+            "region": "MA",
+            "regionName": "Massachusetts",
+            "actionId": "A14",
+            "actionName": "Retrofitting Municipal Buildings",
+            "actionPriority": 14,
+            "explanation": "Boston focuses on Retrofitting Municipal Buildings as a way to reduce energy consumption in key public assets. This action improves operational efficiency and aligns with the city’s commitment to sustainable urban development. Its compatibility with historic structures and moderate implementation demands make it an important part of the city’s climate action strategy."
+        },
+        {
+            "locode": "US-SD",
+            "cityName": "San Diego",
+            "region": "CA",
+            "regionName": "California",
+            "actionId": "A15",
+            "actionName": "Solar Panel Incentives",
+            "actionPriority": 15,
+            "explanation": "San Diego's initiative for Solar Panel Incentives leverages the city’s abundant sunlight to reduce reliance on non-renewable energy sources. The action complements local environmental conditions while offering long-term sustainability benefits. Its focus on renewable energy adoption and operational savings makes it a fitting measure for advancing the city's green objectives."
+        },
+        {
+            "locode": "US-PDX",
+            "cityName": "Portland",
+            "region": "OR",
+            "regionName": "Oregon",
+            "actionId": "A16",
+            "actionName": "Eco-friendly Roadway Materials",
+            "actionPriority": 16,
+            "explanation": "Portland values the use of Eco-friendly Roadway Materials because they help lower the environmental impact of construction and maintenance activities. The innovative approach supports the city’s commitment to sustainability and mitigates emissions associated with infrastructure projects. Its integration into the broader urban development strategy strengthens its role in promoting a greener economy."
+        },
+        {
+            "locode": "US-ATL",
+            "cityName": "Atlanta",
+            "region": "GA",
+            "regionName": "Georgia",
+            "actionId": "A17",
+            "actionName": "Reforestation Projects",
+            "actionPriority": 17,
+            "explanation": "Atlanta prioritizes Reforestation Projects because they play a crucial role in carbon sequestration and cooling urban areas. This initiative supports improved air quality and enhances local biodiversity, which is vital for a city facing urban heat challenges. Its community-driven nature and alignment with environmental restoration efforts add depth to its overall impact."
+        },
+        {
+            "locode": "US-MSP",
+            "cityName": "Minneapolis",
+            "region": "MN",
+            "regionName": "Minnesota",
+            "actionId": "A18",
+            "actionName": "Circular Economy Initiatives",
+            "actionPriority": 18,
+            "explanation": "Minneapolis is promoting Circular Economy Initiatives to foster sustainable resource use and reduce waste generation. This action supports recycling and reuse strategies, driving economic as well as environmental benefits. It fits well with the city's long-term vision of sustainability and contributes to a resilient urban ecosystem."
+        },
+        {
+            "locode": "US-MSN",
+            "cityName": "New Orleans",
+            "region": "LA",
+            "regionName": "Louisiana",
+            "actionId": "A19",
+            "actionName": "Flood-Resilient Building Codes",
+            "actionPriority": 19,
+            "explanation": "In New Orleans, Flood-Resilient Building Codes are emphasized as they help mitigate the risks associated with recurring flood events. This initiative strengthens structural safety and is specifically tailored to the city's vulnerability to extreme weather events. By enhancing community preparedness and reducing long-term recovery challenges, the action addresses critical local needs."
+        },
+        {
+            "locode": "US-WAS",
+            "cityName": "Washington",
+            "region": "DC",
+            "regionName": "District of Columbia",
+            "actionId": "A20",
+            "actionName": "Green Roof Installations",
+            "actionPriority": 20,
+            "explanation": "Washington advocates for Green Roof Installations due to their multiple benefits in managing urban heat and stormwater runoff. This action integrates seamlessly with the city’s modern urban landscape and promotes increased biodiversity. Its ability to provide aesthetic improvements alongside environmental benefits reinforces its role as a strategic climate action."
+        }
+    ]
+}

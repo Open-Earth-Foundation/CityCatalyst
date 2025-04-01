@@ -1,182 +1,204 @@
-[
-    {
-        "locode": "BR MAO",
-        "cityName": "Manaus",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "icare_0121",
-        "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
-        "actionPriority": 1
-    },
-    {
-        "locode": "BR MAO",
-        "cityName": "Manaus",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "icare_0005",
-        "actionName": "Create credit lines for residential and community wind energy projects",
-        "actionPriority": 2
-    },
-    {
-        "locode": "BR MAO",
-        "cityName": "Manaus",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "icare_0118",
-        "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
-        "actionPriority": 3
-    },
-    {
-        "locode": "BR MAO",
-        "cityName": "Manaus",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "icare_0094",
-        "actionName": "Adoption of biomethane in public fleets.",
-        "actionPriority": 4
-    },
-    {
-        "locode": "BR MAO",
-        "cityName": "Manaus",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "icare_0090",
-        "actionName": "Adoption of electric drones for last-mile deliveries.",
-        "actionPriority": 5
-    },
-    {
-        "locode": "BR MAO",
-        "cityName": "Manaus",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "icare_0057",
-        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
-        "actionPriority": 6
-    },
-    {
-        "locode": "BR MAO",
-        "cityName": "Manaus",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "icare_0088",
-        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
-        "actionPriority": 7
-    },
-    {
-        "locode": "BR MAO",
-        "cityName": "Manaus",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "icare_0044",
-        "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
-        "actionPriority": 8
-    },
-    {
-        "locode": "BR MAO",
-        "cityName": "Manaus",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "icare_0092",
-        "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
-        "actionPriority": 9
-    },
-    {
-        "locode": "BR MAO",
-        "cityName": "Manaus",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "icare_0068",
-        "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
-        "actionPriority": 10
-    },
-    {
-        "locode": "BR MAO",
-        "cityName": "Manaus",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "icare_0117",
-        "actionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
-        "actionPriority": 11
-    },
-    {
-        "locode": "BR MAO",
-        "cityName": "Manaus",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "icare_0025",
-        "actionName": "Promote energy-efficient low-income housing",
-        "actionPriority": 12
-    },
-    {
-        "locode": "BR MAO",
-        "cityName": "Manaus",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "icare_0042",
-        "actionName": "Encourage renewable energy policies at the municipal level",
-        "actionPriority": 13
-    },
-    {
-        "locode": "BR MAO",
-        "cityName": "Manaus",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "icare_0139",
-        "actionName": "Implementation of urban toll.",
-        "actionPriority": 14
-    },
-    {
-        "locode": "BR MAO",
-        "cityName": "Manaus",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "icare_0024",
-        "actionName": "Integrate renewables into municipal water systems",
-        "actionPriority": 15
-    },
-    {
-        "locode": "BR MAO",
-        "cityName": "Manaus",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "icare_0133",
-        "actionName": "Promote Urban Reforestation and Green Corridors",
-        "actionPriority": 16
-    },
-    {
-        "locode": "BR MAO",
-        "cityName": "Manaus",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "icare_0027",
-        "actionName": "Create financing programs for local renewable energy projects",
-        "actionPriority": 17
-    },
-    {
-        "locode": "BR MAO",
-        "cityName": "Manaus",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "c40_0033",
-        "actionName": "15/30-Minute Areas",
-        "actionPriority": 18
-    },
-    {
-        "locode": "BR MAO",
-        "cityName": "Manaus",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "icare_0131",
-        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
-        "actionPriority": 19
-    },
-    {
-        "locode": "BR MAO",
-        "cityName": "Manaus",
-        "region": "AM",
-        "regionName": "Amazonas",
-        "actionId": "icare_0038",
-        "actionName": "Promote community solar farms",
-        "actionPriority": 20
-    }
-]
+{
+    "actions": [
+        {
+            "locode": "LOC001",
+            "cityName": "Green City",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "ACT001",
+            "actionName": "New Building Standards",
+            "actionPriority": 1,
+            "explanation": "For Green City, New Building Standards was prioritized because it directly targets emissions from the built environment, which is one of the city’s significant sources of greenhouse gases. The policy supports long-term energy efficiency and improved indoor environmental quality. It also encourages modern construction practices that align closely with the city’s sustainability objectives and capacity for implementation."
+        },
+        {
+            "locode": "LOC002",
+            "cityName": "Green City",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "ACT002",
+            "actionName": "Bus Emissions",
+            "actionPriority": 1,
+            "explanation": "For Green City, the Bus Emissions action is seen as highly valuable because it directly addresses the emissions produced by the public transportation sector. It helps reduce urban air pollutants while offering improvements in overall air quality. The approach is designed for relatively quick implementation and aligns well with the city's dense urban infrastructure and mobility needs."
+        },
+        {
+            "locode": "LOC003",
+            "cityName": "Green City",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "ACT003",
+            "actionName": "Renewable Energy Incentives",
+            "actionPriority": 1,
+            "explanation": "In Green City, Renewable Energy Incentives are prioritized because they significantly support the transition away from fossil fuels and stimulate cleaner energy sources. The action is well-suited to the city’s mixed residential and industrial settings, offering strong co-benefits for energy resilience. Its design takes into account cost-effectiveness and reduced climate risks, making it a strategic choice for sustained emissions reduction."
+        },
+        {
+            "locode": "LOC004",
+            "cityName": "Green City",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "ACT004",
+            "actionName": "Urban Tree Planting",
+            "actionPriority": 1,
+            "explanation": "Urban Tree Planting in Green City is valued for its ability to enhance urban green cover and improve local air quality. The action supports environmental compatibility by mitigating urban heat islands and contributing to biodiversity. Its benefits, while developing gradually, provide important co-benefits in public health and community well-being."
+        },
+        {
+            "locode": "LOC005",
+            "cityName": "Green City",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "ACT005",
+            "actionName": "Flood Defense Infrastructure",
+            "actionPriority": 1,
+            "explanation": "Flood Defense Infrastructure is prioritized in Green City because it directly addresses the risk of climate-induced flooding in vulnerable urban neighborhoods. This action strengthens the city's resilience by safeguarding communities and reducing potential economic losses. Its design is closely aligned with the local environmental risks and long-term adaptation needs."
+        },
+        {
+            "locode": "LOC006",
+            "cityName": "Green City",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "ACT006",
+            "actionName": "Water Conservation Programs",
+            "actionPriority": 1,
+            "explanation": "Green City’s Water Conservation Programs are highly regarded for their role in addressing local water scarcity and promoting sustainable usage. The action is cost-effective and can be rolled out in phases to quickly begin yielding environmental benefits. Its approach considers both the socio-demographic context and the city’s long-term environmental sustainability goals."
+        },
+        {
+            "locode": "LOC007",
+            "cityName": "Green City",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "ACT007",
+            "actionName": "Electric Vehicle Charging Stations",
+            "actionPriority": 1,
+            "explanation": "The establishment of Electric Vehicle Charging Stations in Green City is prioritized because it facilitates the transition to cleaner transportation. This action supports the reduction of tailpipe emissions and is well integrated with the city’s broader sustainability initiatives. Its modern infrastructure is both scalable and adaptable for future growth, making it an effective component of the urban climate strategy."
+        },
+        {
+            "locode": "LOC008",
+            "cityName": "Green City",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "ACT008",
+            "actionName": "Waste Management Enhancements",
+            "actionPriority": 1,
+            "explanation": "Waste Management Enhancements in Green City are highly valued for their role in reducing methane emissions from urban waste. The action leverages cost-effective technologies to improve recycling and waste processing rates, leading to cleaner urban environments. Its implementation supports both environmental protection and improved public health outcomes."
+        },
+        {
+            "locode": "LOC009",
+            "cityName": "Green City",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "ACT009",
+            "actionName": "Energy Efficiency Upgrades",
+            "actionPriority": 1,
+            "explanation": "Energy Efficiency Upgrades are a key priority for Green City as they directly contribute to reducing overall energy consumption and emissions. The action is well tailored to the city’s dense urban setting with a focus on public facilities and residential buildings. It offers swift benefits in lowering utility costs while enhancing the sustainability of infrastructure."
+        },
+        {
+            "locode": "LOC010",
+            "cityName": "Green City",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "ACT010",
+            "actionName": "Coastal Restoration",
+            "actionPriority": -1,
+            "explanation": "Coastal Restoration has been given a lower priority in Green City due to its comparatively lesser relevance in the city’s current environmental challenges. Although it is effective in rehabilitating natural buffers and protecting against coastal erosion, its direct impact on the city's main emission sources is limited. The action may also require longer timelines to achieve visible benefits relative to other more pressing urban climate initiatives."
+        },
+        {
+            "locode": "LOC011",
+            "cityName": "Green City",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "ACT011",
+            "actionName": "Public Transport Expansion",
+            "actionPriority": 1,
+            "explanation": "Public Transport Expansion in Green City is given high priority as it addresses key emission sources in densely populated urban centers. By improving the reach and efficiency of transit networks, this action significantly reduces reliance on personal vehicles and cuts down on traffic-related emissions. Its focus on accessibility and improved service quality directly benefits the socio-demographic fabric of the city."
+        },
+        {
+            "locode": "LOC012",
+            "cityName": "Green City",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "ACT012",
+            "actionName": "Green Roof Installation",
+            "actionPriority": 1,
+            "explanation": "Green Roof Installation is prioritized in Green City for its ability to integrate nature within urban structures, thereby enhancing energy efficiency and managing stormwater runoff. The action is particularly well-suited for a dense urban environment where open green spaces are limited. It combines environmental benefits with cost-effective retrofitting options that can improve urban microclimates."
+        },
+        {
+            "locode": "LOC013",
+            "cityName": "Green City",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "ACT013",
+            "actionName": "Smart Grid Implementation",
+            "actionPriority": 1,
+            "explanation": "Smart Grid Implementation is seen as a significant upgrade for Green City’s energy infrastructure, enhancing overall efficiency and system resilience. The initiative is aligned with the city’s capacity to adopt advanced technologies, which facilitates a smoother integration of renewable energy sources. Its focus on modernizing energy distribution supports the city’s long-term sustainability and risk reduction strategies."
+        },
+        {
+            "locode": "LOC014",
+            "cityName": "Green City",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "ACT014",
+            "actionName": "Air Quality Monitoring Systems",
+            "actionPriority": 1,
+            "explanation": "Air Quality Monitoring Systems have been prioritized in Green City because they provide critical data that informs targeted emission reduction strategies. This action supports public health by allowing timely responses to poor air quality events and guides further environmental improvements. Its role in risk reduction is vital for ensuring a healthier urban atmosphere."
+        },
+        {
+            "locode": "LOC015",
+            "cityName": "Green City",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "ACT015",
+            "actionName": "Climate Education Campaigns",
+            "actionPriority": 1,
+            "explanation": "Climate Education Campaigns in Green City are valued for their capacity to engage the community and foster a culture of sustainability. By raising public awareness and promoting behavioral change, this action lays the groundwork for successful long-term climate initiatives. Its inclusive approach is especially important in addressing the diverse needs of the city's population."
+        },
+        {
+            "locode": "LOC016",
+            "cityName": "Green City",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "ACT016",
+            "actionName": "High-Speed Rail Development",
+            "actionPriority": -1,
+            "explanation": "High-Speed Rail Development in Green City has been assigned a lower priority due to its complex implementation challenges and longer timelines for delivering benefits. Although it offers significant long-distance emissions reduction potential, the extensive planning and infrastructure requirements make it less immediately impactful. The action is better suited for long-term regional integration rather than addressing the city’s most urgent climate needs."
+        },
+        {
+            "locode": "LOC017",
+            "cityName": "Green City",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "ACT017",
+            "actionName": "Industrial Emissions Regulation",
+            "actionPriority": 1,
+            "explanation": "Industrial Emissions Regulation is prioritized in Green City because it targets a major source of greenhouse gases within the industrial sector. The action is designed to enforce stricter controls that lead to significant long-term environmental improvements. Its focus on high-emission contributors makes it a critical element of the city's overall climate strategy."
+        },
+        {
+            "locode": "LOC018",
+            "cityName": "Green City",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "ACT018",
+            "actionName": "Public Lighting Modernization",
+            "actionPriority": 1,
+            "explanation": "Public Lighting Modernization is recognized in Green City for its ability to upgrade essential urban infrastructure through energy-efficient technologies. The action is cost-effective and can be implemented relatively swiftly, leading to almost immediate reductions in energy consumption. By enhancing both safety and operational efficiency, it contributes positively to the city’s overall sustainability efforts."
+        },
+        {
+            "locode": "LOC019",
+            "cityName": "Green City",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "ACT019",
+            "actionName": "Sustainable Agriculture Support",
+            "actionPriority": -1,
+            "explanation": "Sustainable Agriculture Support has been given a lower priority in Green City because its direct impact is more relevant to rural settings than the predominantly urban challenges faced. While this action promotes eco-friendly farming and can enhance local food security, its benefits are more indirect for the city. It is recognized for its long-term environmental benefits, but it does not address the immediate emission reduction and urban infrastructure needs as directly."
+        },
+        {
+            "locode": "LOC020",
+            "cityName": "Green City",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "ACT020",
+            "actionName": "Disaster Risk Reduction Strategies",
+            "actionPriority": 1,
+            "explanation": "Disaster Risk Reduction Strategies are highly prioritized in Green City as they tackle the critical need for enhanced preparedness against climate-induced hazards. This action integrates multiple resilience measures into the city’s planning framework, significantly reducing potential risks to communities. It is well-aligned with both the local environmental challenges and the city’s long-term adaptation objectives."
+        }
+    ]
+}

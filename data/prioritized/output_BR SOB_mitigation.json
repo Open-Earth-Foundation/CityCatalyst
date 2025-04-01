@@ -1,182 +1,204 @@
-[
-    {
-        "locode": "BR SOB",
-        "cityName": "Sobral",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0121",
-        "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
-        "actionPriority": 1
-    },
-    {
-        "locode": "BR SOB",
-        "cityName": "Sobral",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0118",
-        "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
-        "actionPriority": 2
-    },
-    {
-        "locode": "BR SOB",
-        "cityName": "Sobral",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0005",
-        "actionName": "Create credit lines for residential and community wind energy projects",
-        "actionPriority": 3
-    },
-    {
-        "locode": "BR SOB",
-        "cityName": "Sobral",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0092",
-        "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
-        "actionPriority": 4
-    },
-    {
-        "locode": "BR SOB",
-        "cityName": "Sobral",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0133",
-        "actionName": "Promote Urban Reforestation and Green Corridors",
-        "actionPriority": 5
-    },
-    {
-        "locode": "BR SOB",
-        "cityName": "Sobral",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0025",
-        "actionName": "Promote energy-efficient low-income housing",
-        "actionPriority": 6
-    },
-    {
-        "locode": "BR SOB",
-        "cityName": "Sobral",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0088",
-        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
-        "actionPriority": 7
-    },
-    {
-        "locode": "BR SOB",
-        "cityName": "Sobral",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0094",
-        "actionName": "Adoption of biomethane in public fleets.",
-        "actionPriority": 8
-    },
-    {
-        "locode": "BR SOB",
-        "cityName": "Sobral",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0090",
-        "actionName": "Adoption of electric drones for last-mile deliveries.",
-        "actionPriority": 9
-    },
-    {
-        "locode": "BR SOB",
-        "cityName": "Sobral",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0057",
-        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
-        "actionPriority": 10
-    },
-    {
-        "locode": "BR SOB",
-        "cityName": "Sobral",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0044",
-        "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
-        "actionPriority": 11
-    },
-    {
-        "locode": "BR SOB",
-        "cityName": "Sobral",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0117",
-        "actionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
-        "actionPriority": 12
-    },
-    {
-        "locode": "BR SOB",
-        "cityName": "Sobral",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0068",
-        "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
-        "actionPriority": 13
-    },
-    {
-        "locode": "BR SOB",
-        "cityName": "Sobral",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0131",
-        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
-        "actionPriority": 14
-    },
-    {
-        "locode": "BR SOB",
-        "cityName": "Sobral",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0027",
-        "actionName": "Create financing programs for local renewable energy projects",
-        "actionPriority": 15
-    },
-    {
-        "locode": "BR SOB",
-        "cityName": "Sobral",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0139",
-        "actionName": "Implementation of urban toll.",
-        "actionPriority": 16
-    },
-    {
-        "locode": "BR SOB",
-        "cityName": "Sobral",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "c40_0033",
-        "actionName": "15/30-Minute Areas",
-        "actionPriority": 17
-    },
-    {
-        "locode": "BR SOB",
-        "cityName": "Sobral",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0042",
-        "actionName": "Encourage renewable energy policies at the municipal level",
-        "actionPriority": 18
-    },
-    {
-        "locode": "BR SOB",
-        "cityName": "Sobral",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0136",
-        "actionName": "Support the Implementation of Ecological Fiscal Incentives",
-        "actionPriority": 19
-    },
-    {
-        "locode": "BR SOB",
-        "cityName": "Sobral",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0050",
-        "actionName": "Implement Agroforestry Systems",
-        "actionPriority": 20
-    }
-]
+{
+    "actions": [
+        {
+            "locode": "MT001",
+            "cityName": "Metropolis",
+            "region": "MT",
+            "regionName": "Metro Region",
+            "actionId": "A001",
+            "actionName": "Renewable Energy Transition",
+            "actionPriority": 1,
+            "explanation": "For the city Metropolis, Renewable Energy Transition is prioritized because it directly targets major emissions from the energy sector. This action is well aligned with the city's goal of reducing greenhouse gas emissions and modernizing its energy infrastructure. Its compatibility with local environmental conditions, combined with strong co-benefits for sustainable growth, makes it highly appropriate despite requiring systemic changes."
+        },
+        {
+            "locode": "MT002",
+            "cityName": "Metropolis",
+            "region": "MT",
+            "regionName": "Metro Region",
+            "actionId": "A002",
+            "actionName": "New Building Standards",
+            "actionPriority": 2,
+            "explanation": "For the city Metropolis, New Building Standards are prioritized because they have a significant impact on reducing emissions linked to the construction and building sector. This action ensures that new developments incorporate energy efficient and climate-resilient designs. It aligns with the city's environmental objectives while offering long-term benefits through reduced operational costs and improved occupant comfort."
+        },
+        {
+            "locode": "MT003",
+            "cityName": "Metropolis",
+            "region": "MT",
+            "regionName": "Metro Region",
+            "actionId": "A003",
+            "actionName": "Energy Efficiency in Public Buildings",
+            "actionPriority": 3,
+            "explanation": "For the city Metropolis, enhancing energy efficiency in public buildings is seen as a priority because it targets significant energy consumption in key civic infrastructures. This action not only lowers emissions but also reduces operational costs, which is valuable given the city's resource constraints. Its focus on immediate improvements and risk reduction makes it a practical and effective choice for a public sector transformation."
+        },
+        {
+            "locode": "MT004",
+            "cityName": "Metropolis",
+            "region": "MT",
+            "regionName": "Metro Region",
+            "actionId": "A004",
+            "actionName": "Electric Vehicle Incentives",
+            "actionPriority": 4,
+            "explanation": "For the city Metropolis, Electric Vehicle Incentives are prioritized as they directly contribute to reducing emissions from the transportation sector. This action responds well to the urban mobility challenges while supporting cleaner, sustainable transit options. Its measures offer significant environmental and public health co-benefits, making it a cost-effective and forward-looking initiative."
+        },
+        {
+            "locode": "MT005",
+            "cityName": "Metropolis",
+            "region": "MT",
+            "regionName": "Metro Region",
+            "actionId": "A005",
+            "actionName": "Public Transit Expansion",
+            "actionPriority": 5,
+            "explanation": "For the city Metropolis, Public Transit Expansion is prioritized because it enhances accessibility and reduces reliance on personal, emission-intensive vehicles. The action supports a shift towards more sustainable travel patterns in a densely populated urban environment. Its implementation is designed to address both climate risks and mobility equity, aligning well with the city’s strategic priorities."
+        },
+        {
+            "locode": "MT006",
+            "cityName": "Metropolis",
+            "region": "MT",
+            "regionName": "Metro Region",
+            "actionId": "A006",
+            "actionName": "Bus Emissions Reduction",
+            "actionPriority": 6,
+            "explanation": "For the city Metropolis, Bus Emissions Reduction is valued because it targets a key segment of urban transport emissions. The action is designed to upgrade the bus fleet with cleaner technologies, contributing to better local air quality. It is seen as a vital step in modernizing public transit systems and reducing health-related climate risks, even when compared with broader transportation initiatives."
+        },
+        {
+            "locode": "MT007",
+            "cityName": "Metropolis",
+            "region": "MT",
+            "regionName": "Metro Region",
+            "actionId": "A007",
+            "actionName": "Cycling Infrastructure Development",
+            "actionPriority": 7,
+            "explanation": "For the city Metropolis, Cycling Infrastructure Development is recognized for its role in promoting active transportation and reducing urban emissions. It offers a straightforward and community-friendly approach to lowering the reliance on motorized vehicles. The initiative fits well with the city’s environmental goals by fostering healthier lifestyles and decreasing overall transport-related risks."
+        },
+        {
+            "locode": "MT008",
+            "cityName": "Metropolis",
+            "region": "MT",
+            "regionName": "Metro Region",
+            "actionId": "A008",
+            "actionName": "Urban Tree Canopy Expansion",
+            "actionPriority": 8,
+            "explanation": "For the city Metropolis, Urban Tree Canopy Expansion is prioritized as it enhances the local microclimate and contributes to natural carbon sequestration. The action improves urban aesthetics and provides environmental benefits through cooling and air quality improvement. Its integration into city planning strengthens community resilience and supports a more sustainable urban ecosystem."
+        },
+        {
+            "locode": "MT009",
+            "cityName": "Metropolis",
+            "region": "MT",
+            "regionName": "Metro Region",
+            "actionId": "A009",
+            "actionName": "Green Roof Incentives",
+            "actionPriority": 9,
+            "explanation": "For the city Metropolis, Green Roof Incentives are appealing because they contribute to building-level energy savings and urban cooling effects. This action not only supports emission reductions but also improves stormwater management and urban biodiversity. Its localized benefits and adaptability to various building types make it a smart, cost-efficient urban sustainability measure."
+        },
+        {
+            "locode": "MT010",
+            "cityName": "Metropolis",
+            "region": "MT",
+            "regionName": "Metro Region",
+            "actionId": "A010",
+            "actionName": "Sustainable Urban Drainage",
+            "actionPriority": 10,
+            "explanation": "For the city Metropolis, Sustainable Urban Drainage is a key action because it effectively addresses the issues of urban flooding and water management. It is important in a dense urban setting where proper drainage can reduce climate-related risks. The approach not only improves resilience but also integrates well with broader environmental planning, delivering benefits without heavy dependency on extensive resources."
+        },
+        {
+            "locode": "MT011",
+            "cityName": "Metropolis",
+            "region": "MT",
+            "regionName": "Metro Region",
+            "actionId": "A011",
+            "actionName": "Stormwater Management",
+            "actionPriority": 11,
+            "explanation": "For the city Metropolis, Stormwater Management is prioritized because it mitigates risks associated with extreme weather events and urban flooding. The action emphasizes preventative measures that protect infrastructure and communities. Its design fits the local context of rapid urbanization and offers a sustainable approach to managing water flows in challenging conditions."
+        },
+        {
+            "locode": "MT012",
+            "cityName": "Metropolis",
+            "region": "MT",
+            "regionName": "Metro Region",
+            "actionId": "A012",
+            "actionName": "Flood Defense Enhancements",
+            "actionPriority": 12,
+            "explanation": "For the city Metropolis, Flood Defense Enhancements are recognized for their role in increasing the city's resilience against climate-induced flooding. The action focuses on strengthening protective infrastructure, which is critical given the urban density and vulnerability of key areas. By reducing potential losses and safeguarding community assets, it serves as a crucial risk reduction measure in the climate adaptation portfolio."
+        },
+        {
+            "locode": "MT013",
+            "cityName": "Metropolis",
+            "region": "MT",
+            "regionName": "Metro Region",
+            "actionId": "A013",
+            "actionName": "Coastal Erosion Protection",
+            "actionPriority": 13,
+            "explanation": "For the city Metropolis, Coastal Erosion Protection is prioritized due to its ability to safeguard valuable coastal resources and urban infrastructure. This action is important for a city with coastal vulnerabilities, as it minimizes long-term risks from sea-level rise and erosion. Its integration into broader urban planning ensures that the city can maintain sustainable growth while protecting natural shorelines."
+        },
+        {
+            "locode": "MT014",
+            "cityName": "Metropolis",
+            "region": "MT",
+            "regionName": "Metro Region",
+            "actionId": "A014",
+            "actionName": "Heat Island Mitigation",
+            "actionPriority": 14,
+            "explanation": "For the city Metropolis, Heat Island Mitigation is valued because it directly addresses the challenges posed by elevated urban temperatures. This action is crafted to improve the livability of city environments by reducing heat stress and improving energy efficiency. It complements other climate strategies by enhancing environmental quality and supporting community health, even if it requires targeted interventions."
+        },
+        {
+            "locode": "MT015",
+            "cityName": "Metropolis",
+            "region": "MT",
+            "regionName": "Metro Region",
+            "actionId": "A015",
+            "actionName": "Reforestation Projects",
+            "actionPriority": 15,
+            "explanation": "For the city Metropolis, Reforestation Projects are prioritized because they contribute to natural carbon capture and enhance local biodiversity. This action helps restore ecological balance while providing an aesthetic and environmental boost to urban spaces. Its integration with community-led initiatives supports long-term resilience, making it a valuable, though longer-term, investment."
+        },
+        {
+            "locode": "MT016",
+            "cityName": "Metropolis",
+            "region": "MT",
+            "regionName": "Metro Region",
+            "actionId": "A016",
+            "actionName": "Waste Management Improvement",
+            "actionPriority": 16,
+            "explanation": "For the city Metropolis, Waste Management Improvement is prioritized because effective waste reduction and recycling directly benefit urban environmental quality. The action plays a role in reducing emissions related to waste disposal while promoting a circular economy. It is well-suited to the city's infrastructure, offering both immediate and longer-term environmental benefits."
+        },
+        {
+            "locode": "MT017",
+            "cityName": "Metropolis",
+            "region": "MT",
+            "regionName": "Metro Region",
+            "actionId": "A017",
+            "actionName": "Air Quality Monitoring",
+            "actionPriority": 17,
+            "explanation": "For the city Metropolis, Air Quality Monitoring is valued as it provides critical information for managing and mitigating urban pollution. This action supports evidence-based policy-making and ensures that other climate initiatives are effectively calibrated to current conditions. It is an enabling measure that enhances overall environmental management, even though its benefits are indirect."
+        },
+        {
+            "locode": "MT018",
+            "cityName": "Metropolis",
+            "region": "MT",
+            "regionName": "Metro Region",
+            "actionId": "A018",
+            "actionName": "Water Conservation Programs",
+            "actionPriority": 18,
+            "explanation": "For the city Metropolis, Water Conservation Programs are prioritized because they address a critical resource management issue linked to both climate adaptation and efficiency. This action emphasizes reducing water wastage and promoting sustainable use, which is essential for urban resilience. It is designed to integrate smoothly with existing infrastructure and environmental policies, offering reliable benefits in water-scarce conditions."
+        },
+        {
+            "locode": "MT019",
+            "cityName": "Metropolis",
+            "region": "MT",
+            "regionName": "Metro Region",
+            "actionId": "A019",
+            "actionName": "Community Resilience Planning",
+            "actionPriority": 19,
+            "explanation": "For the city Metropolis, Community Resilience Planning is valued because it fosters local capacity to respond and adapt to climate challenges. This action prioritizes the integration of local knowledge and resources, ensuring that responses are tailored to community needs. Its focus on social and environmental resilience builds a stronger foundation for sustainable, long-term adaptation strategies."
+        },
+        {
+            "locode": "MT020",
+            "cityName": "Metropolis",
+            "region": "MT",
+            "regionName": "Metro Region",
+            "actionId": "A020",
+            "actionName": "Smart Grid Implementation",
+            "actionPriority": 20,
+            "explanation": "For the city Metropolis, Smart Grid Implementation is prioritized for its potential to modernize the energy system and integrate renewable sources more efficiently. This action supports improved energy management and responsiveness to demand changes, which is essential for a smart and sustainable urban environment. Although its benefits manifest over time, it represents an important step toward a more adaptive and cost-effective energy framework."
+        }
+    ]
+}

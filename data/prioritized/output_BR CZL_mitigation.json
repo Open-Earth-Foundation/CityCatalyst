@@ -1,182 +1,204 @@
-[
-    {
-        "locode": "BR CZL",
-        "cityName": "Cruzeiro do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0005",
-        "actionName": "Create credit lines for residential and community wind energy projects",
-        "actionPriority": 1
-    },
-    {
-        "locode": "BR CZL",
-        "cityName": "Cruzeiro do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0121",
-        "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
-        "actionPriority": 2
-    },
-    {
-        "locode": "BR CZL",
-        "cityName": "Cruzeiro do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0118",
-        "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
-        "actionPriority": 3
-    },
-    {
-        "locode": "BR CZL",
-        "cityName": "Cruzeiro do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0088",
-        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
-        "actionPriority": 4
-    },
-    {
-        "locode": "BR CZL",
-        "cityName": "Cruzeiro do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0099",
-        "actionName": "Support Agroecological Certification Programs",
-        "actionPriority": 5
-    },
-    {
-        "locode": "BR CZL",
-        "cityName": "Cruzeiro do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0094",
-        "actionName": "Adoption of biomethane in public fleets.",
-        "actionPriority": 6
-    },
-    {
-        "locode": "BR CZL",
-        "cityName": "Cruzeiro do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0092",
-        "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
-        "actionPriority": 7
-    },
-    {
-        "locode": "BR CZL",
-        "cityName": "Cruzeiro do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0090",
-        "actionName": "Adoption of electric drones for last-mile deliveries.",
-        "actionPriority": 8
-    },
-    {
-        "locode": "BR CZL",
-        "cityName": "Cruzeiro do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0057",
-        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
-        "actionPriority": 9
-    },
-    {
-        "locode": "BR CZL",
-        "cityName": "Cruzeiro do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0068",
-        "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
-        "actionPriority": 10
-    },
-    {
-        "locode": "BR CZL",
-        "cityName": "Cruzeiro do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0131",
-        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
-        "actionPriority": 11
-    },
-    {
-        "locode": "BR CZL",
-        "cityName": "Cruzeiro do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0117",
-        "actionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
-        "actionPriority": 12
-    },
-    {
-        "locode": "BR CZL",
-        "cityName": "Cruzeiro do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0133",
-        "actionName": "Promote Urban Reforestation and Green Corridors",
-        "actionPriority": 13
-    },
-    {
-        "locode": "BR CZL",
-        "cityName": "Cruzeiro do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0136",
-        "actionName": "Support the Implementation of Ecological Fiscal Incentives",
-        "actionPriority": 14
-    },
-    {
-        "locode": "BR CZL",
-        "cityName": "Cruzeiro do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0027",
-        "actionName": "Create financing programs for local renewable energy projects",
-        "actionPriority": 15
-    },
-    {
-        "locode": "BR CZL",
-        "cityName": "Cruzeiro do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0044",
-        "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
-        "actionPriority": 16
-    },
-    {
-        "locode": "BR CZL",
-        "cityName": "Cruzeiro do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0025",
-        "actionName": "Promote energy-efficient low-income housing",
-        "actionPriority": 17
-    },
-    {
-        "locode": "BR CZL",
-        "cityName": "Cruzeiro do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0042",
-        "actionName": "Encourage renewable energy policies at the municipal level",
-        "actionPriority": 18
-    },
-    {
-        "locode": "BR CZL",
-        "cityName": "Cruzeiro do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0132",
-        "actionName": "Encourage Local Agroecological Production and Short Supply Chains",
-        "actionPriority": 19
-    },
-    {
-        "locode": "BR CZL",
-        "cityName": "Cruzeiro do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0091",
-        "actionName": "Implementation of prioritized routes for sustainable vehicles.",
-        "actionPriority": 20
-    }
-]
+{
+    "actions": [
+        {
+            "locode": "MT001",
+            "cityName": "Metropolis",
+            "region": "CR",
+            "regionName": "Central Region",
+            "actionId": "A1",
+            "actionName": "New Building Standards",
+            "actionPriority": 1,
+            "explanation": "For the city Metropolis, New Building Standards was prioritized because it significantly reduces emissions by targeting energy use in the building sector, which is critical given the city's dense urban environment. This action offers high impact through cost-effective measures and aligns well with local infrastructure needs. Its streamlined implementation process and fewer dependencies make it especially suited to the city's capacity and sustainability goals."
+        },
+        {
+            "locode": "MT001",
+            "cityName": "Metropolis",
+            "region": "CR",
+            "regionName": "Central Region",
+            "actionId": "A2",
+            "actionName": "Bus Emissions",
+            "actionPriority": 2,
+            "explanation": "For the city Metropolis, addressing Bus Emissions stands out as it directly targets a vital aspect of urban transportation that substantially affects local air quality and public health. This action is tailored to the realities of a densely populated area where public transit is a major contributor to overall emissions. Its design emphasizes cost effectiveness and rapid deployment to ensure tangible benefits within the city's operational framework."
+        },
+        {
+            "locode": "MT001",
+            "cityName": "Metropolis",
+            "region": "CR",
+            "regionName": "Central Region",
+            "actionId": "A3",
+            "actionName": "Renewable Energy Incentives",
+            "actionPriority": 3,
+            "explanation": "For the city Metropolis, Renewable Energy Incentives are highly valued as they foster a shift towards cleaner energy sources, reducing reliance on fossil fuels. This action leverages the city's natural resources while encouraging innovation in energy production. Its alignment with long-term economic benefits and environmental sustainability makes it an integral part of the local climate strategy."
+        },
+        {
+            "locode": "MT001",
+            "cityName": "Metropolis",
+            "region": "CR",
+            "regionName": "Central Region",
+            "actionId": "A4",
+            "actionName": "Urban Tree Planting",
+            "actionPriority": 4,
+            "explanation": "In Metropolis, Urban Tree Planting is prioritized for its multiple benefits, including carbon sequestration, reduction of urban heat, and overall enhancement of green spaces. The action fits naturally into the urban landscape, adding resilience and improving environmental quality in densely built areas. Its nature-based solution offers significant co-benefits while remaining a low-cost and adaptable measure."
+        },
+        {
+            "locode": "MT001",
+            "cityName": "Metropolis",
+            "region": "CR",
+            "regionName": "Central Region",
+            "actionId": "A5",
+            "actionName": "Energy Efficiency Retrofits",
+            "actionPriority": 5,
+            "explanation": "Energy Efficiency Retrofits are favored in Metropolis because they upgrade existing infrastructure to more sustainable standards, leading to notable reductions in energy consumption and emissions. This action resonates with the city's drive to modernize and optimize energy use across older buildings. Its straightforward implementation and cost-effective nature ensure that improvements in operational efficiency are both timely and impactful."
+        },
+        {
+            "locode": "MT001",
+            "cityName": "Metropolis",
+            "region": "CR",
+            "regionName": "Central Region",
+            "actionId": "A6",
+            "actionName": "Public Transit Expansion",
+            "actionPriority": 6,
+            "explanation": "Public Transit Expansion is crucial for Metropolis as it focuses on reducing vehicular emissions by improving the accessibility and reliability of transit systems. This action directly responds to challenges posed by urban congestion and promotes a shift away from private vehicles. Its strategic implementation supports a more sustainable and transit-oriented urban environment."
+        },
+        {
+            "locode": "MT001",
+            "cityName": "Metropolis",
+            "region": "CR",
+            "regionName": "Central Region",
+            "actionId": "A7",
+            "actionName": "Green Infrastructure Development",
+            "actionPriority": 7,
+            "explanation": "Green Infrastructure Development is particularly compelling in Metropolis because it integrates natural systems into urban planning to mitigate climate risks. By enhancing environmental quality and promoting ecosystem services, this action bolsters the city's resilience against climate-related hazards. It is viewed as an adaptable and cost-effective strategy that aligns closely with local sustainability objectives."
+        },
+        {
+            "locode": "MT001",
+            "cityName": "Metropolis",
+            "region": "CR",
+            "regionName": "Central Region",
+            "actionId": "A8",
+            "actionName": "Carbon Pricing Implementation",
+            "actionPriority": 8,
+            "explanation": "In Metropolis, Carbon Pricing Implementation is seen as an effective market-based approach that incentivizes emissions reductions across diverse sectors. This measure encourages industries to adopt cleaner technologies while aligning with broader environmental and economic policies. Its integration into the city’s policy framework helps streamline efforts towards achieving significant greenhouse gas reductions."
+        },
+        {
+            "locode": "MT001",
+            "cityName": "Metropolis",
+            "region": "CR",
+            "regionName": "Central Region",
+            "actionId": "A9",
+            "actionName": "Waste-to-Energy Projects",
+            "actionPriority": 9,
+            "explanation": "Metropolis values Waste-to-Energy Projects for their dual role in managing municipal waste and generating renewable energy. This action capitalizes on the efficient use of resources, transforming potential waste into a beneficial energy asset. By offering an integrated solution, it supports the city’s ambitions for waste reduction and cleaner energy production."
+        },
+        {
+            "locode": "MT001",
+            "cityName": "Metropolis",
+            "region": "CR",
+            "regionName": "Central Region",
+            "actionId": "A10",
+            "actionName": "Industrial Emission Controls",
+            "actionPriority": 10,
+            "explanation": "Industrial Emission Controls are essential in Metropolis as they target reducing harmful emissions from local manufacturing operations. This action directly addresses the environmental challenges posed by industrial activity, making a meaningful impact on overall air quality. It is a focused intervention that supports stricter compliance with environmental standards while enabling sustainable industrial practices."
+        },
+        {
+            "locode": "MT001",
+            "cityName": "Metropolis",
+            "region": "CR",
+            "regionName": "Central Region",
+            "actionId": "A11",
+            "actionName": "Smart Grid Deployment",
+            "actionPriority": 11,
+            "explanation": "Smart Grid Deployment is prioritized in Metropolis because it modernizes the city’s energy distribution system, enhancing efficiency and reliability. This innovation supports the integration of diverse renewable energy sources and helps manage energy demand more responsively. The action is well-matched to the city’s technological capacity and offers long-term benefits for both the economy and the environment."
+        },
+        {
+            "locode": "MT001",
+            "cityName": "Metropolis",
+            "region": "CR",
+            "regionName": "Central Region",
+            "actionId": "A12",
+            "actionName": "Low-Carbon Mobility Solutions",
+            "actionPriority": 12,
+            "explanation": "Low-Carbon Mobility Solutions are significant for Metropolis, as they facilitate a shift in transportation habits away from high-emission options. This action supports cleaner, more efficient urban mobility while easing traffic congestion. Its alignment with sustainable urban planning ensures that it meets both environmental and social objectives effectively."
+        },
+        {
+            "locode": "MT001",
+            "cityName": "Metropolis",
+            "region": "CR",
+            "regionName": "Central Region",
+            "actionId": "A13",
+            "actionName": "Water Conservation Measures",
+            "actionPriority": 13,
+            "explanation": "Water Conservation Measures are valued in Metropolis for protecting critical water resources amid climate variability. The action emphasizes efficient water use within both urban and industrial sectors, mitigating risks of scarcity. This approach is well-tailored to ensuring sustainable resource management without imposing heavy financial burdens."
+        },
+        {
+            "locode": "MT001",
+            "cityName": "Metropolis",
+            "region": "CR",
+            "regionName": "Central Region",
+            "actionId": "A14",
+            "actionName": "Coastal Protection Plans",
+            "actionPriority": 14,
+            "explanation": "Coastal Protection Plans are crucial for Metropolis, especially considering potential climate-related hazards along its waterfront areas. These plans are designed to safeguard infrastructure and communities, mitigating long-term risk exposures. Their integration into urban planning reinforces a robust defense against environmental challenges while remaining sensitive to local coastal dynamics."
+        },
+        {
+            "locode": "MT001",
+            "cityName": "Metropolis",
+            "region": "CR",
+            "regionName": "Central Region",
+            "actionId": "A15",
+            "actionName": "Sustainable Urban Drainage",
+            "actionPriority": 15,
+            "explanation": "Sustainable Urban Drainage is prioritized in Metropolis for its effectiveness in managing stormwater and mitigating flood risks. This action aligns with the city's environmental characteristics by promoting natural water management systems. It offers a resilient and economically sensible solution that supports broader urban sustainability efforts."
+        },
+        {
+            "locode": "MT001",
+            "cityName": "Metropolis",
+            "region": "CR",
+            "regionName": "Central Region",
+            "actionId": "A16",
+            "actionName": "Air Quality Monitoring Expansion",
+            "actionPriority": 16,
+            "explanation": "Air Quality Monitoring Expansion in Metropolis is an essential action that enhances the city's ability to detect and respond to pollution events. By ensuring continuous and comprehensive air quality assessments, it supports informed decision-making for targeted interventions. This initiative strengthens the overall framework for environmental management and aids in the strategic reduction of emissions."
+        },
+        {
+            "locode": "MT001",
+            "cityName": "Metropolis",
+            "region": "CR",
+            "regionName": "Central Region",
+            "actionId": "A17",
+            "actionName": "Community Solar Projects",
+            "actionPriority": 17,
+            "explanation": "Community Solar Projects in Metropolis are prioritized for their ability to increase access to renewable energy at the local level. This action fosters community involvement and supports a transition towards sustainable, decentralized energy systems. By empowering residents and reducing reliance on conventional energy sources, it contributes to both environmental and socio-economic resilience."
+        },
+        {
+            "locode": "MT001",
+            "cityName": "Metropolis",
+            "region": "CR",
+            "regionName": "Central Region",
+            "actionId": "A18",
+            "actionName": "Electric Vehicle Adoption",
+            "actionPriority": 18,
+            "explanation": "Electric Vehicle Adoption is significant for Metropolis as it directly addresses transportation sector emissions by shifting towards cleaner mobility options. This action is particularly effective in urban settings where reducing air pollution is essential for public health. Its promotion is well-supported by emerging infrastructure and technological readiness within the city."
+        },
+        {
+            "locode": "MT001",
+            "cityName": "Metropolis",
+            "region": "CR",
+            "regionName": "Central Region",
+            "actionId": "A19",
+            "actionName": "Climate Resilience Training",
+            "actionPriority": 19,
+            "explanation": "Climate Resilience Training is valued in Metropolis for its role in building local capacity to address and adapt to climate-related challenges. By equipping community members and stakeholders with practical knowledge, the action strengthens overall preparedness and risk reduction. This focus on education and empowerment complements broader infrastructural measures for enhanced urban resilience."
+        },
+        {
+            "locode": "MT001",
+            "cityName": "Metropolis",
+            "region": "CR",
+            "regionName": "Central Region",
+            "actionId": "A20",
+            "actionName": "Adaptive Urban Planning",
+            "actionPriority": 20,
+            "explanation": "Adaptive Urban Planning is prioritized in Metropolis because it integrates flexible design strategies to accommodate future climate uncertainties. This action is aligned with the city's evolving socio-economic dynamics and rapid urban growth, ensuring sustainable development. Its holistic approach, which takes into account multiple environmental and demographic factors, positions the city to better manage long-term climate impacts."
+        }
+    ]
+}

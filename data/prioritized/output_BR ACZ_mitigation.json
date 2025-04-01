@@ -1,182 +1,204 @@
-[
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0118",
-        "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
-        "actionPriority": 1
-    },
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0057",
-        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
-        "actionPriority": 2
-    },
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0005",
-        "actionName": "Create credit lines for residential and community wind energy projects",
-        "actionPriority": 3
-    },
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0121",
-        "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
-        "actionPriority": 4
-    },
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0133",
-        "actionName": "Promote Urban Reforestation and Green Corridors",
-        "actionPriority": 5
-    },
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0088",
-        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
-        "actionPriority": 6
-    },
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0094",
-        "actionName": "Adoption of biomethane in public fleets.",
-        "actionPriority": 7
-    },
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0092",
-        "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
-        "actionPriority": 8
-    },
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0117",
-        "actionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
-        "actionPriority": 9
-    },
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0025",
-        "actionName": "Promote energy-efficient low-income housing",
-        "actionPriority": 10
-    },
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0090",
-        "actionName": "Adoption of electric drones for last-mile deliveries.",
-        "actionPriority": 11
-    },
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0044",
-        "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
-        "actionPriority": 12
-    },
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0042",
-        "actionName": "Encourage renewable energy policies at the municipal level",
-        "actionPriority": 13
-    },
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0068",
-        "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
-        "actionPriority": 14
-    },
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0131",
-        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
-        "actionPriority": 15
-    },
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0099",
-        "actionName": "Support Agroecological Certification Programs",
-        "actionPriority": 16
-    },
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0136",
-        "actionName": "Support the Implementation of Ecological Fiscal Incentives",
-        "actionPriority": 17
-    },
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0132",
-        "actionName": "Encourage Local Agroecological Production and Short Supply Chains",
-        "actionPriority": 18
-    },
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0091",
-        "actionName": "Implementation of prioritized routes for sustainable vehicles.",
-        "actionPriority": 19
-    },
-    {
-        "locode": "BR ACZ",
-        "cityName": "Aracruz",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0027",
-        "actionName": "Create financing programs for local renewable energy projects",
-        "actionPriority": 20
-    }
-]
+{
+    "actions": [
+        {
+            "locode": "GV001",
+            "cityName": "Greenvale",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "ACT01",
+            "actionName": "Renewable Energy Expansion",
+            "actionPriority": 1,
+            "explanation": "In Greenvale, Renewable Energy Expansion is highly valued because it has strong potential to significantly reduce greenhouse gas emissions by shifting away from fossil fuels. This action aligns well with the city's energy landscape and leverages abundant local renewable resources. Additionally, it offers long-term sustainability with beneficial cost-savings and minimal dependencies, reinforcing its high ranking."
+        },
+        {
+            "locode": "GV002",
+            "cityName": "Greenvale",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "ACT02",
+            "actionName": "Energy Efficiency Upgrades",
+            "actionPriority": 2,
+            "explanation": "Energy Efficiency Upgrades stand out by promoting effective energy use and lowering emissions in dense urban settings. The initiative improves building performance and contributes to overall environmental quality through reduced energy demands. Its relative ease of implementation and cost-effectiveness make it well-suited to the city’s capacity."
+        },
+        {
+            "locode": "GV003",
+            "cityName": "Greenvale",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "ACT03",
+            "actionName": "Tree Canopy Enhancement",
+            "actionPriority": 3,
+            "explanation": "Tree Canopy Enhancement is recognized for its natural approach to cooling and moderating urban temperatures, thereby indirectly contributing to emissions mitigation. The action provides added benefits such as improved air quality and urban aesthetics. It is well-aligned with the city's environmental characteristics, even though its direct impact on emissions reduction is modest."
+        },
+        {
+            "locode": "GV004",
+            "cityName": "Greenvale",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "ACT04",
+            "actionName": "Waste-to-Energy Initiatives",
+            "actionPriority": 4,
+            "explanation": "Waste-to-Energy Initiatives are appreciated for combining effective waste management with cleaner energy production, leading to a reduction in overall emissions. This approach directly addresses the challenges posed by urban waste while supporting sustainable energy goals. Its compatibility with existing infrastructure further supports its prioritization despite some dependency on advanced waste management systems."
+        },
+        {
+            "locode": "GV005",
+            "cityName": "Greenvale",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "ACT05",
+            "actionName": "Urban Green Infrastructure",
+            "actionPriority": 5,
+            "explanation": "Urban Green Infrastructure is favored for its role in enhancing the city's resilience and reducing climate risks through natural solutions. It offers benefits like improved stormwater management and urban cooling, which are important for a densely populated area. The initiative also provides significant co-benefits in air quality and community well-being despite requiring a longer adaptation period."
+        },
+        {
+            "locode": "GV006",
+            "cityName": "Greenvale",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "ACT06",
+            "actionName": "Water Resource Management",
+            "actionPriority": 6,
+            "explanation": "Water Resource Management is seen as essential for optimizing water use and mitigating climate-induced water scarcity. It supports sustainable practices that, while indirectly contributing to emissions reduction, are crucial for long-term resource security. The action aligns well with the city’s environmental features and capacity, even though its direct impact on greenhouse gas reduction is secondary."
+        },
+        {
+            "locode": "GV007",
+            "cityName": "Greenvale",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "ACT07",
+            "actionName": "Sustainable Transportation Planning",
+            "actionPriority": 7,
+            "explanation": "Sustainable Transportation Planning is highly regarded for its ability to reduce vehicular emissions and address urban congestion effectively. By shifting transport modes, it directly targets the city's critical emission sources while enhancing overall mobility. The action is considered timely and aligned with the socio-demographic context, reinforcing its high prioritization."
+        },
+        {
+            "locode": "GV008",
+            "cityName": "Greenvale",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "ACT08",
+            "actionName": "Industrial Emissions Control",
+            "actionPriority": 8,
+            "explanation": "Industrial Emissions Control is critical for mitigating pollution from the city’s high-emission industrial sectors. Its targeted approach helps reduce harmful emissions that have significant environmental and public health impacts. Though it requires robust coordination among stakeholders, its long-term benefits in risk reduction justify its ranking."
+        },
+        {
+            "locode": "GV009",
+            "cityName": "Greenvale",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "ACT09",
+            "actionName": "Climate Resilient Buildings",
+            "actionPriority": 9,
+            "explanation": "Climate Resilient Buildings are valued for enhancing both energy efficiency and the durability of urban infrastructure against climate impacts. This action improves building standards in a way that decreases vulnerability while also reducing energy consumption. It aligns well with local risk reduction strategies and the city’s capacity to manage moderate investments."
+        },
+        {
+            "locode": "GV010",
+            "cityName": "Greenvale",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "ACT10",
+            "actionName": "Community-based Renewable Projects",
+            "actionPriority": 10,
+            "explanation": "Community-based Renewable Projects are appreciated for their inclusive approach, empowering local stakeholders in the transition to cleaner energy. The initiative fosters local engagement and supports emissions reduction through decentralized renewable solutions. Its relatively low dependency on external factors makes it a practical and socially beneficial option for the city."
+        },
+        {
+            "locode": "GV011",
+            "cityName": "Greenvale",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "ACT11",
+            "actionName": "Green Roof Programs",
+            "actionPriority": 11,
+            "explanation": "Green Roof Programs are recognized for mitigating the urban heat island effect and providing natural insulation, which indirectly contributes to lower energy demands. They help improve air quality and add green space in a densely built environment. This innovative approach aligns well with the city’s urban context and offers sustainable benefits even if the emissions reduction impact is moderate."
+        },
+        {
+            "locode": "GV012",
+            "cityName": "Greenvale",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "ACT12",
+            "actionName": "Enhanced Public Transit Networks",
+            "actionPriority": 12,
+            "explanation": "Enhanced Public Transit Networks are prioritized for their ability to reduce reliance on individual car usage and lower urban emissions significantly. The focus on public mobility addresses congestion and improves overall air quality effortlessly. With its strong alignment with the city’s socio-demographic needs and effective implementation potential, this action supports sustainable urban growth."
+        },
+        {
+            "locode": "GV013",
+            "cityName": "Greenvale",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "ACT13",
+            "actionName": "Smart Grid Implementation",
+            "actionPriority": 13,
+            "explanation": "Smart Grid Implementation is valued for modernizing the energy infrastructure, which results in improved efficiency and lower emissions. It facilitates the integration of renewable energy sources into the city's power network while enhancing overall resilience. Despite its reliance on technological upgrades, the action's benefits in cost-effectiveness and risk reduction are clear and compelling."
+        },
+        {
+            "locode": "GV014",
+            "cityName": "Greenvale",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "ACT14",
+            "actionName": "Flood Risk Mitigation",
+            "actionPriority": 14,
+            "explanation": "Flood Risk Mitigation is central to protecting the city from the adverse effects of climate-induced flooding and related disasters. The action contributes indirectly to a stable urban environment by reducing recovery costs and safeguarding critical infrastructure. While its primary focus is on adaptation rather than emissions reduction, its role in enhancing urban resilience is highly valued."
+        },
+        {
+            "locode": "GV015",
+            "cityName": "Greenvale",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "ACT15",
+            "actionName": "Heat Island Reduction",
+            "actionPriority": 15,
+            "explanation": "Heat Island Reduction strategies are important for addressing the challenges of high urban temperatures and energy demands in a densely populated area. This action helps mitigate the extra cooling load on buildings, contributing to slight reductions in overall emissions. It further improves thermal comfort and environmental quality, making it a relevant supportive measure in the overall climate strategy."
+        },
+        {
+            "locode": "GV016",
+            "cityName": "Greenvale",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "ACT16",
+            "actionName": "Stormwater Management",
+            "actionPriority": 16,
+            "explanation": "Stormwater Management is recognized for its ability to reduce urban flooding and manage water runoff effectively. The action enhances the quality of local water bodies and indirectly contributes to a healthier ecosystem. Its compatibility with the city’s climatic conditions and sustainability goals supports its standing, even though its direct emissions reduction is limited."
+        },
+        {
+            "locode": "GV017",
+            "cityName": "Greenvale",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "ACT17",
+            "actionName": "Air Quality Improvement Measures",
+            "actionPriority": 17,
+            "explanation": "Air Quality Improvement Measures are prioritized due to their direct benefits in reducing pollution and enhancing public health in urban areas. They tackle critical sources of emissions from both transportation and industrial activities effectively. The approach is cost-effective and has a positive social impact, making it a trusted component of the city's climate strategy."
+        },
+        {
+            "locode": "GV018",
+            "cityName": "Greenvale",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "ACT18",
+            "actionName": "Eco-friendly Urban Planning",
+            "actionPriority": 18,
+            "explanation": "Eco-friendly Urban Planning is regarded as a strategic initiative that integrates sustainability into city development. It influences long-term emissions reduction by encouraging mixed-use and transit-oriented developments. The action blends environmental compatibility with cost-effective design principles, making it a well-rounded approach for future urban growth."
+        },
+        {
+            "locode": "GV019",
+            "cityName": "Greenvale",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "ACT19",
+            "actionName": "Sequestration Forest Restoration",
+            "actionPriority": 19,
+            "explanation": "Sequestration Forest Restoration is recognized for its role in capturing carbon and promoting local biodiversity through natural processes. This action is particularly valuable in enhancing the ecosystem services that contribute indirectly to risk reduction. Although the benefits unfold over a longer term, its compatibility with the city’s environmental context is well appreciated."
+        },
+        {
+            "locode": "GV020",
+            "cityName": "Greenvale",
+            "region": "NA",
+            "regionName": "North America",
+            "actionId": "ACT20",
+            "actionName": "Coastal Erosion Defense",
+            "actionPriority": 20,
+            "explanation": "Coastal Erosion Defense is prioritized for its critical role in safeguarding coastal areas and urban infrastructure from the impacts of rising sea levels. This action effectively reduces risks associated with severe storms and long-term coastal degradation. It is particularly well-suited to the city's unique environmental needs, ensuring resilience and sustained urban protection."
+        }
+    ]
+}

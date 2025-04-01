@@ -10,12 +10,12 @@ import {
   useSetUserInfoMutation,
 } from "@/services/api";
 
-import { OCCityAttributes } from "@/util/types";
+import { OCCityAttributes, ProjectResponse } from "@/util/types";
 import { MdArrowBack, MdArrowForward } from "react-icons/md";
 import { Box, Icon, Text, useSteps } from "@chakra-ui/react";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
 import type { SubmitHandler } from "react-hook-form";
 import { useForm } from "react-hook-form";
 import SelectCityStep from "@/components/steps/select-city-steps";
@@ -25,6 +25,7 @@ import ConfirmStep from "@/components/steps/confirm-city-data-step";
 import ProgressSteps from "@/components/steps/progress-steps";
 import { Button } from "@/components/ui/button";
 import { UseErrorToast } from "@/hooks/Toasts";
+import ProgressLoader from "@/components/ProgressLoader";
 
 export type Inputs = {
   city: string;
@@ -71,7 +72,10 @@ export default function OnboardingSetup({
   } = useForm<Inputs>();
 
   const params = useSearchParams();
+
   const projectId = params.get("project");
+
+  const { data: projectsList, isLoading } = api.useGetUserProjectsQuery({});
 
   const steps = [
     { title: t("setup-step") },
@@ -158,7 +162,9 @@ export default function OnboardingSetup({
         country: countryName ?? undefined,
         regionLocode: region?.actor_id ?? undefined,
         countryLocode: country?.actor_id ?? undefined,
-        projectId: projectId as string,
+        projectId: (selectedProject.length > 0
+          ? selectedProject[0]
+          : projectId) as string,
       }).unwrap();
       await addCityPopulation({
         cityId: city.cityId,
@@ -210,6 +216,17 @@ export default function OnboardingSetup({
     goToNextStep();
   };
 
+  const [selectedProject, setSelectedProject] = useState<string[]>([]);
+  useEffect(() => {
+    if (projectId) {
+      setSelectedProject([projectId!]);
+    }
+  }, [projectId]);
+
+  if (isLoading) {
+    return <ProgressLoader />;
+  }
+
   return (
     <>
       <div className="pt-16 pb-16 w-[1090px] max-w-full mx-auto">
@@ -234,6 +251,9 @@ export default function OnboardingSetup({
               setOcCityData={setOcCityData}
               setData={setData}
               control={control}
+              projectsList={projectsList}
+              selectedProject={selectedProject}
+              setSelectedProject={setSelectedProject}
               t={t}
             />
           )}

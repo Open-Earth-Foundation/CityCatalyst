@@ -34,7 +34,8 @@ import {
   ProjectWithCities,
   RequiredScopesResponse,
   ResultsResponse,
-  SectorBreakdownResponse, UserAccessResponse,
+  SectorBreakdownResponse,
+  UserAccessResponse,
   UserFileResponse,
   UserInfoResponse,
   UserInviteResponse,
@@ -71,7 +72,7 @@ export const api = createApi({
     "Organization",
     "Project",
     "ProjectUsers",
-    "UserAccessStatus"
+    "UserAccessStatus",
   ],
   baseQuery: fetchBaseQuery({ baseUrl: "/api/v0/", credentials: "include" }),
   endpoints: (builder) => {
@@ -648,7 +649,21 @@ export const api = createApi({
             response.data,
         },
       ),
-
+      acceptOrganizationAdminInvite: builder.mutation({
+        query: (data: {
+          token: string;
+          organizationId: string;
+          email: string;
+        }) => {
+          return {
+            method: "PATCH",
+            url: `/organizations/${data.organizationId}/invitations/accept`,
+            body: data,
+          };
+        },
+        transformResponse: (response: any) => response,
+        invalidatesTags: ["UserAccessStatus"],
+      }),
       mockData: builder.query({
         query: () => {
           return {
@@ -994,9 +1009,18 @@ export const api = createApi({
           method: "GET",
           url: `/user/access-status`,
         }),
-        transformResponse: (response: UserAccessResponse ) => response,
+        transformResponse: (response: { data: UserAccessResponse }) =>
+          response.data,
         providesTags: ["UserAccessStatus"],
-      })
+      }),
+      getUserProjects: builder.query({
+        query: () => ({
+          method: "GET",
+          url: `/user/projects`,
+        }),
+        transformResponse: (response: ProjectResponse[]) => response,
+        providesTags: ["ProjectUsers"],
+      }),
     };
   },
 });
@@ -1086,6 +1110,6 @@ export const {
   useEditProjectMutation,
   useDeleteProjectMutation,
   useGetProjectUsersQuery,
-    useGetUserAccessStatusQuery
+  useGetUserAccessStatusQuery,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

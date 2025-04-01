@@ -592,4 +592,6 @@ export default class UserService {
     }
     return responseObject;
   }
+
+  public async fetchUserProjects(userId: string) {}
 }

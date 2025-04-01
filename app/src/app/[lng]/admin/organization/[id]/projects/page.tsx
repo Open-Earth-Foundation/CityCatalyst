@@ -26,6 +26,7 @@ import {
 import CreateEditProjectModal from "@/app/[lng]/admin/organization/[id]/projects/CreateEditProjectModal";
 import { RiDeleteBin6Line, RiEditLine } from "react-icons/ri";
 import DeleteProjectModal from "@/app/[lng]/admin/organization/[id]/projects/DeleteProjectModal";
+import ProgressLoader from "@/components/ProgressLoader";
 
 const AdminOrganizationProjectsPage = ({
   params: { lng, id },
@@ -68,11 +69,7 @@ const AdminOrganizationProjectsPage = ({
 
   if (isOrganizationLoading) {
     return (
-      <Box className="w-full py-12 flex items-center justify-center">
-        <ProgressCircleRoot value={null}>
-          <ProgressCircleRing cap="round" />
-        </ProgressCircleRoot>
-      </Box>
+        <ProgressLoader/>
     );
   }
 

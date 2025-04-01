@@ -46,8 +46,10 @@ import { Controller, useForm } from "react-hook-form";
 import { RadioGroup } from "@/components/ui/radio";
 import CustomSelectableButton from "@/components/custom-selectable-buttons";
 import CommaSeperatedInput from "./bulk-inventory-actions/CommaSeperatedInput";
-import { Toaster, toaster } from "@/components/ui/toaster";
+import { Toaster } from "@/components/ui/toaster";
 import BulkActionsTabContent from "./bulk-inventory-actions/BulkActionsTabContent";
+import { OrganizationRole } from "@/util/types";
+import { toaster } from "@/components/ui/toaster";
 
 interface OrgData {
   contactEmail: string;
@@ -80,6 +82,35 @@ const AdminPage = ({ params: { lng } }: { params: { lng: string } }) => {
         {t(title)}
       </Tabs.Trigger>
     );
+  };
+  const [createOrganizationInvite, { isLoading: isInviteLoading }] =
+    api.useCreateOrganizationInviteMutation();
+
+  const handleReInvite = async (email: string, organizationId: string) => {
+    toaster.create({
+      title: t("sending-invite"),
+      type: "info",
+    });
+    const inviteResponse = await createOrganizationInvite({
+      organizationId,
+      inviteeEmail: email,
+      role: OrganizationRole.ORG_ADMIN,
+    });
+    if (inviteResponse.data) {
+      toaster.dismiss();
+      toaster.create({
+        title: t("invite-sent-success"),
+        type: "success",
+        duration: 3000,
+      });
+    } else {
+      toaster.dismiss();
+      toaster.create({
+        title: t("invite-sent-error"),
+        type: "error",
+        duration: 3000,
+      });
+    }
   };
 
   const BulkActionsTabTrigger: FC<{ title: string; disabled?: boolean }> = ({
@@ -199,7 +230,7 @@ const AdminPage = ({ params: { lng } }: { params: { lng: string } }) => {
                 </Text>
               )}
 
-              {!isOrgDataLoading && orgData && orgData.length > 0 && (
+              {!isOrgDataLoading && orgData && orgData?.length > 0 && (
                 <DataTable
                   t={t}
                   searchable={true}
@@ -264,7 +295,12 @@ const AdminPage = ({ params: { lng } }: { params: { lng: string } }) => {
                                 cursor: "pointer",
                               }}
                               className="group"
-                              onClick={() => {}}
+                              onClick={() =>
+                                handleReInvite(
+                                  item.contactEmail,
+                                  item.organizationId,
+                                )
+                              }
                             >
                               <Icon
                                 className="group-hover:text-white"

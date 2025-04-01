@@ -12,7 +12,6 @@ export const GET = apiHandler(async (_req: Request, context) => {
   const userId = context.session.user.id;
 
   const data = await UserService.findUserAccessStatus(userId);
-  console.log(data, "thi si the data");
   if (!data) {
     throw new createHttpError.NotFound("User not found");
   }

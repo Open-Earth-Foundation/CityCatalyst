@@ -178,7 +178,7 @@ export default function HomePage({
                       gap="8px"
                       onClick={() =>
                         router.push(
-                          `/onboarding/setup?city=${inventory?.cityId}`,
+                          `/onboarding/setup?city=${inventory?.cityId}&project=${city?.projectId}`,
                         )
                       }
                     >

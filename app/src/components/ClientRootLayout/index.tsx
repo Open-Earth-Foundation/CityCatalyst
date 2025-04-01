@@ -18,7 +18,7 @@ export function ClientRootLayout({
   const pathname = usePathname();
   const isPublic = pathname.includes("public");
   const isAuthPage = pathname.includes("auth");
-  const nonEnterpriseMode = hasFeatureFlag("NEXT_PUBLIC_NON_ENTERPRISE_MODE");
+  const EnterpriseMode = hasFeatureFlag("ENTERPRISE_MODE");
   const { data: userInfo, isLoading: isUserInfoLoading } =
     api.useGetUserInfoQuery();
 
@@ -26,7 +26,7 @@ export function ClientRootLayout({
     useGetUserAccessStatusQuery(
       {},
       {
-        skip: isPublic || isAuthPage || nonEnterpriseMode,
+        skip: isPublic || isAuthPage || !EnterpriseMode,
       },
     );
 

@@ -22,11 +22,12 @@ import {
   ProgressCircleRing,
   ProgressCircleRoot,
 } from "@/components/ui/progress-circle";
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { FaLocationDot } from "react-icons/fa6";
 import { useTranslation } from "@/i18n/client";
+import ProjectLimitModal from "@/components/project-limit";
 
 const SearchInput = ({
   searchTerm,
@@ -148,8 +149,18 @@ const SingleProjectView = ({
   currentInventoryId: string;
 }) => {
   const router = useRouter();
-  const goToOnboarding = () =>
-    router.push(`/onboarding/setup?project=${project.projectId}`);
+  const [isProjectLimitModalOpen, setIsProjectLimitModalOpen] = useState(false);
+  const goToOnboarding = () => {
+    console.log("goToOnboarding", project);
+    if (
+      BigInt(project.cities.length) ===
+      BigInt(project.cityCountLimit as unknown as string)
+    ) {
+      setIsProjectLimitModalOpen(true);
+    } else {
+      router.push(`/onboarding/setup?project=${project.projectId}`);
+    }
+  };
 
   const goToInventory = (inventoryId: string) => {
     router.push(`/${inventoryId}`);
@@ -225,6 +236,12 @@ const SingleProjectView = ({
           </Button>
         ))}
       </HStack>
+      <ProjectLimitModal
+        isOpen={isProjectLimitModalOpen}
+        onClose={() => setIsProjectLimitModalOpen(false)}
+        t={t as any}
+        onOpenChange={setIsProjectLimitModalOpen}
+      />
     </HStack>
   );
 };

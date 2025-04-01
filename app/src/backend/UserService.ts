@@ -352,6 +352,7 @@ export default class UserService {
         groupedByProject[projectId] = {
           projectId,
           name: projectName,
+          cityCountLimit: city.project.cityCountLimit,
           cities: [],
         };
       }

@@ -412,7 +412,7 @@ export type ProjectWithCities = {
   projectId: string;
   name: string;
   description?: string;
-  cityCountLimit?: number;
+  cityCountLimit?: Number;
   cities: {
     cityId: string;
     name: string;
@@ -434,7 +434,7 @@ export type ProjectUserResponse = {
 };
 
 export type UserAccessResponse = {
-  isOrgOwner: boolean,
-  isProjectAdmin: boolean,
-  isCollaborator: boolean,
-}
+  isOrgOwner: boolean;
+  isProjectAdmin: boolean;
+  isCollaborator: boolean;
+};

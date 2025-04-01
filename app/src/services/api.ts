@@ -197,7 +197,7 @@ export const api = createApi({
         }),
         transformResponse: (response: { data: CityAttributes }) =>
           response.data,
-        invalidatesTags: ["CityData"],
+        invalidatesTags: ["CityData", "Projects"],
       }),
       addInventory: builder.mutation<
         InventoryAttributes,
@@ -524,7 +524,7 @@ export const api = createApi({
           method: "DELETE",
         }),
         transformResponse: (response: { data: any }) => response.data,
-        invalidatesTags: ["CityData"],
+        invalidatesTags: ["CityData", "Projects"],
       }),
       getInventories: builder.query<InventoryAttributes[], { cityId: string }>({
         query: ({ cityId }) => ({

@@ -10,7 +10,7 @@ For each city, it will:
 3. Add the emissions data to the city_data.json file
 
 Usage:
-    python run_ghgi_pipeline.py --bulk_file data/cities/brazil_city_locodes.json
+    python scripts/create_city_data/run_ghgi_bulk_import.py --bulk_file data/cities/brazil_city_locodes.json
 """
 
 import argparse

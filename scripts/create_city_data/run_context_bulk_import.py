@@ -7,7 +7,7 @@ For each city, it will:
 2. Add or update the city context data in the city_data.json file
 
 Usage:
-    python run_context_bulk_import.py --bulk_file data/cities/brazil_city_locodes.json
+    python scripts/create_city_data/run_context_bulk_import.py --bulk_file data/cities/brazil_city_locodes.json
 """
 
 import argparse

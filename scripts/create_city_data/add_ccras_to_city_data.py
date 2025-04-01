@@ -3,6 +3,9 @@ Use this script to CCRA values retrieved by
 the ccra API and add them to the city data stored inside 'data/cities'.
 
 Inputs: locode of the city to add the emissions data to
+
+Execute:
+python scripts/create_city_data/add_ccras_to_city_data.py --locode "BR MGE"
 """
 
 from pathlib import Path

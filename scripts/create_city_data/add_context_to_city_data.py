@@ -8,6 +8,9 @@ The city context data includes information such as:
 - Access to public services
 
 Inputs: locode of the city to add/update the context data for
+
+Execute:
+python scripts/create_city_data/add_context_to_city_data.py --locode "BR SER"
 """
 
 from pathlib import Path

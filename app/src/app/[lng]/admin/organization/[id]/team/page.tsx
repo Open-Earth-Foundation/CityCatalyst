@@ -15,6 +15,7 @@ import { MdAdd, MdMoreVert, MdOutlineGroup } from "react-icons/md";
 import React, { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "@/i18n/client";
 import {
+  api,
   useGetOrganizationQuery,
   useGetProjectsQuery,
   useGetProjectUsersQuery,
@@ -29,7 +30,12 @@ import {
 import { convertKgToTonnes } from "@/util/helpers";
 import { LuChevronDown } from "react-icons/lu";
 import DataTable from "@/components/ui/data-table";
-import { OrganizationRole } from "@/util/types";
+import {
+  InviteStatus,
+  OrganizationRole,
+  ProjectUserResponse,
+  ProjectWithCities,
+} from "@/util/types";
 import {
   MenuContent,
   MenuItem,
@@ -40,6 +46,7 @@ import { RiDeleteBin6Line, RiEditLine } from "react-icons/ri";
 import { Tag } from "@/components/ui/tag";
 import AddCollaboratorsModal from "@/components/HomePage/AddCollaboratorModal/AddCollaboratorsModal";
 import { uniqBy } from "lodash";
+import RemoveUserModal from "@/app/[lng]/admin/organization/[id]/team/RemoveUserModal";
 
 const AdminOrganizationTeamPage = ({
   params: { lng, id },
@@ -89,12 +96,17 @@ const AdminOrganizationTeamPage = ({
   const userList = useMemo(() => {
     if (!projectUsers) return [];
     if (selectedCity) {
-      return projectUsers.filter(
-        (user) =>
-          user.cityId === selectedCity ||
-          user.role === OrganizationRole.ORG_ADMIN ||
-          user.role === OrganizationRole.ADMIN,
-      );
+      return projectUsers
+        .filter(
+          (user) =>
+            user.cityId === selectedCity ||
+            user.role === OrganizationRole.ORG_ADMIN ||
+            user.role === OrganizationRole.ADMIN,
+        )
+        .map((user) => ({
+          ...user,
+          role: user.role,
+        }));
     }
     return uniqBy(projectUsers, "email");
   }, [projectUsers, selectedCity]);
@@ -117,7 +129,10 @@ const AdminOrganizationTeamPage = ({
   }, [selectedCity, selectedProject, projectsData]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [userToRemove, setUserToRemove] = useState<ProjectUserResponse | null>(
+    null,
+  );
   if (isOrganizationLoading || isLoading) {
     return <ProgressLoader />;
   }
@@ -302,7 +317,10 @@ const AdminOrganizationTeamPage = ({
               t={t}
               searchable={true}
               pagination={true}
-              filterOptions={Object.values(OrganizationRole)}
+              filterOptions={Object.keys(TagMapping).map((item) => ({
+                value: item,
+                label: TagMapping[item as OrganizationRole].text,
+              }))}
               filterProperty={"role"}
               title={`${selectedCityData ? selectedCityData.name + " ," : ""} ${t(
                 "org-team-heading",
@@ -313,7 +331,6 @@ const AdminOrganizationTeamPage = ({
               columns={[
                 { header: t("email"), accessor: "email" },
                 { header: t("role"), accessor: "role" },
-                { header: t("status"), accessor: "status" },
                 { header: "", accessor: null },
               ]}
               renderRow={(item, idx) => (
@@ -330,100 +347,59 @@ const AdminOrganizationTeamPage = ({
                       {TagMapping[item.role as OrganizationRole].text}
                     </Tag>
                   </Table.Cell>
-                  <Table.Cell title={item.role}>
-                    {" "}
-                    <Tag size="lg" colorPalette="muted">
-                      {item.status === "accepted"
-                        ? t("accepted")
-                        : t("invite-sent")}
-                    </Tag>
-                  </Table.Cell>
-                  {[
-                    OrganizationRole.ADMIN,
-                    OrganizationRole.COLLABORATOR,
-                  ].includes(item.role) ? (
-                    <Table.Cell>
-                      <MenuRoot>
-                        <MenuTrigger>
-                          <IconButton
-                            data-testid="activity-more-icon"
-                            aria-label="more-icon"
-                            variant="ghost"
-                            color="content.tertiary"
-                          >
-                            <Icon as={MdMoreVert} size="lg" />
-                          </IconButton>
-                        </MenuTrigger>
-                        <MenuContent
-                          w="auto"
-                          borderRadius="8px"
-                          shadow="2dp"
-                          px="0"
+
+                  <Table.Cell>
+                    <MenuRoot>
+                      <MenuTrigger>
+                        <IconButton
+                          data-testid="activity-more-icon"
+                          aria-label="more-icon"
+                          variant="ghost"
+                          color="content.tertiary"
                         >
-                          <MenuItem
-                            value={t("edit-project")}
-                            valueText={t("edit-project")}
-                            p="16px"
-                            display="flex"
-                            alignItems="center"
-                            gap="16px"
-                            _hover={{
-                              bg: "content.link",
-                              cursor: "pointer",
-                            }}
-                            className="group"
-                            onClick={() => {}}
+                          <Icon as={MdMoreVert} size="lg" />
+                        </IconButton>
+                      </MenuTrigger>
+                      <MenuContent
+                        w="auto"
+                        borderRadius="8px"
+                        shadow="2dp"
+                        px="0"
+                      >
+                        <MenuItem
+                          value={t("remove-user")}
+                          valueText={t("remove-user")}
+                          p="16px"
+                          display="flex"
+                          alignItems="center"
+                          gap="16px"
+                          _hover={{
+                            bg: "content.link",
+                            cursor: "pointer",
+                          }}
+                          className="group"
+                          onClick={() => {
+                            setIsDeleteModalOpen(true);
+                            setUserToRemove(item);
+                          }}
+                        >
+                          <Icon
+                            className="group-hover:text-white"
+                            color="sentiment.negativeDefault"
+                            as={RiDeleteBin6Line}
+                            h="24px"
+                            w="24px"
+                          />
+                          <Text
+                            className="group-hover:text-white"
+                            color="content.primary"
                           >
-                            <Icon
-                              className="group-hover:text-white"
-                              color="interactive.control"
-                              as={MdOutlineGroup}
-                              h="24px"
-                              w="24px"
-                            />
-                            <Text
-                              className="group-hover:text-white"
-                              color="content.primary"
-                            >
-                              {t("change-to-admin")}
-                            </Text>
-                          </MenuItem>
-                          <MenuItem
-                            value={t("remove-user")}
-                            valueText={t("remove-user")}
-                            p="16px"
-                            display="flex"
-                            alignItems="center"
-                            gap="16px"
-                            _hover={{
-                              bg: "content.link",
-                              cursor: "pointer",
-                            }}
-                            className="group"
-                            onClick={() => {}}
-                          >
-                            <Icon
-                              className="group-hover:text-white"
-                              color="sentiment.negativeDefault"
-                              as={RiDeleteBin6Line}
-                              h="24px"
-                              w="24px"
-                            />
-                            <Text
-                              className="group-hover:text-white"
-                              color="content.primary"
-                            >
-                              {t("remove")}
-                            </Text>
-                          </MenuItem>
-                        </MenuContent>
-                      </MenuRoot>
-                    </Table.Cell>
-                  ) : (
-                    <Table.Cell>
-                      <span></span>
-                    </Table.Cell>
-                  )}
+                            {t("remove-user")}
+                          </Text>
+                        </MenuItem>
+                      </MenuContent>
+                    </MenuRoot>
+                  </Table.Cell>
                 </Table.Row>
               )}
             />
@@ -436,6 +412,20 @@ const AdminOrganizationTeamPage = ({
         onClose={() => setIsModalOpen(false)}
         organizationId={id}
         isAdmin={true}
+      />
+      <RemoveUserModal
+        t={t}
+        isOpen={isDeleteModalOpen}
+        onClose={() => {
+          setIsDeleteModalOpen(false);
+          setUserToRemove(null);
+        }}
+        onOpenChange={setIsDeleteModalOpen}
+        projectData={projectsData as ProjectWithCities[]}
+        selectedProject={selectedProject.length > 0 ? selectedProject[0] : null}
+        selectedCity={selectedCity}
+        user={userToRemove}
+        organization={organization}
       />
     </Box>
   );

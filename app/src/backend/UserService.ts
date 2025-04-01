@@ -11,7 +11,7 @@ import { type AppSession } from "@/lib/auth";
 import { City } from "@/models/City";
 import { Inventory } from "@/models/Inventory";
 import { User } from "@/models/User";
-import { Includeable, QueryTypes } from "sequelize";
+import { Includeable, QueryTypes, Transaction } from "sequelize";
 import { UserFile } from "@/models/UserFile";
 import { Project } from "@/models/Project";
 import { hasOrgOwnerLevelAccess } from "@/backend/RoleBasedAccessService";
@@ -415,8 +415,6 @@ export default class UserService {
       ],
     });
 
-    console.log(cities);
-
     const cityInvites = cities.flatMap((city) =>
       city.cityInvites.map((invite) => ({
         email: invite?.email as string,
@@ -429,5 +427,137 @@ export default class UserService {
     users.push(...cityInvites);
 
     return users;
+  }
+
+  public static async removeUserFromProject(projectId: string, email: string) {
+    const project = await Project.findByPk(projectId as string);
+
+    if (!project) {
+      throw new createHttpError.NotFound("project-not-found");
+    }
+
+    const user = await User.findOne({ where: { email } });
+    const cities = await City.findAll({
+      where: { projectId },
+      attributes: ["cityId"],
+      raw: true,
+    });
+    const cityIds = cities.map((city) => city.cityId);
+
+    try {
+      await db.sequelize?.transaction(async (t: Transaction) => {
+        if (user) {
+          // remove on project level
+          await db.models.ProjectAdmin.destroy({
+            where: {
+              projectId: projectId,
+              userId: user.userId,
+            },
+            transaction: t,
+          });
+          await db.models.CityUser.destroy({
+            where: {
+              cityId: cityIds,
+              userId: user.userId,
+            },
+            transaction: t,
+          });
+        }
+        await db.models.ProjectInvite.destroy({
+          where: {
+            projectId: projectId,
+            email: email,
+          },
+          transaction: t,
+        });
+        await db.models.CityInvite.destroy({
+          where: {
+            cityId: cityIds,
+            email: email,
+          },
+          transaction: t,
+        });
+      });
+    } catch (error) {
+      console.error("Error removing user from project:", error);
+      throw new createHttpError.InternalServerError(
+        "failed-to-remove-user-from-project",
+      );
+    }
+
+    // remove from project admin
+    return true;
+  }
+
+  public static async removeUserFromCity(cityId: string, email: string) {
+    console.log(cityId, "city id");
+    const city = await City.findByPk(cityId as string);
+
+    if (!city) {
+      throw new createHttpError.NotFound("city-not-found");
+    }
+
+    const user = await User.findOne({ where: { email } });
+
+    try {
+      await db.sequelize?.transaction(async (t: Transaction) => {
+        if (user) {
+          // remove on project level
+          await db.models.CityUser.destroy({
+            where: {
+              cityId: cityId,
+              userId: user.userId,
+            },
+            transaction: t,
+          });
+        }
+        await db.models.CityInvite.destroy({
+          where: {
+            cityId: cityId,
+            email: email,
+          },
+          transaction: t,
+        });
+      });
+    } catch (error) {
+      console.error("Error removing user from project:", error);
+      throw new createHttpError.InternalServerError(
+        "failed-to-remove-user-from-city",
+      );
+    }
+
+    return true;
+  }
+
+  public static async removeOrganizationOwner(
+    organizationId: string,
+    email: string,
+  ) {
+    const user = await User.findOne({ where: { email } });
+    try {
+      await db.sequelize?.transaction(async (t: Transaction) => {
+        if (user) {
+          // remove on project level
+          await db.models.OrganizationAdmin.destroy({
+            where: {
+              userId: user.userId,
+              organizationId: organizationId,
+            },
+            transaction: t,
+          });
+        }
+        await db.models.OrganizationInvite.destroy({
+          where: {
+            email: email,
+          },
+          transaction: t,
+        });
+      });
+    } catch (error) {
+      console.error("Error removing user from project:", error);
+      throw new createHttpError.InternalServerError(
+        "failed-to-remove-organization-owner",
+      );
+    }
   }
 }

@@ -224,7 +224,7 @@ export enum InviteStatus {
 export enum OrganizationRole {
   COLLABORATOR = "collaborator",
   ADMIN = "admin",
-  ORG_ADMIN = "owner",
+  ORG_ADMIN = "org_admin",
 }
 
 export interface GetUserCityInvitesResponse {

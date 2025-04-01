@@ -154,7 +154,7 @@ const AdminPage = ({ params: { lng } }: { params: { lng: string } }) => {
           </Text>
         )}
 
-        {!isOrgDataLoading && orgData && orgData.length > 0 && (
+        {!isOrgDataLoading && orgData && orgData?.length > 0 && (
           <DataTable
             t={t}
             searchable={true}

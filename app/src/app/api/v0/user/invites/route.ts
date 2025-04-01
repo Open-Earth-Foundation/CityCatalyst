@@ -61,25 +61,55 @@ export const POST = apiHandler(async (req, { params, session }) => {
   const inviteRequest = CreateUsersInvite.parse(await req.json());
   const { emails, cityIds } = inviteRequest;
 
-  interface WhereConditions {
-    cityId: { [Op.in]: string[] };
-    userId?: string;
-  }
-
-  const whereConditions: WhereConditions = {
-    cityId: { [Op.in]: cityIds },
-  };
-
+  // if the user is not an OEF admin, we want to make sure they have access to the city they are people inviting to
   if (!(session.user.role === Roles.Admin)) {
-    whereConditions.userId = session.user.id;
-  }
+    // check for org admins
+    const orgAdmin = await db.models.OrganizationAdmin.findOne({
+      where: {
+        userId: session.user.id,
+      },
+      include: [
+        {
+          model: db.models.Organization,
+          as: "organization",
+          include: [
+            {
+              model: db.models.Project,
+              as: "projects",
+              include: [
+                {
+                  model: db.models.City,
+                  as: "cities",
+                  where: { cityId: { [Op.in]: cityIds } },
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    });
 
-  const userCities = await db.models.CityUser.findAll({
-    where: whereConditions as any,
-  });
+    if (orgAdmin) {
+      const orgCities = orgAdmin.organization.projects.flatMap((project) =>
+        project.cities.map((city) => city.cityId),
+      );
+      const hasAccess = cityIds.every((cityId) => orgCities.includes(cityId));
+      if (!hasAccess) {
+        throw createHttpError.NotFound("City not found");
+      }
+    } else {
+      let userCities = [];
+      userCities = await db.models.CityUser.findAll({
+        where: {
+          userId: session.user.id,
+          cityId: { [Op.in]: cityIds },
+        },
+      });
 
-  if (userCities.length !== cityIds.length) {
-    throw new createHttpError.NotFound("City not found");
+      if (userCities.length !== cityIds.length) {
+        throw new createHttpError.NotFound("City not found");
+      }
+    }
   }
 
   const cities = await db.models.City.findAll({

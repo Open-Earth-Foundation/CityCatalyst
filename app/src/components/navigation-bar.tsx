@@ -26,8 +26,8 @@ import {
   MdOutlineMenu,
 } from "react-icons/md";
 import Cookies from "js-cookie";
-import { useParams, useRouter } from "next/navigation";
-import { api } from "@/services/api";
+import { useParams, usePathname, useRouter } from "next/navigation";
+import { api, useGetUserAccessStatusQuery } from "@/services/api";
 import {
   MenuContent,
   MenuItem,
@@ -53,11 +53,13 @@ export function NavigationBar({
   showNav = true,
   isPublic = false,
   showMenu = false,
+  isAuth = false,
 }: {
   lng: string;
   showNav?: boolean;
   isPublic?: boolean;
   showMenu?: boolean;
+  isAuth?: boolean;
 }) {
   const { t } = useTranslation(lng, "navigation");
   const { inventory: inventoryParam } = useParams();
@@ -106,6 +108,7 @@ export function NavigationBar({
   const currentInventoryId =
     inventoryIdFromParam ?? userInfo?.defaultInventoryId;
   const router = useRouter();
+  const pathname = usePathname();
   const dashboardPath = `/${lng}/${inventoryIdFromParam ?? currentInventoryId}`;
 
   const [isUserMenuOpen, setUserMenuOpen] = useState(false);
@@ -316,7 +319,7 @@ export function NavigationBar({
                   px="16px"
                   onClick={() =>
                     router.push(
-                      `/${inventory ? inventory : currentInventoryId}/settings`,
+                      `/${inventory ? inventory.inventoryId : currentInventoryId}/settings`,
                     )
                   }
                 >

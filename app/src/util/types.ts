@@ -81,6 +81,7 @@ export interface UserInfoResponse {
   name: string;
   defaultInventoryId: string | null;
   role: Roles;
+  email?: string;
 }
 
 export type DataSource = DataSourceAttributes & {
@@ -411,7 +412,7 @@ export type ProjectWithCities = {
   projectId: string;
   name: string;
   description?: string;
-  cityCountLimit?: number;
+  cityCountLimit?: Number;
   cities: {
     cityId: string;
     name: string;
@@ -424,3 +425,16 @@ export type ProjectWithCities = {
 };
 
 export type ProjectWithCitiesResponse = ProjectWithCities[];
+
+export type ProjectUserResponse = {
+  email: string;
+  role: OrganizationRole;
+  status: InviteStatus;
+  cityId?: string;
+};
+
+export type UserAccessResponse = {
+  isOrgOwner: boolean;
+  isProjectAdmin: boolean;
+  isCollaborator: boolean;
+};

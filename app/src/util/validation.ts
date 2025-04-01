@@ -177,6 +177,12 @@ export const AcceptInvite = z.object({
   token: z.string(),
 });
 
+export const AcceptOrganizationInvite = z.object({
+  email: z.string().email(),
+  organizationId: z.string().uuid(),
+  token: z.string(),
+});
+
 export const CreateUsersInvite = z.object({
   emails: z.array(z.string().email()),
   cityIds: z.array(z.string()),

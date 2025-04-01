@@ -70,5 +70,6 @@
   "recent-searches-title": "Recent Searches",
   "recent-searches-no-results": "You have no recent searches",
   "failed-to-add-city": "Failed to add city",
-  "failed-to-create-inventory": "Failed to create inventory"
+  "failed-to-create-inventory": "Failed to create inventory",
+  "select-project": "Select Project"
 }

@@ -5,6 +5,7 @@ import { dir } from "i18next";
 import { languages } from "@/i18n/settings";
 import { PublicEnvScript } from "next-runtime-env";
 import { Toaster } from "@/components/ui/toaster";
+import ClientRootLayout from "@/components/ClientRootLayout";
 
 export const metadata: Metadata = {
   title: "CityCatalyst",
@@ -32,7 +33,9 @@ export default function RootLayout({
       <body>
         <Providers>
           <Toaster />
-          {children}
+            <ClientRootLayout lng={lng}>
+                {children}
+            </ClientRootLayout>
         </Providers>
       </body>
     </html>

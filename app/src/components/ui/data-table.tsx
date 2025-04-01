@@ -17,6 +17,8 @@ import { IoIosArrowBack } from "react-icons/io";
 import { InputGroup } from "@/components/ui/input-group";
 import { MdSearch } from "react-icons/md";
 
+type FilterOption<TValue> = TValue | { label: string; value: TValue };
+
 type DataTableProps<T> = {
   data: T[];
   t: Function;
@@ -26,9 +28,20 @@ type DataTableProps<T> = {
   pagination?: boolean;
   itemsPerPage?: number;
   filterProperty?: keyof T;
-  filterOptions?: Array<T[keyof T]>;
+  filterOptions?: FilterOption<T[keyof T]>[];
   renderRow: (item: T, index: number) => React.ReactNode;
 };
+
+function isLabelValueOption<TValue>(
+  option: FilterOption<TValue>,
+): option is { label: string; value: TValue } {
+  return (
+    typeof option === "object" &&
+    option !== null &&
+    "label" in option &&
+    "value" in option
+  );
+}
 
 function DataTable<T extends Record<string, any>>({
   data,
@@ -47,7 +60,6 @@ function DataTable<T extends Record<string, any>>({
   const [filterValue, setFilterValue] = useState<string | number>("");
 
   const filteredData = useMemo(() => {
-    if (filterValue === "all") return data;
     return data.filter((item) => {
       const matchesSearch = searchable
         ? Object.values(item).some((val) =>
@@ -110,20 +122,24 @@ function DataTable<T extends Record<string, any>>({
               }}
             >
               <NativeSelectField
-                placeholder="Filter"
+                placeholder={t("all")}
                 value={filterValue}
                 onChange={(e) => setFilterValue(e.target.value)}
               >
-                <option value="all">{t("all")}</option>
-                {filterOptions.map((option, idx) => (
-                  <option
-                    className="!capitalize"
-                    key={idx}
-                    value={String(option)}
-                  >
-                    {String(option)}
-                  </option>
-                ))}
+                {filterOptions.map((option, idx) => {
+                  const isObj = isLabelValueOption(option);
+                  const value = isObj ? option.value : option;
+                  const label = isObj ? option.label : String(option);
+                  return (
+                    <option
+                      className="!capitalize"
+                      key={idx}
+                      value={String(value)}
+                    >
+                      {label}
+                    </option>
+                  );
+                })}
               </NativeSelectField>
             </NativeSelectRoot>
           )}

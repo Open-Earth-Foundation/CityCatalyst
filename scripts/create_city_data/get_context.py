@@ -8,7 +8,7 @@ The city context data includes information such as:
 - Access to public services
 
 Run it from the root of the project with the following command:
-python scripts/get_context.py --locode "BR SER"
+python scripts/create_city_data/get_context.py --locode "BR ATM"
 """
 
 import requests

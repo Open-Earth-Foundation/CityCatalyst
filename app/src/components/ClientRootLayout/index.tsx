@@ -35,21 +35,6 @@ export function ClientRootLayout({
     return <ProgressLoader />;
   }
 
-  console.log(
-    userAccessStatus,
-    userAccessStatus?.isOrgOwner,
-    userAccessStatus?.isProjectAdmin ||
-      userAccessStatus?.isOrgOwner ||
-      userAccessStatus?.isCollaborator ||
-      userInfo?.role === Roles.Admin,
-    !(
-      userAccessStatus?.isProjectAdmin ||
-      userAccessStatus?.isOrgOwner ||
-      userAccessStatus?.isCollaborator ||
-      userInfo?.role === Roles.Admin
-    ),
-  );
-
   if (
     userAccessStatus &&
     !(

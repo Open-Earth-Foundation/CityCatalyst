@@ -122,8 +122,6 @@ export default function SelectCityStep({
     });
   }, [projectsList]);
 
-  console.log(projectsList, "projects");
-
   useEffect(() => {
     if (year && ocCityData) {
       setData({

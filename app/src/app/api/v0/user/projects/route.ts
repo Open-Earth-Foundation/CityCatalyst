@@ -5,7 +5,7 @@ import { NextResponse } from "next/server";
 
 export const GET = apiHandler(async (req, { params, session }) => {
   if (!session) {
-    throw new createHttpError.Unauthorized("Not signed in");
+    throw new createHttpError.Unauthorized("Unauthorized");
   }
   const userId = session.user.id;
   // Fetch the projects associated with the user

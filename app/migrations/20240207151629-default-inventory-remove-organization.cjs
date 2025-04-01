@@ -58,14 +58,6 @@ module.exports = {
           );
           continue;
         }
-        console.log(
-          "Inventory",
-          inventory.inventory_id,
-          "was found for locode",
-          user.default_city_locode,
-          "and year",
-          user.default_inventory_year,
-        );
         await queryInterface.bulkUpdate(
           "User",
           { default_inventory_id: inventory.inventory_id },

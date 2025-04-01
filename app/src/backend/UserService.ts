@@ -491,7 +491,6 @@ export default class UserService {
   }
 
   public static async removeUserFromCity(cityId: string, email: string) {
-    console.log(cityId, "city id");
     const city = await City.findByPk(cityId as string);
 
     if (!city) {

@@ -5,6 +5,7 @@ import type { GDP, GDPId } from "./GDP";
 import type { Inventory, InventoryId } from "./Inventory";
 import type { Population, PopulationId } from "./Population";
 import { Project } from "@/models/Project";
+import {CityInvite} from "@/models/CityInvite";
 
 export interface CityAttributes {
   cityId: string;
@@ -57,6 +58,9 @@ export class City
   lastUpdated?: Date;
   projectId?: string;
 
+  // City hasMany CityInvites via cityId
+  cityInvites!: CityInvite[];
+  getCityInvites!: Sequelize.HasManyGetAssociationsMixin<CityInvite>;
   // City belongsToMany User via CityUser.cityId
   users!: User[];
   getUsers!: Sequelize.BelongsToManyGetAssociationsMixin<User>;

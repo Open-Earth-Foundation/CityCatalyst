@@ -1,18 +1,23 @@
-import React, { useState } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import {
   Box,
   Button,
   CheckboxGroup,
+  createListCollection,
   HStack,
+  Icon,
+  NativeSelectRoot,
+  ProgressCircle,
   Separator,
   Text,
 } from "@chakra-ui/react";
-import { MdPersonAdd } from "react-icons/md";
+import { MdInfoOutline, MdPersonAdd } from "react-icons/md";
 import { TitleLarge } from "@/components/Texts/Title";
 import { BodyLarge } from "@/components/Texts/Body";
 import { HeadlineSmall } from "@/components/Texts/Headline";
 import {
   useGetCitiesAndYearsQuery,
+  useGetProjectsQuery,
   useInviteUsersMutation,
 } from "@/services/api";
 import LabelLarge from "@/components/Texts/Label";
@@ -28,17 +33,30 @@ import {
   DialogRoot,
 } from "@/components/ui/dialog";
 import { Checkbox } from "@/components/ui/checkbox";
+import {
+  SelectContent,
+  SelectItem,
+  SelectItemGroup,
+  SelectLabel,
+  SelectRoot,
+  SelectTrigger,
+  SelectValueText,
+} from "@/components/ui/select";
 
 const AddCollaboratorsDialog = ({
   lng,
   isOpen,
   onClose,
   onOpen,
+  organizationId,
+  isAdmin,
 }: {
   lng: string;
   isOpen: boolean;
   onClose: () => void;
-  onOpen: () => void;
+  onOpen?: () => void;
+  organizationId?: string;
+  isAdmin?: boolean;
 }) => {
   const { t } = useTranslation(lng, "dashboard");
 
@@ -52,11 +70,33 @@ const AddCollaboratorsDialog = ({
     description: t("invite-error-toast-description"),
   });
 
-  const { data: citiesAndYears } = useGetCitiesAndYearsQuery();
+  const { data: projectsData, isLoading } = useGetProjectsQuery(
+    {
+      organizationId: organizationId as string,
+    },
+    {
+      skip: !isAdmin || !organizationId,
+    },
+  );
+
+  const projectCollection = useMemo(() => {
+    return createListCollection({
+      items:
+        projectsData?.map((project) => ({
+          label: project.name,
+          value: project.projectId,
+        })) ?? [],
+    });
+  }, [projectsData]);
+
+  const { data: citiesAndYears } = useGetCitiesAndYearsQuery(undefined, {
+    skip: isAdmin,
+  });
   const [inviteUsers, { isLoading: isInviteUsersLoading }] =
     useInviteUsersMutation();
   const [emails, setEmails] = useState<string[]>([]);
   const [selectedCities, setSelectedCities] = useState<string[]>([]);
+  const [selectedProject, setSelectedProject] = useState<string[]>([]);
 
   const handleCityChange = (city: string) => {
     setSelectedCities((prevSelectedCities) =>
@@ -81,47 +121,175 @@ const AddCollaboratorsDialog = ({
     }
   };
 
+  const closeFunction = () => {
+    setEmails([]);
+    setSelectedCities([]);
+    setSelectedProject([]);
+    onClose();
+  };
+
+  const cityData = useMemo<
+    {
+      cityId: string;
+      name: string;
+    }[]
+  >(() => {
+    if (!isAdmin) {
+      return (
+        citiesAndYears?.map(({ city }) => ({
+          cityId: city.cityId,
+          name: city.name as string,
+        })) ?? []
+      );
+    }
+    if (!selectedProject || selectedProject.length === 0) return [];
+
+    const project = projectsData?.find(
+      (project) => project.projectId === selectedProject[0],
+    );
+    return (
+      project?.cities.map((city) => ({
+        cityId: city.cityId,
+        name: city.name,
+      })) ?? []
+    );
+  }, [isAdmin, citiesAndYears, projectsData, selectedProject]);
+
   return (
-    <DialogRoot open={isOpen} onOpenChange={onClose} onExitComplete={onClose}>
-      <DialogContent maxW="container.md">
-        <DialogHeader>
+    <DialogRoot
+      open={isOpen}
+      onOpenChange={closeFunction}
+      onExitComplete={onClose}
+    >
+      <DialogContent minH="300px" minW="600px" marginTop="2%" p={0}>
+        <DialogHeader
+          display="flex"
+          justifyContent="start"
+          fontWeight="semibold"
+          fontSize="headline.sm"
+          fontFamily="heading"
+          lineHeight="32"
+          color="base.dark"
+          padding="24px"
+          borderBottomWidth="2px"
+          borderStyle="solid"
+          borderColor="background.neutral"
+        >
           <HStack>
             <MdPersonAdd fontSize={"32px"} />
             <HeadlineSmall text={t("invite-your-colleagues")} />
           </HStack>
         </DialogHeader>
-        <DialogCloseTrigger />
-        <Separator my="24px" />
-        <DialogBody>
-          <TitleLarge>{t("select-cities-to-share")}</TitleLarge>
-          <BodyLarge>{t("select-cities-to-share-description")}</BodyLarge>
-          <CheckboxGroup unstyled my={"24px"} mx={"32px"}>
-            <HStack width="100%" flexWrap="wrap">
-              {citiesAndYears?.map(({ city }) => (
-                <Checkbox
-                  key={city.cityId}
-                  checked={selectedCities.includes(city.cityId)}
-                  onChange={() => handleCityChange(city.cityId)}
-                >
-                  <Text fontWeight="semibold" fontSize="body.lg">
-                    {city.name}
-                  </Text>
-                </Checkbox>
-              ))}
-            </HStack>
-          </CheckboxGroup>
-          <TitleLarge mt={"48px"}>{t("send-invites")}</TitleLarge>
-          <Text>
-            {t("send-invites-description-1")}
-            <Text as="span" fontWeight="bold">
-              {t("send-invites-description-2")}
+        <DialogCloseTrigger mt={"2"} color="interactive.control" mr={"2"} />
+        <DialogBody p={0}>
+          <Box paddingX={6} mt={6}>
+            <TitleLarge color="content.tertiary">
+              {t("send-invites")}
+            </TitleLarge>
+            <Text color="content.tertiary">
+              {t("send-invites-description-1")}
+              <Text as="span" fontWeight="bold">
+                {t("send-invites-description-2")}
+              </Text>
+              {t("send-invites-description-3")}
             </Text>
-            {t("send-invites-description-3")}
-          </Text>
-          <LabelLarge text={t("email")} mt={"24px"} />
-          <MultipleEmailInput t={t} emails={emails} setEmails={setEmails} />
-          <Separator my="24px" />
-          <DialogFooter>
+            <LabelLarge text={t("email")} mt={3} />
+            <MultipleEmailInput t={t} emails={emails} setEmails={setEmails} />
+          </Box>
+          {isAdmin && (
+            <Box
+              display="flex"
+              paddingX={6}
+              mt={6}
+              flexDirection="column"
+              gap={3}
+              mb={10}
+            >
+              <TitleLarge color="content.tertiary">
+                {t("project-to-share")}
+              </TitleLarge>
+              {isLoading ? (
+                <ProgressCircle.Root value={null} size="sm">
+                  <ProgressCircle.Circle>
+                    <ProgressCircle.Track />
+                    <ProgressCircle.Range />
+                  </ProgressCircle.Circle>
+                </ProgressCircle.Root>
+              ) : (
+                <SelectRoot
+                  value={selectedProject}
+                  onValueChange={(e) => setSelectedProject(e.value)}
+                  variant="subtle"
+                  collection={projectCollection}
+                >
+                  <SelectLabel display="flex" alignItems="center" gap="8px">
+                    <Text fontFamily="heading" color="content.secondary">
+                      {t("project")}
+                    </Text>
+                  </SelectLabel>
+                  <SelectTrigger>
+                    <SelectValueText
+                      color="content.tertiary"
+                      fontWeight="medium"
+                      placeholder={t("select-project")}
+                    />
+                  </SelectTrigger>
+                  <SelectContent portalled={false}>
+                    {projectCollection?.items.map((project) => (
+                      <SelectItem key={project.value} item={project.value}>
+                        {project.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </SelectRoot>
+              )}
+            </Box>
+          )}
+          {isAdmin && !(selectedProject.length > 0) ? null : (
+            <Box paddingX={6}>
+              <TitleLarge color="content.tertiary">
+                {t("select-cities-to-share")}
+              </TitleLarge>
+              <BodyLarge>{t("select-cities-to-share-description")}</BodyLarge>
+              {cityData?.length === 0 && (
+                <Text fontSize="body.md" mt={3} color="content.tertiary">
+                  {isAdmin && !selectedProject
+                    ? t("select-project")
+                    : t("no-cities-available")}
+                </Text>
+              )}
+              <CheckboxGroup my="24px">
+                <Box
+                  display="grid"
+                  gridTemplateColumns={{
+                    base: "1fr",
+                    sm: "repeat(2, 1fr)",
+                    md: "repeat(3, 1fr)",
+                  }}
+                  gap={4}
+                >
+                  {cityData?.map(({ cityId, name }) => (
+                    <Checkbox
+                      key={cityId}
+                      checked={selectedCities.includes(cityId)}
+                      onChange={() => handleCityChange(cityId)}
+                    >
+                      <Text fontWeight="semibold" fontSize="body.lg">
+                        {name}
+                      </Text>
+                    </Checkbox>
+                  ))}
+                </Box>
+              </CheckboxGroup>
+            </Box>
+          )}
+          <DialogFooter
+            paddingX={6}
+            paddingY={6}
+            borderTop="2px"
+            borderColor="background.neutral"
+            borderStyle="solid"
+          >
             <Box>
               <Button
                 disabled={
@@ -129,6 +297,7 @@ const AddCollaboratorsDialog = ({
                   selectedCities.length === 0 ||
                   isInviteUsersLoading
                 }
+                loading={isInviteUsersLoading}
                 colorScheme="blue"
                 onClick={() => onSendInvitesClick()}
               >

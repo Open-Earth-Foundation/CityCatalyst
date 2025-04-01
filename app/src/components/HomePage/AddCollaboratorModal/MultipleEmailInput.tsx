@@ -60,11 +60,12 @@ const MultipleEmailInput: React.FC<MultipleEmailInputProps> = ({
   };
 
   return (
-    <Box mt={4}>
+    <Box mt={3}>
       <Field invalid={!!error}>
         <Input
           value={inputValue}
           onChange={handleInputChange}
+          placeholder={t("email")}
           onKeyDown={handleInputKeyDown}
           borderColor={"border.neutral"}
           variant="outline"
@@ -84,12 +85,10 @@ const MultipleEmailInput: React.FC<MultipleEmailInputProps> = ({
           <BodyMedium text={t("press-enter-to-add")} />
         </HStack>
       )}
-      <Separator my="24px" />
       <Flex flexWrap="wrap" gap={2} mt={2}>
         {emails.map((email, index) => (
           <Tag.Root
             key={index}
-            borderRadius="full"
             variant="solid"
             backgroundColor="background.neutral"
           >

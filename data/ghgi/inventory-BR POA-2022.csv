@@ -42,8 +42,8 @@
 "N/A","III.3.3","Incineration and open burning","NO",,"t CO2e",,,,,,,,
 "e0ba4eda-8fc4-33e6-beaf-6fc7c8f39e8b","III.4.1","Wastewater treatment and discharge",,"110027.026","t CO2e",,,,,,,"b7aa7f41-37a1-468e-9394-fc0b421964de","SNIS"
 "N/A","III.4.2","Wastewater treatment and discharge","NO",,"t CO2e",,,,,,,,
-"N/A","IV.1","Emissions from industrial processes occurring within the city boundary",,"1740.308","t CO2e",,,,,,,"be2ec3ba-10cc-4cad-b48b-33045d053de0","ClimateTRACE"
-"N/A","IV.2","Emissions from product use occurring within the city boundary","NO",,"t CO2e",,,,,,,,
+"N/A","IV.1","Emissions from industrial processes occurring within the city boundary","NE",,"t CO2e",,,,,,,,
+"N/A","IV.2","Emissions from product use occurring within the city boundary","NE",,"t CO2e",,,,,,,,
 "N/A","V.1","Emissions from livestock within the city boundary",,"13457.023","t CO2e",,,,,,,"3da1a62f-8cff-464b-bd5e-af70213f22c8","Sistema de Estimativa de Emissão de Gases do Efeito Estufa"
 "N/A","V.2","Emissions from land within the city boundary",,"150281","t CO2e",,,,,,,"56578539-5606-4fd7-88da-20a87b730af0","Sistema de Estimativa de Emissão de Gases do Efeito Estufa"
 "N/A","V.3","Emissions from aggregate sources and non-CO2 emission sources on land within the city boundary",,"8997.339","t CO2e",,,,,,,"0891f485-942c-44f8-a398-09b9d050dabc","Sistema de Estimativa de Emissão de Gases do Efeito Estufa"

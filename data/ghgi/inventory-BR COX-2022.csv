@@ -21,7 +21,19 @@
 "N/A","I.7.1","Fugitive emissions from mining, processing, storage, and transportation of coal","NO",,"t CO2e",,,,,,,,
 "N/A","I.8.1","Fugitive emissions from oil and natural gas systems","NO",,"t CO2e",,,,,,,,
 "064d8e7c-cddb-3766-8c70-579a1908c866","II.1.1","On-road transportation",,"117774.845","t CO2e",,,,,,,"567bcd46-f6c4-499f-9597-6240592c1e35","Sistema de Estimativa de Emissão de Gases do Efeito Estufa"
+"N/A","II.1.2","On-road transportation","NE",,"t CO2e",,,,,,,,
+"N/A","II.1.3","On-road transportation","NE",,"t CO2e",,,,,,,,
+"N/A","II.2.1","Railways","NO",,"t CO2e",,,,,,,,
+"N/A","II.2.2","Railways","NO",,"t CO2e",,,,,,,,
+"N/A","II.2.3","Railways","NO",,"t CO2e",,,,,,,,
+"N/A","II.3.1","Waterborne navigation","NO",,"t CO2e",,,,,,,,
+"N/A","II.3.2","Waterborne navigation","NO",,"t CO2e",,,,,,,,
+"N/A","II.3.3","Waterborne navigation","NO",,"t CO2e",,,,,,,,
+"N/A","II.4.1","Aviation","NE",,"t CO2e",,,,,,,,
+"N/A","II.4.2","Aviation","NE",,"t CO2e",,,,,,,,
 "ce889acf-9acd-3498-965a-3d4e5c88f57e","II.4.3","Aviation",,"126.28","t CO2e",,,,,,,"60ca4997-51a3-43de-9caa-ce5ec0d1ab19","Sistema de Estimativa de Emissão de Gases do Efeito Estufa"
+"N/A","II.5.1","Off-road transportation","NE",,"t CO2e",,,,,,,,
+"N/A","II.5.2","Off-road transportation","NE",,"t CO2e",,,,,,,,
 "N/A","III.1.1","Solid waste disposal","NO",,"t CO2e",,,,,,,,
 "32acd829-2e87-38e9-aab3-8a495577ea7d","III.1.2","Solid waste disposal",,"9277.269","t CO2e",,,,,,,"94b54d32-87e9-4220-a1cc-cf0058917c59","SINIR"
 "N/A","III.2.1","Biological treatment of waste","NO",,"t CO2e",,,,,,,,

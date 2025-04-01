@@ -197,7 +197,7 @@ export const api = createApi({
         }),
         transformResponse: (response: { data: CityAttributes }) =>
           response.data,
-        invalidatesTags: ["CityData"],
+        invalidatesTags: ["CityData", "Projects"],
       }),
       addInventory: builder.mutation<
         InventoryAttributes,
@@ -524,7 +524,7 @@ export const api = createApi({
           method: "DELETE",
         }),
         transformResponse: (response: { data: any }) => response.data,
-        invalidatesTags: ["CityData"],
+        invalidatesTags: ["CityData", "Projects"],
       }),
       getInventories: builder.query<InventoryAttributes[], { cityId: string }>({
         query: ({ cityId }) => ({
@@ -649,7 +649,21 @@ export const api = createApi({
             response.data,
         },
       ),
-
+      acceptOrganizationAdminInvite: builder.mutation({
+        query: (data: {
+          token: string;
+          organizationId: string;
+          email: string;
+        }) => {
+          return {
+            method: "PATCH",
+            url: `/organizations/${data.organizationId}/invitations/accept`,
+            body: data,
+          };
+        },
+        transformResponse: (response: any) => response,
+        invalidatesTags: ["UserAccessStatus"],
+      }),
       mockData: builder.query({
         query: () => {
           return {
@@ -1021,8 +1035,17 @@ export const api = createApi({
           method: "GET",
           url: `/user/access-status`,
         }),
-        transformResponse: (response: UserAccessResponse) => response,
+        transformResponse: (response: { data: UserAccessResponse }) =>
+          response.data,
         providesTags: ["UserAccessStatus"],
+      }),
+      getUserProjects: builder.query({
+        query: () => ({
+          method: "GET",
+          url: `/user/projects`,
+        }),
+        transformResponse: (response: ProjectResponse[]) => response,
+        providesTags: ["ProjectUsers"],
       }),
     };
   },

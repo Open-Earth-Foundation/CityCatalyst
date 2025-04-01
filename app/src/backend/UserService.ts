@@ -352,6 +352,7 @@ export default class UserService {
         groupedByProject[projectId] = {
           projectId,
           name: projectName,
+          cityCountLimit: city.project.cityCountLimit,
           cities: [],
         };
       }
@@ -490,7 +491,6 @@ export default class UserService {
   }
 
   public static async removeUserFromCity(cityId: string, email: string) {
-    console.log(cityId, "city id");
     const city = await City.findByPk(cityId as string);
 
     if (!city) {
@@ -592,4 +592,6 @@ export default class UserService {
     }
     return responseObject;
   }
+
+  public async fetchUserProjects(userId: string) {}
 }

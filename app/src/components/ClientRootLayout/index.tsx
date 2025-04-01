@@ -17,6 +17,7 @@ export function ClientRootLayout({
 }) {
   const pathname = usePathname();
   const isPublic = pathname.includes("public");
+  const isInvitePage = pathname.includes("invites");
   const isAuthPage = pathname.includes("auth");
   const EnterpriseMode = hasFeatureFlag("ENTERPRISE_MODE");
   const { data: userInfo, isLoading: isUserInfoLoading } =
@@ -26,7 +27,7 @@ export function ClientRootLayout({
     useGetUserAccessStatusQuery(
       {},
       {
-        skip: isPublic || isAuthPage || !EnterpriseMode,
+        skip: isPublic || isAuthPage || !EnterpriseMode || isInvitePage,
       },
     );
 
@@ -39,7 +40,7 @@ export function ClientRootLayout({
     !(
       userAccessStatus?.isProjectAdmin ||
       userAccessStatus?.isOrgOwner ||
-      userAccessStatus?.isOrgOwner ||
+      userAccessStatus?.isCollaborator ||
       userInfo?.role === Roles.Admin
     )
   ) {

@@ -26,8 +26,8 @@ import {
   MdOutlineMenu,
 } from "react-icons/md";
 import Cookies from "js-cookie";
-import {useParams, usePathname, useRouter} from "next/navigation";
-import {api, useGetUserAccessStatusQuery} from "@/services/api";
+import { useParams, usePathname, useRouter } from "next/navigation";
+import { api, useGetUserAccessStatusQuery } from "@/services/api";
 import {
   MenuContent,
   MenuItem,
@@ -53,7 +53,7 @@ export function NavigationBar({
   showNav = true,
   isPublic = false,
   showMenu = false,
-    isAuth = false,
+  isAuth = false,
 }: {
   lng: string;
   showNav?: boolean;
@@ -66,8 +66,6 @@ export function NavigationBar({
   const inventoryIdFromParam = inventoryParam;
   const { data: inventory, isLoading: isInventoryLoading } =
     api.useGetInventoryQuery((inventoryIdFromParam as string) || "default");
-
-
 
   const onChangeLanguage = (language: string) => {
     Cookies.set("i18next", language);
@@ -119,7 +117,6 @@ export function NavigationBar({
   const [userMenuHighlight, setUserMenuHighlight] = useState<string | null>();
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-
 
   return (
     <Box
@@ -322,7 +319,7 @@ export function NavigationBar({
                   px="16px"
                   onClick={() =>
                     router.push(
-                      `/${inventory ? inventory : currentInventoryId}/settings`,
+                      `/${inventory ? inventory.inventoryId : currentInventoryId}/settings`,
                     )
                   }
                 >

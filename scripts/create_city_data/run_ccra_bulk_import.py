@@ -10,7 +10,7 @@ For each city, it will:
 3. Add the CCRA data to the city_data.json file
 
 Usage:
-    python run_ccra_pipeline.py --bulk_file data/cities/brazil_city_locodes.json --scenario_name "current"
+    python scripts/create_city_data/run_ccra_bulk_import.py --bulk_file data/cities/brazil_city_locodes.json
 """
 
 import argparse

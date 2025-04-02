@@ -42,8 +42,6 @@ const FileInput: React.FC<FileUploadProps> = ({
   };
 
   const handleChange = (e: any) => {
-    console.log(e.acceptedFiles);
-    console.log(e.acceptedFiles[0]);
     if (e.acceptedFiles && e.acceptedFiles[0]) {
       onFileSelect(e.acceptedFiles[0]);
       setUploadedFile(e.acceptedFiles[0]);

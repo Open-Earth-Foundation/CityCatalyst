@@ -151,7 +151,6 @@ const SingleProjectView = ({
   const router = useRouter();
   const [isProjectLimitModalOpen, setIsProjectLimitModalOpen] = useState(false);
   const goToOnboarding = () => {
-    console.log("goToOnboarding", project);
     if (
       BigInt(project.cities.length) ===
       BigInt(project.cityCountLimit as unknown as string)

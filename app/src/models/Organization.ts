@@ -1,5 +1,6 @@
 import * as Sequelize from "sequelize";
 import { DataTypes, Model, Optional } from "sequelize";
+import { Project } from "@/models/Project";
 
 export interface OrganizationAttributes {
   organizationId: string;
@@ -19,13 +20,15 @@ export type OrganizationCreationAttributes = Optional<
 
 export class Organization
   extends Model<OrganizationAttributes, OrganizationCreationAttributes>
-  implements OrganizationAttributes
+  implements Partial<OrganizationAttributes>
 {
   organizationId!: string;
   name?: string;
   contactEmail?: string;
   created?: Date;
   lastUpdated?: Date;
+
+  projects!: Project[];
 
   static initModel(sequelize: Sequelize.Sequelize): typeof Organization {
     return Organization.init(

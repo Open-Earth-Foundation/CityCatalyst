@@ -591,12 +591,8 @@ const ActivityModalBody = ({
                 name="activity.CO2EmissionFactor"
                 defaultValue="0"
               >
-                <Text
-                  truncate // Truncate the text with an ellipsis
-                  lineClamp={1}
-                  w="full"
-                  textAlign="center"
-                >
+                {/* eslint-disable-next-line i18next/no-literal-string */}
+                <Text truncate lineClamp={1} w="full" textAlign="center">
                   tCO2
                 </Text>
               </FormattedNumberInput>
@@ -620,12 +616,8 @@ const ActivityModalBody = ({
                 name={`activity.N2OEmissionFactor`}
                 defaultValue="0"
               >
-                <Text
-                  truncate // Truncate the text with an ellipsis
-                  lineClamp={1}
-                  w="full"
-                  textAlign="center"
-                >
+                {/* eslint-disable-next-line i18next/no-literal-string */}
+                <Text truncate lineClamp={1} w="full" textAlign="center">
                   tN2O
                 </Text>
               </FormattedNumberInput>
@@ -649,12 +641,8 @@ const ActivityModalBody = ({
                 name={`activity.CH4EmissionFactor`}
                 defaultValue="0"
               >
-                <Text
-                  truncate // Truncate the text with an ellipsis
-                  lineClamp={1}
-                  w="full"
-                  textAlign="center"
-                >
+                {/* eslint-disable-next-line i18next/no-literal-string */}
+                <Text truncate lineClamp={1} w="full" textAlign="center">
                   tCH4
                 </Text>
               </FormattedNumberInput>
@@ -713,7 +701,7 @@ const ActivityModalBody = ({
                           w="full"
                           textAlign="center"
                         >
-                          kg/
+                          {t("kg")}/
                           {methodology.id.includes("energy-consumption") ||
                           methodology.id.includes("electricity-consumption")
                             ? t("kWh")
@@ -752,7 +740,7 @@ const ActivityModalBody = ({
                       <Spinner size="sm" color="border.neutral" />
                     ) : (
                       <Text truncate lineClamp={1} w="full" textAlign="center">
-                        kg/
+                        {t("kg")}/
                         {methodology.id.includes("energy-consumption") ||
                         methodology.id.includes("electricity-consumption")
                           ? t("kWh")
@@ -795,7 +783,7 @@ const ActivityModalBody = ({
                         w="full"
                         textAlign="center"
                       >
-                        kg/
+                        {t("kg")}/
                         {methodology.id.includes("energy-consumption") ||
                         methodology.id.includes("electricity-consumption")
                           ? t("kWh")

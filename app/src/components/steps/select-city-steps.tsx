@@ -5,9 +5,9 @@ import {
   OnboardingData,
 } from "../../app/[lng]/onboarding/setup/page";
 import { TFunction } from "i18next";
-import { OCCityAttributes } from "@/util/types";
+import { OCCityAttributes, ProjectResponse } from "@/util/types";
 import { useAppDispatch } from "@/lib/hooks";
-import { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { set } from "@/features/city/openclimateCitySlice";
 import {
   useGetCityQuery,
@@ -18,6 +18,7 @@ import { findClosestYear } from "@/util/helpers";
 import {
   Box,
   Card,
+  createListCollection,
   Heading,
   Icon,
   Input,
@@ -36,6 +37,14 @@ import RecentSearches from "@/components/recent-searches";
 import { useOutsideClick } from "@/lib/use-outside-click";
 import { Field } from "@/components/ui/field";
 import { InputGroup } from "../ui/input-group";
+import {
+  SelectContent,
+  SelectItem,
+  SelectLabel,
+  SelectRoot,
+  SelectTrigger,
+  SelectValueText,
+} from "@/components/ui/select";
 
 const CityMap = dynamic(() => import("@/components/CityMap"), { ssr: false });
 
@@ -49,6 +58,9 @@ export default function SelectCityStep({
   ocCityData,
   setOcCityData,
   setData,
+  projectsList,
+  selectedProject,
+  setSelectedProject,
 }: {
   errors: FieldErrors<Inputs>;
   register: UseFormRegister<Inputs>;
@@ -59,6 +71,9 @@ export default function SelectCityStep({
   ocCityData?: OCCityAttributes;
   setOcCityData: (cityData: OCCityAttributes) => void;
   setData: (data: OnboardingData) => void;
+  projectsList: ProjectResponse[] | undefined;
+  selectedProject: string[];
+  setSelectedProject: (val: string[]) => void;
 }) {
   const searchParams = useSearchParams();
   const cityFromUrl = searchParams.get("city");
@@ -96,6 +111,16 @@ export default function SelectCityStep({
 
     setIsCityNew(true);
   };
+
+  const projectCollection = useMemo(() => {
+    return createListCollection({
+      items:
+        projectsList?.map((project) => ({
+          label: project.name,
+          value: project.projectId,
+        })) ?? [],
+    });
+  }, [projectsList]);
 
   useEffect(() => {
     if (year && ocCityData) {
@@ -272,6 +297,38 @@ export default function SelectCityStep({
         <Card.Root p={6} shadow="none" px="24px" py="32px">
           <Card.Body>
             <form className="space-y-8">
+              <Box w="full">
+                <SelectRoot
+                  value={selectedProject}
+                  onValueChange={(e) => setSelectedProject(e.value)}
+                  variant="outline"
+                  collection={projectCollection}
+                >
+                  <SelectLabel display="flex" alignItems="center" gap="8px">
+                    <Text
+                      fontFamily="heading"
+                      className="capitalize"
+                      color="content.secondary"
+                    >
+                      {t("project")}
+                    </Text>
+                  </SelectLabel>
+                  <SelectTrigger shadow="1dp">
+                    <SelectValueText
+                      color="content.tertiary"
+                      fontWeight="medium"
+                      placeholder={t("select-project")}
+                    />
+                  </SelectTrigger>
+                  <SelectContent portalled={false}>
+                    {projectCollection?.items.map((project) => (
+                      <SelectItem key={project.value} item={project.value}>
+                        {project.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </SelectRoot>
+              </Box>
               <Field
                 invalid={!!errors.city}
                 errorText={

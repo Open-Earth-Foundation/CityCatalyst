@@ -3,7 +3,15 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "@/i18n/client";
 import { languages } from "@/i18n/settings";
-import { Box, Heading, Icon, Link, Separator, Text } from "@chakra-ui/react";
+import {
+  Box,
+  Heading,
+  Icon,
+  IconButton,
+  Link,
+  Separator,
+  Text,
+} from "@chakra-ui/react";
 import i18next from "i18next";
 import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
@@ -15,10 +23,11 @@ import {
   MdArrowDropUp,
   MdAspectRatio,
   MdLogout,
+  MdOutlineMenu,
 } from "react-icons/md";
 import Cookies from "js-cookie";
-import { useParams, useRouter } from "next/navigation";
-import { api } from "@/services/api";
+import { useParams, usePathname, useRouter } from "next/navigation";
+import { api, useGetUserAccessStatusQuery } from "@/services/api";
 import {
   MenuContent,
   MenuItem,
@@ -28,6 +37,8 @@ import {
 import { Avatar } from "@/components/ui/avatar";
 
 import { Button } from "@/components/ui/button";
+import { Roles } from "@/util/types";
+import ProjectDrawer from "@/components/HomePage/ProjectDrawer";
 
 function countryFromLanguage(language: string) {
   return language == "en" ? "us" : language;
@@ -41,13 +52,21 @@ export function NavigationBar({
   lng,
   showNav = true,
   isPublic = false,
+  showMenu = false,
+  isAuth = false,
 }: {
   lng: string;
   showNav?: boolean;
   isPublic?: boolean;
+  showMenu?: boolean;
+  isAuth?: boolean;
 }) {
   const { t } = useTranslation(lng, "navigation");
-  const { inventory } = useParams();
+  const { inventory: inventoryParam } = useParams();
+  const inventoryIdFromParam = inventoryParam;
+  const { data: inventory, isLoading: isInventoryLoading } =
+    api.useGetInventoryQuery((inventoryIdFromParam as string) || "default");
+
   const onChangeLanguage = (language: string) => {
     Cookies.set("i18next", language);
     const cookieLanguage = Cookies.get("i18next");
@@ -86,34 +105,44 @@ export function NavigationBar({
   const { data: session, status } = useSession();
   const { data: userInfo, isLoading: isUserInfoLoading } =
     api.useGetUserInfoQuery();
-  const currentInventoryId = userInfo?.defaultInventoryId;
+  const currentInventoryId =
+    inventoryIdFromParam ?? userInfo?.defaultInventoryId;
   const router = useRouter();
-  const dashboardPath = `/${lng}/${inventory ?? currentInventoryId}`;
+  const pathname = usePathname();
+  const dashboardPath = `/${lng}/${inventoryIdFromParam ?? currentInventoryId}`;
 
   const [isUserMenuOpen, setUserMenuOpen] = useState(false);
   const [isLanguageMenuOpen, setLanguageMenuOpen] = useState(false);
 
   const [userMenuHighlight, setUserMenuHighlight] = useState<string | null>();
 
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
   return (
     <Box
       className="flex flex-row px-8 py-4 align-middle space-x-12 items-center relative z-50"
       bgColor="content.alternative"
     >
-      <Link href={dashboardPath}>
-        <Image
-          src="/assets/logo.svg"
-          width={36}
-          height={36}
-          alt="CityCatalyst logo"
-          className="mr-[56px]"
-        />
-      </Link>
-      <Link href={dashboardPath}>
-        <Heading size="lg" color="base.light">
-          {t("title")}
-        </Heading>
-      </Link>
+      <Box className="flex" gap={6}>
+        {showMenu && !isPublic && (
+          <IconButton variant="ghost" onClick={() => setIsDrawerOpen(true)}>
+            <Icon as={MdOutlineMenu} boxSize={8} />
+          </IconButton>
+        )}
+        <Link width={9} height={9} href={dashboardPath}>
+          <Image
+            src="/assets/logo.svg"
+            width={36}
+            height={36}
+            alt="CityCatalyst logo"
+          />
+        </Link>
+        <Link href={dashboardPath}>
+          <Heading size="lg" color="base.light">
+            {t("title")}
+          </Heading>
+        </Link>
+      </Box>
       <div className="w-full" />
       {showNav && !isPublic && (
         <>
@@ -259,28 +288,30 @@ export function NavigationBar({
                 minH="128px"
                 zIndex={2000}
               >
-                <MenuItem
-                  value="admin"
-                  paddingTop="12px"
-                  paddingBottom="12px"
-                  px="16px"
-                  onClick={() => router.push(`/admin`)}
-                >
-                  <Box display="flex" alignItems="center">
-                    {" "}
-                    <Icon
-                      as={MdAspectRatio}
-                      boxSize={6}
-                      color={
-                        userMenuHighlight === "admin"
-                          ? "background.neutral"
-                          : "content.tertiary"
-                      }
-                      mr={4}
-                    />
-                    <Text fontSize="title.md">{t("admin")}</Text>
-                  </Box>
-                </MenuItem>
+                {userInfo?.role === Roles.Admin && (
+                  <MenuItem
+                    value="admin"
+                    paddingTop="12px"
+                    paddingBottom="12px"
+                    px="16px"
+                    onClick={() => router.push(`/admin`)}
+                  >
+                    <Box display="flex" alignItems="center">
+                      {" "}
+                      <Icon
+                        as={MdAspectRatio}
+                        boxSize={6}
+                        color={
+                          userMenuHighlight === "admin"
+                            ? "background.neutral"
+                            : "content.tertiary"
+                        }
+                        mr={4}
+                      />
+                      <Text fontSize="title.md">{t("admin")}</Text>
+                    </Box>
+                  </MenuItem>
+                )}
                 <MenuItem
                   value="settings"
                   paddingTop="12px"
@@ -288,7 +319,7 @@ export function NavigationBar({
                   px="16px"
                   onClick={() =>
                     router.push(
-                      `/${inventory ? inventory : currentInventoryId}/settings`,
+                      `/${inventory ? inventory.inventoryId : currentInventoryId}/settings`,
                     )
                   }
                 >
@@ -333,6 +364,14 @@ export function NavigationBar({
           )}
         </Box>
       </Box>
+      <ProjectDrawer
+        lng={lng}
+        currentInventoryId={currentInventoryId as string}
+        organizationId={inventory?.city.project.organizationId as string}
+        isOpen={isDrawerOpen}
+        onClose={() => setIsDrawerOpen(false)}
+        onOpenChange={({ open }) => setIsDrawerOpen(open)}
+      />
     </Box>
   );
 }

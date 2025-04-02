@@ -11,6 +11,23 @@ export const POST = apiHandler(async (req, { session }) => {
     throw new createHttpError.Unauthorized("Unauthorized");
   }
 
+  const project = await db.models.Project.findByPk(body.projectId, {
+    include: [
+      {
+        model: db.models.City,
+        as: "cities",
+      },
+    ],
+  });
+
+  if (!project) {
+    throw new createHttpError.BadRequest("invalid-project-id");
+  }
+
+  if (project.cities.length === project.cityCountLimit) {
+    throw new createHttpError.BadRequest("city-count-limit-reached");
+  }
+
   let city = await db.models.City.findOne({
     where: {
       locode: body.locode,

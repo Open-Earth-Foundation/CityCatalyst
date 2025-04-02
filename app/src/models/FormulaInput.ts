@@ -37,7 +37,7 @@ export type FormulaInputCreationAttributes = Optional<
 
 export class FormulaInput
   extends Model<FormulaInputAttributes, FormulaInputCreationAttributes>
-  implements FormulaInputAttributes
+  implements Partial<FormulaInputAttributes>
 {
   gas!: string;
   parameterCode!: string;

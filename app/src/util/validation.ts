@@ -30,6 +30,7 @@ export const createCityRequest = z.object({
   countryLocode: z.string().optional(),
   regionLocode: z.string().optional(),
   area: z.number().int().optional(),
+  projectId: z.string().uuid(),
 });
 export type CreateCityRequest = z.infer<typeof createCityRequest>;
 
@@ -176,6 +177,12 @@ export const AcceptInvite = z.object({
   token: z.string(),
 });
 
+export const AcceptOrganizationInvite = z.object({
+  email: z.string().email(),
+  organizationId: z.string().uuid(),
+  token: z.string(),
+});
+
 export const CreateUsersInvite = z.object({
   emails: z.array(z.string().email()),
   cityIds: z.array(z.string()),
@@ -295,3 +302,10 @@ export const updateProjectRequest = z.object({
 });
 
 export type UpdateProjectRequest = z.infer<typeof updateProjectRequest>;
+
+export const transferCitiesRequest = z.object({
+  cityIds: z.array(z.string().uuid()).nonempty(),
+  projectId: z.string().uuid(),
+});
+
+export type TransferCitiesRequest = z.infer<typeof transferCitiesRequest>;

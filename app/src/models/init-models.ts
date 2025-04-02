@@ -162,6 +162,21 @@ import type {
 import { Organization as _Organization } from "./Organization";
 import type { ProjectAttributes, ProjectCreationAttributes } from "./Project";
 import { Project as _Project } from "./Project";
+import {
+  OrganizationAdmin as _OrganizationAdmin,
+  OrganizationAdminAttributes,
+  OrganizationAdminCreationAttributes,
+} from "@/models/OrganizationAdmin";
+import {
+  ProjectAdmin as _ProjectAdmin,
+  ProjectAdminAttributes,
+  ProjectAdminCreationAttributes,
+} from "@/models/ProjectAdmin";
+import {
+  ProjectInvite as _ProjectInvite,
+  ProjectInviteAttributes,
+  ProjectInviteCreationAttributes,
+} from "@/models/ProjectInvite";
 
 export {
   _ActivityData as ActivityData,
@@ -203,6 +218,9 @@ export {
   _AssistantMessage as AssistantMessage,
   _AssistantThread as AssistantThread,
   _OrganizationInvite as OrganizationInvite,
+  _OrganizationAdmin as OrganizationAdmin,
+  _ProjectAdmin as ProjectAdmin,
+  _ProjectInvite as ProjectInvite,
 };
 
 export type {
@@ -280,6 +298,12 @@ export type {
   AssistantThreadCreationAttributes,
   FormulaInputAttributes,
   FormulaInputCreationAttributes,
+  OrganizationAdminAttributes,
+  OrganizationAdminCreationAttributes,
+  ProjectAdminAttributes,
+  ProjectAdminCreationAttributes,
+  ProjectInviteAttributes,
+  ProjectInviteCreationAttributes,
 };
 
 export function initModels(sequelize: Sequelize) {
@@ -324,6 +348,9 @@ export function initModels(sequelize: Sequelize) {
   const AssistantMessage = _AssistantMessage.initModel(sequelize);
   const AssistantThread = _AssistantThread.initModel(sequelize);
   const OrganizationInvite = _OrganizationInvite.initModel(sequelize);
+  const OrganizationAdmin = _OrganizationAdmin.initModel(sequelize);
+  const ProjectAdmin = _ProjectAdmin.initModel(sequelize);
+  const ProjectInvite = _ProjectInvite.initModel(sequelize);
 
   ActivityData.belongsToMany(DataSource, {
     as: "datasourceIdDataSources",
@@ -486,9 +513,17 @@ export function initModels(sequelize: Sequelize) {
     otherKey: "cityId",
   });
   CityInvite.belongsTo(User, { foreignKey: "userId", as: "user" });
+  CityInvite.belongsTo(City, {
+    foreignKey: "cityId",
+    as: "city",
+  });
   CityInvite.belongsTo(User, {
     foreignKey: "invitingUserId",
     as: "invitingUser",
+  });
+  City.hasMany(CityInvite, {
+    foreignKey: "cityId",
+    as: "cityInvites",
   });
   User.hasMany(OrganizationInvite, {
     foreignKey: "userId",
@@ -796,6 +831,43 @@ export function initModels(sequelize: Sequelize) {
   });
   Project.hasMany(City, { as: "cities", foreignKey: "projectId" });
   City.belongsTo(Project, { as: "project", foreignKey: "projectId" });
+  OrganizationAdmin.belongsTo(Organization, {
+    as: "organization",
+    foreignKey: "organizationId",
+  });
+  Organization.hasMany(OrganizationAdmin, {
+    as: "organizationAdmins",
+    foreignKey: "organizationId",
+  });
+  OrganizationAdmin.belongsTo(User, { as: "user", foreignKey: "userId" });
+  User.hasOne(OrganizationAdmin, {
+    as: "organizationAdmin",
+    foreignKey: "userId",
+  });
+  ProjectAdmin.belongsTo(Project, { as: "project", foreignKey: "projectId" });
+  Project.hasMany(ProjectAdmin, {
+    as: "projectAdmins",
+    foreignKey: "projectId",
+  });
+  User.hasMany(ProjectAdmin, { as: "projectAdmin", foreignKey: "userId" });
+  ProjectAdmin.belongsTo(User, { as: "user", foreignKey: "userId" });
+  CityUser.belongsTo(City, { as: "city", foreignKey: "cityId" });
+  ProjectInvite.belongsTo(User, {
+    foreignKey: "userId",
+    as: "user",
+  });
+  ProjectInvite.belongsTo(Project, {
+    foreignKey: "projectId",
+    as: "project",
+  });
+  Project.hasMany(ProjectInvite, {
+    foreignKey: "projectId",
+    as: "projectInvites",
+  });
+  User.hasMany(ProjectInvite, {
+    foreignKey: "userId",
+    as: "projectInvites",
+  });
 
   return {
     ActivityData: ActivityData,
@@ -837,5 +909,8 @@ export function initModels(sequelize: Sequelize) {
     AssistantMessage: AssistantMessage,
     AssistantThread: AssistantThread,
     FormulaInput: FormulaInput,
+    OrganizationAdmin: OrganizationAdmin,
+    ProjectAdmin: ProjectAdmin,
+    ProjectInvite: ProjectInvite,
   };
 }

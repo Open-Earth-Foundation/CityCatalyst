@@ -4,12 +4,12 @@ import Footer from "@/components/Sections/Footer";
 import { useTranslation } from "@/i18n/client";
 import {
   api,
-  useGetCitiesAndYearsQuery,
   useGetCityPopulationQuery,
+  useGetCityYearsQuery,
 } from "@/services/api";
 import { CheckUserSession } from "@/util/check-user-session";
 import { formatEmissions } from "@/util/helpers";
-import { Box, Tabs, Text, VStack, Icon } from "@chakra-ui/react";
+import { Box, Icon, Tabs, Text, VStack } from "@chakra-ui/react";
 import { useParams, useRouter } from "next/navigation";
 import MissingInventory from "@/components/missing-inventory";
 import InventoryCalculationTab from "@/components/HomePage/InventoryCalculationTab";
@@ -18,12 +18,15 @@ import NotAvailable from "@/components/NotAvailable";
 import { Hero } from "@/components/HomePage/Hero";
 import { ActionCards } from "@/components/HomePage/ActionCards";
 import { InventoryPreferencesCard } from "@/components/HomePage/InventoryPreferencesCard";
-import { useEffect } from "react";
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import { YearSelectorCard } from "@/components/Cards/years-selection-card";
 import { Button } from "../ui/button";
 import { BsPlus } from "react-icons/bs";
 import Cookies from "js-cookie";
+import {
+  ProgressCircleRing,
+  ProgressCircleRoot,
+} from "@/components/ui/progress-circle";
 
 export default function HomePage({
   lng,
@@ -45,9 +48,6 @@ export default function HomePage({
   const { data: inventory, isLoading: isInventoryLoading } =
     api.useGetInventoryQuery((inventoryIdFromParam as string) || "default");
 
-  // TODO also add this to login logic or after email verification to prevent extra redirect?
-  // if the user doesn't have a default inventory or if path has a null inventory id, redirect to onboarding page
-
   useEffect(() => {
     if (!inventoryIdFromParam && !isInventoryLoading && inventory) {
       if (inventory.inventoryId) {
@@ -64,6 +64,7 @@ export default function HomePage({
         }
       } else {
         // fixes warning "Cannot update a component (`Router`) while rendering a different component (`Home`)"
+
         setTimeout(() => router.push(`/onboarding`), 0);
       }
     }
@@ -87,26 +88,31 @@ export default function HomePage({
     { skip: !inventory?.cityId || !inventory?.year },
   );
 
-  const { data: citiesAndYears, isLoading } = useGetCitiesAndYearsQuery();
+  const { data: cityYears, isLoading } = useGetCityYearsQuery(
+    inventory?.cityId as string,
+    { skip: !inventory?.cityId || !inventory?.year },
+  );
 
   const formattedEmissions = inventory?.totalEmissions
     ? formatEmissions(inventory.totalEmissions)
     : { value: t("N/A"), unit: "" };
 
-  const inventoriesForCurrentCity = useMemo<
-    { year: number; inventoryId: string; lastUpdate: Date }[]
-  >(() => {
-    if (!citiesAndYears) {
-      return [];
-    }
-    return citiesAndYears
-      .filter(({ city }) => inventory?.cityId === city.cityId)
-      .map(({ years }) => years)
-      .flat();
-  }, [citiesAndYears, inventory?.cityId]);
+  const inventoriesForCurrentCity = useMemo(() => {
+    if (!cityYears) return [];
+    return [...cityYears.years].sort((a, b) => b.year - a.year) || [];
+  }, [cityYears]);
 
   return (
     <>
+      {isInventoryLoading && (
+        <Box className="flex items-center justify-center w-full">
+          <Box className="w-full py-12 flex items-center justify-center">
+            <ProgressCircleRoot value={null}>
+              <ProgressCircleRing cap="round" />
+            </ProgressCircleRoot>
+          </Box>
+        </Box>
+      )}
       {!inventory && !isInventoryLoading && (
         <>
           {isPublic ? (
@@ -172,7 +178,7 @@ export default function HomePage({
                       gap="8px"
                       onClick={() =>
                         router.push(
-                          `/onboarding/setup?city=${inventory?.cityId}`,
+                          `/onboarding/setup?city=${inventory?.cityId}&project=${city?.projectId}`,
                         )
                       }
                     >

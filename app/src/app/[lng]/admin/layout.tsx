@@ -1,6 +1,5 @@
 "use client";
 
-import ChatPopover from "@/components/ChatBot/chat-popover";
 import { NavigationBar } from "@/components/navigation-bar";
 import { toaster, Toaster } from "@/components/ui/toaster";
 import { Box } from "@chakra-ui/react";
@@ -16,10 +15,10 @@ import { useTranslation } from "@/i18n/client";
 
 export default function AdminLayout({
   children,
-  params: { lng, inventory },
+  params: { lng },
 }: {
   children: React.ReactNode;
-  params: { lng: string; inventory: string };
+  params: { lng: string };
 }) {
   const router = useRouter();
 
@@ -40,7 +39,7 @@ export default function AdminLayout({
         router.push(fallbackPath);
       }, REDIRECT_DELAY_MS);
     }
-  }, [isUserInfoLoading, userInfo, router, lng]);
+  }, [isUserInfoLoading, userInfo, router, lng, t]);
 
   return (
     <Box className="h-full flex flex-col" bg="background.backgroundLight">
@@ -59,7 +58,6 @@ export default function AdminLayout({
           </div>
         )}
       </div>
-      <ChatPopover inventoryId={inventory} />
     </Box>
   );
 }

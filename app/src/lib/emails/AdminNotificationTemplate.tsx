@@ -1,18 +1,16 @@
+/* eslint-disable i18next/no-literal-string */
 import { ExcelFileIcon } from "@/components/icons";
 import { bytesToMB } from "@/util/helpers";
 import { UserFileResponse } from "@/util/types";
 import React from "react";
 import {
   Body,
-  Button,
   Container,
   Head,
   Html,
   Link,
   Preview,
   Text,
-  Img,
-  Font,
   Hr,
 } from "@react-email/components";
 

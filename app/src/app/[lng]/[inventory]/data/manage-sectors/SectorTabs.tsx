@@ -1,26 +1,21 @@
 "use client";
-import { InventoryProgressResponse } from "@/util/types";
 import {
   Box,
-  Card,
   CheckboxCard,
   createListCollection,
   Field,
   Icon,
   Input,
-  ProgressCircle,
   Tabs,
   Text,
   Textarea,
 } from "@chakra-ui/react";
-import { SerializedError } from "@reduxjs/toolkit";
-import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import { TFunction } from "i18next";
 import React, { FC, useEffect, useMemo, useState } from "react";
 import { StationaryEnergyIcon } from "@/components/icons";
 import { BiSelectMultiple } from "react-icons/bi";
 
-import { MdInfoOutline, MdRemoveFromQueue } from "react-icons/md";
+import { MdInfoOutline } from "react-icons/md";
 import { RiErrorWarningFill } from "react-icons/ri";
 import { CgRemoveR } from "react-icons/cg";
 
@@ -41,8 +36,6 @@ import ProgressLoader from "@/components/ProgressLoader";
 import type { SubCategoryAttributes } from "@/models/SubCategory";
 import type { InventoryValueAttributes } from "@/models/InventoryValue";
 import type { SubSectorAttributes } from "@/models/SubSector";
-
-// Define your transformation interfaces
 
 interface SubcategoryItem {
   subSectorId: string;
@@ -255,6 +248,7 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
         title: t("error"),
         description: t("error-updating-notation-keys"),
       });
+      console.error("Failed to update notation keys", error);
     }
   };
 
@@ -706,7 +700,13 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
                 justifyContent="flex-end"
                 gap="16px"
               >
-                <Button height="56px" width="150px" variant="outline">
+                <Button
+                  height="56px"
+                  width="150px"
+                  variant="outline"
+                  onClick={handleUndoChanges}
+                  disabled={!isDirty}
+                >
                   {t("cancel")}
                 </Button>
                 <Button
@@ -715,13 +715,14 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
                   variant="solid"
                   onClick={() => handleUpdateNotationKeys()}
                   loading={isLoading}
+                  disabled={!isDirty}
                 >
                   {t("update")}
                 </Button>
               </Box>
             </>
           ) : (
-            <Text>No unfinished subsectors.</Text>
+            <Text>{t("no-unfinished-subsectors")}</Text>
           )}
         </Tabs.Content>
       );

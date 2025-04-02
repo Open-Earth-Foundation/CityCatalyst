@@ -87,7 +87,8 @@ const Footer = ({ lng }: { lng: string }) => {
             fontWeight="semibold"
             letterSpacing="wide"
           >
-            v{currentVersion}
+            {/* eslint-disable-next-line i18next/no-literal-string */}
+            <>v{currentVersion}</>
           </Text>
           <Box
             backgroundColor="border.neutral"

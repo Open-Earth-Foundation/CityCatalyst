@@ -38,7 +38,7 @@ export type ActivityDataCreationAttributes = Optional<
 
 export class ActivityData
   extends Model<ActivityDataAttributes, ActivityDataCreationAttributes>
-  implements ActivityDataAttributes
+  implements Partial<ActivityDataAttributes>
 {
   activitydataId!: string;
   activitydata?: string;

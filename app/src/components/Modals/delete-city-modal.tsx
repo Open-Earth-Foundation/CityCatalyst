@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/dialog";
 
 import { UseSuccessToast } from "@/hooks/Toasts";
+import { Trans } from "react-i18next/TransWithoutContext";
 
 interface DeleteCityDialogProps {
   isOpen: boolean;
@@ -122,11 +123,13 @@ const DeleteCityDialog: FC<DeleteCityDialogProps> = ({
                   letterSpacing="wide"
                   fontStyle="normal"
                 >
-                  Are you sure you want to{" "}
-                  <span style={{ fontWeight: "bold" }}>
-                    permanently remove this city
-                  </span>{" "}
-                  from CityCatalyst?
+                  <Trans t={t} i18nKey="remove-city-confirmation-message">
+                    Are you sure you want to{" "}
+                    <span style={{ fontWeight: "bold" }}>
+                      permanently remove this city
+                    </span>{" "}
+                    from CityCatalyst?
+                  </Trans>
                 </Text>
               </Box>
               <Box>

@@ -80,5 +80,15 @@
   "password-updated": "Contraseña actualizada",
   "password-updated-success": "¡Contraseña actualizada con éxito!",
   "passwords-dont-match": "Las contraseñas no coinciden",
-  "email-placeholder": "Dirección de correo electrónico"
+  "email-placeholder": "Dirección de correo electrónico",
+  "new-password": "Nueva Contraseña",
+  "password-hint": "Sugerencia de contraseña",
+  "reset-button": "Restablecer Contraseña",
+  "password-min-length": "La contraseña debe tener al menos 8 caracteres de longitud.",
+  "password-upper-case": "La contraseña debe incluir al menos una letra mayúscula.",
+  "password-lower-case": "La contraseña debe incluir al menos una letra minúscula.",
+  "password-number": "La contraseña debe incluir al menos un número.",
+  "password-min-length-check": "Al menos {{length}} caracteres",
+  "password-upper-case-check": "Al menos una letra mayúscula",
+  "password-lower-case-check": "Al menos una letra minúscula"
 }

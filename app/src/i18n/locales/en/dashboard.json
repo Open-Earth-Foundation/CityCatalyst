@@ -155,7 +155,7 @@
   "invite-your-colleagues": "Invite your colleagues",
   "select-cities-to-share": "Select which cities you want to share",
   "select-cities-to-share-description": "Each user you invite will get a single link per city to add each. They will access to all the inventories made in each city.",
-  "send-invites": "Send invites",
+  "send-invites": "Send invites to",
   "send-invites-description-1": "Keep in mind that each team member you invite will be able to ",
   "send-invites-description-2": "add, edit and delete",
   "send-invites-description-3": " any inventory they get access to.",
@@ -177,6 +177,13 @@
   "an-error-occurred": "An error occurred",
   "error-fetching-sector-breakdown": "Error fetching sector breakdown",
   "manage-missing-subsectors": "Manage missing sub-sectors",
-  "source-open-climate": "Source: OpenClimate"
-
+  "source-open-climate": "Source: OpenClimate",
+  "n-a": "N/A",
+  "projects": "Projects",
+  "project": "Project",
+  "select-project": "Select a Project",
+  "select-project-to-invite-collaborators": "Select project to invite collaborators",
+  "project-to-share": "Select which project you want to share",
+  "upgrade-plan-city-limit-heading": "Need to Upgrade your plan?",
+  "upgrade-plan-city-limit-text": "It seems you have reached the limit of cities that can be added to this project.To upgrade your plan, please reach out to <mail>info@openearth.com</mail>."
 }

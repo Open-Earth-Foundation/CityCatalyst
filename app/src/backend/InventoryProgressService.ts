@@ -145,7 +145,6 @@ export default class InventoryProgressService {
 
       // add completed field to subsectors if there is a value for it
       const subSectors = sector.subSectors.map((subSector) => {
-        let completed = false;
         const subCategoryCount =
           subSector.referenceNumber?.includes("IV") ||
           subSector.referenceNumber?.includes("V")
@@ -169,8 +168,9 @@ export default class InventoryProgressService {
           );
           completedCount = currentSubSectorValues.length;
         }
+
         return {
-          completed,
+          completed: completedCount === totalCount,
           completedCount,
           totalCount,
           sectorId: subSector.sectorId, // optional string defaults to empty string

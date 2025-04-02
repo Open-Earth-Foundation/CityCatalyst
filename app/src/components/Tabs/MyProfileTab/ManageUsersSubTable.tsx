@@ -93,7 +93,7 @@ const ManageUsersSubTable = React.memo(function SubTable({
       {
         Header: () => (
           <ButtonSmall textTransform="uppercase" textAlign="left">
-            City Name
+            {t("city-name")}
           </ButtonSmall>
         ),
         accessor: (row) => row.cityInvites.name,
@@ -103,7 +103,7 @@ const ManageUsersSubTable = React.memo(function SubTable({
       {
         Header: () => (
           <ButtonSmall textTransform="uppercase" textAlign="left">
-            Status
+            {t("status")}
           </ButtonSmall>
         ),
         accessor: "status",
@@ -167,12 +167,7 @@ const ManageUsersSubTable = React.memo(function SubTable({
           ),
       },
     ];
-  }, [
-    getTextAndBorderColor,
-    getBackgroundColor,
-    handleDeleteClick,
-    handleResetClick,
-  ]);
+  }, [getTextAndBorderColor, handleDeleteClick, handleResetClick, t]);
 
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
     useTable({

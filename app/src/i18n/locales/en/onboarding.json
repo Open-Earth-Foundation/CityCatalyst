@@ -43,14 +43,12 @@
   "total-population": "Total population",
   "total-land-area": "Total land area",
   "geographical-boundaries": "Geographical boundaries",
-
   "done-heading": "Your GHG emission inventory is ready to start!",
   "done-description": "Great job! You can review, add and update your inventory data anytime. Start completing your GHG emissions inventory now!",
-  "add-new-inventory": "Add new inventory", 
+  "add-new-inventory": "Add new inventory",
   "inventory-title": "GPC Basic Emission Inventory - Year {{year}}",
   "done-details": "You created your city profile to start your GPC Basic GHG inventory.",
   "check-dashboard": "Check Dashboard",
-
   "information-required": "This information is required and affects your GHG inventory accuracy.",
   "year-placeholder": "Year",
   "required": "Required",
@@ -72,5 +70,6 @@
   "recent-searches-title": "Recent Searches",
   "recent-searches-no-results": "You have no recent searches",
   "failed-to-add-city": "Failed to add city",
-  "failed-to-create-inventory": "Failed to create inventory"
+  "failed-to-create-inventory": "Failed to create inventory",
+  "select-project": "Select Project"
 }

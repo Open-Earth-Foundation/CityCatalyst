@@ -40,6 +40,11 @@ export type InventoryResponse = RequiredInventoryAttributes & {
   city: CityAttributes & {
     populationYear: number;
     population: number;
+    project: {
+      projectId: string;
+      name: string;
+      organizationId: string;
+    };
   };
 };
 
@@ -76,6 +81,7 @@ export interface UserInfoResponse {
   name: string;
   defaultInventoryId: string | null;
   role: Roles;
+  email?: string;
 }
 
 export type DataSource = DataSourceAttributes & {
@@ -368,6 +374,15 @@ export type OrganizationResponse = {
   last_updated: string;
   name: string;
   organizationId: string;
+  projects: {
+    projectId: string;
+    name: string;
+    cityCountLimit: number;
+    cities: {
+      cityId: string;
+      name: string;
+    }[];
+  }[];
 };
 
 export type ProjectResponse = {
@@ -392,3 +407,34 @@ export type ListOrganizationsResponse = {
     role: OrganizationRole;
   }[];
 }[];
+
+export type ProjectWithCities = {
+  projectId: string;
+  name: string;
+  description?: string;
+  cityCountLimit?: Number;
+  cities: {
+    cityId: string;
+    name: string;
+    inventories: {
+      inventoryId: string;
+      year: number;
+      lastUpdated: string;
+    }[];
+  }[];
+};
+
+export type ProjectWithCitiesResponse = ProjectWithCities[];
+
+export type ProjectUserResponse = {
+  email: string;
+  role: OrganizationRole;
+  status: InviteStatus;
+  cityId?: string;
+};
+
+export type UserAccessResponse = {
+  isOrgOwner: boolean;
+  isProjectAdmin: boolean;
+  isCollaborator: boolean;
+};

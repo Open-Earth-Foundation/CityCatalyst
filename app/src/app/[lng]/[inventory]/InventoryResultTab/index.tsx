@@ -123,7 +123,6 @@ function SectorTabs({
 
   return (
     <Tabs.Root
-      // align="start"
       variant="line"
       defaultValue={SECTORS[0].name}
       onValueChange={(event) => setSelectedTab(event.value)}
@@ -131,7 +130,12 @@ function SectorTabs({
       <Tabs.List>
         {getSectorsForInventory(inventory?.inventoryType).map(
           ({ icon, name }, index) => (
-            <Tabs.Trigger key={index} value={name}>
+            <Tabs.Trigger
+              key={index}
+              value={name}
+              minWidth="170px"
+              height="64px"
+            >
               <Icon
                 as={icon}
                 height="24px"
@@ -142,7 +146,8 @@ function SectorTabs({
               />
               <Text
                 fontSize="16"
-                mx="16px"
+                lineClamp={2}
+                textAlign="left"
                 fontWeight={selectedTab === name ? 600 : 400}
                 fontStyle="normal"
                 color={

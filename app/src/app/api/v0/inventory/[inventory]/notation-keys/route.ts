@@ -48,7 +48,7 @@ export const GET = apiHandler(async (_req, { session, params }) => {
   });
 
   const inventoryValuesBySector = Object.fromEntries(
-    inventoryStructure.map((sector) => {
+    applicableSectors.map((sector) => {
       const inventoryValues = sector.subSectors.flatMap((subSector) => {
         return subSector.subCategories
           .map((subCategory) => {

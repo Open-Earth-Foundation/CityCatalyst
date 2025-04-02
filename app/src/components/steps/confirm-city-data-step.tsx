@@ -227,7 +227,7 @@ export default function ConfirmStep({
                     >
                       {area && area > 0 ? (
                         <>
-                          {" "}
+                          {/* eslint-disable-next-line i18next/no-literal-string */}
                           {Math.round(area)}km<sup>2</sup>
                         </>
                       ) : (

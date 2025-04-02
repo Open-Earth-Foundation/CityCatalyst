@@ -1,7 +1,8 @@
-import { Box, Select, Text } from "@chakra-ui/react";
+import { Box, Text } from "@chakra-ui/react";
 import React, { FC } from "react";
 import { FieldError } from "react-hook-form";
 import { NativeSelectField, NativeSelectRoot } from "./ui/native-select";
+import { TFunction } from "i18next";
 
 interface FormInputProps {
   label: string;
@@ -11,6 +12,7 @@ interface FormInputProps {
   register: Function;
   id: string;
   onInputChange: Function;
+  t: TFunction;
 }
 
 const FormSelectInput: FC<FormInputProps> = ({
@@ -21,6 +23,7 @@ const FormSelectInput: FC<FormInputProps> = ({
   register,
   id,
   onInputChange,
+  t,
 }) => {
   return (
     <Box display="flex" flexDirection="column" gap="8px">
@@ -48,8 +51,8 @@ const FormSelectInput: FC<FormInputProps> = ({
           onChange={(e) => onInputChange(e)}
           disabled={isDisabled}
         >
-          <option value="admin">Admin</option>
-          <option value="contributor">Contributor</option>
+          <option value="admin">{t("admin")}</option>
+          <option value="contributor">{t("contributor")}</option>
         </NativeSelectField>
       </NativeSelectRoot>
     </Box>

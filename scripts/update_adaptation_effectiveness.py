@@ -1,12 +1,14 @@
 """
 This script updates the 'AdaptationEffectivenessPerHazard' field of each climate action.
-It uses GPT-4o to determine the effectiveness of the action for each hazard.
+It uses an LLM to determine the effectiveness of the action for each hazard.
+
+It is a 'one-off' script, probably not needed again.
 
 Input file:
 data/climate_actions/output/merged.json
 
 Output file:
-data/climate_actions/output/merged_updated.json
+data/climate_actions/output/merged_individual_adaptation_effectiveness.json
 
 Execute:
 python scripts/update_adaptation_effectiveness.py
@@ -18,6 +20,36 @@ from pathlib import Path
 from openai import OpenAI
 from typing import Dict, List, Optional, Union, Tuple
 from dotenv import load_dotenv
+from typing import Optional, Dict, Literal
+from pydantic import BaseModel, RootModel, Field
+
+HazardType = Literal[
+    "droughts",
+    "heatwaves",
+    "floods",
+    "sea-level-rise",
+    "landslides",
+    "storms",
+    "wildfires",
+    "diseases",
+]
+
+Effectiveness = Literal["high", "medium", "low"]  # no Optional here
+
+
+# Define the Pydantic model correctly
+class AdaptationEffectivenessPerHazard(BaseModel):
+    """Model for hazard-specific adaptation effectiveness."""
+
+    droughts: Optional[Effectiveness] = None
+    heatwaves: Optional[Effectiveness] = None
+    floods: Optional[Effectiveness] = None
+    sea_level_rise: Optional[Effectiveness] = Field(None, alias="sea-level-rise")
+    landslides: Optional[Effectiveness] = None
+    storms: Optional[Effectiveness] = None
+    wildfires: Optional[Effectiveness] = None
+    diseases: Optional[Effectiveness] = None
+
 
 load_dotenv()
 
@@ -92,47 +124,34 @@ Remember:
 4. Do not include any other text in your response like ```json ```
 """
     try:
-        response = client.chat.completions.create(
-            model="gpt-4o",
+        response = client.beta.chat.completions.parse(
+            model="o3-mini",
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_prompt},
             ],
-            temperature=0.0,
+            response_format=AdaptationEffectivenessPerHazard,
+            # temperature=0.0,
         )
 
-        content = response.choices[0].message.content
-        if content is None:
+        # Get the parsed Pydantic model from the response
+        parsed_response = response.choices[0].message.parsed
+
+        print(parsed_response)
+
+        if parsed_response is None:
             return (
                 {hazard: None for hazard in hazards},
                 False,
-                "Empty response from GPT",
+                "No response from the model",
             )
+        # Convert the Pydantic model to a dictionary
+        effectiveness_dict = parsed_response.model_dump(by_alias=True)
 
-        try:
-            effectiveness_dict = json.loads(content)
+        # Ensure all hazards are included
+        result = {hazard: effectiveness_dict.get(hazard) for hazard in hazards}
 
-            # Validate the values
-            valid_values = {"high", "medium", "low"}
-            for hazard, value in effectiveness_dict.items():
-                if value not in valid_values:
-                    return (
-                        {hazard: None for hazard in hazards},
-                        False,
-                        f"Invalid value '{value}' for hazard '{hazard}'",
-                    )
-
-            # Ensure all hazards are included
-            result = {hazard: effectiveness_dict.get(hazard) for hazard in hazards}
-
-            return result, True, ""
-
-        except json.JSONDecodeError as e:
-            return (
-                {hazard: None for hazard in hazards},
-                False,
-                f"JSON parsing error: {str(e)}",
-            )
+        return result, True, ""
 
     except Exception as e:
         return (

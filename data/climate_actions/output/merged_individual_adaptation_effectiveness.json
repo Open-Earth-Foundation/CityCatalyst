@@ -6428,8 +6428,8 @@
     "AdaptationEffectivenessPerHazard": {
       "sea-level-rise": "high",
       "floods": "high",
-      "storms": "medium",
-      "landslides": "low"
+      "storms": "high",
+      "landslides": "high"
     }
   },
   {
@@ -6484,7 +6484,7 @@
     "AdaptationEffectivenessPerHazard": {
       "sea-level-rise": "high",
       "floods": "high",
-      "storms": "medium",
+      "storms": "high",
       "droughts": "medium"
     }
   },
@@ -6543,10 +6543,10 @@
     "PowersAndMandates": null,
     "AdaptationEffectivenessPerHazard": {
       "droughts": "medium",
-      "floods": "medium",
-      "sea-level-rise": "low",
+      "floods": "high",
+      "sea-level-rise": "high",
       "wildfires": "medium",
-      "storms": "low"
+      "storms": "high"
     }
   },
   {
@@ -6610,7 +6610,7 @@
     "PowersAndMandates": null,
     "AdaptationEffectivenessPerHazard": {
       "storms": "high",
-      "sea-level-rise": "medium",
+      "sea-level-rise": "high",
       "heatwaves": "high",
       "floods": "high"
     }
@@ -6762,9 +6762,9 @@
     ],
     "PowersAndMandates": null,
     "AdaptationEffectivenessPerHazard": {
-      "floods": "high",
+      "floods": "medium",
       "heatwaves": "medium",
-      "sea-level-rise": "high"
+      "sea-level-rise": "medium"
     }
   },
   {
@@ -6864,7 +6864,7 @@
     ],
     "PowersAndMandates": null,
     "AdaptationEffectivenessPerHazard": {
-      "storms": "medium",
+      "storms": "high",
       "sea-level-rise": "high"
     }
   },
@@ -6916,7 +6916,7 @@
     "PowersAndMandates": null,
     "AdaptationEffectivenessPerHazard": {
       "droughts": "high",
-      "heatwaves": "medium",
+      "heatwaves": "high",
       "floods": "medium",
       "storms": "medium"
     }
@@ -6970,7 +6970,7 @@
     "AdaptationEffectivenessPerHazard": {
       "droughts": "high",
       "floods": "high",
-      "sea-level-rise": "medium",
+      "sea-level-rise": "high",
       "diseases": "high"
     }
   },
@@ -7023,8 +7023,8 @@
     "PowersAndMandates": null,
     "AdaptationEffectivenessPerHazard": {
       "heatwaves": "high",
-      "floods": "medium",
-      "droughts": "medium"
+      "floods": "high",
+      "droughts": "high"
     }
   },
   {
@@ -7078,7 +7078,7 @@
     "AdaptationEffectivenessPerHazard": {
       "heatwaves": "high",
       "droughts": "medium",
-      "storms": "medium"
+      "storms": "high"
     }
   },
   {
@@ -7134,7 +7134,7 @@
       "droughts": "high",
       "heatwaves": "high",
       "floods": "medium",
-      "wildfires": "medium",
+      "wildfires": "low",
       "storms": "medium"
     }
   },
@@ -7188,8 +7188,8 @@
     "PowersAndMandates": null,
     "AdaptationEffectivenessPerHazard": {
       "droughts": "high",
-      "floods": "medium",
-      "storms": "medium",
+      "floods": "high",
+      "storms": "high",
       "heatwaves": "high"
     }
   },
@@ -7245,7 +7245,7 @@
       "droughts": "high",
       "heatwaves": "medium",
       "floods": "medium",
-      "wildfires": "medium"
+      "wildfires": "low"
     }
   },
   {
@@ -7298,8 +7298,8 @@
     "PowersAndMandates": null,
     "AdaptationEffectivenessPerHazard": {
       "droughts": "high",
-      "floods": "medium",
-      "storms": "medium"
+      "floods": "high",
+      "storms": "high"
     }
   },
   {
@@ -7400,8 +7400,8 @@
     "PowersAndMandates": null,
     "AdaptationEffectivenessPerHazard": {
       "droughts": "high",
-      "floods": "medium",
-      "storms": "medium"
+      "floods": "high",
+      "storms": "high"
     }
   },
   {
@@ -7452,7 +7452,7 @@
     "AdaptationEffectivenessPerHazard": {
       "sea-level-rise": "medium",
       "storms": "medium",
-      "droughts": "high"
+      "droughts": "low"
     }
   },
   {
@@ -7504,7 +7504,7 @@
     ],
     "PowersAndMandates": null,
     "AdaptationEffectivenessPerHazard": {
-      "sea-level-rise": "medium",
+      "sea-level-rise": "high",
       "storms": "high"
     }
   },
@@ -14609,8 +14609,8 @@
       "local"
     ],
     "AdaptationEffectivenessPerHazard": {
-      "diseases": "medium",
-      "floods": "high"
+      "diseases": "low",
+      "floods": "low"
     }
   },
   {
@@ -14811,10 +14811,10 @@
     ],
     "AdaptationEffectivenessPerHazard": {
       "heatwaves": "high",
-      "diseases": "high",
+      "diseases": "medium",
       "landslides": "medium",
       "floods": "high",
-      "storms": "medium",
+      "storms": "high",
       "droughts": "medium"
     }
   },
@@ -14908,12 +14908,12 @@
     ],
     "PowersAndMandates": null,
     "AdaptationEffectivenessPerHazard": {
-      "droughts": "medium",
-      "heatwaves": "medium",
+      "droughts": "low",
+      "heatwaves": "low",
       "diseases": "low",
-      "landslides": "medium",
+      "landslides": "low",
       "floods": "medium",
-      "wildfires": "medium",
+      "wildfires": "low",
       "storms": "medium",
       "sea-level-rise": "medium"
     }
@@ -14971,7 +14971,7 @@
       "droughts": "medium",
       "diseases": "medium",
       "heatwaves": "medium",
-      "landslides": "medium",
+      "landslides": "low",
       "floods": "medium",
       "wildfires": "medium",
       "sea-level-rise": "medium",
@@ -15025,11 +15025,11 @@
       "local"
     ],
     "AdaptationEffectivenessPerHazard": {
-      "droughts": "high",
+      "droughts": "medium",
       "heatwaves": "medium",
-      "landslides": "medium",
+      "landslides": "high",
       "floods": "medium",
-      "wildfires": "high"
+      "wildfires": "medium"
     }
   },
   {
@@ -15078,8 +15078,8 @@
     ],
     "AdaptationEffectivenessPerHazard": {
       "droughts": "high",
-      "heatwaves": "medium",
-      "diseases": "low"
+      "heatwaves": "high",
+      "diseases": "medium"
     }
   },
   {
@@ -15130,10 +15130,10 @@
     ],
     "AdaptationEffectivenessPerHazard": {
       "sea-level-rise": "medium",
-      "floods": "high",
-      "landslides": "medium",
+      "floods": "medium",
+      "landslides": "low",
       "diseases": "medium",
-      "heatwaves": "medium"
+      "heatwaves": "high"
     }
   },
   {
@@ -15183,9 +15183,9 @@
     ],
     "AdaptationEffectivenessPerHazard": {
       "droughts": "high",
-      "heatwaves": "medium",
-      "landslides": "medium",
-      "floods": "medium"
+      "heatwaves": "high",
+      "landslides": "high",
+      "floods": "high"
     }
   },
   {
@@ -15233,9 +15233,9 @@
       "national"
     ],
     "AdaptationEffectivenessPerHazard": {
-      "heatwaves": "low",
+      "heatwaves": "medium",
       "sea-level-rise": "high",
-      "floods": "medium"
+      "floods": "high"
     }
   },
   {
@@ -15378,7 +15378,7 @@
       "local"
     ],
     "AdaptationEffectivenessPerHazard": {
-      "heatwaves": "medium",
+      "heatwaves": "high",
       "landslides": "low",
       "floods": "medium"
     }
@@ -15429,8 +15429,8 @@
       "local"
     ],
     "AdaptationEffectivenessPerHazard": {
-      "heatwaves": "low",
-      "landslides": "medium",
+      "heatwaves": "medium",
+      "landslides": "high",
       "floods": "high",
       "droughts": "medium"
     }
@@ -15526,7 +15526,7 @@
     "AdaptationEffectivenessPerHazard": {
       "floods": "high",
       "sea-level-rise": "high",
-      "heatwaves": "medium"
+      "heatwaves": "high"
     }
   },
   {
@@ -15578,9 +15578,9 @@
       "wildfires": "low",
       "floods": "low",
       "landslides": "low",
-      "diseases": "low",
-      "heatwaves": "low",
-      "droughts": "low"
+      "diseases": "medium",
+      "heatwaves": "medium",
+      "droughts": "medium"
     }
   },
   {
@@ -15623,8 +15623,8 @@
     ],
     "PowersAndMandates": null,
     "AdaptationEffectivenessPerHazard": {
-      "floods": "medium",
-      "landslides": "medium",
+      "floods": "high",
+      "landslides": "high",
       "diseases": "low",
       "heatwaves": "medium"
     }
@@ -15675,8 +15675,8 @@
       "state"
     ],
     "AdaptationEffectivenessPerHazard": {
-      "floods": "medium",
-      "landslides": "medium",
+      "floods": "high",
+      "landslides": "high",
       "heatwaves": "medium",
       "diseases": "medium"
     }
@@ -15772,9 +15772,9 @@
       "local"
     ],
     "AdaptationEffectivenessPerHazard": {
-      "droughts": "medium",
+      "droughts": "high",
       "floods": "high",
-      "storms": "medium"
+      "storms": "high"
     }
   },
   {
@@ -16010,12 +16010,12 @@
     ],
     "AdaptationEffectivenessPerHazard": {
       "droughts": "medium",
-      "heatwaves": "medium",
+      "heatwaves": "high",
       "diseases": "medium",
-      "landslides": "medium",
+      "landslides": "high",
       "floods": "high",
-      "wildfires": "medium",
-      "sea-level-rise": "medium",
+      "wildfires": "high",
+      "sea-level-rise": "low",
       "storms": "high"
     }
   },
@@ -16065,10 +16065,10 @@
       "local"
     ],
     "AdaptationEffectivenessPerHazard": {
-      "storms": "medium",
+      "storms": "high",
       "floods": "high",
       "landslides": "high",
-      "heatwaves": "low"
+      "heatwaves": "medium"
     }
   },
   {
@@ -16111,7 +16111,7 @@
     ],
     "PowersAndMandates": null,
     "AdaptationEffectivenessPerHazard": {
-      "droughts": "medium",
+      "droughts": "low",
       "landslides": "medium",
       "floods": "high",
       "storms": "high"
@@ -16295,7 +16295,7 @@
     ],
     "AdaptationEffectivenessPerHazard": {
       "heatwaves": "high",
-      "floods": "medium",
+      "floods": "high",
       "wildfires": "medium"
     }
   },
@@ -16545,7 +16545,7 @@
       "state"
     ],
     "AdaptationEffectivenessPerHazard": {
-      "landslides": "medium",
+      "landslides": "high",
       "floods": "high"
     }
   },
@@ -16639,7 +16639,7 @@
     ],
     "AdaptationEffectivenessPerHazard": {
       "landslides": "high",
-      "storms": "high"
+      "storms": "medium"
     }
   },
   {
@@ -16870,7 +16870,7 @@
     "PowersAndMandates": null,
     "AdaptationEffectivenessPerHazard": {
       "droughts": "low",
-      "heatwaves": "low",
+      "heatwaves": "medium",
       "diseases": "high",
       "floods": "low"
     }
@@ -16923,8 +16923,8 @@
     "AdaptationEffectivenessPerHazard": {
       "droughts": "medium",
       "heatwaves": "medium",
-      "landslides": "low",
-      "floods": "medium"
+      "landslides": "medium",
+      "floods": "low"
     }
   }
 ]

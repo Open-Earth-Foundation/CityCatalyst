@@ -371,3 +371,6 @@ export const sortGpcReferenceNumbers = (refNumbers: string[]): string[] => {
 export const isEmptyObject = (obj: Record<string, any>) => {
   return Object.keys(obj).length === 0 && obj.constructor === Object;
 };
+
+export const clamp = (num: number, min: number = 0, max: number = 1) =>
+  Math.min(Math.max(num, min), max);

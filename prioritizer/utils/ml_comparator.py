@@ -158,6 +158,7 @@ def ml_compare(city: dict, action_A: dict, action_B: dict) -> int:
             "AdaptationEffectiveness",
             "CostInvestmentNeeded",
             "TimelineForImplementation",
+            "AdaptationEffectivenessPerHazard",
         ]
         for key in action_keys:
             data[f"actionA_{key}"] = action_A.get(key)
@@ -456,37 +457,55 @@ def ml_compare(city: dict, action_A: dict, action_B: dict) -> int:
 
         return df
 
-    def prepare_adaptation_effectiveness_data(df) -> pd.DataFrame:
-        # Define adaptation effectiveness ranking
+    def prepare_adaptation_effectiveness_data_per_hazard(
+        df: pd.DataFrame,
+    ) -> pd.DataFrame:
+        """
+        Converts the adaptation effectiveness per hazard (e.g. 'high', 'medium', 'low')
+        into numeric values for each action.
+        """
         adaptation_mapping = {"low": 1, "medium": 2, "high": 3}
 
-        # Apply mapping with proper handling for None or missing keys by returning 0
-        df["actionA_AdaptationEffectiveness"] = df[
-            "actionA_AdaptationEffectiveness"
-        ].map(lambda x: adaptation_mapping.get(x, 0))
-        df["actionB_AdaptationEffectiveness"] = df[
-            "actionB_AdaptationEffectiveness"
-        ].map(lambda x: adaptation_mapping.get(x, 0))
+        def map_effectiveness_dict(eff_dict):
+            if isinstance(eff_dict, dict):
+                return {k: adaptation_mapping.get(v, 0) for k, v in eff_dict.items()}
+            return {}
+
+        if "actionA_AdaptationEffectivenessPerHazard" in df.columns:
+            df["actionA_AdaptationEffectivenessPerHazard"] = df[
+                "actionA_AdaptationEffectivenessPerHazard"
+            ].apply(map_effectiveness_dict)
+        else:
+            print(
+                "Warning: 'actionA_AdaptationEffectivenessPerHazard' column not found."
+            )
+
+        if "actionB_AdaptationEffectivenessPerHazard" in df.columns:
+            df["actionB_AdaptationEffectivenessPerHazard"] = df[
+                "actionB_AdaptationEffectivenessPerHazard"
+            ].apply(map_effectiveness_dict)
+        else:
+            print(
+                "Warning: 'actionB_AdaptationEffectivenessPerHazard' column not found."
+            )
 
         return df
 
-    def prepare_city_risk_profile(df: pd.DataFrame) -> pd.DataFrame:
+    def prepare_city_risk_profile_per_hazard(df: pd.DataFrame) -> pd.DataFrame:
         """
-        Extracts a risk profile from the 'city_ccra' column and adds it as a new column 'city_risk_profile'.
-        Each risk profile is a dictionary mapping hazards to the maximum normalized risk score.
+        Extracts the city's risk profile from 'city_ccra'.
+        The risk profile is a dict mapping hazards to the maximum normalized risk score.
         """
 
         def extract_risk_profile(ccra_data):
             risk_profile = {}
-            # Ensure the data is a list of dictionaries
             if isinstance(ccra_data, list):
                 for entry in ccra_data:
                     hazard = entry.get("hazard")
                     score = entry.get("normalised_risk_score")
-                    # Skip entries with missing hazard or score
                     if hazard is None or score is None:
                         continue
-                    # Use the maximum score if a hazard appears multiple times
+                    # Keep the highest score for each hazard
                     risk_profile[hazard] = max(risk_profile.get(hazard, 0), score)
             return risk_profile
 
@@ -497,30 +516,29 @@ def ml_compare(city: dict, action_A: dict, action_B: dict) -> int:
 
         return df
 
-    def match_action_hazards_with_city_risks(df: pd.DataFrame) -> pd.DataFrame:
+    def match_action_hazards_with_city_risks_per_hazard(
+        df: pd.DataFrame,
+    ) -> pd.DataFrame:
         """
-        Matches each action's hazard list with the city's risk profile.
-        Creates two new columns:
-        - 'actionA_risk_scores': List of risk scores for hazards in 'actionA_Hazard' that are present in the city's risk profile.
-        - 'actionB_risk_scores': List of risk scores for hazards in 'actionB_Hazard' that are present in the city's risk profile.
+        Matches each action's list of hazards with the city's risk profile.
+        Instead of returning a list of risk scores, this version returns a dictionary mapping
+        each matching hazard to its risk score.
         """
 
-        def get_matching_risk_scores(action_hazards, city_risk_profile):
-            # Validate that we have the correct types
+        def get_matching_hazards(action_hazards, city_risk_profile):
             if not isinstance(action_hazards, list) or not isinstance(
                 city_risk_profile, dict
             ):
-                return []
-            return [
-                city_risk_profile[hazard]
+                return {}
+            return {
+                hazard: city_risk_profile[hazard]
                 for hazard in action_hazards
                 if hazard in city_risk_profile
-            ]
+            }
 
-        # Process Action A hazards
         if "actionA_Hazard" in df.columns:
-            df["actionA_risk_scores"] = df.apply(
-                lambda row: get_matching_risk_scores(
+            df["actionA_matched_hazards"] = df.apply(
+                lambda row: get_matching_hazards(
                     row.get("actionA_Hazard", []), row.get("city_risk_profile", {})
                 ),
                 axis=1,
@@ -528,10 +546,9 @@ def ml_compare(city: dict, action_A: dict, action_B: dict) -> int:
         else:
             print("Warning: 'actionA_Hazard' column not found.")
 
-        # Process Action B hazards
         if "actionB_Hazard" in df.columns:
-            df["actionB_risk_scores"] = df.apply(
-                lambda row: get_matching_risk_scores(
+            df["actionB_matched_hazards"] = df.apply(
+                lambda row: get_matching_hazards(
                     row.get("actionB_Hazard", []), row.get("city_risk_profile", {})
                 ),
                 axis=1,
@@ -541,60 +558,67 @@ def ml_compare(city: dict, action_A: dict, action_B: dict) -> int:
 
         return df
 
-    def create_weighted_comparative_feature(df: pd.DataFrame) -> pd.DataFrame:
+    def create_weighted_comparative_feature_per_hazard(
+        df: pd.DataFrame,
+    ) -> pd.DataFrame:
         """
-        Computes a weighted total risk score for each action by:
-        - Summing the matched risk scores from the corresponding action.
-        - Multiplying the sum by the action's adaptation effectiveness.
-
-        Creates the following new columns:
-        - 'weighted_actionA_risk_total'
-        - 'weighted_actionB_risk_total'
-        - 'weighted_risk_score_diff': The difference (Action A total minus Action B total)
-
-        A positive 'weighted_risk_score_diff' indicates that Action A is better aligned with the city's risks.
+        For each action, compute a weighted total risk score:
+        - For each matched hazard, multiply the city's risk score by the action's effectiveness score (from the per-hazard dictionary).
+        - Sum these values to get the action's weighted risk total.
+        Then compute the difference: (Action A total - Action B total).
         """
 
-        def sum_scores(scores):
-            if isinstance(scores, list):
-                return sum(scores)
-            return 0
+        def compute_weighted_total(matched_hazards, adaptation_dict):
+            total = 0
+            if isinstance(matched_hazards, dict) and isinstance(adaptation_dict, dict):
+                for hazard, risk in matched_hazards.items():
+                    effectiveness = adaptation_dict.get(hazard, 0)
+                    total += risk * effectiveness
+            return total
 
-        # Calculate weighted risk total for Action A and Action B.
-        df["weighted_actionA_risk_total"] = (
-            df["actionA_risk_scores"].apply(sum_scores)
-            * df["actionA_AdaptationEffectiveness"]
-        )
-        df["weighted_actionB_risk_total"] = (
-            df["actionB_risk_scores"].apply(sum_scores)
-            * df["actionB_AdaptationEffectiveness"]
+        df["weighted_actionA_risk_total"] = df.apply(
+            lambda row: compute_weighted_total(
+                row.get("actionA_matched_hazards", {}),
+                row.get("actionA_AdaptationEffectivenessPerHazard", {}),
+            ),
+            axis=1,
         )
 
-        # Compute the comparative feature.
+        df["weighted_actionB_risk_total"] = df.apply(
+            lambda row: compute_weighted_total(
+                row.get("actionB_matched_hazards", {}),
+                row.get("actionB_AdaptationEffectivenessPerHazard", {}),
+            ),
+            axis=1,
+        )
+
         df["weighted_risk_score_Diff"] = (
             df["weighted_actionA_risk_total"] - df["weighted_actionB_risk_total"]
         )
 
         return df
 
-    def process_ccra_hazards_adaptation_effectiveness(df: pd.DataFrame) -> pd.DataFrame:
+    def process_ccra_hazards_adaptation_effectiveness_per_hazard(
+        df: pd.DataFrame,
+    ) -> pd.DataFrame:
         """
-        Processes the input DataFrame through the following pipeline:
+        Processes the DataFrame through the following steps:
         1. Extract the city's risk profile from 'city_ccra'.
-        2. Match each action's hazard list with the city's risk profile.
-        3. Compute a weighted comparative feature based on the matched risk scores and adaptation effectiveness.
-
-        Returns the modified DataFrame with new feature columns added.
+        2. Convert each action's per-hazard adaptation effectiveness ratings to numeric values.
+        3. Match the hazards from each action with the city's risk profile.
+        4. Compute the weighted risk total for each action using the per-hazard values.
+        5. Create the 'weighted_risk_score_Diff' feature.
         """
-        df = prepare_city_risk_profile(df)
-        df = match_action_hazards_with_city_risks(df)
-        df = create_weighted_comparative_feature(df)
+        df = prepare_city_risk_profile_per_hazard(df)
+        df = match_action_hazards_with_city_risks_per_hazard(df)
+        df = create_weighted_comparative_feature_per_hazard(df)
 
+        # Optionally, drop intermediate columns, leaving only the final comparative feature.
         columns_to_drop = [
-            "actionA_AdaptationEffectiveness",
-            "actionB_AdaptationEffectiveness",
-            "actionA_risk_scores",
-            "actionB_risk_scores",
+            "actionA_AdaptationEffectivenessPerHazard",
+            "actionB_AdaptationEffectivenessPerHazard",
+            "actionA_matched_hazards",
+            "actionB_matched_hazards",
             "city_risk_profile",
             "city_ccra",
             "actionA_Hazard",
@@ -654,39 +678,6 @@ def ml_compare(city: dict, action_A: dict, action_B: dict) -> int:
 
         return df
 
-    # def prepare_co_benefits_data(df) -> pd.DataFrame:
-
-    #     # Extract all unique CoBenefits keys
-    #     co_benefits_keys = [
-    #         "air_quality",
-    #         "water_quality",
-    #         "habitat",
-    #         "cost_of_living",
-    #         "housing",
-    #         "mobility",
-    #         "stakeholder_engagement",
-    #     ]
-
-    #     # Compute differences between Action A and Action B directly
-    #     for key in co_benefits_keys:
-    #         df[f"CoBenefits_Diff_{key}"] = df.apply(
-    #             lambda row: (
-    #                 (
-    #                     row["actionA_CoBenefits"].get(key, 0)
-    #                     - row["actionB_CoBenefits"].get(key, 0)
-    #                 )
-    #                 if isinstance(row["actionA_CoBenefits"], dict)
-    #                 and isinstance(row["actionB_CoBenefits"], dict)
-    #                 else 0
-    #             ),
-    #             axis=1,
-    #         )
-
-    #     # Drop the original CoBenefits dictionary columns
-    #     df.drop(columns=["actionA_CoBenefits", "actionB_CoBenefits"], inplace=True)
-
-    #     return df
-
     def prepare_biome_data(df) -> pd.DataFrame:
 
         # List of possible biome categories
@@ -743,6 +734,8 @@ def ml_compare(city: dict, action_A: dict, action_B: dict) -> int:
                 "biome_boreal_forest_taiga",
                 "biome_coastal_marine",
                 "biome_temperate_forest",
+                "actionA_AdaptationEffectiveness",
+                "actionB_AdaptationEffectiveness",
             ],
             inplace=True,
         )
@@ -781,8 +774,10 @@ def ml_compare(city: dict, action_A: dict, action_B: dict) -> int:
     df_transformed = prepare_action_type_data(df_transformed)
     df_transformed = prepare_cost_investment_needed_data(df_transformed)
     df_transformed = prepare_timeline_data(df_transformed)
-    df_transformed = prepare_adaptation_effectiveness_data(df_transformed)
-    df_transformed = process_ccra_hazards_adaptation_effectiveness(df_transformed)
+    df_transformed = prepare_adaptation_effectiveness_data_per_hazard(df_transformed)
+    df_transformed = process_ccra_hazards_adaptation_effectiveness_per_hazard(
+        df_transformed
+    )
     df_transformed = prepare_co_benefits_data_single_diff(df_transformed)
     df_transformed = prepare_biome_data(df_transformed)
 
@@ -791,9 +786,6 @@ def ml_compare(city: dict, action_A: dict, action_B: dict) -> int:
 
     # Before dropping rows, check which columns have missing values
     missing_columns = df_transformed.columns[df_transformed.isna().any()].tolist()
-
-    # print(df_transformed.T)
-
     # Dropping empty rows
     # If after transformation a row has missing values, it will be dropped
     # Since we only pass in one pair at a time, the df will be empty if there are missing values
@@ -816,13 +808,18 @@ def ml_compare(city: dict, action_A: dict, action_B: dict) -> int:
     prediction = predict_xgb(df_transformed)
 
     # (Optional for explanation) Create a SHAP waterfall plot
-    # create_shap_waterfall(df_transformed, loaded_model)
+    create_shap_waterfall(df_transformed, loaded_model)
 
     return prediction
 
 
 if __name__ == "__main__":
     # Calling it with test data
+    # This is the same data used as in colab.
+    # Notice: We changed the city data and the data we now use in production is different.
+    # We cannot use the new city data for training, because the experts ranked on the old city data.
+    # Therefore essentially all the new city data 'is new' to the model.
+    # Here we use the same data to make sure we have the same pipeline in place both in this repo and in colab.
     dict_brcci = {
         "locode": "BRCCI",
         "name": "Camaçari",
@@ -1049,5 +1046,166 @@ if __name__ == "__main__":
         "PowersAndMandates": None,
     }
 
-    result = ml_compare(dict_brcci, dict_c40_0009, dict_c40_0023)
+    dict_icare_0145 = {
+        "ActionID": "icare_0145",
+        "ActionName": "Strengthen the healthcare network to attend to climate victims",
+        "ActionType": ["adaptation"],
+        "Hazard": [
+            "heatwaves",
+            "diseases",
+            "landslides",
+            "floods",
+            "storms",
+            "droughts",
+        ],
+        "Sector": None,
+        "Subsector": None,
+        "PrimaryPurpose": ["climate_resilience"],
+        "Description": "Improve the infrastructure of healthcare units to assist people who require medical care due to impacts associated with climate risks (climate victims), such as those affected by heat waves or floods, especially in more vulnerable areas. Develop action plans to prepare the healthcare network for extreme climate-related situations.",
+        "CoBenefits": {
+            "air_quality": 0,
+            "water_quality": 0,
+            "habitat": 0,
+            "cost_of_living": 0,
+            "housing": 0,
+            "mobility": 0,
+            "stakeholder_engagement": 2,
+        },
+        "EquityAndInclusionConsiderations": None,
+        "GHGReductionPotential": None,
+        "AdaptationEffectiveness": "high",
+        "CostInvestmentNeeded": "high",
+        "TimelineForImplementation": ">10 years",
+        "Dependencies": [
+            "Investment in the renovation and expansion of healthcare facilities, ensuring they are equipped to handle climate-related health impacts, particularly in vulnerable areas.",
+            "Development of action plans and training programs for healthcare professionals to respond to extreme climate events like heatwaves and floods.",
+            "Collaboration with local authorities, emergency response teams, and climate experts to create a comprehensive framework for preparing the healthcare network for climate risks.",
+        ],
+        "KeyPerformanceIndicators": [
+            "Number of healthcare facilities upgraded for climate-related emergencies.",
+            "Increase in healthcare staff trained in climate emergency response (%).",
+            "Number of climate-related injuries treated successfully.",
+            ".",
+        ],
+        "PowersAndMandates": ["national"],
+        "AdaptationEffectivenessPerHazard": {
+            "heatwaves": "high",
+            "diseases": "medium",
+            "landslides": "medium",
+            "floods": "high",
+            "storms": "high",
+            "droughts": "medium",
+        },
+    }
+
+    dict_icare_0140 = {
+        "ActionID": "icare_0140",
+        "ActionName": "Landslide Risk Assessment and Management",
+        "ActionType": ["adaptation"],
+        "Hazard": ["landslides"],
+        "Sector": None,
+        "Subsector": None,
+        "PrimaryPurpose": ["climate_resilience"],
+        "Description": "This action involves assessing and managing landslide risks by collecting data, mapping hazard areas, and conducting evacuation simulations. It aims to reduce the risks associated with landslides in areas prone to these events.",
+        "CoBenefits": {
+            "air_quality": 1,
+            "water_quality": 2,
+            "habitat": 2,
+            "cost_of_living": 1,
+            "housing": 1,
+            "mobility": 1,
+            "stakeholder_engagement": 2,
+        },
+        "EquityAndInclusionConsiderations": None,
+        "GHGReductionPotential": None,
+        "AdaptationEffectiveness": "high",
+        "CostInvestmentNeeded": "low",
+        "TimelineForImplementation": "<5 years",
+        "Dependencies": [
+            "Comprehensive planning and policy framework",
+            "Stakeholder participation",
+            "Capacity building and institutional support",
+        ],
+        "KeyPerformanceIndicators": [
+            "Coastal erosion rates",
+            "Water quality",
+            "Habitat health",
+        ],
+        "PowersAndMandates": ["local"],
+        "AdaptationEffectivenessPerHazard": {"landslides": "high"},
+    }
+
+    dict_icare_0141 = {
+        "ActionID": "icare_0141",
+        "ActionName": "Implementation of Wetlands",
+        "ActionType": ["adaptation"],
+        "Hazard": ["diseases", "floods"],
+        "Sector": None,
+        "Subsector": None,
+        "PrimaryPurpose": ["climate_resilience"],
+        "Description": "Implementation of wetlands using phytoremediation to remove pollutants from water and improve water quality.",
+        "CoBenefits": {
+            "air_quality": 1,
+            "water_quality": 2,
+            "habitat": 1,
+            "cost_of_living": 1,
+            "housing": 0,
+            "mobility": 0,
+            "stakeholder_engagement": 1,
+        },
+        "EquityAndInclusionConsiderations": None,
+        "GHGReductionPotential": None,
+        "AdaptationEffectiveness": "low",
+        "CostInvestmentNeeded": "medium",
+        "TimelineForImplementation": "<5 years",
+        "Dependencies": ["Maintenance"],
+        "KeyPerformanceIndicators": [
+            "Water quality improvement",
+            "Water flow rate",
+            "Maintenance costs",
+        ],
+        "PowersAndMandates": ["local"],
+        "AdaptationEffectivenessPerHazard": {"diseases": "low", "floods": "low"},
+    }
+
+    dict_icare_0142 = {
+        "ActionID": "icare_0142",
+        "ActionName": "Improvement of Water Supply and Sanitation Systems",
+        "ActionType": ["adaptation"],
+        "Hazard": ["floods"],
+        "Sector": None,
+        "Subsector": None,
+        "PrimaryPurpose": ["climate_resilience"],
+        "Description": "This action involves implementing artesian wells, cisterns, and water supply systems, as well as improving water quality and expanding sanitation services in the city.",
+        "CoBenefits": {
+            "air_quality": 0,
+            "water_quality": 2,
+            "habitat": 1,
+            "cost_of_living": 1,
+            "housing": 1,
+            "mobility": 0,
+            "stakeholder_engagement": 1,
+        },
+        "EquityAndInclusionConsiderations": None,
+        "GHGReductionPotential": None,
+        "AdaptationEffectiveness": "high",
+        "CostInvestmentNeeded": "medium",
+        "TimelineForImplementation": "<5 years",
+        "Dependencies": [
+            "Infrastructure development",
+            "Financial resources",
+            "Technical expertise",
+        ],
+        "KeyPerformanceIndicators": [
+            "Access to safe water",
+            "Water quality",
+            "Sanitation coverage",
+        ],
+        "PowersAndMandates": ["local"],
+        "AdaptationEffectivenessPerHazard": {"floods": "high"},
+    }
+
+    result = ml_compare(dict_brcci, dict_icare_0145, dict_icare_0140)
+    # result = ml_compare(dict_brcci, dict_c40_0009, dict_c40_0023)
+    # result = ml_compare(dict_brcci, dict_icare_0141, dict_icare_0142)
     print(f"Preferred Action: {result}")

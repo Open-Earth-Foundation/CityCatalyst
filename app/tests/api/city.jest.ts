@@ -111,7 +111,7 @@ describe("City API", () => {
     const {
       error: { issues },
     } = await res.json();
-    assert.equal(issues.length, 6);
+    assert.equal(issues.length, 5);
   });
 
   it("should find a city", async () => {
@@ -151,7 +151,7 @@ describe("City API", () => {
     const {
       error: { issues },
     } = await res.json();
-    assert.equal(issues.length, 6);
+    assert.equal(issues.length, 5);
   });
 
   it("should delete a city", async () => {

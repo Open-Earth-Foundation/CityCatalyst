@@ -227,7 +227,7 @@ const AdminOrganizationIdProfilePage = ({
               name: organization?.name,
               num_projects: organization?.projects.length ?? 0,
               num_cities: organization?.projects.reduce(
-                (acc, proj) => acc + proj.cities.length,
+                (acc, proj) => acc + proj?.cities.length,
                 0,
               ),
               total_cities:

@@ -7,9 +7,12 @@ certifi==2024.8.30
 charset-normalizer==3.4.0
 cloudpickle==3.1.1
 colorama==0.4.6
+contourpy==1.3.1
+cycler==0.12.1
 distro==1.9.0
 et_xmlfile==2.0.0
 filelock==3.17.0
+fonttools==4.57.0
 fsspec==2025.2.0
 h11==0.14.0
 httpcore==1.0.6
@@ -21,9 +24,11 @@ jmespath==1.0.1
 joblib==1.4.2
 jsonschema==4.23.0
 jsonschema-specifications==2024.10.1
+kiwisolver==1.4.8
 langsmith==0.1.143
 llvmlite==0.44.0
 MarkupSafe==3.0.2
+matplotlib==3.10.1
 mpmath==1.3.0
 networkx==3.4.2
 numba==0.61.0
@@ -33,8 +38,10 @@ openpyxl==3.1.5
 orjson==3.10.11
 packaging==24.2
 pandas==2.2.3
+pillow==11.1.0
 pydantic==2.9.2
 pydantic_core==2.23.4
+pyparsing==3.2.3
 python-dateutil==2.9.0.post0
 python-dotenv==1.0.1
 pytz==2024.2

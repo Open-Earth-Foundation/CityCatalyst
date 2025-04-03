@@ -32,7 +32,7 @@ class Biome(BaseModel):
 # File paths - using os.path.join for cross-platform compatibility
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ACTIONS_FOLDER = os.path.join(BASE_DIR, "data", "climate_actions", "output")
-ACTION_DATA_FILE = "merged.json"
+ACTION_DATA_FILE = "merged_individual_adaptation_effectiveness.json"
 OUTPUT_FILE = "merged_with_biome.json"
 
 def load_actions_data() -> List[Dict]:

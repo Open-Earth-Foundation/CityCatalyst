@@ -367,7 +367,6 @@ export function NavigationBar({
       <ProjectDrawer
         lng={lng}
         currentInventoryId={currentInventoryId as string}
-        organizationId={inventory?.city?.project?.organizationId}
         isOpen={isDrawerOpen}
         onClose={() => setIsDrawerOpen(false)}
         onOpenChange={({ open }) => setIsDrawerOpen(open)}

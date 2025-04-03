@@ -1,6 +1,7 @@
 import { db } from "@/models";
 import { logger } from "@/services/logger";
 import { uniqBy } from "lodash";
+import { ProjectWithCities } from "@/util/types";
 
 interface ProjectInfo {
   projectId: string;
@@ -13,7 +14,7 @@ interface ProjectInfo {
 export class ProjectService {
   public static async fetchUserProjects(
     userId: string,
-  ): Promise<ProjectInfo[]> {
+  ): Promise<ProjectWithCities[]> {
     // perform access control
     await db.models.User.findByPk(userId, {});
 
@@ -25,6 +26,18 @@ export class ProjectService {
         {
           model: db.models.Project,
           as: "project",
+          include: [
+            {
+              model: db.models.City,
+              as: "cities",
+              include: [
+                {
+                  model: db.models.Inventory,
+                  as: "inventories",
+                },
+              ],
+            },
+          ],
         },
       ],
     });
@@ -41,6 +54,18 @@ export class ProjectService {
               {
                 model: db.models.Project,
                 as: "projects",
+                include: [
+                  {
+                    model: db.models.City,
+                    as: "cities",
+                    include: [
+                      {
+                        model: db.models.Inventory,
+                        as: "inventories",
+                      },
+                    ],
+                  },
+                ],
               },
             ],
           },
@@ -59,12 +84,16 @@ export class ProjectService {
               model: db.models.Project,
               as: "project",
             },
+            {
+              model: db.models.Inventory,
+              as: "inventories",
+            },
           ],
         },
       ],
     });
 
-    const projectsData: ProjectInfo[] = [
+    const dataList: ProjectWithCities[] = [
       ...projectAdminAssociations
         .filter((assoc) => {
           if (!assoc.project) {
@@ -80,6 +109,11 @@ export class ProjectService {
           organizationId: assoc.project.organizationId,
           description: assoc.project.description,
           cityCountLimit: assoc.project.cityCountLimit,
+          cities: assoc.project.cities.map((city) => ({
+            name: city.name as string,
+            cityId: city.cityId as string,
+            inventories: city.inventories as any,
+          })),
         })),
       ...organizationAdminAssociations.flatMap((assoc) =>
         assoc.organization?.projects
@@ -97,9 +131,18 @@ export class ProjectService {
             organizationId: assoc.organization.organizationId,
             description: project.description,
             cityCountLimit: project.cityCountLimit,
+            cities: project.cities.map((city) => ({
+              name: city.name as string,
+              cityId: city.cityId as string,
+              inventories: city.inventories as any,
+            })),
           })),
       ),
-      ...cityUserAssociations
+    ];
+
+    //   city user has access to only the cities
+    const cityUserDataList: Record<string, ProjectWithCities> =
+      cityUserAssociations
         .filter((assoc) => {
           if (!assoc.city?.project) {
             logger.warn(
@@ -108,16 +151,33 @@ export class ProjectService {
           }
           return !!assoc.city?.project;
         })
-        .map((assoc) => ({
-          projectId: assoc.city.project.projectId,
-          name: assoc.city.project.name,
-          organizationId: assoc.city.project.organizationId,
-          description: assoc.city.project.description,
-          cityCountLimit: assoc.city.project.cityCountLimit,
-        })),
-    ];
+        .reduce((acc: Record<string, any>, cityUserAsocc) => {
+          const projectId = cityUserAsocc.city?.project?.projectId;
+          const project = cityUserAsocc.city?.project;
+          const existingProject = acc[projectId];
+          const city = {
+            name: cityUserAsocc.city.name as string,
+            cityId: cityUserAsocc.city.cityId as string,
+            inventories: cityUserAsocc.city.inventories as any,
+          };
+          if (!existingProject) {
+            acc[projectId] = {
+              projectId: project.projectId,
+              name: project.name,
+              organizationId: project.organizationId,
+              description: project.description,
+              cityCountLimit: project.cityCountLimit,
+              cities: [city],
+            };
+          } else {
+            existingProject.cities.push(city);
+          }
+          return acc;
+        }, {});
+
+    const projectList = dataList.concat(Object.values(cityUserDataList));
 
     // Remove duplicates based on projectId
-    return uniqBy(projectsData, "projectId");
+    return uniqBy(projectList, "projectId");
   }
 }

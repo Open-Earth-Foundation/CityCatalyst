@@ -17,7 +17,11 @@ import {
 import { InputGroup } from "@/components/ui/input-group";
 import { LuSearch } from "react-icons/lu";
 import { ProjectWithCities, ProjectWithCitiesResponse } from "@/util/types";
-import { useGetProjectsQuery } from "@/services/api";
+import {
+  useGetProjectsQuery,
+  useGetProjectUsersQuery,
+  useGetUserProjectsQuery,
+} from "@/services/api";
 import {
   ProgressCircleRing,
   ProgressCircleRoot,
@@ -261,14 +265,7 @@ const ProjectDrawer = ({
   currentInventoryId?: string;
 }) => {
   const { t } = useTranslation(lng, "dashboard");
-  const { data: projectsData, isLoading } = useGetProjectsQuery(
-    {
-      organizationId: organizationId!,
-    },
-    {
-      skip: !organizationId,
-    },
-  );
+  const { data: projectsData, isLoading } = useGetUserProjectsQuery({});
 
   const [selectedProject, setSelectedProject] = React.useState<string | null>();
 

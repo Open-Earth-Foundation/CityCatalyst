@@ -7,8 +7,6 @@ import UserService from "@/backend/UserService";
 import { db } from "@/models";
 import { NextResponse } from "next/server";
 
-// endpoint should take an array of city ids and a project id to move it to.
-
 export const PATCH = apiHandler(async (req, { session }) => {
   UserService.validateIsAdmin(session);
 

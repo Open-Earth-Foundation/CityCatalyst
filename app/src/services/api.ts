@@ -1047,6 +1047,13 @@ export const api = createApi({
         transformResponse: (response: ProjectResponse[]) => response,
         providesTags: ["ProjectUsers"],
       }),
+      getAllCitiesInSystem: builder.query({
+        query: () => ({
+          method: "GET",
+          url: `city/admin`,
+        }),
+        transformResponse: (response: { data: any }) => response.data,
+      }),
     };
   },
 });
@@ -1139,5 +1146,6 @@ export const {
   useConnectDataSourcesMutation,
   useGetProjectUsersQuery,
   useGetUserAccessStatusQuery,
+  useGetAllCitiesInSystemQuery,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

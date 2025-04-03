@@ -24,6 +24,8 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
     cities: (verifiedToken as JwtPayload).cities,
   };
 
+  console.log(tokenContent.cities, cityIds);
+
   const difference = (setA: string[], setB: string[]) =>
     setA.filter((x) => !setB.includes(x));
 
@@ -43,7 +45,7 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
   });
   const inviteCityIds = invites.map((i) => i.cityId!);
   const citiesNotFound = difference(cityIds, inviteCityIds);
-
+  console.log(citiesNotFound);
   if (citiesNotFound.length > 0) {
     console.error(
       "error in invites/accept/route PATCH: ",

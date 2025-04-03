@@ -255,7 +255,7 @@ const AdminPage = ({ params: { lng } }: { params: { lng: string } }) => {
                       <Table.Cell>
                         {" "}
                         {item.status === "accepted" ? (
-                          <Tag size="lg" rounded="full" colorPalette="green">
+                          <Tag size="lg" colorPalette="green">
                             {" "}
                             {t("accepted")}
                           </Tag>

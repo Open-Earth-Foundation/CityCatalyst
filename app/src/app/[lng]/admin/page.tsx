@@ -224,7 +224,7 @@ const AdminPage = ({ params: { lng } }: { params: { lng: string } }) => {
                   </Box>
                 </div>
               )}
-              {!isOrgDataLoading && orgData.length === 0 && (
+              {!isOrgDataLoading && orgData?.length === 0 && (
                 <Text color="content.tertiary" fontSize="body.lg">
                   {t("no-data")}
                 </Text>

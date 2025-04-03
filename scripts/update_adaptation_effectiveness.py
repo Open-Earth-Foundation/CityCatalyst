@@ -8,7 +8,7 @@ Input file:
 data/climate_actions/output/merged.json
 
 Output file:
-data/climate_actions/output/merged_individual_adaptation_effectiveness.json
+data/climate_actions/output/merged.json
 
 Execute:
 python scripts/update_adaptation_effectiveness.py
@@ -50,7 +50,7 @@ client = OpenAI(api_key=api_key)
 BASE_DIR = Path(__file__).resolve().parent.parent
 DATA_DIR = BASE_DIR / "data" / "climate_actions" / "output"
 INPUT_FILE = DATA_DIR / "merged.json"
-OUTPUT_FILE = DATA_DIR / "merged_individual_adaptation_effectiveness.json"
+OUTPUT_FILE = DATA_DIR / "merged.json"
 
 
 def load_json_file(file_path: Path) -> dict:

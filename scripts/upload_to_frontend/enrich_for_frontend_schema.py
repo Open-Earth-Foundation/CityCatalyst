@@ -15,13 +15,7 @@ import argparse
 BASE_DIR = Path(__file__).parent.parent.parent
 
 # Load paths dynamically relative to the base directory
-PATH_ACTIONSLIST_EN = (
-    BASE_DIR
-    / "data"
-    / "climate_actions"
-    / "output"
-    / "merged_individual_adaptation_effectiveness.json"
-)
+PATH_ACTIONSLIST_EN = BASE_DIR / "data" / "climate_actions" / "output" / "merged.json"
 PATH_TRANSLATIONS = BASE_DIR / "data" / "climate_actions" / "output" / "translations"
 BASE_PATH_PRIORITIZED_ACTIONS = BASE_DIR / "data" / "prioritized"
 BASE_PATH_OUTPUT = BASE_DIR / "data" / "frontend"
@@ -29,8 +23,8 @@ BASE_PATH_OUTPUT = BASE_DIR / "data" / "frontend"
 # Define supported languages and their corresponding files
 LANGUAGE_FILES = {
     "en": PATH_ACTIONSLIST_EN,
-    "es": PATH_TRANSLATIONS / "merged_individual_adaptation_effectiveness_es.json",
-    "pt": PATH_TRANSLATIONS / "merged_individual_adaptation_effectiveness_pt.json",
+    "es": PATH_TRANSLATIONS / "merged_es.json",
+    "pt": PATH_TRANSLATIONS / "merged_pt.json",
 }
 
 

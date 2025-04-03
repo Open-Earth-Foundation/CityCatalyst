@@ -146,14 +146,9 @@ def main():
     args = parser.parse_args()
 
     # Input and output paths
-    input_path = Path(
-        BASE_DIR
-        / "data/climate_actions/output/merged_individual_adaptation_effectiveness.json"
-    )
+    input_path = Path(BASE_DIR / "data/climate_actions/output/merged.json")
     output_dir = Path(BASE_DIR / "data/climate_actions/output/translations")
-    output_path = (
-        output_dir / f"merged_individual_adaptation_effectiveness_{args.language}.json"
-    )
+    output_path = output_dir / f"merged_{args.language}.json"
 
     # Create output directory if it doesn't exist
     output_dir.mkdir(parents=True, exist_ok=True)

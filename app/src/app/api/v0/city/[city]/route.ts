@@ -66,7 +66,7 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
   const body = createCityRequest.parse(await req.json());
   const projectId = body.projectId;
   if (!projectId) {
-    logger.error("Project ID is not provided, defaulting to Default Project");
+    logger.info("Project ID is not provided, defaulting to Default Project");
     body.projectId = DEFAULT_PROJECT_ID;
   }
   let city = await UserService.findUserCity(params.city, session);

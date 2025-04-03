@@ -2,7 +2,7 @@
   "//comment": "appliesTo and generated are metadata that are not supported for type checking by JSON schema",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://schemas.openearth.org/cap/generic_action_schema.json",
-  "title": "Climate Action Priorization Schema",
+  "title": "Climate Action Prioritization Schema",
   "description": "Schema for defining climate actions with adaptation and mitigation properties",
   "type": "object",
   "properties": {
@@ -255,6 +255,35 @@
       "appliesTo": ["adaptation"],
       "generated": true
     },
+    "AdaptationEffectivenessPerHazard": {
+      "type": ["object", "null"],
+      "description": "Adaptation effectiveness scores for each hazard listed in the 'Hazard' field. Each key corresponds to a hazard and its value indicates the effectiveness ('high', 'medium', 'low', or null).",
+      "propertyNames": {
+        "enum": [
+          "droughts",
+          "heatwaves",
+          "floods",
+          "sea-level-rise",
+          "landslides",
+          "storms",
+          "wildfires",
+          "diseases"
+        ]
+      },
+      "additionalProperties": {
+        "oneOf": [
+          {
+            "type": "string",
+            "enum": ["high", "medium", "low"]
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "generated": true,
+      "appliesTo": ["adaptation"]
+    },
     "CostInvestmentNeeded": {
       "oneOf": [
         {
@@ -322,6 +351,7 @@
     "TimelineForImplementation",
     "Dependencies",
     "KeyPerformanceIndicators",
-    "PowersAndMandates"
+    "PowersAndMandates",
+    "AdaptationEffectivenessPerHazard"
   ]
 }

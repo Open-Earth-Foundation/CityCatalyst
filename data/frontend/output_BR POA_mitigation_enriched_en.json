@@ -4,12 +4,74 @@
         "cityName": "Porto Alegre",
         "region": "RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0005",
-        "actionName": "Create credit lines for residential and community wind energy projects",
+        "actionId": "icare_0042",
+        "actionName": "Encourage renewable energy policies at the municipal level",
         "actionPriority": 1,
         "action": {
-            "ActionID": "icare_0005",
-            "ActionName": "Create credit lines for residential and community wind energy projects",
+            "ActionID": "icare_0042",
+            "ActionName": "Encourage renewable energy policies at the municipal level",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "stationary_energy"
+            ],
+            "Subsector": [
+                "non-specified_sources"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Advocate for and implement policies that prioritize the development and integration of renewable energy systems in local government operations and planning.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 1,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": "80-100",
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Political will and leadership to prioritize renewable energy in local government policies and planning processes",
+                "Development of clear policies and regulatory frameworks that facilitate the integration of renewable energy systems into government operations",
+                "Availability of funding or financial mechanisms to support the transition to renewable energy in municipal infrastructure and operations"
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of renewable energy projects approved or initiated annually at the municipal level.",
+                "Percentage of municipal energy demand met by renewable sources (%).",
+                "Reduction in municipal carbon emissions due to --renewable energy adoption (tons CO\u2082e/year)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR POA",
+        "cityName": "Porto Alegre",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0024",
+        "actionName": "Integrate renewables into municipal water systems",
+        "actionPriority": 2,
+        "action": {
+            "ActionID": "icare_0024",
+            "ActionName": "Integrate renewables into municipal water systems",
             "ActionType": [
                 "mitigation"
             ],
@@ -23,19 +85,19 @@
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "Description": "Establish accessible financing programs to support the development and adoption of wind energy systems in households and community-based projects, enabling a transition to cleaner energy sources.",
+            "Description": "Implement renewable energy sources, such as solar or wind power, to drive water treatment, pumping, and distribution systems, reducing energy costs and emissions.",
             "CoBenefits": {
                 "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 2,
-                "housing": 2,
+                "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 0,
                 "mobility": 0,
                 "stakeholder_engagement": 1
             },
             "EquityAndInclusionConsiderations": null,
             "GHGReductionPotential": {
-                "stationary_energy": "60-79",
+                "stationary_energy": "80-100",
                 "transportation": null,
                 "waste": null,
                 "ippu": null,
@@ -45,18 +107,81 @@
             "CostInvestmentNeeded": "medium",
             "TimelineForImplementation": "5-10 years",
             "Dependencies": [
-                "Availability of financial programs, grants, or subsidies to make wind energy systems affordable for households and community projects",
-                "Access to technical expertise and resources to guide the installation and maintenance of wind energy systems in residential and community settings",
-                "Policy and regulatory support to encourage the adoption of wind energy, including streamlined permitting processes and incentives for clean energy projects"
+                "Availability of funding or financial incentives to integrate renewable energy sources like solar or wind power into water treatment and distribution systems",
+                "Technical expertise and infrastructure to retrofit existing systems with renewable energy solutions or design new facilities powered by renewables",
+                "Policy and regulatory support to encourage the use of clean energy in water systems and ensure its integration into municipal energy grids"
             ],
             "KeyPerformanceIndicators": [
-                "Number of wind energy projects financed annually.",
-                "Installed capacity of wind energy systems from credit-supported projects (MW).",
-                "Estimated reduction in CO\u2082 equivalent emissions from wind energy adoption."
+                "Percentage of municipal water systems powered by renewables.",
+                "Reduction in energy consumption from non-renewable sources (kWh/year).",
+                "GHG emissions avoided (tons CO\u2082e)"
             ],
             "PowersAndMandates": [
                 "local"
-            ]
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR POA",
+        "cityName": "Porto Alegre",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0139",
+        "actionName": "Implementation of urban toll.",
+        "actionPriority": 3,
+        "action": {
+            "ActionID": "icare_0139",
+            "ActionName": "Implementation of urban toll.",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "on-road"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Establishment of a congestion charge and/or license plate rotation for light vehicles in saturated areas and at saturated times",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": -1,
+                "housing": 0,
+                "mobility": 2,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "80-100",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Establish a clear legal framework and invest in technology for monitoring and enforcement (e.g., cameras, sensors).",
+                "Launch awareness campaigns and ensure availability of efficient public transportation or alternative mobility solutions.",
+                "Collaborate with local governments and transport agencies, and set up systems for monitoring and evaluating the policy's effectiveness."
+            ],
+            "KeyPerformanceIndicators": [
+                "Reduction of CO\u2082 emissions from urban road transport (tCO\u2082e/year).",
+                "Revenue generated by the implementation of the urban congestion charge (R$)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
         }
     },
     {
@@ -66,7 +191,7 @@
         "regionName": "Rio Grande do Sul",
         "actionId": "icare_0121",
         "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
-        "actionPriority": 2,
+        "actionPriority": 4,
         "action": {
             "ActionID": "icare_0121",
             "ActionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
@@ -116,427 +241,9 @@
             ],
             "PowersAndMandates": [
                 "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR POA",
-        "cityName": "Porto Alegre",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0118",
-        "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
-        "actionPriority": 3,
-        "action": {
-            "ActionID": "icare_0118",
-            "ActionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
-            "ActionType": [
-                "mitigation"
             ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Encourage the adoption of bicycles as a regular mode of transport by expanding cycling infrastructure, such as dedicated bike lanes, parking facilities, and repair stations. Additionally, implement awareness campaigns and communication strategies to highlight the environmental, health, and economic benefits of cycling, aiming to increase public participation and make cycling a viable and sustainable transport option for daily commuting.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 2,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Expand cycling infrastructure, including dedicated bike lanes, parking facilities, and repair stations.",
-                "Implement awareness campaigns to highlight the environmental, health, and economic benefits of cycling.",
-                "Promote public participation through communication strategies, making cycling a viable and sustainable option for daily commuting."
-            ],
-            "KeyPerformanceIndicators": [
-                "Length of new bike lanes added to the urban network (km).",
-                "Annual increase in the number of bicycle users in urban areas.",
-                "Estimated reduction in CO\u2082 equivalent emissions from the shift to cycling."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR POA",
-        "cityName": "Porto Alegre",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0088",
-        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
-        "actionPriority": 4,
-        "action": {
-            "ActionID": "icare_0088",
-            "ActionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Encourage the use of public transportation by offering free services during peak hours for workers and students. This measure reduces urban congestion, decreases the number of individual vehicles on the road, and consequently lowers greenhouse gas emissions associated with private transportation.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 2,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Allocation of funding to subsidize free public transportation services during peak hours.",
-                "Development of policies to ensure the sustainability and efficiency of public transit systems amid increased demand.",
-                "Coordination with employers and educational institutions to optimize peak-hour schedules and promote the initiative."
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in air pollution levels during peak hours (PM2.5/PM10 concentration).",
-                "Number of private vehicles removed from roads during peak hours.",
-                "Public satisfaction rate with the free transportation initiative (%)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR POA",
-        "cityName": "Porto Alegre",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0025",
-        "actionName": "Promote energy-efficient low-income housing",
-        "actionPriority": 5,
-        "action": {
-            "ActionID": "icare_0025",
-            "ActionName": "Promote energy-efficient low-income housing",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "stationary_energy"
-            ],
-            "Subsector": [
-                "residential_buildings"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Develop and support housing projects that incorporate energy-efficient designs and technologies, reducing energy costs for low-income households.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 2,
-                "housing": 2,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": "60-79",
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Availability of funding or subsidies to support the development of energy-efficient housing for low-income households",
-                "Collaboration with architects, engineers, and contractors to design and implement energy-efficient technologies in housing projects",
-                "Development of policies and regulations to incentivize energy-efficient housing solutions and ensure affordability for low-income communities"
-            ],
-            "KeyPerformanceIndicators": [
-                "Number of energy-efficient housing units built or retrofitted.",
-                "Reduction in household energy consumption (kWh).",
-                "Decrease in energy bills for low-income households (USD)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR POA",
-        "cityName": "Porto Alegre",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0094",
-        "actionName": "Adoption of biomethane in public fleets.",
-        "actionPriority": 6,
-        "action": {
-            "ActionID": "icare_0094",
-            "ActionName": "Adoption of biomethane in public fleets.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Use biomethane produced from urban and agro-industrial waste to fuel public buses and trucks, reducing greenhouse gas emissions in municipal fleets",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 1,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Development of infrastructure for the production, processing, and distribution of biomethane from urban and agro-industrial waste.",
-                "Retrofitting or acquisition of public buses and trucks capable of using biomethane as a fuel source.",
-                "Establishment of policies and financial incentives to support biomethane production and its integration into municipal fleets."
-            ],
-            "KeyPerformanceIndicators": [
-                "Cost savings in fleet operation due to biomethane use (USD/year).",
-                "Increase in biomethane production capacity (%).",
-                "Percentage of biomethane sourced locally versus imported."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR POA",
-        "cityName": "Porto Alegre",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0092",
-        "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
-        "actionPriority": 7,
-        "action": {
-            "ActionID": "icare_0092",
-            "ActionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Create small-scale logistics hubs in urban neighborhoods to facilitate deliveries using electric cargo bikes, while implementing tax incentives or subsidies for businesses to adopt these bikes as a transportation mode, reducing emissions and improving delivery efficiency in densely populated areas.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "20-39",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Identification and development of suitable locations for small-scale logistics hubs within urban neighborhoods.",
-                "Provision of tax incentives, subsidies, or grants to encourage businesses to transition to electric cargo bikes.",
-                "Establishment of partnerships with logistics companies to ensure integration and efficiency in delivery operations using these hubs."
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in distance traveled by traditional delivery vehicles (km/year).",
-                "Increase in operational efficiency of logistics hubs (%).",
-                "Number of businesses utilizing micro-logistics hubs for deliveries."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR POA",
-        "cityName": "Porto Alegre",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0057",
-        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
-        "actionPriority": 8,
-        "action": {
-            "ActionID": "icare_0057",
-            "ActionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "railways"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "These systems offer high capacity and low emissions, crucial for cities with high population density.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 2,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "80-100",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Investment in the development and expansion of high-capacity public transportation infrastructure, such as electric buses and metro systems.",
-                "Implementation of policies and incentives to encourage the use of public transport over private vehicles.",
-                "Integration of renewable energy sources to power these systems, reducing emissions further."
-            ],
-            "KeyPerformanceIndicators": [
-                "Length of new transit lines built (km/year).",
-                "Reduction in road traffic congestion (%).",
-                "Reduction in private vehicle usage (number of trips avoided/year)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR POA",
-        "cityName": "Porto Alegre",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0090",
-        "actionName": "Adoption of electric drones for last-mile deliveries.",
-        "actionPriority": 9,
-        "action": {
-            "ActionID": "icare_0090",
-            "ActionName": "Adoption of electric drones for last-mile deliveries.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "off-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Replace traditional vehicles with electric drones for short-distance deliveries in urban centers, reducing emissions and traffic congestion.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Development of urban airspace regulations to ensure the safe and efficient operation of delivery drones.",
-                "Investment in charging and maintenance infrastructure to support a fleet of electric drones.",
-                "Collaboration with logistics companies to integrate drones into last-mile delivery networks."
-            ],
-            "KeyPerformanceIndicators": [
-                "Delivery time reduction compared to traditional methods (minutes).",
-                "Increase in customer satisfaction with drone deliveries (%).",
-                "Reduction in traffic congestion caused by delivery vehicles (%)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
         }
     },
     {
@@ -546,7 +253,7 @@
         "regionName": "Rio Grande do Sul",
         "actionId": "icare_0068",
         "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
-        "actionPriority": 10,
+        "actionPriority": 5,
         "action": {
             "ActionID": "icare_0068",
             "ActionName": "Deploy on-demand transport systems with 100% electric fleets.",
@@ -596,7 +303,317 @@
             ],
             "PowersAndMandates": [
                 "local"
-            ]
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR POA",
+        "cityName": "Porto Alegre",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0088",
+        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
+        "actionPriority": 6,
+        "action": {
+            "ActionID": "icare_0088",
+            "ActionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "on-road"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Encourage the use of public transportation by offering free services during peak hours for workers and students. This measure reduces urban congestion, decreases the number of individual vehicles on the road, and consequently lowers greenhouse gas emissions associated with private transportation.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 2,
+                "housing": 0,
+                "mobility": 2,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "60-79",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Allocation of funding to subsidize free public transportation services during peak hours.",
+                "Development of policies to ensure the sustainability and efficiency of public transit systems amid increased demand.",
+                "Coordination with employers and educational institutions to optimize peak-hour schedules and promote the initiative."
+            ],
+            "KeyPerformanceIndicators": [
+                "Reduction in air pollution levels during peak hours (PM2.5/PM10 concentration).",
+                "Number of private vehicles removed from roads during peak hours.",
+                "Public satisfaction rate with the free transportation initiative (%)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR POA",
+        "cityName": "Porto Alegre",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0094",
+        "actionName": "Adoption of biomethane in public fleets.",
+        "actionPriority": 7,
+        "action": {
+            "ActionID": "icare_0094",
+            "ActionName": "Adoption of biomethane in public fleets.",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "on-road"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Use biomethane produced from urban and agro-industrial waste to fuel public buses and trucks, reducing greenhouse gas emissions in municipal fleets",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 1,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 1,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "60-79",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Development of infrastructure for the production, processing, and distribution of biomethane from urban and agro-industrial waste.",
+                "Retrofitting or acquisition of public buses and trucks capable of using biomethane as a fuel source.",
+                "Establishment of policies and financial incentives to support biomethane production and its integration into municipal fleets."
+            ],
+            "KeyPerformanceIndicators": [
+                "Cost savings in fleet operation due to biomethane use (USD/year).",
+                "Increase in biomethane production capacity (%).",
+                "Percentage of biomethane sourced locally versus imported."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR POA",
+        "cityName": "Porto Alegre",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0038",
+        "actionName": "Promote community solar farms",
+        "actionPriority": 8,
+        "action": {
+            "ActionID": "icare_0038",
+            "ActionName": "Promote community solar farms",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "stationary_energy"
+            ],
+            "Subsector": [
+                "energy_generation_supplied_to_the_grid"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Develop and encourage the adoption of shared solar energy projects, enabling communities to collectively benefit from clean, renewable power.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 1,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 1,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": "80-100",
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Development of policies and regulatory frameworks to support community-based shared solar energy projects and ensure equitable access to clean energy",
+                "Availability of financial mechanisms or incentives to help communities invest in and maintain shared solar energy systems",
+                "Collaboration between local governments, energy providers, and community organizations to design and implement shared solar projects effectively"
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of households served by community solar projects.",
+                "GHG emissions avoided through solar energy production (tons CO\u2082e)"
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR POA",
+        "cityName": "Porto Alegre",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0033",
+        "actionName": "Install biodigesters in rural properties",
+        "actionPriority": 9,
+        "action": {
+            "ActionID": "icare_0033",
+            "ActionName": "Install biodigesters in rural properties",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "stationary_energy"
+            ],
+            "Subsector": [
+                "agriculture_forestry_and_fishing_activities"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Equip rural farms and properties with biodigesters to convert organic waste into biogas and nutrient-rich fertilizers, providing a sustainable energy source.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": "80-100",
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Availability of funding or subsidies to support the installation of biodigesters on rural farms and properties",
+                "Access to technical expertise for the design, installation, and maintenance of biodigesters",
+                "Development of a supportive regulatory framework that encourages the use of biogas and organic waste management systems in rural agriculture"
+            ],
+            "KeyPerformanceIndicators": [
+                "Volume of biogas generated (m\u00b3/year).",
+                "GHG emissions avoided by replacing fossil fuels (tons CO\u2082e)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR POA",
+        "cityName": "Porto Alegre",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0029",
+        "actionName": "Adopt policies for fossil fuel-free buildings",
+        "actionPriority": 10,
+        "action": {
+            "ActionID": "icare_0029",
+            "ActionName": "Adopt policies for fossil fuel-free buildings",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "stationary_energy"
+            ],
+            "Subsector": [
+                "residential_buildings"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Enforce regulations requiring new constructions to utilize renewable energy systems, energy-efficient designs, and zero-emission technologies.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 1,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": "80-100",
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Development of building codes and regulatory frameworks that mandate the integration of renewable energy systems and energy-efficient designs in new constructions",
+                "Availability of incentives or support for developers to comply with regulations and adopt zero-emission technologies",
+                "Technical expertise and resources to ensure proper implementation and monitoring of renewable energy systems and energy-efficient designs in construction projects"
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of buildings transitioning to renewable energy sources.",
+                "Total reduction in fossil fuel use for heating/cooling (m\u00b3 or liters).",
+                "Decrease in building-related GHG emissions (tons CO\u2082e)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
         }
     },
     {
@@ -656,7 +673,9 @@
             ],
             "PowersAndMandates": [
                 "local"
-            ]
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
         }
     },
     {
@@ -664,260 +683,12 @@
         "cityName": "Porto Alegre",
         "region": "RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0042",
-        "actionName": "Encourage renewable energy policies at the municipal level",
+        "actionId": "icare_0040",
+        "actionName": "Adopt solar-powered street lighting in rural areas",
         "actionPriority": 12,
         "action": {
-            "ActionID": "icare_0042",
-            "ActionName": "Encourage renewable energy policies at the municipal level",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "stationary_energy"
-            ],
-            "Subsector": [
-                "non-specified_sources"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Advocate for and implement policies that prioritize the development and integration of renewable energy systems in local government operations and planning.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 1,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": "80-100",
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Political will and leadership to prioritize renewable energy in local government policies and planning processes",
-                "Development of clear policies and regulatory frameworks that facilitate the integration of renewable energy systems into government operations",
-                "Availability of funding or financial mechanisms to support the transition to renewable energy in municipal infrastructure and operations"
-            ],
-            "KeyPerformanceIndicators": [
-                "Number of renewable energy projects approved or initiated annually at the municipal level.",
-                "Percentage of municipal energy demand met by renewable sources (%).",
-                "Reduction in municipal carbon emissions due to --renewable energy adoption (tons CO\u2082e/year)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR POA",
-        "cityName": "Porto Alegre",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "c40_0033",
-        "actionName": "15/30-Minute Areas",
-        "actionPriority": 13,
-        "action": {
-            "ActionID": "c40_0033",
-            "ActionName": "15/30-Minute Areas",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "all"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "\"15/30-Minute Areas\" refer to the development of complete neighborhoods where essential services, amenities, and public transport are easily accessible within a 15 or 30-minute walk or bike ride. This urban planning approach promotes sustainability by reducing the need for long-distance travel and fostering community resilience.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "The \"15/30-Minute Areas\" climate action promotes equity and inclusion by ensuring that essential services and amenities are accessible to all community members, particularly benefiting vulnerable or underserved populations who may lack reliable transportation. By designing neighborhoods where key resources are within a short walking or biking distance, this approach reduces barriers to access for low-income individuals, the elderly, and those with disabilities. \n \n Additionally, the focus on public transport integration enhances mobility options for those who may not own a vehicle, further supporting equitable access to jobs, education, and healthcare. The development of complete neighborhoods fosters a sense of community and belonging, encouraging social interactions among diverse groups and promoting inclusivity. Overall, this urban planning strategy actively addresses the needs of marginalized communities, ensuring they are not left behind in the transition to sustainable living.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "0-19",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Availability of essential services and amenities within walking or biking distance",
-                "Investment in public transport infrastructure",
-                "Community engagement and support for local planning initiatives",
-                "Zoning regulations that promote mixed-use development",
-                "Sustainable urban design principles that prioritize walkability and bikeability",
-                "Collaboration between local government, urban planners, and residents"
-            ],
-            "KeyPerformanceIndicators": [
-                "Percentage of residents within 15/30-minute reach of essential services",
-                "Reduction in average commuting distance",
-                "Increase in active transportation (walking/biking) rates",
-                "Public transport usage rates",
-                "Reduction in greenhouse gas emissions from transportation",
-                "Community satisfaction with local amenities",
-                "Number of new businesses established within 15/30-minute areas",
-                "Increase in green spaces per capita",
-                "Frequency of community events and engagement activities",
-                "Change in property values in 15/30-minute areas"
-            ],
-            "PowersAndMandates": null
-        }
-    },
-    {
-        "locode": "BR POA",
-        "cityName": "Porto Alegre",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0117",
-        "actionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
-        "actionPriority": 14,
-        "action": {
-            "ActionID": "icare_0117",
-            "ActionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Increase the quality of transportation service delivery, aiming at the modal shift of passengers from private motorized transport to public transport, thereby reducing emissions generated by cars and motorcycles.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Improve the quality of public transportation services to attract passengers from private motorized transport.",
-                "Implement policies and infrastructure that support and enhance the efficiency of public transportation systems.",
-                "Promote awareness of the environmental benefits of public transport to encourage a modal shift and reduce emissions."
-            ],
-            "KeyPerformanceIndicators": [
-                "Annual increase in the number of passengers using the municipal bus system.",
-                "Percentage of bus routes with improved travel time reliability.",
-                "Estimated reduction in CO\u2082 equivalent emissions due to increased public transportation use."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR POA",
-        "cityName": "Porto Alegre",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0024",
-        "actionName": "Integrate renewables into municipal water systems",
-        "actionPriority": 15,
-        "action": {
-            "ActionID": "icare_0024",
-            "ActionName": "Integrate renewables into municipal water systems",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "stationary_energy"
-            ],
-            "Subsector": [
-                "energy_generation_supplied_to_the_grid"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Implement renewable energy sources, such as solar or wind power, to drive water treatment, pumping, and distribution systems, reducing energy costs and emissions.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": "80-100",
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Availability of funding or financial incentives to integrate renewable energy sources like solar or wind power into water treatment and distribution systems",
-                "Technical expertise and infrastructure to retrofit existing systems with renewable energy solutions or design new facilities powered by renewables",
-                "Policy and regulatory support to encourage the use of clean energy in water systems and ensure its integration into municipal energy grids"
-            ],
-            "KeyPerformanceIndicators": [
-                "Percentage of municipal water systems powered by renewables.",
-                "Reduction in energy consumption from non-renewable sources (kWh/year).",
-                "GHG emissions avoided (tons CO\u2082e)"
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR POA",
-        "cityName": "Porto Alegre",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0029",
-        "actionName": "Adopt policies for fossil fuel-free buildings",
-        "actionPriority": 16,
-        "action": {
-            "ActionID": "icare_0029",
-            "ActionName": "Adopt policies for fossil fuel-free buildings",
+            "ActionID": "icare_0040",
+            "ActionName": "Adopt solar-powered street lighting in rural areas",
             "ActionType": [
                 "mitigation"
             ],
@@ -931,14 +702,14 @@
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "Description": "Enforce regulations requiring new constructions to utilize renewable energy systems, energy-efficient designs, and zero-emission technologies.",
+            "Description": "Install solar-powered streetlights to improve safety and accessibility in rural communities while reducing energy costs and environmental impact.",
             "CoBenefits": {
                 "air_quality": 2,
                 "water_quality": 0,
                 "habitat": 0,
                 "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 0,
+                "housing": 0,
+                "mobility": 1,
                 "stakeholder_engagement": 1
             },
             "EquityAndInclusionConsiderations": null,
@@ -953,18 +724,337 @@
             "CostInvestmentNeeded": "medium",
             "TimelineForImplementation": "5-10 years",
             "Dependencies": [
-                "Development of building codes and regulatory frameworks that mandate the integration of renewable energy systems and energy-efficient designs in new constructions",
-                "Availability of incentives or support for developers to comply with regulations and adopt zero-emission technologies",
-                "Technical expertise and resources to ensure proper implementation and monitoring of renewable energy systems and energy-efficient designs in construction projects"
+                "Availability of funding or financial mechanisms to support the installation of solar-powered streetlights in rural communities",
+                "Access to technical expertise to design, install, and maintain solar-powered street lighting systems",
+                "Collaboration with local governments and communities to ensure the integration of solar streetlights into existing infrastructure and energy plans"
             ],
             "KeyPerformanceIndicators": [
-                "Number of buildings transitioning to renewable energy sources.",
-                "Total reduction in fossil fuel use for heating/cooling (m\u00b3 or liters).",
-                "Decrease in building-related GHG emissions (tons CO\u2082e)."
+                "Percentage of streetlights powered by solar energy.",
+                "Annual reduction in electricity consumption (kWh).",
+                "GHG emissions avoided (tons CO\u2082e)."
             ],
             "PowersAndMandates": [
                 "local"
-            ]
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR POA",
+        "cityName": "Porto Alegre",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "c40_0026",
+        "actionName": "Vehicle Emissions",
+        "actionPriority": 13,
+        "action": {
+            "ActionID": "c40_0026",
+            "ActionName": "Vehicle Emissions",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "on-road"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "\"Vehicle Emissions\" reduction strategies focus on minimizing the environmental impact of all types of vehicles. Implementing cleaner technologies and promoting alternative fuels contribute to lower emissions, fostering sustainable and eco-friendly transportation.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": "The \"Vehicle Emissions\" reduction strategies inherently promote equity and inclusion by addressing the environmental impacts that disproportionately affect vulnerable and underserved communities. These communities often experience higher levels of air pollution and related health issues due to proximity to high-traffic areas and industrial zones. By implementing cleaner technologies and promoting alternative fuels, the action directly benefits these populations by improving air quality and reducing health risks.\n \n Additionally, the focus on sustainable and eco-friendly transportation can enhance access to affordable and efficient transportation options for underserved communities, which may lack reliable public transit. This inclusivity ensures that all community members, regardless of socioeconomic status, can benefit from cleaner air and improved public health outcomes. Overall, the action recognizes and addresses the specific needs of vulnerable populations, fostering a more equitable approach to climate action.",
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "80-100",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Development and availability of cleaner vehicle technologies",
+                "Infrastructure for alternative fuel distribution",
+                "Government policies and regulations supporting emissions reduction",
+                "Public awareness and acceptance of eco-friendly transportation options",
+                "Investment in research and development for sustainable transportation solutions"
+            ],
+            "KeyPerformanceIndicators": [
+                "Reduction in vehicle emissions (CO2, NOx, PM)",
+                "Percentage of vehicles using alternative fuels",
+                "Number of electric vehicles on the road",
+                "Fuel efficiency improvements (miles per gallon)",
+                "Adoption rate of cleaner technologies",
+                "Reduction in fossil fuel consumption",
+                "Public transportation usage rates",
+                "Air quality index improvements",
+                "Percentage of low-emission zones established",
+                "Investment in sustainable transportation infrastructure"
+            ],
+            "PowersAndMandates": null,
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR POA",
+        "cityName": "Porto Alegre",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0090",
+        "actionName": "Adoption of electric drones for last-mile deliveries.",
+        "actionPriority": 14,
+        "action": {
+            "ActionID": "icare_0090",
+            "ActionName": "Adoption of electric drones for last-mile deliveries.",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "off-road"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Replace traditional vehicles with electric drones for short-distance deliveries in urban centers, reducing emissions and traffic congestion.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 1,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "60-79",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Development of urban airspace regulations to ensure the safe and efficient operation of delivery drones.",
+                "Investment in charging and maintenance infrastructure to support a fleet of electric drones.",
+                "Collaboration with logistics companies to integrate drones into last-mile delivery networks."
+            ],
+            "KeyPerformanceIndicators": [
+                "Delivery time reduction compared to traditional methods (minutes).",
+                "Increase in customer satisfaction with drone deliveries (%).",
+                "Reduction in traffic congestion caused by delivery vehicles (%)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR POA",
+        "cityName": "Porto Alegre",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0097",
+        "actionName": "Support Distributed Energy Generation in Residences and Businesses",
+        "actionPriority": 15,
+        "action": {
+            "ActionID": "icare_0097",
+            "ActionName": "Support Distributed Energy Generation in Residences and Businesses",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "stationary_energy"
+            ],
+            "Subsector": [
+                "residential_buildings"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Facilitate the use of solar panels and other renewable energy technologies in homes and commercial buildings.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 1,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": "60-79",
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Provide financial incentives, clear installation regulations, and access to affordable technologies for solar panels.",
+                "Launch public awareness campaigns and offer training for homeowners and businesses.",
+                "Encourage adoption of renewable energy technologies to promote long-term energy savings."
+            ],
+            "KeyPerformanceIndicators": [
+                "Installed capacity of distributed energy generation (MW).",
+                "Percentage of homes and businesses generating their own energy (%).",
+                "Reduction in CO\u2082 emissions through distributed generation (tCO\u2082e/year)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR POA",
+        "cityName": "Porto Alegre",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0057",
+        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
+        "actionPriority": 16,
+        "action": {
+            "ActionID": "icare_0057",
+            "ActionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "railways"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "These systems offer high capacity and low emissions, crucial for cities with high population density.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 1,
+                "mobility": 2,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "80-100",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "high",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Investment in the development and expansion of high-capacity public transportation infrastructure, such as electric buses and metro systems.",
+                "Implementation of policies and incentives to encourage the use of public transport over private vehicles.",
+                "Integration of renewable energy sources to power these systems, reducing emissions further."
+            ],
+            "KeyPerformanceIndicators": [
+                "Length of new transit lines built (km/year).",
+                "Reduction in road traffic congestion (%).",
+                "Reduction in private vehicle usage (number of trips avoided/year)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR POA",
+        "cityName": "Porto Alegre",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0005",
+        "actionName": "Create credit lines for residential and community wind energy projects",
+        "actionPriority": 17,
+        "action": {
+            "ActionID": "icare_0005",
+            "ActionName": "Create credit lines for residential and community wind energy projects",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "stationary_energy"
+            ],
+            "Subsector": [
+                "energy_generation_supplied_to_the_grid"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Establish accessible financing programs to support the development and adoption of wind energy systems in households and community-based projects, enabling a transition to cleaner energy sources.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 2,
+                "housing": 2,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": "60-79",
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Availability of financial programs, grants, or subsidies to make wind energy systems affordable for households and community projects",
+                "Access to technical expertise and resources to guide the installation and maintenance of wind energy systems in residential and community settings",
+                "Policy and regulatory support to encourage the adoption of wind energy, including streamlined permitting processes and incentives for clean energy projects"
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of wind energy projects financed annually.",
+                "Installed capacity of wind energy systems from credit-supported projects (MW).",
+                "Estimated reduction in CO\u2082 equivalent emissions from wind energy adoption."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
         }
     },
     {
@@ -974,7 +1064,7 @@
         "regionName": "Rio Grande do Sul",
         "actionId": "icare_0131",
         "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
-        "actionPriority": 17,
+        "actionPriority": 18,
         "action": {
             "ActionID": "icare_0131",
             "ActionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
@@ -1024,7 +1114,9 @@
             ],
             "PowersAndMandates": [
                 "local"
-            ]
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
         }
     },
     {
@@ -1032,12 +1124,74 @@
         "cityName": "Porto Alegre",
         "region": "RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0027",
-        "actionName": "Create financing programs for local renewable energy projects",
-        "actionPriority": 18,
+        "actionId": "icare_0011",
+        "actionName": "Provide tax incentives for renewable energy in residential projects",
+        "actionPriority": 19,
         "action": {
-            "ActionID": "icare_0027",
-            "ActionName": "Create financing programs for local renewable energy projects",
+            "ActionID": "icare_0011",
+            "ActionName": "Provide tax incentives for renewable energy in residential projects",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "stationary_energy"
+            ],
+            "Subsector": [
+                "residential_buildings"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Encourage homeowners to adopt solar, wind, and other clean energy sources.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 2,
+                "housing": 1,
+                "mobility": 0,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": "60-79",
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Availability of financial incentives, subsidies, or tax credits to encourage homeowners to install solar, wind, and other clean energy systems",
+                "Access to information and educational resources to help homeowners understand the benefits, costs, and installation processes for clean energy systems",
+                "Development of supportive regulations and policies that facilitate the installation of renewable energy technologies in residential areas"
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of households benefiting from tax incentives for renewable energy adoption.",
+                "Annual increase in renewable energy installations in residential projects.",
+                "Estimated reduction in CO\u2082 equivalent emissions from renewable energy adoption."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR POA",
+        "cityName": "Porto Alegre",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0105",
+        "actionName": "Reduce technical losses in energy distribution networks",
+        "actionPriority": 20,
+        "action": {
+            "ActionID": "icare_0105",
+            "ActionName": "Reduce technical losses in energy distribution networks",
             "ActionType": [
                 "mitigation"
             ],
@@ -1051,73 +1205,13 @@
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "Description": "Establish funding mechanisms, such as grants and low-interest loans, to support the development of small-scale renewable energy initiatives in communities.",
+            "Description": "Upgrade and maintain electrical infrastructure to minimize energy lost during transmission and distribution, improving overall grid efficiency.",
             "CoBenefits": {
                 "air_quality": 2,
                 "water_quality": 0,
                 "habitat": 0,
-                "cost_of_living": 2,
-                "housing": 1,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": "60-79",
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Development of accessible financial mechanisms, including grants and low-interest loans, to support small-scale renewable energy projects in communities",
-                "Collaboration with financial institutions and local governments to ensure the effective disbursement and management of funding for renewable energy initiatives",
-                "Clear guidelines and support for community organizations and local businesses to access funding and successfully implement renewable energy projects"
-            ],
-            "KeyPerformanceIndicators": [
-                "Total funds allocated for renewable energy projects (USD).",
-                "Number of projects financed annually.",
-                "Increase in renewable energy capacity installed (MW)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR POA",
-        "cityName": "Porto Alegre",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0038",
-        "actionName": "Promote community solar farms",
-        "actionPriority": 19,
-        "action": {
-            "ActionID": "icare_0038",
-            "ActionName": "Promote community solar farms",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "stationary_energy"
-            ],
-            "Subsector": [
-                "energy_generation_supplied_to_the_grid"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Develop and encourage the adoption of shared solar energy projects, enabling communities to collectively benefit from clean, renewable power.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 1,
-                "habitat": 0,
                 "cost_of_living": 1,
-                "housing": 1,
+                "housing": 0,
                 "mobility": 0,
                 "stakeholder_engagement": 1
             },
@@ -1133,77 +1227,20 @@
             "CostInvestmentNeeded": "medium",
             "TimelineForImplementation": "5-10 years",
             "Dependencies": [
-                "Development of policies and regulatory frameworks to support community-based shared solar energy projects and ensure equitable access to clean energy",
-                "Availability of financial mechanisms or incentives to help communities invest in and maintain shared solar energy systems",
-                "Collaboration between local governments, energy providers, and community organizations to design and implement shared solar projects effectively"
+                "Availability of funding to invest in modernizing electrical infrastructure and upgrading transmission and distribution networks",
+                "Access to technical expertise for implementing upgrades that reduce energy losses and improve grid efficiency",
+                "Policy and regulatory frameworks to ensure ongoing maintenance and integration of energy-efficient technologies into the grid infrastructure"
             ],
             "KeyPerformanceIndicators": [
-                "Number of households served by community solar projects.",
-                "GHG emissions avoided through solar energy production (tons CO\u2082e)"
+                "Percentage reduction in technical losses from baseline (%).",
+                "Energy savings achieved annually (kWh).",
+                "GHG emissions avoided through reduced energy losses (tons CO\u2082e)."
             ],
             "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR POA",
-        "cityName": "Porto Alegre",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0099",
-        "actionName": "Support Agroecological Certification Programs",
-        "actionPriority": 20,
-        "action": {
-            "ActionID": "icare_0099",
-            "ActionName": "Support Agroecological Certification Programs",
-            "ActionType": [
-                "mitigation"
+                "state"
             ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Encourage the certification of agroecological products that meet sustainability criteria and have low environmental impact.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "20-39"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Development of clear and accessible certification standards for agroecological products that emphasize sustainability and low environmental impact.",
-                "Support for farmers and producers to meet certification requirements through training, financial assistance, or technical guidance.",
-                "Creation of marketing strategies and partnerships to increase the visibility and demand for certified agroecological products in local and global markets."
-            ],
-            "KeyPerformanceIndicators": [
-                "Number of farmers or producers obtaining agroecological certifications.",
-                "Percentage of certified agricultural products in the market (%).",
-                "Reduction in the use of synthetic inputs (e.g., fertilizers, pesticides)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
         }
     }
 ]

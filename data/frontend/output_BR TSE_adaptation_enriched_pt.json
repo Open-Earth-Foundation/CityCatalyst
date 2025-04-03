@@ -56,7 +56,18 @@
             ],
             "PowersAndMandates": [
                 "local"
-            ]
+            ],
+            "AdaptationEffectivenessPerHazard": {
+                "storms": "medium",
+                "sea-level-rise": "medium",
+                "wildfires": "medium",
+                "floods": "medium",
+                "landslides": "medium",
+                "diseases": "medium",
+                "heatwaves": "medium",
+                "droughts": "medium"
+            },
+            "biome": "none"
         }
     },
     {
@@ -64,51 +75,461 @@
         "cityName": "Tangar\u00e1 da Serra",
         "region": "MT",
         "regionName": "Mato Grosso",
-        "actionId": "icare_0154",
-        "actionName": "Cleaning and Unclogging of Channels with Installation of Eco-barriers",
+        "actionId": "ipcc_0097",
+        "actionName": "Food storage/distribution improvements",
         "actionPriority": 2,
         "explanation": "Ranked #2 by tournament ranking algorithm",
         "action": {
-            "ActionID": "icare_0154",
-            "ActionName": "Limpeza e Desobstru\u00e7\u00e3o de Canais com Instala\u00e7\u00e3o de Eco-barreiras",
+            "ActionID": "ipcc_0097",
+            "ActionName": "Melhorias no armazenamento/distribui\u00e7\u00e3o de alimentos",
             "ActionType": [
                 "adaptation"
             ],
             "Hazard": [
-                "floods"
+                "droughts",
+                "floods",
+                "storms",
+                "heatwaves"
+            ],
+            "Sector": [
+                "food_security",
+                "road_infrastructure"
+            ],
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Aprimorar os sistemas de armazenamento e distribui\u00e7\u00e3o de alimentos melhorando a infraestrutura de transporte, otimizando redes de com\u00e9rcio e encurtando cadeias de suprimento para garantir a disponibilidade local de alimentos e resili\u00eancia aos impactos clim\u00e1ticos. Esta a\u00e7\u00e3o tamb\u00e9m inclui aumentar a capacidade das instala\u00e7\u00f5es locais de armazenamento de alimentos para reduzir perdas p\u00f3s-colheita, abordar inefici\u00eancias na log\u00edstica e refor\u00e7ar a infraestrutura para produtos perec\u00edveis. O objetivo \u00e9 melhorar a seguran\u00e7a alimentar e reduzir a vulnerabilidade a eventos extremos, interrup\u00e7\u00f5es e impactos em cascata, especialmente durante pandemias e outras crises.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 2,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": "Apoia o acesso equitativo a alimentos para popula\u00e7\u00f5es marginalizadas e vulner\u00e1veis, priorizando a produ\u00e7\u00e3o local de alimentos e melhorando os sistemas de distribui\u00e7\u00e3o que alcan\u00e7am \u00e1reas desatendidas.",
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Investimento em infraestrutura",
+                "Incentivos pol\u00edticos para a produ\u00e7\u00e3o local de alimentos",
+                "Colabora\u00e7\u00e3o com os setores de log\u00edstica e com\u00e9rcio",
+                "Tecnologia para otimiza\u00e7\u00e3o da cadeia de suprimentos"
+            ],
+            "KeyPerformanceIndicators": [
+                "Redu\u00e7\u00e3o das perdas p\u00f3s-colheita",
+                "Aumento da disponibilidade de alimentos locais",
+                "Melhoria da efici\u00eancia do transporte para distribui\u00e7\u00e3o de alimentos",
+                "Cadeias de abastecimento encurtadas"
+            ],
+            "PowersAndMandates": null,
+            "AdaptationEffectivenessPerHazard": {
+                "droughts": "high",
+                "floods": "high",
+                "storms": "high",
+                "heatwaves": "high"
+            },
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR TSE",
+        "cityName": "Tangar\u00e1 da Serra",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "ipcc_0096",
+        "actionName": "Farm/fishery improvements",
+        "actionPriority": 3,
+        "explanation": "Ranked #3 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "ipcc_0096",
+            "ActionName": "Melhorias na fazenda/pesqueira",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "droughts",
+                "heatwaves",
+                "floods",
+                "wildfires",
+                "storms"
+            ],
+            "Sector": [
+                "food_security",
+                "biodiversity",
+                "water_resources"
+            ],
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Implementar uma variedade de estrat\u00e9gias para adaptar fazendas e pescarias aos impactos clim\u00e1ticos. Isso inclui mudar o equipamento de pesca ou a pot\u00eancia dos barcos, adotar novas variedades de culturas ou ajustar os cronogramas de plantio, melhorar os esquemas de irriga\u00e7\u00e3o, integrar sistemas de cultivo e pecu\u00e1ria, realocar o gado com manejo de pastagens melhorado e adotar sistemas agroecol\u00f3gicos e agroflorestais. Inova\u00e7\u00f5es tecnol\u00f3gicas como a agricultura inteligente e medidas financeiras como subs\u00eddios apoiam essas adapta\u00e7\u00f5es.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": "Garante o acesso a recursos para agricultores e pescadores marginalizados, promove op\u00e7\u00f5es diversificadas de subsist\u00eancia e fortalece a resili\u00eancia em comunidades desfavorecidas.",
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Apoio pol\u00edtico para agricultura e pesca resilientes ao clima",
+                "Acesso a financiamento e subs\u00eddios",
+                "Treinamento para ado\u00e7\u00e3o de novas pr\u00e1ticas",
+                "Infraestrutura de mercado melhorada"
+            ],
+            "KeyPerformanceIndicators": [
+                "Aumento na produtividade agr\u00edcola e pesqueira",
+                "Taxa de ado\u00e7\u00e3o de sistemas integrados",
+                "Redu\u00e7\u00e3o nas perdas de rendimento relacionadas ao clima"
+            ],
+            "PowersAndMandates": null,
+            "AdaptationEffectivenessPerHazard": {
+                "droughts": "high",
+                "heatwaves": "high",
+                "floods": "medium",
+                "wildfires": "low",
+                "storms": "medium"
+            },
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR TSE",
+        "cityName": "Tangar\u00e1 da Serra",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "ipcc_0094",
+        "actionName": "Access to health care",
+        "actionPriority": 4,
+        "explanation": "Ranked #4 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "ipcc_0094",
+            "ActionName": "Acesso aos cuidados de sa\u00fade",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "heatwaves",
+                "floods",
+                "droughts"
+            ],
+            "Sector": [
+                "public_health",
+                "water_resources"
+            ],
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Melhorar o acesso aos servi\u00e7os de sa\u00fade, incluindo servi\u00e7os de sa\u00fade e nutri\u00e7\u00e3o, \u00e1gua limpa, saneamento e recursos de sa\u00fade mental culturalmente apropriados. A expans\u00e3o das capacidades de telemedicina permite uma entrega eficiente de servi\u00e7os de sa\u00fade, especialmente para popula\u00e7\u00f5es remotas e carentes. Fortalecer os sistemas b\u00e1sicos de sa\u00fade p\u00fablica e a prepara\u00e7\u00e3o para desastres pode reduzir rapidamente a vulnerabilidade aos riscos de sa\u00fade relacionados ao clima.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 2,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 1,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": "Promove o acesso equitativo aos cuidados de sa\u00fade para grupos marginalizados e vulner\u00e1veis, incluindo popula\u00e7\u00f5es sem-teto, comunidades remotas e aqueles afetados por desigualdades habitacionais.",
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Investimento em tecnologias de telemedicina",
+                "Governan\u00e7a fortalecida dos sistemas de sa\u00fade p\u00fablica",
+                "Capacita\u00e7\u00e3o para trabalhadores da sa\u00fade",
+                "Melhorias na infraestrutura das instala\u00e7\u00f5es de sa\u00fade"
+            ],
+            "KeyPerformanceIndicators": [
+                "Redu\u00e7\u00e3o na mortalidade relacionada ao clima",
+                "Aumento no acesso \u00e0 telemedicina",
+                "N\u00famero de programas de sa\u00fade adaptados culturalmente implementados",
+                "Melhoria nas m\u00e9tricas de acesso \u00e0 \u00e1gua e saneamento"
+            ],
+            "PowersAndMandates": null,
+            "AdaptationEffectivenessPerHazard": {
+                "heatwaves": "high",
+                "floods": "high",
+                "droughts": "high"
+            },
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR TSE",
+        "cityName": "Tangar\u00e1 da Serra",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0151",
+        "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
+        "actionPriority": 5,
+        "explanation": "Ranked #5 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "icare_0151",
+            "ActionName": "Desenvolver diagn\u00f3sticos e restaurar \u00e1reas de Zonas Especiais de Interesse Social (ZEIS)",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "sea-level-rise",
+                "floods",
+                "landslides",
+                "diseases",
+                "heatwaves"
             ],
             "Sector": null,
             "Subsector": null,
             "PrimaryPurpose": [
                 "climate_resilience"
             ],
-            "Description": "Limpeza e desobstru\u00e7\u00e3o de canais na cidade para reduzir o risco de inunda\u00e7\u00f5es causadas por eventos de chuvas extremas. Instala\u00e7\u00e3o de eco-barreiras para auxiliar nos esfor\u00e7os de limpeza e aumentar a conscientiza\u00e7\u00e3o sobre res\u00edduos s\u00f3lidos.",
+            "Description": "Prioridade para \u00e1reas ZEIS nas a\u00e7\u00f5es de melhoria habitacional e na aplica\u00e7\u00e3o de recursos do Fundo de Urbaniza\u00e7\u00e3o, com a implementa\u00e7\u00e3o de infraestrutura urbana que considere a adapta\u00e7\u00e3o clim\u00e1tica nesses espa\u00e7os. Uso de Solu\u00e7\u00f5es Baseadas na Natureza (NbS) na adapta\u00e7\u00e3o do saneamento ambiental e infraestruturas verdes e azuis que potencializem o lazer, a cultura, a agricultura urbana e atividades para fortalecer associa\u00e7\u00f5es comunit\u00e1rias.",
             "CoBenefits": {
                 "air_quality": 1,
-                "water_quality": 2,
+                "water_quality": 1,
                 "habitat": 1,
                 "cost_of_living": 1,
-                "housing": 1,
+                "housing": 2,
                 "mobility": 1,
-                "stakeholder_engagement": 1
+                "stakeholder_engagement": 2
             },
             "EquityAndInclusionConsiderations": null,
             "GHGReductionPotential": null,
             "AdaptationEffectiveness": "medium",
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
             "Dependencies": [
-                "Manuten\u00e7\u00e3o regular",
-                "Pr\u00e1ticas adequadas de gest\u00e3o de res\u00edduos"
+                "Disponibilidade de financiamento do Fundo de Urbaniza\u00e7\u00e3o e de outros mecanismos financeiros para apoiar melhorias habitacionais e infraestrutura urbana em \u00e1reas ZEIS",
+                "Colabora\u00e7\u00e3o entre planejadores urbanos, especialistas ambientais e comunidades locais para projetar e implementar solu\u00e7\u00f5es baseadas na natureza (NbS) para infraestrutura urbana",
+                "Pol\u00edticas e estruturas regulat\u00f3rias que integrem medidas de adapta\u00e7\u00e3o clim\u00e1tica no planejamento urbano, garantindo que os investimentos priorizem a sustentabilidade ambiental e a comunidade"
             ],
             "KeyPerformanceIndicators": [
-                "Redu\u00e7\u00e3o de inunda\u00e7\u00f5es",
-                "Redu\u00e7\u00e3o de res\u00edduos",
-                "Custos de manuten\u00e7\u00e3o"
+                "N\u00famero de \u00e1reas ZEIS diagnosticadas e restauradas.",
+                "Percentual de residentes beneficiados por \u00e1reas restauradas (%).",
+                "Investimentos p\u00fablicos alocados para \u00e1reas ZEIS (valor em moeda)."
             ],
             "PowersAndMandates": [
                 "local"
-            ]
+            ],
+            "AdaptationEffectivenessPerHazard": {
+                "sea-level-rise": "medium",
+                "floods": "medium",
+                "landslides": "low",
+                "diseases": "medium",
+                "heatwaves": "high"
+            },
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR TSE",
+        "cityName": "Tangar\u00e1 da Serra",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "ipcc_0092",
+        "actionName": "Social safety nets",
+        "actionPriority": 6,
+        "explanation": "Ranked #6 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "ipcc_0092",
+            "ActionName": "Redes de prote\u00e7\u00e3o social",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "droughts",
+                "heatwaves",
+                "floods",
+                "storms"
+            ],
+            "Sector": [
+                "food_security",
+                "public_health"
+            ],
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "As redes de seguran\u00e7a social englobam mecanismos de prote\u00e7\u00e3o social adaptativa para reduzir a inseguran\u00e7a alimentar e a desnutri\u00e7\u00e3o, especialmente para popula\u00e7\u00f5es vulner\u00e1veis. Estes incluem transfer\u00eancias de dinheiro, programas de alimenta\u00e7\u00e3o escolar, iniciativas de trabalho p\u00fablico, compensa\u00e7\u00e3o de desemprego, reformas agr\u00e1rias, esquemas de cr\u00e9dito e seguros. Abordagens integradas combinam avalia\u00e7\u00f5es de risco clim\u00e1tico com redu\u00e7\u00e3o de risco de desastres, educa\u00e7\u00e3o e equidade social para aumentar a resili\u00eancia aos estresses clim\u00e1ticos.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 2,
+                "housing": 1,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": "Aumenta o status social e os direitos de grupos marginalizados, protege popula\u00e7\u00f5es vulner\u00e1veis, reduz desigualdades e promove a educa\u00e7\u00e3o e a equidade de g\u00eanero.",
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Integra\u00e7\u00e3o do clima e risco de desastres na prote\u00e7\u00e3o social",
+                "programas educacionais",
+                "coordena\u00e7\u00e3o com iniciativas de meios de subsist\u00eancia sustent\u00e1veis e inclus\u00e3o financeira"
+            ],
+            "KeyPerformanceIndicators": [
+                "Redu\u00e7\u00e3o nas taxas de desnutri\u00e7\u00e3o",
+                "Aumento no acesso \u00e0 educa\u00e7\u00e3o para grupos vulner\u00e1veis",
+                "Participa\u00e7\u00e3o em programas de prote\u00e7\u00e3o social"
+            ],
+            "PowersAndMandates": null,
+            "AdaptationEffectivenessPerHazard": {
+                "droughts": "high",
+                "heatwaves": "high",
+                "floods": "medium",
+                "storms": "medium"
+            },
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR TSE",
+        "cityName": "Tangar\u00e1 da Serra",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0169",
+        "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
+        "actionPriority": 7,
+        "explanation": "Ranked #7 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "icare_0169",
+            "ActionName": "Estabelecer um Plano de Prepara\u00e7\u00e3o e Medidas de Resposta a Emerg\u00eancias em caso de eventos clim\u00e1ticos extremos",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "droughts",
+                "heatwaves",
+                "diseases",
+                "landslides",
+                "floods",
+                "wildfires",
+                "sea-level-rise",
+                "storms"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Esta a\u00e7\u00e3o foca em preparar o munic\u00edpio para responder a eventos extremos, visando fornecer uma resposta r\u00e1pida que minimize os impactos na popula\u00e7\u00e3o.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Desenvolvimento de um plano abrangente de resposta a emerg\u00eancias que inclua a coordena\u00e7\u00e3o entre as autoridades locais, servi\u00e7os de emerg\u00eancia e organiza\u00e7\u00f5es comunit\u00e1rias",
+                "Investimento em sistemas de alerta precoce e infraestrutura para garantir respostas oportunas e eficazes a eventos extremos",
+                "Treinamento e capacita\u00e7\u00e3o para socorristas locais e comunidades para melhorar a prepara\u00e7\u00e3o e resili\u00eancia a eventos extremos"
+            ],
+            "KeyPerformanceIndicators": [
+                "N\u00famero de parcerias de resposta a emerg\u00eancias estabelecidas.",
+                "Tempo m\u00e9dio de resposta durante eventos clim\u00e1ticos extremos (horas).",
+                "Percentual de redu\u00e7\u00e3o de v\u00edtimas e danos durante eventos clim\u00e1ticos extremos anualmente (%)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": {
+                "droughts": "medium",
+                "heatwaves": "high",
+                "diseases": "medium",
+                "landslides": "high",
+                "floods": "high",
+                "wildfires": "high",
+                "sea-level-rise": "low",
+                "storms": "high"
+            },
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR TSE",
+        "cityName": "Tangar\u00e1 da Serra",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "ipcc_0093",
+        "actionName": "Availability of health infrastructure",
+        "actionPriority": 8,
+        "explanation": "Ranked #8 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "ipcc_0093",
+            "ActionName": "Disponibilidade de infraestrutura de sa\u00fade",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "droughts",
+                "floods",
+                "sea-level-rise",
+                "diseases"
+            ],
+            "Sector": [
+                "public_health",
+                "water_resources"
+            ],
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Garantir o acesso a infraestrutura de \u00e1gua pot\u00e1vel segura, proteger os servi\u00e7os de sa\u00fade e melhorar os sistemas de saneamento para mitigar os impactos clim\u00e1ticos. Isso inclui desenvolver medidas adaptativas para a seguran\u00e7a h\u00eddrica contra secas, inunda\u00e7\u00f5es e eleva\u00e7\u00e3o do n\u00edvel do mar. Fortalecer a resili\u00eancia da infraestrutura garante acesso equitativo aos servi\u00e7os de sa\u00fade, reduz os riscos de contamina\u00e7\u00e3o e aborda os impactos dos perigos induzidos pelo clima.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 2,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": "Melhora o acesso a recursos cr\u00edticos de sa\u00fade e \u00e1gua para comunidades vulner\u00e1veis e desatendidas, mitigando as desigualdades causadas pelos impactos clim\u00e1ticos.",
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Financiamento adequado",
+                "investimentos tecnol\u00f3gicos em infraestrutura de sa\u00fade e \u00e1gua",
+                "governan\u00e7a eficaz e coordena\u00e7\u00e3o intersetorial"
+            ],
+            "KeyPerformanceIndicators": [
+                "Redu\u00e7\u00e3o de doen\u00e7as transmitidas pela \u00e1gua",
+                "melhor acesso a \u00e1gua pot\u00e1vel",
+                "n\u00famero de instala\u00e7\u00f5es de sa\u00fade resilientes desenvolvidas"
+            ],
+            "PowersAndMandates": null,
+            "AdaptationEffectivenessPerHazard": {
+                "droughts": "high",
+                "floods": "high",
+                "sea-level-rise": "high",
+                "diseases": "high"
+            },
+            "biome": "none"
         }
     },
     {
@@ -118,8 +539,8 @@
         "regionName": "Mato Grosso",
         "actionId": "icare_0164",
         "actionName": "Hydrological Monitoring System with Telemetry Stations",
-        "actionPriority": 3,
-        "explanation": "Ranked #3 by tournament ranking algorithm",
+        "actionPriority": 9,
+        "explanation": "Ranked #9 by tournament ranking algorithm",
         "action": {
             "ActionID": "icare_0164",
             "ActionName": "Sistema de Monitoramento Hidrol\u00f3gico com Esta\u00e7\u00f5es de Telemetria",
@@ -158,12 +579,18 @@
             ],
             "KeyPerformanceIndicators": [
                 "Pontualidade dos dados",
-                "Custo-efetividade",
+                "Custo-benef\u00edcio",
                 "Efic\u00e1cia da mitiga\u00e7\u00e3o"
             ],
             "PowersAndMandates": [
                 "local"
-            ]
+            ],
+            "AdaptationEffectivenessPerHazard": {
+                "droughts": "high",
+                "floods": "high",
+                "storms": "high"
+            },
+            "biome": "none"
         }
     },
     {
@@ -171,58 +598,123 @@
         "cityName": "Tangar\u00e1 da Serra",
         "region": "MT",
         "regionName": "Mato Grosso",
-        "actionId": "ipcc_0097",
-        "actionName": "Food storage/distribution improvements",
-        "actionPriority": 4,
-        "explanation": "Ranked #4 by tournament ranking algorithm",
+        "actionId": "icare_0152",
+        "actionName": "Recovery of degraded areas",
+        "actionPriority": 10,
+        "explanation": "Ranked #10 by tournament ranking algorithm",
         "action": {
-            "ActionID": "ipcc_0097",
-            "ActionName": "Melhorias no armazenamento/distribui\u00e7\u00e3o de alimentos",
+            "ActionID": "icare_0152",
+            "ActionName": "Recupera\u00e7\u00e3o de \u00e1reas degradadas",
             "ActionType": [
                 "adaptation"
             ],
             "Hazard": [
                 "droughts",
-                "floods",
-                "storms",
-                "heatwaves"
+                "heatwaves",
+                "landslides",
+                "floods"
             ],
-            "Sector": [
-                "food_security",
-                "road_infrastructure"
-            ],
+            "Sector": null,
             "Subsector": null,
             "PrimaryPurpose": [
                 "climate_resilience"
             ],
-            "Description": "Melhorar os sistemas de armazenamento e distribui\u00e7\u00e3o de alimentos atrav\u00e9s do aprimoramento da infraestrutura de transporte, otimiza\u00e7\u00e3o das redes de com\u00e9rcio e encurtamento das cadeias de suprimento para garantir a disponibilidade local de alimentos e resili\u00eancia aos impactos clim\u00e1ticos. Esta a\u00e7\u00e3o tamb\u00e9m inclui aumentar a capacidade das instala\u00e7\u00f5es locais de armazenamento de alimentos para reduzir as perdas p\u00f3s-colheita, abordar inefici\u00eancias na log\u00edstica e refor\u00e7ar a infraestrutura para produtos perec\u00edveis. O objetivo \u00e9 melhorar a seguran\u00e7a alimentar e reduzir a vulnerabilidade a eventos extremos, interrup\u00e7\u00f5es e impactos em cascata, especialmente durante pandemias e outras crises.",
+            "Description": "Restaurar ecossistemas danificados por atividades humanas atrav\u00e9s do replantio de vegeta\u00e7\u00e3o nativa, restaura\u00e7\u00e3o do solo, elimina\u00e7\u00e3o de esp\u00e9cies invasoras e implementa\u00e7\u00e3o de t\u00e9cnicas de manejo sustent\u00e1vel.",
             "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 1,
+                "air_quality": 1,
+                "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": 0,
                 "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 2
+                "mobility": 0,
+                "stakeholder_engagement": 1
             },
-            "EquityAndInclusionConsiderations": "Apoia o acesso equitativo \u00e0 alimenta\u00e7\u00e3o para popula\u00e7\u00f5es marginalizadas e vulner\u00e1veis, priorizando a produ\u00e7\u00e3o local de alimentos e melhorando os sistemas de distribui\u00e7\u00e3o que alcan\u00e7am \u00e1reas desatendidas.",
+            "EquityAndInclusionConsiderations": null,
             "GHGReductionPotential": null,
             "AdaptationEffectiveness": "high",
             "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
+            "TimelineForImplementation": ">10 years",
             "Dependencies": [
-                "Investimento em infraestrutura",
-                "Incentivos pol\u00edticos para a produ\u00e7\u00e3o local de alimentos",
-                "Colabora\u00e7\u00e3o com os setores de log\u00edstica e com\u00e9rcio",
-                "Tecnologia para otimiza\u00e7\u00e3o da cadeia de suprimentos"
+                "Desenvolver um plano de restaura\u00e7\u00e3o claro e garantir financiamento para a gest\u00e3o a longo prazo.",
+                "Assegurar o acesso a esp\u00e9cies de plantas nativas e fornecer treinamento em pr\u00e1ticas sustent\u00e1veis.",
+                "Remover esp\u00e9cies invasoras e colaborar com as comunidades locais para uma restaura\u00e7\u00e3o bem-sucedida do ecossistema."
             ],
             "KeyPerformanceIndicators": [
-                "Redu\u00e7\u00e3o das perdas p\u00f3s-colheita",
-                "Aumento da disponibilidade de alimentos locais",
-                "Melhoria da efici\u00eancia do transporte para distribui\u00e7\u00e3o de alimentos",
-                "Cadeias de abastecimento encurtadas"
+                "Hectares de terras degradadas restauradas anualmente",
+                "Aumento na cobertura vegetal (%) em \u00e1reas restauradas",
+                "N\u00famero de comunidades locais envolvidas em projetos de restaura\u00e7\u00e3o"
             ],
-            "PowersAndMandates": null
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": {
+                "droughts": "high",
+                "heatwaves": "high",
+                "landslides": "high",
+                "floods": "high"
+            },
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR TSE",
+        "cityName": "Tangar\u00e1 da Serra",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0156",
+        "actionName": "Implementation of urban gardens",
+        "actionPriority": 11,
+        "explanation": "Ranked #11 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "icare_0156",
+            "ActionName": "Implementa\u00e7\u00e3o de hortas urbanas",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "heatwaves",
+                "landslides",
+                "floods"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Identificar e avaliar a viabilidade de \u00e1reas adequadas para a instala\u00e7\u00e3o de hortas urbanas e garantir que os locais escolhidos atendam \u00e0s expectativas da comunidade.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 0,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 1,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "medium",
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Garantir a disponibilidade de mapas detalhados de uso do solo e dados de planejamento urbano.",
+                "Envolver-se com as comunidades locais para entender suas necessidades e expectativas.",
+                "Avaliar a qualidade do solo, a disponibilidade de \u00e1gua e formar parcerias para apoiar o estabelecimento e a manuten\u00e7\u00e3o de jardins."
+            ],
+            "KeyPerformanceIndicators": [
+                "N\u00famero de hortas urbanas criadas.",
+                "Quantidade de alimentos produzidos localmente (kg/ano).",
+                "N\u00famero de benefici\u00e1rios diretos."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": {
+                "heatwaves": "high",
+                "landslides": "low",
+                "floods": "medium"
+            },
+            "biome": "none"
         }
     },
     {
@@ -232,8 +724,8 @@
         "regionName": "Mato Grosso",
         "actionId": "icare_0175",
         "actionName": "Recovery and preservation of green areas",
-        "actionPriority": 5,
-        "explanation": "Ranked #5 by tournament ranking algorithm",
+        "actionPriority": 12,
+        "explanation": "Ranked #12 by tournament ranking algorithm",
         "action": {
             "ActionID": "icare_0175",
             "ActionName": "Recupera\u00e7\u00e3o e preserva\u00e7\u00e3o de \u00e1reas verdes",
@@ -276,61 +768,13 @@
             ],
             "PowersAndMandates": [
                 "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR TSE",
-        "cityName": "Tangar\u00e1 da Serra",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0181",
-        "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
-        "actionPriority": 6,
-        "explanation": "Ranked #6 by tournament ranking algorithm",
-        "action": {
-            "ActionID": "icare_0181",
-            "ActionName": "Reloca\u00e7\u00e3o e Restaura\u00e7\u00e3o Ambiental em \u00c1reas Vulner\u00e1veis",
-            "ActionType": [
-                "adaptation"
             ],
-            "Hazard": [
-                "landslides",
-                "floods"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Um projeto abrangente que aborda a vulnerabilidade socioambiental de um assentamento informal. Inclui a realoca\u00e7\u00e3o de residentes de \u00e1reas propensas a inunda\u00e7\u00f5es, a restaura\u00e7\u00e3o do meio ambiente e o fornecimento de infraestrutura e servi\u00e7os sociais.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 2,
-                "mobility": 1,
-                "stakeholder_engagement": 1
+            "AdaptationEffectivenessPerHazard": {
+                "heatwaves": "high",
+                "floods": "high",
+                "wildfires": "medium"
             },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Financiamento adequado",
-                "Coordena\u00e7\u00e3o interag\u00eancias",
-                "Seguran\u00e7a da posse da terra"
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de fam\u00edlias realocadas.",
-                "Progresso da restaura\u00e7\u00e3o ambiental.",
-                "Redu\u00e7\u00e3o do risco de inunda\u00e7\u00f5es."
-            ],
-            "PowersAndMandates": [
-                "state"
-            ]
+            "biome": "none"
         }
     },
     {
@@ -338,70 +782,13 @@
         "cityName": "Tangar\u00e1 da Serra",
         "region": "MT",
         "regionName": "Mato Grosso",
-        "actionId": "icare_0151",
-        "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
-        "actionPriority": 7,
-        "explanation": "Ranked #7 by tournament ranking algorithm",
+        "actionId": "ipcc_0098",
+        "actionName": "Behaviour change in diets and food waste",
+        "actionPriority": 13,
+        "explanation": "Ranked #13 by tournament ranking algorithm",
         "action": {
-            "ActionID": "icare_0151",
-            "ActionName": "Desenvolver diagn\u00f3sticos e restaurar \u00e1reas de Zonas Especiais de Interesse Social (ZEIS)",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "sea-level-rise",
-                "floods",
-                "landslides",
-                "diseases",
-                "heatwaves"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Prioridade para \u00e1reas ZEIS nas a\u00e7\u00f5es de melhoria habitacional e na aplica\u00e7\u00e3o de recursos do Fundo de Urbaniza\u00e7\u00e3o, com a implementa\u00e7\u00e3o de infraestrutura urbana que considere a adapta\u00e7\u00e3o clim\u00e1tica nesses espa\u00e7os. Uso de Solu\u00e7\u00f5es Baseadas na Natureza (NbS) na adapta\u00e7\u00e3o do saneamento ambiental e infraestruturas verdes e azuis que potencializem o lazer, a cultura, a agricultura urbana e atividades para fortalecer associa\u00e7\u00f5es comunit\u00e1rias.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 2,
-                "mobility": 1,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "medium",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Disponibilidade de financiamento do Fundo de Urbaniza\u00e7\u00e3o e de outros mecanismos financeiros para apoiar melhorias habitacionais e infraestrutura urbana em \u00e1reas de ZEIS",
-                "Colabora\u00e7\u00e3o entre planejadores urbanos, especialistas ambientais e comunidades locais para projetar e implementar solu\u00e7\u00f5es baseadas na natureza (NbS) para infraestrutura urbana",
-                "Pol\u00edticas e estruturas regulat\u00f3rias que integrem medidas de adapta\u00e7\u00e3o clim\u00e1tica no planejamento urbano, garantindo que os investimentos priorizem a sustentabilidade ambiental e a comunidade"
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de \u00e1reas ZEIS diagnosticadas e restauradas.",
-                "Percentual de residentes beneficiados por \u00e1reas restauradas (%).",
-                "Investimentos p\u00fablicos alocados para \u00e1reas ZEIS (quantia em moeda)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR TSE",
-        "cityName": "Tangar\u00e1 da Serra",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "ipcc_0092",
-        "actionName": "Social safety nets",
-        "actionPriority": 8,
-        "explanation": "Ranked #8 by tournament ranking algorithm",
-        "action": {
-            "ActionID": "ipcc_0092",
-            "ActionName": "Redes de prote\u00e7\u00e3o social",
+            "ActionID": "ipcc_0098",
+            "ActionName": "Mudan\u00e7a de comportamento em dietas e desperd\u00edcio de alimentos",
             "ActionType": [
                 "adaptation"
             ],
@@ -409,42 +796,246 @@
                 "droughts",
                 "heatwaves",
                 "floods",
-                "storms"
+                "wildfires"
             ],
             "Sector": [
                 "food_security",
-                "public_health"
+                "biodiversity"
             ],
             "Subsector": null,
             "PrimaryPurpose": [
                 "climate_resilience"
             ],
-            "Description": "As redes de seguran\u00e7a social englobam mecanismos de prote\u00e7\u00e3o social adaptativa para reduzir a inseguran\u00e7a alimentar e a desnutri\u00e7\u00e3o, especialmente para popula\u00e7\u00f5es vulner\u00e1veis. Estes incluem transfer\u00eancias de dinheiro, programas de alimenta\u00e7\u00e3o escolar, iniciativas de trabalho p\u00fablico, compensa\u00e7\u00e3o de desemprego, reformas agr\u00e1rias, esquemas de cr\u00e9dito e seguros. Abordagens integradas combinam avalia\u00e7\u00f5es de risco clim\u00e1tico com redu\u00e7\u00e3o de risco de desastres, educa\u00e7\u00e3o e equidade social para aumentar a resili\u00eancia aos estresses clim\u00e1ticos.",
+            "Description": "Reduzir a perda e o desperd\u00edcio de alimentos por meio de pr\u00e1ticas aprimoradas de produ\u00e7\u00e3o, distribui\u00e7\u00e3o e consumo de alimentos. As a\u00e7\u00f5es incluem o aprimoramento de t\u00e9cnicas agr\u00edcolas, a ado\u00e7\u00e3o de tecnologias de economia de \u00e1gua, a implementa\u00e7\u00e3o de solu\u00e7\u00f5es de armazenamento de baixo custo e a promo\u00e7\u00e3o de dietas \u00e0 base de plantas. Os formuladores de pol\u00edticas podem incentivar esses comportamentos com pol\u00edticas de pre\u00e7os adequadas, iniciativas de agricultura sustent\u00e1vel e apoio a grupos desfavorecidos. A a\u00e7\u00e3o enfatiza a mudan\u00e7a para dietas mais saud\u00e1veis, a redu\u00e7\u00e3o do consumo excessivo e o apoio a sistemas alimentares locais para mitigar as emiss\u00f5es de gases de efeito estufa e garantir a seguran\u00e7a alimentar sob as mudan\u00e7as clim\u00e1ticas.",
             "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 2,
-                "housing": 1,
+                "air_quality": 1,
+                "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 0,
                 "mobility": 0,
                 "stakeholder_engagement": 2
             },
-            "EquityAndInclusionConsiderations": "Aprimora o status social e os direitos de grupos marginalizados, protege popula\u00e7\u00f5es vulner\u00e1veis, reduz desigualdades e promove a educa\u00e7\u00e3o e a equidade de g\u00eanero.",
+            "EquityAndInclusionConsiderations": "Promove o acesso a alimentos saud\u00e1veis e acess\u00edveis para comunidades vulner\u00e1veis, capacitando mulheres, jovens e grupos socialmente desfavorecidos. Incentiva a participa\u00e7\u00e3o equitativa em pr\u00e1ticas agr\u00edcolas sustent\u00e1veis e redes alimentares locais.",
             "GHGReductionPotential": null,
             "AdaptationEffectiveness": "high",
             "CostInvestmentNeeded": "medium",
             "TimelineForImplementation": "5-10 years",
             "Dependencies": [
-                "Integra\u00e7\u00e3o do clima e risco de desastres na prote\u00e7\u00e3o social",
-                "programas educacionais",
-                "coordena\u00e7\u00e3o com iniciativas de meios de subsist\u00eancia sustent\u00e1veis e inclus\u00e3o financeira"
+                "Educa\u00e7\u00e3o e treinamento para agricultores",
+                "Acesso a insumos agr\u00edcolas sustent\u00e1veis",
+                "Apoio pol\u00edtico para pr\u00e1ticas sustent\u00e1veis",
+                "Infraestrutura tecnol\u00f3gica para armazenamento e processamento"
             ],
             "KeyPerformanceIndicators": [
-                "Redu\u00e7\u00e3o nas taxas de desnutri\u00e7\u00e3o",
-                "Aumento no acesso \u00e0 educa\u00e7\u00e3o para grupos vulner\u00e1veis",
-                "Participa\u00e7\u00e3o em programas de prote\u00e7\u00e3o social"
+                "Redu\u00e7\u00e3o nas porcentagens de perda e desperd\u00edcio de alimentos",
+                "Aumento na ado\u00e7\u00e3o de dietas \u00e0 base de plantas",
+                "Melhoria nos indicadores de seguran\u00e7a alimentar",
+                "Redu\u00e7\u00e3o nas emiss\u00f5es de GEE dos sistemas alimentares"
             ],
-            "PowersAndMandates": null
+            "PowersAndMandates": null,
+            "AdaptationEffectivenessPerHazard": {
+                "droughts": "high",
+                "heatwaves": "medium",
+                "floods": "medium",
+                "wildfires": "low"
+            },
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR TSE",
+        "cityName": "Tangar\u00e1 da Serra",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "ipcc_0095",
+        "actionName": "Disaster early warning",
+        "actionPriority": 14,
+        "explanation": "Ranked #14 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "ipcc_0095",
+            "ActionName": "Alerta precoce de desastres",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "heatwaves",
+                "droughts",
+                "storms"
+            ],
+            "Sector": [
+                "public_health",
+                "biodiversity",
+                "geo-hydrological_disasters"
+            ],
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Estabelecer e manter sistemas de alerta precoce para desastres, incluindo ondas de calor marinhas, surtos de pragas e ondas de calor. Esses sistemas envolvem a dissemina\u00e7\u00e3o oportuna de informa\u00e7\u00f5es para indiv\u00edduos, comunidades e servi\u00e7os de emerg\u00eancia, permitindo medidas proativas para mitigar riscos. Os Planos de A\u00e7\u00e3o para Calor (HAPs) fazem parte desses sistemas e incluem estrat\u00e9gias detalhadas como planejamento urbano com solu\u00e7\u00f5es baseadas na natureza (por exemplo, espa\u00e7os verdes-azuis, materiais frescos), campanhas de conscientiza\u00e7\u00e3o p\u00fablica e medidas direcionadas para grupos vulner\u00e1veis (por exemplo, idosos, crian\u00e7as, trabalhadores ao ar livre). A\u00e7\u00f5es cr\u00edticas tamb\u00e9m incluem a avalia\u00e7\u00e3o da efic\u00e1cia do sistema ap\u00f3s desastres, compartilhamento de li\u00e7\u00f5es e melhorias para melhor prepara\u00e7\u00e3o em eventos futuros.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 1,
+                "habitat": 2,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 1,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": "Foca em abordar vulnerabilidades entre grupos de baixa renda, idosos, gestantes, crian\u00e7as e trabalhadores ao ar livre, incorporando comunica\u00e7\u00e3o direcionada, acesso a \u00e1reas frescas e interven\u00e7\u00f5es de sa\u00fade espec\u00edficas. Promove a equidade ao envolver comunidades marginalizadas no planejamento e garantir o acesso aos recursos necess\u00e1rios.",
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Coordena\u00e7\u00e3o entre servi\u00e7os de emerg\u00eancia e ag\u00eancias de sa\u00fade",
+                "Investimento em planejamento urbano e solu\u00e7\u00f5es baseadas na natureza",
+                "Educa\u00e7\u00e3o comunit\u00e1ria e campanhas de conscientiza\u00e7\u00e3o p\u00fablica",
+                "Infraestrutura tecnol\u00f3gica para sistemas de alerta precoce"
+            ],
+            "KeyPerformanceIndicators": [
+                "Redu\u00e7\u00e3o nas taxas de mortalidade relacionadas a ondas de calor",
+                "Pontualidade dos avisos",
+                "N\u00edveis de conscientiza\u00e7\u00e3o p\u00fablica",
+                "Ado\u00e7\u00e3o de medidas de prote\u00e7\u00e3o pela comunidade"
+            ],
+            "PowersAndMandates": null,
+            "AdaptationEffectivenessPerHazard": {
+                "heatwaves": "high",
+                "droughts": "medium",
+                "storms": "high"
+            },
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR TSE",
+        "cityName": "Tangar\u00e1 da Serra",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "ipcc_0099",
+        "actionName": "Water capture/storage",
+        "actionPriority": 15,
+        "explanation": "Ranked #15 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "ipcc_0099",
+            "ActionName": "Captura/armazenamento de \u00e1gua",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "droughts",
+                "floods",
+                "storms"
+            ],
+            "Sector": [
+                "water_resources",
+                "food_security",
+                "energy_security",
+                "geo-hydrological_disasters"
+            ],
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Implementa\u00e7\u00e3o de solu\u00e7\u00f5es de capta\u00e7\u00e3o e armazenamento de \u00e1gua, como a\u00e7udes em fazendas, revitaliza\u00e7\u00e3o de corpos d'\u00e1gua, jardins de chuva, bioswales, lagoas de reten\u00e7\u00e3o e tanques de armazenamento de \u00e1gua. Essas medidas visam mitigar os impactos induzidos pelo clima, melhorando a gest\u00e3o da \u00e1gua, reduzindo o escoamento de \u00e1guas pluviais, melhorando a qualidade da \u00e1gua e apoiando a agricultura e a produ\u00e7\u00e3o de energia em cen\u00e1rios clim\u00e1ticos em mudan\u00e7a. Reservat\u00f3rios de \u00e1gua e barragens multiuso oferecem benef\u00edcios adicionais ao abordar a escassez de \u00e1gua e gerenciar riscos associados a desastres naturais.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 1,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": "Garante o acesso \u00e0 \u00e1gua para comunidades carentes, apoia meios de subsist\u00eancia sustent\u00e1veis em regi\u00f5es com escassez de \u00e1gua e promove a distribui\u00e7\u00e3o equitativa de recursos por meio de processos de tomada de decis\u00e3o inclusivos.",
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Investimento em infraestrutura verde",
+                "engajamento comunit\u00e1rio",
+                "apoio pol\u00edtico para a gest\u00e3o de recursos h\u00eddricos"
+            ],
+            "KeyPerformanceIndicators": [
+                "Redu\u00e7\u00e3o no escoamento de \u00e1guas pluviais",
+                "aumento na capacidade de armazenamento de \u00e1gua",
+                "melhoria na qualidade da \u00e1gua",
+                "estabilidade nos rendimentos agr\u00edcolas"
+            ],
+            "PowersAndMandates": null,
+            "AdaptationEffectivenessPerHazard": {
+                "droughts": "high",
+                "floods": "high",
+                "storms": "high"
+            },
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR TSE",
+        "cityName": "Tangar\u00e1 da Serra",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0149",
+        "actionName": "Encourage sustainable land use practices",
+        "actionPriority": 16,
+        "explanation": "Ranked #16 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "icare_0149",
+            "ActionName": "Incentivar pr\u00e1ticas sustent\u00e1veis de uso da terra",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "droughts",
+                "heatwaves",
+                "landslides",
+                "floods",
+                "wildfires"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Promover m\u00e9todos que garantam a conserva\u00e7\u00e3o e a sa\u00fade do solo, preservando a biodiversidade, reduzindo a eros\u00e3o e minimizando os impactos ambientais.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 2,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "medium",
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Fornecer acesso a conhecimento t\u00e9cnico e treinamento em pr\u00e1ticas de manejo sustent\u00e1vel do solo.",
+                "Oferecer incentivos financeiros e formar parcerias com institui\u00e7\u00f5es de pesquisa e agricultores locais.",
+                "Desenvolver sistemas de monitoramento para a sa\u00fade do solo e biodiversidade, e implementar pol\u00edticas para controle da eros\u00e3o."
+            ],
+            "KeyPerformanceIndicators": [
+                "Percentagem da \u00e1rea de terra gerida sob pr\u00e1ticas de uso sustent\u00e1vel da terra (%)",
+                "Redu\u00e7\u00e3o nas taxas de desmatamento ou degrada\u00e7\u00e3o da terra (%)",
+                "Aumento nos indicadores de biodiversidade em terras geridas (por exemplo, contagem de esp\u00e9cies, qualidade do habitat)"
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": {
+                "droughts": "medium",
+                "heatwaves": "medium",
+                "landslides": "high",
+                "floods": "medium",
+                "wildfires": "medium"
+            },
+            "biome": "none"
         }
     },
     {
@@ -454,8 +1045,8 @@
         "regionName": "Mato Grosso",
         "actionId": "ipcc_0086",
         "actionName": "Ecosystem-based adaptation",
-        "actionPriority": 9,
-        "explanation": "Ranked #9 by tournament ranking algorithm",
+        "actionPriority": 17,
+        "explanation": "Ranked #17 by tournament ranking algorithm",
         "action": {
             "ActionID": "ipcc_0086",
             "ActionName": "Adapta\u00e7\u00e3o baseada em ecossistemas",
@@ -505,7 +1096,7 @@
                 "Financiamento sustent\u00e1vel"
             ],
             "KeyPerformanceIndicators": [
-                "Redu\u00e7\u00e3o dos danos causados por mar\u00e9s de tempestade",
+                "Redu\u00e7\u00e3o de danos causados por mar\u00e9s de tempestade",
                 "Taxas de sequestro de carbono",
                 "Aumento da biodiversidade",
                 "Redu\u00e7\u00e3o da temperatura em \u00e1reas urbanas",
@@ -514,298 +1105,14 @@
                 "Redu\u00e7\u00e3o de eventos de inunda\u00e7\u00e3o",
                 "Melhoria da sa\u00fade dos ecossistemas"
             ],
-            "PowersAndMandates": null
-        }
-    },
-    {
-        "locode": "BR TSE",
-        "cityName": "Tangar\u00e1 da Serra",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "ipcc_0094",
-        "actionName": "Access to health care",
-        "actionPriority": 10,
-        "explanation": "Ranked #10 by tournament ranking algorithm",
-        "action": {
-            "ActionID": "ipcc_0094",
-            "ActionName": "Acesso aos cuidados de sa\u00fade",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "heatwaves",
-                "floods",
-                "droughts"
-            ],
-            "Sector": [
-                "public_health",
-                "water_resources"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Melhorar o acesso aos servi\u00e7os de sa\u00fade, incluindo servi\u00e7os de sa\u00fade e nutri\u00e7\u00e3o, \u00e1gua limpa, saneamento e recursos de sa\u00fade mental culturalmente apropriados. A expans\u00e3o das capacidades de telemedicina permite uma entrega eficiente de servi\u00e7os de sa\u00fade, especialmente para popula\u00e7\u00f5es remotas e carentes. Fortalecer os sistemas b\u00e1sicos de sa\u00fade p\u00fablica e a prepara\u00e7\u00e3o para desastres pode reduzir rapidamente a vulnerabilidade aos riscos de sa\u00fade relacionados ao clima.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 0,
-                "stakeholder_engagement": 2
+            "PowersAndMandates": null,
+            "AdaptationEffectivenessPerHazard": {
+                "storms": "high",
+                "sea-level-rise": "high",
+                "heatwaves": "high",
+                "floods": "high"
             },
-            "EquityAndInclusionConsiderations": "Promove o acesso equitativo aos cuidados de sa\u00fade para grupos marginalizados e vulner\u00e1veis, incluindo popula\u00e7\u00f5es sem-teto, comunidades remotas e aqueles afetados por desigualdades habitacionais.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Investimento em tecnologias de telemedicina",
-                "Governan\u00e7a fortalecida dos sistemas de sa\u00fade p\u00fablica",
-                "Capacita\u00e7\u00e3o para trabalhadores da sa\u00fade",
-                "Melhorias na infraestrutura das instala\u00e7\u00f5es de sa\u00fade"
-            ],
-            "KeyPerformanceIndicators": [
-                "Redu\u00e7\u00e3o na mortalidade relacionada ao clima",
-                "Aumento no acesso \u00e0 telemedicina",
-                "N\u00famero de programas de sa\u00fade adaptados culturalmente implementados",
-                "Melhoria nas m\u00e9tricas de acesso \u00e0 \u00e1gua e saneamento"
-            ],
-            "PowersAndMandates": null
-        }
-    },
-    {
-        "locode": "BR TSE",
-        "cityName": "Tangar\u00e1 da Serra",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "ipcc_0095",
-        "actionName": "Disaster early warning",
-        "actionPriority": 11,
-        "explanation": "Ranked #11 by tournament ranking algorithm",
-        "action": {
-            "ActionID": "ipcc_0095",
-            "ActionName": "Alerta precoce de desastres",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "heatwaves",
-                "droughts",
-                "storms"
-            ],
-            "Sector": [
-                "public_health",
-                "biodiversity",
-                "geo-hydrological_disasters"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Estabelecer e manter sistemas de alerta precoce para desastres, incluindo ondas de calor marinhas, surtos de pragas e ondas de calor. Esses sistemas envolvem a dissemina\u00e7\u00e3o oportuna de informa\u00e7\u00f5es para indiv\u00edduos, comunidades e servi\u00e7os de emerg\u00eancia, permitindo medidas proativas para mitigar riscos. Os Planos de A\u00e7\u00e3o contra o Calor (HAPs) fazem parte desses sistemas e incluem estrat\u00e9gias detalhadas como planejamento urbano com solu\u00e7\u00f5es baseadas na natureza (por exemplo, espa\u00e7os verdes-azuis, materiais frescos), campanhas de conscientiza\u00e7\u00e3o p\u00fablica e medidas direcionadas para grupos vulner\u00e1veis (por exemplo, idosos, crian\u00e7as, trabalhadores ao ar livre). A\u00e7\u00f5es cr\u00edticas tamb\u00e9m incluem a avalia\u00e7\u00e3o da efic\u00e1cia do sistema ap\u00f3s desastres, compartilhamento de li\u00e7\u00f5es e melhorias para melhor prepara\u00e7\u00e3o em eventos futuros.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 1,
-                "habitat": 2,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 1,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": "Foca em abordar vulnerabilidades entre grupos de baixa renda, idosos, gestantes, crian\u00e7as e trabalhadores ao ar livre, incorporando comunica\u00e7\u00e3o direcionada, acesso a \u00e1reas frescas e interven\u00e7\u00f5es de sa\u00fade espec\u00edficas. Promove a equidade ao envolver comunidades marginalizadas no planejamento e garantir o acesso aos recursos necess\u00e1rios.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Coordena\u00e7\u00e3o entre servi\u00e7os de emerg\u00eancia e ag\u00eancias de sa\u00fade",
-                "Investimento em planejamento urbano e solu\u00e7\u00f5es baseadas na natureza",
-                "Educa\u00e7\u00e3o comunit\u00e1ria e campanhas de conscientiza\u00e7\u00e3o p\u00fablica",
-                "Infraestrutura tecnol\u00f3gica para sistemas de alerta precoce"
-            ],
-            "KeyPerformanceIndicators": [
-                "Redu\u00e7\u00e3o nas taxas de mortalidade relacionadas a ondas de calor",
-                "Pontualidade dos avisos",
-                "N\u00edveis de conscientiza\u00e7\u00e3o p\u00fablica",
-                "Ado\u00e7\u00e3o de medidas de prote\u00e7\u00e3o pela comunidade"
-            ],
-            "PowersAndMandates": null
-        }
-    },
-    {
-        "locode": "BR TSE",
-        "cityName": "Tangar\u00e1 da Serra",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0169",
-        "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
-        "actionPriority": 12,
-        "explanation": "Ranked #12 by tournament ranking algorithm",
-        "action": {
-            "ActionID": "icare_0169",
-            "ActionName": "Estabelecer um Plano de Prepara\u00e7\u00e3o e Medidas de Resposta a Emerg\u00eancias em caso de eventos clim\u00e1ticos extremos",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "droughts",
-                "heatwaves",
-                "diseases",
-                "landslides",
-                "floods",
-                "wildfires",
-                "sea-level-rise",
-                "storms"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Esta a\u00e7\u00e3o foca em preparar o munic\u00edpio para responder a eventos extremos, visando fornecer uma resposta r\u00e1pida que minimize os impactos na popula\u00e7\u00e3o.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Desenvolvimento de um plano abrangente de resposta a emerg\u00eancias que inclua a coordena\u00e7\u00e3o entre as autoridades locais, servi\u00e7os de emerg\u00eancia e organiza\u00e7\u00f5es comunit\u00e1rias",
-                "Investimento em sistemas de alerta precoce e infraestrutura para garantir respostas oportunas e eficazes a eventos extremos",
-                "Treinamento e capacita\u00e7\u00e3o para os respondentes locais e comunidades para melhorar a prepara\u00e7\u00e3o e resili\u00eancia a eventos extremos"
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de parcerias de resposta a emerg\u00eancias estabelecidas.",
-                "Tempo m\u00e9dio de resposta durante eventos clim\u00e1ticos extremos (horas).",
-                "Percentual de redu\u00e7\u00e3o de v\u00edtimas e danos durante eventos clim\u00e1ticos extremos anualmente (%)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR TSE",
-        "cityName": "Tangar\u00e1 da Serra",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "ipcc_0096",
-        "actionName": "Farm/fishery improvements",
-        "actionPriority": 13,
-        "explanation": "Ranked #13 by tournament ranking algorithm",
-        "action": {
-            "ActionID": "ipcc_0096",
-            "ActionName": "Melhorias em fazendas/pesqueiras",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "droughts",
-                "heatwaves",
-                "floods",
-                "wildfires",
-                "storms"
-            ],
-            "Sector": [
-                "food_security",
-                "biodiversity",
-                "water_resources"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Implementar uma gama de estrat\u00e9gias para adaptar fazendas e pescarias aos impactos clim\u00e1ticos. Isso inclui mudar o equipamento de pesca ou a pot\u00eancia das embarca\u00e7\u00f5es, adotar novas variedades de culturas ou ajustar os cronogramas de plantio, melhorar os esquemas de irriga\u00e7\u00e3o, integrar sistemas de culturas e pecu\u00e1ria, realocar o gado com manejo de pastagens melhorado e adotar sistemas agroecol\u00f3gicos e agroflorestais. Inova\u00e7\u00f5es tecnol\u00f3gicas como a agricultura inteligente e medidas financeiras como subs\u00eddios apoiam essas adapta\u00e7\u00f5es.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": "Garante acesso a recursos para agricultores e pescadores marginalizados, promove op\u00e7\u00f5es diversificadas de subsist\u00eancia e fortalece a resili\u00eancia em comunidades desfavorecidas.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Apoio pol\u00edtico para a agricultura e pesca resilientes ao clima",
-                "Acesso a financiamento e subs\u00eddios",
-                "Treinamento para ado\u00e7\u00e3o de novas pr\u00e1ticas",
-                "Infraestrutura de mercado melhorada"
-            ],
-            "KeyPerformanceIndicators": [
-                "Aumento na produtividade agr\u00edcola e pesqueira",
-                "Taxa de ado\u00e7\u00e3o de sistemas integrados",
-                "Redu\u00e7\u00e3o nas perdas de rendimento relacionadas ao clima"
-            ],
-            "PowersAndMandates": null
-        }
-    },
-    {
-        "locode": "BR TSE",
-        "cityName": "Tangar\u00e1 da Serra",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "ipcc_0088",
-        "actionName": "Building codes",
-        "actionPriority": 14,
-        "explanation": "Ranked #14 by tournament ranking algorithm",
-        "action": {
-            "ActionID": "ipcc_0088",
-            "ActionName": "C\u00f3digos de constru\u00e7\u00e3o",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "floods",
-                "landslides"
-            ],
-            "Sector": [
-                "road_infrastructure",
-                "geo-hydrological_disasters"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "O desenvolvimento e implementa\u00e7\u00e3o de c\u00f3digos de constru\u00e7\u00e3o e regulamentos de design arquitet\u00f4nico voltados para a integra\u00e7\u00e3o de par\u00e2metros de adapta\u00e7\u00e3o clim\u00e1tica. Esses c\u00f3digos s\u00e3o focados na redu\u00e7\u00e3o de riscos de perigos induzidos pelo clima, como inunda\u00e7\u00f5es e deslizamentos de terra. Eles tamb\u00e9m apoiam o desenvolvimento urbano resiliente ao clima, orientando o uso do solo, pr\u00e1ticas de constru\u00e7\u00e3o e padr\u00f5es de infraestrutura. A iniciativa promove o planejamento urbano estrat\u00e9gico de longo prazo para coordenar investimentos p\u00fablicos e privados em adapta\u00e7\u00e3o, incluindo a cria\u00e7\u00e3o de zonas seguras e a transforma\u00e7\u00e3o de assentamentos prec\u00e1rios. Ela garante que novas infraestruturas sejam resilientes aos riscos clim\u00e1ticos e que os espa\u00e7os urbanos sejam seguros e sustent\u00e1veis para as popula\u00e7\u00f5es atuais e futuras.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 2,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": "Promove o planejamento urbano inclusivo ao abordar riscos em assentamentos informais e prec\u00e1rios e integrar eco-parques e eco-jardins para popula\u00e7\u00f5es vulner\u00e1veis.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Integra\u00e7\u00e3o com avalia\u00e7\u00f5es locais de risco clim\u00e1tico",
-                "Colabora\u00e7\u00e3o estrat\u00e9gica entre planejadores urbanos e autoridades municipais"
-            ],
-            "KeyPerformanceIndicators": [
-                "Redu\u00e7\u00e3o de incidentes de inunda\u00e7\u00f5es urbanas",
-                "Aumento da disponibilidade de habita\u00e7\u00e3o segura em \u00e1reas de risco",
-                "Taxa de implementa\u00e7\u00e3o de eco-parques e eco-jardins em \u00e1reas vulner\u00e1veis"
-            ],
-            "PowersAndMandates": null
+            "biome": "none"
         }
     },
     {
@@ -815,8 +1122,8 @@
         "regionName": "Mato Grosso",
         "actionId": "icare_0148",
         "actionName": "Create the Municipal Climate Change Forum",
-        "actionPriority": 15,
-        "explanation": "Ranked #15 by tournament ranking algorithm",
+        "actionPriority": 18,
+        "explanation": "Ranked #18 by tournament ranking algorithm",
         "action": {
             "ActionID": "icare_0148",
             "ActionName": "Criar o F\u00f3rum Municipal de Mudan\u00e7as Clim\u00e1ticas",
@@ -838,7 +1145,7 @@
             "PrimaryPurpose": [
                 "climate_resilience"
             ],
-            "Description": "Cria\u00e7\u00e3o de um F\u00f3rum Municipal de Mudan\u00e7as Clim\u00e1ticas com a participa\u00e7\u00e3o de l\u00edderes comunit\u00e1rios, cientistas, coletivos, institutos de pesquisa, ONGs e membros da administra\u00e7\u00e3o municipal e estadual. O F\u00f3rum servir\u00e1 como refer\u00eancia para a\u00e7\u00f5es relacionadas \u00e0s Mudan\u00e7as Clim\u00e1ticas, visando monitorar pol\u00edticas futuras sobre o assunto no munic\u00edpio, estimular o di\u00e1logo e criar uma rede de discuss\u00f5es sobre a crise clim\u00e1tica.",
+            "Description": "Cria\u00e7\u00e3o de um F\u00f3rum Municipal de Mudan\u00e7as Clim\u00e1ticas com a participa\u00e7\u00e3o de l\u00edderes comunit\u00e1rios, cientistas, coletivos, institutos de pesquisa, ONGs e membros da administra\u00e7\u00e3o municipal e estadual. O F\u00f3rum servir\u00e1 como refer\u00eancia para a\u00e7\u00f5es relacionadas \u00e0s Mudan\u00e7as Clim\u00e1ticas, com o objetivo de monitorar pol\u00edticas futuras sobre o assunto no munic\u00edpio, estimular o di\u00e1logo e criar uma rede de discuss\u00f5es sobre a crise clim\u00e1tica.",
             "CoBenefits": {
                 "air_quality": 0,
                 "water_quality": 0,
@@ -865,66 +1172,18 @@
             ],
             "PowersAndMandates": [
                 "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR TSE",
-        "cityName": "Tangar\u00e1 da Serra",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "ipcc_0098",
-        "actionName": "Behaviour change in diets and food waste",
-        "actionPriority": 16,
-        "explanation": "Ranked #16 by tournament ranking algorithm",
-        "action": {
-            "ActionID": "ipcc_0098",
-            "ActionName": "Mudan\u00e7a de comportamento em dietas e desperd\u00edcio de alimentos",
-            "ActionType": [
-                "adaptation"
             ],
-            "Hazard": [
-                "droughts",
-                "heatwaves",
-                "floods",
-                "wildfires"
-            ],
-            "Sector": [
-                "food_security",
-                "biodiversity"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Reduzir a perda e o desperd\u00edcio de alimentos por meio de pr\u00e1ticas aprimoradas de produ\u00e7\u00e3o, distribui\u00e7\u00e3o e consumo de alimentos. As a\u00e7\u00f5es incluem o aprimoramento de t\u00e9cnicas agr\u00edcolas, a ado\u00e7\u00e3o de tecnologias de economia de \u00e1gua, a implementa\u00e7\u00e3o de solu\u00e7\u00f5es de armazenamento de baixo custo e a promo\u00e7\u00e3o de dietas \u00e0 base de plantas. Os formuladores de pol\u00edticas podem incentivar esses comportamentos com pol\u00edticas de pre\u00e7os adequadas, iniciativas de agricultura sustent\u00e1vel e apoio a grupos desfavorecidos. A a\u00e7\u00e3o enfatiza a mudan\u00e7a para dietas mais saud\u00e1veis, a redu\u00e7\u00e3o do consumo excessivo e o apoio a sistemas alimentares locais para mitigar as emiss\u00f5es de gases de efeito estufa e garantir a seguran\u00e7a alimentar sob as mudan\u00e7as clim\u00e1ticas.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
+            "AdaptationEffectivenessPerHazard": {
+                "droughts": "medium",
+                "diseases": "medium",
+                "heatwaves": "medium",
+                "landslides": "low",
+                "floods": "medium",
+                "wildfires": "medium",
+                "sea-level-rise": "medium",
+                "storms": "medium"
             },
-            "EquityAndInclusionConsiderations": "Promove o acesso a alimentos saud\u00e1veis e acess\u00edveis para comunidades vulner\u00e1veis, capacitando mulheres, jovens e grupos socialmente desfavorecidos. Incentiva a participa\u00e7\u00e3o equitativa em pr\u00e1ticas agr\u00edcolas sustent\u00e1veis e redes alimentares locais.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Educa\u00e7\u00e3o e treinamento para agricultores",
-                "Acesso a insumos agr\u00edcolas sustent\u00e1veis",
-                "Apoio pol\u00edtico para pr\u00e1ticas sustent\u00e1veis",
-                "Infraestrutura tecnol\u00f3gica para armazenamento e processamento"
-            ],
-            "KeyPerformanceIndicators": [
-                "Redu\u00e7\u00e3o nas porcentagens de perda e desperd\u00edcio de alimentos",
-                "Aumento na ado\u00e7\u00e3o de dietas \u00e0 base de plantas",
-                "Melhoria nos indicadores de seguran\u00e7a alimentar",
-                "Redu\u00e7\u00e3o das emiss\u00f5es de GEE dos sistemas alimentares"
-            ],
-            "PowersAndMandates": null
+            "biome": "none"
         }
     },
     {
@@ -934,8 +1193,8 @@
         "regionName": "Mato Grosso",
         "actionId": "icare_0162",
         "actionName": "Strengthen programs for control and conservation of protected areas",
-        "actionPriority": 17,
-        "explanation": "Ranked #17 by tournament ranking algorithm",
+        "actionPriority": 19,
+        "explanation": "Ranked #19 by tournament ranking algorithm",
         "action": {
             "ActionID": "icare_0162",
             "ActionName": "Fortalecer programas de controle e conserva\u00e7\u00e3o de \u00e1reas protegidas",
@@ -980,66 +1239,14 @@
             ],
             "PowersAndMandates": [
                 "state"
-            ]
-        }
-    },
-    {
-        "locode": "BR TSE",
-        "cityName": "Tangar\u00e1 da Serra",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "ipcc_0099",
-        "actionName": "Water capture/storage",
-        "actionPriority": 18,
-        "explanation": "Ranked #18 by tournament ranking algorithm",
-        "action": {
-            "ActionID": "ipcc_0099",
-            "ActionName": "Captura/armazenamento de \u00e1gua",
-            "ActionType": [
-                "adaptation"
             ],
-            "Hazard": [
-                "droughts",
-                "floods",
-                "storms"
-            ],
-            "Sector": [
-                "water_resources",
-                "food_security",
-                "energy_security",
-                "geo-hydrological_disasters"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Implementa\u00e7\u00e3o de solu\u00e7\u00f5es de capta\u00e7\u00e3o e armazenamento de \u00e1gua, como a\u00e7udes em fazendas, revitaliza\u00e7\u00e3o de corpos d'\u00e1gua, jardins de chuva, bioswales, lagoas de reten\u00e7\u00e3o e tanques de armazenamento de \u00e1gua. Essas medidas visam mitigar os impactos induzidos pelo clima, melhorando a gest\u00e3o da \u00e1gua, reduzindo o escoamento de \u00e1guas pluviais, melhorando a qualidade da \u00e1gua e apoiando a agricultura e a produ\u00e7\u00e3o de energia em cen\u00e1rios clim\u00e1ticos em mudan\u00e7a. Reservat\u00f3rios de \u00e1gua e barragens multiuso oferecem benef\u00edcios adicionais ao abordar a escassez de \u00e1gua e gerenciar riscos associados a desastres naturais.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 1,
-                "stakeholder_engagement": 2
+            "AdaptationEffectivenessPerHazard": {
+                "floods": "high",
+                "landslides": "high",
+                "heatwaves": "medium",
+                "diseases": "medium"
             },
-            "EquityAndInclusionConsiderations": "Garante o acesso \u00e0 \u00e1gua para comunidades carentes, apoia meios de subsist\u00eancia sustent\u00e1veis em regi\u00f5es com escassez de \u00e1gua e promove a distribui\u00e7\u00e3o equitativa de recursos por meio de processos de tomada de decis\u00e3o inclusivos.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Investimento em infraestrutura verde",
-                "engajamento comunit\u00e1rio",
-                "apoio pol\u00edtico para a gest\u00e3o de recursos h\u00eddricos"
-            ],
-            "KeyPerformanceIndicators": [
-                "Redu\u00e7\u00e3o no escoamento de \u00e1guas pluviais",
-                "aumento na capacidade de armazenamento de \u00e1gua",
-                "melhoria na qualidade da \u00e1gua",
-                "estabilidade nos rendimentos agr\u00edcolas"
-            ],
-            "PowersAndMandates": null
+            "biome": "none"
         }
     },
     {
@@ -1047,86 +1254,29 @@
         "cityName": "Tangar\u00e1 da Serra",
         "region": "MT",
         "regionName": "Mato Grosso",
-        "actionId": "icare_0156",
-        "actionName": "Implementation of urban gardens",
-        "actionPriority": 19,
-        "explanation": "Ranked #19 by tournament ranking algorithm",
-        "action": {
-            "ActionID": "icare_0156",
-            "ActionName": "Implementa\u00e7\u00e3o de hortas urbanas",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "heatwaves",
-                "landslides",
-                "floods"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Identificar e avaliar a viabilidade de \u00e1reas adequadas para a instala\u00e7\u00e3o de hortas urbanas e garantir que os locais escolhidos atendam \u00e0s expectativas da comunidade.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "medium",
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Garantir a disponibilidade de mapas detalhados de uso do solo e dados de planejamento urbano.",
-                "Envolver-se com as comunidades locais para entender suas necessidades e expectativas.",
-                "Avaliar a qualidade do solo, a disponibilidade de \u00e1gua e formar parcerias para apoiar o estabelecimento e a manuten\u00e7\u00e3o de jardins."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de hortas urbanas criadas.",
-                "Quantidade de alimentos produzidos localmente (kg/ano).",
-                "N\u00famero de benefici\u00e1rios diretos."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR TSE",
-        "cityName": "Tangar\u00e1 da Serra",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0149",
-        "actionName": "Encourage sustainable land use practices",
+        "actionId": "icare_0150",
+        "actionName": "Implement Loss Reduction and Control Program promoting water security for the municipality",
         "actionPriority": 20,
         "explanation": "Ranked #20 by tournament ranking algorithm",
         "action": {
-            "ActionID": "icare_0149",
-            "ActionName": "Incentivar pr\u00e1ticas sustent\u00e1veis de uso da terra",
+            "ActionID": "icare_0150",
+            "ActionName": "Implementar o Programa de Redu\u00e7\u00e3o e Controle de Perdas promovendo a seguran\u00e7a h\u00eddrica para o munic\u00edpio",
             "ActionType": [
                 "adaptation"
             ],
             "Hazard": [
                 "droughts",
                 "heatwaves",
-                "landslides",
-                "floods",
-                "wildfires"
+                "diseases"
             ],
             "Sector": null,
             "Subsector": null,
             "PrimaryPurpose": [
                 "climate_resilience"
             ],
-            "Description": "Promover m\u00e9todos que garantam a conserva\u00e7\u00e3o e a sa\u00fade do solo, preservando a biodiversidade, reduzindo a eros\u00e3o e minimizando os impactos ambientais.",
+            "Description": "Garantir a disponibilidade de \u00e1gua em quantidade e qualidade suficientes para a popula\u00e7\u00e3o da cidade. Implementar o Programa de Redu\u00e7\u00e3o e Controle de Perdas, que visa reduzir o consumo per capita de \u00e1gua, juntamente com a redu\u00e7\u00e3o de perdas f\u00edsicas. Realizar estudos, regulamentar e facilitar o re\u00faso de \u00e1gua para fins n\u00e3o pot\u00e1veis, e implementar equipamentos para o uso de \u00e1gua da chuva.",
             "CoBenefits": {
-                "air_quality": 1,
+                "air_quality": 0,
                 "water_quality": 2,
                 "habitat": 1,
                 "cost_of_living": 1,
@@ -1136,22 +1286,28 @@
             },
             "EquityAndInclusionConsiderations": null,
             "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "medium",
-            "CostInvestmentNeeded": "low",
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "medium",
             "TimelineForImplementation": "5-10 years",
             "Dependencies": [
-                "Fornecer acesso a conhecimento t\u00e9cnico e treinamento em pr\u00e1ticas de manejo sustent\u00e1vel do solo.",
-                "Oferecer incentivos financeiros e formar parcerias com institui\u00e7\u00f5es de pesquisa e agricultores locais.",
-                "Desenvolver sistemas de monitoramento para a sa\u00fade do solo e biodiversidade, e implementar pol\u00edticas para controle da eros\u00e3o."
+                "Disponibilidade de financiamento e expertise t\u00e9cnica para implementar sistemas de redu\u00e7\u00e3o de perdas de \u00e1gua, incluindo melhorias de infraestrutura e tecnologias de monitoramento",
+                "Desenvolvimento de estruturas regulat\u00f3rias para apoiar o re\u00faso de \u00e1gua para fins n\u00e3o pot\u00e1veis e sistemas de capta\u00e7\u00e3o de \u00e1gua da chuva em ambientes residenciais e comerciais",
+                "Colabora\u00e7\u00e3o entre governos locais, empresas de servi\u00e7os p\u00fablicos e comunidades para garantir a gest\u00e3o eficiente da \u00e1gua e aumentar a conscientiza\u00e7\u00e3o sobre pr\u00e1ticas de conserva\u00e7\u00e3o de \u00e1gua"
             ],
             "KeyPerformanceIndicators": [
-                "Percentagem da \u00e1rea de terra gerida sob pr\u00e1ticas de uso sustent\u00e1vel da terra (%)",
-                "Redu\u00e7\u00e3o nas taxas de desmatamento ou degrada\u00e7\u00e3o da terra (%)",
-                "Aumento nos indicadores de biodiversidade em terras geridas (por exemplo, contagem de esp\u00e9cies, qualidade do habitat)"
+                "Percentual de redu\u00e7\u00e3o de perdas no sistema de abastecimento de \u00e1gua.",
+                "\u00cdndice de redu\u00e7\u00e3o do consumo de \u00e1gua per capita (litros).",
+                "N\u00famero de novas fontes de abastecimento de \u00e1gua implementadas."
             ],
             "PowersAndMandates": [
                 "local"
-            ]
+            ],
+            "AdaptationEffectivenessPerHazard": {
+                "droughts": "high",
+                "heatwaves": "high",
+                "diseases": "medium"
+            },
+            "biome": "none"
         }
     }
 ]

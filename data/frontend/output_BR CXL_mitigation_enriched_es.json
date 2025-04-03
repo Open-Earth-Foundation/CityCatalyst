@@ -4,179 +4,60 @@
         "cityName": "Caxias do Sul",
         "region": "RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0053",
-        "actionName": "Implement a project to support cooperatives of recyclabe material collectors",
+        "actionId": "icare_0139",
+        "actionName": "Implementation of urban toll.",
         "actionPriority": 1,
         "action": {
-            "ActionID": "icare_0053",
-            "ActionName": "Implementar un proyecto para apoyar a las cooperativas de recolectores de materiales reciclables",
+            "ActionID": "icare_0139",
+            "ActionName": "Implementaci\u00f3n de peaje urbano.",
             "ActionType": [
                 "mitigation"
             ],
             "Hazard": null,
             "Sector": [
-                "waste"
+                "transportation"
             ],
             "Subsector": [
-                "disposal_of_solid_waste_generated_in_the_city"
+                "on-road"
             ],
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "Description": "Medidas para mejorar las condiciones laborales y los ingresos en los procesos de clasificaci\u00f3n de residuos reciclables. Incluye capacitaci\u00f3n continua para los recolectores en tecnolog\u00eda, econom\u00eda, gesti\u00f3n empresarial y planificaci\u00f3n conceptual para la operaci\u00f3n y administraci\u00f3n de la Unidad de Clasificaci\u00f3n.",
+            "Description": "Establecimiento de un cargo por congesti\u00f3n y/o rotaci\u00f3n de matr\u00edculas para veh\u00edculos ligeros en \u00e1reas saturadas y en horarios saturados",
             "CoBenefits": {
-                "air_quality": 0,
+                "air_quality": 2,
                 "water_quality": 0,
-                "habitat": 1,
-                "cost_of_living": 2,
+                "habitat": 0,
+                "cost_of_living": -1,
                 "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": "20-39",
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Implementaci\u00f3n de medidas para mejorar las condiciones laborales y los ingresos para la clasificaci\u00f3n de residuos reciclables.",
-                "Capacitaci\u00f3n continua para los recolectores en tecnolog\u00eda, econom\u00eda, gesti\u00f3n empresarial y planificaci\u00f3n operativa.",
-                "Desarrollo de capacidades administrativas y operativas para la Unidad de Clasificaci\u00f3n."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de cooperativas apoyadas anualmente.",
-                "Aumento en los ingresos de los recolectores (%).",
-                "Volumen de materiales reciclables recolectados por cooperativas (toneladas/a\u00f1o)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR CXL",
-        "cityName": "Caxias do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0122",
-        "actionName": "Establish eco-parks.",
-        "actionPriority": 2,
-        "action": {
-            "ActionID": "icare_0122",
-            "ActionName": "Establecer eco-parques.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "waste"
-            ],
-            "Subsector": [
-                "land"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Un eco-parque es una instalaci\u00f3n para el tratamiento mec\u00e1nico y biol\u00f3gico de residuos s\u00f3lidos urbanos, integrando diferentes tecnolog\u00edas para la segregaci\u00f3n y tratamiento de varias fracciones dentro de los residuos. Este tratamiento tiene como objetivo maximizar la recuperaci\u00f3n de residuos secos y org\u00e1nicos y reducir el volumen de residuos a ser enviados para disposici\u00f3n final en vertederos, utilizando tecnolog\u00edas como generaci\u00f3n de energ\u00eda, compostaje, recuperaci\u00f3n de reciclaje, disposici\u00f3n adecuada de residuos residuales y otros m\u00e9todos de tratamiento existentes disponibles en el mercado.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
-                "habitat": 2,
-                "cost_of_living": 0,
-                "housing": 1,
-                "mobility": 0,
+                "mobility": 2,
                 "stakeholder_engagement": 0
             },
             "EquityAndInclusionConsiderations": null,
             "GHGReductionPotential": {
                 "stationary_energy": null,
-                "transportation": null,
-                "waste": "20-39",
+                "transportation": "80-100",
+                "waste": null,
                 "ippu": null,
                 "afolu": null
             },
             "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
+            "CostInvestmentNeeded": "low",
             "TimelineForImplementation": "<5 years",
             "Dependencies": [
-                "Implementaci\u00f3n de eco-parques para el tratamiento mec\u00e1nico y biol\u00f3gico de residuos s\u00f3lidos urbanos.",
-                "Integraci\u00f3n de tecnolog\u00edas como generaci\u00f3n de energ\u00eda, compostaje, recuperaci\u00f3n de reciclaje y disposici\u00f3n adecuada de residuos residuales.",
-                "Maximizaci\u00f3n de la recuperaci\u00f3n de residuos secos y org\u00e1nicos para reducir los vol\u00famenes de disposici\u00f3n en vertederos."
+                "Establecer un marco legal claro e invertir en tecnolog\u00eda para el monitoreo y la aplicaci\u00f3n (por ejemplo, c\u00e1maras, sensores).",
+                "Lanzar campa\u00f1as de concienciaci\u00f3n y asegurar la disponibilidad de transporte p\u00fablico eficiente o soluciones de movilidad alternativas.",
+                "Colaborar con los gobiernos locales y las agencias de transporte, y establecer sistemas para monitorear y evaluar la efectividad de la pol\u00edtica."
             ],
             "KeyPerformanceIndicators": [
-                "\u00c1rea total cubierta por eco-parques en la ciudad (hect\u00e1reas).",
-                "Aumento en el n\u00famero de visitantes a los eco-parques anualmente.",
-                "Mejora en los \u00edndices de biodiversidad local dentro de las \u00e1reas de los eco-parques."
+                "Reducci\u00f3n de emisiones de CO\u2082 del transporte por carretera urbano (tCO\u2082e/a\u00f1o).",
+                "Ingresos generados por la implementaci\u00f3n del cargo por congesti\u00f3n urbana (R$)."
             ],
             "PowersAndMandates": [
                 "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR CXL",
-        "cityName": "Caxias do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0052",
-        "actionName": "Develop projects for renewable energy and waste reuse",
-        "actionPriority": 3,
-        "action": {
-            "ActionID": "icare_0052",
-            "ActionName": "Desarrollar proyectos para energ\u00eda renovable y reutilizaci\u00f3n de residuos",
-            "ActionType": [
-                "mitigation"
             ],
-            "Hazard": null,
-            "Sector": [
-                "waste"
-            ],
-            "Subsector": [
-                "energy_generation_supplied_to_the_grid"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Esta acci\u00f3n tiene como objetivo desarrollar e implementar proyectos de energ\u00eda renovable, incluyendo: un biodigestor para el tratamiento de residuos org\u00e1nicos y una planta de energ\u00eda solar.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": "60-79",
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Desarrollo e implementaci\u00f3n de proyectos de energ\u00eda renovable.",
-                "Instalaci\u00f3n de un biodigestor para el tratamiento de residuos org\u00e1nicos.",
-                "Establecimiento de una planta de energ\u00eda solar para generar energ\u00eda limpia."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de proyectos de energ\u00eda renovable y reutilizaci\u00f3n de residuos implementados.",
-                "Cantidad de residuos reutilizados o reciclados (toneladas/a\u00f1o).",
-                "Reducci\u00f3n en los costos de energ\u00eda para los municipios participantes (USD)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
         }
     },
     {
@@ -186,7 +67,7 @@
         "regionName": "Rio Grande do Sul",
         "actionId": "icare_0121",
         "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
-        "actionPriority": 4,
+        "actionPriority": 2,
         "action": {
             "ActionID": "icare_0121",
             "ActionName": "Incentivo para crear programas de bicicletas compartidas en \u00e1reas urbanas, con un enfoque en bicicletas el\u00e9ctricas.",
@@ -231,194 +112,14 @@
             ],
             "KeyPerformanceIndicators": [
                 "N\u00famero de bicicletas el\u00e9ctricas disponibles en programas de bicicletas compartidas.",
-                "Aumento anual de usuarios de bicicletas compartidas.",
+                "Aumento anual en usuarios de bicicletas compartidas.",
                 "Reducci\u00f3n estimada en emisiones equivalentes de CO\u2082 por la adopci\u00f3n de bicicletas el\u00e9ctricas compartidas."
             ],
             "PowersAndMandates": [
                 "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR CXL",
-        "cityName": "Caxias do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0057",
-        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
-        "actionPriority": 5,
-        "action": {
-            "ActionID": "icare_0057",
-            "ActionName": "Expansi\u00f3n de los sistemas de transporte masivo sobre rieles (metros, LRTs y monorra\u00edles).",
-            "ActionType": [
-                "mitigation"
             ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "railways"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Estos sistemas ofrecen alta capacidad y bajas emisiones, cruciales para ciudades con alta densidad de poblaci\u00f3n.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 2,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "80-100",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Inversi\u00f3n en el desarrollo y expansi\u00f3n de infraestructuras de transporte p\u00fablico de alta capacidad, como autobuses el\u00e9ctricos y sistemas de metro.",
-                "Implementaci\u00f3n de pol\u00edticas e incentivos para fomentar el uso del transporte p\u00fablico sobre los veh\u00edculos privados.",
-                "Integraci\u00f3n de fuentes de energ\u00eda renovable para alimentar estos sistemas, reduciendo a\u00fan m\u00e1s las emisiones."
-            ],
-            "KeyPerformanceIndicators": [
-                "Longitud de las nuevas l\u00edneas de tr\u00e1nsito construidas (km/a\u00f1o).",
-                "Reducci\u00f3n en la congesti\u00f3n del tr\u00e1fico vial (%).",
-                "Reducci\u00f3n en el uso de veh\u00edculos privados (n\u00famero de viajes evitados/a\u00f1o)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR CXL",
-        "cityName": "Caxias do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "ipcc_0080",
-        "actionName": "Avoiding, Minimising, and Recycling Waste",
-        "actionPriority": 6,
-        "action": {
-            "ActionID": "ipcc_0080",
-            "ActionName": "Evitando, Minimizar y Reciclar Residuos",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "waste"
-            ],
-            "Subsector": [
-                "disposal_of_solid_waste_generated_in_the_city"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Implementaci\u00f3n de los principios de la jerarqu\u00eda de residuos para reducir la generaci\u00f3n de residuos, mejorar la separaci\u00f3n en origen y aumentar el reciclaje y el compostaje. Promueve la gesti\u00f3n descentralizada de residuos, el compostaje dom\u00e9stico y enfoques de econom\u00eda circular para transformar los residuos en energ\u00eda o subproductos, minimizando al mismo tiempo las emisiones relacionadas con el transporte.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": "Apoya a los trabajadores informales en la gesti\u00f3n de residuos, proporciona oportunidades de empleo y reduce las desigualdades al integrar los sectores informales en los sistemas formales. Asegura el reparto de costos y la distribuci\u00f3n de beneficios entre las partes interesadas.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": "40-59",
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Requiere capacidad institucional",
-                "gobernanza",
-                "coordinaci\u00f3n intersectorial",
-                "campa\u00f1as de concienciaci\u00f3n p\u00fablica",
-                "necesita infraestructura para el tratamiento descentralizado de residuos",
-                "pol\u00edticas para promover pr\u00e1cticas de econom\u00eda circular"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reducci\u00f3n en la generaci\u00f3n de residuos per c\u00e1pita",
-                "aumento en las tasas de reciclaje y compostaje",
-                "reducci\u00f3n de emisiones de CH4 de los residuos",
-                "oportunidades de empleo creadas en la gesti\u00f3n de residuos"
-            ],
-            "PowersAndMandates": null
-        }
-    },
-    {
-        "locode": "BR CXL",
-        "cityName": "Caxias do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0118",
-        "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
-        "actionPriority": 7,
-        "action": {
-            "ActionID": "icare_0118",
-            "ActionName": "Promover el uso de bicicletas como un modo de transporte regular mediante la expansi\u00f3n de la infraestructura y estrategias de concienciaci\u00f3n y comunicaci\u00f3n.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Fomentar la adopci\u00f3n de bicicletas como un modo de transporte regular mediante la expansi\u00f3n de la infraestructura para ciclistas, como carriles bici dedicados, instalaciones de estacionamiento y estaciones de reparaci\u00f3n. Adem\u00e1s, implementar campa\u00f1as de concienciaci\u00f3n y estrategias de comunicaci\u00f3n para resaltar los beneficios ambientales, de salud y econ\u00f3micos del ciclismo, con el objetivo de aumentar la participaci\u00f3n p\u00fablica y hacer del ciclismo una opci\u00f3n de transporte viable y sostenible para los desplazamientos diarios.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 2,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Expandir la infraestructura para bicicletas, incluyendo carriles exclusivos para bicicletas, instalaciones de estacionamiento y estaciones de reparaci\u00f3n.",
-                "Implementar campa\u00f1as de concienciaci\u00f3n para resaltar los beneficios ambientales, de salud y econ\u00f3micos del ciclismo.",
-                "Promover la participaci\u00f3n p\u00fablica a trav\u00e9s de estrategias de comunicaci\u00f3n, haciendo del ciclismo una opci\u00f3n viable y sostenible para el desplazamiento diario."
-            ],
-            "KeyPerformanceIndicators": [
-                "Longitud de los nuevos carriles bici a\u00f1adidos a la red urbana (km).",
-                "Aumento anual en el n\u00famero de usuarios de bicicletas en \u00e1reas urbanas.",
-                "Reducci\u00f3n estimada en las emisiones de CO\u2082 equivalente por el cambio al ciclismo."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
         }
     },
     {
@@ -428,7 +129,7 @@
         "regionName": "Rio Grande do Sul",
         "actionId": "icare_0094",
         "actionName": "Adoption of biomethane in public fleets.",
-        "actionPriority": 8,
+        "actionPriority": 3,
         "action": {
             "ActionID": "icare_0094",
             "ActionName": "Adopci\u00f3n de biometano en flotas p\u00fablicas.",
@@ -478,192 +179,9 @@
             ],
             "PowersAndMandates": [
                 "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR CXL",
-        "cityName": "Caxias do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "c40_0035",
-        "actionName": "Waste Efficiency",
-        "actionPriority": 9,
-        "action": {
-            "ActionID": "c40_0035",
-            "ActionName": "Eficiencia en el Desperdicio",
-            "ActionType": [
-                "mitigation"
             ],
-            "Hazard": null,
-            "Sector": [
-                "waste"
-            ],
-            "Subsector": [
-                "all"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Las iniciativas de \"Eficiencia de Residuos\" tienen como objetivo mejorar la eficiencia de los procesos de recolecci\u00f3n de residuos, reduciendo el consumo de recursos y minimizando el impacto ambiental. Esto incluye la optimizaci\u00f3n de los sistemas de gesti\u00f3n de residuos para mejorar la eficiencia energ\u00e9tica y promover pr\u00e1cticas sostenibles de eliminaci\u00f3n de residuos.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 1,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "Las iniciativas de \"Eficiencia de Residuos\" promueven la equidad y la inclusi\u00f3n al centrarse en comunidades desatendidas que a menudo soportan la carga de sistemas de gesti\u00f3n de residuos ineficientes. Al optimizar los procesos de recolecci\u00f3n de residuos, estas iniciativas pueden reducir la carga ambiental sobre las poblaciones vulnerables, que pueden vivir en \u00e1reas desproporcionadamente afectadas por los residuos y la contaminaci\u00f3n.\n\nAdem\u00e1s, mejorar la eficiencia energ\u00e9tica en la gesti\u00f3n de residuos puede generar ahorros de costos, que pueden reinvertirse en servicios comunitarios o infraestructuras que beneficien a los vecindarios de bajos ingresos. La promoci\u00f3n de pr\u00e1cticas sostenibles de eliminaci\u00f3n de residuos tambi\u00e9n asegura que todos los miembros de la comunidad, independientemente de su estatus socioecon\u00f3mico, tengan acceso a opciones ambientalmente responsables, fomentando un sentido de responsabilidad compartida e inclusi\u00f3n en los esfuerzos de acci\u00f3n clim\u00e1tica.\n\nEn general, estas iniciativas reconocen los desaf\u00edos \u00fanicos que enfrentan las comunidades desatendidas y tienen como objetivo crear un sistema de gesti\u00f3n de residuos m\u00e1s equitativo que beneficie a todos los residentes.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": "80-100",
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Infraestructura y tecnolog\u00eda efectiva para la gesti\u00f3n de residuos",
-                "Colaboraci\u00f3n con gobiernos locales y autoridades de gesti\u00f3n de residuos",
-                "Concienciaci\u00f3n y educaci\u00f3n p\u00fablica sobre pr\u00e1cticas de eliminaci\u00f3n de residuos",
-                "Acceso a datos para monitorear y optimizar los procesos de recolecci\u00f3n de residuos",
-                "Inversi\u00f3n en instalaciones sostenibles de procesamiento de residuos"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reducci\u00f3n en los costos de recolecci\u00f3n de residuos",
-                "Porcentaje de disminuci\u00f3n de residuos enviados a vertederos",
-                "Aumento en las tasas de reciclaje",
-                "Consumo de energ\u00eda por tonelada de residuos recolectados",
-                "Reducci\u00f3n de emisiones de carbono de la gesti\u00f3n de residuos",
-                "Satisfacci\u00f3n del cliente con los servicios de recolecci\u00f3n de residuos",
-                "Volumen de residuos procesados mediante m\u00e9todos sostenibles",
-                "Eficiencia operativa de las rutas de recolecci\u00f3n de residuos"
-            ],
-            "PowersAndMandates": null
-        }
-    },
-    {
-        "locode": "BR CXL",
-        "cityName": "Caxias do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0092",
-        "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
-        "actionPriority": 10,
-        "action": {
-            "ActionID": "icare_0092",
-            "ActionName": "Desarrollo de micro-centros log\u00edsticos para fomentar el uso de bicicletas de carga el\u00e9ctricas.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Crear centros log\u00edsticos a peque\u00f1a escala en barrios urbanos para facilitar las entregas utilizando bicicletas de carga el\u00e9ctricas, mientras se implementan incentivos fiscales o subsidios para que las empresas adopten estas bicicletas como modo de transporte, reduciendo las emisiones y mejorando la eficiencia de las entregas en \u00e1reas densamente pobladas.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "20-39",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Identificaci\u00f3n y desarrollo de ubicaciones adecuadas para centros log\u00edsticos a peque\u00f1a escala dentro de vecindarios urbanos.",
-                "Provisi\u00f3n de incentivos fiscales, subsidios o subvenciones para alentar a las empresas a hacer la transici\u00f3n a bicicletas de carga el\u00e9ctricas.",
-                "Establecimiento de asociaciones con empresas de log\u00edstica para asegurar la integraci\u00f3n y eficiencia en las operaciones de entrega utilizando estos centros."
-            ],
-            "KeyPerformanceIndicators": [
-                "Reducci\u00f3n en la distancia recorrida por veh\u00edculos de entrega tradicionales (km/a\u00f1o).",
-                "Aumento en la eficiencia operativa de los centros log\u00edsticos (%).",
-                "N\u00famero de empresas que utilizan micro-centros log\u00edsticos para entregas."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR CXL",
-        "cityName": "Caxias do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0044",
-        "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
-        "actionPriority": 11,
-        "action": {
-            "ActionID": "icare_0044",
-            "ActionName": "Expandir la infraestructura para bicicletas y construir paseos p\u00fablicos y aceras accesibles, priorizando medidas resilientes a las amenazas clim\u00e1ticas.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "El objetivo principal de esta acci\u00f3n es promover la movilidad activa, garantizando la seguridad, el confort y la prioridad del movimiento peatonal, de las personas con discapacidades (o movilidad reducida) y de los veh\u00edculos y equipos impulsados por humanos, como bicicletas y patinetes.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "80-100",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Inversiones en infraestructura para pasarelas peatonales seguras y accesibles, carriles para bicicletas e instalaciones para personas con discapacidades",
-                "Marcos de pol\u00edticas y regulaciones para priorizar la movilidad activa y establecer est\u00e1ndares de seguridad para peatones y veh\u00edculos no motorizados",
-                "Campa\u00f1as de concienciaci\u00f3n p\u00fablica para promover la movilidad activa y educar a los ciudadanos sobre los beneficios de caminar, andar en bicicleta y usar otros medios de transporte impulsados por humanos"
-            ],
-            "KeyPerformanceIndicators": [
-                "Kil\u00f3metros de nuevos carriles bici y senderos peatonales construidos anualmente.",
-                "Aumento en el uso diario de la infraestructura para ciclistas y peatones (%).",
-                "Reducci\u00f3n en las emisiones del transporte urbano (%)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
         }
     },
     {
@@ -673,7 +191,7 @@
         "regionName": "Rio Grande do Sul",
         "actionId": "icare_0088",
         "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
-        "actionPriority": 12,
+        "actionPriority": 4,
         "action": {
             "ActionID": "icare_0088",
             "ActionName": "Implementaci\u00f3n de programas de transporte p\u00fablico gratuito durante las horas pico para reducir el uso de veh\u00edculos individuales",
@@ -723,7 +241,9 @@
             ],
             "PowersAndMandates": [
                 "local"
-            ]
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
         }
     },
     {
@@ -731,164 +251,39 @@
         "cityName": "Caxias do Sul",
         "region": "RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "c40_0036",
-        "actionName": "Landfill Management",
-        "actionPriority": 13,
+        "actionId": "icare_0044",
+        "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
+        "actionPriority": 5,
         "action": {
-            "ActionID": "c40_0036",
-            "ActionName": "Gesti\u00f3n de Vertederos",
+            "ActionID": "icare_0044",
+            "ActionName": "Expandir la infraestructura para bicicletas y construir paseos p\u00fablicos y aceras accesibles, priorizando medidas resilientes a las amenazas clim\u00e1ticas.",
             "ActionType": [
                 "mitigation"
             ],
             "Hazard": null,
             "Sector": [
-                "waste"
+                "transportation"
             ],
             "Subsector": [
-                "all"
+                "on-road"
             ],
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "Description": "Las estrategias de \"Gesti\u00f3n de Vertederos\" se centran en pr\u00e1cticas responsables y sostenibles de gesti\u00f3n de vertederos para minimizar la degradaci\u00f3n ambiental. Al adoptar t\u00e9cnicas de gesti\u00f3n efectivas, las ciudades buscan reducir la huella ecol\u00f3gica asociada con los sitios de vertederos y fomentar la reducci\u00f3n de residuos.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "Las estrategias de \"Gesti\u00f3n de Vertederos\" promueven la equidad y la inclusi\u00f3n al abordar los impactos ambientales de los sitios de vertederos, que a menudo afectan de manera desproporcionada a las comunidades vulnerables y desatendidas. Estas comunidades frecuentemente residen cerca de vertederos y son m\u00e1s susceptibles a los riesgos para la salud asociados con la contaminaci\u00f3n y la degradaci\u00f3n ambiental. Al implementar pr\u00e1cticas de vertedero responsables y sostenibles, la acci\u00f3n busca reducir estos impactos negativos, mejorando as\u00ed la calidad de vida de los residentes en estas \u00e1reas.\n\nAdem\u00e1s, las t\u00e9cnicas efectivas de reducci\u00f3n de residuos pueden crear oportunidades para la participaci\u00f3n y el compromiso comunitario, permitiendo que las poblaciones desatendidas tengan voz en las decisiones ambientales locales. Esta inclusi\u00f3n fomenta un sentido de pertenencia y empoderamiento entre los miembros de la comunidad, asegurando que sus necesidades y preocupaciones sean consideradas en la gesti\u00f3n de los sitios de vertederos. En general, la acci\u00f3n reconoce y busca mitigar las inequidades enfrentadas por las comunidades marginadas en relaci\u00f3n con la gesti\u00f3n de residuos y la salud ambiental.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": "60-79",
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Pr\u00e1cticas efectivas de segregaci\u00f3n de residuos para asegurar una correcta eliminaci\u00f3n y reciclaje",
-                "Inversi\u00f3n en tecnolog\u00eda para el tratamiento de residuos y monitoreo de vertederos",
-                "Participaci\u00f3n comunitaria y educaci\u00f3n sobre la reducci\u00f3n de residuos y el reciclaje",
-                "Marcos regulatorios y pol\u00edticas que apoyan pr\u00e1cticas sostenibles en vertederos",
-                "Colaboraci\u00f3n con gobiernos locales y organizaciones para compartir recursos y mejores pr\u00e1cticas"
-            ],
-            "KeyPerformanceIndicators": [
-                "Reducci\u00f3n del volumen de residuos en vertederos",
-                "Porcentaje de residuos desviados de vertederos",
-                "Tasa de captura de gas de vertedero",
-                "Calidad del suelo y del agua alrededor de los sitios de vertederos",
-                "Frecuencia de inspecciones de vertederos",
-                "Niveles de concienciaci\u00f3n y participaci\u00f3n p\u00fablica",
-                "Ahorro de costos por pr\u00e1cticas mejoradas de gesti\u00f3n de vertederos",
-                "Cumplimiento de las regulaciones ambientales"
-            ],
-            "PowersAndMandates": null
-        }
-    },
-    {
-        "locode": "BR CXL",
-        "cityName": "Caxias do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0119",
-        "actionName": "Maximize composting processes.",
-        "actionPriority": 14,
-        "action": {
-            "ActionID": "icare_0119",
-            "ActionName": "Maximizar los procesos de compostaje.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "waste"
-            ],
-            "Subsector": [
-                "biological_treatment_of_waste_generated_in_the_city"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "La acci\u00f3n tiene como objetivo aumentar la cantidad de residuos org\u00e1nicos tratados mediante procesos de compostaje, precediendo la biodigesti\u00f3n siempre que sea posible, y produciendo compost que pueda ser utilizado para actividades relacionadas con la plantaci\u00f3n y el mantenimiento de \u00e1reas verdes p\u00fablicas.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": "20-39",
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Expansi\u00f3n de los procesos de compostaje para tratar los residuos org\u00e1nicos, con la biodigesti\u00f3n como un paso preliminar cuando sea posible.",
-                "Producci\u00f3n de compost para su uso en la plantaci\u00f3n y mantenimiento de \u00e1reas verdes p\u00fablicas.",
-                "Desarrollo de infraestructura y sistemas para apoyar el aumento del tratamiento de residuos org\u00e1nicos."
-            ],
-            "KeyPerformanceIndicators": [
-                "La cantidad mensual de residuos org\u00e1nicos desviados a instalaciones de compostaje se mide en toneladas.",
-                "Tambi\u00e9n se registra el porcentaje de hogares y empresas que participan en programas de compostaje.",
-                "La reducci\u00f3n estimada de emisiones de metano por la descomposici\u00f3n de residuos org\u00e1nicos en vertederos es un indicador clave del impacto ambiental."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR CXL",
-        "cityName": "Caxias do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0005",
-        "actionName": "Create credit lines for residential and community wind energy projects",
-        "actionPriority": 15,
-        "action": {
-            "ActionID": "icare_0005",
-            "ActionName": "Crear l\u00edneas de cr\u00e9dito para proyectos de energ\u00eda e\u00f3lica residencial y comunitaria",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "stationary_energy"
-            ],
-            "Subsector": [
-                "energy_generation_supplied_to_the_grid"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Establecer programas de financiamiento accesibles para apoyar el desarrollo y la adopci\u00f3n de sistemas de energ\u00eda e\u00f3lica en hogares y proyectos comunitarios, permitiendo una transici\u00f3n hacia fuentes de energ\u00eda m\u00e1s limpias.",
+            "Description": "El objetivo principal de esta acci\u00f3n es promover la movilidad activa, garantizando la seguridad, comodidad y prioridad del movimiento peatonal, de personas con discapacidades (o movilidad reducida), y de veh\u00edculos y equipos impulsados por humanos, como bicicletas y patinetes.",
             "CoBenefits": {
                 "air_quality": 2,
                 "water_quality": 0,
                 "habitat": 0,
-                "cost_of_living": 2,
-                "housing": 2,
-                "mobility": 0,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 2,
                 "stakeholder_engagement": 1
             },
             "EquityAndInclusionConsiderations": null,
             "GHGReductionPotential": {
-                "stationary_energy": "60-79",
-                "transportation": null,
+                "stationary_energy": null,
+                "transportation": "80-100",
                 "waste": null,
                 "ippu": null,
                 "afolu": null
@@ -897,18 +292,20 @@
             "CostInvestmentNeeded": "medium",
             "TimelineForImplementation": "5-10 years",
             "Dependencies": [
-                "Disponibilidad de programas financieros, subvenciones o subsidios para hacer que los sistemas de energ\u00eda e\u00f3lica sean asequibles para hogares y proyectos comunitarios",
-                "Acceso a experiencia t\u00e9cnica y recursos para guiar la instalaci\u00f3n y el mantenimiento de sistemas de energ\u00eda e\u00f3lica en entornos residenciales y comunitarios",
-                "Apoyo pol\u00edtico y regulatorio para fomentar la adopci\u00f3n de energ\u00eda e\u00f3lica, incluyendo procesos de permisos simplificados e incentivos para proyectos de energ\u00eda limpia"
+                "Inversiones en infraestructura para pasarelas peatonales seguras y accesibles, carriles para bicicletas e instalaciones para personas con discapacidades",
+                "Marcos de pol\u00edticas y regulaciones para priorizar la movilidad activa y establecer est\u00e1ndares de seguridad para peatones y veh\u00edculos no motorizados",
+                "Campa\u00f1as de concienciaci\u00f3n p\u00fablica para promover la movilidad activa y educar a los ciudadanos sobre los beneficios de caminar, andar en bicicleta y usar otros medios de transporte impulsados por humanos"
             ],
             "KeyPerformanceIndicators": [
-                "N\u00famero de proyectos de energ\u00eda e\u00f3lica financiados anualmente.",
-                "Capacidad instalada de sistemas de energ\u00eda e\u00f3lica de proyectos apoyados por cr\u00e9dito (MW).",
-                "Reducci\u00f3n estimada en emisiones equivalentes de CO\u2082 por la adopci\u00f3n de energ\u00eda e\u00f3lica."
+                "Kil\u00f3metros de nuevos carriles bici y senderos peatonales construidos anualmente.",
+                "Aumento en el uso diario de la infraestructura para ciclistas y peatones (%).",
+                "Reducci\u00f3n en las emisiones del transporte urbano (%)."
             ],
             "PowersAndMandates": [
                 "local"
-            ]
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
         }
     },
     {
@@ -918,7 +315,7 @@
         "regionName": "Rio Grande do Sul",
         "actionId": "icare_0068",
         "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
-        "actionPriority": 16,
+        "actionPriority": 6,
         "action": {
             "ActionID": "icare_0068",
             "ActionName": "Desplegar sistemas de transporte bajo demanda con flotas 100% el\u00e9ctricas.",
@@ -935,7 +332,7 @@
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "Description": "Servicios de transporte colectivo a demanda, basados en aplicaciones, optimizan el uso de veh\u00edculos el\u00e9ctricos, reduciendo las emisiones por pasajero.",
+            "Description": "Servicios de transporte colectivo bajo demanda, basados en aplicaciones, optimizan el uso de veh\u00edculos el\u00e9ctricos, reduciendo las emisiones por pasajero.",
             "CoBenefits": {
                 "air_quality": 2,
                 "water_quality": 0,
@@ -962,13 +359,15 @@
                 "Implementaci\u00f3n de pol\u00edticas e incentivos para fomentar la adopci\u00f3n y el uso de servicios de transporte el\u00e9ctrico compartido."
             ],
             "KeyPerformanceIndicators": [
-                "N\u00famero de usuarios activos del sistema de flota el\u00e9ctrica a demanda.",
-                "Porcentaje de la demanda de transporte urbano cubierta por sistemas a demanda.",
-                "Reducci\u00f3n en los niveles de contaminaci\u00f3n ac\u00fastica en \u00e1reas urbanas"
+                "N\u00famero de usuarios activos del sistema de flota el\u00e9ctrica bajo demanda.",
+                "Porcentaje de demanda de transporte urbano satisfecho por sistemas bajo demanda.",
+                "Reducci\u00f3n en los niveles de contaminaci\u00f3n ac\u00fastica en \u00e1reas urbanas."
             ],
             "PowersAndMandates": [
                 "local"
-            ]
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
         }
     },
     {
@@ -976,132 +375,12 @@
         "cityName": "Caxias do Sul",
         "region": "RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0017",
-        "actionName": "Optimize the urban solid waste (USW) management system, aiming to expand collection and reduce illegal disposal.",
-        "actionPriority": 17,
+        "actionId": "icare_0090",
+        "actionName": "Adoption of electric drones for last-mile deliveries.",
+        "actionPriority": 7,
         "action": {
-            "ActionID": "icare_0017",
-            "ActionName": "Optimizar el sistema de gesti\u00f3n de residuos s\u00f3lidos urbanos (RSU), con el objetivo de ampliar la recolecci\u00f3n y reducir la disposici\u00f3n ilegal.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "waste"
-            ],
-            "Subsector": [
-                "disposal_of_solid_waste_generated_in_the_city"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Esta acci\u00f3n se centra en optimizar el sistema de gesti\u00f3n de residuos s\u00f3lidos urbanos (RSU), cubriendo todas las etapas. Inicialmente, se revisar\u00e1 la planificaci\u00f3n e infraestructura de la recolecci\u00f3n selectiva de residuos en los barrios para alcanzar m\u00e1s \u00e1reas del municipio y mejorar el monitoreo de la disposici\u00f3n regular y los vertederos de residuos.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": "20-39",
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Inversi\u00f3n en infraestructura y log\u00edstica para expandir la cobertura de recolecci\u00f3n selectiva de residuos a m\u00e1s vecindarios",
-                "Sistemas de monitoreo y aplicaci\u00f3n fortalecidos para prevenir el vertido ilegal y asegurar la correcta disposici\u00f3n de residuos",
-                "Campa\u00f1as de concienciaci\u00f3n p\u00fablica para educar a los ciudadanos sobre la importancia de la separaci\u00f3n de residuos y los m\u00e9todos adecuados de disposici\u00f3n"
-            ],
-            "KeyPerformanceIndicators": [
-                "Porcentaje de residuos s\u00f3lidos urbanos recolectados y procesados adecuadamente.",
-                "Reducci\u00f3n mensual en la cantidad de incidentes de disposici\u00f3n ilegal de residuos.",
-                "Reducci\u00f3n estimada en las emisiones equivalentes de CO\u2082 a partir de pr\u00e1cticas mejoradas de gesti\u00f3n de residuos."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR CXL",
-        "cityName": "Caxias do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0110",
-        "actionName": "Regulate the Construction Waste Management Plan",
-        "actionPriority": 18,
-        "action": {
-            "ActionID": "icare_0110",
-            "ActionName": "Regular el Plan de Gesti\u00f3n de Residuos de Construcci\u00f3n",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "waste"
-            ],
-            "Subsector": [
-                "disposal_of_solid_waste_generated_in_the_city"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Establecer directrices para la gesti\u00f3n eficiente de residuos, promoviendo la sostenibilidad a trav\u00e9s de la reducci\u00f3n de residuos y la reutilizaci\u00f3n de materiales en proyectos de construcci\u00f3n.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": "20-39",
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Desarrollar directrices claras para la gesti\u00f3n de residuos en la construcci\u00f3n, centr\u00e1ndose en la reducci\u00f3n de residuos y la reutilizaci\u00f3n de materiales.",
-                "Promover el uso de materiales de construcci\u00f3n sostenibles y los principios de la econom\u00eda circular en proyectos de construcci\u00f3n.",
-                "Proporcionar capacitaci\u00f3n e incentivos para que las empresas de construcci\u00f3n adopten pr\u00e1cticas eficientes de gesti\u00f3n de residuos."
-            ],
-            "KeyPerformanceIndicators": [
-                "Porcentaje de contratistas que cumplen con el plan de gesti\u00f3n.",
-                "Cantidad mensual de residuos de construcci\u00f3n reciclados o reutilizados (toneladas/mes).",
-                "Reducci\u00f3n estimada en emisiones equivalentes de CO\u2082 debido a la gesti\u00f3n adecuada de residuos de construcci\u00f3n."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR CXL",
-        "cityName": "Caxias do Sul",
-        "region": "RS",
-        "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0139",
-        "actionName": "Implementation of urban toll.",
-        "actionPriority": 19,
-        "action": {
-            "ActionID": "icare_0139",
-            "ActionName": "Implementaci\u00f3n de peaje urbano.",
+            "ActionID": "icare_0090",
+            "ActionName": "Adopci\u00f3n de drones el\u00e9ctricos para entregas de \u00faltima milla.",
             "ActionType": [
                 "mitigation"
             ],
@@ -1110,18 +389,142 @@
                 "transportation"
             ],
             "Subsector": [
-                "on-road"
+                "off-road"
             ],
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "Description": "Establecimiento de un cargo por congesti\u00f3n y/o rotaci\u00f3n de matr\u00edculas para veh\u00edculos ligeros en \u00e1reas saturadas y en horarios saturados",
+            "Description": "Reemplazar los veh\u00edculos tradicionales con drones el\u00e9ctricos para entregas de corta distancia en centros urbanos, reduciendo emisiones y congesti\u00f3n de tr\u00e1fico.",
             "CoBenefits": {
                 "air_quality": 2,
                 "water_quality": 0,
                 "habitat": 0,
-                "cost_of_living": -1,
+                "cost_of_living": 0,
                 "housing": 0,
+                "mobility": 1,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "60-79",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Desarrollo de regulaciones del espacio a\u00e9reo urbano para garantizar la operaci\u00f3n segura y eficiente de drones de entrega.",
+                "Inversi\u00f3n en infraestructura de carga y mantenimiento para apoyar una flota de drones el\u00e9ctricos.",
+                "Colaboraci\u00f3n con empresas de log\u00edstica para integrar drones en redes de entrega de \u00faltima milla."
+            ],
+            "KeyPerformanceIndicators": [
+                "Reducci\u00f3n del tiempo de entrega en comparaci\u00f3n con los m\u00e9todos tradicionales (minutos).",
+                "Aumento en la satisfacci\u00f3n del cliente con las entregas mediante drones (%).",
+                "Reducci\u00f3n de la congesti\u00f3n del tr\u00e1fico causada por veh\u00edculos de entrega (%)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR CXL",
+        "cityName": "Caxias do Sul",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0042",
+        "actionName": "Encourage renewable energy policies at the municipal level",
+        "actionPriority": 8,
+        "action": {
+            "ActionID": "icare_0042",
+            "ActionName": "Fomentar pol\u00edticas de energ\u00eda renovable a nivel municipal",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "stationary_energy"
+            ],
+            "Subsector": [
+                "non-specified_sources"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Abogar por e implementar pol\u00edticas que prioricen el desarrollo e integraci\u00f3n de sistemas de energ\u00eda renovable en las operaciones y planificaci\u00f3n del gobierno local.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 1,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": "80-100",
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Voluntad pol\u00edtica y liderazgo para priorizar la energ\u00eda renovable en las pol\u00edticas y procesos de planificaci\u00f3n del gobierno local",
+                "Desarrollo de pol\u00edticas claras y marcos regulatorios que faciliten la integraci\u00f3n de sistemas de energ\u00eda renovable en las operaciones gubernamentales",
+                "Disponibilidad de financiamiento o mecanismos financieros para apoyar la transici\u00f3n a la energ\u00eda renovable en la infraestructura y operaciones municipales"
+            ],
+            "KeyPerformanceIndicators": [
+                "N\u00famero de proyectos de energ\u00eda renovable aprobados o iniciados anualmente a nivel municipal.",
+                "Porcentaje de la demanda energ\u00e9tica municipal cubierta por fuentes renovables (%).",
+                "Reducci\u00f3n de las emisiones de carbono municipales debido a la adopci\u00f3n de energ\u00eda renovable (toneladas de CO\u2082e/a\u00f1o)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR CXL",
+        "cityName": "Caxias do Sul",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0057",
+        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
+        "actionPriority": 9,
+        "action": {
+            "ActionID": "icare_0057",
+            "ActionName": "Expansi\u00f3n de los sistemas de transporte masivo sobre rieles (metros, LRTs y monorra\u00edles).",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "railways"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Estos sistemas ofrecen alta capacidad y bajas emisiones, cruciales para ciudades con alta densidad de poblaci\u00f3n.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 1,
                 "mobility": 2,
                 "stakeholder_engagement": 0
             },
@@ -1134,20 +537,23 @@
                 "afolu": null
             },
             "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
+            "CostInvestmentNeeded": "high",
+            "TimelineForImplementation": "5-10 years",
             "Dependencies": [
-                "Establecer un marco legal claro e invertir en tecnolog\u00eda para la supervisi\u00f3n y el cumplimiento (por ejemplo, c\u00e1maras, sensores).",
-                "Lanzar campa\u00f1as de concienciaci\u00f3n y asegurar la disponibilidad de transporte p\u00fablico eficiente o soluciones de movilidad alternativas.",
-                "Colaborar con los gobiernos locales y las agencias de transporte, y establecer sistemas para monitorear y evaluar la efectividad de la pol\u00edtica."
+                "Inversi\u00f3n en el desarrollo y expansi\u00f3n de infraestructuras de transporte p\u00fablico de alta capacidad, como autobuses el\u00e9ctricos y sistemas de metro.",
+                "Implementaci\u00f3n de pol\u00edticas e incentivos para fomentar el uso del transporte p\u00fablico sobre los veh\u00edculos privados.",
+                "Integraci\u00f3n de fuentes de energ\u00eda renovable para alimentar estos sistemas, reduciendo a\u00fan m\u00e1s las emisiones."
             ],
             "KeyPerformanceIndicators": [
-                "Reducci\u00f3n de emisiones de CO\u2082 del transporte por carretera urbano (tCO\u2082e/a\u00f1o).",
-                "Ingresos generados por la implementaci\u00f3n del cargo por congesti\u00f3n urbana (R$)."
+                "Longitud de las nuevas l\u00edneas de tr\u00e1nsito construidas (km/a\u00f1o).",
+                "Reducci\u00f3n en la congesti\u00f3n del tr\u00e1fico vial (%).",
+                "Reducci\u00f3n en el uso de veh\u00edculos privados (n\u00famero de viajes evitados/a\u00f1o)."
             ],
             "PowersAndMandates": [
                 "local"
-            ]
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
         }
     },
     {
@@ -1155,12 +561,12 @@
         "cityName": "Caxias do Sul",
         "region": "RS",
         "regionName": "Rio Grande do Sul",
-        "actionId": "icare_0117",
-        "actionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
-        "actionPriority": 20,
+        "actionId": "c40_0026",
+        "actionName": "Vehicle Emissions",
+        "actionPriority": 10,
         "action": {
-            "ActionID": "icare_0117",
-            "ActionName": "Aumentar el atractivo del sistema de autobuses municipales para promover este modo de transporte.",
+            "ActionID": "c40_0026",
+            "ActionName": "Emisiones de Veh\u00edculos",
             "ActionType": [
                 "mitigation"
             ],
@@ -1174,15 +580,146 @@
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "Description": "Aumentar la calidad de la prestaci\u00f3n del servicio de transporte, con el objetivo de cambiar el modo de transporte de los pasajeros del transporte motorizado privado al transporte p\u00fablico, reduciendo as\u00ed las emisiones generadas por coches y motocicletas.",
+            "Description": "Las estrategias de reducci\u00f3n de \"Vehicle Emissions\" se centran en minimizar el impacto ambiental de todo tipo de veh\u00edculos. La implementaci\u00f3n de tecnolog\u00edas m\u00e1s limpias y la promoci\u00f3n de combustibles alternativos contribuyen a reducir las emisiones, fomentando un transporte sostenible y ecol\u00f3gico.",
             "CoBenefits": {
-                "air_quality": 2,
+                "air_quality": 1,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": "Las estrategias de reducci\u00f3n de \"Emisiones de Veh\u00edculos\" promueven inherentemente la equidad y la inclusi\u00f3n al abordar los impactos ambientales que afectan desproporcionadamente a las comunidades vulnerables y desatendidas. Estas comunidades a menudo experimentan niveles m\u00e1s altos de contaminaci\u00f3n del aire y problemas de salud relacionados debido a la proximidad a \u00e1reas de alto tr\u00e1fico y zonas industriales. Al implementar tecnolog\u00edas m\u00e1s limpias y promover combustibles alternativos, la acci\u00f3n beneficia directamente a estas poblaciones al mejorar la calidad del aire y reducir los riesgos para la salud.\n\nAdem\u00e1s, el enfoque en el transporte sostenible y ecol\u00f3gico puede mejorar el acceso a opciones de transporte asequibles y eficientes para las comunidades desatendidas, que pueden carecer de un transporte p\u00fablico confiable. Esta inclusividad asegura que todos los miembros de la comunidad, independientemente de su estatus socioecon\u00f3mico, puedan beneficiarse de un aire m\u00e1s limpio y mejores resultados de salud p\u00fablica. En general, la acci\u00f3n reconoce y aborda las necesidades espec\u00edficas de las poblaciones vulnerables, fomentando un enfoque m\u00e1s equitativo hacia la acci\u00f3n clim\u00e1tica.",
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "80-100",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Desarrollo y disponibilidad de tecnolog\u00edas de veh\u00edculos m\u00e1s limpias",
+                "Infraestructura para la distribuci\u00f3n de combustibles alternativos",
+                "Pol\u00edticas y regulaciones gubernamentales que apoyan la reducci\u00f3n de emisiones",
+                "Conciencia p\u00fablica y aceptaci\u00f3n de opciones de transporte ecol\u00f3gicas",
+                "Inversi\u00f3n en investigaci\u00f3n y desarrollo para soluciones de transporte sostenible"
+            ],
+            "KeyPerformanceIndicators": [
+                "Reducci\u00f3n de emisiones de veh\u00edculos (CO2, NOx, PM)",
+                "Porcentaje de veh\u00edculos que utilizan combustibles alternativos",
+                "N\u00famero de veh\u00edculos el\u00e9ctricos en circulaci\u00f3n",
+                "Mejoras en la eficiencia del combustible (millas por gal\u00f3n)",
+                "Tasa de adopci\u00f3n de tecnolog\u00edas m\u00e1s limpias",
+                "Reducci\u00f3n en el consumo de combustibles f\u00f3siles",
+                "Tasas de uso del transporte p\u00fablico",
+                "Mejoras en el \u00edndice de calidad del aire",
+                "Porcentaje de zonas de bajas emisiones establecidas",
+                "Inversi\u00f3n en infraestructura de transporte sostenible"
+            ],
+            "PowersAndMandates": null,
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR CXL",
+        "cityName": "Caxias do Sul",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0092",
+        "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
+        "actionPriority": 11,
+        "action": {
+            "ActionID": "icare_0092",
+            "ActionName": "Desarrollo de micro-centros log\u00edsticos para fomentar el uso de bicicletas de carga el\u00e9ctricas.",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "on-road"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Crear centros log\u00edsticos a peque\u00f1a escala en barrios urbanos para facilitar las entregas utilizando bicicletas de carga el\u00e9ctricas, mientras se implementan incentivos fiscales o subsidios para que las empresas adopten estas bicicletas como modo de transporte, reduciendo las emisiones y mejorando la eficiencia de las entregas en \u00e1reas densamente pobladas.",
+            "CoBenefits": {
+                "air_quality": 1,
                 "water_quality": 0,
                 "habitat": 0,
                 "cost_of_living": 1,
                 "housing": 0,
                 "mobility": 2,
-                "stakeholder_engagement": 0
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "20-39",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Identificaci\u00f3n y desarrollo de ubicaciones adecuadas para centros log\u00edsticos a peque\u00f1a escala dentro de los vecindarios urbanos.",
+                "Provisi\u00f3n de incentivos fiscales, subsidios o subvenciones para alentar a las empresas a hacer la transici\u00f3n a bicicletas de carga el\u00e9ctricas.",
+                "Establecimiento de asociaciones con empresas de log\u00edstica para garantizar la integraci\u00f3n y eficiencia en las operaciones de entrega utilizando estos centros."
+            ],
+            "KeyPerformanceIndicators": [
+                "Reducci\u00f3n en la distancia recorrida por veh\u00edculos de entrega tradicionales (km/a\u00f1o).",
+                "Aumento en la eficiencia operativa de los centros log\u00edsticos (%).",
+                "N\u00famero de empresas que utilizan micro-centros log\u00edsticos para entregas."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR CXL",
+        "cityName": "Caxias do Sul",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0118",
+        "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
+        "actionPriority": 12,
+        "action": {
+            "ActionID": "icare_0118",
+            "ActionName": "Promover el uso de bicicletas como un modo de transporte regular mediante la expansi\u00f3n de la infraestructura y estrategias de concienciaci\u00f3n y comunicaci\u00f3n.",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "on-road"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Fomentar la adopci\u00f3n de bicicletas como un modo de transporte regular mediante la expansi\u00f3n de la infraestructura para ciclistas, como carriles bici dedicados, instalaciones de estacionamiento y estaciones de reparaci\u00f3n. Adem\u00e1s, implementar campa\u00f1as de concienciaci\u00f3n y estrategias de comunicaci\u00f3n para resaltar los beneficios ambientales, de salud y econ\u00f3micos del ciclismo, con el objetivo de aumentar la participaci\u00f3n p\u00fablica y hacer del ciclismo una opci\u00f3n de transporte viable y sostenible para el desplazamiento diario.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 1,
+                "mobility": 2,
+                "stakeholder_engagement": 1
             },
             "EquityAndInclusionConsiderations": null,
             "GHGReductionPotential": {
@@ -1196,18 +733,515 @@
             "CostInvestmentNeeded": "medium",
             "TimelineForImplementation": "5-10 years",
             "Dependencies": [
-                "Mejorar la calidad de los servicios de transporte p\u00fablico para atraer pasajeros del transporte motorizado privado.",
-                "Implementar pol\u00edticas e infraestructuras que apoyen y mejoren la eficiencia de los sistemas de transporte p\u00fablico.",
-                "Promover la concienciaci\u00f3n sobre los beneficios ambientales del transporte p\u00fablico para fomentar un cambio modal y reducir las emisiones."
+                "Expandir la infraestructura para bicicletas, incluyendo carriles exclusivos para bicicletas, instalaciones de estacionamiento y estaciones de reparaci\u00f3n.",
+                "Implementar campa\u00f1as de concienciaci\u00f3n para resaltar los beneficios ambientales, de salud y econ\u00f3micos del ciclismo.",
+                "Promover la participaci\u00f3n p\u00fablica a trav\u00e9s de estrategias de comunicaci\u00f3n, haciendo del ciclismo una opci\u00f3n viable y sostenible para el desplazamiento diario."
             ],
             "KeyPerformanceIndicators": [
-                "Aumento anual en el n\u00famero de pasajeros que utilizan el sistema de autobuses municipales.",
-                "Porcentaje de rutas de autob\u00fas con mejor fiabilidad en el tiempo de viaje.",
-                "Reducci\u00f3n estimada en las emisiones de CO\u2082 equivalente debido al aumento del uso del transporte p\u00fablico."
+                "Longitud de los nuevos carriles bici a\u00f1adidos a la red urbana (km).",
+                "Aumento anual en el n\u00famero de usuarios de bicicletas en \u00e1reas urbanas.",
+                "Reducci\u00f3n estimada en las emisiones de CO\u2082 equivalente por el cambio al ciclismo."
             ],
             "PowersAndMandates": [
                 "local"
-            ]
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR CXL",
+        "cityName": "Caxias do Sul",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0024",
+        "actionName": "Integrate renewables into municipal water systems",
+        "actionPriority": 13,
+        "action": {
+            "ActionID": "icare_0024",
+            "ActionName": "Integrar energ\u00edas renovables en los sistemas de agua municipales",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "stationary_energy"
+            ],
+            "Subsector": [
+                "energy_generation_supplied_to_the_grid"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Implementar fuentes de energ\u00eda renovable, como la solar o la e\u00f3lica, para impulsar los sistemas de tratamiento, bombeo y distribuci\u00f3n de agua, reduciendo los costos de energ\u00eda y las emisiones.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": "80-100",
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Disponibilidad de financiaci\u00f3n o incentivos financieros para integrar fuentes de energ\u00eda renovable como la solar o la e\u00f3lica en los sistemas de tratamiento y distribuci\u00f3n de agua",
+                "Experiencia t\u00e9cnica e infraestructura para adaptar los sistemas existentes con soluciones de energ\u00eda renovable o dise\u00f1ar nuevas instalaciones alimentadas por energ\u00edas renovables",
+                "Apoyo pol\u00edtico y regulatorio para fomentar el uso de energ\u00eda limpia en los sistemas de agua y asegurar su integraci\u00f3n en las redes energ\u00e9ticas municipales"
+            ],
+            "KeyPerformanceIndicators": [
+                "Porcentaje de sistemas de agua municipales alimentados por energ\u00edas renovables.",
+                "Reducci\u00f3n en el consumo de energ\u00eda de fuentes no renovables (kWh/a\u00f1o).",
+                "Emisiones de GEI evitadas (toneladas de CO\u2082e)"
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR CXL",
+        "cityName": "Caxias do Sul",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0021",
+        "actionName": "Encourage and promote measures for the sustainable and rational use of individual motorized transportation",
+        "actionPriority": 14,
+        "action": {
+            "ActionID": "icare_0021",
+            "ActionName": "Fomentar y promover medidas para el uso sostenible y racional del transporte motorizado individual",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "on-road"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "El objetivo de esta acci\u00f3n es racionalizar el uso del transporte motorizado individual, reduciendo su participaci\u00f3n en la matriz de movilidad. Tambi\u00e9n es importante regular los servicios de transporte privado basados en aplicaciones, con el objetivo de proporcionar un servicio de calidad integrado con la movilidad general de la ciudad.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": -1,
+                "housing": 0,
+                "mobility": 1,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "80-100",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "high",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Desarrollo de pol\u00edticas y regulaciones para reducir el uso del transporte motorizado individual y fomentar modos de transporte alternativos",
+                "Integraci\u00f3n de servicios de transporte privado basados en aplicaciones con el sistema de transporte p\u00fablico de la ciudad para una movilidad sin interrupciones",
+                "Inversi\u00f3n en infraestructura de transporte p\u00fablico para ofrecer alternativas accesibles, confiables y de alta calidad al uso de autom\u00f3viles privados"
+            ],
+            "KeyPerformanceIndicators": [
+                "Porcentaje de reducci\u00f3n en el uso de veh\u00edculos privados en la ciudad (%).",
+                "Aumento anual en el uso del transporte p\u00fablico (%).",
+                "Reducci\u00f3n en las emisiones equivalentes de CO\u2082 por la disminuci\u00f3n del transporte motorizado (toneladas/a\u00f1o)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR CXL",
+        "cityName": "Caxias do Sul",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0128",
+        "actionName": "Establish Municipal Programs for Payment for Environmental Services (PES)",
+        "actionPriority": 15,
+        "action": {
+            "ActionID": "icare_0128",
+            "ActionName": "Establecer Programas Municipales de Pago por Servicios Ambientales (PES)",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "land"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Implementar programas que paguen a los propietarios de tierras por mantener o mejorar las condiciones ambientales en sus propiedades.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": -1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "60-79"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Creaci\u00f3n de mecanismos de financiaci\u00f3n y criterios de elegibilidad claros con indicadores de rendimiento.",
+                "Alianzas con organizaciones ambientales y campa\u00f1as de concienciaci\u00f3n para fomentar la participaci\u00f3n.",
+                "Integraci\u00f3n con marcos legales para garantizar la sostenibilidad del programa."
+            ],
+            "KeyPerformanceIndicators": [
+                "N\u00famero de contratos activos de Pago por Servicios Ambientales (PES) firmados.",
+                "\u00c1rea total bajo pr\u00e1cticas de conservaci\u00f3n o restauraci\u00f3n incentivadas (hect\u00e1reas).",
+                "Cantidad de carbono secuestrado o emisiones evitadas a trav\u00e9s de acciones de PES (tCO\u2082e/a\u00f1o)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR CXL",
+        "cityName": "Caxias do Sul",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0129",
+        "actionName": "Facilitate Technology Transfer for Conservation Practices",
+        "actionPriority": 16,
+        "action": {
+            "ActionID": "icare_0129",
+            "ActionName": "Facilitar la Transferencia de Tecnolog\u00eda para Pr\u00e1cticas de Conservaci\u00f3n",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "agriculture_forestry_and_fishing_activities"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Promover la adopci\u00f3n de pr\u00e1cticas agr\u00edcolas sostenibles mediante la capacitaci\u00f3n, proyectos piloto y demostraciones tecnol\u00f3gicas.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 1,
+                "habitat": 2,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "60-79"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Provisi\u00f3n de programas de capacitaci\u00f3n y establecimiento de proyectos piloto para mostrar pr\u00e1cticas sostenibles.",
+                "Alianzas con instituciones de investigaci\u00f3n para el desarrollo de tecnolog\u00eda e incentivos financieros para fomentar la adopci\u00f3n.",
+                "Acceso a asistencia t\u00e9cnica para una implementaci\u00f3n exitosa."
+            ],
+            "KeyPerformanceIndicators": [
+                "N\u00famero de tecnolog\u00edas de conservaci\u00f3n transferidas y aplicadas en las granjas.",
+                "Porcentaje de productores capacitados para implementar pr\u00e1cticas de conservaci\u00f3n.",
+                "Reducci\u00f3n en la degradaci\u00f3n del suelo o aumento en la cobertura vegetal (hect\u00e1reas)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR CXL",
+        "cityName": "Caxias do Sul",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0100",
+        "actionName": "Support Regenerative Agriculture Practices",
+        "actionPriority": 17,
+        "action": {
+            "ActionID": "icare_0100",
+            "ActionName": "Apoyar las Pr\u00e1cticas de Agricultura Regenerativa",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "agriculture_forestry_and_fishing_activities"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Apoyar pr\u00e1cticas agr\u00edcolas regenerativas que se centren en restaurar la salud del suelo y reducir las emisiones de carbono.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "60-79"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Desarrollo de programas de capacitaci\u00f3n y recursos para educar a los agricultores sobre t\u00e9cnicas agr\u00edcolas regenerativas, como el cultivo de cobertura y la reducci\u00f3n de la labranza.",
+                "Implementaci\u00f3n de incentivos financieros o subsidios para apoyar la adopci\u00f3n de pr\u00e1cticas regenerativas.",
+                "Colaboraci\u00f3n con instituciones de investigaci\u00f3n agr\u00edcola para monitorear y documentar la efectividad de las pr\u00e1cticas regenerativas en la captura de carbono y la mejora de la salud del suelo."
+            ],
+            "KeyPerformanceIndicators": [
+                "Aumento en los niveles de carbono org\u00e1nico del suelo (toneladas/hect\u00e1rea).",
+                "Reducci\u00f3n en el uso de agua por hect\u00e1rea en la producci\u00f3n agr\u00edcola (%).",
+                "N\u00famero de proyectos piloto de agricultura regenerativa implementados."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR CXL",
+        "cityName": "Caxias do Sul",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0126",
+        "actionName": "Implementation of green fuel supply infrastructure for aircraft, such as biofuels or green hydrogen.",
+        "actionPriority": 18,
+        "action": {
+            "ActionID": "icare_0126",
+            "ActionName": "Implementaci\u00f3n de infraestructura de suministro de combustibles verdes para aeronaves, como biocombustibles o hidr\u00f3geno verde.",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "aviation"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Esta acci\u00f3n tiene como objetivo promover la sostenibilidad en los aeropuertos mediante la implementaci\u00f3n de infraestructura para abastecer a las aeronaves con combustibles de bajo carbono. El uso de biocombustibles o hidr\u00f3geno verde puede reducir significativamente las emisiones de GEI en el sector de la aviaci\u00f3n. Adem\u00e1s, la transici\u00f3n a estas fuentes de energ\u00eda m\u00e1s limpias contribuir\u00e1 a alcanzar los objetivos de descarbonizaci\u00f3n en el sector del transporte, al tiempo que se mantiene la eficiencia operativa en los aeropuertos y se minimiza su impacto ambiental.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "60-79",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "high",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Desarrollar infraestructura para abastecer aviones con combustibles bajos en carbono como biocombustibles o hidr\u00f3geno verde.",
+                "Asegurar la disponibilidad de fuentes de combustible sostenibles y la tecnolog\u00eda necesaria para las operaciones de abastecimiento.",
+                "Monitorear y evaluar el impacto ambiental y la eficiencia operativa de la transici\u00f3n a combustibles bajos en carbono."
+            ],
+            "KeyPerformanceIndicators": [
+                "N\u00famero de aeropuertos con infraestructura de biocombustible o hidr\u00f3geno verde.",
+                "Cantidad de combustible verde consumido por el sector de la aviaci\u00f3n (litros/a\u00f1o).",
+                "Reducci\u00f3n de emisiones de CO\u2082 de la aviaci\u00f3n mediante el uso de combustibles alternativos (tCO\u2082e/a\u00f1o)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR CXL",
+        "cityName": "Caxias do Sul",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0130",
+        "actionName": "Conduct Technical Assistance and Rural Extension (ATER) Actions",
+        "actionPriority": 19,
+        "action": {
+            "ActionID": "icare_0130",
+            "ActionName": "Realizar Acciones de Asistencia T\u00e9cnica y Extensi\u00f3n Rural (ATER)",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "agriculture_forestry_and_fishing_activities"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Proporcionar apoyo t\u00e9cnico y capacitaci\u00f3n a los productores rurales para la producci\u00f3n agr\u00edcola sostenible.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "60-79"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Disponibilidad de personal t\u00e9cnico calificado y programas de formaci\u00f3n adaptados.",
+                "Alianzas con instituciones de investigaci\u00f3n agr\u00edcola y asignaci\u00f3n de recursos para el desarrollo de capacidades.",
+                "Compromiso con los productores rurales para asegurar su participaci\u00f3n activa."
+            ],
+            "KeyPerformanceIndicators": [
+                "N\u00famero de productores beneficiados con asistencia t\u00e9cnica rural (% del total).",
+                "Porcentaje de participantes que adoptan pr\u00e1cticas resilientes al clima.",
+                "Vulnerabilidad reducida de las propiedades al riesgo clim\u00e1tico (%)."
+            ],
+            "PowersAndMandates": [
+                "state"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR CXL",
+        "cityName": "Caxias do Sul",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0038",
+        "actionName": "Promote community solar farms",
+        "actionPriority": 20,
+        "action": {
+            "ActionID": "icare_0038",
+            "ActionName": "Promover granjas solares comunitarias",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "stationary_energy"
+            ],
+            "Subsector": [
+                "energy_generation_supplied_to_the_grid"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Desarrollar y fomentar la adopci\u00f3n de proyectos solares compartidos, permitiendo que las comunidades se beneficien colectivamente de energ\u00eda limpia y renovable.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 1,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 1,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": "80-100",
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Desarrollo de pol\u00edticas y marcos regulatorios para apoyar proyectos de energ\u00eda solar compartida basados en la comunidad y garantizar el acceso equitativo a la energ\u00eda limpia",
+                "Disponibilidad de mecanismos financieros o incentivos para ayudar a las comunidades a invertir en y mantener sistemas de energ\u00eda solar compartida",
+                "Colaboraci\u00f3n entre gobiernos locales, proveedores de energ\u00eda y organizaciones comunitarias para dise\u00f1ar e implementar proyectos de energ\u00eda solar compartida de manera efectiva"
+            ],
+            "KeyPerformanceIndicators": [
+                "N\u00famero de hogares atendidos por proyectos solares comunitarios.",
+                "Emisiones de GEI evitadas mediante la producci\u00f3n de energ\u00eda solar (toneladas de CO\u2082e)"
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
         }
     }
 ]

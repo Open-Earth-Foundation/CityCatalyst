@@ -4,69 +4,9 @@
         "cityName": "Corumb\u00e1",
         "region": "MS",
         "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0133",
-        "actionName": "Promote Urban Reforestation and Green Corridors",
-        "actionPriority": 1,
-        "action": {
-            "ActionID": "icare_0133",
-            "ActionName": "Promote Urban Reforestation and Green Corridors",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "land"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Increase urban tree coverage to mitigate the urban heat island effect and enhance biodiversity.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 1,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "80-100"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Identification of priority areas and selection of native, climate-resilient species for tree planting.",
-                "Partnerships with local organizations and nurseries, and allocation of resources for planting and maintenance.",
-                "Community engagement to ensure long-term care and support."
-            ],
-            "KeyPerformanceIndicators": [
-                "Increase in urban tree canopy cover (%)",
-                "Total length of green corridors created or restored (kilometers)",
-                "Reduction in urban heat island effect temperatures (\u00b0C)"
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR CMG",
-        "cityName": "Corumb\u00e1",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
         "actionId": "icare_0050",
         "actionName": "Implement Agroforestry Systems",
-        "actionPriority": 2,
+        "actionPriority": 1,
         "action": {
             "ActionID": "icare_0050",
             "ActionName": "Implement Agroforestry Systems",
@@ -116,7 +56,71 @@
             ],
             "PowersAndMandates": [
                 "local"
-            ]
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR CMG",
+        "cityName": "Corumb\u00e1",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0133",
+        "actionName": "Promote Urban Reforestation and Green Corridors",
+        "actionPriority": 2,
+        "action": {
+            "ActionID": "icare_0133",
+            "ActionName": "Promote Urban Reforestation and Green Corridors",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "land"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Increase urban tree coverage to mitigate the urban heat island effect and enhance biodiversity.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 1,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 1,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "80-100"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Identification of priority areas and selection of native, climate-resilient species for tree planting.",
+                "Partnerships with local organizations and nurseries, and allocation of resources for planting and maintenance.",
+                "Community engagement to ensure long-term care and support."
+            ],
+            "KeyPerformanceIndicators": [
+                "Increase in urban tree canopy cover (%)",
+                "Total length of green corridors created or restored (kilometers)",
+                "Reduction in urban heat island effect temperatures (\u00b0C)"
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
         }
     },
     {
@@ -176,307 +180,9 @@
             ],
             "PowersAndMandates": [
                 "national"
-            ]
-        }
-    },
-    {
-        "locode": "BR CMG",
-        "cityName": "Corumb\u00e1",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0084",
-        "actionName": "Create Incentives for Agroforestry Practices in Livestock Systems",
-        "actionPriority": 4,
-        "action": {
-            "ActionID": "icare_0084",
-            "ActionName": "Create Incentives for Agroforestry Practices in Livestock Systems",
-            "ActionType": [
-                "mitigation"
             ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Create financial and technical incentives for integrating agroforestry practices into livestock systems, promoting carbon capture, soil protection, and biodiversity improvement.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "60-79"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Development of financial incentive programs, such as subsidies or tax breaks, to support farmers in integrating agroforestry with livestock systems.",
-                "Provision of technical assistance and training to farmers on best practices for agroforestry integration into livestock operations.",
-                "Collaboration with agricultural and environmental organizations to monitor and assess the impacts of agroforestry practices on carbon capture, soil health, and biodiversity."
-            ],
-            "KeyPerformanceIndicators": [
-                "Number of financial incentives provided to integrate agroforestry in livestock systems.",
-                "Increase in soil quality and vegetation cover in managed properties (%).",
-                "Growth in biodiversity in agroforestry areas (% of identified species)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR CMG",
-        "cityName": "Corumb\u00e1",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0100",
-        "actionName": "Support Regenerative Agriculture Practices",
-        "actionPriority": 5,
-        "action": {
-            "ActionID": "icare_0100",
-            "ActionName": "Support Regenerative Agriculture Practices",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Support regenerative agricultural practices that focus on restoring soil health and reducing carbon emissions.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "60-79"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Development of training programs and resources to educate farmers on regenerative agricultural techniques, such as cover cropping and reduced tillage.",
-                "Implementation of financial incentives or subsidies to support the adoption of regenerative practices.",
-                "Collaboration with agricultural research institutions to monitor and document the effectiveness of regenerative practices in carbon sequestration and soil health improvement."
-            ],
-            "KeyPerformanceIndicators": [
-                "Increase in soil organic carbon levels (tons/hectare).",
-                "Reduction in water usage per hectare in agricultural production (%).",
-                "Number of regenerative agriculture pilot projects implemented."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR CMG",
-        "cityName": "Corumb\u00e1",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0102",
-        "actionName": "Promote Sustainable Agricultural Practices",
-        "actionPriority": 6,
-        "action": {
-            "ActionID": "icare_0102",
-            "ActionName": "Promote Sustainable Agricultural Practices",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Encourage agricultural practices that reduce greenhouse gas emissions, such as reduced use of fertilizers and agrochemicals.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "60-79"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Development of educational programs and resources to promote sustainable agricultural practices among farmers.",
-                "Implementation of policies that incentivize the reduction of fertilizer and agrochemical use, such as subsidies for organic inputs or sustainable farming techniques.",
-                "Collaboration with agricultural organizations to provide technical support and guidance on emission-reducing practices."
-            ],
-            "KeyPerformanceIndicators": [
-                "Percentage of farmland adopting sustainable practices (% of total agricultural land).",
-                "Increase in crop yield per hectare (tons/hectare) due to sustainable methods.",
-                "Reduction in water usage for agriculture (liters or m\u00b3/hectare/year)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR CMG",
-        "cityName": "Corumb\u00e1",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0096",
-        "actionName": "Promote Organic Farming",
-        "actionPriority": 7,
-        "action": {
-            "ActionID": "icare_0096",
-            "ActionName": "Promote Organic Farming",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Encourage the adoption of organic farming practices that avoid the use of chemicals and contribute to soil health and carbon capture.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "60-79"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Provision of financial incentives, subsidies, or grants to support the transition to organic farming practices.",
-                "Development of training and support networks to educate farmers on organic farming methods and their benefits.",
-                "Establishment of certification systems and market access strategies to ensure the economic viability of organic products."
-            ],
-            "KeyPerformanceIndicators": [
-                "Percentage of agricultural land under organic farming practices (%).",
-                "Increase in soil organic carbon content (tons of carbon per hectare).",
-                "Reduction in the use of chemical fertilizers and pesticides (kilograms/hectare/year)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR CMG",
-        "cityName": "Corumb\u00e1",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0129",
-        "actionName": "Facilitate Technology Transfer for Conservation Practices",
-        "actionPriority": 8,
-        "action": {
-            "ActionID": "icare_0129",
-            "ActionName": "Facilitate Technology Transfer for Conservation Practices",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Promote the adoption of sustainable agricultural practices through training, pilot projects, and technology demonstrations.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
-                "habitat": 2,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "60-79"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Provision of training programs and establishment of pilot projects to showcase sustainable practices.",
-                "Partnerships with research institutions for technology development and financial incentives to encourage adoption.",
-                "Access to technical assistance for successful implementation."
-            ],
-            "KeyPerformanceIndicators": [
-                "Number of conservation technologies transferred and applied on farms.",
-                "Percentage of producers trained to implement conservation practices.",
-                "Reduction in soil degradation or increase in vegetation cover (hectares)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
         }
     },
     {
@@ -486,7 +192,7 @@
         "regionName": "Mato Grosso do Sul",
         "actionId": "icare_0130",
         "actionName": "Conduct Technical Assistance and Rural Extension (ATER) Actions",
-        "actionPriority": 9,
+        "actionPriority": 4,
         "action": {
             "ActionID": "icare_0130",
             "ActionName": "Conduct Technical Assistance and Rural Extension (ATER) Actions",
@@ -536,247 +242,9 @@
             ],
             "PowersAndMandates": [
                 "state"
-            ]
-        }
-    },
-    {
-        "locode": "BR CMG",
-        "cityName": "Corumb\u00e1",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0101",
-        "actionName": "Encourage the Use of Low-Emission Agricultural Machinery",
-        "actionPriority": 10,
-        "action": {
-            "ActionID": "icare_0101",
-            "ActionName": "Encourage the Use of Low-Emission Agricultural Machinery",
-            "ActionType": [
-                "mitigation"
             ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Promote the use of low-carbon agricultural machinery, such as tractors and equipment powered by biofuels or solar energy.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "60-79"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Establishment of funding programs or incentives for farmers to purchase low-carbon agricultural machinery.",
-                "Development of partnerships with machinery manufacturers to create and distribute sustainable equipment solutions.",
-                "Implementation of training and support programs to assist farmers in integrating and maintaining low-carbon agricultural machinery."
-            ],
-            "KeyPerformanceIndicators": [
-                "Reduction in emissions from agricultural machinery (tons of CO\u2082e/year).",
-                "Number of low-emission machinery subsidies or incentives provided.",
-                "Percentage of farmers trained to operate low-emission machinery."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR CMG",
-        "cityName": "Corumb\u00e1",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0131",
-        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
-        "actionPriority": 11,
-        "action": {
-            "ActionID": "icare_0131",
-            "ActionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Focus on buying sustainable, locally produced food for public institutions.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "20-39"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Development of procurement policies and identification of reliable local suppliers.",
-                "Partnerships with producers and allocation of funding for sustainable procurement programs.",
-                "Establishment of monitoring systems to ensure compliance with sustainability criteria."
-            ],
-            "KeyPerformanceIndicators": [
-                "Percentage of the total volume of public purchases coming from local agroecological producers.",
-                "Amount of CO\u2082 emissions avoided due to reduced transport distance (tCO\u2082e).",
-                "Number of agroecological producers benefiting from public purchases."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR CMG",
-        "cityName": "Corumb\u00e1",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0118",
-        "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
-        "actionPriority": 12,
-        "action": {
-            "ActionID": "icare_0118",
-            "ActionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Encourage the adoption of bicycles as a regular mode of transport by expanding cycling infrastructure, such as dedicated bike lanes, parking facilities, and repair stations. Additionally, implement awareness campaigns and communication strategies to highlight the environmental, health, and economic benefits of cycling, aiming to increase public participation and make cycling a viable and sustainable transport option for daily commuting.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 2,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Expand cycling infrastructure, including dedicated bike lanes, parking facilities, and repair stations.",
-                "Implement awareness campaigns to highlight the environmental, health, and economic benefits of cycling.",
-                "Promote public participation through communication strategies, making cycling a viable and sustainable option for daily commuting."
-            ],
-            "KeyPerformanceIndicators": [
-                "Length of new bike lanes added to the urban network (km).",
-                "Annual increase in the number of bicycle users in urban areas.",
-                "Estimated reduction in CO\u2082 equivalent emissions from the shift to cycling."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR CMG",
-        "cityName": "Corumb\u00e1",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "icare_0005",
-        "actionName": "Create credit lines for residential and community wind energy projects",
-        "actionPriority": 13,
-        "action": {
-            "ActionID": "icare_0005",
-            "ActionName": "Create credit lines for residential and community wind energy projects",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "stationary_energy"
-            ],
-            "Subsector": [
-                "energy_generation_supplied_to_the_grid"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Establish accessible financing programs to support the development and adoption of wind energy systems in households and community-based projects, enabling a transition to cleaner energy sources.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 2,
-                "housing": 2,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": "60-79",
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Availability of financial programs, grants, or subsidies to make wind energy systems affordable for households and community projects",
-                "Access to technical expertise and resources to guide the installation and maintenance of wind energy systems in residential and community settings",
-                "Policy and regulatory support to encourage the adoption of wind energy, including streamlined permitting processes and incentives for clean energy projects"
-            ],
-            "KeyPerformanceIndicators": [
-                "Number of wind energy projects financed annually.",
-                "Installed capacity of wind energy systems from credit-supported projects (MW).",
-                "Estimated reduction in CO\u2082 equivalent emissions from wind energy adoption."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
         }
     },
     {
@@ -786,7 +254,7 @@
         "regionName": "Mato Grosso do Sul",
         "actionId": "icare_0128",
         "actionName": "Establish Municipal Programs for Payment for Environmental Services (PES)",
-        "actionPriority": 14,
+        "actionPriority": 5,
         "action": {
             "ActionID": "icare_0128",
             "ActionName": "Establish Municipal Programs for Payment for Environmental Services (PES)",
@@ -836,7 +304,319 @@
             ],
             "PowersAndMandates": [
                 "local"
-            ]
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR CMG",
+        "cityName": "Corumb\u00e1",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0129",
+        "actionName": "Facilitate Technology Transfer for Conservation Practices",
+        "actionPriority": 6,
+        "action": {
+            "ActionID": "icare_0129",
+            "ActionName": "Facilitate Technology Transfer for Conservation Practices",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "agriculture_forestry_and_fishing_activities"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Promote the adoption of sustainable agricultural practices through training, pilot projects, and technology demonstrations.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 1,
+                "habitat": 2,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "60-79"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Provision of training programs and establishment of pilot projects to showcase sustainable practices.",
+                "Partnerships with research institutions for technology development and financial incentives to encourage adoption.",
+                "Access to technical assistance for successful implementation."
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of conservation technologies transferred and applied on farms.",
+                "Percentage of producers trained to implement conservation practices.",
+                "Reduction in soil degradation or increase in vegetation cover (hectares)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR CMG",
+        "cityName": "Corumb\u00e1",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0084",
+        "actionName": "Create Incentives for Agroforestry Practices in Livestock Systems",
+        "actionPriority": 7,
+        "action": {
+            "ActionID": "icare_0084",
+            "ActionName": "Create Incentives for Agroforestry Practices in Livestock Systems",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "agriculture_forestry_and_fishing_activities"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Create financial and technical incentives for integrating agroforestry practices into livestock systems, promoting carbon capture, soil protection, and biodiversity improvement.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "60-79"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Development of financial incentive programs, such as subsidies or tax breaks, to support farmers in integrating agroforestry with livestock systems.",
+                "Provision of technical assistance and training to farmers on best practices for agroforestry integration into livestock operations.",
+                "Collaboration with agricultural and environmental organizations to monitor and assess the impacts of agroforestry practices on carbon capture, soil health, and biodiversity."
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of financial incentives provided to integrate agroforestry in livestock systems.",
+                "Increase in soil quality and vegetation cover in managed properties (%).",
+                "Growth in biodiversity in agroforestry areas (% of identified species)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR CMG",
+        "cityName": "Corumb\u00e1",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0096",
+        "actionName": "Promote Organic Farming",
+        "actionPriority": 8,
+        "action": {
+            "ActionID": "icare_0096",
+            "ActionName": "Promote Organic Farming",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "agriculture_forestry_and_fishing_activities"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Encourage the adoption of organic farming practices that avoid the use of chemicals and contribute to soil health and carbon capture.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "60-79"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Provision of financial incentives, subsidies, or grants to support the transition to organic farming practices.",
+                "Development of training and support networks to educate farmers on organic farming methods and their benefits.",
+                "Establishment of certification systems and market access strategies to ensure the economic viability of organic products."
+            ],
+            "KeyPerformanceIndicators": [
+                "Percentage of agricultural land under organic farming practices (%).",
+                "Increase in soil organic carbon content (tons of carbon per hectare).",
+                "Reduction in the use of chemical fertilizers and pesticides (kilograms/hectare/year)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR CMG",
+        "cityName": "Corumb\u00e1",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0102",
+        "actionName": "Promote Sustainable Agricultural Practices",
+        "actionPriority": 9,
+        "action": {
+            "ActionID": "icare_0102",
+            "ActionName": "Promote Sustainable Agricultural Practices",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "agriculture_forestry_and_fishing_activities"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Encourage agricultural practices that reduce greenhouse gas emissions, such as reduced use of fertilizers and agrochemicals.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "60-79"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Development of educational programs and resources to promote sustainable agricultural practices among farmers.",
+                "Implementation of policies that incentivize the reduction of fertilizer and agrochemical use, such as subsidies for organic inputs or sustainable farming techniques.",
+                "Collaboration with agricultural organizations to provide technical support and guidance on emission-reducing practices."
+            ],
+            "KeyPerformanceIndicators": [
+                "Percentage of farmland adopting sustainable practices (% of total agricultural land).",
+                "Increase in crop yield per hectare (tons/hectare) due to sustainable methods.",
+                "Reduction in water usage for agriculture (liters or m\u00b3/hectare/year)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR CMG",
+        "cityName": "Corumb\u00e1",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0100",
+        "actionName": "Support Regenerative Agriculture Practices",
+        "actionPriority": 10,
+        "action": {
+            "ActionID": "icare_0100",
+            "ActionName": "Support Regenerative Agriculture Practices",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "agriculture_forestry_and_fishing_activities"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Support regenerative agricultural practices that focus on restoring soil health and reducing carbon emissions.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "60-79"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Development of training programs and resources to educate farmers on regenerative agricultural techniques, such as cover cropping and reduced tillage.",
+                "Implementation of financial incentives or subsidies to support the adoption of regenerative practices.",
+                "Collaboration with agricultural research institutions to monitor and document the effectiveness of regenerative practices in carbon sequestration and soil health improvement."
+            ],
+            "KeyPerformanceIndicators": [
+                "Increase in soil organic carbon levels (tons/hectare).",
+                "Reduction in water usage per hectare in agricultural production (%).",
+                "Number of regenerative agriculture pilot projects implemented."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
         }
     },
     {
@@ -846,7 +626,7 @@
         "regionName": "Mato Grosso do Sul",
         "actionId": "icare_0127",
         "actionName": "Accelerate Environmental Regularization of Rural Properties",
-        "actionPriority": 15,
+        "actionPriority": 11,
         "action": {
             "ActionID": "icare_0127",
             "ActionName": "Accelerate Environmental Regularization of Rural Properties",
@@ -896,7 +676,9 @@
             ],
             "PowersAndMandates": [
                 "local"
-            ]
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
         }
     },
     {
@@ -904,12 +686,12 @@
         "cityName": "Corumb\u00e1",
         "region": "MS",
         "regionName": "Mato Grosso do Sul",
-        "actionId": "ipcc_0052",
-        "actionName": "Reduce Deforestation and Degradation",
-        "actionPriority": 16,
+        "actionId": "icare_0101",
+        "actionName": "Encourage the Use of Low-Emission Agricultural Machinery",
+        "actionPriority": 12,
         "action": {
-            "ActionID": "ipcc_0052",
-            "ActionName": "Reduce Deforestation and Degradation",
+            "ActionID": "icare_0101",
+            "ActionName": "Encourage the Use of Low-Emission Agricultural Machinery",
             "ActionType": [
                 "mitigation"
             ],
@@ -918,22 +700,22 @@
                 "afolu"
             ],
             "Subsector": [
-                "land"
+                "agriculture_forestry_and_fishing_activities"
             ],
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "Description": "Reducing deforestation and forest degradation conserves carbon pools in forest vegetation and soil by avoiding tree cover loss and disturbance. This involves controlling drivers of deforestation, improving forest governance, and supporting community forest management.",
+            "Description": "Promote the use of low-carbon agricultural machinery, such as tractors and equipment powered by biofuels or solar energy.",
             "CoBenefits": {
-                "air_quality": 1,
+                "air_quality": 2,
                 "water_quality": 1,
-                "habitat": 0,
+                "habitat": 1,
                 "cost_of_living": 0,
                 "housing": 0,
                 "mobility": 0,
-                "stakeholder_engagement": 0
+                "stakeholder_engagement": 1
             },
-            "EquityAndInclusionConsiderations": "Promotes secure land tenure, supports community-based forest management, and ensures participation of marginalized and indigenous groups in decision-making processes.",
+            "EquityAndInclusionConsiderations": null,
             "GHGReductionPotential": {
                 "stationary_energy": null,
                 "transportation": null,
@@ -945,82 +727,20 @@
             "CostInvestmentNeeded": "medium",
             "TimelineForImplementation": "5-10 years",
             "Dependencies": [
-                "Requires improved governance",
-                "clear land tenure policies",
-                "funding for protected areas",
-                "community participation in forest conservation efforts"
+                "Establishment of funding programs or incentives for farmers to purchase low-carbon agricultural machinery.",
+                "Development of partnerships with machinery manufacturers to create and distribute sustainable equipment solutions.",
+                "Implementation of training and support programs to assist farmers in integrating and maintaining low-carbon agricultural machinery."
             ],
             "KeyPerformanceIndicators": [
-                "Reduction in deforestation rates",
-                "increased forest cover",
-                "the amount of GHG emissions avoided per year"
+                "Reduction in emissions from agricultural machinery (tons of CO\u2082e/year).",
+                "Number of low-emission machinery subsidies or incentives provided.",
+                "Percentage of farmers trained to operate low-emission machinery."
             ],
-            "PowersAndMandates": null
-        }
-    },
-    {
-        "locode": "BR CMG",
-        "cityName": "Corumb\u00e1",
-        "region": "MS",
-        "regionName": "Mato Grosso do Sul",
-        "actionId": "c40_0042",
-        "actionName": "Biodiversity Expansion",
-        "actionPriority": 17,
-        "action": {
-            "ActionID": "c40_0042",
-            "ActionName": "Biodiversity Expansion",
-            "ActionType": [
-                "mitigation"
+            "PowersAndMandates": [
+                "local"
             ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "\"Biodiversity Expansion\" initiatives aim to preserve and expand green spaces, promoting biodiversity within urban areas. By preserving natural habitats, cities enhance ecosystem services and create resilient environments that support diverse flora and fauna.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "The \"Biodiversity Expansion\" initiatives promote equity and inclusion by ensuring that underserved communities have access to preserved green spaces, which are often lacking in urban areas. By focusing on enhancing biodiversity in these neighborhoods, the action addresses environmental justice by improving the quality of life for vulnerable populations who may face higher exposure to pollution and limited access to nature. Additionally, the creation of resilient environments supports diverse flora and fauna, which can enhance local ecosystems that these communities rely on for recreational, cultural, and economic benefits. Overall, the initiative fosters a sense of community ownership and involvement in the preservation of natural habitats, ensuring that the voices of marginalized groups are included in urban planning and environmental stewardship.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "40-59"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Availability of funding for green space projects",
-                "Community engagement and support for biodiversity initiatives",
-                "Collaboration with local governments and environmental organizations",
-                "Access to scientific research on local ecosystems",
-                "Regulatory frameworks that support land conservation and urban planning"
-            ],
-            "KeyPerformanceIndicators": [
-                "Increase in green space area (hectares)",
-                "Number of native species introduced",
-                "Biodiversity index improvement",
-                "Percentage of urban areas with accessible green spaces",
-                "Community engagement in biodiversity programs",
-                "Reduction in urban heat island effect",
-                "Increase in pollinator populations",
-                "Improvement in air quality metrics",
-                "Number of partnerships with local conservation organizations",
-                "Public awareness and education outreach metrics"
-            ],
-            "PowersAndMandates": null
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
         }
     },
     {
@@ -1030,7 +750,7 @@
         "regionName": "Mato Grosso do Sul",
         "actionId": "ipcc_0061",
         "actionName": "Soil Carbon Management in Croplands and Grasslands",
-        "actionPriority": 18,
+        "actionPriority": 13,
         "action": {
             "ActionID": "ipcc_0061",
             "ActionName": "Soil Carbon Management in Croplands and Grasslands",
@@ -1079,7 +799,133 @@
                 "improvement in agricultural productivity",
                 "biodiversity enhancements"
             ],
-            "PowersAndMandates": null
+            "PowersAndMandates": null,
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR CMG",
+        "cityName": "Corumb\u00e1",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0131",
+        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
+        "actionPriority": 14,
+        "action": {
+            "ActionID": "icare_0131",
+            "ActionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "agriculture_forestry_and_fishing_activities"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Focus on buying sustainable, locally produced food for public institutions.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "20-39"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Development of procurement policies and identification of reliable local suppliers.",
+                "Partnerships with producers and allocation of funding for sustainable procurement programs.",
+                "Establishment of monitoring systems to ensure compliance with sustainability criteria."
+            ],
+            "KeyPerformanceIndicators": [
+                "Percentage of the total volume of public purchases coming from local agroecological producers.",
+                "Amount of CO\u2082 emissions avoided due to reduced transport distance (tCO\u2082e).",
+                "Number of agroecological producers benefiting from public purchases."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR CMG",
+        "cityName": "Corumb\u00e1",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0132",
+        "actionName": "Encourage Local Agroecological Production and Short Supply Chains",
+        "actionPriority": 15,
+        "action": {
+            "ActionID": "icare_0132",
+            "ActionName": "Encourage Local Agroecological Production and Short Supply Chains",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "agriculture_forestry_and_fishing_activities"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Support local, sustainable agricultural practices and reduce emissions associated with food transport.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 2,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "20-39"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Incentives for sustainable agricultural practices and development of local food distribution networks.",
+                "Partnerships with producers and investment in infrastructure to support local markets.",
+                "Policies to prioritize low-emission transportation methods."
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of producers adhering to local agroecological practices.",
+                "Percentage of food consumed in the city from short chains.",
+                "Reduction in emissions associated with food transport (tCO\u2082e)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
         }
     },
     {
@@ -1089,7 +935,7 @@
         "regionName": "Mato Grosso do Sul",
         "actionId": "icare_0136",
         "actionName": "Support the Implementation of Ecological Fiscal Incentives",
-        "actionPriority": 19,
+        "actionPriority": 16,
         "action": {
             "ActionID": "icare_0136",
             "ActionName": "Support the Implementation of Ecological Fiscal Incentives",
@@ -1139,7 +985,71 @@
             ],
             "PowersAndMandates": [
                 "state"
-            ]
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR CMG",
+        "cityName": "Corumb\u00e1",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0085",
+        "actionName": "Promote the Adoption of Agroecological Pest Control",
+        "actionPriority": 17,
+        "action": {
+            "ActionID": "icare_0085",
+            "ActionName": "Promote the Adoption of Agroecological Pest Control",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "agriculture_forestry_and_fishing_activities"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Encourage pest control methods that are agroecological, such as using natural predators and repellent plants, to reduce reliance on chemical pesticides.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "20-39"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Development of educational programs to inform farmers about agroecological pest control methods and their benefits.",
+                "Provision of access to resources or materials for implementing natural pest control methods, such as introducing beneficial insects or cultivating repellent plants.",
+                "Creation of incentives or support networks to encourage the transition away from chemical pesticides in favor of sustainable alternatives."
+            ],
+            "KeyPerformanceIndicators": [
+                "Increase in productivity rates in areas adopting agroecological pest control (%).",
+                "Number of educational campaigns conducted on sustainable pest control.",
+                "Impact on total production costs due to the adoption of agroecological practices (%)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
         }
     },
     {
@@ -1149,7 +1059,7 @@
         "regionName": "Mato Grosso do Sul",
         "actionId": "icare_0099",
         "actionName": "Support Agroecological Certification Programs",
-        "actionPriority": 20,
+        "actionPriority": 18,
         "action": {
             "ActionID": "icare_0099",
             "ActionName": "Support Agroecological Certification Programs",
@@ -1199,7 +1109,133 @@
             ],
             "PowersAndMandates": [
                 "local"
-            ]
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR CMG",
+        "cityName": "Corumb\u00e1",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0053",
+        "actionName": "Afforestation, Reforestation and Forest Ecosystem Restoration",
+        "actionPriority": 19,
+        "action": {
+            "ActionID": "ipcc_0053",
+            "ActionName": "Afforestation, Reforestation and Forest Ecosystem Restoration",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "land"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Activities focused on converting land to forests, restoring degraded forests, and prioritizing ecological integrity. Afforestation targets historically non-forested land, while reforestation targets previously forested areas. Efforts include enhancing biodiversity, improving ecosystem services, and increasing carbon sequestration.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": "Supports local livelihoods, promotes land-use equity, and ensures inclusive stakeholder participation in afforestation and restoration programs.",
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "60-79"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "high",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Requires funding for land restoration",
+                "access to suitable species for planting",
+                "local community engagement",
+                "monitoring systems for ecosystem integrity and carbon sequestration"
+            ],
+            "KeyPerformanceIndicators": [
+                "Area of land reforested or afforested",
+                "carbon sequestration rates",
+                "improvement in biodiversity indices",
+                "ecosystem service metrics such as water regulation and soil quality"
+            ],
+            "PowersAndMandates": null,
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR CMG",
+        "cityName": "Corumb\u00e1",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0045",
+        "actionName": "Promote organic and agroecological agriculture in the rural areas",
+        "actionPriority": 20,
+        "action": {
+            "ActionID": "icare_0045",
+            "ActionName": "Promote organic and agroecological agriculture in the rural areas",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "agriculture_forestry_and_fishing_activities"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Promote organic and agroecological agriculture in the rural areas of the city through technical training for farmers and the strengthening of value chains, encouraging an increase in the added value of agricultural production and the implementation of economic instruments to incentivize agroecological conversion, including payment for environmental services.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "20-39"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Availability of technical training programs for farmers to adopt organic and agroecological practices",
+                "Strengthened value chains and market access for agroecological products to ensure economic sustainability",
+                "Implementation of economic instruments, such as payment for environmental services, to incentivize agroecological conversion"
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of sustainable rural economic projects implemented annually.",
+                "Reduction in environmental impact from traditional farming or production practices (%).",
+                "Percentage of rural households adopting sustainable practices."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
         }
     }
 ]

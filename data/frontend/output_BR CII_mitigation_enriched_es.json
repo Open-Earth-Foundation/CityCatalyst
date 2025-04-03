@@ -4,59 +4,123 @@
         "cityName": "Cariacica",
         "region": "ES",
         "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0005",
-        "actionName": "Create credit lines for residential and community wind energy projects",
+        "actionId": "icare_0075",
+        "actionName": "Set carbon emissions reduction targets for industrial sectors",
         "actionPriority": 1,
         "action": {
-            "ActionID": "icare_0005",
-            "ActionName": "Crear l\u00edneas de cr\u00e9dito para proyectos de energ\u00eda e\u00f3lica residencial y comunitaria",
+            "ActionID": "icare_0075",
+            "ActionName": "Establecer objetivos de reducci\u00f3n de emisiones de carbono para los sectores industriales",
             "ActionType": [
                 "mitigation"
             ],
             "Hazard": null,
             "Sector": [
-                "stationary_energy"
+                "ippu"
             ],
             "Subsector": [
-                "energy_generation_supplied_to_the_grid"
+                "industrial_processes"
             ],
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "Description": "Establecer programas de financiamiento accesibles para apoyar el desarrollo y la adopci\u00f3n de sistemas de energ\u00eda e\u00f3lica en hogares y proyectos comunitarios, permitiendo una transici\u00f3n hacia fuentes de energ\u00eda m\u00e1s limpias.",
+            "Description": "Establecer objetivos claros y alcanzables de reducci\u00f3n de emisiones de carbono para las industrias y exigir informes peri\u00f3dicos para asegurar el progreso.",
             "CoBenefits": {
                 "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 2,
-                "housing": 2,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": "80-100",
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Desarrollo de un sistema estandarizado de medici\u00f3n y reporte de emisiones de carbono.",
+                "Creaci\u00f3n de marcos regulatorios para hacer cumplir los objetivos de reducci\u00f3n de emisiones.",
+                "Fortalecimiento de capacidades para que las industrias monitoreen e informen sobre las emisiones de manera efectiva."
+            ],
+            "KeyPerformanceIndicators": [
+                "Porcentaje de industrias con objetivos establecidos de reducci\u00f3n de carbono (%).",
+                "Reducci\u00f3n en las emisiones totales de GEI sectoriales en comparaci\u00f3n con la l\u00ednea base (toneladas de CO\u2082e).",
+                "Aumento en la adopci\u00f3n de fuentes de energ\u00eda renovable por parte de las industrias (%)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR CII",
+        "cityName": "Cariacica",
+        "region": "ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0078",
+        "actionName": "Develop and implement industrial waste management programs",
+        "actionPriority": 2,
+        "action": {
+            "ActionID": "icare_0078",
+            "ActionName": "Desarrollar e implementar programas de gesti\u00f3n de residuos industriales",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "ippu"
+            ],
+            "Subsector": [
+                "industrial_processes"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Establecer sistemas para gestionar mejor los residuos industriales, reduciendo las emisiones de los vertederos y fomentando el reciclaje o la reutilizaci\u00f3n.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 2,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 0,
                 "mobility": 0,
                 "stakeholder_engagement": 1
             },
             "EquityAndInclusionConsiderations": null,
             "GHGReductionPotential": {
-                "stationary_energy": "60-79",
+                "stationary_energy": null,
                 "transportation": null,
                 "waste": null,
-                "ippu": null,
+                "ippu": "60-79",
                 "afolu": null
             },
             "AdaptationEffectiveness": null,
             "CostInvestmentNeeded": "medium",
             "TimelineForImplementation": "5-10 years",
             "Dependencies": [
-                "Disponibilidad de programas financieros, subvenciones o subsidios para hacer que los sistemas de energ\u00eda e\u00f3lica sean asequibles para hogares y proyectos comunitarios",
-                "Acceso a experiencia t\u00e9cnica y recursos para guiar la instalaci\u00f3n y el mantenimiento de sistemas de energ\u00eda e\u00f3lica en entornos residenciales y comunitarios",
-                "Apoyo pol\u00edtico y regulatorio para fomentar la adopci\u00f3n de energ\u00eda e\u00f3lica, incluyendo procesos de permisos simplificados e incentivos para proyectos de energ\u00eda limpia"
+                "Regulaciones claras de gesti\u00f3n de residuos para las industrias.",
+                "Disponibilidad de infraestructura para el procesamiento de residuos.",
+                "Programas de capacitaci\u00f3n para trabajadores industriales sobre gesti\u00f3n de residuos."
             ],
             "KeyPerformanceIndicators": [
-                "N\u00famero de proyectos de energ\u00eda e\u00f3lica financiados anualmente.",
-                "Capacidad instalada de sistemas de energ\u00eda e\u00f3lica de proyectos apoyados por cr\u00e9dito (MW).",
-                "Reducci\u00f3n estimada en emisiones equivalentes de CO\u2082 por la adopci\u00f3n de energ\u00eda e\u00f3lica."
+                "Reducci\u00f3n en la generaci\u00f3n de residuos peligrosos (toneladas/a\u00f1o).",
+                "Aumento en la tasa de reciclaje de materiales de desecho industrial (%).",
+                "Cantidad de conversi\u00f3n de residuos a energ\u00eda lograda (MWh/a\u00f1o)"
             ],
             "PowersAndMandates": [
                 "local"
-            ]
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
         }
     },
     {
@@ -64,239 +128,61 @@
         "cityName": "Cariacica",
         "region": "ES",
         "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0121",
-        "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
-        "actionPriority": 2,
-        "action": {
-            "ActionID": "icare_0121",
-            "ActionName": "Incentivo para crear programas de bicicletas compartidas en \u00e1reas urbanas, con un enfoque en bicicletas el\u00e9ctricas.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Esta acci\u00f3n fomenta el establecimiento de sistemas de bicicletas compartidas en las ciudades, promoviendo espec\u00edficamente el uso de bicicletas el\u00e9ctricas. Estos sistemas permiten a los residentes alquilar bicicletas el\u00e9ctricas para viajes cortos, reduciendo la dependencia de los autom\u00f3viles para el transporte urbano. Al integrar bicicletas el\u00e9ctricas, las ciudades pueden reducir a\u00fan m\u00e1s las emisiones de gases de efecto invernadero, aliviar la congesti\u00f3n del tr\u00e1fico y promover un modo de transporte m\u00e1s saludable y sostenible tanto para \u00e1reas urbanas como rurales. Esta iniciativa tambi\u00e9n apoya la igualdad de movilidad, ya que hace que las bicicletas sean m\u00e1s accesibles para un rango m\u00e1s amplio de personas.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Establecimiento de sistemas de bicicletas compartidas con un enfoque en bicicletas el\u00e9ctricas para reducir la dependencia del autom\u00f3vil.",
-                "Integraci\u00f3n de bicicletas el\u00e9ctricas para reducir las emisiones de gases de efecto invernadero, aliviar la congesti\u00f3n del tr\u00e1fico y promover el transporte sostenible.",
-                "Promoci\u00f3n de la igualdad de movilidad haciendo que las bicicletas el\u00e9ctricas sean accesibles para una poblaci\u00f3n m\u00e1s amplia."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de bicicletas el\u00e9ctricas disponibles en programas de bicicletas compartidas.",
-                "Aumento anual de usuarios de bicicletas compartidas.",
-                "Reducci\u00f3n estimada en emisiones equivalentes de CO\u2082 por la adopci\u00f3n de bicicletas el\u00e9ctricas compartidas."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR CII",
-        "cityName": "Cariacica",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0118",
-        "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
+        "actionId": "icare_0081",
+        "actionName": "Enhance material recycling in manufacturing",
         "actionPriority": 3,
         "action": {
-            "ActionID": "icare_0118",
-            "ActionName": "Promover el uso de bicicletas como un modo de transporte regular mediante la expansi\u00f3n de la infraestructura y estrategias de concienciaci\u00f3n y comunicaci\u00f3n.",
+            "ActionID": "icare_0081",
+            "ActionName": "Mejorar el reciclaje de materiales en la fabricaci\u00f3n",
             "ActionType": [
                 "mitigation"
             ],
             "Hazard": null,
             "Sector": [
-                "transportation"
+                "ippu"
             ],
             "Subsector": [
-                "on-road"
+                "industrial_processes"
             ],
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "Description": "Fomentar la adopci\u00f3n de bicicletas como un modo de transporte regular mediante la expansi\u00f3n de la infraestructura para ciclistas, como carriles bici dedicados, instalaciones de estacionamiento y estaciones de reparaci\u00f3n. Adem\u00e1s, implementar campa\u00f1as de concienciaci\u00f3n y estrategias de comunicaci\u00f3n para resaltar los beneficios ambientales, de salud y econ\u00f3micos del ciclismo, con el objetivo de aumentar la participaci\u00f3n p\u00fablica y hacer del ciclismo una opci\u00f3n de transporte viable y sostenible para los desplazamientos diarios.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 2,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Expandir la infraestructura para bicicletas, incluyendo carriles exclusivos para bicicletas, instalaciones de estacionamiento y estaciones de reparaci\u00f3n.",
-                "Implementar campa\u00f1as de concienciaci\u00f3n para resaltar los beneficios ambientales, de salud y econ\u00f3micos del ciclismo.",
-                "Promover la participaci\u00f3n p\u00fablica a trav\u00e9s de estrategias de comunicaci\u00f3n, haciendo del ciclismo una opci\u00f3n viable y sostenible para el desplazamiento diario."
-            ],
-            "KeyPerformanceIndicators": [
-                "Longitud de los nuevos carriles bici a\u00f1adidos a la red urbana (km).",
-                "Aumento anual en el n\u00famero de usuarios de bicicletas en \u00e1reas urbanas.",
-                "Reducci\u00f3n estimada en las emisiones de CO\u2082 equivalente por el cambio al ciclismo."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR CII",
-        "cityName": "Cariacica",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0088",
-        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
-        "actionPriority": 4,
-        "action": {
-            "ActionID": "icare_0088",
-            "ActionName": "Implementaci\u00f3n de programas de transporte p\u00fablico gratuito durante las horas pico para reducir el uso de veh\u00edculos individuales",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Fomentar el uso del transporte p\u00fablico ofreciendo servicios gratuitos durante las horas pico para trabajadores y estudiantes. Esta medida reduce la congesti\u00f3n urbana, disminuye el n\u00famero de veh\u00edculos individuales en la carretera y, en consecuencia, reduce las emisiones de gases de efecto invernadero asociadas con el transporte privado.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 2,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Asignaci\u00f3n de fondos para subsidiar servicios de transporte p\u00fablico gratuito durante las horas pico.",
-                "Desarrollo de pol\u00edticas para garantizar la sostenibilidad y eficiencia de los sistemas de transporte p\u00fablico ante el aumento de la demanda.",
-                "Coordinaci\u00f3n con empleadores e instituciones educativas para optimizar los horarios de las horas pico y promover la iniciativa."
-            ],
-            "KeyPerformanceIndicators": [
-                "Reducci\u00f3n en los niveles de contaminaci\u00f3n del aire durante las horas pico (concentraci\u00f3n de PM2.5/PM10).",
-                "N\u00famero de veh\u00edculos privados retirados de las carreteras durante las horas pico.",
-                "Tasa de satisfacci\u00f3n p\u00fablica con la iniciativa de transporte gratuito (%)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR CII",
-        "cityName": "Cariacica",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0094",
-        "actionName": "Adoption of biomethane in public fleets.",
-        "actionPriority": 5,
-        "action": {
-            "ActionID": "icare_0094",
-            "ActionName": "Adopci\u00f3n de biometano en flotas p\u00fablicas.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Utilizar biometano producido a partir de residuos urbanos y agroindustriales para alimentar autobuses y camiones p\u00fablicos, reduciendo las emisiones de gases de efecto invernadero en las flotas municipales.",
+            "Description": "Fomentar el reciclaje y la reutilizaci\u00f3n de materiales en la producci\u00f3n industrial para reducir la extracci\u00f3n de materias primas y las emisiones.",
             "CoBenefits": {
                 "air_quality": 2,
                 "water_quality": 1,
-                "habitat": 0,
+                "habitat": 1,
                 "cost_of_living": 1,
                 "housing": 0,
-                "mobility": 1,
+                "mobility": 0,
                 "stakeholder_engagement": 1
             },
             "EquityAndInclusionConsiderations": null,
             "GHGReductionPotential": {
                 "stationary_energy": null,
-                "transportation": "60-79",
+                "transportation": null,
                 "waste": null,
-                "ippu": null,
+                "ippu": "60-79",
                 "afolu": null
             },
             "AdaptationEffectiveness": null,
             "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
+            "TimelineForImplementation": "5-10 years",
             "Dependencies": [
-                "Desarrollo de infraestructura para la producci\u00f3n, procesamiento y distribuci\u00f3n de biometano a partir de residuos urbanos y agroindustriales.",
-                "Adaptaci\u00f3n o adquisici\u00f3n de autobuses y camiones p\u00fablicos capaces de utilizar biometano como fuente de combustible.",
-                "Establecimiento de pol\u00edticas e incentivos financieros para apoyar la producci\u00f3n de biometano y su integraci\u00f3n en las flotas municipales."
+                "Establecimiento de programas de reciclaje adaptados a industrias espec\u00edficas, con directrices claras para la separaci\u00f3n y reutilizaci\u00f3n de materiales.",
+                "Colaboraci\u00f3n con empresas de gesti\u00f3n de residuos para crear sistemas de reciclaje eficientes dentro de \u00e1reas industriales.",
+                "Desarrollo de pol\u00edticas que proporcionen incentivos econ\u00f3micos para que las industrias inviertan en tecnolog\u00edas de reciclaje y m\u00e9todos de producci\u00f3n sostenibles."
             ],
             "KeyPerformanceIndicators": [
-                "Ahorro de costos en la operaci\u00f3n de la flota debido al uso de biometano (USD/a\u00f1o).",
-                "Aumento en la capacidad de producci\u00f3n de biometano (%).",
-                "Porcentaje de biometano obtenido localmente versus importado."
+                "Porcentaje de materiales de desecho reciclados en los procesos de fabricaci\u00f3n (%).",
+                "Reducci\u00f3n en el consumo de materias primas debido al reciclaje (toneladas/a\u00f1o).",
+                "Aumento en el uso de materiales reciclados en productos finales (%)"
             ],
             "PowersAndMandates": [
                 "local"
-            ]
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
         }
     },
     {
@@ -304,59 +190,61 @@
         "cityName": "Cariacica",
         "region": "ES",
         "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0092",
-        "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
-        "actionPriority": 6,
+        "actionId": "icare_0074",
+        "actionName": "Support research into carbon-neutral manufacturing technologies",
+        "actionPriority": 4,
         "action": {
-            "ActionID": "icare_0092",
-            "ActionName": "Desarrollo de micro-centros log\u00edsticos para fomentar el uso de bicicletas de carga el\u00e9ctricas.",
+            "ActionID": "icare_0074",
+            "ActionName": "Apoyar la investigaci\u00f3n en tecnolog\u00edas de fabricaci\u00f3n neutras en carbono",
             "ActionType": [
                 "mitigation"
             ],
             "Hazard": null,
             "Sector": [
-                "transportation"
+                "ippu"
             ],
             "Subsector": [
-                "on-road"
+                "industrial_processes"
             ],
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "Description": "Crear centros log\u00edsticos a peque\u00f1a escala en barrios urbanos para facilitar las entregas utilizando bicicletas de carga el\u00e9ctricas, mientras se implementan incentivos fiscales o subsidios para que las empresas adopten estas bicicletas como modo de transporte, reduciendo las emisiones y mejorando la eficiencia de las entregas en \u00e1reas densamente pobladas.",
+            "Description": "Invertir en investigaci\u00f3n y desarrollo de tecnolog\u00edas neutras en carbono y fomentar su adopci\u00f3n en la producci\u00f3n industrial.",
             "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 0,
+                "air_quality": 2,
+                "water_quality": 1,
+                "habitat": 1,
                 "cost_of_living": 1,
                 "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 1
+                "mobility": 0,
+                "stakeholder_engagement": 2
             },
             "EquityAndInclusionConsiderations": null,
             "GHGReductionPotential": {
                 "stationary_energy": null,
-                "transportation": "20-39",
+                "transportation": null,
                 "waste": null,
-                "ippu": null,
+                "ippu": "60-79",
                 "afolu": null
             },
             "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
             "Dependencies": [
-                "Identificaci\u00f3n y desarrollo de ubicaciones adecuadas para centros log\u00edsticos a peque\u00f1a escala dentro de vecindarios urbanos.",
-                "Provisi\u00f3n de incentivos fiscales, subsidios o subvenciones para alentar a las empresas a hacer la transici\u00f3n a bicicletas de carga el\u00e9ctricas.",
-                "Establecimiento de asociaciones con empresas de log\u00edstica para asegurar la integraci\u00f3n y eficiencia en las operaciones de entrega utilizando estos centros."
+                "Financiamiento para la investigaci\u00f3n y desarrollo de tecnolog\u00edas neutras en carbono.",
+                "Alianzas entre el gobierno, la academia y la industria para fomentar la innovaci\u00f3n.",
+                "Programas de incentivos para que las industrias adopten nuevas tecnolog\u00edas."
             ],
             "KeyPerformanceIndicators": [
-                "Reducci\u00f3n en la distancia recorrida por veh\u00edculos de entrega tradicionales (km/a\u00f1o).",
-                "Aumento en la eficiencia operativa de los centros log\u00edsticos (%).",
-                "N\u00famero de empresas que utilizan micro-centros log\u00edsticos para entregas."
+                "N\u00famero de proyectos de investigaci\u00f3n financiados o iniciados.",
+                "Porcentaje de industrias locales que adoptan tecnolog\u00edas neutras en carbono (%).",
+                "Reducci\u00f3n de emisiones de carbono en industrias que participan en proyectos de investigaci\u00f3n (toneladas de CO\u2082/a\u00f1o)."
             ],
             "PowersAndMandates": [
                 "local"
-            ]
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
         }
     },
     {
@@ -364,487 +252,61 @@
         "cityName": "Cariacica",
         "region": "ES",
         "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0057",
-        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
-        "actionPriority": 7,
+        "actionId": "icare_0001",
+        "actionName": "Stimulate solar energy production in industrial facilities",
+        "actionPriority": 5,
         "action": {
-            "ActionID": "icare_0057",
-            "ActionName": "Expansi\u00f3n de los sistemas de transporte masivo sobre rieles (metros, LRTs y monorra\u00edles).",
+            "ActionID": "icare_0001",
+            "ActionName": "Estimular la producci\u00f3n de energ\u00eda solar en instalaciones industriales",
             "ActionType": [
                 "mitigation"
             ],
             "Hazard": null,
             "Sector": [
-                "transportation"
+                "ippu"
             ],
             "Subsector": [
-                "railways"
+                "industrial_processes"
             ],
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "Description": "Estos sistemas ofrecen alta capacidad y bajas emisiones, cruciales para ciudades con alta densidad de poblaci\u00f3n.",
+            "Description": "Fomentar la instalaci\u00f3n de sistemas de energ\u00eda solar en f\u00e1bricas para reducir la dependencia de los combustibles f\u00f3siles y minimizar las emisiones asociadas.",
             "CoBenefits": {
                 "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
+                "water_quality": 1,
+                "habitat": 1,
                 "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 2,
-                "stakeholder_engagement": 0
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
             },
             "EquityAndInclusionConsiderations": null,
             "GHGReductionPotential": {
                 "stationary_energy": null,
-                "transportation": "80-100",
+                "transportation": null,
                 "waste": null,
-                "ippu": null,
+                "ippu": "80-100",
                 "afolu": null
             },
             "AdaptationEffectiveness": null,
             "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "5-10 years",
+            "TimelineForImplementation": ">10 years",
             "Dependencies": [
-                "Inversi\u00f3n en el desarrollo y expansi\u00f3n de infraestructuras de transporte p\u00fablico de alta capacidad, como autobuses el\u00e9ctricos y sistemas de metro.",
-                "Implementaci\u00f3n de pol\u00edticas e incentivos para fomentar el uso del transporte p\u00fablico sobre los veh\u00edculos privados.",
-                "Integraci\u00f3n de fuentes de energ\u00eda renovable para alimentar estos sistemas, reduciendo a\u00fan m\u00e1s las emisiones."
+                "Disponibilidad de financiaci\u00f3n o subsidios para apoyar las instalaciones de energ\u00eda solar en industrias.",
+                "Experiencia t\u00e9cnica y capacidad para la instalaci\u00f3n de paneles solares y sistemas relacionados.",
+                "Marcos regulatorios que faciliten la integraci\u00f3n de la energ\u00eda solar en las operaciones industriales."
             ],
             "KeyPerformanceIndicators": [
-                "Longitud de las nuevas l\u00edneas de tr\u00e1nsito construidas (km/a\u00f1o).",
-                "Reducci\u00f3n en la congesti\u00f3n del tr\u00e1fico vial (%).",
-                "Reducci\u00f3n en el uso de veh\u00edculos privados (n\u00famero de viajes evitados/a\u00f1o)."
+                "Emisiones totales de gases de efecto invernadero evitadas mediante la adopci\u00f3n de energ\u00eda solar en industrias (toneladas de CO\u2082/a\u00f1o).",
+                "Per\u00edodo promedio de retorno de la inversi\u00f3n (ROI) para instalaciones solares industriales (a\u00f1os).",
+                "Porcentaje de necesidades energ\u00e9ticas industriales cubiertas por sistemas de energ\u00eda solar (%)."
             ],
             "PowersAndMandates": [
                 "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR CII",
-        "cityName": "Cariacica",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0025",
-        "actionName": "Promote energy-efficient low-income housing",
-        "actionPriority": 8,
-        "action": {
-            "ActionID": "icare_0025",
-            "ActionName": "Promover viviendas de bajo consumo energ\u00e9tico para personas de bajos ingresos",
-            "ActionType": [
-                "mitigation"
             ],
-            "Hazard": null,
-            "Sector": [
-                "stationary_energy"
-            ],
-            "Subsector": [
-                "residential_buildings"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Desarrollar y apoyar proyectos de vivienda que incorporen dise\u00f1os y tecnolog\u00edas energ\u00e9ticamente eficientes, reduciendo los costos de energ\u00eda para los hogares de bajos ingresos.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 2,
-                "housing": 2,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": "60-79",
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Disponibilidad de financiaci\u00f3n o subsidios para apoyar el desarrollo de viviendas energ\u00e9ticamente eficientes para hogares de bajos ingresos",
-                "Colaboraci\u00f3n con arquitectos, ingenieros y contratistas para dise\u00f1ar e implementar tecnolog\u00edas energ\u00e9ticamente eficientes en proyectos de vivienda",
-                "Desarrollo de pol\u00edticas y regulaciones para incentivar soluciones de vivienda energ\u00e9ticamente eficientes y garantizar la asequibilidad para comunidades de bajos ingresos"
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de unidades de vivienda energ\u00e9ticamente eficientes construidas o renovadas.",
-                "Reducci\u00f3n en el consumo de energ\u00eda del hogar (kWh).",
-                "Disminuci\u00f3n en las facturas de energ\u00eda para hogares de bajos ingresos (USD)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR CII",
-        "cityName": "Cariacica",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0044",
-        "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
-        "actionPriority": 9,
-        "action": {
-            "ActionID": "icare_0044",
-            "ActionName": "Expandir la infraestructura para bicicletas y construir paseos p\u00fablicos y aceras accesibles, priorizando medidas resilientes a las amenazas clim\u00e1ticas.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "El objetivo principal de esta acci\u00f3n es promover la movilidad activa, garantizando la seguridad, el confort y la prioridad del movimiento peatonal, de las personas con discapacidades (o movilidad reducida) y de los veh\u00edculos y equipos impulsados por humanos, como bicicletas y patinetes.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "80-100",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Inversiones en infraestructura para pasarelas peatonales seguras y accesibles, carriles para bicicletas e instalaciones para personas con discapacidades",
-                "Marcos de pol\u00edticas y regulaciones para priorizar la movilidad activa y establecer est\u00e1ndares de seguridad para peatones y veh\u00edculos no motorizados",
-                "Campa\u00f1as de concienciaci\u00f3n p\u00fablica para promover la movilidad activa y educar a los ciudadanos sobre los beneficios de caminar, andar en bicicleta y usar otros medios de transporte impulsados por humanos"
-            ],
-            "KeyPerformanceIndicators": [
-                "Kil\u00f3metros de nuevos carriles bici y senderos peatonales construidos anualmente.",
-                "Aumento en el uso diario de la infraestructura para ciclistas y peatones (%).",
-                "Reducci\u00f3n en las emisiones del transporte urbano (%)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR CII",
-        "cityName": "Cariacica",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0090",
-        "actionName": "Adoption of electric drones for last-mile deliveries.",
-        "actionPriority": 10,
-        "action": {
-            "ActionID": "icare_0090",
-            "ActionName": "Adopci\u00f3n de drones el\u00e9ctricos para entregas de \u00faltima milla.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "off-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Reemplazar los veh\u00edculos tradicionales con drones el\u00e9ctricos para entregas de corta distancia en centros urbanos, reduciendo las emisiones y la congesti\u00f3n del tr\u00e1fico.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Desarrollo de regulaciones del espacio a\u00e9reo urbano para garantizar la operaci\u00f3n segura y eficiente de drones de entrega.",
-                "Inversi\u00f3n en infraestructura de carga y mantenimiento para apoyar una flota de drones el\u00e9ctricos.",
-                "Colaboraci\u00f3n con empresas de log\u00edstica para integrar drones en redes de entrega de \u00faltima milla."
-            ],
-            "KeyPerformanceIndicators": [
-                "Reducci\u00f3n del tiempo de entrega en comparaci\u00f3n con los m\u00e9todos tradicionales (minutos).",
-                "Aumento en la satisfacci\u00f3n del cliente con las entregas por drones (%).",
-                "Reducci\u00f3n de la congesti\u00f3n del tr\u00e1fico causada por veh\u00edculos de entrega (%)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR CII",
-        "cityName": "Cariacica",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0068",
-        "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
-        "actionPriority": 11,
-        "action": {
-            "ActionID": "icare_0068",
-            "ActionName": "Desplegar sistemas de transporte bajo demanda con flotas 100% el\u00e9ctricas.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Servicios de transporte colectivo a demanda, basados en aplicaciones, optimizan el uso de veh\u00edculos el\u00e9ctricos, reduciendo las emisiones por pasajero.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "80-100",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Desarrollo de plataformas digitales y aplicaciones para gestionar eficientemente servicios de transporte colectivo bajo demanda.",
-                "Expansi\u00f3n de flotas de veh\u00edculos el\u00e9ctricos adaptadas para soluciones de transporte compartido.",
-                "Implementaci\u00f3n de pol\u00edticas e incentivos para fomentar la adopci\u00f3n y el uso de servicios de transporte el\u00e9ctrico compartido."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de usuarios activos del sistema de flota el\u00e9ctrica a demanda.",
-                "Porcentaje de la demanda de transporte urbano cubierta por sistemas a demanda.",
-                "Reducci\u00f3n en los niveles de contaminaci\u00f3n ac\u00fastica en \u00e1reas urbanas"
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR CII",
-        "cityName": "Cariacica",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0027",
-        "actionName": "Create financing programs for local renewable energy projects",
-        "actionPriority": 12,
-        "action": {
-            "ActionID": "icare_0027",
-            "ActionName": "Crear programas de financiamiento para proyectos locales de energ\u00eda renovable",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "stationary_energy"
-            ],
-            "Subsector": [
-                "energy_industries"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Establecer mecanismos de financiaci\u00f3n, como subvenciones y pr\u00e9stamos a bajo inter\u00e9s, para apoyar el desarrollo de iniciativas de energ\u00eda renovable a peque\u00f1a escala en las comunidades.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 2,
-                "housing": 1,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": "60-79",
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Desarrollo de mecanismos financieros accesibles, incluyendo subvenciones y pr\u00e9stamos a bajo inter\u00e9s, para apoyar proyectos de energ\u00eda renovable a peque\u00f1a escala en comunidades",
-                "Colaboraci\u00f3n con instituciones financieras y gobiernos locales para asegurar la distribuci\u00f3n y gesti\u00f3n efectiva de fondos para iniciativas de energ\u00eda renovable",
-                "Directrices claras y apoyo para que las organizaciones comunitarias y las empresas locales accedan a financiamiento e implementen con \u00e9xito proyectos de energ\u00eda renovable"
-            ],
-            "KeyPerformanceIndicators": [
-                "Fondos totales asignados para proyectos de energ\u00eda renovable (USD).",
-                "N\u00famero de proyectos financiados anualmente.",
-                "Aumento en la capacidad de energ\u00eda renovable instalada (MW)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR CII",
-        "cityName": "Cariacica",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0133",
-        "actionName": "Promote Urban Reforestation and Green Corridors",
-        "actionPriority": 13,
-        "action": {
-            "ActionID": "icare_0133",
-            "ActionName": "Promover la Reforestaci\u00f3n Urbana y los Corredores Verdes",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "land"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Aumentar la cobertura arb\u00f3rea urbana para mitigar el efecto de isla de calor urbano y mejorar la biodiversidad.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 1,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "80-100"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Identificaci\u00f3n de \u00e1reas prioritarias y selecci\u00f3n de especies nativas y resilientes al clima para la plantaci\u00f3n de \u00e1rboles.",
-                "Alianzas con organizaciones locales y viveros, y asignaci\u00f3n de recursos para la plantaci\u00f3n y el mantenimiento.",
-                "Participaci\u00f3n comunitaria para asegurar el cuidado y apoyo a largo plazo."
-            ],
-            "KeyPerformanceIndicators": [
-                "Aumento en la cobertura de dosel arb\u00f3reo urbano (%)",
-                "Longitud total de corredores verdes creados o restaurados (kil\u00f3metros)",
-                "Reducci\u00f3n en las temperaturas del efecto de isla de calor urbano (\u00b0C)"
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR CII",
-        "cityName": "Cariacica",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "c40_0033",
-        "actionName": "15/30-Minute Areas",
-        "actionPriority": 14,
-        "action": {
-            "ActionID": "c40_0033",
-            "ActionName": "\u00c1reas de 15/30 Minutos",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "all"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "\"\u00c1reas de 15/30 Minutos\" se refiere al desarrollo de vecindarios completos donde los servicios esenciales, las comodidades y el transporte p\u00fablico son f\u00e1cilmente accesibles a pie o en bicicleta en 15 o 30 minutos. Este enfoque de planificaci\u00f3n urbana promueve la sostenibilidad al reducir la necesidad de viajes de larga distancia y fomentar la resiliencia comunitaria.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": "La acci\u00f3n clim\u00e1tica de \"\u00c1reas de 15/30 Minutos\" promueve la equidad y la inclusi\u00f3n al garantizar que los servicios y comodidades esenciales sean accesibles para todos los miembros de la comunidad, beneficiando particularmente a las poblaciones vulnerables o desatendidas que pueden carecer de transporte confiable. Al dise\u00f1ar vecindarios donde los recursos clave est\u00e9n a una corta distancia a pie o en bicicleta, este enfoque reduce las barreras de acceso para personas de bajos ingresos, ancianos y aquellos con discapacidades.\n\nAdem\u00e1s, el enfoque en la integraci\u00f3n del transporte p\u00fablico mejora las opciones de movilidad para aquellos que pueden no poseer un veh\u00edculo, apoyando a\u00fan m\u00e1s el acceso equitativo a empleos, educaci\u00f3n y atenci\u00f3n m\u00e9dica. El desarrollo de vecindarios completos fomenta un sentido de comunidad y pertenencia, alentando las interacciones sociales entre diversos grupos y promoviendo la inclusividad. En general, esta estrategia de planificaci\u00f3n urbana aborda activamente las necesidades de las comunidades marginadas, asegurando que no se queden atr\u00e1s en la transici\u00f3n hacia una vida sostenible.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "0-19",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Disponibilidad de servicios y comodidades esenciales a una distancia que se pueda recorrer a pie o en bicicleta",
-                "Inversi\u00f3n en infraestructura de transporte p\u00fablico",
-                "Participaci\u00f3n comunitaria y apoyo a iniciativas de planificaci\u00f3n local",
-                "Regulaciones de zonificaci\u00f3n que promuevan el desarrollo de uso mixto",
-                "Principios de dise\u00f1o urbano sostenible que prioricen la caminabilidad y la ciclabilidad",
-                "Colaboraci\u00f3n entre el gobierno local, los urbanistas y los residentes"
-            ],
-            "KeyPerformanceIndicators": [
-                "Porcentaje de residentes a 15/30 minutos de servicios esenciales",
-                "Reducci\u00f3n en la distancia promedio de desplazamiento",
-                "Aumento en las tasas de transporte activo (caminata/bicicleta)",
-                "Tasas de uso del transporte p\u00fablico",
-                "Reducci\u00f3n de emisiones de gases de efecto invernadero del transporte",
-                "Satisfacci\u00f3n de la comunidad con las comodidades locales",
-                "N\u00famero de nuevos negocios establecidos en \u00e1reas de 15/30 minutos",
-                "Aumento de espacios verdes per c\u00e1pita",
-                "Frecuencia de eventos comunitarios y actividades de participaci\u00f3n",
-                "Cambio en los valores de propiedad en \u00e1reas de 15/30 minutos"
-            ],
-            "PowersAndMandates": null
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
         }
     },
     {
@@ -854,7 +316,7 @@
         "regionName": "Esp\u00edrito Santo",
         "actionId": "icare_0042",
         "actionName": "Encourage renewable energy policies at the municipal level",
-        "actionPriority": 15,
+        "actionPriority": 6,
         "action": {
             "ActionID": "icare_0042",
             "ActionName": "Fomentar pol\u00edticas de energ\u00eda renovable a nivel municipal",
@@ -904,7 +366,505 @@
             ],
             "PowersAndMandates": [
                 "local"
-            ]
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR CII",
+        "cityName": "Cariacica",
+        "region": "ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0082",
+        "actionName": "Transition to renewable energy for industrial operations",
+        "actionPriority": 7,
+        "action": {
+            "ActionID": "icare_0082",
+            "ActionName": "Transici\u00f3n a energ\u00edas renovables para operaciones industriales",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "ippu"
+            ],
+            "Subsector": [
+                "industrial_processes"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Fomentar el cambio hacia fuentes de energ\u00eda renovable como la e\u00f3lica, solar e hidroel\u00e9ctrica en las operaciones industriales para reducir el uso de combustibles f\u00f3siles.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": "80-100",
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "high",
+            "TimelineForImplementation": ">10 years",
+            "Dependencies": [
+                "Provisi\u00f3n de incentivos, como exenciones fiscales o subsidios, para hacer que las tecnolog\u00edas de energ\u00eda renovable sean m\u00e1s asequibles para las industrias.",
+                "Desarrollo de infraestructura para la integraci\u00f3n de energ\u00eda renovable en las operaciones industriales existentes, incluidas soluciones de almacenamiento de energ\u00eda.",
+                "Asistencia t\u00e9cnica y capacitaci\u00f3n para las partes interesadas de la industria para facilitar la transici\u00f3n a fuentes de energ\u00eda renovable."
+            ],
+            "KeyPerformanceIndicators": [
+                "N\u00famero de industrias que adoptan fuentes de energ\u00eda renovable.",
+                "Capacidad instalada de energ\u00eda renovable en operaciones industriales (MW).",
+                "Reducci\u00f3n en los costos promedio de energ\u00eda para las industrias que han hecho la transici\u00f3n a energ\u00edas renovables (%)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR CII",
+        "cityName": "Cariacica",
+        "region": "ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0073",
+        "actionName": "Support the transition to low-emission industrial refrigeration",
+        "actionPriority": 8,
+        "action": {
+            "ActionID": "icare_0073",
+            "ActionName": "Apoyar la transici\u00f3n hacia la refrigeraci\u00f3n industrial de bajas emisiones",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "ippu"
+            ],
+            "Subsector": [
+                "industrial_processes"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Reemplazar los refrigerantes de alto GWP con alternativas de baja emisi\u00f3n y eficiencia energ\u00e9tica en los sistemas de refrigeraci\u00f3n industrial.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": "60-79",
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Disponibilidad de refrigerantes de bajo GWP y equipos compatibles.",
+                "Apoyo regulatorio para eliminar gradualmente los refrigerantes de alto GWP.",
+                "Programas de capacitaci\u00f3n para profesionales de la industria sobre nuevos sistemas de refrigerantes."
+            ],
+            "KeyPerformanceIndicators": [
+                "N\u00famero de sistemas de refrigeraci\u00f3n industrial que han cambiado a alternativas de bajas emisiones.",
+                "Reducci\u00f3n de emisiones de gases de efecto invernadero de los sistemas de refrigeraci\u00f3n (toneladas de CO\u2082 equivalente/a\u00f1o).",
+                "Porcentaje de negocios locales que reciben apoyo para la transici\u00f3n (%)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR CII",
+        "cityName": "Cariacica",
+        "region": "ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0079",
+        "actionName": "Implement energy audits in industrial plants",
+        "actionPriority": 9,
+        "action": {
+            "ActionID": "icare_0079",
+            "ActionName": "Implementar auditor\u00edas energ\u00e9ticas en plantas industriales",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "ippu"
+            ],
+            "Subsector": [
+                "industrial_processes"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Realizar auditor\u00edas energ\u00e9ticas peri\u00f3dicas para identificar oportunidades de ahorro de energ\u00eda y reducci\u00f3n de emisiones.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 1,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": "20-39",
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Disponibilidad de profesionales calificados o auditores energ\u00e9ticos para realizar evaluaciones exhaustivas en industrias y edificios.",
+                "Desarrollo de un marco estandarizado para auditor\u00edas energ\u00e9ticas, asegurando consistencia y precisi\u00f3n en los resultados.",
+                "Implementaci\u00f3n de incentivos gubernamentales o corporativos para alentar a las organizaciones a actuar sobre las recomendaciones de auditor\u00eda, como reembolsos para mejoras de eficiencia energ\u00e9tica."
+            ],
+            "KeyPerformanceIndicators": [
+                "N\u00famero de plantas industriales que realizan auditor\u00edas energ\u00e9ticas anualmente.",
+                "Ahorro de costos logrado a trav\u00e9s de mejoras recomendadas por auditor\u00eda (%).",
+                "Tiempo promedio para implementar medidas de eficiencia energ\u00e9tica despu\u00e9s de la auditor\u00eda (meses)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR CII",
+        "cityName": "Cariacica",
+        "region": "ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0076",
+        "actionName": "Encourage the use of low-emission fuels in industrial processes",
+        "actionPriority": 10,
+        "action": {
+            "ActionID": "icare_0076",
+            "ActionName": "Fomentar el uso de combustibles de bajas emisiones en los procesos industriales",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "ippu"
+            ],
+            "Subsector": [
+                "industrial_processes"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Promover la transici\u00f3n a biocombustibles, hidr\u00f3geno y otras alternativas bajas en carbono en los procesos de combusti\u00f3n industrial.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": "60-79",
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Desarrollo de infraestructura para la producci\u00f3n y distribuci\u00f3n de biocombustibles e hidr\u00f3geno.",
+                "Marcos regulatorios para apoyar la transici\u00f3n a combustibles bajos en carbono.",
+                "Disponibilidad de tecnolog\u00eda para integrar biocombustibles e hidr\u00f3geno en sistemas industriales."
+            ],
+            "KeyPerformanceIndicators": [
+                "Porcentaje de consumo de energ\u00eda industrial a partir de combustibles de bajas emisiones (%).",
+                "Reducci\u00f3n de emisiones de GEI por sustituci\u00f3n de combustibles (toneladas de CO\u2082e/a\u00f1o).",
+                "N\u00famero de instalaciones que est\u00e1n haciendo la transici\u00f3n a fuentes de combustible de bajas emisiones."
+            ],
+            "PowersAndMandates": [
+                "state"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR CII",
+        "cityName": "Cariacica",
+        "region": "ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0077",
+        "actionName": "Encourage the use of alternative materials in manufacturing",
+        "actionPriority": 11,
+        "action": {
+            "ActionID": "icare_0077",
+            "ActionName": "Fomentar el uso de materiales alternativos en la fabricaci\u00f3n",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "ippu"
+            ],
+            "Subsector": [
+                "industrial_processes"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Promover el uso de materiales de bajas emisiones o neutros en carbono en el proceso de producci\u00f3n para reducir las emisiones totales.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": "60-79",
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Disponibilidad de materiales de bajas emisiones o neutros en carbono en el mercado.",
+                "Incentivos para que las industrias adopten estos materiales.",
+                "Apoyo a la investigaci\u00f3n y desarrollo para mejorar la eficiencia de los materiales y reducir costos."
+            ],
+            "KeyPerformanceIndicators": [
+                "Porcentaje de producci\u00f3n utilizando materiales alternativos (%).",
+                "N\u00famero de empresas que est\u00e1n haciendo la transici\u00f3n al uso de materiales alternativos.",
+                "Reducci\u00f3n de costos lograda mediante la adopci\u00f3n de materiales alternativos (%)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR CII",
+        "cityName": "Cariacica",
+        "region": "ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0094",
+        "actionName": "Adoption of biomethane in public fleets.",
+        "actionPriority": 12,
+        "action": {
+            "ActionID": "icare_0094",
+            "ActionName": "Adopci\u00f3n de biometano en flotas p\u00fablicas.",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "on-road"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Utilizar biometano producido a partir de residuos urbanos y agroindustriales para alimentar autobuses y camiones p\u00fablicos, reduciendo las emisiones de gases de efecto invernadero en las flotas municipales.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 1,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 1,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "60-79",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Desarrollo de infraestructura para la producci\u00f3n, procesamiento y distribuci\u00f3n de biometano a partir de residuos urbanos y agroindustriales.",
+                "Adaptaci\u00f3n o adquisici\u00f3n de autobuses y camiones p\u00fablicos capaces de utilizar biometano como fuente de combustible.",
+                "Establecimiento de pol\u00edticas e incentivos financieros para apoyar la producci\u00f3n de biometano y su integraci\u00f3n en las flotas municipales."
+            ],
+            "KeyPerformanceIndicators": [
+                "Ahorro de costos en la operaci\u00f3n de la flota debido al uso de biometano (USD/a\u00f1o).",
+                "Aumento en la capacidad de producci\u00f3n de biometano (%).",
+                "Porcentaje de biometano obtenido localmente versus importado."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR CII",
+        "cityName": "Cariacica",
+        "region": "ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0121",
+        "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
+        "actionPriority": 13,
+        "action": {
+            "ActionID": "icare_0121",
+            "ActionName": "Incentivo para crear programas de bicicletas compartidas en \u00e1reas urbanas, con un enfoque en bicicletas el\u00e9ctricas.",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "on-road"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Esta acci\u00f3n fomenta el establecimiento de sistemas de bicicletas compartidas en las ciudades, promoviendo espec\u00edficamente el uso de bicicletas el\u00e9ctricas. Estos sistemas permiten a los residentes alquilar bicicletas el\u00e9ctricas para viajes cortos, reduciendo la dependencia de los autom\u00f3viles para el transporte urbano. Al integrar bicicletas el\u00e9ctricas, las ciudades pueden reducir a\u00fan m\u00e1s las emisiones de gases de efecto invernadero, aliviar la congesti\u00f3n del tr\u00e1fico y promover un modo de transporte m\u00e1s saludable y sostenible tanto para \u00e1reas urbanas como rurales. Esta iniciativa tambi\u00e9n apoya la igualdad de movilidad, ya que hace que las bicicletas sean m\u00e1s accesibles para un rango m\u00e1s amplio de personas.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 2,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "60-79",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Establecimiento de sistemas de bicicletas compartidas con un enfoque en bicicletas el\u00e9ctricas para reducir la dependencia del autom\u00f3vil.",
+                "Integraci\u00f3n de bicicletas el\u00e9ctricas para reducir las emisiones de gases de efecto invernadero, aliviar la congesti\u00f3n del tr\u00e1fico y promover el transporte sostenible.",
+                "Promoci\u00f3n de la igualdad de movilidad haciendo que las bicicletas el\u00e9ctricas sean accesibles para una poblaci\u00f3n m\u00e1s amplia."
+            ],
+            "KeyPerformanceIndicators": [
+                "N\u00famero de bicicletas el\u00e9ctricas disponibles en programas de bicicletas compartidas.",
+                "Aumento anual en usuarios de bicicletas compartidas.",
+                "Reducci\u00f3n estimada en emisiones equivalentes de CO\u2082 por la adopci\u00f3n de bicicletas el\u00e9ctricas compartidas."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR CII",
+        "cityName": "Cariacica",
+        "region": "ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0088",
+        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
+        "actionPriority": 14,
+        "action": {
+            "ActionID": "icare_0088",
+            "ActionName": "Implementaci\u00f3n de programas de transporte p\u00fablico gratuito durante las horas pico para reducir el uso de veh\u00edculos individuales",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "on-road"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Fomentar el uso del transporte p\u00fablico ofreciendo servicios gratuitos durante las horas pico para trabajadores y estudiantes. Esta medida reduce la congesti\u00f3n urbana, disminuye el n\u00famero de veh\u00edculos individuales en la carretera y, en consecuencia, reduce las emisiones de gases de efecto invernadero asociadas con el transporte privado.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 2,
+                "housing": 0,
+                "mobility": 2,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "60-79",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Asignaci\u00f3n de fondos para subsidiar servicios de transporte p\u00fablico gratuito durante las horas pico.",
+                "Desarrollo de pol\u00edticas para garantizar la sostenibilidad y eficiencia de los sistemas de transporte p\u00fablico ante el aumento de la demanda.",
+                "Coordinaci\u00f3n con empleadores e instituciones educativas para optimizar los horarios de las horas pico y promover la iniciativa."
+            ],
+            "KeyPerformanceIndicators": [
+                "Reducci\u00f3n en los niveles de contaminaci\u00f3n del aire durante las horas pico (concentraci\u00f3n de PM2.5/PM10).",
+                "N\u00famero de veh\u00edculos privados retirados de las carreteras durante las horas pico.",
+                "Tasa de satisfacci\u00f3n p\u00fablica con la iniciativa de transporte gratuito (%)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
         }
     },
     {
@@ -914,10 +874,10 @@
         "regionName": "Esp\u00edrito Santo",
         "actionId": "icare_0131",
         "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
-        "actionPriority": 16,
+        "actionPriority": 15,
         "action": {
             "ActionID": "icare_0131",
-            "ActionName": "Priorizar la adquisici\u00f3n de productos agroecol\u00f3gicos de producci\u00f3n local en las compras p\u00fablicas",
+            "ActionName": "Priorizar la Adquisici\u00f3n de Productos Agroecol\u00f3gicos de Producci\u00f3n Local en Compras P\u00fablicas",
             "ActionType": [
                 "mitigation"
             ],
@@ -964,7 +924,9 @@
             ],
             "PowersAndMandates": [
                 "local"
-            ]
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
         }
     },
     {
@@ -972,30 +934,92 @@
         "cityName": "Cariacica",
         "region": "ES",
         "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0136",
-        "actionName": "Support the Implementation of Ecological Fiscal Incentives",
-        "actionPriority": 17,
+        "actionId": "icare_0072",
+        "actionName": "Promote industry-government collaborations on emissions reduction",
+        "actionPriority": 16,
         "action": {
-            "ActionID": "icare_0136",
-            "ActionName": "Apoyar la Implementaci\u00f3n de Incentivos Fiscales Ecol\u00f3gicos",
+            "ActionID": "icare_0072",
+            "ActionName": "Promover colaboraciones entre la industria y el gobierno para la reducci\u00f3n de emisiones",
             "ActionType": [
                 "mitigation"
             ],
             "Hazard": null,
             "Sector": [
-                "afolu"
+                "ippu"
             ],
             "Subsector": [
-                "land"
+                "industrial_processes"
             ],
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "Description": "Fomentar la aplicaci\u00f3n de impuestos ecol\u00f3gicos e incentivos para promover la conservaci\u00f3n ambiental.",
+            "Description": "Fomentar colaboraciones entre la industria y el gobierno para crear pol\u00edticas e incentivos que reduzcan las emisiones industriales y apoyen los objetivos de sostenibilidad.",
             "CoBenefits": {
                 "air_quality": 1,
                 "water_quality": 1,
-                "habitat": 2,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": "20-39",
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Establecimiento de foros de m\u00faltiples partes interesadas que involucren a la industria y al gobierno.",
+                "Desarrollo de marcos de pol\u00edticas claros para apoyar la reducci\u00f3n de emisiones.",
+                "Creaci\u00f3n de incentivos financieros para que las industrias adopten pr\u00e1cticas sostenibles."
+            ],
+            "KeyPerformanceIndicators": [
+                "N\u00famero de acuerdos de colaboraci\u00f3n firmados entre la industria y el gobierno.",
+                "Cantidad de emisiones reducidas a trav\u00e9s de iniciativas colaborativas (toneladas de CO\u2082/a\u00f1o).",
+                "Porcentaje de industrias clave involucradas en asociaciones para la reducci\u00f3n de emisiones (%)."
+            ],
+            "PowersAndMandates": [
+                "national"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR CII",
+        "cityName": "Cariacica",
+        "region": "ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0034",
+        "actionName": "Create tax incentives for companies adopting clean technologies",
+        "actionPriority": 17,
+        "action": {
+            "ActionID": "icare_0034",
+            "ActionName": "Crear incentivos fiscales para las empresas que adopten tecnolog\u00edas limpias",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "ippu"
+            ],
+            "Subsector": [
+                "industrial_processes"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Implementar incentivos fiscales y subsidios para las empresas que invierten en tecnolog\u00edas limpias, lo que lleva a reducciones sustanciales de emisiones.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 0,
+                "habitat": 0,
                 "cost_of_living": 1,
                 "housing": 0,
                 "mobility": 0,
@@ -1006,85 +1030,27 @@
                 "stationary_energy": null,
                 "transportation": null,
                 "waste": null,
-                "ippu": null,
-                "afolu": "20-39"
+                "ippu": "20-39",
+                "afolu": null
             },
             "AdaptationEffectiveness": null,
             "CostInvestmentNeeded": "low",
             "TimelineForImplementation": "<5 years",
             "Dependencies": [
-                "Establecer un marco regulatorio claro con tasas impositivas justas e incentivos para la sostenibilidad.",
-                "Implementar sistemas de monitoreo efectivos para rastrear el cumplimiento y medir el impacto.",
-                "Promover la conciencia p\u00fablica y fomentar la colaboraci\u00f3n entre gobiernos, empresas y comunidades."
+                "Desarrollo de un marco de incentivos fiscales dirigido a inversiones en tecnolog\u00eda limpia.",
+                "Disponibilidad de recursos financieros para subsidios e incentivos fiscales.",
+                "Colaboraci\u00f3n entre el gobierno y las empresas para identificar tecnolog\u00edas limpias elegibles."
             ],
             "KeyPerformanceIndicators": [
-                "N\u00famero de municipios que han adoptado incentivos fiscales ambientales.",
-                "Porcentaje de ingresos fiscales gastados en pr\u00e1cticas sostenibles.",
-                "Superficie o n\u00famero de propiedades que se benefician de pr\u00e1cticas de conservaci\u00f3n como resultado de los incentivos."
+                "Porcentaje promedio de ahorro fiscal por empresa que adopta tecnolog\u00edas limpias (%).",
+                "N\u00famero de nuevas empresas de tecnolog\u00eda limpia establecidas como resultado de incentivos fiscales.",
+                "Aumento en los empleos relacionados con tecnolog\u00edas limpias creados debido a incentivos fiscales."
             ],
             "PowersAndMandates": [
                 "state"
-            ]
-        }
-    },
-    {
-        "locode": "BR CII",
-        "cityName": "Cariacica",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0117",
-        "actionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
-        "actionPriority": 18,
-        "action": {
-            "ActionID": "icare_0117",
-            "ActionName": "Aumentar el atractivo del sistema de autobuses municipales para promover este modo de transporte.",
-            "ActionType": [
-                "mitigation"
             ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Aumentar la calidad de la prestaci\u00f3n del servicio de transporte, con el objetivo de cambiar el modo de transporte de los pasajeros del transporte motorizado privado al transporte p\u00fablico, reduciendo as\u00ed las emisiones generadas por coches y motocicletas.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Mejorar la calidad de los servicios de transporte p\u00fablico para atraer pasajeros del transporte motorizado privado.",
-                "Implementar pol\u00edticas e infraestructuras que apoyen y mejoren la eficiencia de los sistemas de transporte p\u00fablico.",
-                "Promover la concienciaci\u00f3n sobre los beneficios ambientales del transporte p\u00fablico para fomentar un cambio modal y reducir las emisiones."
-            ],
-            "KeyPerformanceIndicators": [
-                "Aumento anual en el n\u00famero de pasajeros que utilizan el sistema de autobuses municipales.",
-                "Porcentaje de rutas de autob\u00fas con mejor fiabilidad en el tiempo de viaje.",
-                "Reducci\u00f3n estimada en las emisiones de CO\u2082 equivalente debido al aumento del uso del transporte p\u00fablico."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
         }
     },
     {
@@ -1094,7 +1060,7 @@
         "regionName": "Esp\u00edrito Santo",
         "actionId": "icare_0099",
         "actionName": "Support Agroecological Certification Programs",
-        "actionPriority": 19,
+        "actionPriority": 18,
         "action": {
             "ActionID": "icare_0099",
             "ActionName": "Apoyar los Programas de Certificaci\u00f3n Agroecol\u00f3gica",
@@ -1134,7 +1100,7 @@
             "TimelineForImplementation": "<5 years",
             "Dependencies": [
                 "Desarrollo de est\u00e1ndares de certificaci\u00f3n claros y accesibles para productos agroecol\u00f3gicos que enfatizan la sostenibilidad y el bajo impacto ambiental.",
-                "Apoyo a agricultores y productores para cumplir con los requisitos de certificaci\u00f3n a trav\u00e9s de capacitaci\u00f3n, asistencia financiera o gu\u00eda t\u00e9cnica.",
+                "Apoyo a los agricultores y productores para cumplir con los requisitos de certificaci\u00f3n a trav\u00e9s de capacitaci\u00f3n, asistencia financiera o orientaci\u00f3n t\u00e9cnica.",
                 "Creaci\u00f3n de estrategias de marketing y asociaciones para aumentar la visibilidad y la demanda de productos agroecol\u00f3gicos certificados en los mercados locales y globales."
             ],
             "KeyPerformanceIndicators": [
@@ -1144,7 +1110,9 @@
             ],
             "PowersAndMandates": [
                 "local"
-            ]
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
         }
     },
     {
@@ -1152,12 +1120,12 @@
         "cityName": "Cariacica",
         "region": "ES",
         "regionName": "Esp\u00edrito Santo",
-        "actionId": "ipcc_0016",
-        "actionName": "Eco-driving",
-        "actionPriority": 20,
+        "actionId": "icare_0139",
+        "actionName": "Implementation of urban toll.",
+        "actionPriority": 19,
         "action": {
-            "ActionID": "ipcc_0016",
-            "ActionName": "Eco-conducci\u00f3n",
+            "ActionID": "icare_0139",
+            "ActionName": "Implementaci\u00f3n de peaje urbano.",
             "ActionType": [
                 "mitigation"
             ],
@@ -1171,20 +1139,20 @@
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "Description": "Un conjunto de pr\u00e1cticas de conducci\u00f3n destinadas a mejorar la eficiencia del combustible, reducir las emisiones de gases de efecto invernadero y minimizar el desgaste de los veh\u00edculos promoviendo una conducci\u00f3n suave, el mantenimiento regular del veh\u00edculo y la anticipaci\u00f3n del tr\u00e1fico.",
+            "Description": "Establecimiento de un cargo por congesti\u00f3n y/o rotaci\u00f3n de matr\u00edculas para veh\u00edculos ligeros en \u00e1reas saturadas y en horarios saturados",
             "CoBenefits": {
-                "air_quality": 1,
+                "air_quality": 2,
                 "water_quality": 0,
                 "habitat": 0,
-                "cost_of_living": 1,
+                "cost_of_living": -1,
                 "housing": 0,
-                "mobility": 1,
-                "stakeholder_engagement": 1
+                "mobility": 2,
+                "stakeholder_engagement": 0
             },
-            "EquityAndInclusionConsiderations": "Promueve la accesibilidad a t\u00e9cnicas de ahorro de combustible para todos los conductores, reduciendo los costos operativos y apoyando a las comunidades vulnerables que dependen del transporte vehicular.",
+            "EquityAndInclusionConsiderations": null,
             "GHGReductionPotential": {
                 "stationary_energy": null,
-                "transportation": "0-19",
+                "transportation": "80-100",
                 "waste": null,
                 "ippu": null,
                 "afolu": null
@@ -1193,19 +1161,81 @@
             "CostInvestmentNeeded": "low",
             "TimelineForImplementation": "<5 years",
             "Dependencies": [
-                "Educaci\u00f3n de conductores",
-                "programas de formaci\u00f3n efectivos",
-                "apoyo pol\u00edtico",
-                "mecanismos de incentivos",
-                "fomentar la adopci\u00f3n de pr\u00e1cticas de conducci\u00f3n ecol\u00f3gica"
+                "Establecer un marco legal claro e invertir en tecnolog\u00eda para el monitoreo y la aplicaci\u00f3n (por ejemplo, c\u00e1maras, sensores).",
+                "Lanzar campa\u00f1as de concienciaci\u00f3n y asegurar la disponibilidad de transporte p\u00fablico eficiente o soluciones de movilidad alternativas.",
+                "Colaborar con los gobiernos locales y las agencias de transporte, y establecer sistemas para monitorear y evaluar la efectividad de la pol\u00edtica."
             ],
             "KeyPerformanceIndicators": [
-                "Porcentaje de reducci\u00f3n en el consumo de combustible",
-                "emisiones de GEI por veh\u00edculo",
-                "n\u00famero de conductores capacitados en conducci\u00f3n ecol\u00f3gica",
-                "adherencia a las pr\u00e1cticas de conducci\u00f3n ecol\u00f3gica entre los conductores capacitados"
+                "Reducci\u00f3n de emisiones de CO\u2082 del transporte por carretera urbano (tCO\u2082e/a\u00f1o).",
+                "Ingresos generados por la implementaci\u00f3n del cargo por congesti\u00f3n urbana (R$)."
             ],
-            "PowersAndMandates": null
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR CII",
+        "cityName": "Cariacica",
+        "region": "ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0024",
+        "actionName": "Integrate renewables into municipal water systems",
+        "actionPriority": 20,
+        "action": {
+            "ActionID": "icare_0024",
+            "ActionName": "Integrar energ\u00edas renovables en los sistemas de agua municipales",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "stationary_energy"
+            ],
+            "Subsector": [
+                "energy_generation_supplied_to_the_grid"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Implementar fuentes de energ\u00eda renovable, como la solar o la e\u00f3lica, para impulsar los sistemas de tratamiento, bombeo y distribuci\u00f3n de agua, reduciendo los costos de energ\u00eda y las emisiones.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": "80-100",
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Disponibilidad de financiaci\u00f3n o incentivos financieros para integrar fuentes de energ\u00eda renovable como la solar o la e\u00f3lica en los sistemas de tratamiento y distribuci\u00f3n de agua",
+                "Experiencia t\u00e9cnica e infraestructura para adaptar los sistemas existentes con soluciones de energ\u00eda renovable o dise\u00f1ar nuevas instalaciones alimentadas por energ\u00edas renovables",
+                "Apoyo pol\u00edtico y regulatorio para fomentar el uso de energ\u00eda limpia en los sistemas de agua y asegurar su integraci\u00f3n en las redes energ\u00e9ticas municipales"
+            ],
+            "KeyPerformanceIndicators": [
+                "Porcentaje de sistemas de agua municipales alimentados por energ\u00edas renovables.",
+                "Reducci\u00f3n en el consumo de energ\u00eda de fuentes no renovables (kWh/a\u00f1o).",
+                "Emisiones de GEI evitadas (toneladas de CO\u2082e)"
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
         }
     }
 ]

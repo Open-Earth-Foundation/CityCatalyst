@@ -1,0 +1,1240 @@
+[
+    {
+        "locode": "BR ATM",
+        "cityName": "Altamira",
+        "region": "PA",
+        "regionName": "Par\u00e1",
+        "actionId": "icare_0050",
+        "actionName": "Implement Agroforestry Systems",
+        "actionPriority": 1,
+        "action": {
+            "ActionID": "icare_0050",
+            "ActionName": "Implement Agroforestry Systems",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "agriculture_forestry_and_fishing_activities"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Promote agroforestry systems by integrating trees into food cultivation and pasture, increasing biodiversity and carbon sequestration.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "80-100"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Provision of technical support and guidance to farmers on the design and implementation of agroforestry systems.",
+                "Development of financial incentives or subsidies to make agroforestry more economically attractive.",
+                "Creation of policies that integrate agroforestry practices into agricultural land-use planning and land tenure systems."
+            ],
+            "KeyPerformanceIndicators": [
+                "Percentage of agricultural land converted to agroforestry systems (%).",
+                "Number of new agroforestry projects implemented.",
+                "Increase in carbon sequestration in agroforestry systems (tons of CO\u2082e/year)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR ATM",
+        "cityName": "Altamira",
+        "region": "PA",
+        "regionName": "Par\u00e1",
+        "actionId": "icare_0134",
+        "actionName": "Strengthen Mechanisms for Deforestation Control",
+        "actionPriority": 2,
+        "action": {
+            "ActionID": "icare_0134",
+            "ActionName": "Strengthen Mechanisms for Deforestation Control",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "land"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Enhance monitoring and enforcement to prevent illegal deforestation and promote sustainable land use.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "80-100"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Strong legal framework, advanced monitoring technologies (satellites and drones), and capacity building for local authorities.",
+                "Collaboration with local communities and adequate funding for enforcement efforts.",
+                "Transparency and accountability in reporting to ensure effective implementation."
+            ],
+            "KeyPerformanceIndicators": [
+                "Total area monitored for deforestation (hectares/year).",
+                "Reduction in annual deforestation rate (%).",
+                "Amount of emissions avoided by reducing deforestation (tCO\u2082e)."
+            ],
+            "PowersAndMandates": [
+                "national"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR ATM",
+        "cityName": "Altamira",
+        "region": "PA",
+        "regionName": "Par\u00e1",
+        "actionId": "icare_0133",
+        "actionName": "Promote Urban Reforestation and Green Corridors",
+        "actionPriority": 3,
+        "action": {
+            "ActionID": "icare_0133",
+            "ActionName": "Promote Urban Reforestation and Green Corridors",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "land"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Increase urban tree coverage to mitigate the urban heat island effect and enhance biodiversity.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 1,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 1,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "80-100"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Identification of priority areas and selection of native, climate-resilient species for tree planting.",
+                "Partnerships with local organizations and nurseries, and allocation of resources for planting and maintenance.",
+                "Community engagement to ensure long-term care and support."
+            ],
+            "KeyPerformanceIndicators": [
+                "Increase in urban tree canopy cover (%)",
+                "Total length of green corridors created or restored (kilometers)",
+                "Reduction in urban heat island effect temperatures (\u00b0C)"
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR ATM",
+        "cityName": "Altamira",
+        "region": "PA",
+        "regionName": "Par\u00e1",
+        "actionId": "icare_0128",
+        "actionName": "Establish Municipal Programs for Payment for Environmental Services (PES)",
+        "actionPriority": 4,
+        "action": {
+            "ActionID": "icare_0128",
+            "ActionName": "Establish Municipal Programs for Payment for Environmental Services (PES)",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "land"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Implement programs that pay landowners for maintaining or improving environmental conditions on their properties.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": -1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "60-79"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Creation of funding mechanisms and clear eligibility criteria with performance indicators.",
+                "Partnerships with environmental organizations and awareness campaigns to encourage participation.",
+                "Integration with legal frameworks to ensure program sustainability."
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of active Payment for Environmental Services (PES) contracts signed.",
+                "Total area under incentivised conservation or restoration practices (hectares).",
+                "Amount of carbon sequestered or emissions avoided through PES actions (tCO\u2082e/year)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR ATM",
+        "cityName": "Altamira",
+        "region": "PA",
+        "regionName": "Par\u00e1",
+        "actionId": "icare_0129",
+        "actionName": "Facilitate Technology Transfer for Conservation Practices",
+        "actionPriority": 5,
+        "action": {
+            "ActionID": "icare_0129",
+            "ActionName": "Facilitate Technology Transfer for Conservation Practices",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "agriculture_forestry_and_fishing_activities"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Promote the adoption of sustainable agricultural practices through training, pilot projects, and technology demonstrations.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 1,
+                "habitat": 2,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "60-79"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Provision of training programs and establishment of pilot projects to showcase sustainable practices.",
+                "Partnerships with research institutions for technology development and financial incentives to encourage adoption.",
+                "Access to technical assistance for successful implementation."
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of conservation technologies transferred and applied on farms.",
+                "Percentage of producers trained to implement conservation practices.",
+                "Reduction in soil degradation or increase in vegetation cover (hectares)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR ATM",
+        "cityName": "Altamira",
+        "region": "PA",
+        "regionName": "Par\u00e1",
+        "actionId": "icare_0130",
+        "actionName": "Conduct Technical Assistance and Rural Extension (ATER) Actions",
+        "actionPriority": 6,
+        "action": {
+            "ActionID": "icare_0130",
+            "ActionName": "Conduct Technical Assistance and Rural Extension (ATER) Actions",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "agriculture_forestry_and_fishing_activities"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Provide technical support and training to rural producers for sustainable agricultural production.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "60-79"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Availability of skilled technical staff and tailored training programs.",
+                "Partnerships with agricultural research institutions and allocation of resources for capacity-building.",
+                "Engagement with rural producers to ensure active participation."
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of producers benefiting from rural technical assistance (% of total).",
+                "Percentage of participants adopting climate-resilient practices.",
+                "Reduced vulnerability of properties to climate risk (%).\""
+            ],
+            "PowersAndMandates": [
+                "state"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR ATM",
+        "cityName": "Altamira",
+        "region": "PA",
+        "regionName": "Par\u00e1",
+        "actionId": "icare_0102",
+        "actionName": "Promote Sustainable Agricultural Practices",
+        "actionPriority": 7,
+        "action": {
+            "ActionID": "icare_0102",
+            "ActionName": "Promote Sustainable Agricultural Practices",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "agriculture_forestry_and_fishing_activities"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Encourage agricultural practices that reduce greenhouse gas emissions, such as reduced use of fertilizers and agrochemicals.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "60-79"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Development of educational programs and resources to promote sustainable agricultural practices among farmers.",
+                "Implementation of policies that incentivize the reduction of fertilizer and agrochemical use, such as subsidies for organic inputs or sustainable farming techniques.",
+                "Collaboration with agricultural organizations to provide technical support and guidance on emission-reducing practices."
+            ],
+            "KeyPerformanceIndicators": [
+                "Percentage of farmland adopting sustainable practices (% of total agricultural land).",
+                "Increase in crop yield per hectare (tons/hectare) due to sustainable methods.",
+                "Reduction in water usage for agriculture (liters or m\u00b3/hectare/year)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR ATM",
+        "cityName": "Altamira",
+        "region": "PA",
+        "regionName": "Par\u00e1",
+        "actionId": "icare_0100",
+        "actionName": "Support Regenerative Agriculture Practices",
+        "actionPriority": 8,
+        "action": {
+            "ActionID": "icare_0100",
+            "ActionName": "Support Regenerative Agriculture Practices",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "agriculture_forestry_and_fishing_activities"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Support regenerative agricultural practices that focus on restoring soil health and reducing carbon emissions.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "60-79"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Development of training programs and resources to educate farmers on regenerative agricultural techniques, such as cover cropping and reduced tillage.",
+                "Implementation of financial incentives or subsidies to support the adoption of regenerative practices.",
+                "Collaboration with agricultural research institutions to monitor and document the effectiveness of regenerative practices in carbon sequestration and soil health improvement."
+            ],
+            "KeyPerformanceIndicators": [
+                "Increase in soil organic carbon levels (tons/hectare).",
+                "Reduction in water usage per hectare in agricultural production (%).",
+                "Number of regenerative agriculture pilot projects implemented."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR ATM",
+        "cityName": "Altamira",
+        "region": "PA",
+        "regionName": "Par\u00e1",
+        "actionId": "icare_0084",
+        "actionName": "Create Incentives for Agroforestry Practices in Livestock Systems",
+        "actionPriority": 9,
+        "action": {
+            "ActionID": "icare_0084",
+            "ActionName": "Create Incentives for Agroforestry Practices in Livestock Systems",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "agriculture_forestry_and_fishing_activities"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Create financial and technical incentives for integrating agroforestry practices into livestock systems, promoting carbon capture, soil protection, and biodiversity improvement.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "60-79"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Development of financial incentive programs, such as subsidies or tax breaks, to support farmers in integrating agroforestry with livestock systems.",
+                "Provision of technical assistance and training to farmers on best practices for agroforestry integration into livestock operations.",
+                "Collaboration with agricultural and environmental organizations to monitor and assess the impacts of agroforestry practices on carbon capture, soil health, and biodiversity."
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of financial incentives provided to integrate agroforestry in livestock systems.",
+                "Increase in soil quality and vegetation cover in managed properties (%).",
+                "Growth in biodiversity in agroforestry areas (% of identified species)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR ATM",
+        "cityName": "Altamira",
+        "region": "PA",
+        "regionName": "Par\u00e1",
+        "actionId": "icare_0096",
+        "actionName": "Promote Organic Farming",
+        "actionPriority": 10,
+        "action": {
+            "ActionID": "icare_0096",
+            "ActionName": "Promote Organic Farming",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "agriculture_forestry_and_fishing_activities"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Encourage the adoption of organic farming practices that avoid the use of chemicals and contribute to soil health and carbon capture.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "60-79"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Provision of financial incentives, subsidies, or grants to support the transition to organic farming practices.",
+                "Development of training and support networks to educate farmers on organic farming methods and their benefits.",
+                "Establishment of certification systems and market access strategies to ensure the economic viability of organic products."
+            ],
+            "KeyPerformanceIndicators": [
+                "Percentage of agricultural land under organic farming practices (%).",
+                "Increase in soil organic carbon content (tons of carbon per hectare).",
+                "Reduction in the use of chemical fertilizers and pesticides (kilograms/hectare/year)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR ATM",
+        "cityName": "Altamira",
+        "region": "PA",
+        "regionName": "Par\u00e1",
+        "actionId": "icare_0127",
+        "actionName": "Accelerate Environmental Regularization of Rural Properties",
+        "actionPriority": 11,
+        "action": {
+            "ActionID": "icare_0127",
+            "ActionName": "Accelerate Environmental Regularization of Rural Properties",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "agriculture_forestry_and_fishing_activities"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Implement programs to register properties in the Rural Environmental Registry (CAR) and adhere to environmental restoration commitments.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 2,
+                "habitat": 1,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "60-79"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Access to digital platforms and technical training for property registration and restoration processes.",
+                "Financial incentives and partnerships with environmental agencies to support implementation.",
+                "Monitoring and enforcement mechanisms to ensure compliance with restoration commitments."
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of rural properties with regularised Rural Environmental Registration (CAR).",
+                "Total area of native vegetation protected or restored on regularised properties (hectares).",
+                "Annual reduction in greenhouse gas emissions (tCO\u2082e) due to regularisation."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR ATM",
+        "cityName": "Altamira",
+        "region": "PA",
+        "regionName": "Par\u00e1",
+        "actionId": "icare_0101",
+        "actionName": "Encourage the Use of Low-Emission Agricultural Machinery",
+        "actionPriority": 12,
+        "action": {
+            "ActionID": "icare_0101",
+            "ActionName": "Encourage the Use of Low-Emission Agricultural Machinery",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "agriculture_forestry_and_fishing_activities"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Promote the use of low-carbon agricultural machinery, such as tractors and equipment powered by biofuels or solar energy.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "60-79"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Establishment of funding programs or incentives for farmers to purchase low-carbon agricultural machinery.",
+                "Development of partnerships with machinery manufacturers to create and distribute sustainable equipment solutions.",
+                "Implementation of training and support programs to assist farmers in integrating and maintaining low-carbon agricultural machinery."
+            ],
+            "KeyPerformanceIndicators": [
+                "Reduction in emissions from agricultural machinery (tons of CO\u2082e/year).",
+                "Number of low-emission machinery subsidies or incentives provided.",
+                "Percentage of farmers trained to operate low-emission machinery."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR ATM",
+        "cityName": "Altamira",
+        "region": "PA",
+        "regionName": "Par\u00e1",
+        "actionId": "icare_0131",
+        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
+        "actionPriority": 13,
+        "action": {
+            "ActionID": "icare_0131",
+            "ActionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "agriculture_forestry_and_fishing_activities"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Focus on buying sustainable, locally produced food for public institutions.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "20-39"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Development of procurement policies and identification of reliable local suppliers.",
+                "Partnerships with producers and allocation of funding for sustainable procurement programs.",
+                "Establishment of monitoring systems to ensure compliance with sustainability criteria."
+            ],
+            "KeyPerformanceIndicators": [
+                "Percentage of the total volume of public purchases coming from local agroecological producers.",
+                "Amount of CO\u2082 emissions avoided due to reduced transport distance (tCO\u2082e).",
+                "Number of agroecological producers benefiting from public purchases."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR ATM",
+        "cityName": "Altamira",
+        "region": "PA",
+        "regionName": "Par\u00e1",
+        "actionId": "ipcc_0061",
+        "actionName": "Soil Carbon Management in Croplands and Grasslands",
+        "actionPriority": 14,
+        "action": {
+            "ActionID": "ipcc_0061",
+            "ActionName": "Soil Carbon Management in Croplands and Grasslands",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "land"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Implementation of sustainable soil management practices in croplands and grasslands to enhance soil organic carbon. Practices include improved crop and nutrient management, reduced tillage, residue retention, water and rice management, biochar application, improved grass varieties, livestock stocking management, and fire management. These activities aim to increase soil organic matter, mitigate GHG emissions, and provide co-benefits for biodiversity, water provision, and food security.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 1,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": "Promotes inclusion of smallholder farmers and resource-limited communities by providing cost-effective and regionally adaptable practices that improve agricultural productivity and resilience to climate change.",
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "60-79"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Success depends on the availability of resources for monitoring and verification",
+                "regional adaptation of practices",
+                "addressing barriers such as soil saturation and permanence issues"
+            ],
+            "KeyPerformanceIndicators": [
+                "Increase in soil organic carbon",
+                "reduction in GHG emissions",
+                "improvement in agricultural productivity",
+                "biodiversity enhancements"
+            ],
+            "PowersAndMandates": null,
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR ATM",
+        "cityName": "Altamira",
+        "region": "PA",
+        "regionName": "Par\u00e1",
+        "actionId": "icare_0099",
+        "actionName": "Support Agroecological Certification Programs",
+        "actionPriority": 15,
+        "action": {
+            "ActionID": "icare_0099",
+            "ActionName": "Support Agroecological Certification Programs",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "agriculture_forestry_and_fishing_activities"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Encourage the certification of agroecological products that meet sustainability criteria and have low environmental impact.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 1,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "20-39"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Development of clear and accessible certification standards for agroecological products that emphasize sustainability and low environmental impact.",
+                "Support for farmers and producers to meet certification requirements through training, financial assistance, or technical guidance.",
+                "Creation of marketing strategies and partnerships to increase the visibility and demand for certified agroecological products in local and global markets."
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of farmers or producers obtaining agroecological certifications.",
+                "Percentage of certified agricultural products in the market (%).",
+                "Reduction in the use of synthetic inputs (e.g., fertilizers, pesticides)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR ATM",
+        "cityName": "Altamira",
+        "region": "PA",
+        "regionName": "Par\u00e1",
+        "actionId": "icare_0136",
+        "actionName": "Support the Implementation of Ecological Fiscal Incentives",
+        "actionPriority": 16,
+        "action": {
+            "ActionID": "icare_0136",
+            "ActionName": "Support the Implementation of Ecological Fiscal Incentives",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "land"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Encourage the application of ecological taxes and incentives to promote environmental conservation.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 1,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "20-39"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Establish a clear regulatory framework with fair tax rates and incentives for sustainability.",
+                "Implement effective monitoring systems to track compliance and measure impact.",
+                "Promote public awareness and foster collaboration between governments, businesses, and communities."
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of municipalities that have adopted environmental tax incentives.",
+                "Percentage of tax revenue spent on sustainable practices.",
+                "Acreage or number of properties benefiting from conservation practices as a result of incentives."
+            ],
+            "PowersAndMandates": [
+                "state"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR ATM",
+        "cityName": "Altamira",
+        "region": "PA",
+        "regionName": "Par\u00e1",
+        "actionId": "icare_0132",
+        "actionName": "Encourage Local Agroecological Production and Short Supply Chains",
+        "actionPriority": 17,
+        "action": {
+            "ActionID": "icare_0132",
+            "ActionName": "Encourage Local Agroecological Production and Short Supply Chains",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "agriculture_forestry_and_fishing_activities"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Support local, sustainable agricultural practices and reduce emissions associated with food transport.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 2,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "20-39"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Incentives for sustainable agricultural practices and development of local food distribution networks.",
+                "Partnerships with producers and investment in infrastructure to support local markets.",
+                "Policies to prioritize low-emission transportation methods."
+            ],
+            "KeyPerformanceIndicators": [
+                "Number of producers adhering to local agroecological practices.",
+                "Percentage of food consumed in the city from short chains.",
+                "Reduction in emissions associated with food transport (tCO\u2082e)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR ATM",
+        "cityName": "Altamira",
+        "region": "PA",
+        "regionName": "Par\u00e1",
+        "actionId": "icare_0085",
+        "actionName": "Promote the Adoption of Agroecological Pest Control",
+        "actionPriority": 18,
+        "action": {
+            "ActionID": "icare_0085",
+            "ActionName": "Promote the Adoption of Agroecological Pest Control",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "agriculture_forestry_and_fishing_activities"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Encourage pest control methods that are agroecological, such as using natural predators and repellent plants, to reduce reliance on chemical pesticides.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "20-39"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Development of educational programs to inform farmers about agroecological pest control methods and their benefits.",
+                "Provision of access to resources or materials for implementing natural pest control methods, such as introducing beneficial insects or cultivating repellent plants.",
+                "Creation of incentives or support networks to encourage the transition away from chemical pesticides in favor of sustainable alternatives."
+            ],
+            "KeyPerformanceIndicators": [
+                "Increase in productivity rates in areas adopting agroecological pest control (%).",
+                "Number of educational campaigns conducted on sustainable pest control.",
+                "Impact on total production costs due to the adoption of agroecological practices (%)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR ATM",
+        "cityName": "Altamira",
+        "region": "PA",
+        "regionName": "Par\u00e1",
+        "actionId": "ipcc_0052",
+        "actionName": "Reduce Deforestation and Degradation",
+        "actionPriority": 19,
+        "action": {
+            "ActionID": "ipcc_0052",
+            "ActionName": "Reduce Deforestation and Degradation",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "land"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Reducing deforestation and forest degradation conserves carbon pools in forest vegetation and soil by avoiding tree cover loss and disturbance. This involves controlling drivers of deforestation, improving forest governance, and supporting community forest management.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 1,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": "Promotes secure land tenure, supports community-based forest management, and ensures participation of marginalized and indigenous groups in decision-making processes.",
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "60-79"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Requires improved governance",
+                "clear land tenure policies",
+                "funding for protected areas",
+                "community participation in forest conservation efforts"
+            ],
+            "KeyPerformanceIndicators": [
+                "Reduction in deforestation rates",
+                "increased forest cover",
+                "the amount of GHG emissions avoided per year"
+            ],
+            "PowersAndMandates": null,
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "tropical_rainforest"
+        }
+    },
+    {
+        "locode": "BR ATM",
+        "cityName": "Altamira",
+        "region": "PA",
+        "regionName": "Par\u00e1",
+        "actionId": "ipcc_0053",
+        "actionName": "Afforestation, Reforestation and Forest Ecosystem Restoration",
+        "actionPriority": 20,
+        "action": {
+            "ActionID": "ipcc_0053",
+            "ActionName": "Afforestation, Reforestation and Forest Ecosystem Restoration",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "land"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Activities focused on converting land to forests, restoring degraded forests, and prioritizing ecological integrity. Afforestation targets historically non-forested land, while reforestation targets previously forested areas. Efforts include enhancing biodiversity, improving ecosystem services, and increasing carbon sequestration.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": "Supports local livelihoods, promotes land-use equity, and ensures inclusive stakeholder participation in afforestation and restoration programs.",
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "60-79"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "high",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Requires funding for land restoration",
+                "access to suitable species for planting",
+                "local community engagement",
+                "monitoring systems for ecosystem integrity and carbon sequestration"
+            ],
+            "KeyPerformanceIndicators": [
+                "Area of land reforested or afforested",
+                "carbon sequestration rates",
+                "improvement in biodiversity indices",
+                "ecosystem service metrics such as water regulation and soil quality"
+            ],
+            "PowersAndMandates": null,
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    }
+]

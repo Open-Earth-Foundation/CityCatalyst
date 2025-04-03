@@ -4,59 +4,60 @@
         "cityName": "Serra",
         "region": "ES",
         "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0075",
-        "actionName": "Set carbon emissions reduction targets for industrial sectors",
+        "actionId": "icare_0139",
+        "actionName": "Implementation of urban toll.",
         "actionPriority": 1,
         "action": {
-            "ActionID": "icare_0075",
-            "ActionName": "Establecer objetivos de reducci\u00f3n de emisiones de carbono para los sectores industriales",
+            "ActionID": "icare_0139",
+            "ActionName": "Implementaci\u00f3n de peaje urbano.",
             "ActionType": [
                 "mitigation"
             ],
             "Hazard": null,
             "Sector": [
-                "ippu"
+                "transportation"
             ],
             "Subsector": [
-                "industrial_processes"
+                "on-road"
             ],
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "Description": "Establecer objetivos claros y alcanzables de reducci\u00f3n de emisiones de carbono para las industrias y exigir informes peri\u00f3dicos para asegurar el progreso.",
+            "Description": "Establecimiento de un cargo por congesti\u00f3n y/o rotaci\u00f3n de matr\u00edculas para veh\u00edculos ligeros en \u00e1reas saturadas y en horarios saturados",
             "CoBenefits": {
                 "air_quality": 2,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 0,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": -1,
                 "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
+                "mobility": 2,
+                "stakeholder_engagement": 0
             },
             "EquityAndInclusionConsiderations": null,
             "GHGReductionPotential": {
                 "stationary_energy": null,
-                "transportation": null,
+                "transportation": "80-100",
                 "waste": null,
-                "ippu": "80-100",
+                "ippu": null,
                 "afolu": null
             },
             "AdaptationEffectiveness": null,
             "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "5-10 years",
+            "TimelineForImplementation": "<5 years",
             "Dependencies": [
-                "Desarrollo de un sistema estandarizado de medici\u00f3n y reporte de emisiones de carbono.",
-                "Creaci\u00f3n de marcos regulatorios para hacer cumplir los objetivos de reducci\u00f3n de emisiones.",
-                "Fortalecimiento de capacidades para que las industrias monitoreen e informen sobre las emisiones de manera efectiva."
+                "Establecer un marco legal claro e invertir en tecnolog\u00eda para el monitoreo y la aplicaci\u00f3n (por ejemplo, c\u00e1maras, sensores).",
+                "Lanzar campa\u00f1as de concienciaci\u00f3n y asegurar la disponibilidad de transporte p\u00fablico eficiente o soluciones de movilidad alternativas.",
+                "Colaborar con los gobiernos locales y las agencias de transporte, y establecer sistemas para monitorear y evaluar la efectividad de la pol\u00edtica."
             ],
             "KeyPerformanceIndicators": [
-                "Porcentaje de industrias con objetivos establecidos de reducci\u00f3n de carbono (%).",
-                "Reducci\u00f3n en las emisiones totales de GEI sectoriales en comparaci\u00f3n con la l\u00ednea base (toneladas de CO\u2082e).",
-                "Aumento en la adopci\u00f3n de fuentes de energ\u00eda renovable por parte de las industrias (%)."
+                "Reducci\u00f3n de emisiones de CO\u2082 del transporte por carretera urbano (tCO\u2082e/a\u00f1o).",
+                "Ingresos generados por la implementaci\u00f3n del cargo por congesti\u00f3n urbana (R$)."
             ],
             "PowersAndMandates": [
                 "local"
-            ]
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
         }
     },
     {
@@ -64,419 +65,61 @@
         "cityName": "Serra",
         "region": "ES",
         "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0001",
-        "actionName": "Stimulate solar energy production in industrial facilities",
+        "actionId": "icare_0094",
+        "actionName": "Adoption of biomethane in public fleets.",
         "actionPriority": 2,
         "action": {
-            "ActionID": "icare_0001",
-            "ActionName": "Estimular la producci\u00f3n de energ\u00eda solar en instalaciones industriales",
+            "ActionID": "icare_0094",
+            "ActionName": "Adopci\u00f3n de biometano en flotas p\u00fablicas.",
             "ActionType": [
                 "mitigation"
             ],
             "Hazard": null,
             "Sector": [
-                "ippu"
+                "transportation"
             ],
             "Subsector": [
-                "industrial_processes"
+                "on-road"
             ],
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "Description": "Fomentar la instalaci\u00f3n de sistemas de energ\u00eda solar en f\u00e1bricas para reducir la dependencia de los combustibles f\u00f3siles y minimizar las emisiones asociadas.",
+            "Description": "Utilizar biometano producido a partir de residuos urbanos y agroindustriales para alimentar autobuses y camiones p\u00fablicos, reduciendo las emisiones de gases de efecto invernadero en las flotas municipales.",
             "CoBenefits": {
                 "air_quality": 2,
                 "water_quality": 1,
-                "habitat": 1,
+                "habitat": 0,
                 "cost_of_living": 1,
                 "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": "80-100",
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": ">10 years",
-            "Dependencies": [
-                "Disponibilidad de financiaci\u00f3n o subsidios para apoyar las instalaciones de energ\u00eda solar en industrias.",
-                "Experiencia t\u00e9cnica y capacidad para la instalaci\u00f3n de paneles solares y sistemas relacionados.",
-                "Marcos regulatorios que faciliten la integraci\u00f3n de la energ\u00eda solar en las operaciones industriales."
-            ],
-            "KeyPerformanceIndicators": [
-                "Emisiones totales de gases de efecto invernadero evitadas mediante la adopci\u00f3n de energ\u00eda solar en industrias (toneladas de CO\u2082/a\u00f1o).",
-                "Per\u00edodo promedio de retorno de la inversi\u00f3n (ROI) para instalaciones solares industriales (a\u00f1os).",
-                "Porcentaje de necesidades energ\u00e9ticas industriales cubiertas por sistemas de energ\u00eda solar (%)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR SER",
-        "cityName": "Serra",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0082",
-        "actionName": "Transition to renewable energy for industrial operations",
-        "actionPriority": 3,
-        "action": {
-            "ActionID": "icare_0082",
-            "ActionName": "Transici\u00f3n a energ\u00edas renovables para operaciones industriales",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "ippu"
-            ],
-            "Subsector": [
-                "industrial_processes"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Fomentar el cambio hacia fuentes de energ\u00eda renovable como la e\u00f3lica, solar e hidroel\u00e9ctrica en las operaciones industriales para reducir el uso de combustibles f\u00f3siles.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
+                "mobility": 1,
                 "stakeholder_engagement": 1
             },
             "EquityAndInclusionConsiderations": null,
             "GHGReductionPotential": {
                 "stationary_energy": null,
-                "transportation": null,
+                "transportation": "60-79",
                 "waste": null,
-                "ippu": "80-100",
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": ">10 years",
-            "Dependencies": [
-                "Provisi\u00f3n de incentivos, como exenciones fiscales o subsidios, para hacer que las tecnolog\u00edas de energ\u00eda renovable sean m\u00e1s asequibles para las industrias.",
-                "Desarrollo de infraestructura para la integraci\u00f3n de energ\u00eda renovable en las operaciones industriales existentes, incluidas soluciones de almacenamiento de energ\u00eda.",
-                "Asistencia t\u00e9cnica y capacitaci\u00f3n para las partes interesadas de la industria para facilitar la transici\u00f3n a fuentes de energ\u00eda renovable."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de industrias que adoptan fuentes de energ\u00eda renovable.",
-                "Capacidad instalada de energ\u00eda renovable en operaciones industriales (MW).",
-                "Reducci\u00f3n en los costos promedio de energ\u00eda para las industrias que han hecho la transici\u00f3n a energ\u00edas renovables (%)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR SER",
-        "cityName": "Serra",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0078",
-        "actionName": "Develop and implement industrial waste management programs",
-        "actionPriority": 4,
-        "action": {
-            "ActionID": "icare_0078",
-            "ActionName": "Desarrollar e implementar programas de gesti\u00f3n de residuos industriales",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "ippu"
-            ],
-            "Subsector": [
-                "industrial_processes"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Establecer sistemas para gestionar mejor los residuos industriales, reduciendo las emisiones de los vertederos y fomentando el reciclaje o la reutilizaci\u00f3n.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 2,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": "60-79",
+                "ippu": null,
                 "afolu": null
             },
             "AdaptationEffectiveness": null,
             "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
+            "TimelineForImplementation": "<5 years",
             "Dependencies": [
-                "Regulaciones claras de gesti\u00f3n de residuos para las industrias.",
-                "Disponibilidad de infraestructura para el procesamiento de residuos.",
-                "Programas de capacitaci\u00f3n para trabajadores industriales sobre gesti\u00f3n de residuos."
+                "Desarrollo de infraestructura para la producci\u00f3n, procesamiento y distribuci\u00f3n de biometano a partir de residuos urbanos y agroindustriales.",
+                "Adaptaci\u00f3n o adquisici\u00f3n de autobuses y camiones p\u00fablicos capaces de utilizar biometano como fuente de combustible.",
+                "Establecimiento de pol\u00edticas e incentivos financieros para apoyar la producci\u00f3n de biometano y su integraci\u00f3n en las flotas municipales."
             ],
             "KeyPerformanceIndicators": [
-                "Reducci\u00f3n en la generaci\u00f3n de residuos peligrosos (toneladas/a\u00f1o).",
-                "Aumento en la tasa de reciclaje de materiales de desecho industrial (%).",
-                "Cantidad de conversi\u00f3n de residuos a energ\u00eda lograda (MWh/a\u00f1o)"
+                "Ahorro de costos en la operaci\u00f3n de la flota debido al uso de biometano (USD/a\u00f1o).",
+                "Aumento en la capacidad de producci\u00f3n de biometano (%).",
+                "Porcentaje de biometano obtenido localmente versus importado."
             ],
             "PowersAndMandates": [
                 "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR SER",
-        "cityName": "Serra",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0073",
-        "actionName": "Support the transition to low-emission industrial refrigeration",
-        "actionPriority": 5,
-        "action": {
-            "ActionID": "icare_0073",
-            "ActionName": "Apoyar la transici\u00f3n hacia la refrigeraci\u00f3n industrial de bajas emisiones",
-            "ActionType": [
-                "mitigation"
             ],
-            "Hazard": null,
-            "Sector": [
-                "ippu"
-            ],
-            "Subsector": [
-                "industrial_processes"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Reemplazar los refrigerantes de alto GWP por alternativas de baja emisi\u00f3n y eficiencia energ\u00e9tica en los sistemas de refrigeraci\u00f3n industrial.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": "60-79",
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Disponibilidad de refrigerantes de bajo GWP y equipos compatibles.",
-                "Apoyo regulatorio para eliminar gradualmente los refrigerantes de alto GWP.",
-                "Programas de capacitaci\u00f3n para profesionales de la industria sobre nuevos sistemas de refrigerantes."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de sistemas de refrigeraci\u00f3n industrial que han cambiado a alternativas de bajas emisiones.",
-                "Reducci\u00f3n de emisiones de gases de efecto invernadero de los sistemas de refrigeraci\u00f3n (toneladas de CO\u2082 equivalente/a\u00f1o).",
-                "Porcentaje de negocios locales que reciben apoyo para la transici\u00f3n (%)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR SER",
-        "cityName": "Serra",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0074",
-        "actionName": "Support research into carbon-neutral manufacturing technologies",
-        "actionPriority": 6,
-        "action": {
-            "ActionID": "icare_0074",
-            "ActionName": "Apoyar la investigaci\u00f3n en tecnolog\u00edas de fabricaci\u00f3n neutras en carbono",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "ippu"
-            ],
-            "Subsector": [
-                "industrial_processes"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Invertir en investigaci\u00f3n y desarrollo de tecnolog\u00edas neutras en carbono y fomentar su adopci\u00f3n en la producci\u00f3n industrial.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": "60-79",
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Financiamiento para la investigaci\u00f3n y desarrollo de tecnolog\u00edas neutras en carbono.",
-                "Alianzas entre el gobierno, la academia y la industria para fomentar la innovaci\u00f3n.",
-                "Programas de incentivos para que las industrias adopten nuevas tecnolog\u00edas."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de proyectos de investigaci\u00f3n financiados o iniciados.",
-                "Porcentaje de industrias locales que adoptan tecnolog\u00edas neutras en carbono (%).",
-                "Reducci\u00f3n de emisiones de carbono en industrias que participan en proyectos de investigaci\u00f3n (toneladas de CO\u2082/a\u00f1o)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR SER",
-        "cityName": "Serra",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0081",
-        "actionName": "Enhance material recycling in manufacturing",
-        "actionPriority": 7,
-        "action": {
-            "ActionID": "icare_0081",
-            "ActionName": "Mejorar el reciclaje de materiales en la fabricaci\u00f3n",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "ippu"
-            ],
-            "Subsector": [
-                "industrial_processes"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Fomentar el reciclaje y la reutilizaci\u00f3n de materiales en la producci\u00f3n industrial para reducir la extracci\u00f3n de materias primas y las emisiones.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": "60-79",
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Establecimiento de programas de reciclaje adaptados a industrias espec\u00edficas, con directrices claras para la separaci\u00f3n y reutilizaci\u00f3n de materiales.",
-                "Colaboraci\u00f3n con empresas de gesti\u00f3n de residuos para crear sistemas de reciclaje eficientes dentro de \u00e1reas industriales.",
-                "Desarrollo de pol\u00edticas que proporcionen incentivos econ\u00f3micos para que las industrias inviertan en tecnolog\u00edas de reciclaje y m\u00e9todos de producci\u00f3n sostenibles."
-            ],
-            "KeyPerformanceIndicators": [
-                "Porcentaje de materiales de desecho reciclados en los procesos de fabricaci\u00f3n (%).",
-                "Reducci\u00f3n en el consumo de materias primas debido al reciclaje (toneladas/a\u00f1o).",
-                "Aumento en el uso de materiales reciclados en productos finales (%)"
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR SER",
-        "cityName": "Serra",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0076",
-        "actionName": "Encourage the use of low-emission fuels in industrial processes",
-        "actionPriority": 8,
-        "action": {
-            "ActionID": "icare_0076",
-            "ActionName": "Fomentar el uso de combustibles de bajas emisiones en los procesos industriales",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "ippu"
-            ],
-            "Subsector": [
-                "industrial_processes"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Promover la transici\u00f3n a biocombustibles, hidr\u00f3geno y otras alternativas bajas en carbono en los procesos de combusti\u00f3n industrial.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": "60-79",
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Desarrollo de infraestructura para la producci\u00f3n y distribuci\u00f3n de biocombustibles e hidr\u00f3geno.",
-                "Marcos regulatorios para apoyar la transici\u00f3n a combustibles bajos en carbono.",
-                "Disponibilidad de tecnolog\u00eda para integrar biocombustibles e hidr\u00f3geno en sistemas industriales."
-            ],
-            "KeyPerformanceIndicators": [
-                "Porcentaje de consumo de energ\u00eda industrial a partir de combustibles de bajas emisiones (%).",
-                "Reducci\u00f3n de emisiones de GEI por sustituci\u00f3n de combustibles (toneladas de CO\u2082e/a\u00f1o).",
-                "N\u00famero de instalaciones que est\u00e1n haciendo la transici\u00f3n a fuentes de combustible de bajas emisiones."
-            ],
-            "PowersAndMandates": [
-                "state"
-            ]
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
         }
     },
     {
@@ -486,7 +129,7 @@
         "regionName": "Esp\u00edrito Santo",
         "actionId": "icare_0088",
         "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
-        "actionPriority": 9,
+        "actionPriority": 3,
         "action": {
             "ActionID": "icare_0088",
             "ActionName": "Implementaci\u00f3n de programas de transporte p\u00fablico gratuito durante las horas pico para reducir el uso de veh\u00edculos individuales",
@@ -536,7 +179,9 @@
             ],
             "PowersAndMandates": [
                 "local"
-            ]
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
         }
     },
     {
@@ -544,59 +189,123 @@
         "cityName": "Serra",
         "region": "ES",
         "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0079",
-        "actionName": "Implement energy audits in industrial plants",
-        "actionPriority": 10,
+        "actionId": "icare_0068",
+        "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
+        "actionPriority": 4,
         "action": {
-            "ActionID": "icare_0079",
-            "ActionName": "Implementar auditor\u00edas energ\u00e9ticas en plantas industriales",
+            "ActionID": "icare_0068",
+            "ActionName": "Desplegar sistemas de transporte bajo demanda con flotas 100% el\u00e9ctricas.",
             "ActionType": [
                 "mitigation"
             ],
             "Hazard": null,
             "Sector": [
-                "ippu"
+                "transportation"
             ],
             "Subsector": [
-                "industrial_processes"
+                "on-road"
             ],
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "Description": "Realizar auditor\u00edas energ\u00e9ticas peri\u00f3dicas para identificar oportunidades de ahorro de energ\u00eda y reducci\u00f3n de emisiones.",
+            "Description": "Servicios de transporte colectivo bajo demanda, basados en aplicaciones, optimizan el uso de veh\u00edculos el\u00e9ctricos, reduciendo las emisiones por pasajero.",
             "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
+                "air_quality": 2,
+                "water_quality": 0,
                 "habitat": 0,
                 "cost_of_living": 1,
                 "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
+                "mobility": 2,
+                "stakeholder_engagement": 1
             },
             "EquityAndInclusionConsiderations": null,
             "GHGReductionPotential": {
                 "stationary_energy": null,
-                "transportation": null,
+                "transportation": "80-100",
                 "waste": null,
-                "ippu": "20-39",
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Desarrollo de plataformas digitales y aplicaciones para gestionar eficientemente servicios de transporte colectivo bajo demanda.",
+                "Expansi\u00f3n de flotas de veh\u00edculos el\u00e9ctricos adaptadas para soluciones de transporte compartido.",
+                "Implementaci\u00f3n de pol\u00edticas e incentivos para fomentar la adopci\u00f3n y el uso de servicios de transporte el\u00e9ctrico compartido."
+            ],
+            "KeyPerformanceIndicators": [
+                "N\u00famero de usuarios activos del sistema de flota el\u00e9ctrica bajo demanda.",
+                "Porcentaje de demanda de transporte urbano satisfecho por sistemas bajo demanda.",
+                "Reducci\u00f3n en los niveles de contaminaci\u00f3n ac\u00fastica en \u00e1reas urbanas."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR SER",
+        "cityName": "Serra",
+        "region": "ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0090",
+        "actionName": "Adoption of electric drones for last-mile deliveries.",
+        "actionPriority": 5,
+        "action": {
+            "ActionID": "icare_0090",
+            "ActionName": "Adopci\u00f3n de drones el\u00e9ctricos para entregas de \u00faltima milla.",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "off-road"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Reemplazar los veh\u00edculos tradicionales con drones el\u00e9ctricos para entregas de corta distancia en centros urbanos, reduciendo emisiones y congesti\u00f3n de tr\u00e1fico.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 1,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "60-79",
+                "waste": null,
+                "ippu": null,
                 "afolu": null
             },
             "AdaptationEffectiveness": null,
             "CostInvestmentNeeded": "low",
             "TimelineForImplementation": "<5 years",
             "Dependencies": [
-                "Disponibilidad de profesionales calificados o auditores energ\u00e9ticos para realizar evaluaciones exhaustivas en industrias y edificios.",
-                "Desarrollo de un marco estandarizado para auditor\u00edas energ\u00e9ticas, asegurando consistencia y precisi\u00f3n en los resultados.",
-                "Implementaci\u00f3n de incentivos gubernamentales o corporativos para alentar a las organizaciones a actuar sobre las recomendaciones de auditor\u00eda, como reembolsos para mejoras de eficiencia energ\u00e9tica."
+                "Desarrollo de regulaciones del espacio a\u00e9reo urbano para garantizar la operaci\u00f3n segura y eficiente de drones de entrega.",
+                "Inversi\u00f3n en infraestructura de carga y mantenimiento para apoyar una flota de drones el\u00e9ctricos.",
+                "Colaboraci\u00f3n con empresas de log\u00edstica para integrar drones en redes de entrega de \u00faltima milla."
             ],
             "KeyPerformanceIndicators": [
-                "N\u00famero de plantas industriales que realizan auditor\u00edas energ\u00e9ticas anualmente.",
-                "Ahorro de costos logrado a trav\u00e9s de mejoras recomendadas por auditor\u00eda (%).",
-                "Tiempo promedio para implementar medidas de eficiencia energ\u00e9tica despu\u00e9s de la auditor\u00eda (meses)."
+                "Reducci\u00f3n del tiempo de entrega en comparaci\u00f3n con los m\u00e9todos tradicionales (minutos).",
+                "Aumento en la satisfacci\u00f3n del cliente con las entregas mediante drones (%).",
+                "Reducci\u00f3n de la congesti\u00f3n del tr\u00e1fico causada por veh\u00edculos de entrega (%)."
             ],
             "PowersAndMandates": [
                 "local"
-            ]
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
         }
     },
     {
@@ -604,179 +313,61 @@
         "cityName": "Serra",
         "region": "ES",
         "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0071",
-        "actionName": "Promote the substitution of traditional materials with sustainable alternatives",
-        "actionPriority": 11,
+        "actionId": "icare_0044",
+        "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
+        "actionPriority": 6,
         "action": {
-            "ActionID": "icare_0071",
-            "ActionName": "Promover la sustituci\u00f3n de materiales tradicionales por alternativas sostenibles",
+            "ActionID": "icare_0044",
+            "ActionName": "Expandir la infraestructura para bicicletas y construir paseos p\u00fablicos y aceras accesibles, priorizando medidas resilientes a las amenazas clim\u00e1ticas.",
             "ActionType": [
                 "mitigation"
             ],
             "Hazard": null,
             "Sector": [
-                "ippu"
+                "transportation"
             ],
             "Subsector": [
-                "industrial_processes"
+                "on-road"
             ],
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "Description": "Fomentar la sustituci\u00f3n de materiales tradicionales por alternativas sostenibles de bajo impacto, como opciones biodegradables o reciclables.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": "60-79",
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Disponibilidad de materiales sostenibles a precios competitivos.",
-                "Pol\u00edticas y regulaciones de apoyo que promuevan la sustituci\u00f3n de materiales.",
-                "Conciencia y capacidad de la industria para la transici\u00f3n a nuevos materiales."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de campa\u00f1as de concienciaci\u00f3n p\u00fablica o sesiones de formaci\u00f3n realizadas para promover materiales sostenibles.",
-                "Porcentaje de reducci\u00f3n de costos en la producci\u00f3n de materiales sostenibles en comparaci\u00f3n con los materiales tradicionales (%).",
-                "Cuota de mercado de materiales sostenibles en comparaci\u00f3n con los materiales tradicionales en las industrias locales (%)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR SER",
-        "cityName": "Serra",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0077",
-        "actionName": "Encourage the use of alternative materials in manufacturing",
-        "actionPriority": 12,
-        "action": {
-            "ActionID": "icare_0077",
-            "ActionName": "Fomentar el uso de materiales alternativos en la fabricaci\u00f3n",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "ippu"
-            ],
-            "Subsector": [
-                "industrial_processes"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Promover el uso de materiales de bajas emisiones o neutros en carbono en el proceso de producci\u00f3n para reducir las emisiones totales.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": "60-79",
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Disponibilidad de materiales de bajas emisiones o neutros en carbono en el mercado.",
-                "Incentivos para que las industrias adopten estos materiales.",
-                "Apoyo a la investigaci\u00f3n y desarrollo para mejorar la eficiencia de los materiales y reducir costos."
-            ],
-            "KeyPerformanceIndicators": [
-                "Porcentaje de producci\u00f3n utilizando materiales alternativos (%).",
-                "N\u00famero de empresas que est\u00e1n haciendo la transici\u00f3n al uso de materiales alternativos.",
-                "Reducci\u00f3n de costos lograda mediante la adopci\u00f3n de materiales alternativos (%)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR SER",
-        "cityName": "Serra",
-        "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0083",
-        "actionName": "Adopt cleaner production technologies",
-        "actionPriority": 13,
-        "action": {
-            "ActionID": "icare_0083",
-            "ActionName": "Adoptar tecnolog\u00edas de producci\u00f3n m\u00e1s limpias",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "ippu"
-            ],
-            "Subsector": [
-                "industrial_processes"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Alentar a las industrias a adoptar m\u00e9todos de producci\u00f3n m\u00e1s limpios que minimicen los desechos y reduzcan las emisiones durante la fabricaci\u00f3n.",
+            "Description": "El objetivo principal de esta acci\u00f3n es promover la movilidad activa, garantizando la seguridad, comodidad y prioridad del movimiento peatonal, de personas con discapacidades (o movilidad reducida), y de veh\u00edculos y equipos impulsados por humanos, como bicicletas y patinetes.",
             "CoBenefits": {
                 "air_quality": 2,
-                "water_quality": 1,
-                "habitat": 1,
+                "water_quality": 0,
+                "habitat": 0,
                 "cost_of_living": 1,
                 "housing": 0,
-                "mobility": 0,
+                "mobility": 2,
                 "stakeholder_engagement": 1
             },
             "EquityAndInclusionConsiderations": null,
             "GHGReductionPotential": {
                 "stationary_energy": null,
-                "transportation": null,
+                "transportation": "80-100",
                 "waste": null,
-                "ippu": "60-79",
+                "ippu": null,
                 "afolu": null
             },
             "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": ">10 years",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
             "Dependencies": [
-                "Colaboraci\u00f3n con asociaciones industriales para desarrollar directrices espec\u00edficas del sector para una producci\u00f3n m\u00e1s limpia.",
-                "Acceso a financiaci\u00f3n para investigaci\u00f3n e innovaci\u00f3n para apoyar el desarrollo de tecnolog\u00edas de bajas emisiones y bajo desperdicio.",
-                "Establecimiento de sistemas de monitoreo para evaluar el progreso en la reducci\u00f3n de residuos y emisiones en todas las industrias."
+                "Inversiones en infraestructura para pasarelas peatonales seguras y accesibles, carriles para bicicletas e instalaciones para personas con discapacidades",
+                "Marcos de pol\u00edticas y regulaciones para priorizar la movilidad activa y establecer est\u00e1ndares de seguridad para peatones y veh\u00edculos no motorizados",
+                "Campa\u00f1as de concienciaci\u00f3n p\u00fablica para promover la movilidad activa y educar a los ciudadanos sobre los beneficios de caminar, andar en bicicleta y usar otros medios de transporte impulsados por humanos"
             ],
             "KeyPerformanceIndicators": [
-                "Porcentaje de industrias que implementan tecnolog\u00edas de producci\u00f3n m\u00e1s limpias (%).",
-                "Reducci\u00f3n de emisiones de GEI asociadas con la producci\u00f3n industrial (toneladas de CO\u2082e/a\u00f1o).",
-                "Ahorro de agua en procesos industriales debido a la adopci\u00f3n de tecnolog\u00edas m\u00e1s limpias (litros/unidad)."
+                "Kil\u00f3metros de nuevos carriles bici y senderos peatonales construidos anualmente.",
+                "Aumento en el uso diario de la infraestructura para ciclistas y peatones (%).",
+                "Reducci\u00f3n en las emisiones del transporte urbano (%)."
             ],
             "PowersAndMandates": [
                 "local"
-            ]
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
         }
     },
     {
@@ -786,7 +377,7 @@
         "regionName": "Esp\u00edrito Santo",
         "actionId": "icare_0121",
         "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
-        "actionPriority": 14,
+        "actionPriority": 7,
         "action": {
             "ActionID": "icare_0121",
             "ActionName": "Incentivo para crear programas de bicicletas compartidas en \u00e1reas urbanas, con un enfoque en bicicletas el\u00e9ctricas.",
@@ -831,12 +422,14 @@
             ],
             "KeyPerformanceIndicators": [
                 "N\u00famero de bicicletas el\u00e9ctricas disponibles en programas de bicicletas compartidas.",
-                "Aumento anual de usuarios de bicicletas compartidas.",
+                "Aumento anual en usuarios de bicicletas compartidas.",
                 "Reducci\u00f3n estimada en emisiones equivalentes de CO\u2082 por la adopci\u00f3n de bicicletas el\u00e9ctricas compartidas."
             ],
             "PowersAndMandates": [
                 "local"
-            ]
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
         }
     },
     {
@@ -844,59 +437,130 @@
         "cityName": "Serra",
         "region": "ES",
         "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0080",
-        "actionName": "Invest in sustainable cement production technologies",
-        "actionPriority": 15,
+        "actionId": "icare_0057",
+        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
+        "actionPriority": 8,
         "action": {
-            "ActionID": "icare_0080",
-            "ActionName": "Invertir en tecnolog\u00edas de producci\u00f3n de cemento sostenible",
+            "ActionID": "icare_0057",
+            "ActionName": "Expansi\u00f3n de los sistemas de transporte masivo sobre rieles (metros, LRTs y monorra\u00edles).",
             "ActionType": [
                 "mitigation"
             ],
             "Hazard": null,
             "Sector": [
-                "ippu"
+                "transportation"
             ],
             "Subsector": [
-                "manufacturing_industries_and_construction"
+                "railways"
             ],
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "Description": "Apoyar el desarrollo de t\u00e9cnicas de producci\u00f3n de cemento bajo en carbono para reducir las emisiones de CO2 de la industria de la construcci\u00f3n.",
+            "Description": "Estos sistemas ofrecen alta capacidad y bajas emisiones, cruciales para ciudades con alta densidad de poblaci\u00f3n.",
             "CoBenefits": {
                 "air_quality": 2,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 1
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 1,
+                "mobility": 2,
+                "stakeholder_engagement": 0
             },
             "EquityAndInclusionConsiderations": null,
             "GHGReductionPotential": {
                 "stationary_energy": null,
-                "transportation": null,
+                "transportation": "80-100",
                 "waste": null,
-                "ippu": "60-79",
+                "ippu": null,
                 "afolu": null
             },
             "AdaptationEffectiveness": null,
             "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": ">10 years",
+            "TimelineForImplementation": "5-10 years",
             "Dependencies": [
-                "Inversi\u00f3n en investigaci\u00f3n y desarrollo de materiales y procesos alternativos para la producci\u00f3n de cemento bajo en carbono.",
-                "Colaboraci\u00f3n entre el gobierno, la academia y el sector privado para crear est\u00e1ndares y certificaciones para productos de cemento bajo en carbono.",
-                "Provisi\u00f3n de incentivos financieros, como subvenciones o subsidios, para apoyar la adopci\u00f3n de tecnolog\u00edas de cemento bajo en carbono en proyectos de construcci\u00f3n."
+                "Inversi\u00f3n en el desarrollo y expansi\u00f3n de infraestructuras de transporte p\u00fablico de alta capacidad, como autobuses el\u00e9ctricos y sistemas de metro.",
+                "Implementaci\u00f3n de pol\u00edticas e incentivos para fomentar el uso del transporte p\u00fablico sobre los veh\u00edculos privados.",
+                "Integraci\u00f3n de fuentes de energ\u00eda renovable para alimentar estos sistemas, reduciendo a\u00fan m\u00e1s las emisiones."
             ],
             "KeyPerformanceIndicators": [
-                "Reducci\u00f3n de emisiones de GEI por tonelada de cemento producido (toneladas de CO\u2082e).",
-                "Porcentaje de instalaciones que adoptan tecnolog\u00edas de cemento sostenible (%).",
-                "N\u00famero de asociaciones establecidas para la innovaci\u00f3n en cemento sostenible."
+                "Longitud de las nuevas l\u00edneas de tr\u00e1nsito construidas (km/a\u00f1o).",
+                "Reducci\u00f3n en la congesti\u00f3n del tr\u00e1fico vial (%).",
+                "Reducci\u00f3n en el uso de veh\u00edculos privados (n\u00famero de viajes evitados/a\u00f1o)."
             ],
             "PowersAndMandates": [
-                "state"
-            ]
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR SER",
+        "cityName": "Serra",
+        "region": "ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "c40_0026",
+        "actionName": "Vehicle Emissions",
+        "actionPriority": 9,
+        "action": {
+            "ActionID": "c40_0026",
+            "ActionName": "Emisiones de Veh\u00edculos",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "on-road"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Las estrategias de reducci\u00f3n de \"Vehicle Emissions\" se centran en minimizar el impacto ambiental de todo tipo de veh\u00edculos. La implementaci\u00f3n de tecnolog\u00edas m\u00e1s limpias y la promoci\u00f3n de combustibles alternativos contribuyen a reducir las emisiones, fomentando un transporte sostenible y ecol\u00f3gico.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": "Las estrategias de reducci\u00f3n de \"Emisiones de Veh\u00edculos\" promueven inherentemente la equidad y la inclusi\u00f3n al abordar los impactos ambientales que afectan desproporcionadamente a las comunidades vulnerables y desatendidas. Estas comunidades a menudo experimentan niveles m\u00e1s altos de contaminaci\u00f3n del aire y problemas de salud relacionados debido a la proximidad a \u00e1reas de alto tr\u00e1fico y zonas industriales. Al implementar tecnolog\u00edas m\u00e1s limpias y promover combustibles alternativos, la acci\u00f3n beneficia directamente a estas poblaciones al mejorar la calidad del aire y reducir los riesgos para la salud.\n\nAdem\u00e1s, el enfoque en el transporte sostenible y ecol\u00f3gico puede mejorar el acceso a opciones de transporte asequibles y eficientes para las comunidades desatendidas, que pueden carecer de un transporte p\u00fablico confiable. Esta inclusividad asegura que todos los miembros de la comunidad, independientemente de su estatus socioecon\u00f3mico, puedan beneficiarse de un aire m\u00e1s limpio y mejores resultados de salud p\u00fablica. En general, la acci\u00f3n reconoce y aborda las necesidades espec\u00edficas de las poblaciones vulnerables, fomentando un enfoque m\u00e1s equitativo hacia la acci\u00f3n clim\u00e1tica.",
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "80-100",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Desarrollo y disponibilidad de tecnolog\u00edas de veh\u00edculos m\u00e1s limpias",
+                "Infraestructura para la distribuci\u00f3n de combustibles alternativos",
+                "Pol\u00edticas y regulaciones gubernamentales que apoyan la reducci\u00f3n de emisiones",
+                "Conciencia p\u00fablica y aceptaci\u00f3n de opciones de transporte ecol\u00f3gicas",
+                "Inversi\u00f3n en investigaci\u00f3n y desarrollo para soluciones de transporte sostenible"
+            ],
+            "KeyPerformanceIndicators": [
+                "Reducci\u00f3n de emisiones de veh\u00edculos (CO2, NOx, PM)",
+                "Porcentaje de veh\u00edculos que utilizan combustibles alternativos",
+                "N\u00famero de veh\u00edculos el\u00e9ctricos en circulaci\u00f3n",
+                "Mejoras en la eficiencia del combustible (millas por gal\u00f3n)",
+                "Tasa de adopci\u00f3n de tecnolog\u00edas m\u00e1s limpias",
+                "Reducci\u00f3n en el consumo de combustibles f\u00f3siles",
+                "Tasas de uso del transporte p\u00fablico",
+                "Mejoras en el \u00edndice de calidad del aire",
+                "Porcentaje de zonas de bajas emisiones establecidas",
+                "Inversi\u00f3n en infraestructura de transporte sostenible"
+            ],
+            "PowersAndMandates": null,
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
         }
     },
     {
@@ -906,7 +570,7 @@
         "regionName": "Esp\u00edrito Santo",
         "actionId": "icare_0118",
         "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
-        "actionPriority": 16,
+        "actionPriority": 10,
         "action": {
             "ActionID": "icare_0118",
             "ActionName": "Promover el uso de bicicletas como un modo de transporte regular mediante la expansi\u00f3n de la infraestructura y estrategias de concienciaci\u00f3n y comunicaci\u00f3n.",
@@ -923,7 +587,7 @@
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "Description": "Fomentar la adopci\u00f3n de bicicletas como un modo de transporte regular mediante la expansi\u00f3n de la infraestructura para ciclistas, como carriles bici dedicados, instalaciones de estacionamiento y estaciones de reparaci\u00f3n. Adem\u00e1s, implementar campa\u00f1as de concienciaci\u00f3n y estrategias de comunicaci\u00f3n para resaltar los beneficios ambientales, de salud y econ\u00f3micos del ciclismo, con el objetivo de aumentar la participaci\u00f3n p\u00fablica y hacer del ciclismo una opci\u00f3n de transporte viable y sostenible para los desplazamientos diarios.",
+            "Description": "Fomentar la adopci\u00f3n de bicicletas como un modo de transporte regular mediante la expansi\u00f3n de la infraestructura para ciclistas, como carriles bici dedicados, instalaciones de estacionamiento y estaciones de reparaci\u00f3n. Adem\u00e1s, implementar campa\u00f1as de concienciaci\u00f3n y estrategias de comunicaci\u00f3n para resaltar los beneficios ambientales, de salud y econ\u00f3micos del ciclismo, con el objetivo de aumentar la participaci\u00f3n p\u00fablica y hacer del ciclismo una opci\u00f3n de transporte viable y sostenible para el desplazamiento diario.",
             "CoBenefits": {
                 "air_quality": 2,
                 "water_quality": 0,
@@ -956,7 +620,9 @@
             ],
             "PowersAndMandates": [
                 "local"
-            ]
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
         }
     },
     {
@@ -964,57 +630,123 @@
         "cityName": "Serra",
         "region": "ES",
         "regionName": "Esp\u00edrito Santo",
-        "actionId": "ipcc_0033",
-        "actionName": "Electrification of Processes",
-        "actionPriority": 17,
+        "actionId": "icare_0042",
+        "actionName": "Encourage renewable energy policies at the municipal level",
+        "actionPriority": 11,
         "action": {
-            "ActionID": "ipcc_0033",
-            "ActionName": "Electrificaci\u00f3n de Procesos",
+            "ActionID": "icare_0042",
+            "ActionName": "Fomentar pol\u00edticas de energ\u00eda renovable a nivel municipal",
             "ActionType": [
                 "mitigation"
             ],
             "Hazard": null,
             "Sector": [
-                "ippu"
+                "stationary_energy"
             ],
             "Subsector": [
-                "industrial_processes"
+                "non-specified_sources"
             ],
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "Description": "La transici\u00f3n de los procesos de producci\u00f3n de acero a m\u00e9todos electrificados como la electr\u00f3lisis de \u00f3xidos fundidos, la reducci\u00f3n directa avanzada y otros m\u00e9todos impulsados por electricidad de bajo carbono para reducir las emisiones y mejorar la eficiencia energ\u00e9tica.",
+            "Description": "Abogar por e implementar pol\u00edticas que prioricen el desarrollo e integraci\u00f3n de sistemas de energ\u00eda renovable en las operaciones y planificaci\u00f3n del gobierno local.",
             "CoBenefits": {
-                "air_quality": 1,
+                "air_quality": 2,
                 "water_quality": 0,
-                "habitat": 0,
+                "habitat": 1,
                 "cost_of_living": 0,
                 "housing": 0,
                 "mobility": 0,
-                "stakeholder_engagement": 0
+                "stakeholder_engagement": 2
             },
-            "EquityAndInclusionConsiderations": "Promueve el acceso equitativo a tecnolog\u00edas avanzadas de electrificaci\u00f3n y capacitaci\u00f3n para la fuerza laboral, asegurando la participaci\u00f3n de sectores industriales desatendidos.",
+            "EquityAndInclusionConsiderations": null,
             "GHGReductionPotential": {
-                "stationary_energy": null,
+                "stationary_energy": "80-100",
                 "transportation": null,
                 "waste": null,
-                "ippu": "60-79",
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Voluntad pol\u00edtica y liderazgo para priorizar la energ\u00eda renovable en las pol\u00edticas y procesos de planificaci\u00f3n del gobierno local",
+                "Desarrollo de pol\u00edticas claras y marcos regulatorios que faciliten la integraci\u00f3n de sistemas de energ\u00eda renovable en las operaciones gubernamentales",
+                "Disponibilidad de financiamiento o mecanismos financieros para apoyar la transici\u00f3n a la energ\u00eda renovable en la infraestructura y operaciones municipales"
+            ],
+            "KeyPerformanceIndicators": [
+                "N\u00famero de proyectos de energ\u00eda renovable aprobados o iniciados anualmente a nivel municipal.",
+                "Porcentaje de la demanda energ\u00e9tica municipal cubierta por fuentes renovables (%).",
+                "Reducci\u00f3n de las emisiones de carbono municipales debido a la adopci\u00f3n de energ\u00eda renovable (toneladas de CO\u2082e/a\u00f1o)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR SER",
+        "cityName": "Serra",
+        "region": "ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0021",
+        "actionName": "Encourage and promote measures for the sustainable and rational use of individual motorized transportation",
+        "actionPriority": 12,
+        "action": {
+            "ActionID": "icare_0021",
+            "ActionName": "Fomentar y promover medidas para el uso sostenible y racional del transporte motorizado individual",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "on-road"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "El objetivo de esta acci\u00f3n es racionalizar el uso del transporte motorizado individual, reduciendo su participaci\u00f3n en la matriz de movilidad. Tambi\u00e9n es importante regular los servicios de transporte privado basados en aplicaciones, con el objetivo de proporcionar un servicio de calidad integrado con la movilidad general de la ciudad.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": -1,
+                "housing": 0,
+                "mobility": 1,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "80-100",
+                "waste": null,
+                "ippu": null,
                 "afolu": null
             },
             "AdaptationEffectiveness": null,
             "CostInvestmentNeeded": "high",
             "TimelineForImplementation": "5-10 years",
             "Dependencies": [
-                "Disponibilidad de electricidad baja en carbono",
-                "desarrollo de materiales de \u00e1nodo adecuados",
-                "infraestructura para la electrificaci\u00f3n a gran escala en la producci\u00f3n de acero"
+                "Desarrollo de pol\u00edticas y regulaciones para reducir el uso del transporte motorizado individual y fomentar modos de transporte alternativos",
+                "Integraci\u00f3n de servicios de transporte privado basados en aplicaciones con el sistema de transporte p\u00fablico de la ciudad para una movilidad sin interrupciones",
+                "Inversi\u00f3n en infraestructura de transporte p\u00fablico para ofrecer alternativas accesibles, confiables y de alta calidad al uso de autom\u00f3viles privados"
             ],
             "KeyPerformanceIndicators": [
-                "Reducci\u00f3n de emisiones por tonelada de acero producida",
-                "aumento en la proporci\u00f3n de procesos electrificados",
-                "ahorro de energ\u00eda en las etapas de producci\u00f3n"
+                "Porcentaje de reducci\u00f3n en el uso de veh\u00edculos privados en la ciudad (%).",
+                "Aumento anual en el uso del transporte p\u00fablico (%).",
+                "Reducci\u00f3n en las emisiones equivalentes de CO\u2082 por la disminuci\u00f3n del transporte motorizado (toneladas/a\u00f1o)."
             ],
-            "PowersAndMandates": null
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
         }
     },
     {
@@ -1022,26 +754,88 @@
         "cityName": "Serra",
         "region": "ES",
         "regionName": "Esp\u00edrito Santo",
-        "actionId": "ipcc_0051",
-        "actionName": "Reducing overall demand for product services",
-        "actionPriority": 18,
+        "actionId": "icare_0092",
+        "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
+        "actionPriority": 13,
         "action": {
-            "ActionID": "ipcc_0051",
-            "ActionName": "Reducir la demanda general de servicios de productos",
+            "ActionID": "icare_0092",
+            "ActionName": "Desarrollo de micro-centros log\u00edsticos para fomentar el uso de bicicletas de carga el\u00e9ctricas.",
             "ActionType": [
                 "mitigation"
             ],
             "Hazard": null,
             "Sector": [
-                "ippu"
+                "transportation"
             ],
             "Subsector": [
-                "product_use"
+                "on-road"
             ],
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "Description": "Esta acci\u00f3n se centra en mitigar el cambio clim\u00e1tico reduciendo la demanda de productos y servicios industriales, particularmente en sectores como la ropa y el turismo. Hace hincapi\u00e9 en cambios de comportamiento y estilo de vida, como patrones de consumo sostenibles, reducci\u00f3n de viajes de larga distancia y menor demanda de productos vinculados a la producci\u00f3n excesiva de materiales y emisiones.",
+            "Description": "Crear centros log\u00edsticos a peque\u00f1a escala en barrios urbanos para facilitar las entregas utilizando bicicletas de carga el\u00e9ctricas, mientras se implementan incentivos fiscales o subsidios para que las empresas adopten estas bicicletas como modo de transporte, reduciendo las emisiones y mejorando la eficiencia de las entregas en \u00e1reas densamente pobladas.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 2,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "20-39",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Identificaci\u00f3n y desarrollo de ubicaciones adecuadas para centros log\u00edsticos a peque\u00f1a escala dentro de los vecindarios urbanos.",
+                "Provisi\u00f3n de incentivos fiscales, subsidios o subvenciones para alentar a las empresas a hacer la transici\u00f3n a bicicletas de carga el\u00e9ctricas.",
+                "Establecimiento de asociaciones con empresas de log\u00edstica para garantizar la integraci\u00f3n y eficiencia en las operaciones de entrega utilizando estos centros."
+            ],
+            "KeyPerformanceIndicators": [
+                "Reducci\u00f3n en la distancia recorrida por veh\u00edculos de entrega tradicionales (km/a\u00f1o).",
+                "Aumento en la eficiencia operativa de los centros log\u00edsticos (%).",
+                "N\u00famero de empresas que utilizan micro-centros log\u00edsticos para entregas."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR SER",
+        "cityName": "Serra",
+        "region": "ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "ipcc_0012",
+        "actionName": "Electric Technologies",
+        "actionPriority": 14,
+        "action": {
+            "ActionID": "ipcc_0012",
+            "ActionName": "Tecnolog\u00edas El\u00e9ctricas",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "on-road"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Adopci\u00f3n de tecnolog\u00edas de veh\u00edculos el\u00e9ctricos, incluyendo Veh\u00edculos El\u00e9ctricos de Bater\u00eda (BEVs), Veh\u00edculos El\u00e9ctricos H\u00edbridos (HEVs) y Veh\u00edculos El\u00e9ctricos H\u00edbridos Enchufables (PHEVs), para reducir las emisiones de gases de efecto invernadero y la dependencia de los combustibles f\u00f3siles. Los BEVs funcionan solo con electricidad, produciendo cero emisiones; los HEVs combinan un motor de combusti\u00f3n interna con un motor el\u00e9ctrico; los PHEVs permiten una conducci\u00f3n extendida solo con electricidad.",
             "CoBenefits": {
                 "air_quality": 1,
                 "water_quality": 0,
@@ -1049,30 +843,95 @@
                 "cost_of_living": 0,
                 "housing": 0,
                 "mobility": 1,
-                "stakeholder_engagement": 1
+                "stakeholder_engagement": 0
             },
-            "EquityAndInclusionConsiderations": "Fomenta el acceso equitativo a alternativas sostenibles, particularmente para las comunidades desatendidas, asegurando la reducci\u00f3n de impactos ambientales sin excluir a las poblaciones vulnerables.",
+            "EquityAndInclusionConsiderations": "Reduce la dependencia de los combustibles f\u00f3siles, mejora la calidad del aire y ofrece opciones de transporte m\u00e1s limpias que pueden beneficiar a las comunidades desatendidas.",
             "GHGReductionPotential": {
                 "stationary_energy": null,
-                "transportation": null,
+                "transportation": "80-100",
                 "waste": null,
-                "ippu": "40-59",
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "high",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Dependencia de los avances en tecnolog\u00edas de bater\u00edas",
+                "desarrollo de infraestructura de carga",
+                "pol\u00edticas para subsidios e incentivos",
+                "integraci\u00f3n con fuentes de energ\u00eda renovable para la generaci\u00f3n de electricidad"
+            ],
+            "KeyPerformanceIndicators": [
+                "Porcentaje de veh\u00edculos el\u00e9ctricos en la flota de veh\u00edculos",
+                "reducci\u00f3n de emisiones de GEI por kil\u00f3metro recorrido",
+                "disponibilidad de infraestructura de carga"
+            ],
+            "PowersAndMandates": null,
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR SER",
+        "cityName": "Serra",
+        "region": "ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0060",
+        "actionName": "Introduction of modular and automated collective transport systems.",
+        "actionPriority": 15,
+        "action": {
+            "ActionID": "icare_0060",
+            "ActionName": "Introducci\u00f3n de sistemas de transporte colectivo modulares y automatizados.",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "on-road"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Los sistemas automatizados y modulares se adaptan a la demanda en tiempo real, optimizando el uso de energ\u00eda y reduciendo las emisiones.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 2,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "60-79",
+                "waste": null,
+                "ippu": null,
                 "afolu": null
             },
             "AdaptationEffectiveness": null,
             "CostInvestmentNeeded": "medium",
             "TimelineForImplementation": "5-10 years",
             "Dependencies": [
-                "Implementaci\u00f3n de pol\u00edticas y programas que promuevan el consumo sostenible",
-                "disponibilidad de alternativas a actividades de alta emisi\u00f3n",
-                "apoyo social para cambios de comportamiento y estilo de vida"
+                "Inversi\u00f3n en el desarrollo y despliegue de sistemas automatizados y modulares capaces de ajustar la demanda de energ\u00eda en tiempo real.",
+                "Integraci\u00f3n de tecnolog\u00edas de redes inteligentes y plataformas de gesti\u00f3n energ\u00e9tica para optimizar el uso de fuentes de energ\u00eda renovable.",
+                "Colaboraci\u00f3n con industrias y proveedores de servicios para incorporar estos sistemas en la infraestructura existente, asegurando eficiencia y reducci\u00f3n de emisiones."
             ],
             "KeyPerformanceIndicators": [
-                "Reducci\u00f3n en la demanda de productos y servicios de alta emisi\u00f3n",
-                "disminuci\u00f3n de emisiones industriales vinculadas al uso de productos",
-                "aumento en la adopci\u00f3n de pr\u00e1cticas de consumo sostenible"
+                "Tiempo de espera promedio para los pasajeros que utilizan los nuevos sistemas (minutos).",
+                "Consumo de energ\u00eda por kil\u00f3metro por pasajero (kWh/pasajero-km).",
+                "Tasa de satisfacci\u00f3n p\u00fablica con los sistemas de transporte modulares (%)."
             ],
-            "PowersAndMandates": null
+            "PowersAndMandates": [
+                "state"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
         }
     },
     {
@@ -1080,59 +939,61 @@
         "cityName": "Serra",
         "region": "ES",
         "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0122",
-        "actionName": "Establish eco-parks.",
-        "actionPriority": 19,
+        "actionId": "icare_0059",
+        "actionName": "Modernization of ports and airports with zero-emission technologies",
+        "actionPriority": 16,
         "action": {
-            "ActionID": "icare_0122",
-            "ActionName": "Establecer eco-parques.",
+            "ActionID": "icare_0059",
+            "ActionName": "Modernizaci\u00f3n de puertos y aeropuertos con tecnolog\u00edas de cero emisiones",
             "ActionType": [
                 "mitigation"
             ],
             "Hazard": null,
             "Sector": [
-                "waste"
+                "transportation"
             ],
             "Subsector": [
-                "land"
+                "aviation"
             ],
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "Description": "Un eco-parque es una instalaci\u00f3n para el tratamiento mec\u00e1nico y biol\u00f3gico de residuos s\u00f3lidos urbanos, integrando diferentes tecnolog\u00edas para la segregaci\u00f3n y tratamiento de varias fracciones dentro de los residuos. Este tratamiento tiene como objetivo maximizar la recuperaci\u00f3n de residuos secos y org\u00e1nicos y reducir el volumen de residuos a ser enviados para disposici\u00f3n final en vertederos, utilizando tecnolog\u00edas como generaci\u00f3n de energ\u00eda, compostaje, recuperaci\u00f3n de reciclaje, disposici\u00f3n adecuada de residuos residuales y otros m\u00e9todos de tratamiento existentes disponibles en el mercado.",
+            "Description": "Los puertos y aeropuertos pueden cambiar la maquinaria pesada y los veh\u00edculos a versiones el\u00e9ctricas o impulsadas por hidr\u00f3geno, reduciendo las emisiones de GEI en las principales infraestructuras de transporte.",
             "CoBenefits": {
-                "air_quality": 1,
+                "air_quality": 2,
                 "water_quality": 1,
-                "habitat": 2,
-                "cost_of_living": 0,
-                "housing": 1,
-                "mobility": 0,
-                "stakeholder_engagement": 0
+                "habitat": 0,
+                "cost_of_living": -1,
+                "housing": 0,
+                "mobility": 2,
+                "stakeholder_engagement": 2
             },
             "EquityAndInclusionConsiderations": null,
             "GHGReductionPotential": {
                 "stationary_energy": null,
-                "transportation": null,
-                "waste": "20-39",
+                "transportation": "80-100",
+                "waste": null,
                 "ippu": null,
                 "afolu": null
             },
             "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
+            "CostInvestmentNeeded": "high",
+            "TimelineForImplementation": ">10 years",
             "Dependencies": [
-                "Implementaci\u00f3n de eco-parques para el tratamiento mec\u00e1nico y biol\u00f3gico de residuos s\u00f3lidos urbanos.",
-                "Integraci\u00f3n de tecnolog\u00edas como generaci\u00f3n de energ\u00eda, compostaje, recuperaci\u00f3n de reciclaje y disposici\u00f3n adecuada de residuos residuales.",
-                "Maximizaci\u00f3n de la recuperaci\u00f3n de residuos secos y org\u00e1nicos para reducir los vol\u00famenes de disposici\u00f3n en vertederos."
+                "Inversi\u00f3n en el desarrollo y despliegue de maquinaria y veh\u00edculos el\u00e9ctricos e impulsados por hidr\u00f3geno para puertos y aeropuertos.",
+                "Construcci\u00f3n de infraestructura de recarga y abastecimiento para equipos el\u00e9ctricos e impulsados por hidr\u00f3geno dentro de estos centros de transporte.",
+                "Colaboraci\u00f3n con organismos reguladores para garantizar que las nuevas tecnolog\u00edas cumplan con los est\u00e1ndares ambientales y las regulaciones de seguridad."
             ],
             "KeyPerformanceIndicators": [
-                "\u00c1rea total cubierta por eco-parques en la ciudad (hect\u00e1reas).",
-                "Aumento en el n\u00famero de visitantes a los eco-parques anualmente.",
-                "Mejora en los \u00edndices de biodiversidad local dentro de las \u00e1reas de los eco-parques."
+                "Porcentaje de operaciones impulsadas por tecnolog\u00edas de cero emisiones.",
+                "Reducci\u00f3n anual en el uso de combustibles f\u00f3siles en puertos y aeropuertos (litros/a\u00f1o).",
+                "Reducci\u00f3n de emisiones de GEI por la modernizaci\u00f3n de puertos y aeropuertos (toneladas de CO\u2082e)."
             ],
             "PowersAndMandates": [
-                "local"
-            ]
+                "national"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
         }
     },
     {
@@ -1140,12 +1001,136 @@
         "cityName": "Serra",
         "region": "ES",
         "regionName": "Esp\u00edrito Santo",
-        "actionId": "icare_0005",
-        "actionName": "Create credit lines for residential and community wind energy projects",
-        "actionPriority": 20,
+        "actionId": "icare_0091",
+        "actionName": "Implementation of prioritized routes for sustainable vehicles.",
+        "actionPriority": 17,
         "action": {
-            "ActionID": "icare_0005",
-            "ActionName": "Crear l\u00edneas de cr\u00e9dito para proyectos de energ\u00eda e\u00f3lica residencial y comunitaria",
+            "ActionID": "icare_0091",
+            "ActionName": "Implementaci\u00f3n de rutas priorizadas para veh\u00edculos sostenibles.",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "on-road"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Crear carriles prioritarios para veh\u00edculos el\u00e9ctricos, h\u00edbridos y de bajas emisiones en los centros urbanos para fomentar su adopci\u00f3n y reducir la contaminaci\u00f3n en \u00e1reas de alto tr\u00e1fico.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 2,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "60-79",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Implementaci\u00f3n de sistemas de gesti\u00f3n del tr\u00e1fico para hacer cumplir y monitorear el uso de carriles prioritarios.",
+                "Desarrollo de se\u00f1alizaci\u00f3n clara y campa\u00f1as de concienciaci\u00f3n p\u00fablica para informar a los conductores sobre la elegibilidad y el uso de los carriles.",
+                "Establecimiento de marcos regulatorios que incentiven la adopci\u00f3n de veh\u00edculos de bajas emisiones para la elegibilidad en carriles prioritarios."
+            ],
+            "KeyPerformanceIndicators": [
+                "Porcentaje de veh\u00edculos sostenibles utilizando rutas prioritarias.",
+                "Aumento en la eficiencia de entrega de bienes transportados a trav\u00e9s de rutas prioritarias (%).",
+                "Tasa de aceptaci\u00f3n p\u00fablica de rutas prioritarias para veh\u00edculos sostenibles (%)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR SER",
+        "cityName": "Serra",
+        "region": "ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0117",
+        "actionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
+        "actionPriority": 18,
+        "action": {
+            "ActionID": "icare_0117",
+            "ActionName": "Aumentar el atractivo del sistema de autobuses municipales para promover este modo de transporte.",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "on-road"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Aumentar la calidad de la prestaci\u00f3n del servicio de transporte, con el objetivo de cambiar el modo de transporte de los pasajeros del transporte motorizado privado al transporte p\u00fablico, reduciendo as\u00ed las emisiones generadas por coches y motocicletas.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 2,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "60-79",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Mejorar la calidad de los servicios de transporte p\u00fablico para atraer pasajeros del transporte motorizado privado.",
+                "Implementar pol\u00edticas e infraestructuras que apoyen y mejoren la eficiencia de los sistemas de transporte p\u00fablico.",
+                "Promover la concienciaci\u00f3n sobre los beneficios ambientales del transporte p\u00fablico para fomentar un cambio modal y reducir las emisiones."
+            ],
+            "KeyPerformanceIndicators": [
+                "Aumento anual en el n\u00famero de pasajeros que utilizan el sistema de autobuses municipales.",
+                "Porcentaje de rutas de autob\u00fas con mejor fiabilidad en el tiempo de viaje.",
+                "Reducci\u00f3n estimada en las emisiones equivalentes de CO\u2082 debido al aumento del uso del transporte p\u00fablico."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR SER",
+        "cityName": "Serra",
+        "region": "ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0024",
+        "actionName": "Integrate renewables into municipal water systems",
+        "actionPriority": 19,
+        "action": {
+            "ActionID": "icare_0024",
+            "ActionName": "Integrar energ\u00edas renovables en los sistemas de agua municipales",
             "ActionType": [
                 "mitigation"
             ],
@@ -1159,19 +1144,19 @@
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "Description": "Establecer programas de financiamiento accesibles para apoyar el desarrollo y la adopci\u00f3n de sistemas de energ\u00eda e\u00f3lica en hogares y proyectos comunitarios, permitiendo una transici\u00f3n hacia fuentes de energ\u00eda m\u00e1s limpias.",
+            "Description": "Implementar fuentes de energ\u00eda renovable, como la solar o la e\u00f3lica, para impulsar los sistemas de tratamiento, bombeo y distribuci\u00f3n de agua, reduciendo los costos de energ\u00eda y las emisiones.",
             "CoBenefits": {
                 "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 2,
-                "housing": 2,
+                "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 0,
                 "mobility": 0,
                 "stakeholder_engagement": 1
             },
             "EquityAndInclusionConsiderations": null,
             "GHGReductionPotential": {
-                "stationary_energy": "60-79",
+                "stationary_energy": "80-100",
                 "transportation": null,
                 "waste": null,
                 "ippu": null,
@@ -1181,18 +1166,82 @@
             "CostInvestmentNeeded": "medium",
             "TimelineForImplementation": "5-10 years",
             "Dependencies": [
-                "Disponibilidad de programas financieros, subvenciones o subsidios para hacer que los sistemas de energ\u00eda e\u00f3lica sean asequibles para hogares y proyectos comunitarios",
-                "Acceso a experiencia t\u00e9cnica y recursos para guiar la instalaci\u00f3n y el mantenimiento de sistemas de energ\u00eda e\u00f3lica en entornos residenciales y comunitarios",
-                "Apoyo pol\u00edtico y regulatorio para fomentar la adopci\u00f3n de energ\u00eda e\u00f3lica, incluyendo procesos de permisos simplificados e incentivos para proyectos de energ\u00eda limpia"
+                "Disponibilidad de financiaci\u00f3n o incentivos financieros para integrar fuentes de energ\u00eda renovable como la solar o la e\u00f3lica en los sistemas de tratamiento y distribuci\u00f3n de agua",
+                "Experiencia t\u00e9cnica e infraestructura para adaptar los sistemas existentes con soluciones de energ\u00eda renovable o dise\u00f1ar nuevas instalaciones alimentadas por energ\u00edas renovables",
+                "Apoyo pol\u00edtico y regulatorio para fomentar el uso de energ\u00eda limpia en los sistemas de agua y asegurar su integraci\u00f3n en las redes energ\u00e9ticas municipales"
             ],
             "KeyPerformanceIndicators": [
-                "N\u00famero de proyectos de energ\u00eda e\u00f3lica financiados anualmente.",
-                "Capacidad instalada de sistemas de energ\u00eda e\u00f3lica de proyectos apoyados por cr\u00e9dito (MW).",
-                "Reducci\u00f3n estimada en emisiones equivalentes de CO\u2082 por la adopci\u00f3n de energ\u00eda e\u00f3lica."
+                "Porcentaje de sistemas de agua municipales alimentados por energ\u00edas renovables.",
+                "Reducci\u00f3n en el consumo de energ\u00eda de fuentes no renovables (kWh/a\u00f1o).",
+                "Emisiones de GEI evitadas (toneladas de CO\u2082e)"
             ],
             "PowersAndMandates": [
                 "local"
-            ]
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR SER",
+        "cityName": "Serra",
+        "region": "ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0126",
+        "actionName": "Implementation of green fuel supply infrastructure for aircraft, such as biofuels or green hydrogen.",
+        "actionPriority": 20,
+        "action": {
+            "ActionID": "icare_0126",
+            "ActionName": "Implementaci\u00f3n de infraestructura de suministro de combustibles verdes para aeronaves, como biocombustibles o hidr\u00f3geno verde.",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "aviation"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Esta acci\u00f3n tiene como objetivo promover la sostenibilidad en los aeropuertos mediante la implementaci\u00f3n de infraestructura para abastecer a las aeronaves con combustibles de bajo carbono. El uso de biocombustibles o hidr\u00f3geno verde puede reducir significativamente las emisiones de GEI en el sector de la aviaci\u00f3n. Adem\u00e1s, la transici\u00f3n a estas fuentes de energ\u00eda m\u00e1s limpias contribuir\u00e1 a alcanzar los objetivos de descarbonizaci\u00f3n en el sector del transporte, al tiempo que se mantiene la eficiencia operativa en los aeropuertos y se minimiza su impacto ambiental.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "60-79",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "high",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Desarrollar infraestructura para abastecer aviones con combustibles bajos en carbono como biocombustibles o hidr\u00f3geno verde.",
+                "Asegurar la disponibilidad de fuentes de combustible sostenibles y la tecnolog\u00eda necesaria para las operaciones de abastecimiento.",
+                "Monitorear y evaluar el impacto ambiental y la eficiencia operativa de la transici\u00f3n a combustibles bajos en carbono."
+            ],
+            "KeyPerformanceIndicators": [
+                "N\u00famero de aeropuertos con infraestructura de biocombustible o hidr\u00f3geno verde.",
+                "Cantidad de combustible verde consumido por el sector de la aviaci\u00f3n (litros/a\u00f1o).",
+                "Reducci\u00f3n de emisiones de CO\u2082 de la aviaci\u00f3n mediante el uso de combustibles alternativos (tCO\u2082e/a\u00f1o)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
         }
     }
 ]

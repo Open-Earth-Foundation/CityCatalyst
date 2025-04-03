@@ -4,9 +4,132 @@
         "cityName": "Cuiab\u00e1",
         "region": "MT",
         "regionName": "Mato Grosso",
+        "actionId": "icare_0139",
+        "actionName": "Implementation of urban toll.",
+        "actionPriority": 1,
+        "action": {
+            "ActionID": "icare_0139",
+            "ActionName": "Implementa\u00e7\u00e3o de ped\u00e1gio urbano.",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "on-road"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Estabelecimento de uma taxa de congestionamento e/ou rod\u00edzio de placas para ve\u00edculos leves em \u00e1reas saturadas e em hor\u00e1rios saturados",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": -1,
+                "housing": 0,
+                "mobility": 2,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "80-100",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Estabelecer um quadro legal claro e investir em tecnologia para monitoramento e fiscaliza\u00e7\u00e3o (por exemplo, c\u00e2meras, sensores).",
+                "Lan\u00e7ar campanhas de conscientiza\u00e7\u00e3o e garantir a disponibilidade de transporte p\u00fablico eficiente ou solu\u00e7\u00f5es alternativas de mobilidade.",
+                "Colaborar com governos locais e ag\u00eancias de transporte, e estabelecer sistemas para monitorar e avaliar a efic\u00e1cia da pol\u00edtica."
+            ],
+            "KeyPerformanceIndicators": [
+                "Redu\u00e7\u00e3o das emiss\u00f5es de CO\u2082 do transporte rodovi\u00e1rio urbano (tCO\u2082e/ano).",
+                "Receita gerada pela implementa\u00e7\u00e3o da taxa de congestionamento urbano (R$)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR CBA",
+        "cityName": "Cuiab\u00e1",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0088",
+        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
+        "actionPriority": 2,
+        "action": {
+            "ActionID": "icare_0088",
+            "ActionName": "Implementa\u00e7\u00e3o de programas de transporte p\u00fablico gratuito durante os hor\u00e1rios de pico para reduzir o uso de ve\u00edculos individuais",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "on-road"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Incentivar o uso do transporte p\u00fablico oferecendo servi\u00e7os gratuitos durante os hor\u00e1rios de pico para trabalhadores e estudantes. Esta medida reduz a congest\u00e3o urbana, diminui o n\u00famero de ve\u00edculos individuais nas estradas e, consequentemente, reduz as emiss\u00f5es de gases de efeito estufa associadas ao transporte privado.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 2,
+                "housing": 0,
+                "mobility": 2,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "60-79",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Aloca\u00e7\u00e3o de financiamento para subsidiar servi\u00e7os de transporte p\u00fablico gratuito durante as horas de pico.",
+                "Desenvolvimento de pol\u00edticas para garantir a sustentabilidade e efici\u00eancia dos sistemas de transporte p\u00fablico diante do aumento da demanda.",
+                "Coordena\u00e7\u00e3o com empregadores e institui\u00e7\u00f5es educacionais para otimizar os hor\u00e1rios de pico e promover a iniciativa."
+            ],
+            "KeyPerformanceIndicators": [
+                "Redu\u00e7\u00e3o nos n\u00edveis de polui\u00e7\u00e3o do ar durante as horas de pico (concentra\u00e7\u00e3o de PM2.5/PM10).",
+                "N\u00famero de ve\u00edculos particulares removidos das estradas durante as horas de pico.",
+                "Taxa de satisfa\u00e7\u00e3o p\u00fablica com a iniciativa de transporte gratuito (%)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR CBA",
+        "cityName": "Cuiab\u00e1",
+        "region": "MT",
+        "regionName": "Mato Grosso",
         "actionId": "icare_0121",
         "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
-        "actionPriority": 1,
+        "actionPriority": 3,
         "action": {
             "ActionID": "icare_0121",
             "ActionName": "Incentivo \u00e0 cria\u00e7\u00e3o de programas de compartilhamento de bicicletas em \u00e1reas urbanas, com foco em bicicletas el\u00e9tricas.",
@@ -56,127 +179,9 @@
             ],
             "PowersAndMandates": [
                 "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR CBA",
-        "cityName": "Cuiab\u00e1",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0118",
-        "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
-        "actionPriority": 2,
-        "action": {
-            "ActionID": "icare_0118",
-            "ActionName": "Promover o uso de bicicletas como um modo regular de transporte atrav\u00e9s da expans\u00e3o da infraestrutura e estrat\u00e9gias de conscientiza\u00e7\u00e3o e comunica\u00e7\u00e3o.",
-            "ActionType": [
-                "mitigation"
             ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Incentivar a ado\u00e7\u00e3o de bicicletas como um modo regular de transporte atrav\u00e9s da expans\u00e3o da infraestrutura ciclovi\u00e1ria, como faixas exclusivas para bicicletas, instala\u00e7\u00f5es de estacionamento e esta\u00e7\u00f5es de reparo. Al\u00e9m disso, implementar campanhas de conscientiza\u00e7\u00e3o e estrat\u00e9gias de comunica\u00e7\u00e3o para destacar os benef\u00edcios ambientais, de sa\u00fade e econ\u00f4micos do ciclismo, visando aumentar a participa\u00e7\u00e3o p\u00fablica e tornar o ciclismo uma op\u00e7\u00e3o de transporte vi\u00e1vel e sustent\u00e1vel para o deslocamento di\u00e1rio.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 2,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Expandir a infraestrutura para ciclismo, incluindo faixas exclusivas para bicicletas, instala\u00e7\u00f5es de estacionamento e esta\u00e7\u00f5es de reparo.",
-                "Implementar campanhas de conscientiza\u00e7\u00e3o para destacar os benef\u00edcios ambientais, de sa\u00fade e econ\u00f4micos do ciclismo.",
-                "Promover a participa\u00e7\u00e3o p\u00fablica por meio de estrat\u00e9gias de comunica\u00e7\u00e3o, tornando o ciclismo uma op\u00e7\u00e3o vi\u00e1vel e sustent\u00e1vel para o deslocamento di\u00e1rio."
-            ],
-            "KeyPerformanceIndicators": [
-                "Comprimento das novas ciclovias adicionadas \u00e0 rede urbana (km).",
-                "Aumento anual no n\u00famero de usu\u00e1rios de bicicleta em \u00e1reas urbanas.",
-                "Redu\u00e7\u00e3o estimada nas emiss\u00f5es de CO\u2082 equivalente devido \u00e0 mudan\u00e7a para o ciclismo."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR CBA",
-        "cityName": "Cuiab\u00e1",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0005",
-        "actionName": "Create credit lines for residential and community wind energy projects",
-        "actionPriority": 3,
-        "action": {
-            "ActionID": "icare_0005",
-            "ActionName": "Criar linhas de cr\u00e9dito para projetos de energia e\u00f3lica residencial e comunit\u00e1ria",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "stationary_energy"
-            ],
-            "Subsector": [
-                "energy_generation_supplied_to_the_grid"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Estabelecer programas de financiamento acess\u00edveis para apoiar o desenvolvimento e a ado\u00e7\u00e3o de sistemas de energia e\u00f3lica em resid\u00eancias e projetos comunit\u00e1rios, possibilitando uma transi\u00e7\u00e3o para fontes de energia mais limpas.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 2,
-                "housing": 2,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": "60-79",
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Disponibilidade de programas financeiros, subs\u00eddios ou subven\u00e7\u00f5es para tornar os sistemas de energia e\u00f3lica acess\u00edveis para resid\u00eancias e projetos comunit\u00e1rios",
-                "Acesso a expertise t\u00e9cnica e recursos para orientar a instala\u00e7\u00e3o e manuten\u00e7\u00e3o de sistemas de energia e\u00f3lica em ambientes residenciais e comunit\u00e1rios",
-                "Apoio pol\u00edtico e regulat\u00f3rio para incentivar a ado\u00e7\u00e3o de energia e\u00f3lica, incluindo processos de licenciamento simplificados e incentivos para projetos de energia limpa"
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de projetos de energia e\u00f3lica financiados anualmente.",
-                "Capacidade instalada de sistemas de energia e\u00f3lica de projetos apoiados por cr\u00e9dito (MW).",
-                "Redu\u00e7\u00e3o estimada nas emiss\u00f5es equivalentes de CO\u2082 pela ado\u00e7\u00e3o de energia e\u00f3lica."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
         }
     },
     {
@@ -232,11 +237,13 @@
             "KeyPerformanceIndicators": [
                 "Economia de custos na opera\u00e7\u00e3o da frota devido ao uso de biometano (USD/ano).",
                 "Aumento na capacidade de produ\u00e7\u00e3o de biometano (%).",
-                "Percentual de biometano obtido localmente versus importado."
+                "Percentagem de biometano obtido localmente versus importado."
             ],
             "PowersAndMandates": [
                 "local"
-            ]
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
         }
     },
     {
@@ -244,12 +251,12 @@
         "cityName": "Cuiab\u00e1",
         "region": "MT",
         "regionName": "Mato Grosso",
-        "actionId": "icare_0092",
-        "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
+        "actionId": "icare_0044",
+        "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
         "actionPriority": 5,
         "action": {
-            "ActionID": "icare_0092",
-            "ActionName": "Desenvolvimento de micro-hubs log\u00edsticos para incentivar o uso de bicicletas de carga el\u00e9tricas.",
+            "ActionID": "icare_0044",
+            "ActionName": "Expandir a infraestrutura ciclovi\u00e1ria e construir passarelas p\u00fablicas e cal\u00e7adas acess\u00edveis, priorizando medidas resilientes \u00e0s amea\u00e7as clim\u00e1ticas",
             "ActionType": [
                 "mitigation"
             ],
@@ -263,75 +270,15 @@
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "Description": "Criar centros log\u00edsticos de pequena escala em bairros urbanos para facilitar entregas usando bicicletas de carga el\u00e9tricas, enquanto implementa incentivos fiscais ou subs\u00eddios para que as empresas adotem essas bicicletas como modo de transporte, reduzindo emiss\u00f5es e melhorando a efici\u00eancia das entregas em \u00e1reas densamente povoadas.",
+            "Description": "O principal objetivo desta a\u00e7\u00e3o \u00e9 promover a mobilidade ativa, garantindo a seguran\u00e7a, o conforto e a prioridade do movimento de pedestres, pessoas com defici\u00eancia (ou mobilidade reduzida) e ve\u00edculos e equipamentos movidos por for\u00e7a humana, como bicicletas e patinetes.",
             "CoBenefits": {
-                "air_quality": 1,
+                "air_quality": 2,
                 "water_quality": 0,
                 "habitat": 0,
                 "cost_of_living": 1,
                 "housing": 0,
                 "mobility": 2,
                 "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "20-39",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Identifica\u00e7\u00e3o e desenvolvimento de locais adequados para centros log\u00edsticos de pequena escala dentro de bairros urbanos.",
-                "Concess\u00e3o de incentivos fiscais, subs\u00eddios ou subs\u00eddios para encorajar as empresas a fazer a transi\u00e7\u00e3o para bicicletas de carga el\u00e9tricas.",
-                "Estabelecimento de parcerias com empresas de log\u00edstica para garantir a integra\u00e7\u00e3o e efici\u00eancia nas opera\u00e7\u00f5es de entrega utilizando esses centros."
-            ],
-            "KeyPerformanceIndicators": [
-                "Redu\u00e7\u00e3o na dist\u00e2ncia percorrida por ve\u00edculos de entrega tradicionais (km/ano).",
-                "Aumento na efici\u00eancia operacional dos centros log\u00edsticos (%).",
-                "N\u00famero de empresas utilizando micro-centros log\u00edsticos para entregas."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR CBA",
-        "cityName": "Cuiab\u00e1",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0057",
-        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
-        "actionPriority": 6,
-        "action": {
-            "ActionID": "icare_0057",
-            "ActionName": "Expans\u00e3o dos sistemas de transporte p\u00fablico em massa sobre trilhos (metr\u00f4s, LRTs e monotrilhos).",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "railways"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Esses sistemas oferecem alta capacidade e baixas emiss\u00f5es, cruciais para cidades com alta densidade populacional.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 2,
-                "stakeholder_engagement": 0
             },
             "EquityAndInclusionConsiderations": null,
             "GHGReductionPotential": {
@@ -342,201 +289,23 @@
                 "afolu": null
             },
             "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Investimento no desenvolvimento e expans\u00e3o da infraestrutura de transporte p\u00fablico de alta capacidade, como \u00f4nibus el\u00e9tricos e sistemas de metr\u00f4.",
-                "Implementa\u00e7\u00e3o de pol\u00edticas e incentivos para encorajar o uso do transporte p\u00fablico em vez de ve\u00edculos particulares.",
-                "Integra\u00e7\u00e3o de fontes de energia renov\u00e1vel para alimentar esses sistemas, reduzindo ainda mais as emiss\u00f5es."
-            ],
-            "KeyPerformanceIndicators": [
-                "Comprimento das novas linhas de tr\u00e2nsito constru\u00eddas (km/ano).",
-                "Redu\u00e7\u00e3o na congest\u00e3o do tr\u00e1fego rodovi\u00e1rio (%).",
-                "Redu\u00e7\u00e3o no uso de ve\u00edculos privados (n\u00famero de viagens evitadas/ano)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR CBA",
-        "cityName": "Cuiab\u00e1",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0088",
-        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
-        "actionPriority": 7,
-        "action": {
-            "ActionID": "icare_0088",
-            "ActionName": "Implementa\u00e7\u00e3o de programas de transporte p\u00fablico gratuito durante os hor\u00e1rios de pico para reduzir o uso de ve\u00edculos individuais",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Incentivar o uso do transporte p\u00fablico oferecendo servi\u00e7os gratuitos durante os hor\u00e1rios de pico para trabalhadores e estudantes. Esta medida reduz a congest\u00e3o urbana, diminui o n\u00famero de ve\u00edculos individuais nas estradas e, consequentemente, reduz as emiss\u00f5es de gases de efeito estufa associadas ao transporte privado.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 2,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Aloca\u00e7\u00e3o de financiamento para subsidiar servi\u00e7os de transporte p\u00fablico gratuito durante os hor\u00e1rios de pico.",
-                "Desenvolvimento de pol\u00edticas para garantir a sustentabilidade e efici\u00eancia dos sistemas de transporte p\u00fablico diante do aumento da demanda.",
-                "Coordena\u00e7\u00e3o com empregadores e institui\u00e7\u00f5es educacionais para otimizar os hor\u00e1rios de pico e promover a iniciativa."
-            ],
-            "KeyPerformanceIndicators": [
-                "Redu\u00e7\u00e3o nos n\u00edveis de polui\u00e7\u00e3o do ar durante as horas de pico (concentra\u00e7\u00e3o de PM2.5/PM10).",
-                "N\u00famero de ve\u00edculos particulares removidos das estradas durante as horas de pico.",
-                "Taxa de satisfa\u00e7\u00e3o p\u00fablica com a iniciativa de transporte gratuito (%)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR CBA",
-        "cityName": "Cuiab\u00e1",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0133",
-        "actionName": "Promote Urban Reforestation and Green Corridors",
-        "actionPriority": 8,
-        "action": {
-            "ActionID": "icare_0133",
-            "ActionName": "Promover o Reflorestamento Urbano e Corredores Verdes",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "land"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Aumentar a cobertura arb\u00f3rea urbana para mitigar o efeito de ilha de calor urbano e melhorar a biodiversidade.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 1,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "80-100"
-            },
-            "AdaptationEffectiveness": null,
             "CostInvestmentNeeded": "medium",
             "TimelineForImplementation": "5-10 years",
             "Dependencies": [
-                "Identifica\u00e7\u00e3o de \u00e1reas priorit\u00e1rias e sele\u00e7\u00e3o de esp\u00e9cies nativas e resilientes ao clima para o plantio de \u00e1rvores.",
-                "Parcerias com organiza\u00e7\u00f5es locais e viveiros, e aloca\u00e7\u00e3o de recursos para plantio e manuten\u00e7\u00e3o.",
-                "Envolvimento da comunidade para garantir cuidado e apoio a longo prazo."
+                "Investimentos em infraestrutura em cal\u00e7adas seguras e acess\u00edveis, ciclovias e instala\u00e7\u00f5es para pessoas com defici\u00eancia",
+                "Estruturas de pol\u00edticas e regulamentos para priorizar a mobilidade ativa e estabelecer padr\u00f5es de seguran\u00e7a para pedestres e ve\u00edculos n\u00e3o motorizados",
+                "Campanhas de conscientiza\u00e7\u00e3o p\u00fablica para promover a mobilidade ativa e educar os cidad\u00e3os sobre os benef\u00edcios de caminhar, andar de bicicleta e usar outros meios de transporte movidos a energia humana"
             ],
             "KeyPerformanceIndicators": [
-                "Aumento na cobertura de dossel arb\u00f3reo urbano (%)",
-                "Comprimento total de corredores verdes criados ou restaurados (quil\u00f4metros)",
-                "Redu\u00e7\u00e3o nas temperaturas do efeito de ilha de calor urbano (\u00b0C)"
+                "Quil\u00f4metros de novas ciclovias e passarelas constru\u00eddas anualmente.",
+                "Aumento no uso di\u00e1rio de infraestrutura ciclovi\u00e1ria e pedonal (%).",
+                "Redu\u00e7\u00e3o nas emiss\u00f5es do transporte urbano (%)."
             ],
             "PowersAndMandates": [
                 "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR CBA",
-        "cityName": "Cuiab\u00e1",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0025",
-        "actionName": "Promote energy-efficient low-income housing",
-        "actionPriority": 9,
-        "action": {
-            "ActionID": "icare_0025",
-            "ActionName": "Promover habita\u00e7\u00f5es de baixo custo energeticamente eficientes",
-            "ActionType": [
-                "mitigation"
             ],
-            "Hazard": null,
-            "Sector": [
-                "stationary_energy"
-            ],
-            "Subsector": [
-                "residential_buildings"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Desenvolver e apoiar projetos habitacionais que incorporem designs e tecnologias energeticamente eficientes, reduzindo os custos de energia para fam\u00edlias de baixa renda.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 2,
-                "housing": 2,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": "60-79",
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Disponibilidade de financiamento ou subs\u00eddios para apoiar o desenvolvimento de habita\u00e7\u00f5es energeticamente eficientes para fam\u00edlias de baixa renda",
-                "Colabora\u00e7\u00e3o com arquitetos, engenheiros e empreiteiros para projetar e implementar tecnologias energeticamente eficientes em projetos habitacionais",
-                "Desenvolvimento de pol\u00edticas e regulamentos para incentivar solu\u00e7\u00f5es habitacionais energeticamente eficientes e garantir a acessibilidade para comunidades de baixa renda"
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de unidades habitacionais energeticamente eficientes constru\u00eddas ou reformadas.",
-                "Redu\u00e7\u00e3o no consumo de energia dom\u00e9stica (kWh).",
-                "Diminui\u00e7\u00e3o nas contas de energia para fam\u00edlias de baixa renda (USD)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
         }
     },
     {
@@ -546,7 +315,7 @@
         "regionName": "Mato Grosso",
         "actionId": "icare_0090",
         "actionName": "Adoption of electric drones for last-mile deliveries.",
-        "actionPriority": 10,
+        "actionPriority": 6,
         "action": {
             "ActionID": "icare_0090",
             "ActionName": "Ado\u00e7\u00e3o de drones el\u00e9tricos para entregas de \u00faltima milha.",
@@ -596,7 +365,9 @@
             ],
             "PowersAndMandates": [
                 "local"
-            ]
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
         }
     },
     {
@@ -606,7 +377,7 @@
         "regionName": "Mato Grosso",
         "actionId": "icare_0068",
         "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
-        "actionPriority": 11,
+        "actionPriority": 7,
         "action": {
             "ActionID": "icare_0068",
             "ActionName": "Implantar sistemas de transporte sob demanda com frotas 100% el\u00e9tricas.",
@@ -647,7 +418,7 @@
             "Dependencies": [
                 "Desenvolvimento de plataformas digitais e aplicativos para gerenciar eficientemente servi\u00e7os de transporte coletivo sob demanda.",
                 "Expans\u00e3o de frotas de ve\u00edculos el\u00e9tricos adaptadas para solu\u00e7\u00f5es de transporte compartilhado.",
-                "Implementa\u00e7\u00e3o de pol\u00edticas e incentivos para incentivar a ado\u00e7\u00e3o e uso de servi\u00e7os de transporte el\u00e9trico compartilhado."
+                "Implementa\u00e7\u00e3o de pol\u00edticas e incentivos para incentivar a ado\u00e7\u00e3o e o uso de servi\u00e7os de transporte el\u00e9trico compartilhado."
             ],
             "KeyPerformanceIndicators": [
                 "N\u00famero de usu\u00e1rios ativos do sistema de frota el\u00e9trica sob demanda.",
@@ -656,187 +427,9 @@
             ],
             "PowersAndMandates": [
                 "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR CBA",
-        "cityName": "Cuiab\u00e1",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0117",
-        "actionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
-        "actionPriority": 12,
-        "action": {
-            "ActionID": "icare_0117",
-            "ActionName": "Aumentar a atratividade do sistema de \u00f4nibus municipal para promover este modo de transporte.",
-            "ActionType": [
-                "mitigation"
             ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Aumentar a qualidade da presta\u00e7\u00e3o de servi\u00e7os de transporte, visando a mudan\u00e7a modal de passageiros do transporte motorizado privado para o transporte p\u00fablico, reduzindo assim as emiss\u00f5es geradas por carros e motocicletas.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Melhorar a qualidade dos servi\u00e7os de transporte p\u00fablico para atrair passageiros do transporte motorizado privado.",
-                "Implementar pol\u00edticas e infraestruturas que apoiem e aumentem a efici\u00eancia dos sistemas de transporte p\u00fablico.",
-                "Promover a conscientiza\u00e7\u00e3o sobre os benef\u00edcios ambientais do transporte p\u00fablico para incentivar uma mudan\u00e7a modal e reduzir as emiss\u00f5es."
-            ],
-            "KeyPerformanceIndicators": [
-                "Aumento anual no n\u00famero de passageiros utilizando o sistema de \u00f4nibus municipal.",
-                "Percentual de rotas de \u00f4nibus com confiabilidade melhorada no tempo de viagem.",
-                "Redu\u00e7\u00e3o estimada nas emiss\u00f5es de CO\u2082 equivalente devido ao aumento do uso de transporte p\u00fablico."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR CBA",
-        "cityName": "Cuiab\u00e1",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0044",
-        "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
-        "actionPriority": 13,
-        "action": {
-            "ActionID": "icare_0044",
-            "ActionName": "Expandir a infraestrutura ciclovi\u00e1ria e construir passarelas p\u00fablicas e cal\u00e7adas acess\u00edveis, priorizando medidas resilientes \u00e0s amea\u00e7as clim\u00e1ticas",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "O principal objetivo desta a\u00e7\u00e3o \u00e9 promover a mobilidade ativa, garantindo a seguran\u00e7a, o conforto e a prioridade do movimento de pedestres, pessoas com defici\u00eancia (ou mobilidade reduzida) e ve\u00edculos e equipamentos movidos a energia humana, como bicicletas e scooters.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "80-100",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Investimentos em infraestrutura em cal\u00e7adas seguras e acess\u00edveis, ciclovias e instala\u00e7\u00f5es para pessoas com defici\u00eancia",
-                "Estruturas de pol\u00edticas e regulamentos para priorizar a mobilidade ativa e estabelecer padr\u00f5es de seguran\u00e7a para pedestres e ve\u00edculos n\u00e3o motorizados",
-                "Campanhas de conscientiza\u00e7\u00e3o p\u00fablica para promover a mobilidade ativa e educar os cidad\u00e3os sobre os benef\u00edcios de caminhar, andar de bicicleta e usar outros meios de transporte movidos a energia humana"
-            ],
-            "KeyPerformanceIndicators": [
-                "Quil\u00f4metros de novas ciclovias e passarelas constru\u00eddas anualmente.",
-                "Aumento no uso di\u00e1rio de infraestrutura ciclovi\u00e1ria e pedonal (%).",
-                "Redu\u00e7\u00e3o nas emiss\u00f5es do transporte urbano (%)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR CBA",
-        "cityName": "Cuiab\u00e1",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0131",
-        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
-        "actionPriority": 14,
-        "action": {
-            "ActionID": "icare_0131",
-            "ActionName": "Priorizar a Aquisi\u00e7\u00e3o de Produtos Agroecol\u00f3gicos Produzidos Localmente em Compras P\u00fablicas",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Concentre-se em comprar alimentos sustent\u00e1veis, produzidos localmente, para institui\u00e7\u00f5es p\u00fablicas.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "20-39"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Desenvolvimento de pol\u00edticas de aquisi\u00e7\u00e3o e identifica\u00e7\u00e3o de fornecedores locais confi\u00e1veis.",
-                "Parcerias com produtores e aloca\u00e7\u00e3o de financiamento para programas de aquisi\u00e7\u00e3o sustent\u00e1vel.",
-                "Estabelecimento de sistemas de monitoramento para garantir a conformidade com os crit\u00e9rios de sustentabilidade."
-            ],
-            "KeyPerformanceIndicators": [
-                "Percentagem do volume total de compras p\u00fablicas provenientes de produtores agroecol\u00f3gicos locais.",
-                "Quantidade de emiss\u00f5es de CO\u2082 evitadas devido \u00e0 redu\u00e7\u00e3o da dist\u00e2ncia de transporte (tCO\u2082e).",
-                "N\u00famero de produtores agroecol\u00f3gicos beneficiados pelas compras p\u00fablicas."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
         }
     },
     {
@@ -846,7 +439,7 @@
         "regionName": "Mato Grosso",
         "actionId": "icare_0042",
         "actionName": "Encourage renewable energy policies at the municipal level",
-        "actionPriority": 15,
+        "actionPriority": 8,
         "action": {
             "ActionID": "icare_0042",
             "ActionName": "Incentivar pol\u00edticas de energia renov\u00e1vel a n\u00edvel municipal",
@@ -887,7 +480,7 @@
             "Dependencies": [
                 "Vontade pol\u00edtica e lideran\u00e7a para priorizar a energia renov\u00e1vel nas pol\u00edticas e processos de planejamento do governo local",
                 "Desenvolvimento de pol\u00edticas claras e estruturas regulat\u00f3rias que facilitem a integra\u00e7\u00e3o de sistemas de energia renov\u00e1vel nas opera\u00e7\u00f5es governamentais",
-                "Disponibilidade de financiamento ou mecanismos financeiros para apoiar a transi\u00e7\u00e3o para energia renov\u00e1vel na infraestrutura e opera\u00e7\u00f5es municipais"
+                "Disponibilidade de financiamento ou mecanismos financeiros para apoiar a transi\u00e7\u00e3o para a energia renov\u00e1vel na infraestrutura e opera\u00e7\u00f5es municipais"
             ],
             "KeyPerformanceIndicators": [
                 "N\u00famero de projetos de energia renov\u00e1vel aprovados ou iniciados anualmente a n\u00edvel municipal.",
@@ -896,7 +489,9 @@
             ],
             "PowersAndMandates": [
                 "local"
-            ]
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
         }
     },
     {
@@ -904,12 +499,260 @@
         "cityName": "Cuiab\u00e1",
         "region": "MT",
         "regionName": "Mato Grosso",
-        "actionId": "icare_0099",
-        "actionName": "Support Agroecological Certification Programs",
-        "actionPriority": 16,
+        "actionId": "icare_0118",
+        "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
+        "actionPriority": 9,
         "action": {
-            "ActionID": "icare_0099",
-            "ActionName": "Apoiar Programas de Certifica\u00e7\u00e3o Agroecol\u00f3gica",
+            "ActionID": "icare_0118",
+            "ActionName": "Promover o uso de bicicletas como um modo regular de transporte atrav\u00e9s da expans\u00e3o da infraestrutura e estrat\u00e9gias de conscientiza\u00e7\u00e3o e comunica\u00e7\u00e3o.",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "on-road"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Incentivar a ado\u00e7\u00e3o de bicicletas como um modo regular de transporte, expandindo a infraestrutura ciclovi\u00e1ria, como ciclovias dedicadas, instala\u00e7\u00f5es de estacionamento e esta\u00e7\u00f5es de reparo. Al\u00e9m disso, implementar campanhas de conscientiza\u00e7\u00e3o e estrat\u00e9gias de comunica\u00e7\u00e3o para destacar os benef\u00edcios ambientais, de sa\u00fade e econ\u00f4micos do ciclismo, visando aumentar a participa\u00e7\u00e3o p\u00fablica e tornar o ciclismo uma op\u00e7\u00e3o de transporte vi\u00e1vel e sustent\u00e1vel para o deslocamento di\u00e1rio.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 1,
+                "mobility": 2,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "60-79",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Expandir a infraestrutura para ciclismo, incluindo faixas exclusivas para bicicletas, instala\u00e7\u00f5es de estacionamento e esta\u00e7\u00f5es de reparo.",
+                "Implementar campanhas de conscientiza\u00e7\u00e3o para destacar os benef\u00edcios ambientais, de sa\u00fade e econ\u00f4micos do ciclismo.",
+                "Promover a participa\u00e7\u00e3o p\u00fablica por meio de estrat\u00e9gias de comunica\u00e7\u00e3o, tornando o ciclismo uma op\u00e7\u00e3o vi\u00e1vel e sustent\u00e1vel para o deslocamento di\u00e1rio."
+            ],
+            "KeyPerformanceIndicators": [
+                "Comprimento de novas ciclovias adicionadas \u00e0 rede urbana (km).",
+                "Aumento anual no n\u00famero de usu\u00e1rios de bicicleta em \u00e1reas urbanas.",
+                "Redu\u00e7\u00e3o estimada nas emiss\u00f5es de CO\u2082 equivalente devido \u00e0 mudan\u00e7a para o ciclismo."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR CBA",
+        "cityName": "Cuiab\u00e1",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0024",
+        "actionName": "Integrate renewables into municipal water systems",
+        "actionPriority": 10,
+        "action": {
+            "ActionID": "icare_0024",
+            "ActionName": "Integrar energias renov\u00e1veis nos sistemas municipais de \u00e1gua",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "stationary_energy"
+            ],
+            "Subsector": [
+                "energy_generation_supplied_to_the_grid"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Implementar fontes de energia renov\u00e1vel, como energia solar ou e\u00f3lica, para impulsionar sistemas de tratamento, bombeamento e distribui\u00e7\u00e3o de \u00e1gua, reduzindo custos de energia e emiss\u00f5es.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": "80-100",
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Disponibilidade de financiamento ou incentivos financeiros para integrar fontes de energia renov\u00e1vel, como energia solar ou e\u00f3lica, em sistemas de tratamento e distribui\u00e7\u00e3o de \u00e1gua",
+                "Expertise t\u00e9cnica e infraestrutura para adaptar sistemas existentes com solu\u00e7\u00f5es de energia renov\u00e1vel ou projetar novas instala\u00e7\u00f5es alimentadas por energias renov\u00e1veis",
+                "Apoio pol\u00edtico e regulat\u00f3rio para incentivar o uso de energia limpa em sistemas de \u00e1gua e garantir sua integra\u00e7\u00e3o nas redes de energia municipais"
+            ],
+            "KeyPerformanceIndicators": [
+                "Percentagem de sistemas municipais de \u00e1gua alimentados por energias renov\u00e1veis.",
+                "Redu\u00e7\u00e3o no consumo de energia de fontes n\u00e3o renov\u00e1veis (kWh/ano).",
+                "Emiss\u00f5es de GEE evitadas (toneladas de CO\u2082e)"
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR CBA",
+        "cityName": "Cuiab\u00e1",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0128",
+        "actionName": "Establish Municipal Programs for Payment for Environmental Services (PES)",
+        "actionPriority": 11,
+        "action": {
+            "ActionID": "icare_0128",
+            "ActionName": "Estabelecer Programas Municipais de Pagamento por Servi\u00e7os Ambientais (PSA)",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "land"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Implementar programas que paguem aos propriet\u00e1rios de terras por manterem ou melhorarem as condi\u00e7\u00f5es ambientais em suas propriedades.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": -1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "60-79"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Cria\u00e7\u00e3o de mecanismos de financiamento e crit\u00e9rios de elegibilidade claros com indicadores de desempenho.",
+                "Parcerias com organiza\u00e7\u00f5es ambientais e campanhas de conscientiza\u00e7\u00e3o para incentivar a participa\u00e7\u00e3o.",
+                "Integra\u00e7\u00e3o com estruturas legais para garantir a sustentabilidade do programa."
+            ],
+            "KeyPerformanceIndicators": [
+                "N\u00famero de contratos ativos de Pagamento por Servi\u00e7os Ambientais (PSA) assinados.",
+                "\u00c1rea total sob pr\u00e1ticas de conserva\u00e7\u00e3o ou restaura\u00e7\u00e3o incentivadas (hectares).",
+                "Quantidade de carbono sequestrado ou emiss\u00f5es evitadas por meio de a\u00e7\u00f5es de PSA (tCO\u2082e/ano)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR CBA",
+        "cityName": "Cuiab\u00e1",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0057",
+        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
+        "actionPriority": 12,
+        "action": {
+            "ActionID": "icare_0057",
+            "ActionName": "Expans\u00e3o dos sistemas de transporte p\u00fablico em massa sobre trilhos (metr\u00f4s, VLTs e monotrilhos).",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "railways"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Esses sistemas oferecem alta capacidade e baixas emiss\u00f5es, cruciais para cidades com alta densidade populacional.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 1,
+                "mobility": 2,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "80-100",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "high",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Investimento no desenvolvimento e expans\u00e3o da infraestrutura de transporte p\u00fablico de alta capacidade, como \u00f4nibus el\u00e9tricos e sistemas de metr\u00f4.",
+                "Implementa\u00e7\u00e3o de pol\u00edticas e incentivos para encorajar o uso de transporte p\u00fablico em vez de ve\u00edculos particulares.",
+                "Integra\u00e7\u00e3o de fontes de energia renov\u00e1vel para alimentar esses sistemas, reduzindo ainda mais as emiss\u00f5es."
+            ],
+            "KeyPerformanceIndicators": [
+                "Comprimento das novas linhas de tr\u00e2nsito constru\u00eddas (km/ano).",
+                "Redu\u00e7\u00e3o na congest\u00e3o do tr\u00e1fego rodovi\u00e1rio (%).",
+                "Redu\u00e7\u00e3o no uso de ve\u00edculos privados (n\u00famero de viagens evitadas/ano)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR CBA",
+        "cityName": "Cuiab\u00e1",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0131",
+        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
+        "actionPriority": 13,
+        "action": {
+            "ActionID": "icare_0131",
+            "ActionName": "Priorizar a Aquisi\u00e7\u00e3o de Produtos Agroecol\u00f3gicos Produzidos Localmente em Compras P\u00fablicas",
             "ActionType": [
                 "mitigation"
             ],
@@ -923,10 +766,10 @@
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "Description": "Incentivar a certifica\u00e7\u00e3o de produtos agroecol\u00f3gicos que atendam a crit\u00e9rios de sustentabilidade e tenham baixo impacto ambiental.",
+            "Description": "Concentre-se em comprar alimentos sustent\u00e1veis e produzidos localmente para institui\u00e7\u00f5es p\u00fablicas.",
             "CoBenefits": {
                 "air_quality": 1,
-                "water_quality": 1,
+                "water_quality": 2,
                 "habitat": 2,
                 "cost_of_living": 1,
                 "housing": 0,
@@ -945,18 +788,268 @@
             "CostInvestmentNeeded": "low",
             "TimelineForImplementation": "<5 years",
             "Dependencies": [
-                "Desenvolvimento de padr\u00f5es de certifica\u00e7\u00e3o claros e acess\u00edveis para produtos agroecol\u00f3gicos que enfatizem a sustentabilidade e o baixo impacto ambiental.",
-                "Apoio a agricultores e produtores para atender aos requisitos de certifica\u00e7\u00e3o por meio de treinamento, assist\u00eancia financeira ou orienta\u00e7\u00e3o t\u00e9cnica.",
-                "Cria\u00e7\u00e3o de estrat\u00e9gias de marketing e parcerias para aumentar a visibilidade e a demanda por produtos agroecol\u00f3gicos certificados nos mercados locais e globais."
+                "Desenvolvimento de pol\u00edticas de aquisi\u00e7\u00e3o e identifica\u00e7\u00e3o de fornecedores locais confi\u00e1veis.",
+                "Parcerias com produtores e aloca\u00e7\u00e3o de financiamento para programas de aquisi\u00e7\u00e3o sustent\u00e1vel.",
+                "Estabelecimento de sistemas de monitoramento para garantir a conformidade com os crit\u00e9rios de sustentabilidade."
             ],
             "KeyPerformanceIndicators": [
-                "N\u00famero de agricultores ou produtores obtendo certifica\u00e7\u00f5es agroecol\u00f3gicas.",
-                "Percentagem de produtos agr\u00edcolas certificados no mercado (%).",
-                "Redu\u00e7\u00e3o no uso de insumos sint\u00e9ticos (por exemplo, fertilizantes, pesticidas)."
+                "Percentagem do volume total de compras p\u00fablicas provenientes de produtores agroecol\u00f3gicos locais.",
+                "Quantidade de emiss\u00f5es de CO\u2082 evitadas devido \u00e0 redu\u00e7\u00e3o da dist\u00e2ncia de transporte (tCO\u2082e).",
+                "N\u00famero de produtores agroecol\u00f3gicos beneficiados pelas compras p\u00fablicas."
             ],
             "PowersAndMandates": [
                 "local"
-            ]
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR CBA",
+        "cityName": "Cuiab\u00e1",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0050",
+        "actionName": "Implement Agroforestry Systems",
+        "actionPriority": 14,
+        "action": {
+            "ActionID": "icare_0050",
+            "ActionName": "Implementar Sistemas Agroflorestais",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "agriculture_forestry_and_fishing_activities"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Promover sistemas agroflorestais integrando \u00e1rvores na produ\u00e7\u00e3o de alimentos e pastagens, aumentando a biodiversidade e a captura de carbono.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "80-100"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Fornecimento de suporte t\u00e9cnico e orienta\u00e7\u00e3o aos agricultores sobre o design e implementa\u00e7\u00e3o de sistemas agroflorestais.",
+                "Desenvolvimento de incentivos financeiros ou subs\u00eddios para tornar a agrofloresta mais economicamente atraente.",
+                "Cria\u00e7\u00e3o de pol\u00edticas que integrem pr\u00e1ticas agroflorestais no planejamento do uso da terra agr\u00edcola e nos sistemas de posse de terra."
+            ],
+            "KeyPerformanceIndicators": [
+                "Percentagem de terras agr\u00edcolas convertidas em sistemas agroflorestais (%).",
+                "N\u00famero de novos projetos agroflorestais implementados.",
+                "Aumento na captura de carbono em sistemas agroflorestais (toneladas de CO\u2082e/ano)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR CBA",
+        "cityName": "Cuiab\u00e1",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0133",
+        "actionName": "Promote Urban Reforestation and Green Corridors",
+        "actionPriority": 15,
+        "action": {
+            "ActionID": "icare_0133",
+            "ActionName": "Promover o Reflorestamento Urbano e Corredores Verdes",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "land"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Aumentar a cobertura arb\u00f3rea urbana para mitigar o efeito de ilha de calor urbano e melhorar a biodiversidade.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 1,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 1,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "80-100"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Identifica\u00e7\u00e3o de \u00e1reas priorit\u00e1rias e sele\u00e7\u00e3o de esp\u00e9cies nativas e resilientes ao clima para o plantio de \u00e1rvores.",
+                "Parcerias com organiza\u00e7\u00f5es locais e viveiros, e aloca\u00e7\u00e3o de recursos para plantio e manuten\u00e7\u00e3o.",
+                "Envolvimento da comunidade para garantir cuidado e apoio a longo prazo."
+            ],
+            "KeyPerformanceIndicators": [
+                "Aumento na cobertura de dossel arb\u00f3reo urbano (%)",
+                "Comprimento total de corredores verdes criados ou restaurados (quil\u00f4metros)",
+                "Redu\u00e7\u00e3o nas temperaturas do efeito de ilha de calor urbano (\u00b0C)"
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR CBA",
+        "cityName": "Cuiab\u00e1",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0129",
+        "actionName": "Facilitate Technology Transfer for Conservation Practices",
+        "actionPriority": 16,
+        "action": {
+            "ActionID": "icare_0129",
+            "ActionName": "Facilitar a Transfer\u00eancia de Tecnologia para Pr\u00e1ticas de Conserva\u00e7\u00e3o",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "agriculture_forestry_and_fishing_activities"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Promover a ado\u00e7\u00e3o de pr\u00e1ticas agr\u00edcolas sustent\u00e1veis por meio de treinamento, projetos piloto e demonstra\u00e7\u00f5es de tecnologia.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 1,
+                "habitat": 2,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "60-79"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Fornecimento de programas de treinamento e estabelecimento de projetos piloto para demonstrar pr\u00e1ticas sustent\u00e1veis.",
+                "Parcerias com institui\u00e7\u00f5es de pesquisa para desenvolvimento de tecnologia e incentivos financeiros para encorajar a ado\u00e7\u00e3o.",
+                "Acesso a assist\u00eancia t\u00e9cnica para implementa\u00e7\u00e3o bem-sucedida."
+            ],
+            "KeyPerformanceIndicators": [
+                "N\u00famero de tecnologias de conserva\u00e7\u00e3o transferidas e aplicadas em fazendas.",
+                "Percentual de produtores treinados para implementar pr\u00e1ticas de conserva\u00e7\u00e3o.",
+                "Redu\u00e7\u00e3o na degrada\u00e7\u00e3o do solo ou aumento na cobertura vegetal (hectares)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR CBA",
+        "cityName": "Cuiab\u00e1",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0097",
+        "actionName": "Support Distributed Energy Generation in Residences and Businesses",
+        "actionPriority": 17,
+        "action": {
+            "ActionID": "icare_0097",
+            "ActionName": "Apoiar a Gera\u00e7\u00e3o de Energia Distribu\u00edda em Resid\u00eancias e Neg\u00f3cios",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "stationary_energy"
+            ],
+            "Subsector": [
+                "residential_buildings"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Facilitar o uso de pain\u00e9is solares e outras tecnologias de energia renov\u00e1vel em resid\u00eancias e edif\u00edcios comerciais.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 1,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": "60-79",
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Fornecer incentivos financeiros, regulamenta\u00e7\u00f5es claras de instala\u00e7\u00e3o e acesso a tecnologias acess\u00edveis para pain\u00e9is solares.",
+                "Lan\u00e7ar campanhas de conscientiza\u00e7\u00e3o p\u00fablica e oferecer treinamento para propriet\u00e1rios de resid\u00eancias e empresas.",
+                "Incentivar a ado\u00e7\u00e3o de tecnologias de energia renov\u00e1vel para promover economias de energia a longo prazo."
+            ],
+            "KeyPerformanceIndicators": [
+                "Capacidade instalada de gera\u00e7\u00e3o de energia distribu\u00edda (MW).",
+                "Percentual de resid\u00eancias e empresas gerando sua pr\u00f3pria energia (%).",
+                "Redu\u00e7\u00e3o nas emiss\u00f5es de CO\u2082 atrav\u00e9s da gera\u00e7\u00e3o distribu\u00edda (tCO\u2082e/ano)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
         }
     },
     {
@@ -966,7 +1059,7 @@
         "regionName": "Mato Grosso",
         "actionId": "icare_0136",
         "actionName": "Support the Implementation of Ecological Fiscal Incentives",
-        "actionPriority": 17,
+        "actionPriority": 18,
         "action": {
             "ActionID": "icare_0136",
             "ActionName": "Apoiar a Implementa\u00e7\u00e3o de Incentivos Fiscais Ecol\u00f3gicos",
@@ -1016,7 +1109,9 @@
             ],
             "PowersAndMandates": [
                 "state"
-            ]
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
         }
     },
     {
@@ -1024,59 +1119,61 @@
         "cityName": "Cuiab\u00e1",
         "region": "MT",
         "regionName": "Mato Grosso",
-        "actionId": "icare_0027",
-        "actionName": "Create financing programs for local renewable energy projects",
-        "actionPriority": 18,
+        "actionId": "icare_0130",
+        "actionName": "Conduct Technical Assistance and Rural Extension (ATER) Actions",
+        "actionPriority": 19,
         "action": {
-            "ActionID": "icare_0027",
-            "ActionName": "Criar programas de financiamento para projetos locais de energia renov\u00e1vel",
+            "ActionID": "icare_0130",
+            "ActionName": "Conduzir A\u00e7\u00f5es de Assist\u00eancia T\u00e9cnica e Extens\u00e3o Rural (ATER)",
             "ActionType": [
                 "mitigation"
             ],
             "Hazard": null,
             "Sector": [
-                "stationary_energy"
+                "afolu"
             ],
             "Subsector": [
-                "energy_industries"
+                "agriculture_forestry_and_fishing_activities"
             ],
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "Description": "Estabelecer mecanismos de financiamento, como subs\u00eddios e empr\u00e9stimos a juros baixos, para apoiar o desenvolvimento de iniciativas de energia renov\u00e1vel em pequena escala nas comunidades.",
+            "Description": "Fornecer suporte t\u00e9cnico e treinamento aos produtores rurais para a produ\u00e7\u00e3o agr\u00edcola sustent\u00e1vel.",
             "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 2,
-                "housing": 1,
+                "air_quality": 1,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 0,
                 "mobility": 0,
-                "stakeholder_engagement": 1
+                "stakeholder_engagement": 2
             },
             "EquityAndInclusionConsiderations": null,
             "GHGReductionPotential": {
-                "stationary_energy": "60-79",
+                "stationary_energy": null,
                 "transportation": null,
                 "waste": null,
                 "ippu": null,
-                "afolu": null
+                "afolu": "60-79"
             },
             "AdaptationEffectiveness": null,
             "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
+            "TimelineForImplementation": "<5 years",
             "Dependencies": [
-                "Desenvolvimento de mecanismos financeiros acess\u00edveis, incluindo subs\u00eddios e empr\u00e9stimos a juros baixos, para apoiar projetos de energia renov\u00e1vel em pequena escala nas comunidades",
-                "Colabora\u00e7\u00e3o com institui\u00e7\u00f5es financeiras e governos locais para garantir a distribui\u00e7\u00e3o e gest\u00e3o eficazes de financiamento para iniciativas de energia renov\u00e1vel",
-                "Diretrizes claras e apoio para organiza\u00e7\u00f5es comunit\u00e1rias e empresas locais acessarem financiamento e implementarem com sucesso projetos de energia renov\u00e1vel"
+                "Disponibilidade de pessoal t\u00e9cnico qualificado e programas de forma\u00e7\u00e3o personalizados.",
+                "Parcerias com institui\u00e7\u00f5es de pesquisa agr\u00edcola e aloca\u00e7\u00e3o de recursos para o desenvolvimento de capacidades.",
+                "Envolvimento com produtores rurais para garantir a participa\u00e7\u00e3o ativa."
             ],
             "KeyPerformanceIndicators": [
-                "Total de fundos alocados para projetos de energia renov\u00e1vel (USD).",
-                "N\u00famero de projetos financiados anualmente.",
-                "Aumento na capacidade instalada de energia renov\u00e1vel (MW)."
+                "N\u00famero de produtores beneficiados com assist\u00eancia t\u00e9cnica rural (% do total).",
+                "Percentual de participantes adotando pr\u00e1ticas resilientes ao clima.",
+                "Redu\u00e7\u00e3o da vulnerabilidade das propriedades ao risco clim\u00e1tico (%)."
             ],
             "PowersAndMandates": [
-                "local"
-            ]
+                "state"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
         }
     },
     {
@@ -1084,12 +1181,12 @@
         "cityName": "Cuiab\u00e1",
         "region": "MT",
         "regionName": "Mato Grosso",
-        "actionId": "icare_0091",
-        "actionName": "Implementation of prioritized routes for sustainable vehicles.",
-        "actionPriority": 19,
+        "actionId": "icare_0092",
+        "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
+        "actionPriority": 20,
         "action": {
-            "ActionID": "icare_0091",
-            "ActionName": "Implementa\u00e7\u00e3o de rotas priorit\u00e1rias para ve\u00edculos sustent\u00e1veis.",
+            "ActionID": "icare_0092",
+            "ActionName": "Desenvolvimento de micro-hubs log\u00edsticos para incentivar o uso de bicicletas de carga el\u00e9tricas.",
             "ActionType": [
                 "mitigation"
             ],
@@ -1103,12 +1200,12 @@
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "Description": "Criar faixas priorit\u00e1rias para ve\u00edculos el\u00e9tricos, h\u00edbridos e de baixa emiss\u00e3o em centros urbanos para incentivar sua ado\u00e7\u00e3o e reduzir a polui\u00e7\u00e3o em \u00e1reas de alto tr\u00e1fego.",
+            "Description": "Criar centros log\u00edsticos de pequena escala em bairros urbanos para facilitar entregas usando bicicletas de carga el\u00e9tricas, enquanto implementa incentivos fiscais ou subs\u00eddios para que as empresas adotem essas bicicletas como modo de transporte, reduzindo emiss\u00f5es e melhorando a efici\u00eancia das entregas em \u00e1reas densamente povoadas.",
             "CoBenefits": {
-                "air_quality": 2,
+                "air_quality": 1,
                 "water_quality": 0,
                 "habitat": 0,
-                "cost_of_living": 0,
+                "cost_of_living": 1,
                 "housing": 0,
                 "mobility": 2,
                 "stakeholder_engagement": 1
@@ -1116,67 +1213,7 @@
             "EquityAndInclusionConsiderations": null,
             "GHGReductionPotential": {
                 "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Implementa\u00e7\u00e3o de sistemas de gest\u00e3o de tr\u00e1fego para aplicar e monitorar o uso de faixas priorit\u00e1rias.",
-                "Desenvolvimento de sinaliza\u00e7\u00e3o clara e campanhas de conscientiza\u00e7\u00e3o p\u00fablica para informar os motoristas sobre a elegibilidade e o uso das faixas.",
-                "Estabelecimento de estruturas regulat\u00f3rias que incentivem a ado\u00e7\u00e3o de ve\u00edculos de baixa emiss\u00e3o para elegibilidade nas faixas priorit\u00e1rias."
-            ],
-            "KeyPerformanceIndicators": [
-                "Percentagem de ve\u00edculos sustent\u00e1veis utilizando rotas priorit\u00e1rias.",
-                "Aumento na efici\u00eancia de entrega de mercadorias transportadas por rotas priorit\u00e1rias (%).",
-                "Taxa de aceita\u00e7\u00e3o p\u00fablica das rotas priorit\u00e1rias para ve\u00edculos sustent\u00e1veis (%)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR CBA",
-        "cityName": "Cuiab\u00e1",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "ipcc_0006",
-        "actionName": "Teleworking",
-        "actionPriority": 20,
-        "action": {
-            "ActionID": "ipcc_0006",
-            "ActionName": "Teletrabalho",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Incentivar o teletrabalho (trabalho em casa) e a videoconfer\u00eancia como alternativas ao deslocamento e reuni\u00f5es presenciais, reduzindo assim o uso de ve\u00edculos leves e as emiss\u00f5es associadas.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": "Melhora a flexibilidade no trabalho, permitindo uma maior participa\u00e7\u00e3o de indiv\u00edduos com restri\u00e7\u00f5es de mobilidade ou responsabilidades de cuidado.",
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "0-19",
+                "transportation": "20-39",
                 "waste": null,
                 "ippu": null,
                 "afolu": null
@@ -1185,16 +1222,20 @@
             "CostInvestmentNeeded": "low",
             "TimelineForImplementation": "<5 years",
             "Dependencies": [
-                "Acesso generalizado \u00e0 internet de alta velocidade",
-                "pol\u00edticas organizacionais de apoio",
-                "disposi\u00e7\u00e3o dos funcion\u00e1rios para adotar o teletrabalho"
+                "Identifica\u00e7\u00e3o e desenvolvimento de locais adequados para centros log\u00edsticos de pequena escala dentro de bairros urbanos.",
+                "Concess\u00e3o de incentivos fiscais, subs\u00eddios ou subven\u00e7\u00f5es para encorajar as empresas a fazerem a transi\u00e7\u00e3o para bicicletas de carga el\u00e9tricas.",
+                "Estabelecimento de parcerias com empresas de log\u00edstica para garantir a integra\u00e7\u00e3o e efici\u00eancia nas opera\u00e7\u00f5es de entrega utilizando esses centros."
             ],
             "KeyPerformanceIndicators": [
-                "Redu\u00e7\u00e3o nas viagens de deslocamento",
-                "aumento nas taxas de ado\u00e7\u00e3o do teletrabalho",
-                "redu\u00e7\u00e3o das emiss\u00f5es relacionadas ao transporte"
+                "Redu\u00e7\u00e3o na dist\u00e2ncia percorrida por ve\u00edculos de entrega tradicionais (km/ano).",
+                "Aumento na efici\u00eancia operacional dos centros log\u00edsticos (%).",
+                "N\u00famero de empresas utilizando micro-centros log\u00edsticos para entregas."
             ],
-            "PowersAndMandates": null
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
         }
     }
 ]

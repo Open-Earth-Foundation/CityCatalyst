@@ -4,9 +4,133 @@
         "cityName": "Rio Branco",
         "region": "AC",
         "regionName": "Acre",
+        "actionId": "icare_0050",
+        "actionName": "Implement Agroforestry Systems",
+        "actionPriority": 1,
+        "action": {
+            "ActionID": "icare_0050",
+            "ActionName": "Implementar Sistemas Agroflorestais",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "agriculture_forestry_and_fishing_activities"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Promover sistemas agroflorestais integrando \u00e1rvores na produ\u00e7\u00e3o de alimentos e pastagens, aumentando a biodiversidade e a captura de carbono.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "80-100"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Fornecimento de suporte t\u00e9cnico e orienta\u00e7\u00e3o aos agricultores sobre o design e implementa\u00e7\u00e3o de sistemas agroflorestais.",
+                "Desenvolvimento de incentivos financeiros ou subs\u00eddios para tornar a agrofloresta mais economicamente atraente.",
+                "Cria\u00e7\u00e3o de pol\u00edticas que integrem pr\u00e1ticas agroflorestais no planejamento do uso da terra agr\u00edcola e nos sistemas de posse de terra."
+            ],
+            "KeyPerformanceIndicators": [
+                "Percentagem de terras agr\u00edcolas convertidas em sistemas agroflorestais (%).",
+                "N\u00famero de novos projetos agroflorestais implementados.",
+                "Aumento na captura de carbono em sistemas agroflorestais (toneladas de CO\u2082e/ano)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR RBR",
+        "cityName": "Rio Branco",
+        "region": "AC",
+        "regionName": "Acre",
+        "actionId": "icare_0134",
+        "actionName": "Strengthen Mechanisms for Deforestation Control",
+        "actionPriority": 2,
+        "action": {
+            "ActionID": "icare_0134",
+            "ActionName": "Fortalecer Mecanismos para o Controle do Desmatamento",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "land"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Aprimorar o monitoramento e a fiscaliza\u00e7\u00e3o para prevenir o desmatamento ilegal e promover o uso sustent\u00e1vel da terra.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "80-100"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Forte estrutura legal, tecnologias de monitoramento avan\u00e7adas (sat\u00e9lites e drones) e capacita\u00e7\u00e3o para as autoridades locais.",
+                "Colabora\u00e7\u00e3o com comunidades locais e financiamento adequado para os esfor\u00e7os de fiscaliza\u00e7\u00e3o.",
+                "Transpar\u00eancia e responsabilidade na elabora\u00e7\u00e3o de relat\u00f3rios para garantir a implementa\u00e7\u00e3o eficaz."
+            ],
+            "KeyPerformanceIndicators": [
+                "\u00c1rea total monitorada para desmatamento (hectares/ano).",
+                "Redu\u00e7\u00e3o na taxa anual de desmatamento (%).",
+                "Quantidade de emiss\u00f5es evitadas pela redu\u00e7\u00e3o do desmatamento (tCO\u2082e)."
+            ],
+            "PowersAndMandates": [
+                "national"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR RBR",
+        "cityName": "Rio Branco",
+        "region": "AC",
+        "regionName": "Acre",
         "actionId": "icare_0133",
         "actionName": "Promote Urban Reforestation and Green Corridors",
-        "actionPriority": 1,
+        "actionPriority": 3,
         "action": {
             "ActionID": "icare_0133",
             "ActionName": "Promover o Reflorestamento Urbano e Corredores Verdes",
@@ -56,7 +180,9 @@
             ],
             "PowersAndMandates": [
                 "local"
-            ]
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
         }
     },
     {
@@ -64,132 +190,12 @@
         "cityName": "Rio Branco",
         "region": "AC",
         "regionName": "Acre",
-        "actionId": "icare_0050",
-        "actionName": "Implement Agroforestry Systems",
-        "actionPriority": 2,
-        "action": {
-            "ActionID": "icare_0050",
-            "ActionName": "Implementar Sistemas Agroflorestais",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Promover sistemas agroflorestais integrando \u00e1rvores na produ\u00e7\u00e3o de alimentos e pastagens, aumentando a biodiversidade e a captura de carbono.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "80-100"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Fornecimento de apoio t\u00e9cnico e orienta\u00e7\u00e3o aos agricultores sobre o design e implementa\u00e7\u00e3o de sistemas agroflorestais.",
-                "Desenvolvimento de incentivos financeiros ou subs\u00eddios para tornar a agrofloresta mais economicamente atrativa.",
-                "Cria\u00e7\u00e3o de pol\u00edticas que integrem pr\u00e1ticas agroflorestais no planejamento do uso da terra agr\u00edcola e nos sistemas de posse de terra."
-            ],
-            "KeyPerformanceIndicators": [
-                "Percentagem de terras agr\u00edcolas convertidas em sistemas agroflorestais (%).",
-                "N\u00famero de novos projetos agroflorestais implementados.",
-                "Aumento na captura de carbono em sistemas agroflorestais (toneladas de CO\u2082e/ano)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR RBR",
-        "cityName": "Rio Branco",
-        "region": "AC",
-        "regionName": "Acre",
-        "actionId": "icare_0084",
-        "actionName": "Create Incentives for Agroforestry Practices in Livestock Systems",
-        "actionPriority": 3,
-        "action": {
-            "ActionID": "icare_0084",
-            "ActionName": "Criar Incentivos para Pr\u00e1ticas de Agroflorestas em Sistemas de Pecu\u00e1ria",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Criar incentivos financeiros e t\u00e9cnicos para integrar pr\u00e1ticas de agrofloresta\u00e7\u00e3o em sistemas de pecu\u00e1ria, promovendo a captura de carbono, a prote\u00e7\u00e3o do solo e a melhoria da biodiversidade.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "60-79"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Desenvolvimento de programas de incentivos financeiros, como subs\u00eddios ou isen\u00e7\u00f5es fiscais, para apoiar os agricultores na integra\u00e7\u00e3o da agrofloresta com sistemas de pecu\u00e1ria.",
-                "Fornecimento de assist\u00eancia t\u00e9cnica e treinamento aos agricultores sobre as melhores pr\u00e1ticas para a integra\u00e7\u00e3o da agrofloresta nas opera\u00e7\u00f5es de pecu\u00e1ria.",
-                "Colabora\u00e7\u00e3o com organiza\u00e7\u00f5es agr\u00edcolas e ambientais para monitorar e avaliar os impactos das pr\u00e1ticas agroflorestais na captura de carbono, sa\u00fade do solo e biodiversidade."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de incentivos financeiros fornecidos para integrar a agrofloresta em sistemas de pecu\u00e1ria.",
-                "Aumento na qualidade do solo e cobertura vegetal em propriedades manejadas (%).",
-                "Crescimento da biodiversidade em \u00e1reas de agrofloresta (% de esp\u00e9cies identificadas)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR RBR",
-        "cityName": "Rio Branco",
-        "region": "AC",
-        "regionName": "Acre",
-        "actionId": "icare_0134",
-        "actionName": "Strengthen Mechanisms for Deforestation Control",
+        "actionId": "icare_0128",
+        "actionName": "Establish Municipal Programs for Payment for Environmental Services (PES)",
         "actionPriority": 4,
         "action": {
-            "ActionID": "icare_0134",
-            "ActionName": "Fortalecer Mecanismos para o Controle do Desmatamento",
+            "ActionID": "icare_0128",
+            "ActionName": "Estabelecer Programas Municipais de Pagamento por Servi\u00e7os Ambientais (PSA)",
             "ActionType": [
                 "mitigation"
             ],
@@ -203,10 +209,134 @@
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "Description": "Aprimorar o monitoramento e a fiscaliza\u00e7\u00e3o para prevenir o desmatamento ilegal e promover o uso sustent\u00e1vel da terra.",
+            "Description": "Implementar programas que paguem aos propriet\u00e1rios de terras por manterem ou melhorarem as condi\u00e7\u00f5es ambientais em suas propriedades.",
             "CoBenefits": {
-                "air_quality": 2,
+                "air_quality": 1,
                 "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": -1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "60-79"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Cria\u00e7\u00e3o de mecanismos de financiamento e crit\u00e9rios de elegibilidade claros com indicadores de desempenho.",
+                "Parcerias com organiza\u00e7\u00f5es ambientais e campanhas de conscientiza\u00e7\u00e3o para incentivar a participa\u00e7\u00e3o.",
+                "Integra\u00e7\u00e3o com estruturas legais para garantir a sustentabilidade do programa."
+            ],
+            "KeyPerformanceIndicators": [
+                "N\u00famero de contratos ativos de Pagamento por Servi\u00e7os Ambientais (PSA) assinados.",
+                "\u00c1rea total sob pr\u00e1ticas de conserva\u00e7\u00e3o ou restaura\u00e7\u00e3o incentivadas (hectares).",
+                "Quantidade de carbono sequestrado ou emiss\u00f5es evitadas por meio de a\u00e7\u00f5es de PSA (tCO\u2082e/ano)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR RBR",
+        "cityName": "Rio Branco",
+        "region": "AC",
+        "regionName": "Acre",
+        "actionId": "icare_0130",
+        "actionName": "Conduct Technical Assistance and Rural Extension (ATER) Actions",
+        "actionPriority": 5,
+        "action": {
+            "ActionID": "icare_0130",
+            "ActionName": "Conduzir A\u00e7\u00f5es de Assist\u00eancia T\u00e9cnica e Extens\u00e3o Rural (ATER)",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "agriculture_forestry_and_fishing_activities"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Fornecer suporte t\u00e9cnico e treinamento aos produtores rurais para a produ\u00e7\u00e3o agr\u00edcola sustent\u00e1vel.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "60-79"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Disponibilidade de pessoal t\u00e9cnico qualificado e programas de forma\u00e7\u00e3o personalizados.",
+                "Parcerias com institui\u00e7\u00f5es de pesquisa agr\u00edcola e aloca\u00e7\u00e3o de recursos para o desenvolvimento de capacidades.",
+                "Envolvimento com produtores rurais para garantir a participa\u00e7\u00e3o ativa."
+            ],
+            "KeyPerformanceIndicators": [
+                "N\u00famero de produtores beneficiados com assist\u00eancia t\u00e9cnica rural (% do total).",
+                "Percentual de participantes adotando pr\u00e1ticas resilientes ao clima.",
+                "Redu\u00e7\u00e3o da vulnerabilidade das propriedades ao risco clim\u00e1tico (%)."
+            ],
+            "PowersAndMandates": [
+                "state"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR RBR",
+        "cityName": "Rio Branco",
+        "region": "AC",
+        "regionName": "Acre",
+        "actionId": "icare_0129",
+        "actionName": "Facilitate Technology Transfer for Conservation Practices",
+        "actionPriority": 6,
+        "action": {
+            "ActionID": "icare_0129",
+            "ActionName": "Facilitar a Transfer\u00eancia de Tecnologia para Pr\u00e1ticas de Conserva\u00e7\u00e3o",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "agriculture_forestry_and_fishing_activities"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Promover a ado\u00e7\u00e3o de pr\u00e1ticas agr\u00edcolas sustent\u00e1veis por meio de treinamento, projetos piloto e demonstra\u00e7\u00f5es de tecnologia.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 1,
                 "habitat": 2,
                 "cost_of_living": 0,
                 "housing": 0,
@@ -219,144 +349,26 @@
                 "transportation": null,
                 "waste": null,
                 "ippu": null,
-                "afolu": "80-100"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Forte estrutura legal, tecnologias avan\u00e7adas de monitoramento (sat\u00e9lites e drones) e capacita\u00e7\u00e3o para as autoridades locais.",
-                "Colabora\u00e7\u00e3o com comunidades locais e financiamento adequado para os esfor\u00e7os de fiscaliza\u00e7\u00e3o.",
-                "Transpar\u00eancia e responsabilidade na elabora\u00e7\u00e3o de relat\u00f3rios para garantir a implementa\u00e7\u00e3o eficaz."
-            ],
-            "KeyPerformanceIndicators": [
-                "\u00c1rea total monitorada para desmatamento (hectares/ano).",
-                "Redu\u00e7\u00e3o na taxa anual de desmatamento (%).",
-                "Quantidade de emiss\u00f5es evitadas pela redu\u00e7\u00e3o do desmatamento (tCO\u2082e)."
-            ],
-            "PowersAndMandates": [
-                "national"
-            ]
-        }
-    },
-    {
-        "locode": "BR RBR",
-        "cityName": "Rio Branco",
-        "region": "AC",
-        "regionName": "Acre",
-        "actionId": "icare_0100",
-        "actionName": "Support Regenerative Agriculture Practices",
-        "actionPriority": 5,
-        "action": {
-            "ActionID": "icare_0100",
-            "ActionName": "Apoiar Pr\u00e1ticas de Agricultura Regenerativa",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Apoiar pr\u00e1ticas agr\u00edcolas regenerativas que se concentrem na restaura\u00e7\u00e3o da sa\u00fade do solo e na redu\u00e7\u00e3o das emiss\u00f5es de carbono.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
                 "afolu": "60-79"
             },
             "AdaptationEffectiveness": null,
             "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
+            "TimelineForImplementation": "<5 years",
             "Dependencies": [
-                "Desenvolvimento de programas de treinamento e recursos para educar os agricultores sobre t\u00e9cnicas agr\u00edcolas regenerativas, como cobertura vegetal e redu\u00e7\u00e3o do preparo do solo.",
-                "Implementa\u00e7\u00e3o de incentivos financeiros ou subs\u00eddios para apoiar a ado\u00e7\u00e3o de pr\u00e1ticas regenerativas.",
-                "Colabora\u00e7\u00e3o com institui\u00e7\u00f5es de pesquisa agr\u00edcola para monitorar e documentar a efic\u00e1cia das pr\u00e1ticas regenerativas na captura de carbono e na melhoria da sa\u00fade do solo."
+                "Fornecimento de programas de treinamento e estabelecimento de projetos piloto para demonstrar pr\u00e1ticas sustent\u00e1veis.",
+                "Parcerias com institui\u00e7\u00f5es de pesquisa para desenvolvimento de tecnologia e incentivos financeiros para encorajar a ado\u00e7\u00e3o.",
+                "Acesso a assist\u00eancia t\u00e9cnica para implementa\u00e7\u00e3o bem-sucedida."
             ],
             "KeyPerformanceIndicators": [
-                "Aumento nos n\u00edveis de carbono org\u00e2nico do solo (toneladas/hectare).",
-                "Redu\u00e7\u00e3o no uso de \u00e1gua por hectare na produ\u00e7\u00e3o agr\u00edcola (%).",
-                "N\u00famero de projetos piloto de agricultura regenerativa implementados."
+                "N\u00famero de tecnologias de conserva\u00e7\u00e3o transferidas e aplicadas em fazendas.",
+                "Percentual de produtores treinados para implementar pr\u00e1ticas de conserva\u00e7\u00e3o.",
+                "Redu\u00e7\u00e3o na degrada\u00e7\u00e3o do solo ou aumento na cobertura vegetal (hectares)."
             ],
             "PowersAndMandates": [
                 "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR RBR",
-        "cityName": "Rio Branco",
-        "region": "AC",
-        "regionName": "Acre",
-        "actionId": "icare_0102",
-        "actionName": "Promote Sustainable Agricultural Practices",
-        "actionPriority": 6,
-        "action": {
-            "ActionID": "icare_0102",
-            "ActionName": "Promover Pr\u00e1ticas Agr\u00edcolas Sustent\u00e1veis",
-            "ActionType": [
-                "mitigation"
             ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Incentivar pr\u00e1ticas agr\u00edcolas que reduzam as emiss\u00f5es de gases de efeito estufa, como o uso reduzido de fertilizantes e agroqu\u00edmicos.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "60-79"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Desenvolvimento de programas educacionais e recursos para promover pr\u00e1ticas agr\u00edcolas sustent\u00e1veis entre os agricultores.",
-                "Implementa\u00e7\u00e3o de pol\u00edticas que incentivem a redu\u00e7\u00e3o do uso de fertilizantes e agroqu\u00edmicos, como subs\u00eddios para insumos org\u00e2nicos ou t\u00e9cnicas de cultivo sustent\u00e1vel.",
-                "Colabora\u00e7\u00e3o com organiza\u00e7\u00f5es agr\u00edcolas para fornecer suporte t\u00e9cnico e orienta\u00e7\u00e3o sobre pr\u00e1ticas de redu\u00e7\u00e3o de emiss\u00f5es."
-            ],
-            "KeyPerformanceIndicators": [
-                "Percentagem de terras agr\u00edcolas adotando pr\u00e1ticas sustent\u00e1veis (% do total de terras agr\u00edcolas).",
-                "Aumento na produtividade das culturas por hectare (toneladas/hectare) devido a m\u00e9todos sustent\u00e1veis.",
-                "Redu\u00e7\u00e3o no uso de \u00e1gua para agricultura (litros ou m\u00b3/hectare/ano)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
         }
     },
     {
@@ -416,7 +428,9 @@
             ],
             "PowersAndMandates": [
                 "local"
-            ]
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
         }
     },
     {
@@ -424,12 +438,12 @@
         "cityName": "Rio Branco",
         "region": "AC",
         "regionName": "Acre",
-        "actionId": "icare_0129",
-        "actionName": "Facilitate Technology Transfer for Conservation Practices",
+        "actionId": "icare_0084",
+        "actionName": "Create Incentives for Agroforestry Practices in Livestock Systems",
         "actionPriority": 8,
         "action": {
-            "ActionID": "icare_0129",
-            "ActionName": "Facilitar a Transfer\u00eancia de Tecnologia para Pr\u00e1ticas de Conserva\u00e7\u00e3o",
+            "ActionID": "icare_0084",
+            "ActionName": "Criar Incentivos para Pr\u00e1ticas de Agroflorestas em Sistemas de Pecu\u00e1ria",
             "ActionType": [
                 "mitigation"
             ],
@@ -443,71 +457,11 @@
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "Description": "Promover a ado\u00e7\u00e3o de pr\u00e1ticas agr\u00edcolas sustent\u00e1veis por meio de treinamento, projetos piloto e demonstra\u00e7\u00f5es de tecnologia.",
+            "Description": "Criar incentivos financeiros e t\u00e9cnicos para integrar pr\u00e1ticas de agrofloresta\u00e7\u00e3o em sistemas de pecu\u00e1ria, promovendo a captura de carbono, prote\u00e7\u00e3o do solo e melhoria da biodiversidade.",
             "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
+                "air_quality": 2,
+                "water_quality": 2,
                 "habitat": 2,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "60-79"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Fornecimento de programas de treinamento e estabelecimento de projetos piloto para demonstrar pr\u00e1ticas sustent\u00e1veis.",
-                "Parcerias com institui\u00e7\u00f5es de pesquisa para desenvolvimento de tecnologia e incentivos financeiros para encorajar a ado\u00e7\u00e3o.",
-                "Acesso a assist\u00eancia t\u00e9cnica para implementa\u00e7\u00e3o bem-sucedida."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de tecnologias de conserva\u00e7\u00e3o transferidas e aplicadas em fazendas.",
-                "Percentual de produtores treinados para implementar pr\u00e1ticas de conserva\u00e7\u00e3o.",
-                "Redu\u00e7\u00e3o na degrada\u00e7\u00e3o do solo ou aumento na cobertura vegetal (hectares)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR RBR",
-        "cityName": "Rio Branco",
-        "region": "AC",
-        "regionName": "Acre",
-        "actionId": "icare_0130",
-        "actionName": "Conduct Technical Assistance and Rural Extension (ATER) Actions",
-        "actionPriority": 9,
-        "action": {
-            "ActionID": "icare_0130",
-            "ActionName": "Conduzir A\u00e7\u00f5es de Assist\u00eancia T\u00e9cnica e Extens\u00e3o Rural (ATER)",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Fornecer suporte t\u00e9cnico e treinamento aos produtores rurais para a produ\u00e7\u00e3o agr\u00edcola sustent\u00e1vel.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
-                "habitat": 1,
                 "cost_of_living": 1,
                 "housing": 0,
                 "mobility": 0,
@@ -523,20 +477,22 @@
             },
             "AdaptationEffectiveness": null,
             "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
+            "TimelineForImplementation": "5-10 years",
             "Dependencies": [
-                "Disponibilidade de pessoal t\u00e9cnico qualificado e programas de forma\u00e7\u00e3o personalizados.",
-                "Parcerias com institui\u00e7\u00f5es de pesquisa agr\u00edcola e aloca\u00e7\u00e3o de recursos para o desenvolvimento de capacidades.",
-                "Envolvimento com produtores rurais para garantir a participa\u00e7\u00e3o ativa."
+                "Desenvolvimento de programas de incentivos financeiros, como subs\u00eddios ou isen\u00e7\u00f5es fiscais, para apoiar os agricultores na integra\u00e7\u00e3o da agrofloresta com sistemas de pecu\u00e1ria.",
+                "Fornecimento de assist\u00eancia t\u00e9cnica e treinamento aos agricultores sobre as melhores pr\u00e1ticas para a integra\u00e7\u00e3o da agrofloresta nas opera\u00e7\u00f5es de pecu\u00e1ria.",
+                "Colabora\u00e7\u00e3o com organiza\u00e7\u00f5es agr\u00edcolas e ambientais para monitorar e avaliar os impactos das pr\u00e1ticas agroflorestais na captura de carbono, sa\u00fade do solo e biodiversidade."
             ],
             "KeyPerformanceIndicators": [
-                "N\u00famero de produtores beneficiados com assist\u00eancia t\u00e9cnica rural (% do total).",
-                "Percentual de participantes adotando pr\u00e1ticas resilientes ao clima.",
-                "Vulnerabilidade reduzida das propriedades ao risco clim\u00e1tico (%)."
+                "N\u00famero de incentivos financeiros fornecidos para integrar a agrofloresta em sistemas de pecu\u00e1ria.",
+                "Aumento na qualidade do solo e cobertura vegetal em propriedades manejadas (%).",
+                "Crescimento da biodiversidade em \u00e1reas de agrofloresta (% de esp\u00e9cies identificadas)."
             ],
             "PowersAndMandates": [
-                "state"
-            ]
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
         }
     },
     {
@@ -544,12 +500,12 @@
         "cityName": "Rio Branco",
         "region": "AC",
         "regionName": "Acre",
-        "actionId": "icare_0128",
-        "actionName": "Establish Municipal Programs for Payment for Environmental Services (PES)",
-        "actionPriority": 10,
+        "actionId": "icare_0100",
+        "actionName": "Support Regenerative Agriculture Practices",
+        "actionPriority": 9,
         "action": {
-            "ActionID": "icare_0128",
-            "ActionName": "Estabelecer Programas Municipais de Pagamento por Servi\u00e7os Ambientais (PSA)",
+            "ActionID": "icare_0100",
+            "ActionName": "Apoiar Pr\u00e1ticas de Agricultura Regenerativa",
             "ActionType": [
                 "mitigation"
             ],
@@ -558,17 +514,17 @@
                 "afolu"
             ],
             "Subsector": [
-                "land"
+                "agriculture_forestry_and_fishing_activities"
             ],
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "Description": "Implementar programas que paguem aos propriet\u00e1rios de terras por manterem ou melhorarem as condi\u00e7\u00f5es ambientais em suas propriedades.",
+            "Description": "Apoiar pr\u00e1ticas agr\u00edcolas regenerativas que se concentrem na restaura\u00e7\u00e3o da sa\u00fade do solo e na redu\u00e7\u00e3o das emiss\u00f5es de carbono.",
             "CoBenefits": {
-                "air_quality": 1,
+                "air_quality": 2,
                 "water_quality": 2,
                 "habitat": 2,
-                "cost_of_living": -1,
+                "cost_of_living": 1,
                 "housing": 0,
                 "mobility": 0,
                 "stakeholder_engagement": 2
@@ -583,20 +539,22 @@
             },
             "AdaptationEffectiveness": null,
             "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
+            "TimelineForImplementation": "5-10 years",
             "Dependencies": [
-                "Cria\u00e7\u00e3o de mecanismos de financiamento e crit\u00e9rios de elegibilidade claros com indicadores de desempenho.",
-                "Parcerias com organiza\u00e7\u00f5es ambientais e campanhas de conscientiza\u00e7\u00e3o para incentivar a participa\u00e7\u00e3o.",
-                "Integra\u00e7\u00e3o com estruturas legais para garantir a sustentabilidade do programa."
+                "Desenvolvimento de programas de treinamento e recursos para educar os agricultores sobre t\u00e9cnicas agr\u00edcolas regenerativas, como cobertura vegetal e redu\u00e7\u00e3o do preparo do solo.",
+                "Implementa\u00e7\u00e3o de incentivos financeiros ou subs\u00eddios para apoiar a ado\u00e7\u00e3o de pr\u00e1ticas regenerativas.",
+                "Colabora\u00e7\u00e3o com institui\u00e7\u00f5es de pesquisa agr\u00edcola para monitorar e documentar a efic\u00e1cia das pr\u00e1ticas regenerativas na captura de carbono e na melhoria da sa\u00fade do solo."
             ],
             "KeyPerformanceIndicators": [
-                "N\u00famero de contratos ativos de Pagamento por Servi\u00e7os Ambientais (PSA) assinados.",
-                "\u00c1rea total sob pr\u00e1ticas de conserva\u00e7\u00e3o ou restaura\u00e7\u00e3o incentivadas (hectares).",
-                "Quantidade de carbono sequestrado ou emiss\u00f5es evitadas atrav\u00e9s de a\u00e7\u00f5es de PSA (tCO\u2082e/ano)."
+                "Aumento nos n\u00edveis de carbono org\u00e2nico do solo (toneladas/hectare).",
+                "Redu\u00e7\u00e3o no uso de \u00e1gua por hectare na produ\u00e7\u00e3o agr\u00edcola (%).",
+                "N\u00famero de projetos piloto de agricultura regenerativa implementados."
             ],
             "PowersAndMandates": [
                 "local"
-            ]
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
         }
     },
     {
@@ -604,12 +562,12 @@
         "cityName": "Rio Branco",
         "region": "AC",
         "regionName": "Acre",
-        "actionId": "icare_0101",
-        "actionName": "Encourage the Use of Low-Emission Agricultural Machinery",
-        "actionPriority": 11,
+        "actionId": "icare_0102",
+        "actionName": "Promote Sustainable Agricultural Practices",
+        "actionPriority": 10,
         "action": {
-            "ActionID": "icare_0101",
-            "ActionName": "Incentivar o Uso de M\u00e1quinas Agr\u00edcolas de Baixa Emiss\u00e3o",
+            "ActionID": "icare_0102",
+            "ActionName": "Promover Pr\u00e1ticas Agr\u00edcolas Sustent\u00e1veis",
             "ActionType": [
                 "mitigation"
             ],
@@ -623,15 +581,15 @@
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "Description": "Promover o uso de maquin\u00e1rio agr\u00edcola de baixo carbono, como tratores e equipamentos movidos a biocombust\u00edveis ou energia solar.",
+            "Description": "Incentivar pr\u00e1ticas agr\u00edcolas que reduzam as emiss\u00f5es de gases de efeito estufa, como o uso reduzido de fertilizantes e agroqu\u00edmicos.",
             "CoBenefits": {
                 "air_quality": 2,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 0,
+                "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": 1,
                 "housing": 0,
                 "mobility": 0,
-                "stakeholder_engagement": 1
+                "stakeholder_engagement": 2
             },
             "EquityAndInclusionConsiderations": null,
             "GHGReductionPotential": {
@@ -645,18 +603,20 @@
             "CostInvestmentNeeded": "medium",
             "TimelineForImplementation": "5-10 years",
             "Dependencies": [
-                "Estabelecimento de programas de financiamento ou incentivos para que os agricultores adquiram m\u00e1quinas agr\u00edcolas de baixo carbono.",
-                "Desenvolvimento de parcerias com fabricantes de m\u00e1quinas para criar e distribuir solu\u00e7\u00f5es de equipamentos sustent\u00e1veis.",
-                "Implementa\u00e7\u00e3o de programas de treinamento e apoio para ajudar os agricultores a integrar e manter m\u00e1quinas agr\u00edcolas de baixo carbono."
+                "Desenvolvimento de programas educacionais e recursos para promover pr\u00e1ticas agr\u00edcolas sustent\u00e1veis entre os agricultores.",
+                "Implementa\u00e7\u00e3o de pol\u00edticas que incentivem a redu\u00e7\u00e3o do uso de fertilizantes e agroqu\u00edmicos, como subs\u00eddios para insumos org\u00e2nicos ou t\u00e9cnicas de cultivo sustent\u00e1vel.",
+                "Colabora\u00e7\u00e3o com organiza\u00e7\u00f5es agr\u00edcolas para fornecer suporte t\u00e9cnico e orienta\u00e7\u00e3o sobre pr\u00e1ticas de redu\u00e7\u00e3o de emiss\u00f5es."
             ],
             "KeyPerformanceIndicators": [
-                "Redu\u00e7\u00e3o nas emiss\u00f5es de m\u00e1quinas agr\u00edcolas (toneladas de CO\u2082e/ano).",
-                "N\u00famero de subs\u00eddios ou incentivos fornecidos para m\u00e1quinas de baixa emiss\u00e3o.",
-                "Percentual de agricultores treinados para operar m\u00e1quinas de baixa emiss\u00e3o."
+                "Percentagem de terras agr\u00edcolas adotando pr\u00e1ticas sustent\u00e1veis (% do total de terras agr\u00edcolas).",
+                "Aumento no rendimento das colheitas por hectare (toneladas/hectare) devido a m\u00e9todos sustent\u00e1veis.",
+                "Redu\u00e7\u00e3o no uso de \u00e1gua para agricultura (litros ou m\u00b3/hectare/ano)."
             ],
             "PowersAndMandates": [
                 "local"
-            ]
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
         }
     },
     {
@@ -666,7 +626,7 @@
         "regionName": "Acre",
         "actionId": "icare_0127",
         "actionName": "Accelerate Environmental Regularization of Rural Properties",
-        "actionPriority": 12,
+        "actionPriority": 11,
         "action": {
             "ActionID": "icare_0127",
             "ActionName": "Acelerar a Regulariza\u00e7\u00e3o Ambiental de Propriedades Rurais",
@@ -716,7 +676,9 @@
             ],
             "PowersAndMandates": [
                 "local"
-            ]
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
         }
     },
     {
@@ -724,59 +686,61 @@
         "cityName": "Rio Branco",
         "region": "AC",
         "regionName": "Acre",
-        "actionId": "icare_0057",
-        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
-        "actionPriority": 13,
+        "actionId": "icare_0101",
+        "actionName": "Encourage the Use of Low-Emission Agricultural Machinery",
+        "actionPriority": 12,
         "action": {
-            "ActionID": "icare_0057",
-            "ActionName": "Expans\u00e3o dos sistemas de transporte p\u00fablico em massa sobre trilhos (metr\u00f4s, LRTs e monotrilhos).",
+            "ActionID": "icare_0101",
+            "ActionName": "Incentivar o Uso de M\u00e1quinas Agr\u00edcolas de Baixa Emiss\u00e3o",
             "ActionType": [
                 "mitigation"
             ],
             "Hazard": null,
             "Sector": [
-                "transportation"
+                "afolu"
             ],
             "Subsector": [
-                "railways"
+                "agriculture_forestry_and_fishing_activities"
             ],
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "Description": "Esses sistemas oferecem alta capacidade e baixas emiss\u00f5es, cruciais para cidades com alta densidade populacional.",
+            "Description": "Promover o uso de maquin\u00e1rio agr\u00edcola de baixo carbono, como tratores e equipamentos movidos a biocombust\u00edveis ou energia solar.",
             "CoBenefits": {
                 "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 2,
-                "stakeholder_engagement": 0
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 1
             },
             "EquityAndInclusionConsiderations": null,
             "GHGReductionPotential": {
                 "stationary_energy": null,
-                "transportation": "80-100",
+                "transportation": null,
                 "waste": null,
                 "ippu": null,
-                "afolu": null
+                "afolu": "60-79"
             },
             "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
+            "CostInvestmentNeeded": "medium",
             "TimelineForImplementation": "5-10 years",
             "Dependencies": [
-                "Investimento no desenvolvimento e expans\u00e3o da infraestrutura de transporte p\u00fablico de alta capacidade, como \u00f4nibus el\u00e9tricos e sistemas de metr\u00f4.",
-                "Implementa\u00e7\u00e3o de pol\u00edticas e incentivos para encorajar o uso do transporte p\u00fablico em vez de ve\u00edculos particulares.",
-                "Integra\u00e7\u00e3o de fontes de energia renov\u00e1vel para alimentar esses sistemas, reduzindo ainda mais as emiss\u00f5es."
+                "Estabelecimento de programas de financiamento ou incentivos para que os agricultores adquiram m\u00e1quinas agr\u00edcolas de baixo carbono.",
+                "Desenvolvimento de parcerias com fabricantes de m\u00e1quinas para criar e distribuir solu\u00e7\u00f5es de equipamentos sustent\u00e1veis.",
+                "Implementa\u00e7\u00e3o de programas de treinamento e apoio para ajudar os agricultores a integrar e manter m\u00e1quinas agr\u00edcolas de baixo carbono."
             ],
             "KeyPerformanceIndicators": [
-                "Comprimento das novas linhas de tr\u00e2nsito constru\u00eddas (km/ano).",
-                "Redu\u00e7\u00e3o na congest\u00e3o do tr\u00e1fego rodovi\u00e1rio (%).",
-                "Redu\u00e7\u00e3o no uso de ve\u00edculos privados (n\u00famero de viagens evitadas/ano)."
+                "Redu\u00e7\u00e3o nas emiss\u00f5es de m\u00e1quinas agr\u00edcolas (toneladas de CO\u2082e/ano).",
+                "N\u00famero de subs\u00eddios ou incentivos fornecidos para m\u00e1quinas de baixa emiss\u00e3o.",
+                "Percentual de agricultores treinados para operar m\u00e1quinas de baixa emiss\u00e3o."
             ],
             "PowersAndMandates": [
                 "local"
-            ]
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
         }
     },
     {
@@ -786,7 +750,7 @@
         "regionName": "Acre",
         "actionId": "icare_0131",
         "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
-        "actionPriority": 14,
+        "actionPriority": 13,
         "action": {
             "ActionID": "icare_0131",
             "ActionName": "Priorizar a Aquisi\u00e7\u00e3o de Produtos Agroecol\u00f3gicos Produzidos Localmente em Compras P\u00fablicas",
@@ -803,7 +767,7 @@
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "Description": "Concentre-se em comprar alimentos sustent\u00e1veis, produzidos localmente, para institui\u00e7\u00f5es p\u00fablicas.",
+            "Description": "Concentre-se em comprar alimentos sustent\u00e1veis e produzidos localmente para institui\u00e7\u00f5es p\u00fablicas.",
             "CoBenefits": {
                 "air_quality": 1,
                 "water_quality": 2,
@@ -836,7 +800,133 @@
             ],
             "PowersAndMandates": [
                 "local"
-            ]
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR RBR",
+        "cityName": "Rio Branco",
+        "region": "AC",
+        "regionName": "Acre",
+        "actionId": "icare_0132",
+        "actionName": "Encourage Local Agroecological Production and Short Supply Chains",
+        "actionPriority": 14,
+        "action": {
+            "ActionID": "icare_0132",
+            "ActionName": "Incentivar a Produ\u00e7\u00e3o Agroecol\u00f3gica Local e Cadeias Curtas de Abastecimento",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "agriculture_forestry_and_fishing_activities"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Apoiar pr\u00e1ticas agr\u00edcolas locais e sustent\u00e1veis e reduzir as emiss\u00f5es associadas ao transporte de alimentos.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 2,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "20-39"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Incentivos para pr\u00e1ticas agr\u00edcolas sustent\u00e1veis e desenvolvimento de redes locais de distribui\u00e7\u00e3o de alimentos.",
+                "Parcerias com produtores e investimento em infraestrutura para apoiar mercados locais.",
+                "Pol\u00edticas para priorizar m\u00e9todos de transporte de baixa emiss\u00e3o."
+            ],
+            "KeyPerformanceIndicators": [
+                "N\u00famero de produtores aderindo a pr\u00e1ticas agroecol\u00f3gicas locais.",
+                "Percentual de alimentos consumidos na cidade provenientes de cadeias curtas.",
+                "Redu\u00e7\u00e3o nas emiss\u00f5es associadas ao transporte de alimentos (tCO\u2082e)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR RBR",
+        "cityName": "Rio Branco",
+        "region": "AC",
+        "regionName": "Acre",
+        "actionId": "icare_0099",
+        "actionName": "Support Agroecological Certification Programs",
+        "actionPriority": 15,
+        "action": {
+            "ActionID": "icare_0099",
+            "ActionName": "Apoiar Programas de Certifica\u00e7\u00e3o Agroecol\u00f3gica",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "agriculture_forestry_and_fishing_activities"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Incentivar a certifica\u00e7\u00e3o de produtos agroecol\u00f3gicos que atendam a crit\u00e9rios de sustentabilidade e tenham baixo impacto ambiental.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 1,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "20-39"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Desenvolvimento de padr\u00f5es de certifica\u00e7\u00e3o claros e acess\u00edveis para produtos agroecol\u00f3gicos que enfatizem a sustentabilidade e o baixo impacto ambiental.",
+                "Apoio a agricultores e produtores para atender aos requisitos de certifica\u00e7\u00e3o por meio de treinamento, assist\u00eancia financeira ou orienta\u00e7\u00e3o t\u00e9cnica.",
+                "Cria\u00e7\u00e3o de estrat\u00e9gias de marketing e parcerias para aumentar a visibilidade e a demanda por produtos agroecol\u00f3gicos certificados nos mercados locais e globais."
+            ],
+            "KeyPerformanceIndicators": [
+                "N\u00famero de agricultores ou produtores obtendo certifica\u00e7\u00f5es agroecol\u00f3gicas.",
+                "Percentual de produtos agr\u00edcolas certificados no mercado (%).",
+                "Redu\u00e7\u00e3o no uso de insumos sint\u00e9ticos (por exemplo, fertilizantes, pesticidas)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
         }
     },
     {
@@ -846,7 +936,7 @@
         "regionName": "Acre",
         "actionId": "icare_0136",
         "actionName": "Support the Implementation of Ecological Fiscal Incentives",
-        "actionPriority": 15,
+        "actionPriority": 16,
         "action": {
             "ActionID": "icare_0136",
             "ActionName": "Apoiar a Implementa\u00e7\u00e3o de Incentivos Fiscais Ecol\u00f3gicos",
@@ -896,67 +986,9 @@
             ],
             "PowersAndMandates": [
                 "state"
-            ]
-        }
-    },
-    {
-        "locode": "BR RBR",
-        "cityName": "Rio Branco",
-        "region": "AC",
-        "regionName": "Acre",
-        "actionId": "icare_0099",
-        "actionName": "Support Agroecological Certification Programs",
-        "actionPriority": 16,
-        "action": {
-            "ActionID": "icare_0099",
-            "ActionName": "Apoiar Programas de Certifica\u00e7\u00e3o Agroecol\u00f3gica",
-            "ActionType": [
-                "mitigation"
             ],
-            "Hazard": null,
-            "Sector": [
-                "afolu"
-            ],
-            "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Incentivar a certifica\u00e7\u00e3o de produtos agroecol\u00f3gicos que atendam a crit\u00e9rios de sustentabilidade e tenham baixo impacto ambiental.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": "20-39"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Desenvolvimento de padr\u00f5es de certifica\u00e7\u00e3o claros e acess\u00edveis para produtos agroecol\u00f3gicos que enfatizem a sustentabilidade e o baixo impacto ambiental.",
-                "Apoio a agricultores e produtores para atender aos requisitos de certifica\u00e7\u00e3o por meio de treinamento, assist\u00eancia financeira ou orienta\u00e7\u00e3o t\u00e9cnica.",
-                "Cria\u00e7\u00e3o de estrat\u00e9gias de marketing e parcerias para aumentar a visibilidade e a demanda por produtos agroecol\u00f3gicos certificados nos mercados locais e globais."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de agricultores ou produtores obtendo certifica\u00e7\u00f5es agroecol\u00f3gicas.",
-                "Percentagem de produtos agr\u00edcolas certificados no mercado (%).",
-                "Redu\u00e7\u00e3o no uso de insumos sint\u00e9ticos (por exemplo, fertilizantes, pesticidas)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
         }
     },
     {
@@ -1007,16 +1039,18 @@
             "Dependencies": [
                 "Desenvolvimento de programas educacionais para informar os agricultores sobre m\u00e9todos de controle de pragas agroecol\u00f3gicos e seus benef\u00edcios.",
                 "Fornecimento de acesso a recursos ou materiais para implementar m\u00e9todos de controle de pragas naturais, como a introdu\u00e7\u00e3o de insetos ben\u00e9ficos ou o cultivo de plantas repelentes.",
-                "Cria\u00e7\u00e3o de incentivos ou redes de apoio para encorajar a transi\u00e7\u00e3o de pesticidas qu\u00edmicos para alternativas sustent\u00e1veis."
+                "Cria\u00e7\u00e3o de incentivos ou redes de apoio para encorajar a transi\u00e7\u00e3o do uso de pesticidas qu\u00edmicos em favor de alternativas sustent\u00e1veis."
             ],
             "KeyPerformanceIndicators": [
-                "Aumento nas taxas de produtividade em \u00e1reas que adotam controle de pragas agroecol\u00f3gico (%).",
+                "Aumento nas taxas de produtividade em \u00e1reas que adotam controle agroecol\u00f3gico de pragas (%).",
                 "N\u00famero de campanhas educativas realizadas sobre controle sustent\u00e1vel de pragas.",
                 "Impacto nos custos totais de produ\u00e7\u00e3o devido \u00e0 ado\u00e7\u00e3o de pr\u00e1ticas agroecol\u00f3gicas (%)."
             ],
             "PowersAndMandates": [
                 "local"
-            ]
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
         }
     },
     {
@@ -1024,12 +1058,12 @@
         "cityName": "Rio Branco",
         "region": "AC",
         "regionName": "Acre",
-        "actionId": "icare_0132",
-        "actionName": "Encourage Local Agroecological Production and Short Supply Chains",
+        "actionId": "ipcc_0052",
+        "actionName": "Reduce Deforestation and Degradation",
         "actionPriority": 18,
         "action": {
-            "ActionID": "icare_0132",
-            "ActionName": "Incentivar a Produ\u00e7\u00e3o Agroecol\u00f3gica Local e Cadeias de Abastecimento Curtas",
+            "ActionID": "ipcc_0052",
+            "ActionName": "Reduzir o Desmatamento e a Degrada\u00e7\u00e3o",
             "ActionType": [
                 "mitigation"
             ],
@@ -1038,165 +1072,169 @@
                 "afolu"
             ],
             "Subsector": [
-                "agriculture_forestry_and_fishing_activities"
+                "land"
             ],
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "Description": "Apoiar pr\u00e1ticas agr\u00edcolas locais e sustent\u00e1veis e reduzir as emiss\u00f5es associadas ao transporte de alimentos.",
+            "Description": "Reduzir o desmatamento e a degrada\u00e7\u00e3o florestal conserva os reservat\u00f3rios de carbono na vegeta\u00e7\u00e3o e no solo das florestas, evitando a perda de cobertura arb\u00f3rea e dist\u00farbios. Isso envolve controlar os fatores que levam ao desmatamento, melhorar a governan\u00e7a florestal e apoiar a gest\u00e3o comunit\u00e1ria das florestas.",
             "CoBenefits": {
                 "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 1,
-                "cost_of_living": 1,
+                "water_quality": 1,
+                "habitat": 0,
+                "cost_of_living": 0,
                 "housing": 0,
                 "mobility": 0,
-                "stakeholder_engagement": 2
+                "stakeholder_engagement": 0
             },
-            "EquityAndInclusionConsiderations": null,
+            "EquityAndInclusionConsiderations": "Promove a posse segura da terra, apoia a gest\u00e3o florestal comunit\u00e1ria e garante a participa\u00e7\u00e3o de grupos marginalizados e ind\u00edgenas nos processos de tomada de decis\u00e3o.",
             "GHGReductionPotential": {
                 "stationary_energy": null,
                 "transportation": null,
                 "waste": null,
                 "ippu": null,
-                "afolu": "20-39"
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Incentivos para pr\u00e1ticas agr\u00edcolas sustent\u00e1veis e desenvolvimento de redes locais de distribui\u00e7\u00e3o de alimentos.",
-                "Parcerias com produtores e investimento em infraestrutura para apoiar mercados locais.",
-                "Pol\u00edticas para priorizar m\u00e9todos de transporte de baixa emiss\u00e3o."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de produtores aderindo a pr\u00e1ticas agroecol\u00f3gicas locais.",
-                "Percentagem de alimentos consumidos na cidade provenientes de cadeias curtas.",
-                "Redu\u00e7\u00e3o nas emiss\u00f5es associadas ao transporte de alimentos (tCO\u2082e)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR RBR",
-        "cityName": "Rio Branco",
-        "region": "AC",
-        "regionName": "Acre",
-        "actionId": "icare_0121",
-        "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
-        "actionPriority": 19,
-        "action": {
-            "ActionID": "icare_0121",
-            "ActionName": "Incentivo \u00e0 cria\u00e7\u00e3o de programas de compartilhamento de bicicletas em \u00e1reas urbanas, com foco em bicicletas el\u00e9tricas.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Esta a\u00e7\u00e3o incentiva o estabelecimento de sistemas de compartilhamento de bicicletas nas cidades, promovendo especificamente o uso de bicicletas el\u00e9tricas. Esses sistemas permitem que os residentes aluguem bicicletas el\u00e9tricas para viagens curtas, reduzindo a depend\u00eancia de carros para o transporte urbano. Ao integrar bicicletas el\u00e9tricas, as cidades podem reduzir ainda mais as emiss\u00f5es de gases de efeito estufa, aliviar a congest\u00e3o do tr\u00e1fego e promover um modo de transporte mais saud\u00e1vel e sustent\u00e1vel tanto para \u00e1reas urbanas quanto rurais. Esta iniciativa tamb\u00e9m apoia a igualdade de mobilidade, pois torna as bicicletas mais acess\u00edveis a uma gama mais ampla de pessoas.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Estabelecimento de sistemas de compartilhamento de bicicletas com foco em bicicletas el\u00e9tricas para reduzir a depend\u00eancia de carros.",
-                "Integra\u00e7\u00e3o de bicicletas el\u00e9tricas para reduzir as emiss\u00f5es de gases de efeito estufa, aliviar o congestionamento do tr\u00e1fego e promover o transporte sustent\u00e1vel.",
-                "Promo\u00e7\u00e3o da igualdade de mobilidade tornando as bicicletas el\u00e9tricas acess\u00edveis a uma popula\u00e7\u00e3o mais ampla."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de bicicletas el\u00e9tricas dispon\u00edveis em programas de compartilhamento de bicicletas.",
-                "Aumento anual no n\u00famero de usu\u00e1rios de compartilhamento de bicicletas.",
-                "Redu\u00e7\u00e3o estimada nas emiss\u00f5es de CO\u2082 equivalente com a ado\u00e7\u00e3o do compartilhamento de bicicletas el\u00e9tricas."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR RBR",
-        "cityName": "Rio Branco",
-        "region": "AC",
-        "regionName": "Acre",
-        "actionId": "icare_0068",
-        "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
-        "actionPriority": 20,
-        "action": {
-            "ActionID": "icare_0068",
-            "ActionName": "Implantar sistemas de transporte sob demanda com frotas 100% el\u00e9tricas.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Servi\u00e7os de transporte coletivo sob demanda, baseados em aplicativos, otimizam o uso de ve\u00edculos el\u00e9tricos, reduzindo as emiss\u00f5es por passageiro.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "80-100",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
+                "afolu": "60-79"
             },
             "AdaptationEffectiveness": null,
             "CostInvestmentNeeded": "medium",
             "TimelineForImplementation": "5-10 years",
             "Dependencies": [
-                "Desenvolvimento de plataformas digitais e aplicativos para gerenciar eficientemente servi\u00e7os de transporte coletivo sob demanda.",
-                "Expans\u00e3o de frotas de ve\u00edculos el\u00e9tricos adaptadas para solu\u00e7\u00f5es de transporte compartilhado.",
-                "Implementa\u00e7\u00e3o de pol\u00edticas e incentivos para incentivar a ado\u00e7\u00e3o e uso de servi\u00e7os de transporte el\u00e9trico compartilhado."
+                "Requer governan\u00e7a aprimorada",
+                "pol\u00edticas claras de posse de terra",
+                "financiamento para \u00e1reas protegidas",
+                "participa\u00e7\u00e3o da comunidade nos esfor\u00e7os de conserva\u00e7\u00e3o florestal"
             ],
             "KeyPerformanceIndicators": [
-                "N\u00famero de usu\u00e1rios ativos do sistema de frota el\u00e9trica sob demanda.",
-                "Percentual da demanda de transporte urbano atendida por sistemas sob demanda.",
-                "Redu\u00e7\u00e3o nos n\u00edveis de polui\u00e7\u00e3o sonora em \u00e1reas urbanas"
+                "Redu\u00e7\u00e3o nas taxas de desmatamento",
+                "aumento da cobertura florestal",
+                "a quantidade de emiss\u00f5es de GEE evitadas por ano"
             ],
-            "PowersAndMandates": [
-                "local"
-            ]
+            "PowersAndMandates": null,
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "tropical_rainforest"
+        }
+    },
+    {
+        "locode": "BR RBR",
+        "cityName": "Rio Branco",
+        "region": "AC",
+        "regionName": "Acre",
+        "actionId": "ipcc_0061",
+        "actionName": "Soil Carbon Management in Croplands and Grasslands",
+        "actionPriority": 19,
+        "action": {
+            "ActionID": "ipcc_0061",
+            "ActionName": "Gest\u00e3o de Carbono do Solo em Terras Agr\u00edcolas e Pastagens",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "land"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Implementa\u00e7\u00e3o de pr\u00e1ticas de manejo sustent\u00e1vel do solo em terras agr\u00edcolas e pastagens para aumentar o carbono org\u00e2nico do solo. As pr\u00e1ticas incluem manejo melhorado de culturas e nutrientes, redu\u00e7\u00e3o do preparo do solo, reten\u00e7\u00e3o de res\u00edduos, manejo de \u00e1gua e arroz, aplica\u00e7\u00e3o de biochar, melhoramento de variedades de gram\u00edneas, manejo de lota\u00e7\u00e3o de gado e manejo de inc\u00eandios. Essas atividades visam aumentar a mat\u00e9ria org\u00e2nica do solo, mitigar as emiss\u00f5es de GEE e proporcionar co-benef\u00edcios para a biodiversidade, fornecimento de \u00e1gua e seguran\u00e7a alimentar.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 1,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": "Promove a inclus\u00e3o de pequenos agricultores e comunidades com recursos limitados, fornecendo pr\u00e1ticas econ\u00f4micas e adapt\u00e1veis regionalmente que melhoram a produtividade agr\u00edcola e a resili\u00eancia \u00e0s mudan\u00e7as clim\u00e1ticas.",
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "60-79"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "O sucesso depende da disponibilidade de recursos para monitoramento e verifica\u00e7\u00e3o",
+                "adapta\u00e7\u00e3o regional de pr\u00e1ticas",
+                "enfrentamento de barreiras como satura\u00e7\u00e3o do solo e quest\u00f5es de perman\u00eancia"
+            ],
+            "KeyPerformanceIndicators": [
+                "Aumento do carbono org\u00e2nico do solo",
+                "redu\u00e7\u00e3o nas emiss\u00f5es de GEE",
+                "melhoria na produtividade agr\u00edcola",
+                "melhorias na biodiversidade"
+            ],
+            "PowersAndMandates": null,
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR RBR",
+        "cityName": "Rio Branco",
+        "region": "AC",
+        "regionName": "Acre",
+        "actionId": "ipcc_0053",
+        "actionName": "Afforestation, Reforestation and Forest Ecosystem Restoration",
+        "actionPriority": 20,
+        "action": {
+            "ActionID": "ipcc_0053",
+            "ActionName": "Aflorestamento, Reflorestamento e Restaura\u00e7\u00e3o de Ecossistemas Florestais",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "afolu"
+            ],
+            "Subsector": [
+                "land"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Atividades focadas na convers\u00e3o de terras em florestas, na restaura\u00e7\u00e3o de florestas degradadas e na prioriza\u00e7\u00e3o da integridade ecol\u00f3gica. O reflorestamento visa terras historicamente n\u00e3o florestadas, enquanto a refloresta\u00e7\u00e3o visa \u00e1reas anteriormente florestadas. Os esfor\u00e7os incluem o aumento da biodiversidade, a melhoria dos servi\u00e7os ecossist\u00eamicos e o aumento da captura de carbono.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": "Apoia os meios de subsist\u00eancia locais, promove a equidade no uso da terra e garante a participa\u00e7\u00e3o inclusiva das partes interessadas em programas de reflorestamento e restaura\u00e7\u00e3o.",
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": "60-79"
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "high",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Requer financiamento para restaura\u00e7\u00e3o de terras",
+                "acesso a esp\u00e9cies adequadas para plantio",
+                "engajamento da comunidade local",
+                "sistemas de monitoramento para integridade do ecossistema e sequestro de carbono"
+            ],
+            "KeyPerformanceIndicators": [
+                "\u00c1rea de terra reflorestada ou florestada",
+                "taxas de sequestro de carbono",
+                "melhoria nos \u00edndices de biodiversidade",
+                "m\u00e9tricas de servi\u00e7os ecossist\u00eamicos, como regula\u00e7\u00e3o da \u00e1gua e qualidade do solo"
+            ],
+            "PowersAndMandates": null,
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
         }
     }
 ]

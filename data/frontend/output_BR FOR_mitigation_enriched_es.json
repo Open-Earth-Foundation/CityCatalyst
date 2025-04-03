@@ -4,198 +4,18 @@
         "cityName": "Fortaleza",
         "region": "CE",
         "regionName": "Cear\u00e1",
-        "actionId": "icare_0121",
-        "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
+        "actionId": "icare_0052",
+        "actionName": "Develop projects for renewable energy and waste reuse",
         "actionPriority": 1,
         "action": {
-            "ActionID": "icare_0121",
-            "ActionName": "Incentivo para crear programas de bicicletas compartidas en \u00e1reas urbanas, con un enfoque en bicicletas el\u00e9ctricas.",
+            "ActionID": "icare_0052",
+            "ActionName": "Desarrollar proyectos para energ\u00eda renovable y reutilizaci\u00f3n de residuos",
             "ActionType": [
                 "mitigation"
             ],
             "Hazard": null,
             "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Esta acci\u00f3n fomenta el establecimiento de sistemas de bicicletas compartidas en las ciudades, promoviendo espec\u00edficamente el uso de bicicletas el\u00e9ctricas. Estos sistemas permiten a los residentes alquilar bicicletas el\u00e9ctricas para viajes cortos, reduciendo la dependencia de los autom\u00f3viles para el transporte urbano. Al integrar bicicletas el\u00e9ctricas, las ciudades pueden reducir a\u00fan m\u00e1s las emisiones de gases de efecto invernadero, aliviar la congesti\u00f3n del tr\u00e1fico y promover un modo de transporte m\u00e1s saludable y sostenible tanto para \u00e1reas urbanas como rurales. Esta iniciativa tambi\u00e9n apoya la igualdad de movilidad, ya que hace que las bicicletas sean m\u00e1s accesibles para un rango m\u00e1s amplio de personas.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Establecimiento de sistemas de bicicletas compartidas con un enfoque en bicicletas el\u00e9ctricas para reducir la dependencia del autom\u00f3vil.",
-                "Integraci\u00f3n de bicicletas el\u00e9ctricas para reducir las emisiones de gases de efecto invernadero, aliviar la congesti\u00f3n del tr\u00e1fico y promover el transporte sostenible.",
-                "Promoci\u00f3n de la igualdad de movilidad haciendo que las bicicletas el\u00e9ctricas sean accesibles para una poblaci\u00f3n m\u00e1s amplia."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de bicicletas el\u00e9ctricas disponibles en programas de bicicletas compartidas.",
-                "Aumento anual de usuarios de bicicletas compartidas.",
-                "Reducci\u00f3n estimada en emisiones equivalentes de CO\u2082 por la adopci\u00f3n de bicicletas el\u00e9ctricas compartidas."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR FOR",
-        "cityName": "Fortaleza",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0118",
-        "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
-        "actionPriority": 2,
-        "action": {
-            "ActionID": "icare_0118",
-            "ActionName": "Promover el uso de bicicletas como un modo de transporte regular mediante la expansi\u00f3n de la infraestructura y estrategias de concienciaci\u00f3n y comunicaci\u00f3n.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Fomentar la adopci\u00f3n de bicicletas como un modo de transporte regular mediante la expansi\u00f3n de la infraestructura para ciclistas, como carriles bici dedicados, instalaciones de estacionamiento y estaciones de reparaci\u00f3n. Adem\u00e1s, implementar campa\u00f1as de concienciaci\u00f3n y estrategias de comunicaci\u00f3n para resaltar los beneficios ambientales, de salud y econ\u00f3micos del ciclismo, con el objetivo de aumentar la participaci\u00f3n p\u00fablica y hacer del ciclismo una opci\u00f3n de transporte viable y sostenible para los desplazamientos diarios.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 2,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Expandir la infraestructura para bicicletas, incluyendo carriles exclusivos para bicicletas, instalaciones de estacionamiento y estaciones de reparaci\u00f3n.",
-                "Implementar campa\u00f1as de concienciaci\u00f3n para resaltar los beneficios ambientales, de salud y econ\u00f3micos del ciclismo.",
-                "Promover la participaci\u00f3n p\u00fablica a trav\u00e9s de estrategias de comunicaci\u00f3n, haciendo del ciclismo una opci\u00f3n viable y sostenible para el desplazamiento diario."
-            ],
-            "KeyPerformanceIndicators": [
-                "Longitud de los nuevos carriles bici a\u00f1adidos a la red urbana (km).",
-                "Aumento anual en el n\u00famero de usuarios de bicicletas en \u00e1reas urbanas.",
-                "Reducci\u00f3n estimada en las emisiones de CO\u2082 equivalente por el cambio al ciclismo."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR FOR",
-        "cityName": "Fortaleza",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0094",
-        "actionName": "Adoption of biomethane in public fleets.",
-        "actionPriority": 3,
-        "action": {
-            "ActionID": "icare_0094",
-            "ActionName": "Adopci\u00f3n de biometano en flotas p\u00fablicas.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Utilizar biometano producido a partir de residuos urbanos y agroindustriales para alimentar autobuses y camiones p\u00fablicos, reduciendo las emisiones de gases de efecto invernadero en las flotas municipales.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 1,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Desarrollo de infraestructura para la producci\u00f3n, procesamiento y distribuci\u00f3n de biometano a partir de residuos urbanos y agroindustriales.",
-                "Adaptaci\u00f3n o adquisici\u00f3n de autobuses y camiones p\u00fablicos capaces de utilizar biometano como fuente de combustible.",
-                "Establecimiento de pol\u00edticas e incentivos financieros para apoyar la producci\u00f3n de biometano y su integraci\u00f3n en las flotas municipales."
-            ],
-            "KeyPerformanceIndicators": [
-                "Ahorro de costos en la operaci\u00f3n de la flota debido al uso de biometano (USD/a\u00f1o).",
-                "Aumento en la capacidad de producci\u00f3n de biometano (%).",
-                "Porcentaje de biometano obtenido localmente versus importado."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR FOR",
-        "cityName": "Fortaleza",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0005",
-        "actionName": "Create credit lines for residential and community wind energy projects",
-        "actionPriority": 4,
-        "action": {
-            "ActionID": "icare_0005",
-            "ActionName": "Crear l\u00edneas de cr\u00e9dito para proyectos de energ\u00eda e\u00f3lica residencial y comunitaria",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "stationary_energy"
+                "waste"
             ],
             "Subsector": [
                 "energy_generation_supplied_to_the_grid"
@@ -203,580 +23,42 @@
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "Description": "Establecer programas de financiamiento accesibles para apoyar el desarrollo y la adopci\u00f3n de sistemas de energ\u00eda e\u00f3lica en hogares y proyectos comunitarios, permitiendo una transici\u00f3n hacia fuentes de energ\u00eda m\u00e1s limpias.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 2,
-                "housing": 2,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": "60-79",
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Disponibilidad de programas financieros, subvenciones o subsidios para hacer que los sistemas de energ\u00eda e\u00f3lica sean asequibles para hogares y proyectos comunitarios",
-                "Acceso a experiencia t\u00e9cnica y recursos para guiar la instalaci\u00f3n y el mantenimiento de sistemas de energ\u00eda e\u00f3lica en entornos residenciales y comunitarios",
-                "Apoyo pol\u00edtico y regulatorio para fomentar la adopci\u00f3n de energ\u00eda e\u00f3lica, incluyendo procesos de permisos simplificados e incentivos para proyectos de energ\u00eda limpia"
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de proyectos de energ\u00eda e\u00f3lica financiados anualmente.",
-                "Capacidad instalada de sistemas de energ\u00eda e\u00f3lica de proyectos apoyados por cr\u00e9dito (MW).",
-                "Reducci\u00f3n estimada en emisiones equivalentes de CO\u2082 por la adopci\u00f3n de energ\u00eda e\u00f3lica."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR FOR",
-        "cityName": "Fortaleza",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0068",
-        "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
-        "actionPriority": 5,
-        "action": {
-            "ActionID": "icare_0068",
-            "ActionName": "Desplegar sistemas de transporte bajo demanda con flotas 100% el\u00e9ctricas.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Servicios de transporte colectivo a demanda, basados en aplicaciones, optimizan el uso de veh\u00edculos el\u00e9ctricos, reduciendo las emisiones por pasajero.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "80-100",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Desarrollo de plataformas digitales y aplicaciones para gestionar eficientemente servicios de transporte colectivo bajo demanda.",
-                "Expansi\u00f3n de flotas de veh\u00edculos el\u00e9ctricos adaptadas para soluciones de transporte compartido.",
-                "Implementaci\u00f3n de pol\u00edticas e incentivos para fomentar la adopci\u00f3n y el uso de servicios de transporte el\u00e9ctrico compartido."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de usuarios activos del sistema de flota el\u00e9ctrica a demanda.",
-                "Porcentaje de la demanda de transporte urbano cubierta por sistemas a demanda.",
-                "Reducci\u00f3n en los niveles de contaminaci\u00f3n ac\u00fastica en \u00e1reas urbanas"
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR FOR",
-        "cityName": "Fortaleza",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0057",
-        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
-        "actionPriority": 6,
-        "action": {
-            "ActionID": "icare_0057",
-            "ActionName": "Expansi\u00f3n de los sistemas de transporte masivo sobre rieles (metros, LRTs y monorra\u00edles).",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "railways"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Estos sistemas ofrecen alta capacidad y bajas emisiones, cruciales para ciudades con alta densidad de poblaci\u00f3n.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 2,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "80-100",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "high",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Inversi\u00f3n en el desarrollo y expansi\u00f3n de infraestructuras de transporte p\u00fablico de alta capacidad, como autobuses el\u00e9ctricos y sistemas de metro.",
-                "Implementaci\u00f3n de pol\u00edticas e incentivos para fomentar el uso del transporte p\u00fablico sobre los veh\u00edculos privados.",
-                "Integraci\u00f3n de fuentes de energ\u00eda renovable para alimentar estos sistemas, reduciendo a\u00fan m\u00e1s las emisiones."
-            ],
-            "KeyPerformanceIndicators": [
-                "Longitud de las nuevas l\u00edneas de tr\u00e1nsito construidas (km/a\u00f1o).",
-                "Reducci\u00f3n en la congesti\u00f3n del tr\u00e1fico vial (%).",
-                "Reducci\u00f3n en el uso de veh\u00edculos privados (n\u00famero de viajes evitados/a\u00f1o)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR FOR",
-        "cityName": "Fortaleza",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0025",
-        "actionName": "Promote energy-efficient low-income housing",
-        "actionPriority": 7,
-        "action": {
-            "ActionID": "icare_0025",
-            "ActionName": "Promover viviendas de bajo consumo energ\u00e9tico para personas de bajos ingresos",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "stationary_energy"
-            ],
-            "Subsector": [
-                "residential_buildings"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Desarrollar y apoyar proyectos de vivienda que incorporen dise\u00f1os y tecnolog\u00edas energ\u00e9ticamente eficientes, reduciendo los costos de energ\u00eda para los hogares de bajos ingresos.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 2,
-                "housing": 2,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": "60-79",
-                "transportation": null,
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Disponibilidad de financiaci\u00f3n o subsidios para apoyar el desarrollo de viviendas energ\u00e9ticamente eficientes para hogares de bajos ingresos",
-                "Colaboraci\u00f3n con arquitectos, ingenieros y contratistas para dise\u00f1ar e implementar tecnolog\u00edas energ\u00e9ticamente eficientes en proyectos de vivienda",
-                "Desarrollo de pol\u00edticas y regulaciones para incentivar soluciones de vivienda energ\u00e9ticamente eficientes y garantizar la asequibilidad para comunidades de bajos ingresos"
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de unidades de vivienda energ\u00e9ticamente eficientes construidas o renovadas.",
-                "Reducci\u00f3n en el consumo de energ\u00eda del hogar (kWh).",
-                "Disminuci\u00f3n en las facturas de energ\u00eda para hogares de bajos ingresos (USD)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR FOR",
-        "cityName": "Fortaleza",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0088",
-        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
-        "actionPriority": 8,
-        "action": {
-            "ActionID": "icare_0088",
-            "ActionName": "Implementaci\u00f3n de programas de transporte p\u00fablico gratuito durante las horas pico para reducir el uso de veh\u00edculos individuales",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Fomentar el uso del transporte p\u00fablico ofreciendo servicios gratuitos durante las horas pico para trabajadores y estudiantes. Esta medida reduce la congesti\u00f3n urbana, disminuye el n\u00famero de veh\u00edculos individuales en la carretera y, en consecuencia, reduce las emisiones de gases de efecto invernadero asociadas con el transporte privado.",
+            "Description": "Esta acci\u00f3n tiene como objetivo desarrollar e implementar proyectos de energ\u00eda renovable, incluyendo: un biodigestor para el tratamiento de residuos org\u00e1nicos y una planta de energ\u00eda solar.",
             "CoBenefits": {
                 "air_quality": 1,
                 "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 2,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Asignaci\u00f3n de fondos para subsidiar servicios de transporte p\u00fablico gratuito durante las horas pico.",
-                "Desarrollo de pol\u00edticas para garantizar la sostenibilidad y eficiencia de los sistemas de transporte p\u00fablico ante el aumento de la demanda.",
-                "Coordinaci\u00f3n con empleadores e instituciones educativas para optimizar los horarios de las horas pico y promover la iniciativa."
-            ],
-            "KeyPerformanceIndicators": [
-                "Reducci\u00f3n en los niveles de contaminaci\u00f3n del aire durante las horas pico (concentraci\u00f3n de PM2.5/PM10).",
-                "N\u00famero de veh\u00edculos privados retirados de las carreteras durante las horas pico.",
-                "Tasa de satisfacci\u00f3n p\u00fablica con la iniciativa de transporte gratuito (%)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR FOR",
-        "cityName": "Fortaleza",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0044",
-        "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
-        "actionPriority": 9,
-        "action": {
-            "ActionID": "icare_0044",
-            "ActionName": "Expandir la infraestructura para bicicletas y construir paseos p\u00fablicos y aceras accesibles, priorizando medidas resilientes a las amenazas clim\u00e1ticas.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "El objetivo principal de esta acci\u00f3n es promover la movilidad activa, garantizando la seguridad, el confort y la prioridad del movimiento peatonal, de las personas con discapacidades (o movilidad reducida) y de los veh\u00edculos y equipos impulsados por humanos, como bicicletas y patinetes.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
+                "habitat": 1,
                 "cost_of_living": 1,
                 "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "80-100",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Inversiones en infraestructura para pasarelas peatonales seguras y accesibles, carriles para bicicletas e instalaciones para personas con discapacidades",
-                "Marcos de pol\u00edticas y regulaciones para priorizar la movilidad activa y establecer est\u00e1ndares de seguridad para peatones y veh\u00edculos no motorizados",
-                "Campa\u00f1as de concienciaci\u00f3n p\u00fablica para promover la movilidad activa y educar a los ciudadanos sobre los beneficios de caminar, andar en bicicleta y usar otros medios de transporte impulsados por humanos"
-            ],
-            "KeyPerformanceIndicators": [
-                "Kil\u00f3metros de nuevos carriles bici y senderos peatonales construidos anualmente.",
-                "Aumento en el uso diario de la infraestructura para ciclistas y peatones (%).",
-                "Reducci\u00f3n en las emisiones del transporte urbano (%)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR FOR",
-        "cityName": "Fortaleza",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0092",
-        "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
-        "actionPriority": 10,
-        "action": {
-            "ActionID": "icare_0092",
-            "ActionName": "Desarrollo de micro-centros log\u00edsticos para fomentar el uso de bicicletas de carga el\u00e9ctricas.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Crear centros log\u00edsticos a peque\u00f1a escala en barrios urbanos para facilitar las entregas utilizando bicicletas de carga el\u00e9ctricas, mientras se implementan incentivos fiscales o subsidios para que las empresas adopten estas bicicletas como modo de transporte, reduciendo las emisiones y mejorando la eficiencia de las entregas en \u00e1reas densamente pobladas.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "20-39",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Identificaci\u00f3n y desarrollo de ubicaciones adecuadas para centros log\u00edsticos a peque\u00f1a escala dentro de vecindarios urbanos.",
-                "Provisi\u00f3n de incentivos fiscales, subsidios o subvenciones para alentar a las empresas a hacer la transici\u00f3n a bicicletas de carga el\u00e9ctricas.",
-                "Establecimiento de asociaciones con empresas de log\u00edstica para asegurar la integraci\u00f3n y eficiencia en las operaciones de entrega utilizando estos centros."
-            ],
-            "KeyPerformanceIndicators": [
-                "Reducci\u00f3n en la distancia recorrida por veh\u00edculos de entrega tradicionales (km/a\u00f1o).",
-                "Aumento en la eficiencia operativa de los centros log\u00edsticos (%).",
-                "N\u00famero de empresas que utilizan micro-centros log\u00edsticos para entregas."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR FOR",
-        "cityName": "Fortaleza",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0090",
-        "actionName": "Adoption of electric drones for last-mile deliveries.",
-        "actionPriority": 11,
-        "action": {
-            "ActionID": "icare_0090",
-            "ActionName": "Adopci\u00f3n de drones el\u00e9ctricos para entregas de \u00faltima milla.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "off-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Reemplazar los veh\u00edculos tradicionales con drones el\u00e9ctricos para entregas de corta distancia en centros urbanos, reduciendo las emisiones y la congesti\u00f3n del tr\u00e1fico.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Desarrollo de regulaciones del espacio a\u00e9reo urbano para garantizar la operaci\u00f3n segura y eficiente de drones de entrega.",
-                "Inversi\u00f3n en infraestructura de carga y mantenimiento para apoyar una flota de drones el\u00e9ctricos.",
-                "Colaboraci\u00f3n con empresas de log\u00edstica para integrar drones en redes de entrega de \u00faltima milla."
-            ],
-            "KeyPerformanceIndicators": [
-                "Reducci\u00f3n del tiempo de entrega en comparaci\u00f3n con los m\u00e9todos tradicionales (minutos).",
-                "Aumento en la satisfacci\u00f3n del cliente con las entregas por drones (%).",
-                "Reducci\u00f3n de la congesti\u00f3n del tr\u00e1fico causada por veh\u00edculos de entrega (%)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR FOR",
-        "cityName": "Fortaleza",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0117",
-        "actionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
-        "actionPriority": 12,
-        "action": {
-            "ActionID": "icare_0117",
-            "ActionName": "Aumentar el atractivo del sistema de autobuses municipales para promover este modo de transporte.",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Aumentar la calidad de la prestaci\u00f3n del servicio de transporte, con el objetivo de cambiar el modo de transporte de los pasajeros del transporte motorizado privado al transporte p\u00fablico, reduciendo as\u00ed las emisiones generadas por coches y motocicletas.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 0
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Mejorar la calidad de los servicios de transporte p\u00fablico para atraer pasajeros del transporte motorizado privado.",
-                "Implementar pol\u00edticas e infraestructuras que apoyen y mejoren la eficiencia de los sistemas de transporte p\u00fablico.",
-                "Promover la concienciaci\u00f3n sobre los beneficios ambientales del transporte p\u00fablico para fomentar un cambio modal y reducir las emisiones."
-            ],
-            "KeyPerformanceIndicators": [
-                "Aumento anual en el n\u00famero de pasajeros que utilizan el sistema de autobuses municipales.",
-                "Porcentaje de rutas de autob\u00fas con mejor fiabilidad en el tiempo de viaje.",
-                "Reducci\u00f3n estimada en las emisiones de CO\u2082 equivalente debido al aumento del uso del transporte p\u00fablico."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR FOR",
-        "cityName": "Fortaleza",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0027",
-        "actionName": "Create financing programs for local renewable energy projects",
-        "actionPriority": 13,
-        "action": {
-            "ActionID": "icare_0027",
-            "ActionName": "Crear programas de financiamiento para proyectos locales de energ\u00eda renovable",
-            "ActionType": [
-                "mitigation"
-            ],
-            "Hazard": null,
-            "Sector": [
-                "stationary_energy"
-            ],
-            "Subsector": [
-                "energy_industries"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Establecer mecanismos de financiaci\u00f3n, como subvenciones y pr\u00e9stamos a bajo inter\u00e9s, para apoyar el desarrollo de iniciativas de energ\u00eda renovable a peque\u00f1a escala en las comunidades.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 2,
-                "housing": 1,
                 "mobility": 0,
                 "stakeholder_engagement": 1
             },
             "EquityAndInclusionConsiderations": null,
             "GHGReductionPotential": {
-                "stationary_energy": "60-79",
+                "stationary_energy": null,
                 "transportation": null,
-                "waste": null,
+                "waste": "60-79",
                 "ippu": null,
                 "afolu": null
             },
             "AdaptationEffectiveness": null,
             "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
+            "TimelineForImplementation": "<5 years",
             "Dependencies": [
-                "Desarrollo de mecanismos financieros accesibles, incluyendo subvenciones y pr\u00e9stamos a bajo inter\u00e9s, para apoyar proyectos de energ\u00eda renovable a peque\u00f1a escala en comunidades",
-                "Colaboraci\u00f3n con instituciones financieras y gobiernos locales para asegurar la distribuci\u00f3n y gesti\u00f3n efectiva de fondos para iniciativas de energ\u00eda renovable",
-                "Directrices claras y apoyo para que las organizaciones comunitarias y las empresas locales accedan a financiamiento e implementen con \u00e9xito proyectos de energ\u00eda renovable"
+                "Desarrollo e implementaci\u00f3n de proyectos de energ\u00eda renovable.",
+                "Instalaci\u00f3n de un biodigestor para el tratamiento de residuos org\u00e1nicos.",
+                "Establecimiento de una planta de energ\u00eda solar para generar energ\u00eda limpia."
             ],
             "KeyPerformanceIndicators": [
-                "Fondos totales asignados para proyectos de energ\u00eda renovable (USD).",
-                "N\u00famero de proyectos financiados anualmente.",
-                "Aumento en la capacidad de energ\u00eda renovable instalada (MW)."
+                "N\u00famero de proyectos de energ\u00eda renovable y reutilizaci\u00f3n de residuos implementados.",
+                "Cantidad de residuos reutilizados o reciclados (toneladas/a\u00f1o).",
+                "Reducci\u00f3n en los costos de energ\u00eda para los municipios participantes (USD)."
             ],
             "PowersAndMandates": [
                 "local"
-            ]
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
         }
     },
     {
@@ -786,7 +68,7 @@
         "regionName": "Cear\u00e1",
         "actionId": "icare_0042",
         "actionName": "Encourage renewable energy policies at the municipal level",
-        "actionPriority": 14,
+        "actionPriority": 2,
         "action": {
             "ActionID": "icare_0042",
             "ActionName": "Fomentar pol\u00edticas de energ\u00eda renovable a nivel municipal",
@@ -836,67 +118,9 @@
             ],
             "PowersAndMandates": [
                 "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR FOR",
-        "cityName": "Fortaleza",
-        "region": "CE",
-        "regionName": "Cear\u00e1",
-        "actionId": "icare_0091",
-        "actionName": "Implementation of prioritized routes for sustainable vehicles.",
-        "actionPriority": 15,
-        "action": {
-            "ActionID": "icare_0091",
-            "ActionName": "Implementaci\u00f3n de rutas priorizadas para veh\u00edculos sostenibles.",
-            "ActionType": [
-                "mitigation"
             ],
-            "Hazard": null,
-            "Sector": [
-                "transportation"
-            ],
-            "Subsector": [
-                "on-road"
-            ],
-            "PrimaryPurpose": [
-                "ghg_reduction"
-            ],
-            "Description": "Crear carriles prioritarios para veh\u00edculos el\u00e9ctricos, h\u00edbridos y de bajas emisiones en los centros urbanos para fomentar su adopci\u00f3n y reducir la contaminaci\u00f3n en \u00e1reas de alto tr\u00e1fico.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 2,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": {
-                "stationary_energy": null,
-                "transportation": "60-79",
-                "waste": null,
-                "ippu": null,
-                "afolu": null
-            },
-            "AdaptationEffectiveness": null,
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Implementaci\u00f3n de sistemas de gesti\u00f3n del tr\u00e1fico para hacer cumplir y monitorear el uso de carriles prioritarios.",
-                "Desarrollo de se\u00f1alizaci\u00f3n clara y campa\u00f1as de concienciaci\u00f3n p\u00fablica para informar a los conductores sobre la elegibilidad y el uso de los carriles.",
-                "Establecimiento de marcos regulatorios que incentiven la adopci\u00f3n de veh\u00edculos de bajas emisiones para la elegibilidad en carriles prioritarios."
-            ],
-            "KeyPerformanceIndicators": [
-                "Porcentaje de veh\u00edculos sostenibles utilizando rutas prioritarias.",
-                "Aumento en la eficiencia de entrega de bienes transportados a trav\u00e9s de rutas prioritarias (%).",
-                "Tasa de aceptaci\u00f3n p\u00fablica de rutas prioritarias para veh\u00edculos sostenibles (%)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
         }
     },
     {
@@ -906,7 +130,7 @@
         "regionName": "Cear\u00e1",
         "actionId": "icare_0024",
         "actionName": "Integrate renewables into municipal water systems",
-        "actionPriority": 16,
+        "actionPriority": 3,
         "action": {
             "ActionID": "icare_0024",
             "ActionName": "Integrar energ\u00edas renovables en los sistemas de agua municipales",
@@ -923,7 +147,7 @@
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "Description": "Implementar fuentes de energ\u00eda renovable, como la energ\u00eda solar o e\u00f3lica, para impulsar los sistemas de tratamiento, bombeo y distribuci\u00f3n de agua, reduciendo los costos de energ\u00eda y las emisiones.",
+            "Description": "Implementar fuentes de energ\u00eda renovable, como la solar o la e\u00f3lica, para impulsar los sistemas de tratamiento, bombeo y distribuci\u00f3n de agua, reduciendo los costos de energ\u00eda y las emisiones.",
             "CoBenefits": {
                 "air_quality": 2,
                 "water_quality": 2,
@@ -956,7 +180,390 @@
             ],
             "PowersAndMandates": [
                 "local"
-            ]
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR FOR",
+        "cityName": "Fortaleza",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0088",
+        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
+        "actionPriority": 4,
+        "action": {
+            "ActionID": "icare_0088",
+            "ActionName": "Implementaci\u00f3n de programas de transporte p\u00fablico gratuito durante las horas pico para reducir el uso de veh\u00edculos individuales",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "on-road"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Fomentar el uso del transporte p\u00fablico ofreciendo servicios gratuitos durante las horas pico para trabajadores y estudiantes. Esta medida reduce la congesti\u00f3n urbana, disminuye el n\u00famero de veh\u00edculos individuales en la carretera y, en consecuencia, reduce las emisiones de gases de efecto invernadero asociadas con el transporte privado.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 2,
+                "housing": 0,
+                "mobility": 2,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "60-79",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Asignaci\u00f3n de fondos para subsidiar servicios de transporte p\u00fablico gratuito durante las horas pico.",
+                "Desarrollo de pol\u00edticas para garantizar la sostenibilidad y eficiencia de los sistemas de transporte p\u00fablico ante el aumento de la demanda.",
+                "Coordinaci\u00f3n con empleadores e instituciones educativas para optimizar los horarios de las horas pico y promover la iniciativa."
+            ],
+            "KeyPerformanceIndicators": [
+                "Reducci\u00f3n en los niveles de contaminaci\u00f3n del aire durante las horas pico (concentraci\u00f3n de PM2.5/PM10).",
+                "N\u00famero de veh\u00edculos privados retirados de las carreteras durante las horas pico.",
+                "Tasa de satisfacci\u00f3n p\u00fablica con la iniciativa de transporte gratuito (%)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR FOR",
+        "cityName": "Fortaleza",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0094",
+        "actionName": "Adoption of biomethane in public fleets.",
+        "actionPriority": 5,
+        "action": {
+            "ActionID": "icare_0094",
+            "ActionName": "Adopci\u00f3n de biometano en flotas p\u00fablicas.",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "on-road"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Utilizar biometano producido a partir de residuos urbanos y agroindustriales para alimentar autobuses y camiones p\u00fablicos, reduciendo las emisiones de gases de efecto invernadero en las flotas municipales.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 1,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 1,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "60-79",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Desarrollo de infraestructura para la producci\u00f3n, procesamiento y distribuci\u00f3n de biometano a partir de residuos urbanos y agroindustriales.",
+                "Adaptaci\u00f3n o adquisici\u00f3n de autobuses y camiones p\u00fablicos capaces de utilizar biometano como fuente de combustible.",
+                "Establecimiento de pol\u00edticas e incentivos financieros para apoyar la producci\u00f3n de biometano y su integraci\u00f3n en las flotas municipales."
+            ],
+            "KeyPerformanceIndicators": [
+                "Ahorro de costos en la operaci\u00f3n de la flota debido al uso de biometano (USD/a\u00f1o).",
+                "Aumento en la capacidad de producci\u00f3n de biometano (%).",
+                "Porcentaje de biometano obtenido localmente versus importado."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR FOR",
+        "cityName": "Fortaleza",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0121",
+        "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
+        "actionPriority": 6,
+        "action": {
+            "ActionID": "icare_0121",
+            "ActionName": "Incentivo para crear programas de bicicletas compartidas en \u00e1reas urbanas, con un enfoque en bicicletas el\u00e9ctricas.",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "on-road"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Esta acci\u00f3n fomenta el establecimiento de sistemas de bicicletas compartidas en las ciudades, promoviendo espec\u00edficamente el uso de bicicletas el\u00e9ctricas. Estos sistemas permiten a los residentes alquilar bicicletas el\u00e9ctricas para viajes cortos, reduciendo la dependencia de los autom\u00f3viles para el transporte urbano. Al integrar bicicletas el\u00e9ctricas, las ciudades pueden reducir a\u00fan m\u00e1s las emisiones de gases de efecto invernadero, aliviar la congesti\u00f3n del tr\u00e1fico y promover un modo de transporte m\u00e1s saludable y sostenible tanto para \u00e1reas urbanas como rurales. Esta iniciativa tambi\u00e9n apoya la igualdad de movilidad, ya que hace que las bicicletas sean m\u00e1s accesibles para un rango m\u00e1s amplio de personas.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 2,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "60-79",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Establecimiento de sistemas de bicicletas compartidas con un enfoque en bicicletas el\u00e9ctricas para reducir la dependencia del autom\u00f3vil.",
+                "Integraci\u00f3n de bicicletas el\u00e9ctricas para reducir las emisiones de gases de efecto invernadero, aliviar la congesti\u00f3n del tr\u00e1fico y promover el transporte sostenible.",
+                "Promoci\u00f3n de la igualdad de movilidad haciendo que las bicicletas el\u00e9ctricas sean accesibles para una poblaci\u00f3n m\u00e1s amplia."
+            ],
+            "KeyPerformanceIndicators": [
+                "N\u00famero de bicicletas el\u00e9ctricas disponibles en programas de bicicletas compartidas.",
+                "Aumento anual en usuarios de bicicletas compartidas.",
+                "Reducci\u00f3n estimada en emisiones equivalentes de CO\u2082 por la adopci\u00f3n de bicicletas el\u00e9ctricas compartidas."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR FOR",
+        "cityName": "Fortaleza",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "c40_0035",
+        "actionName": "Waste Efficiency",
+        "actionPriority": 7,
+        "action": {
+            "ActionID": "c40_0035",
+            "ActionName": "Eficiencia en el manejo de residuos",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "waste"
+            ],
+            "Subsector": [
+                "all"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Las iniciativas de \"Eficiencia de Residuos\" tienen como objetivo mejorar la eficiencia de los procesos de recolecci\u00f3n de residuos, reduciendo el consumo de recursos y minimizando el impacto ambiental. Esto incluye la optimizaci\u00f3n de los sistemas de gesti\u00f3n de residuos para mejorar la eficiencia energ\u00e9tica y promover pr\u00e1cticas sostenibles de eliminaci\u00f3n de residuos.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 1,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": "Las iniciativas de \"Eficiencia de Residuos\" promueven la equidad y la inclusi\u00f3n al centrarse en comunidades desatendidas que a menudo soportan la carga de sistemas de gesti\u00f3n de residuos ineficientes. Al optimizar los procesos de recolecci\u00f3n de residuos, estas iniciativas pueden reducir la carga ambiental sobre las poblaciones vulnerables, que pueden vivir en \u00e1reas desproporcionadamente afectadas por los residuos y la contaminaci\u00f3n.\n\nAdem\u00e1s, mejorar la eficiencia energ\u00e9tica en la gesti\u00f3n de residuos puede generar ahorros de costos, que pueden reinvertirse en servicios comunitarios o infraestructuras que beneficien a los vecindarios de bajos ingresos. La promoci\u00f3n de pr\u00e1cticas sostenibles de eliminaci\u00f3n de residuos tambi\u00e9n asegura que todos los miembros de la comunidad, independientemente de su estatus socioecon\u00f3mico, tengan acceso a opciones ambientalmente responsables, fomentando un sentido de responsabilidad compartida e inclusi\u00f3n en los esfuerzos de acci\u00f3n clim\u00e1tica.\n\nEn general, estas iniciativas reconocen los desaf\u00edos \u00fanicos que enfrentan las comunidades desatendidas y tienen como objetivo crear un sistema de gesti\u00f3n de residuos m\u00e1s equitativo que beneficie a todos los residentes.",
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": "80-100",
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Infraestructura y tecnolog\u00eda efectiva para la gesti\u00f3n de residuos",
+                "Colaboraci\u00f3n con gobiernos locales y autoridades de gesti\u00f3n de residuos",
+                "Concienciaci\u00f3n y educaci\u00f3n p\u00fablica sobre pr\u00e1cticas de eliminaci\u00f3n de residuos",
+                "Acceso a datos para monitorear y optimizar los procesos de recolecci\u00f3n de residuos",
+                "Inversi\u00f3n en instalaciones sostenibles de procesamiento de residuos"
+            ],
+            "KeyPerformanceIndicators": [
+                "Reducci\u00f3n en los costos de recolecci\u00f3n de residuos",
+                "Porcentaje de disminuci\u00f3n de residuos enviados a vertederos",
+                "Aumento en las tasas de reciclaje",
+                "Consumo de energ\u00eda por tonelada de residuos recolectados",
+                "Reducci\u00f3n de emisiones de carbono de la gesti\u00f3n de residuos",
+                "Satisfacci\u00f3n del cliente con los servicios de recolecci\u00f3n de residuos",
+                "Volumen de residuos procesados mediante m\u00e9todos sostenibles",
+                "Eficiencia operativa de las rutas de recolecci\u00f3n de residuos"
+            ],
+            "PowersAndMandates": null,
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR FOR",
+        "cityName": "Fortaleza",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "c40_0036",
+        "actionName": "Landfill Management",
+        "actionPriority": 8,
+        "action": {
+            "ActionID": "c40_0036",
+            "ActionName": "Gesti\u00f3n de Vertederos",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "waste"
+            ],
+            "Subsector": [
+                "all"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Las estrategias de \"Gesti\u00f3n de Vertederos\" se centran en pr\u00e1cticas responsables y sostenibles de gesti\u00f3n de vertederos para minimizar la degradaci\u00f3n ambiental. Al adoptar t\u00e9cnicas de gesti\u00f3n efectivas, las ciudades buscan reducir la huella ecol\u00f3gica asociada con los sitios de vertederos y fomentar la reducci\u00f3n de residuos.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 1,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": "Las estrategias de \"Gesti\u00f3n de Vertederos\" promueven la equidad y la inclusi\u00f3n al abordar los impactos ambientales de los sitios de vertederos, que a menudo afectan de manera desproporcionada a las comunidades vulnerables y desatendidas. Estas comunidades frecuentemente residen cerca de vertederos y son m\u00e1s susceptibles a los riesgos para la salud asociados con la contaminaci\u00f3n y la degradaci\u00f3n ambiental. Al implementar pr\u00e1cticas de vertederos responsables y sostenibles, la acci\u00f3n busca reducir estos impactos negativos, mejorando as\u00ed la calidad de vida de los residentes en estas \u00e1reas.\n\nAdem\u00e1s, las t\u00e9cnicas efectivas de reducci\u00f3n de residuos pueden crear oportunidades para la participaci\u00f3n y el compromiso comunitario, permitiendo que las poblaciones desatendidas tengan voz en las decisiones ambientales locales. Esta inclusi\u00f3n fomenta un sentido de pertenencia y empoderamiento entre los miembros de la comunidad, asegurando que sus necesidades y preocupaciones sean consideradas en la gesti\u00f3n de los sitios de vertederos. En general, la acci\u00f3n reconoce y busca mitigar las inequidades enfrentadas por las comunidades marginadas en relaci\u00f3n con la gesti\u00f3n de residuos y la salud ambiental.",
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": null,
+                "waste": "60-79",
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Pr\u00e1cticas efectivas de segregaci\u00f3n de residuos para asegurar una correcta disposici\u00f3n y reciclaje",
+                "Inversi\u00f3n en tecnolog\u00eda para el tratamiento de residuos y monitoreo de vertederos",
+                "Participaci\u00f3n comunitaria y educaci\u00f3n sobre la reducci\u00f3n de residuos y el reciclaje",
+                "Marcos regulatorios y pol\u00edticas que apoyan pr\u00e1cticas sostenibles en vertederos",
+                "Colaboraci\u00f3n con gobiernos locales y organizaciones para compartir recursos y mejores pr\u00e1cticas"
+            ],
+            "KeyPerformanceIndicators": [
+                "Reducci\u00f3n del volumen de residuos en vertederos",
+                "Porcentaje de residuos desviados de vertederos",
+                "Tasa de captura de gas de vertedero",
+                "Calidad del suelo y del agua alrededor de los sitios de vertederos",
+                "Frecuencia de inspecciones de vertederos",
+                "Niveles de concienciaci\u00f3n y participaci\u00f3n p\u00fablica",
+                "Ahorro de costos por pr\u00e1cticas mejoradas de gesti\u00f3n de vertederos",
+                "Cumplimiento de las regulaciones ambientales"
+            ],
+            "PowersAndMandates": null,
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR FOR",
+        "cityName": "Fortaleza",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0038",
+        "actionName": "Promote community solar farms",
+        "actionPriority": 9,
+        "action": {
+            "ActionID": "icare_0038",
+            "ActionName": "Promover granjas solares comunitarias",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "stationary_energy"
+            ],
+            "Subsector": [
+                "energy_generation_supplied_to_the_grid"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Desarrollar y fomentar la adopci\u00f3n de proyectos solares compartidos, permitiendo que las comunidades se beneficien colectivamente de energ\u00eda limpia y renovable.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 1,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 1,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": "80-100",
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Desarrollo de pol\u00edticas y marcos regulatorios para apoyar proyectos de energ\u00eda solar compartida basados en la comunidad y garantizar el acceso equitativo a la energ\u00eda limpia",
+                "Disponibilidad de mecanismos financieros o incentivos para ayudar a las comunidades a invertir en y mantener sistemas de energ\u00eda solar compartida",
+                "Colaboraci\u00f3n entre gobiernos locales, proveedores de energ\u00eda y organizaciones comunitarias para dise\u00f1ar e implementar proyectos de energ\u00eda solar compartida de manera efectiva"
+            ],
+            "KeyPerformanceIndicators": [
+                "N\u00famero de hogares atendidos por proyectos solares comunitarios.",
+                "Emisiones de GEI evitadas mediante la producci\u00f3n de energ\u00eda solar (toneladas de CO\u2082e)"
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
         }
     },
     {
@@ -966,10 +573,10 @@
         "regionName": "Cear\u00e1",
         "actionId": "icare_0131",
         "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
-        "actionPriority": 17,
+        "actionPriority": 10,
         "action": {
             "ActionID": "icare_0131",
-            "ActionName": "Priorizar la adquisici\u00f3n de productos agroecol\u00f3gicos de producci\u00f3n local en las compras p\u00fablicas",
+            "ActionName": "Priorizar la Adquisici\u00f3n de Productos Agroecol\u00f3gicos de Producci\u00f3n Local en Compras P\u00fablicas",
             "ActionType": [
                 "mitigation"
             ],
@@ -1016,7 +623,132 @@
             ],
             "PowersAndMandates": [
                 "local"
-            ]
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR FOR",
+        "cityName": "Fortaleza",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0033",
+        "actionName": "Install biodigesters in rural properties",
+        "actionPriority": 11,
+        "action": {
+            "ActionID": "icare_0033",
+            "ActionName": "Instalar biodigestores en propiedades rurales",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "stationary_energy"
+            ],
+            "Subsector": [
+                "agriculture_forestry_and_fishing_activities"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Equipar granjas y propiedades rurales con biodigestores para convertir los desechos org\u00e1nicos en biog\u00e1s y fertilizantes ricos en nutrientes, proporcionando una fuente de energ\u00eda sostenible.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": "80-100",
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Disponibilidad de financiaci\u00f3n o subsidios para apoyar la instalaci\u00f3n de biodigestores en granjas y propiedades rurales",
+                "Acceso a experiencia t\u00e9cnica para el dise\u00f1o, instalaci\u00f3n y mantenimiento de biodigestores",
+                "Desarrollo de un marco regulatorio de apoyo que fomente el uso de biog\u00e1s y sistemas de gesti\u00f3n de residuos org\u00e1nicos en la agricultura rural"
+            ],
+            "KeyPerformanceIndicators": [
+                "Volumen de biog\u00e1s generado (m\u00b3/a\u00f1o).",
+                "Emisiones de GEI evitadas al reemplazar combustibles f\u00f3siles (toneladas de CO\u2082e)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR FOR",
+        "cityName": "Fortaleza",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0029",
+        "actionName": "Adopt policies for fossil fuel-free buildings",
+        "actionPriority": 12,
+        "action": {
+            "ActionID": "icare_0029",
+            "ActionName": "Adoptar pol\u00edticas para edificios libres de combustibles f\u00f3siles",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "stationary_energy"
+            ],
+            "Subsector": [
+                "residential_buildings"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Aplicar regulaciones que exijan que las nuevas construcciones utilicen sistemas de energ\u00eda renovable, dise\u00f1os energ\u00e9ticamente eficientes y tecnolog\u00edas de cero emisiones.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 1,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": "80-100",
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Desarrollo de c\u00f3digos de construcci\u00f3n y marcos regulatorios que obliguen a la integraci\u00f3n de sistemas de energ\u00eda renovable y dise\u00f1os energ\u00e9ticamente eficientes en nuevas construcciones",
+                "Disponibilidad de incentivos o apoyo para que los desarrolladores cumplan con las regulaciones y adopten tecnolog\u00edas de cero emisiones",
+                "Experiencia t\u00e9cnica y recursos para garantizar la correcta implementaci\u00f3n y monitoreo de sistemas de energ\u00eda renovable y dise\u00f1os energ\u00e9ticamente eficientes en proyectos de construcci\u00f3n"
+            ],
+            "KeyPerformanceIndicators": [
+                "N\u00famero de edificios que est\u00e1n transitando a fuentes de energ\u00eda renovable.",
+                "Reducci\u00f3n total en el uso de combustibles f\u00f3siles para calefacci\u00f3n/refrigeraci\u00f3n (m\u00b3 o litros).",
+                "Disminuci\u00f3n en las emisiones de GEI relacionadas con los edificios (toneladas de CO\u2082e)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
         }
     },
     {
@@ -1026,7 +758,7 @@
         "regionName": "Cear\u00e1",
         "actionId": "icare_0139",
         "actionName": "Implementation of urban toll.",
-        "actionPriority": 18,
+        "actionPriority": 13,
         "action": {
             "ActionID": "icare_0139",
             "ActionName": "Implementaci\u00f3n de peaje urbano.",
@@ -1065,7 +797,7 @@
             "CostInvestmentNeeded": "low",
             "TimelineForImplementation": "<5 years",
             "Dependencies": [
-                "Establecer un marco legal claro e invertir en tecnolog\u00eda para la supervisi\u00f3n y el cumplimiento (por ejemplo, c\u00e1maras, sensores).",
+                "Establecer un marco legal claro e invertir en tecnolog\u00eda para el monitoreo y la aplicaci\u00f3n (por ejemplo, c\u00e1maras, sensores).",
                 "Lanzar campa\u00f1as de concienciaci\u00f3n y asegurar la disponibilidad de transporte p\u00fablico eficiente o soluciones de movilidad alternativas.",
                 "Colaborar con los gobiernos locales y las agencias de transporte, y establecer sistemas para monitorear y evaluar la efectividad de la pol\u00edtica."
             ],
@@ -1075,7 +807,9 @@
             ],
             "PowersAndMandates": [
                 "local"
-            ]
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
         }
     },
     {
@@ -1083,12 +817,74 @@
         "cityName": "Fortaleza",
         "region": "CE",
         "regionName": "Cear\u00e1",
-        "actionId": "icare_0038",
-        "actionName": "Promote community solar farms",
-        "actionPriority": 19,
+        "actionId": "icare_0097",
+        "actionName": "Support Distributed Energy Generation in Residences and Businesses",
+        "actionPriority": 14,
         "action": {
-            "ActionID": "icare_0038",
-            "ActionName": "Promover granjas solares comunitarias",
+            "ActionID": "icare_0097",
+            "ActionName": "Apoyar la Generaci\u00f3n de Energ\u00eda Distribuida en Residencias y Negocios",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "stationary_energy"
+            ],
+            "Subsector": [
+                "residential_buildings"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Facilitar el uso de paneles solares y otras tecnolog\u00edas de energ\u00eda renovable en hogares y edificios comerciales.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 1,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": "60-79",
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Proporcionar incentivos financieros, regulaciones claras de instalaci\u00f3n y acceso a tecnolog\u00edas asequibles para paneles solares.",
+                "Lanzar campa\u00f1as de concienciaci\u00f3n p\u00fablica y ofrecer capacitaci\u00f3n para propietarios de viviendas y empresas.",
+                "Fomentar la adopci\u00f3n de tecnolog\u00edas de energ\u00eda renovable para promover ahorros energ\u00e9ticos a largo plazo."
+            ],
+            "KeyPerformanceIndicators": [
+                "Capacidad instalada de generaci\u00f3n de energ\u00eda distribuida (MW).",
+                "Porcentaje de hogares y negocios que generan su propia energ\u00eda (%).",
+                "Reducci\u00f3n de emisiones de CO\u2082 a trav\u00e9s de la generaci\u00f3n distribuida (tCO\u2082e/a\u00f1o)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR FOR",
+        "cityName": "Fortaleza",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0005",
+        "actionName": "Create credit lines for residential and community wind energy projects",
+        "actionPriority": 15,
+        "action": {
+            "ActionID": "icare_0005",
+            "ActionName": "Crear l\u00edneas de cr\u00e9dito para proyectos de energ\u00eda e\u00f3lica residencial y comunitaria",
             "ActionType": [
                 "mitigation"
             ],
@@ -1102,14 +898,200 @@
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "Description": "Desarrollar y fomentar la adopci\u00f3n de proyectos de energ\u00eda solar compartida, permitiendo que las comunidades se beneficien colectivamente de energ\u00eda limpia y renovable.",
+            "Description": "Establecer programas de financiamiento accesibles para apoyar el desarrollo y la adopci\u00f3n de sistemas de energ\u00eda e\u00f3lica en hogares y proyectos comunitarios, permitiendo una transici\u00f3n hacia fuentes de energ\u00eda m\u00e1s limpias.",
             "CoBenefits": {
                 "air_quality": 2,
-                "water_quality": 1,
+                "water_quality": 0,
                 "habitat": 0,
-                "cost_of_living": 1,
+                "cost_of_living": 2,
+                "housing": 2,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": "60-79",
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Disponibilidad de programas financieros, subvenciones o subsidios para hacer que los sistemas de energ\u00eda e\u00f3lica sean asequibles para hogares y proyectos comunitarios",
+                "Acceso a experiencia t\u00e9cnica y recursos para guiar la instalaci\u00f3n y el mantenimiento de sistemas de energ\u00eda e\u00f3lica en entornos residenciales y comunitarios",
+                "Apoyo pol\u00edtico y regulatorio para fomentar la adopci\u00f3n de energ\u00eda e\u00f3lica, incluyendo procesos de permisos simplificados e incentivos para proyectos de energ\u00eda limpia"
+            ],
+            "KeyPerformanceIndicators": [
+                "N\u00famero de proyectos de energ\u00eda e\u00f3lica financiados anualmente.",
+                "Capacidad instalada de sistemas de energ\u00eda e\u00f3lica de proyectos apoyados por cr\u00e9dito (MW).",
+                "Reducci\u00f3n estimada en emisiones equivalentes de CO\u2082 por la adopci\u00f3n de energ\u00eda e\u00f3lica."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR FOR",
+        "cityName": "Fortaleza",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0011",
+        "actionName": "Provide tax incentives for renewable energy in residential projects",
+        "actionPriority": 16,
+        "action": {
+            "ActionID": "icare_0011",
+            "ActionName": "Proporcionar incentivos fiscales para la energ\u00eda renovable en proyectos residenciales",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "stationary_energy"
+            ],
+            "Subsector": [
+                "residential_buildings"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Animar a los propietarios de viviendas a adoptar energ\u00eda solar, e\u00f3lica y otras fuentes de energ\u00eda limpia.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 2,
                 "housing": 1,
                 "mobility": 0,
+                "stakeholder_engagement": 0
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": "60-79",
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Disponibilidad de incentivos financieros, subsidios o cr\u00e9ditos fiscales para alentar a los propietarios a instalar sistemas de energ\u00eda solar, e\u00f3lica y otras energ\u00edas limpias",
+                "Acceso a informaci\u00f3n y recursos educativos para ayudar a los propietarios a comprender los beneficios, costos y procesos de instalaci\u00f3n de sistemas de energ\u00eda limpia",
+                "Desarrollo de regulaciones y pol\u00edticas de apoyo que faciliten la instalaci\u00f3n de tecnolog\u00edas de energ\u00eda renovable en \u00e1reas residenciales"
+            ],
+            "KeyPerformanceIndicators": [
+                "N\u00famero de hogares beneficiados por incentivos fiscales para la adopci\u00f3n de energ\u00eda renovable.",
+                "Aumento anual en las instalaciones de energ\u00eda renovable en proyectos residenciales.",
+                "Reducci\u00f3n estimada en emisiones equivalentes de CO\u2082 por la adopci\u00f3n de energ\u00eda renovable."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR FOR",
+        "cityName": "Fortaleza",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0022",
+        "actionName": "Set municipal energy efficiency targets",
+        "actionPriority": 17,
+        "action": {
+            "ActionID": "icare_0022",
+            "ActionName": "Establecer objetivos de eficiencia energ\u00e9tica municipal",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "stationary_energy"
+            ],
+            "Subsector": [
+                "non-specified_sources"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Definir objetivos medibles para el ahorro de energ\u00eda en las operaciones e infraestructuras municipales, promoviendo la responsabilidad y el progreso hacia los objetivos de sostenibilidad.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": "60-79",
+                "transportation": null,
+                "waste": null,
+                "ippu": null,
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Desarrollo de objetivos claros y medibles de ahorro de energ\u00eda para las operaciones e infraestructuras municipales",
+                "Acceso a datos y herramientas para rastrear y evaluar el consumo de energ\u00eda en diferentes sectores municipales",
+                "Compromiso de pol\u00edticas y liderazgo para integrar los objetivos de ahorro de energ\u00eda en la planificaci\u00f3n, presupuestaci\u00f3n y operaciones municipales"
+            ],
+            "KeyPerformanceIndicators": [
+                "Progreso anual hacia el logro de los objetivos de eficiencia energ\u00e9tica municipal (%).",
+                "Reducci\u00f3n en el consumo de energ\u00eda municipal (kWh/a\u00f1o).",
+                "Reducci\u00f3n estimada en las emisiones equivalentes de CO\u2082 por los esfuerzos de eficiencia energ\u00e9tica municipal."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR FOR",
+        "cityName": "Fortaleza",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0040",
+        "actionName": "Adopt solar-powered street lighting in rural areas",
+        "actionPriority": 18,
+        "action": {
+            "ActionID": "icare_0040",
+            "ActionName": "Adoptar iluminaci\u00f3n de calles con energ\u00eda solar en \u00e1reas rurales",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "stationary_energy"
+            ],
+            "Subsector": [
+                "residential_buildings"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Instalar farolas solares para mejorar la seguridad y accesibilidad en comunidades rurales mientras se reducen los costos de energ\u00eda y el impacto ambiental.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 1,
                 "stakeholder_engagement": 1
             },
             "EquityAndInclusionConsiderations": null,
@@ -1124,17 +1106,20 @@
             "CostInvestmentNeeded": "medium",
             "TimelineForImplementation": "5-10 years",
             "Dependencies": [
-                "Desarrollo de pol\u00edticas y marcos regulatorios para apoyar proyectos de energ\u00eda solar compartida basados en la comunidad y garantizar el acceso equitativo a la energ\u00eda limpia",
-                "Disponibilidad de mecanismos financieros o incentivos para ayudar a las comunidades a invertir en y mantener sistemas de energ\u00eda solar compartida",
-                "Colaboraci\u00f3n entre gobiernos locales, proveedores de energ\u00eda y organizaciones comunitarias para dise\u00f1ar e implementar proyectos de energ\u00eda solar compartida de manera efectiva"
+                "Disponibilidad de financiaci\u00f3n o mecanismos financieros para apoyar la instalaci\u00f3n de farolas solares en comunidades rurales",
+                "Acceso a experiencia t\u00e9cnica para dise\u00f1ar, instalar y mantener sistemas de alumbrado p\u00fablico solar",
+                "Colaboraci\u00f3n con gobiernos locales y comunidades para asegurar la integraci\u00f3n de farolas solares en la infraestructura y planes energ\u00e9ticos existentes"
             ],
             "KeyPerformanceIndicators": [
-                "N\u00famero de hogares atendidos por proyectos solares comunitarios.",
-                "Emisiones de GEI evitadas mediante la producci\u00f3n de energ\u00eda solar (toneladas de CO\u2082e)"
+                "Porcentaje de farolas alimentadas por energ\u00eda solar.",
+                "Reducci\u00f3n anual en el consumo de electricidad (kWh).",
+                "Emisiones de GEI evitadas (toneladas de CO\u2082e)."
             ],
             "PowersAndMandates": [
                 "local"
-            ]
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
         }
     },
     {
@@ -1142,59 +1127,123 @@
         "cityName": "Fortaleza",
         "region": "CE",
         "regionName": "Cear\u00e1",
-        "actionId": "icare_0136",
-        "actionName": "Support the Implementation of Ecological Fiscal Incentives",
-        "actionPriority": 20,
+        "actionId": "icare_0068",
+        "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
+        "actionPriority": 19,
         "action": {
-            "ActionID": "icare_0136",
-            "ActionName": "Apoyar la Implementaci\u00f3n de Incentivos Fiscales Ecol\u00f3gicos",
+            "ActionID": "icare_0068",
+            "ActionName": "Desplegar sistemas de transporte bajo demanda con flotas 100% el\u00e9ctricas.",
             "ActionType": [
                 "mitigation"
             ],
             "Hazard": null,
             "Sector": [
-                "afolu"
+                "transportation"
             ],
             "Subsector": [
-                "land"
+                "on-road"
             ],
             "PrimaryPurpose": [
                 "ghg_reduction"
             ],
-            "Description": "Fomentar la aplicaci\u00f3n de impuestos ecol\u00f3gicos e incentivos para promover la conservaci\u00f3n ambiental.",
+            "Description": "Servicios de transporte colectivo bajo demanda, basados en aplicaciones, optimizan el uso de veh\u00edculos el\u00e9ctricos, reduciendo las emisiones por pasajero.",
             "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 1,
-                "habitat": 2,
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 0,
                 "cost_of_living": 1,
                 "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
+                "mobility": 2,
+                "stakeholder_engagement": 1
             },
             "EquityAndInclusionConsiderations": null,
             "GHGReductionPotential": {
                 "stationary_energy": null,
-                "transportation": null,
+                "transportation": "80-100",
                 "waste": null,
                 "ippu": null,
-                "afolu": "20-39"
+                "afolu": null
+            },
+            "AdaptationEffectiveness": null,
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Desarrollo de plataformas digitales y aplicaciones para gestionar eficientemente servicios de transporte colectivo bajo demanda.",
+                "Expansi\u00f3n de flotas de veh\u00edculos el\u00e9ctricos adaptadas para soluciones de transporte compartido.",
+                "Implementaci\u00f3n de pol\u00edticas e incentivos para fomentar la adopci\u00f3n y el uso de servicios de transporte el\u00e9ctrico compartido."
+            ],
+            "KeyPerformanceIndicators": [
+                "N\u00famero de usuarios activos del sistema de flota el\u00e9ctrica bajo demanda.",
+                "Porcentaje de demanda de transporte urbano satisfecho por sistemas bajo demanda.",
+                "Reducci\u00f3n en los niveles de contaminaci\u00f3n ac\u00fastica en \u00e1reas urbanas."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR FOR",
+        "cityName": "Fortaleza",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0090",
+        "actionName": "Adoption of electric drones for last-mile deliveries.",
+        "actionPriority": 20,
+        "action": {
+            "ActionID": "icare_0090",
+            "ActionName": "Adopci\u00f3n de drones el\u00e9ctricos para entregas de \u00faltima milla.",
+            "ActionType": [
+                "mitigation"
+            ],
+            "Hazard": null,
+            "Sector": [
+                "transportation"
+            ],
+            "Subsector": [
+                "off-road"
+            ],
+            "PrimaryPurpose": [
+                "ghg_reduction"
+            ],
+            "Description": "Reemplazar los veh\u00edculos tradicionales con drones el\u00e9ctricos para entregas de corta distancia en centros urbanos, reduciendo emisiones y congesti\u00f3n de tr\u00e1fico.",
+            "CoBenefits": {
+                "air_quality": 2,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 1,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": {
+                "stationary_energy": null,
+                "transportation": "60-79",
+                "waste": null,
+                "ippu": null,
+                "afolu": null
             },
             "AdaptationEffectiveness": null,
             "CostInvestmentNeeded": "low",
             "TimelineForImplementation": "<5 years",
             "Dependencies": [
-                "Establecer un marco regulatorio claro con tasas impositivas justas e incentivos para la sostenibilidad.",
-                "Implementar sistemas de monitoreo efectivos para rastrear el cumplimiento y medir el impacto.",
-                "Promover la conciencia p\u00fablica y fomentar la colaboraci\u00f3n entre gobiernos, empresas y comunidades."
+                "Desarrollo de regulaciones del espacio a\u00e9reo urbano para garantizar la operaci\u00f3n segura y eficiente de drones de entrega.",
+                "Inversi\u00f3n en infraestructura de carga y mantenimiento para apoyar una flota de drones el\u00e9ctricos.",
+                "Colaboraci\u00f3n con empresas de log\u00edstica para integrar drones en redes de entrega de \u00faltima milla."
             ],
             "KeyPerformanceIndicators": [
-                "N\u00famero de municipios que han adoptado incentivos fiscales ambientales.",
-                "Porcentaje de ingresos fiscales gastados en pr\u00e1cticas sostenibles.",
-                "Superficie o n\u00famero de propiedades que se benefician de pr\u00e1cticas de conservaci\u00f3n como resultado de los incentivos."
+                "Reducci\u00f3n del tiempo de entrega en comparaci\u00f3n con los m\u00e9todos tradicionales (minutos).",
+                "Aumento en la satisfacci\u00f3n del cliente con las entregas mediante drones (%).",
+                "Reducci\u00f3n de la congesti\u00f3n del tr\u00e1fico causada por veh\u00edculos de entrega (%)."
             ],
             "PowersAndMandates": [
-                "state"
-            ]
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": null,
+            "biome": "none"
         }
     }
 ]

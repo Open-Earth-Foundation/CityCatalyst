@@ -4,10 +4,81 @@
         "cityName": "Sinop",
         "region": "MT",
         "regionName": "Mato Grosso",
-        "actionId": "icare_0176",
-        "actionName": "Development of Climate Action Plan",
+        "actionId": "icare_0169",
+        "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
         "actionPriority": 1,
         "explanation": "Ranked #1 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "icare_0169",
+            "ActionName": "Estabelecer um Plano de Prepara\u00e7\u00e3o e Medidas de Resposta a Emerg\u00eancias em caso de eventos clim\u00e1ticos extremos",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "droughts",
+                "heatwaves",
+                "diseases",
+                "landslides",
+                "floods",
+                "wildfires",
+                "sea-level-rise",
+                "storms"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Esta a\u00e7\u00e3o foca em preparar o munic\u00edpio para responder a eventos extremos, visando fornecer uma resposta r\u00e1pida que minimize os impactos na popula\u00e7\u00e3o.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Desenvolvimento de um plano abrangente de resposta a emerg\u00eancias que inclua a coordena\u00e7\u00e3o entre as autoridades locais, servi\u00e7os de emerg\u00eancia e organiza\u00e7\u00f5es comunit\u00e1rias",
+                "Investimento em sistemas de alerta precoce e infraestrutura para garantir respostas oportunas e eficazes a eventos extremos",
+                "Treinamento e capacita\u00e7\u00e3o para socorristas locais e comunidades para melhorar a prepara\u00e7\u00e3o e resili\u00eancia a eventos extremos"
+            ],
+            "KeyPerformanceIndicators": [
+                "N\u00famero de parcerias de resposta a emerg\u00eancias estabelecidas.",
+                "Tempo m\u00e9dio de resposta durante eventos clim\u00e1ticos extremos (horas).",
+                "Percentual de redu\u00e7\u00e3o de v\u00edtimas e danos durante eventos clim\u00e1ticos extremos anualmente (%)."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": {
+                "droughts": "medium",
+                "heatwaves": "high",
+                "diseases": "medium",
+                "landslides": "high",
+                "floods": "high",
+                "wildfires": "high",
+                "sea-level-rise": "low",
+                "storms": "high"
+            },
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR SIN",
+        "cityName": "Sinop",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0176",
+        "actionName": "Development of Climate Action Plan",
+        "actionPriority": 2,
+        "explanation": "Ranked #2 by tournament ranking algorithm",
         "action": {
             "ActionID": "icare_0176",
             "ActionName": "Desenvolvimento do Plano de A\u00e7\u00e3o Clim\u00e1tica",
@@ -56,114 +127,18 @@
             ],
             "PowersAndMandates": [
                 "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR SIN",
-        "cityName": "Sinop",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0154",
-        "actionName": "Cleaning and Unclogging of Channels with Installation of Eco-barriers",
-        "actionPriority": 2,
-        "explanation": "Ranked #2 by tournament ranking algorithm",
-        "action": {
-            "ActionID": "icare_0154",
-            "ActionName": "Limpeza e Desobstru\u00e7\u00e3o de Canais com Instala\u00e7\u00e3o de Eco-barreiras",
-            "ActionType": [
-                "adaptation"
             ],
-            "Hazard": [
-                "floods"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Limpeza e desobstru\u00e7\u00e3o de canais na cidade para reduzir o risco de inunda\u00e7\u00f5es causadas por eventos de chuvas extremas. Instala\u00e7\u00e3o de eco-barreiras para auxiliar nos esfor\u00e7os de limpeza e aumentar a conscientiza\u00e7\u00e3o sobre res\u00edduos s\u00f3lidos.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 1,
-                "stakeholder_engagement": 1
+            "AdaptationEffectivenessPerHazard": {
+                "storms": "medium",
+                "sea-level-rise": "medium",
+                "wildfires": "medium",
+                "floods": "medium",
+                "landslides": "medium",
+                "diseases": "medium",
+                "heatwaves": "medium",
+                "droughts": "medium"
             },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "medium",
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Manuten\u00e7\u00e3o regular",
-                "Pr\u00e1ticas adequadas de gest\u00e3o de res\u00edduos"
-            ],
-            "KeyPerformanceIndicators": [
-                "Redu\u00e7\u00e3o de inunda\u00e7\u00f5es",
-                "Redu\u00e7\u00e3o de res\u00edduos",
-                "Custos de manuten\u00e7\u00e3o"
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR SIN",
-        "cityName": "Sinop",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0164",
-        "actionName": "Hydrological Monitoring System with Telemetry Stations",
-        "actionPriority": 3,
-        "explanation": "Ranked #3 by tournament ranking algorithm",
-        "action": {
-            "ActionID": "icare_0164",
-            "ActionName": "Sistema de Monitoramento Hidrol\u00f3gico com Esta\u00e7\u00f5es de Telemetria",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "droughts",
-                "floods",
-                "storms"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Implementa\u00e7\u00e3o de um sistema de monitoramento hidrol\u00f3gico com esta\u00e7\u00f5es de telemetria para monitorar a precipita\u00e7\u00e3o, os n\u00edveis de \u00e1gua e as vari\u00e1veis meteorol\u00f3gicas em tempo real.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 1,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 1,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Equipamento e infraestrutura",
-                "Sistema robusto de gest\u00e3o de dados",
-                "Coordena\u00e7\u00e3o institucional"
-            ],
-            "KeyPerformanceIndicators": [
-                "Pontualidade dos dados",
-                "Custo-efetividade",
-                "Efic\u00e1cia da mitiga\u00e7\u00e3o"
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
+            "biome": "none"
         }
     },
     {
@@ -173,8 +148,8 @@
         "regionName": "Mato Grosso",
         "actionId": "icare_0151",
         "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
-        "actionPriority": 4,
-        "explanation": "Ranked #4 by tournament ranking algorithm",
+        "actionPriority": 3,
+        "explanation": "Ranked #3 by tournament ranking algorithm",
         "action": {
             "ActionID": "icare_0151",
             "ActionName": "Desenvolver diagn\u00f3sticos e restaurar \u00e1reas de Zonas Especiais de Interesse Social (ZEIS)",
@@ -209,18 +184,26 @@
             "CostInvestmentNeeded": "medium",
             "TimelineForImplementation": "5-10 years",
             "Dependencies": [
-                "Disponibilidade de financiamento do Fundo de Urbaniza\u00e7\u00e3o e de outros mecanismos financeiros para apoiar melhorias habitacionais e infraestrutura urbana em \u00e1reas de ZEIS",
+                "Disponibilidade de financiamento do Fundo de Urbaniza\u00e7\u00e3o e de outros mecanismos financeiros para apoiar melhorias habitacionais e infraestrutura urbana em \u00e1reas ZEIS",
                 "Colabora\u00e7\u00e3o entre planejadores urbanos, especialistas ambientais e comunidades locais para projetar e implementar solu\u00e7\u00f5es baseadas na natureza (NbS) para infraestrutura urbana",
                 "Pol\u00edticas e estruturas regulat\u00f3rias que integrem medidas de adapta\u00e7\u00e3o clim\u00e1tica no planejamento urbano, garantindo que os investimentos priorizem a sustentabilidade ambiental e a comunidade"
             ],
             "KeyPerformanceIndicators": [
                 "N\u00famero de \u00e1reas ZEIS diagnosticadas e restauradas.",
                 "Percentual de residentes beneficiados por \u00e1reas restauradas (%).",
-                "Investimentos p\u00fablicos alocados para \u00e1reas ZEIS (quantia em moeda)."
+                "Investimentos p\u00fablicos alocados para \u00e1reas ZEIS (valor em moeda)."
             ],
             "PowersAndMandates": [
                 "local"
-            ]
+            ],
+            "AdaptationEffectivenessPerHazard": {
+                "sea-level-rise": "medium",
+                "floods": "medium",
+                "landslides": "low",
+                "diseases": "medium",
+                "heatwaves": "high"
+            },
+            "biome": "none"
         }
     },
     {
@@ -228,52 +211,65 @@
         "cityName": "Sinop",
         "region": "MT",
         "regionName": "Mato Grosso",
-        "actionId": "icare_0140",
-        "actionName": "Landslide Risk Assessment and Management",
-        "actionPriority": 5,
-        "explanation": "Ranked #5 by tournament ranking algorithm",
+        "actionId": "ipcc_0097",
+        "actionName": "Food storage/distribution improvements",
+        "actionPriority": 4,
+        "explanation": "Ranked #4 by tournament ranking algorithm",
         "action": {
-            "ActionID": "icare_0140",
-            "ActionName": "Avalia\u00e7\u00e3o e Gest\u00e3o do Risco de Deslizamentos de Terra",
+            "ActionID": "ipcc_0097",
+            "ActionName": "Melhorias no armazenamento/distribui\u00e7\u00e3o de alimentos",
             "ActionType": [
                 "adaptation"
             ],
             "Hazard": [
-                "landslides"
+                "droughts",
+                "floods",
+                "storms",
+                "heatwaves"
             ],
-            "Sector": null,
+            "Sector": [
+                "food_security",
+                "road_infrastructure"
+            ],
             "Subsector": null,
             "PrimaryPurpose": [
                 "climate_resilience"
             ],
-            "Description": "Esta a\u00e7\u00e3o envolve a avalia\u00e7\u00e3o e gest\u00e3o dos riscos de deslizamentos de terra atrav\u00e9s da coleta de dados, mapeamento de \u00e1reas de risco e realiza\u00e7\u00e3o de simula\u00e7\u00f5es de evacua\u00e7\u00e3o. O objetivo \u00e9 reduzir os riscos associados a deslizamentos de terra em \u00e1reas propensas a esses eventos.",
+            "Description": "Aprimorar os sistemas de armazenamento e distribui\u00e7\u00e3o de alimentos melhorando a infraestrutura de transporte, otimizando redes de com\u00e9rcio e encurtando cadeias de suprimento para garantir a disponibilidade local de alimentos e resili\u00eancia aos impactos clim\u00e1ticos. Esta a\u00e7\u00e3o tamb\u00e9m inclui aumentar a capacidade das instala\u00e7\u00f5es locais de armazenamento de alimentos para reduzir perdas p\u00f3s-colheita, abordar inefici\u00eancias na log\u00edstica e refor\u00e7ar a infraestrutura para produtos perec\u00edveis. O objetivo \u00e9 melhorar a seguran\u00e7a alimentar e reduzir a vulnerabilidade a eventos extremos, interrup\u00e7\u00f5es e impactos em cascata, especialmente durante pandemias e outras crises.",
             "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 2,
+                "air_quality": 0,
+                "water_quality": 1,
+                "habitat": 1,
                 "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 1,
+                "housing": 0,
+                "mobility": 2,
                 "stakeholder_engagement": 2
             },
-            "EquityAndInclusionConsiderations": null,
+            "EquityAndInclusionConsiderations": "Apoia o acesso equitativo a alimentos para popula\u00e7\u00f5es marginalizadas e vulner\u00e1veis, priorizando a produ\u00e7\u00e3o local de alimentos e melhorando os sistemas de distribui\u00e7\u00e3o que alcan\u00e7am \u00e1reas desatendidas.",
             "GHGReductionPotential": null,
             "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
             "Dependencies": [
-                "Planejamento abrangente e estrutura de pol\u00edticas",
-                "Participa\u00e7\u00e3o das partes interessadas",
-                "Desenvolvimento de capacidades e apoio institucional"
+                "Investimento em infraestrutura",
+                "Incentivos pol\u00edticos para a produ\u00e7\u00e3o local de alimentos",
+                "Colabora\u00e7\u00e3o com os setores de log\u00edstica e com\u00e9rcio",
+                "Tecnologia para otimiza\u00e7\u00e3o da cadeia de suprimentos"
             ],
             "KeyPerformanceIndicators": [
-                "Taxas de eros\u00e3o costeira",
-                "Qualidade da \u00e1gua",
-                "Sa\u00fade do habitat"
+                "Redu\u00e7\u00e3o das perdas p\u00f3s-colheita",
+                "Aumento da disponibilidade de alimentos locais",
+                "Melhoria da efici\u00eancia do transporte para distribui\u00e7\u00e3o de alimentos",
+                "Cadeias de abastecimento encurtadas"
             ],
-            "PowersAndMandates": [
-                "local"
-            ]
+            "PowersAndMandates": null,
+            "AdaptationEffectivenessPerHazard": {
+                "droughts": "high",
+                "floods": "high",
+                "storms": "high",
+                "heatwaves": "high"
+            },
+            "biome": "none"
         }
     },
     {
@@ -283,8 +279,8 @@
         "regionName": "Mato Grosso",
         "actionId": "ipcc_0094",
         "actionName": "Access to health care",
-        "actionPriority": 6,
-        "explanation": "Ranked #6 by tournament ranking algorithm",
+        "actionPriority": 5,
+        "explanation": "Ranked #5 by tournament ranking algorithm",
         "action": {
             "ActionID": "ipcc_0094",
             "ActionName": "Acesso aos cuidados de sa\u00fade",
@@ -331,7 +327,13 @@
                 "N\u00famero de programas de sa\u00fade adaptados culturalmente implementados",
                 "Melhoria nas m\u00e9tricas de acesso \u00e0 \u00e1gua e saneamento"
             ],
-            "PowersAndMandates": null
+            "PowersAndMandates": null,
+            "AdaptationEffectivenessPerHazard": {
+                "heatwaves": "high",
+                "floods": "high",
+                "droughts": "high"
+            },
+            "biome": "none"
         }
     },
     {
@@ -339,33 +341,103 @@
         "cityName": "Sinop",
         "region": "MT",
         "regionName": "Mato Grosso",
-        "actionId": "icare_0181",
-        "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
-        "actionPriority": 7,
-        "explanation": "Ranked #7 by tournament ranking algorithm",
+        "actionId": "ipcc_0096",
+        "actionName": "Farm/fishery improvements",
+        "actionPriority": 6,
+        "explanation": "Ranked #6 by tournament ranking algorithm",
         "action": {
-            "ActionID": "icare_0181",
-            "ActionName": "Reloca\u00e7\u00e3o e Restaura\u00e7\u00e3o Ambiental em \u00c1reas Vulner\u00e1veis",
+            "ActionID": "ipcc_0096",
+            "ActionName": "Melhorias na fazenda/pesqueira",
             "ActionType": [
                 "adaptation"
             ],
             "Hazard": [
+                "droughts",
+                "heatwaves",
+                "floods",
+                "wildfires",
+                "storms"
+            ],
+            "Sector": [
+                "food_security",
+                "biodiversity",
+                "water_resources"
+            ],
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Implementar uma variedade de estrat\u00e9gias para adaptar fazendas e pescarias aos impactos clim\u00e1ticos. Isso inclui mudar o equipamento de pesca ou a pot\u00eancia dos barcos, adotar novas variedades de culturas ou ajustar os cronogramas de plantio, melhorar os esquemas de irriga\u00e7\u00e3o, integrar sistemas de cultivo e pecu\u00e1ria, realocar o gado com manejo de pastagens melhorado e adotar sistemas agroecol\u00f3gicos e agroflorestais. Inova\u00e7\u00f5es tecnol\u00f3gicas como a agricultura inteligente e medidas financeiras como subs\u00eddios apoiam essas adapta\u00e7\u00f5es.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": "Garante o acesso a recursos para agricultores e pescadores marginalizados, promove op\u00e7\u00f5es diversificadas de subsist\u00eancia e fortalece a resili\u00eancia em comunidades desfavorecidas.",
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Apoio pol\u00edtico para agricultura e pesca resilientes ao clima",
+                "Acesso a financiamento e subs\u00eddios",
+                "Treinamento para ado\u00e7\u00e3o de novas pr\u00e1ticas",
+                "Infraestrutura de mercado melhorada"
+            ],
+            "KeyPerformanceIndicators": [
+                "Aumento na produtividade agr\u00edcola e pesqueira",
+                "Taxa de ado\u00e7\u00e3o de sistemas integrados",
+                "Redu\u00e7\u00e3o nas perdas de rendimento relacionadas ao clima"
+            ],
+            "PowersAndMandates": null,
+            "AdaptationEffectivenessPerHazard": {
+                "droughts": "high",
+                "heatwaves": "high",
+                "floods": "medium",
+                "wildfires": "low",
+                "storms": "medium"
+            },
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR SIN",
+        "cityName": "Sinop",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0162",
+        "actionName": "Strengthen programs for control and conservation of protected areas",
+        "actionPriority": 7,
+        "explanation": "Ranked #7 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "icare_0162",
+            "ActionName": "Fortalecer programas de controle e conserva\u00e7\u00e3o de \u00e1reas protegidas",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "floods",
                 "landslides",
-                "floods"
+                "heatwaves",
+                "diseases"
             ],
             "Sector": null,
             "Subsector": null,
             "PrimaryPurpose": [
                 "climate_resilience"
             ],
-            "Description": "Um projeto abrangente que aborda a vulnerabilidade socioambiental de um assentamento informal. Inclui a realoca\u00e7\u00e3o de residentes de \u00e1reas propensas a inunda\u00e7\u00f5es, a restaura\u00e7\u00e3o do meio ambiente e o fornecimento de infraestrutura e servi\u00e7os sociais.",
+            "Description": "Esta a\u00e7\u00e3o foca na implementa\u00e7\u00e3o de uma s\u00e9rie de estrat\u00e9gias integradas para melhorar a conserva\u00e7\u00e3o ambiental e maximizar seus benef\u00edcios, como a expans\u00e3o de \u00e1reas protegidas, o desenvolvimento de planos de manejo para unidades de conserva\u00e7\u00e3o e o treinamento de guias de ecoturismo para fortalecer o turismo sustent\u00e1vel.",
             "CoBenefits": {
-                "air_quality": 1,
+                "air_quality": 2,
                 "water_quality": 2,
                 "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 2,
-                "mobility": 1,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
                 "stakeholder_engagement": 1
             },
             "EquityAndInclusionConsiderations": null,
@@ -374,18 +446,25 @@
             "CostInvestmentNeeded": "medium",
             "TimelineForImplementation": "5-10 years",
             "Dependencies": [
-                "Financiamento adequado",
-                "Coordena\u00e7\u00e3o interag\u00eancias",
-                "Seguran\u00e7a da posse da terra"
+                "Expans\u00e3o de \u00e1reas protegidas para melhorar a conserva\u00e7\u00e3o ambiental.",
+                "Desenvolvimento de planos de manejo para unidades de conserva\u00e7\u00e3o.",
+                "Treinamento de guias de ecoturismo para promover o turismo sustent\u00e1vel."
             ],
             "KeyPerformanceIndicators": [
-                "N\u00famero de fam\u00edlias realocadas.",
-                "Progresso da restaura\u00e7\u00e3o ambiental.",
-                "Redu\u00e7\u00e3o do risco de inunda\u00e7\u00f5es."
+                "Percentual de aumento na \u00e1rea de regi\u00f5es protegidas (%).",
+                "Redu\u00e7\u00e3o nas taxas de desmatamento em \u00e1reas protegidas anualmente (%).",
+                "N\u00famero de programas de conserva\u00e7\u00e3o fortalecidos anualmente."
             ],
             "PowersAndMandates": [
                 "state"
-            ]
+            ],
+            "AdaptationEffectivenessPerHazard": {
+                "floods": "high",
+                "landslides": "high",
+                "heatwaves": "medium",
+                "diseases": "medium"
+            },
+            "biome": "none"
         }
     },
     {
@@ -393,112 +472,126 @@
         "cityName": "Sinop",
         "region": "MT",
         "regionName": "Mato Grosso",
-        "actionId": "ipcc_0097",
-        "actionName": "Food storage/distribution improvements",
+        "actionId": "icare_0152",
+        "actionName": "Recovery of degraded areas",
         "actionPriority": 8,
         "explanation": "Ranked #8 by tournament ranking algorithm",
         "action": {
-            "ActionID": "ipcc_0097",
-            "ActionName": "Melhorias no armazenamento/distribui\u00e7\u00e3o de alimentos",
+            "ActionID": "icare_0152",
+            "ActionName": "Recupera\u00e7\u00e3o de \u00e1reas degradadas",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "droughts",
+                "heatwaves",
+                "landslides",
+                "floods"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Restaurar ecossistemas danificados por atividades humanas atrav\u00e9s do replantio de vegeta\u00e7\u00e3o nativa, restaura\u00e7\u00e3o do solo, elimina\u00e7\u00e3o de esp\u00e9cies invasoras e implementa\u00e7\u00e3o de t\u00e9cnicas de manejo sustent\u00e1vel.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": ">10 years",
+            "Dependencies": [
+                "Desenvolver um plano de restaura\u00e7\u00e3o claro e garantir financiamento para a gest\u00e3o a longo prazo.",
+                "Assegurar o acesso a esp\u00e9cies de plantas nativas e fornecer treinamento em pr\u00e1ticas sustent\u00e1veis.",
+                "Remover esp\u00e9cies invasoras e colaborar com as comunidades locais para uma restaura\u00e7\u00e3o bem-sucedida do ecossistema."
+            ],
+            "KeyPerformanceIndicators": [
+                "Hectares de terras degradadas restauradas anualmente",
+                "Aumento na cobertura vegetal (%) em \u00e1reas restauradas",
+                "N\u00famero de comunidades locais envolvidas em projetos de restaura\u00e7\u00e3o"
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": {
+                "droughts": "high",
+                "heatwaves": "high",
+                "landslides": "high",
+                "floods": "high"
+            },
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR SIN",
+        "cityName": "Sinop",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "ipcc_0093",
+        "actionName": "Availability of health infrastructure",
+        "actionPriority": 9,
+        "explanation": "Ranked #9 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "ipcc_0093",
+            "ActionName": "Disponibilidade de infraestrutura de sa\u00fade",
             "ActionType": [
                 "adaptation"
             ],
             "Hazard": [
                 "droughts",
                 "floods",
-                "storms",
-                "heatwaves"
+                "sea-level-rise",
+                "diseases"
             ],
             "Sector": [
-                "food_security",
-                "road_infrastructure"
+                "public_health",
+                "water_resources"
             ],
             "Subsector": null,
             "PrimaryPurpose": [
                 "climate_resilience"
             ],
-            "Description": "Melhorar os sistemas de armazenamento e distribui\u00e7\u00e3o de alimentos atrav\u00e9s do aprimoramento da infraestrutura de transporte, otimiza\u00e7\u00e3o das redes de com\u00e9rcio e encurtamento das cadeias de suprimento para garantir a disponibilidade local de alimentos e resili\u00eancia aos impactos clim\u00e1ticos. Esta a\u00e7\u00e3o tamb\u00e9m inclui aumentar a capacidade das instala\u00e7\u00f5es locais de armazenamento de alimentos para reduzir as perdas p\u00f3s-colheita, abordar inefici\u00eancias na log\u00edstica e refor\u00e7ar a infraestrutura para produtos perec\u00edveis. O objetivo \u00e9 melhorar a seguran\u00e7a alimentar e reduzir a vulnerabilidade a eventos extremos, interrup\u00e7\u00f5es e impactos em cascata, especialmente durante pandemias e outras crises.",
+            "Description": "Garantir o acesso a infraestrutura de \u00e1gua pot\u00e1vel segura, proteger os servi\u00e7os de sa\u00fade e melhorar os sistemas de saneamento para mitigar os impactos clim\u00e1ticos. Isso inclui desenvolver medidas adaptativas para a seguran\u00e7a h\u00eddrica contra secas, inunda\u00e7\u00f5es e eleva\u00e7\u00e3o do n\u00edvel do mar. Fortalecer a resili\u00eancia da infraestrutura garante acesso equitativo aos servi\u00e7os de sa\u00fade, reduz os riscos de contamina\u00e7\u00e3o e aborda os impactos dos perigos induzidos pelo clima.",
             "CoBenefits": {
                 "air_quality": 0,
-                "water_quality": 1,
+                "water_quality": 2,
                 "habitat": 1,
                 "cost_of_living": 1,
                 "housing": 0,
-                "mobility": 2,
+                "mobility": 0,
                 "stakeholder_engagement": 2
             },
-            "EquityAndInclusionConsiderations": "Apoia o acesso equitativo \u00e0 alimenta\u00e7\u00e3o para popula\u00e7\u00f5es marginalizadas e vulner\u00e1veis, priorizando a produ\u00e7\u00e3o local de alimentos e melhorando os sistemas de distribui\u00e7\u00e3o que alcan\u00e7am \u00e1reas desatendidas.",
+            "EquityAndInclusionConsiderations": "Melhora o acesso a recursos cr\u00edticos de sa\u00fade e \u00e1gua para comunidades vulner\u00e1veis e desatendidas, mitigando as desigualdades causadas pelos impactos clim\u00e1ticos.",
             "GHGReductionPotential": null,
             "AdaptationEffectiveness": "high",
             "CostInvestmentNeeded": "medium",
             "TimelineForImplementation": "5-10 years",
             "Dependencies": [
-                "Investimento em infraestrutura",
-                "Incentivos pol\u00edticos para a produ\u00e7\u00e3o local de alimentos",
-                "Colabora\u00e7\u00e3o com os setores de log\u00edstica e com\u00e9rcio",
-                "Tecnologia para otimiza\u00e7\u00e3o da cadeia de suprimentos"
+                "Financiamento adequado",
+                "investimentos tecnol\u00f3gicos em infraestrutura de sa\u00fade e \u00e1gua",
+                "governan\u00e7a eficaz e coordena\u00e7\u00e3o intersetorial"
             ],
             "KeyPerformanceIndicators": [
-                "Redu\u00e7\u00e3o das perdas p\u00f3s-colheita",
-                "Aumento da disponibilidade de alimentos locais",
-                "Melhoria da efici\u00eancia do transporte para distribui\u00e7\u00e3o de alimentos",
-                "Cadeias de abastecimento encurtadas"
+                "Redu\u00e7\u00e3o de doen\u00e7as transmitidas pela \u00e1gua",
+                "melhor acesso a \u00e1gua pot\u00e1vel",
+                "n\u00famero de instala\u00e7\u00f5es de sa\u00fade resilientes desenvolvidas"
             ],
-            "PowersAndMandates": null
-        }
-    },
-    {
-        "locode": "BR SIN",
-        "cityName": "Sinop",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "ipcc_0088",
-        "actionName": "Building codes",
-        "actionPriority": 9,
-        "explanation": "Ranked #9 by tournament ranking algorithm",
-        "action": {
-            "ActionID": "ipcc_0088",
-            "ActionName": "C\u00f3digos de constru\u00e7\u00e3o",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "floods",
-                "landslides"
-            ],
-            "Sector": [
-                "road_infrastructure",
-                "geo-hydrological_disasters"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "O desenvolvimento e implementa\u00e7\u00e3o de c\u00f3digos de constru\u00e7\u00e3o e regulamentos de design arquitet\u00f4nico voltados para a integra\u00e7\u00e3o de par\u00e2metros de adapta\u00e7\u00e3o clim\u00e1tica. Esses c\u00f3digos s\u00e3o focados na redu\u00e7\u00e3o de riscos de perigos induzidos pelo clima, como inunda\u00e7\u00f5es e deslizamentos de terra. Eles tamb\u00e9m apoiam o desenvolvimento urbano resiliente ao clima, orientando o uso do solo, pr\u00e1ticas de constru\u00e7\u00e3o e padr\u00f5es de infraestrutura. A iniciativa promove o planejamento urbano estrat\u00e9gico de longo prazo para coordenar investimentos p\u00fablicos e privados em adapta\u00e7\u00e3o, incluindo a cria\u00e7\u00e3o de zonas seguras e a transforma\u00e7\u00e3o de assentamentos prec\u00e1rios. Ela garante que novas infraestruturas sejam resilientes aos riscos clim\u00e1ticos e que os espa\u00e7os urbanos sejam seguros e sustent\u00e1veis para as popula\u00e7\u00f5es atuais e futuras.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 0,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 2,
-                "mobility": 1,
-                "stakeholder_engagement": 1
+            "PowersAndMandates": null,
+            "AdaptationEffectivenessPerHazard": {
+                "droughts": "high",
+                "floods": "high",
+                "sea-level-rise": "high",
+                "diseases": "high"
             },
-            "EquityAndInclusionConsiderations": "Promove o planejamento urbano inclusivo ao abordar riscos em assentamentos informais e prec\u00e1rios e integrar eco-parques e eco-jardins para popula\u00e7\u00f5es vulner\u00e1veis.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Integra\u00e7\u00e3o com avalia\u00e7\u00f5es locais de risco clim\u00e1tico",
-                "Colabora\u00e7\u00e3o estrat\u00e9gica entre planejadores urbanos e autoridades municipais"
-            ],
-            "KeyPerformanceIndicators": [
-                "Redu\u00e7\u00e3o de incidentes de inunda\u00e7\u00f5es urbanas",
-                "Aumento da disponibilidade de habita\u00e7\u00e3o segura em \u00e1reas de risco",
-                "Taxa de implementa\u00e7\u00e3o de eco-parques e eco-jardins em \u00e1reas vulner\u00e1veis"
-            ],
-            "PowersAndMandates": null
+            "biome": "none"
         }
     },
     {
@@ -540,7 +633,7 @@
                 "mobility": 0,
                 "stakeholder_engagement": 2
             },
-            "EquityAndInclusionConsiderations": "Aprimora o status social e os direitos de grupos marginalizados, protege popula\u00e7\u00f5es vulner\u00e1veis, reduz desigualdades e promove a educa\u00e7\u00e3o e a equidade de g\u00eanero.",
+            "EquityAndInclusionConsiderations": "Aumenta o status social e os direitos de grupos marginalizados, protege popula\u00e7\u00f5es vulner\u00e1veis, reduz desigualdades e promove a educa\u00e7\u00e3o e a equidade de g\u00eanero.",
             "GHGReductionPotential": null,
             "AdaptationEffectiveness": "high",
             "CostInvestmentNeeded": "medium",
@@ -555,7 +648,14 @@
                 "Aumento no acesso \u00e0 educa\u00e7\u00e3o para grupos vulner\u00e1veis",
                 "Participa\u00e7\u00e3o em programas de prote\u00e7\u00e3o social"
             ],
-            "PowersAndMandates": null
+            "PowersAndMandates": null,
+            "AdaptationEffectivenessPerHazard": {
+                "droughts": "high",
+                "heatwaves": "high",
+                "floods": "medium",
+                "storms": "medium"
+            },
+            "biome": "none"
         }
     },
     {
@@ -563,58 +663,327 @@
         "cityName": "Sinop",
         "region": "MT",
         "regionName": "Mato Grosso",
-        "actionId": "ipcc_0095",
-        "actionName": "Disaster early warning",
+        "actionId": "icare_0145",
+        "actionName": "Strengthen the healthcare network to attend to climate victims",
         "actionPriority": 11,
         "explanation": "Ranked #11 by tournament ranking algorithm",
         "action": {
-            "ActionID": "ipcc_0095",
-            "ActionName": "Alerta precoce de desastres",
+            "ActionID": "icare_0145",
+            "ActionName": "Fortalecer a rede de sa\u00fade para atender \u00e0s v\u00edtimas do clima",
             "ActionType": [
                 "adaptation"
             ],
             "Hazard": [
                 "heatwaves",
-                "droughts",
-                "storms"
+                "diseases",
+                "landslides",
+                "floods",
+                "storms",
+                "droughts"
             ],
-            "Sector": [
-                "public_health",
-                "biodiversity",
-                "geo-hydrological_disasters"
-            ],
+            "Sector": null,
             "Subsector": null,
             "PrimaryPurpose": [
                 "climate_resilience"
             ],
-            "Description": "Estabelecer e manter sistemas de alerta precoce para desastres, incluindo ondas de calor marinhas, surtos de pragas e ondas de calor. Esses sistemas envolvem a dissemina\u00e7\u00e3o oportuna de informa\u00e7\u00f5es para indiv\u00edduos, comunidades e servi\u00e7os de emerg\u00eancia, permitindo medidas proativas para mitigar riscos. Os Planos de A\u00e7\u00e3o contra o Calor (HAPs) fazem parte desses sistemas e incluem estrat\u00e9gias detalhadas como planejamento urbano com solu\u00e7\u00f5es baseadas na natureza (por exemplo, espa\u00e7os verdes-azuis, materiais frescos), campanhas de conscientiza\u00e7\u00e3o p\u00fablica e medidas direcionadas para grupos vulner\u00e1veis (por exemplo, idosos, crian\u00e7as, trabalhadores ao ar livre). A\u00e7\u00f5es cr\u00edticas tamb\u00e9m incluem a avalia\u00e7\u00e3o da efic\u00e1cia do sistema ap\u00f3s desastres, compartilhamento de li\u00e7\u00f5es e melhorias para melhor prepara\u00e7\u00e3o em eventos futuros.",
+            "Description": "Melhorar a infraestrutura das unidades de sa\u00fade para atender pessoas que necessitam de cuidados m\u00e9dicos devido a impactos associados a riscos clim\u00e1ticos (v\u00edtimas do clima), como aquelas afetadas por ondas de calor ou inunda\u00e7\u00f5es, especialmente em \u00e1reas mais vulner\u00e1veis. Desenvolver planos de a\u00e7\u00e3o para preparar a rede de sa\u00fade para situa\u00e7\u00f5es extremas relacionadas ao clima.",
             "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 1,
+                "air_quality": 0,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "high",
+            "TimelineForImplementation": ">10 years",
+            "Dependencies": [
+                "Investimento na renova\u00e7\u00e3o e expans\u00e3o das instala\u00e7\u00f5es de sa\u00fade, garantindo que estejam equipadas para lidar com os impactos na sa\u00fade relacionados ao clima, especialmente em \u00e1reas vulner\u00e1veis.",
+                "Desenvolvimento de planos de a\u00e7\u00e3o e programas de treinamento para profissionais de sa\u00fade responderem a eventos clim\u00e1ticos extremos, como ondas de calor e inunda\u00e7\u00f5es.",
+                "Colabora\u00e7\u00e3o com autoridades locais, equipes de resposta a emerg\u00eancias e especialistas em clima para criar uma estrutura abrangente para preparar a rede de sa\u00fade para os riscos clim\u00e1ticos."
+            ],
+            "KeyPerformanceIndicators": [
+                "N\u00famero de instala\u00e7\u00f5es de sa\u00fade atualizadas para emerg\u00eancias relacionadas ao clima.",
+                "Aumento no percentual de profissionais de sa\u00fade treinados para resposta a emerg\u00eancias clim\u00e1ticas (%).",
+                "N\u00famero de les\u00f5es relacionadas ao clima tratadas com sucesso.",
+                "."
+            ],
+            "PowersAndMandates": [
+                "national"
+            ],
+            "AdaptationEffectivenessPerHazard": {
+                "heatwaves": "high",
+                "diseases": "medium",
+                "landslides": "medium",
+                "floods": "high",
+                "storms": "high",
+                "droughts": "medium"
+            },
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR SIN",
+        "cityName": "Sinop",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0149",
+        "actionName": "Encourage sustainable land use practices",
+        "actionPriority": 12,
+        "explanation": "Ranked #12 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "icare_0149",
+            "ActionName": "Incentivar pr\u00e1ticas sustent\u00e1veis de uso da terra",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "droughts",
+                "heatwaves",
+                "landslides",
+                "floods",
+                "wildfires"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Promover m\u00e9todos que garantam a conserva\u00e7\u00e3o e a sa\u00fade do solo, preservando a biodiversidade, reduzindo a eros\u00e3o e minimizando os impactos ambientais.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 2,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "medium",
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Fornecer acesso a conhecimento t\u00e9cnico e treinamento em pr\u00e1ticas de manejo sustent\u00e1vel do solo.",
+                "Oferecer incentivos financeiros e formar parcerias com institui\u00e7\u00f5es de pesquisa e agricultores locais.",
+                "Desenvolver sistemas de monitoramento para a sa\u00fade do solo e biodiversidade, e implementar pol\u00edticas para controle da eros\u00e3o."
+            ],
+            "KeyPerformanceIndicators": [
+                "Percentagem da \u00e1rea de terra gerida sob pr\u00e1ticas de uso sustent\u00e1vel da terra (%)",
+                "Redu\u00e7\u00e3o nas taxas de desmatamento ou degrada\u00e7\u00e3o da terra (%)",
+                "Aumento nos indicadores de biodiversidade em terras geridas (por exemplo, contagem de esp\u00e9cies, qualidade do habitat)"
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": {
+                "droughts": "medium",
+                "heatwaves": "medium",
+                "landslides": "high",
+                "floods": "medium",
+                "wildfires": "medium"
+            },
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR SIN",
+        "cityName": "Sinop",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0148",
+        "actionName": "Create the Municipal Climate Change Forum",
+        "actionPriority": 13,
+        "explanation": "Ranked #13 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "icare_0148",
+            "ActionName": "Criar o F\u00f3rum Municipal de Mudan\u00e7as Clim\u00e1ticas",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "droughts",
+                "diseases",
+                "heatwaves",
+                "landslides",
+                "floods",
+                "wildfires",
+                "sea-level-rise",
+                "storms"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Cria\u00e7\u00e3o de um F\u00f3rum Municipal de Mudan\u00e7as Clim\u00e1ticas com a participa\u00e7\u00e3o de l\u00edderes comunit\u00e1rios, cientistas, coletivos, institutos de pesquisa, ONGs e membros da administra\u00e7\u00e3o municipal e estadual. O F\u00f3rum servir\u00e1 como refer\u00eancia para a\u00e7\u00f5es relacionadas \u00e0s Mudan\u00e7as Clim\u00e1ticas, com o objetivo de monitorar pol\u00edticas futuras sobre o assunto no munic\u00edpio, estimular o di\u00e1logo e criar uma rede de discuss\u00f5es sobre a crise clim\u00e1tica.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": 0,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "medium",
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Engajamento de diversas partes interessadas, incluindo l\u00edderes comunit\u00e1rios, cientistas, ONGs e autoridades locais, para estabelecer e sustentar o F\u00f3rum.",
+                "Aloca\u00e7\u00e3o de recursos para facilitar reuni\u00f5es regulares, workshops e eventos para que o F\u00f3rum permane\u00e7a ativo e impactante.",
+                "Desenvolvimento de uma estrutura clara e diretrizes para o F\u00f3rum monitorar e orientar pol\u00edticas e iniciativas de mudan\u00e7a clim\u00e1tica dentro do munic\u00edpio."
+            ],
+            "KeyPerformanceIndicators": [
+                "Percentagem de partes interessadas chave participando ativamente no f\u00f3rum.",
+                "N\u00famero de pol\u00edticas ou a\u00e7\u00f5es relacionadas ao clima propostas atrav\u00e9s do f\u00f3rum.",
+                "Envolvimento p\u00fablico nas iniciativas do f\u00f3rum (medido pela participa\u00e7\u00e3o em eventos ou pesquisas)"
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": {
+                "droughts": "medium",
+                "diseases": "medium",
+                "heatwaves": "medium",
+                "landslides": "low",
+                "floods": "medium",
+                "wildfires": "medium",
+                "sea-level-rise": "medium",
+                "storms": "medium"
+            },
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR SIN",
+        "cityName": "Sinop",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0157",
+        "actionName": "Maintenance and Revitalization of Riparian Forests",
+        "actionPriority": 14,
+        "explanation": "Ranked #14 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "icare_0157",
+            "ActionName": "Manuten\u00e7\u00e3o e Revitaliza\u00e7\u00e3o de Florestas Rip\u00e1rias",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "heatwaves",
+                "landslides",
+                "floods",
+                "droughts"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Mapeamento e avalia\u00e7\u00e3o de florestas rip\u00e1rias degradadas, desenvolvimento de planos de revitaliza\u00e7\u00e3o com o plantio de esp\u00e9cies nativas, controle de esp\u00e9cies invasoras, medidas de conten\u00e7\u00e3o de eros\u00e3o e avalia\u00e7\u00f5es peri\u00f3dicas dos impactos nas condi\u00e7\u00f5es ambientais.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 2,
                 "habitat": 2,
                 "cost_of_living": 0,
                 "housing": 0,
-                "mobility": 1,
-                "stakeholder_engagement": 2
+                "mobility": 0,
+                "stakeholder_engagement": 1
             },
-            "EquityAndInclusionConsiderations": "Foca em abordar vulnerabilidades entre grupos de baixa renda, idosos, gestantes, crian\u00e7as e trabalhadores ao ar livre, incorporando comunica\u00e7\u00e3o direcionada, acesso a \u00e1reas frescas e interven\u00e7\u00f5es de sa\u00fade espec\u00edficas. Promove a equidade ao envolver comunidades marginalizadas no planejamento e garantir o acesso aos recursos necess\u00e1rios.",
+            "EquityAndInclusionConsiderations": null,
             "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
+            "AdaptationEffectiveness": "medium",
+            "CostInvestmentNeeded": "high",
+            "TimelineForImplementation": "5-10 years",
             "Dependencies": [
-                "Coordena\u00e7\u00e3o entre servi\u00e7os de emerg\u00eancia e ag\u00eancias de sa\u00fade",
-                "Investimento em planejamento urbano e solu\u00e7\u00f5es baseadas na natureza",
-                "Educa\u00e7\u00e3o comunit\u00e1ria e campanhas de conscientiza\u00e7\u00e3o p\u00fablica",
-                "Infraestrutura tecnol\u00f3gica para sistemas de alerta precoce"
+                "Garantir a disponibilidade de dados geoespaciais e mapeamento pr\u00e9vio de \u00e1reas degradadas.",
+                "Formar parcerias com viveiros locais e fornecer equipamentos e m\u00e3o de obra qualificada para o controle de esp\u00e9cies invasoras.",
+                "Garantir recursos financeiros e estabelecer um sistema de monitoramento para avaliar os impactos ambientais."
             ],
             "KeyPerformanceIndicators": [
-                "Redu\u00e7\u00e3o nas taxas de mortalidade relacionadas a ondas de calor",
-                "Pontualidade dos avisos",
-                "N\u00edveis de conscientiza\u00e7\u00e3o p\u00fablica",
-                "Ado\u00e7\u00e3o de medidas de prote\u00e7\u00e3o pela comunidade"
+                "\u00c1rea total de florestas rip\u00e1rias restauradas (ha).",
+                "N\u00famero de projetos implementados.",
+                "Redu\u00e7\u00e3o da eros\u00e3o e assoreamento de corpos d'\u00e1gua (toneladas/ano)."
             ],
-            "PowersAndMandates": null
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": {
+                "heatwaves": "medium",
+                "landslides": "high",
+                "floods": "high",
+                "droughts": "medium"
+            },
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR SIN",
+        "cityName": "Sinop",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0164",
+        "actionName": "Hydrological Monitoring System with Telemetry Stations",
+        "actionPriority": 15,
+        "explanation": "Ranked #15 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "icare_0164",
+            "ActionName": "Sistema de Monitoramento Hidrol\u00f3gico com Esta\u00e7\u00f5es de Telemetria",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "droughts",
+                "floods",
+                "storms"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Implementa\u00e7\u00e3o de um sistema de monitoramento hidrol\u00f3gico com esta\u00e7\u00f5es de telemetria para monitorar a precipita\u00e7\u00e3o, os n\u00edveis de \u00e1gua e as vari\u00e1veis meteorol\u00f3gicas em tempo real.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 1,
+                "housing": 1,
+                "mobility": 1,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "low",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Equipamento e infraestrutura",
+                "Sistema robusto de gest\u00e3o de dados",
+                "Coordena\u00e7\u00e3o institucional"
+            ],
+            "KeyPerformanceIndicators": [
+                "Pontualidade dos dados",
+                "Custo-benef\u00edcio",
+                "Efic\u00e1cia da mitiga\u00e7\u00e3o"
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": {
+                "droughts": "high",
+                "floods": "high",
+                "storms": "high"
+            },
+            "biome": "none"
         }
     },
     {
@@ -624,8 +993,8 @@
         "regionName": "Mato Grosso",
         "actionId": "icare_0175",
         "actionName": "Recovery and preservation of green areas",
-        "actionPriority": 12,
-        "explanation": "Ranked #12 by tournament ranking algorithm",
+        "actionPriority": 16,
+        "explanation": "Ranked #16 by tournament ranking algorithm",
         "action": {
             "ActionID": "icare_0175",
             "ActionName": "Recupera\u00e7\u00e3o e preserva\u00e7\u00e3o de \u00e1reas verdes",
@@ -668,7 +1037,211 @@
             ],
             "PowersAndMandates": [
                 "local"
-            ]
+            ],
+            "AdaptationEffectivenessPerHazard": {
+                "heatwaves": "high",
+                "floods": "high",
+                "wildfires": "medium"
+            },
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR SIN",
+        "cityName": "Sinop",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0144",
+        "actionName": "Creation of a Financial Support Program to Adress Extreme Weather Events",
+        "actionPriority": 17,
+        "explanation": "Ranked #17 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "icare_0144",
+            "ActionName": "Cria\u00e7\u00e3o de um Programa de Apoio Financeiro para Abordar Eventos Clim\u00e1ticos Extremos",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "droughts",
+                "heatwaves",
+                "diseases",
+                "landslides",
+                "wildfires",
+                "floods",
+                "sea-level-rise",
+                "storms"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Cria\u00e7\u00e3o de um programa para mitigar os efeitos das trag\u00e9dias clim\u00e1ticas, incluindo assist\u00eancia financeira \u00e0s fam\u00edlias afetadas e esfor\u00e7os para garantir recursos adicionais para recupera\u00e7\u00e3o e reconstru\u00e7\u00e3o.",
+            "CoBenefits": {
+                "air_quality": 0,
+                "water_quality": 0,
+                "habitat": 0,
+                "cost_of_living": -1,
+                "housing": 1,
+                "mobility": 1,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "medium",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Recursos financeiros",
+                "Planos de resposta a emerg\u00eancias",
+                "Coordena\u00e7\u00e3o institucional"
+            ],
+            "KeyPerformanceIndicators": [
+                "N\u00famero de pessoas assistidas",
+                "Custo-benef\u00edcio",
+                "Resili\u00eancia da comunidade"
+            ],
+            "PowersAndMandates": [
+                "state"
+            ],
+            "AdaptationEffectivenessPerHazard": {
+                "droughts": "medium",
+                "heatwaves": "medium",
+                "diseases": "medium",
+                "landslides": "medium",
+                "wildfires": "medium",
+                "floods": "medium",
+                "sea-level-rise": "medium",
+                "storms": "medium"
+            },
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR SIN",
+        "cityName": "Sinop",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "ipcc_0098",
+        "actionName": "Behaviour change in diets and food waste",
+        "actionPriority": 18,
+        "explanation": "Ranked #18 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "ipcc_0098",
+            "ActionName": "Mudan\u00e7a de comportamento em dietas e desperd\u00edcio de alimentos",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "droughts",
+                "heatwaves",
+                "floods",
+                "wildfires"
+            ],
+            "Sector": [
+                "food_security",
+                "biodiversity"
+            ],
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Reduzir a perda e o desperd\u00edcio de alimentos por meio de pr\u00e1ticas aprimoradas de produ\u00e7\u00e3o, distribui\u00e7\u00e3o e consumo de alimentos. As a\u00e7\u00f5es incluem o aprimoramento de t\u00e9cnicas agr\u00edcolas, a ado\u00e7\u00e3o de tecnologias de economia de \u00e1gua, a implementa\u00e7\u00e3o de solu\u00e7\u00f5es de armazenamento de baixo custo e a promo\u00e7\u00e3o de dietas \u00e0 base de plantas. Os formuladores de pol\u00edticas podem incentivar esses comportamentos com pol\u00edticas de pre\u00e7os adequadas, iniciativas de agricultura sustent\u00e1vel e apoio a grupos desfavorecidos. A a\u00e7\u00e3o enfatiza a mudan\u00e7a para dietas mais saud\u00e1veis, a redu\u00e7\u00e3o do consumo excessivo e o apoio a sistemas alimentares locais para mitigar as emiss\u00f5es de gases de efeito estufa e garantir a seguran\u00e7a alimentar sob as mudan\u00e7as clim\u00e1ticas.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 2,
+                "habitat": 2,
+                "cost_of_living": 1,
+                "housing": 0,
+                "mobility": 0,
+                "stakeholder_engagement": 2
+            },
+            "EquityAndInclusionConsiderations": "Promove o acesso a alimentos saud\u00e1veis e acess\u00edveis para comunidades vulner\u00e1veis, capacitando mulheres, jovens e grupos socialmente desfavorecidos. Incentiva a participa\u00e7\u00e3o equitativa em pr\u00e1ticas agr\u00edcolas sustent\u00e1veis e redes alimentares locais.",
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "high",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "5-10 years",
+            "Dependencies": [
+                "Educa\u00e7\u00e3o e treinamento para agricultores",
+                "Acesso a insumos agr\u00edcolas sustent\u00e1veis",
+                "Apoio pol\u00edtico para pr\u00e1ticas sustent\u00e1veis",
+                "Infraestrutura tecnol\u00f3gica para armazenamento e processamento"
+            ],
+            "KeyPerformanceIndicators": [
+                "Redu\u00e7\u00e3o nas porcentagens de perda e desperd\u00edcio de alimentos",
+                "Aumento na ado\u00e7\u00e3o de dietas \u00e0 base de plantas",
+                "Melhoria nos indicadores de seguran\u00e7a alimentar",
+                "Redu\u00e7\u00e3o nas emiss\u00f5es de GEE dos sistemas alimentares"
+            ],
+            "PowersAndMandates": null,
+            "AdaptationEffectivenessPerHazard": {
+                "droughts": "high",
+                "heatwaves": "medium",
+                "floods": "medium",
+                "wildfires": "low"
+            },
+            "biome": "none"
+        }
+    },
+    {
+        "locode": "BR SIN",
+        "cityName": "Sinop",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0180",
+        "actionName": "Implement permeable pavements and increase green areas in roadways",
+        "actionPriority": 19,
+        "explanation": "Ranked #19 by tournament ranking algorithm",
+        "action": {
+            "ActionID": "icare_0180",
+            "ActionName": "Implementar pavimentos perme\u00e1veis e aumentar as \u00e1reas verdes nas vias p\u00fablicas",
+            "ActionType": [
+                "adaptation"
+            ],
+            "Hazard": [
+                "floods",
+                "landslides",
+                "heatwaves"
+            ],
+            "Sector": null,
+            "Subsector": null,
+            "PrimaryPurpose": [
+                "climate_resilience"
+            ],
+            "Description": "Aumentar as \u00e1reas perme\u00e1veis e semi-perme\u00e1veis em edif\u00edcios e espa\u00e7os p\u00fablicos sob a administra\u00e7\u00e3o da Cidade, com a ado\u00e7\u00e3o de solu\u00e7\u00f5es baseadas na natureza (NbS). Em \u00e1reas com limita\u00e7\u00f5es de espa\u00e7o, a a\u00e7\u00e3o inclui an\u00e1lises de viabilidade para a implementa\u00e7\u00e3o de pavimentos perme\u00e1veis e o aumento de \u00e1reas verdes em vias p\u00fablicas. Entre as solu\u00e7\u00f5es de constru\u00e7\u00e3o tradicionais, h\u00e1 caracter\u00edsticas como meios-fios e sarjetas com drenos pluviais, bem como solu\u00e7\u00f5es em maior escala, como lagoas de reten\u00e7\u00e3o. As solu\u00e7\u00f5es baseadas na natureza incluem o plantio de \u00e1rvores urbanas, telhados verdes, cisternas de \u00e1gua da chuva, bio-valas, entre outros.",
+            "CoBenefits": {
+                "air_quality": 1,
+                "water_quality": 1,
+                "habitat": 1,
+                "cost_of_living": 0,
+                "housing": 1,
+                "mobility": 0,
+                "stakeholder_engagement": 1
+            },
+            "EquityAndInclusionConsiderations": null,
+            "GHGReductionPotential": null,
+            "AdaptationEffectiveness": "medium",
+            "CostInvestmentNeeded": "medium",
+            "TimelineForImplementation": "<5 years",
+            "Dependencies": [
+                "Expans\u00e3o de \u00e1reas perme\u00e1veis e semi-perme\u00e1veis em edif\u00edcios administrados pela cidade e espa\u00e7os p\u00fablicos.",
+                "Ado\u00e7\u00e3o de solu\u00e7\u00f5es baseadas na natureza (NbS), como plantio de \u00e1rvores urbanas, telhados verdes, cisternas de \u00e1gua da chuva e bio-valas.",
+                "An\u00e1lises de viabilidade para pavimentos perme\u00e1veis e aumento de \u00e1reas verdes em vias, juntamente com solu\u00e7\u00f5es tradicionais de gest\u00e3o de \u00e1guas pluviais, como meios-fios, sarjetas e lagoas de reten\u00e7\u00e3o."
+            ],
+            "KeyPerformanceIndicators": [
+                "Redu\u00e7\u00e3o no escoamento de \u00e1gua superficial durante eventos de chuva (%).",
+                "Diminui\u00e7\u00e3o nas ocorr\u00eancias de inunda\u00e7\u00f5es em \u00e1reas modificadas.",
+                "Percentagem de espa\u00e7os p\u00fablicos em conformidade com os novos regulamentos de superf\u00edcies perme\u00e1veis."
+            ],
+            "PowersAndMandates": [
+                "local"
+            ],
+            "AdaptationEffectivenessPerHazard": {
+                "floods": "high",
+                "landslides": "medium",
+                "heatwaves": "medium"
+            },
+            "biome": "none"
         }
     },
     {
@@ -678,8 +1251,8 @@
         "regionName": "Mato Grosso",
         "actionId": "ipcc_0086",
         "actionName": "Ecosystem-based adaptation",
-        "actionPriority": 13,
-        "explanation": "Ranked #13 by tournament ranking algorithm",
+        "actionPriority": 20,
+        "explanation": "Ranked #20 by tournament ranking algorithm",
         "action": {
             "ActionID": "ipcc_0086",
             "ActionName": "Adapta\u00e7\u00e3o baseada em ecossistemas",
@@ -729,7 +1302,7 @@
                 "Financiamento sustent\u00e1vel"
             ],
             "KeyPerformanceIndicators": [
-                "Redu\u00e7\u00e3o dos danos causados por mar\u00e9s de tempestade",
+                "Redu\u00e7\u00e3o de danos causados por mar\u00e9s de tempestade",
                 "Taxas de sequestro de carbono",
                 "Aumento da biodiversidade",
                 "Redu\u00e7\u00e3o da temperatura em \u00e1reas urbanas",
@@ -738,416 +1311,14 @@
                 "Redu\u00e7\u00e3o de eventos de inunda\u00e7\u00e3o",
                 "Melhoria da sa\u00fade dos ecossistemas"
             ],
-            "PowersAndMandates": null
-        }
-    },
-    {
-        "locode": "BR SIN",
-        "cityName": "Sinop",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0169",
-        "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
-        "actionPriority": 14,
-        "explanation": "Ranked #14 by tournament ranking algorithm",
-        "action": {
-            "ActionID": "icare_0169",
-            "ActionName": "Estabelecer um Plano de Prepara\u00e7\u00e3o e Medidas de Resposta a Emerg\u00eancias em caso de eventos clim\u00e1ticos extremos",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "droughts",
-                "heatwaves",
-                "diseases",
-                "landslides",
-                "floods",
-                "wildfires",
-                "sea-level-rise",
-                "storms"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Esta a\u00e7\u00e3o foca em preparar o munic\u00edpio para responder a eventos extremos, visando fornecer uma resposta r\u00e1pida que minimize os impactos na popula\u00e7\u00e3o.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
+            "PowersAndMandates": null,
+            "AdaptationEffectivenessPerHazard": {
+                "storms": "high",
+                "sea-level-rise": "high",
+                "heatwaves": "high",
+                "floods": "high"
             },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Desenvolvimento de um plano abrangente de resposta a emerg\u00eancias que inclua a coordena\u00e7\u00e3o entre as autoridades locais, servi\u00e7os de emerg\u00eancia e organiza\u00e7\u00f5es comunit\u00e1rias",
-                "Investimento em sistemas de alerta precoce e infraestrutura para garantir respostas oportunas e eficazes a eventos extremos",
-                "Treinamento e capacita\u00e7\u00e3o para os respondentes locais e comunidades para melhorar a prepara\u00e7\u00e3o e resili\u00eancia a eventos extremos"
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de parcerias de resposta a emerg\u00eancias estabelecidas.",
-                "Tempo m\u00e9dio de resposta durante eventos clim\u00e1ticos extremos (horas).",
-                "Percentual de redu\u00e7\u00e3o de v\u00edtimas e danos durante eventos clim\u00e1ticos extremos anualmente (%)."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR SIN",
-        "cityName": "Sinop",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "ipcc_0098",
-        "actionName": "Behaviour change in diets and food waste",
-        "actionPriority": 15,
-        "explanation": "Ranked #15 by tournament ranking algorithm",
-        "action": {
-            "ActionID": "ipcc_0098",
-            "ActionName": "Mudan\u00e7a de comportamento em dietas e desperd\u00edcio de alimentos",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "droughts",
-                "heatwaves",
-                "floods",
-                "wildfires"
-            ],
-            "Sector": [
-                "food_security",
-                "biodiversity"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Reduzir a perda e o desperd\u00edcio de alimentos por meio de pr\u00e1ticas aprimoradas de produ\u00e7\u00e3o, distribui\u00e7\u00e3o e consumo de alimentos. As a\u00e7\u00f5es incluem o aprimoramento de t\u00e9cnicas agr\u00edcolas, a ado\u00e7\u00e3o de tecnologias de economia de \u00e1gua, a implementa\u00e7\u00e3o de solu\u00e7\u00f5es de armazenamento de baixo custo e a promo\u00e7\u00e3o de dietas \u00e0 base de plantas. Os formuladores de pol\u00edticas podem incentivar esses comportamentos com pol\u00edticas de pre\u00e7os adequadas, iniciativas de agricultura sustent\u00e1vel e apoio a grupos desfavorecidos. A a\u00e7\u00e3o enfatiza a mudan\u00e7a para dietas mais saud\u00e1veis, a redu\u00e7\u00e3o do consumo excessivo e o apoio a sistemas alimentares locais para mitigar as emiss\u00f5es de gases de efeito estufa e garantir a seguran\u00e7a alimentar sob as mudan\u00e7as clim\u00e1ticas.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": "Promove o acesso a alimentos saud\u00e1veis e acess\u00edveis para comunidades vulner\u00e1veis, capacitando mulheres, jovens e grupos socialmente desfavorecidos. Incentiva a participa\u00e7\u00e3o equitativa em pr\u00e1ticas agr\u00edcolas sustent\u00e1veis e redes alimentares locais.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Educa\u00e7\u00e3o e treinamento para agricultores",
-                "Acesso a insumos agr\u00edcolas sustent\u00e1veis",
-                "Apoio pol\u00edtico para pr\u00e1ticas sustent\u00e1veis",
-                "Infraestrutura tecnol\u00f3gica para armazenamento e processamento"
-            ],
-            "KeyPerformanceIndicators": [
-                "Redu\u00e7\u00e3o nas porcentagens de perda e desperd\u00edcio de alimentos",
-                "Aumento na ado\u00e7\u00e3o de dietas \u00e0 base de plantas",
-                "Melhoria nos indicadores de seguran\u00e7a alimentar",
-                "Redu\u00e7\u00e3o das emiss\u00f5es de GEE dos sistemas alimentares"
-            ],
-            "PowersAndMandates": null
-        }
-    },
-    {
-        "locode": "BR SIN",
-        "cityName": "Sinop",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0162",
-        "actionName": "Strengthen programs for control and conservation of protected areas",
-        "actionPriority": 16,
-        "explanation": "Ranked #16 by tournament ranking algorithm",
-        "action": {
-            "ActionID": "icare_0162",
-            "ActionName": "Fortalecer programas de controle e conserva\u00e7\u00e3o de \u00e1reas protegidas",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "floods",
-                "landslides",
-                "heatwaves",
-                "diseases"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Esta a\u00e7\u00e3o foca na implementa\u00e7\u00e3o de uma s\u00e9rie de estrat\u00e9gias integradas para melhorar a conserva\u00e7\u00e3o ambiental e maximizar seus benef\u00edcios, como a expans\u00e3o de \u00e1reas protegidas, o desenvolvimento de planos de manejo para unidades de conserva\u00e7\u00e3o e o treinamento de guias de ecoturismo para fortalecer o turismo sustent\u00e1vel.",
-            "CoBenefits": {
-                "air_quality": 2,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 1
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Expans\u00e3o de \u00e1reas protegidas para melhorar a conserva\u00e7\u00e3o ambiental.",
-                "Desenvolvimento de planos de manejo para unidades de conserva\u00e7\u00e3o.",
-                "Treinamento de guias de ecoturismo para promover o turismo sustent\u00e1vel."
-            ],
-            "KeyPerformanceIndicators": [
-                "Percentual de aumento na \u00e1rea de regi\u00f5es protegidas (%).",
-                "Redu\u00e7\u00e3o nas taxas de desmatamento em \u00e1reas protegidas anualmente (%).",
-                "N\u00famero de programas de conserva\u00e7\u00e3o fortalecidos anualmente."
-            ],
-            "PowersAndMandates": [
-                "state"
-            ]
-        }
-    },
-    {
-        "locode": "BR SIN",
-        "cityName": "Sinop",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "ipcc_0096",
-        "actionName": "Farm/fishery improvements",
-        "actionPriority": 17,
-        "explanation": "Ranked #17 by tournament ranking algorithm",
-        "action": {
-            "ActionID": "ipcc_0096",
-            "ActionName": "Melhorias em fazendas/pesqueiras",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "droughts",
-                "heatwaves",
-                "floods",
-                "wildfires",
-                "storms"
-            ],
-            "Sector": [
-                "food_security",
-                "biodiversity",
-                "water_resources"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Implementar uma gama de estrat\u00e9gias para adaptar fazendas e pescarias aos impactos clim\u00e1ticos. Isso inclui mudar o equipamento de pesca ou a pot\u00eancia das embarca\u00e7\u00f5es, adotar novas variedades de culturas ou ajustar os cronogramas de plantio, melhorar os esquemas de irriga\u00e7\u00e3o, integrar sistemas de culturas e pecu\u00e1ria, realocar o gado com manejo de pastagens melhorado e adotar sistemas agroecol\u00f3gicos e agroflorestais. Inova\u00e7\u00f5es tecnol\u00f3gicas como a agricultura inteligente e medidas financeiras como subs\u00eddios apoiam essas adapta\u00e7\u00f5es.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": "Garante acesso a recursos para agricultores e pescadores marginalizados, promove op\u00e7\u00f5es diversificadas de subsist\u00eancia e fortalece a resili\u00eancia em comunidades desfavorecidas.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Apoio pol\u00edtico para a agricultura e pesca resilientes ao clima",
-                "Acesso a financiamento e subs\u00eddios",
-                "Treinamento para ado\u00e7\u00e3o de novas pr\u00e1ticas",
-                "Infraestrutura de mercado melhorada"
-            ],
-            "KeyPerformanceIndicators": [
-                "Aumento na produtividade agr\u00edcola e pesqueira",
-                "Taxa de ado\u00e7\u00e3o de sistemas integrados",
-                "Redu\u00e7\u00e3o nas perdas de rendimento relacionadas ao clima"
-            ],
-            "PowersAndMandates": null
-        }
-    },
-    {
-        "locode": "BR SIN",
-        "cityName": "Sinop",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0148",
-        "actionName": "Create the Municipal Climate Change Forum",
-        "actionPriority": 18,
-        "explanation": "Ranked #18 by tournament ranking algorithm",
-        "action": {
-            "ActionID": "icare_0148",
-            "ActionName": "Criar o F\u00f3rum Municipal de Mudan\u00e7as Clim\u00e1ticas",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "droughts",
-                "diseases",
-                "heatwaves",
-                "landslides",
-                "floods",
-                "wildfires",
-                "sea-level-rise",
-                "storms"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Cria\u00e7\u00e3o de um F\u00f3rum Municipal de Mudan\u00e7as Clim\u00e1ticas com a participa\u00e7\u00e3o de l\u00edderes comunit\u00e1rios, cientistas, coletivos, institutos de pesquisa, ONGs e membros da administra\u00e7\u00e3o municipal e estadual. O F\u00f3rum servir\u00e1 como refer\u00eancia para a\u00e7\u00f5es relacionadas \u00e0s Mudan\u00e7as Clim\u00e1ticas, visando monitorar pol\u00edticas futuras sobre o assunto no munic\u00edpio, estimular o di\u00e1logo e criar uma rede de discuss\u00f5es sobre a crise clim\u00e1tica.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 0,
-                "habitat": 0,
-                "cost_of_living": 0,
-                "housing": 0,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "medium",
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Engajamento de diversas partes interessadas, incluindo l\u00edderes comunit\u00e1rios, cientistas, ONGs e autoridades locais, para estabelecer e sustentar o F\u00f3rum.",
-                "Aloca\u00e7\u00e3o de recursos para facilitar reuni\u00f5es regulares, workshops e eventos para que o F\u00f3rum permane\u00e7a ativo e impactante.",
-                "Desenvolvimento de uma estrutura clara e diretrizes para o F\u00f3rum monitorar e orientar pol\u00edticas e iniciativas de mudan\u00e7a clim\u00e1tica dentro do munic\u00edpio."
-            ],
-            "KeyPerformanceIndicators": [
-                "Percentagem de partes interessadas chave participando ativamente no f\u00f3rum.",
-                "N\u00famero de pol\u00edticas ou a\u00e7\u00f5es relacionadas ao clima propostas atrav\u00e9s do f\u00f3rum.",
-                "Envolvimento p\u00fablico nas iniciativas do f\u00f3rum (medido pela participa\u00e7\u00e3o em eventos ou pesquisas)"
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR SIN",
-        "cityName": "Sinop",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "icare_0156",
-        "actionName": "Implementation of urban gardens",
-        "actionPriority": 19,
-        "explanation": "Ranked #19 by tournament ranking algorithm",
-        "action": {
-            "ActionID": "icare_0156",
-            "ActionName": "Implementa\u00e7\u00e3o de hortas urbanas",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "heatwaves",
-                "landslides",
-                "floods"
-            ],
-            "Sector": null,
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Identificar e avaliar a viabilidade de \u00e1reas adequadas para a instala\u00e7\u00e3o de hortas urbanas e garantir que os locais escolhidos atendam \u00e0s expectativas da comunidade.",
-            "CoBenefits": {
-                "air_quality": 1,
-                "water_quality": 0,
-                "habitat": 1,
-                "cost_of_living": 1,
-                "housing": 1,
-                "mobility": 0,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": null,
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "medium",
-            "CostInvestmentNeeded": "low",
-            "TimelineForImplementation": "<5 years",
-            "Dependencies": [
-                "Garantir a disponibilidade de mapas detalhados de uso do solo e dados de planejamento urbano.",
-                "Envolver-se com as comunidades locais para entender suas necessidades e expectativas.",
-                "Avaliar a qualidade do solo, a disponibilidade de \u00e1gua e formar parcerias para apoiar o estabelecimento e a manuten\u00e7\u00e3o de jardins."
-            ],
-            "KeyPerformanceIndicators": [
-                "N\u00famero de hortas urbanas criadas.",
-                "Quantidade de alimentos produzidos localmente (kg/ano).",
-                "N\u00famero de benefici\u00e1rios diretos."
-            ],
-            "PowersAndMandates": [
-                "local"
-            ]
-        }
-    },
-    {
-        "locode": "BR SIN",
-        "cityName": "Sinop",
-        "region": "MT",
-        "regionName": "Mato Grosso",
-        "actionId": "ipcc_0099",
-        "actionName": "Water capture/storage",
-        "actionPriority": 20,
-        "explanation": "Ranked #20 by tournament ranking algorithm",
-        "action": {
-            "ActionID": "ipcc_0099",
-            "ActionName": "Captura/armazenamento de \u00e1gua",
-            "ActionType": [
-                "adaptation"
-            ],
-            "Hazard": [
-                "droughts",
-                "floods",
-                "storms"
-            ],
-            "Sector": [
-                "water_resources",
-                "food_security",
-                "energy_security",
-                "geo-hydrological_disasters"
-            ],
-            "Subsector": null,
-            "PrimaryPurpose": [
-                "climate_resilience"
-            ],
-            "Description": "Implementa\u00e7\u00e3o de solu\u00e7\u00f5es de capta\u00e7\u00e3o e armazenamento de \u00e1gua, como a\u00e7udes em fazendas, revitaliza\u00e7\u00e3o de corpos d'\u00e1gua, jardins de chuva, bioswales, lagoas de reten\u00e7\u00e3o e tanques de armazenamento de \u00e1gua. Essas medidas visam mitigar os impactos induzidos pelo clima, melhorando a gest\u00e3o da \u00e1gua, reduzindo o escoamento de \u00e1guas pluviais, melhorando a qualidade da \u00e1gua e apoiando a agricultura e a produ\u00e7\u00e3o de energia em cen\u00e1rios clim\u00e1ticos em mudan\u00e7a. Reservat\u00f3rios de \u00e1gua e barragens multiuso oferecem benef\u00edcios adicionais ao abordar a escassez de \u00e1gua e gerenciar riscos associados a desastres naturais.",
-            "CoBenefits": {
-                "air_quality": 0,
-                "water_quality": 2,
-                "habitat": 2,
-                "cost_of_living": 1,
-                "housing": 0,
-                "mobility": 1,
-                "stakeholder_engagement": 2
-            },
-            "EquityAndInclusionConsiderations": "Garante o acesso \u00e0 \u00e1gua para comunidades carentes, apoia meios de subsist\u00eancia sustent\u00e1veis em regi\u00f5es com escassez de \u00e1gua e promove a distribui\u00e7\u00e3o equitativa de recursos por meio de processos de tomada de decis\u00e3o inclusivos.",
-            "GHGReductionPotential": null,
-            "AdaptationEffectiveness": "high",
-            "CostInvestmentNeeded": "medium",
-            "TimelineForImplementation": "5-10 years",
-            "Dependencies": [
-                "Investimento em infraestrutura verde",
-                "engajamento comunit\u00e1rio",
-                "apoio pol\u00edtico para a gest\u00e3o de recursos h\u00eddricos"
-            ],
-            "KeyPerformanceIndicators": [
-                "Redu\u00e7\u00e3o no escoamento de \u00e1guas pluviais",
-                "aumento na capacidade de armazenamento de \u00e1gua",
-                "melhoria na qualidade da \u00e1gua",
-                "estabilidade nos rendimentos agr\u00edcolas"
-            ],
-            "PowersAndMandates": null
+            "biome": "none"
         }
     }
 ]

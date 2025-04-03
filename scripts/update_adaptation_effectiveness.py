@@ -18,21 +18,10 @@ import json
 import os
 from pathlib import Path
 from openai import OpenAI
-from typing import Dict, List, Optional, Union, Tuple
+from typing import Dict, Optional, Tuple
 from dotenv import load_dotenv
 from typing import Optional, Dict, Literal
-from pydantic import BaseModel, RootModel, Field
-
-HazardType = Literal[
-    "droughts",
-    "heatwaves",
-    "floods",
-    "sea-level-rise",
-    "landslides",
-    "storms",
-    "wildfires",
-    "diseases",
-]
+from pydantic import BaseModel, Field
 
 Effectiveness = Literal["high", "medium", "low"]  # no Optional here
 
@@ -44,6 +33,7 @@ class AdaptationEffectivenessPerHazard(BaseModel):
     droughts: Optional[Effectiveness] = None
     heatwaves: Optional[Effectiveness] = None
     floods: Optional[Effectiveness] = None
+    # sea-level-rise is an alias for sea_level_rise, as pydantic doesn't allow hyphens in field names
     sea_level_rise: Optional[Effectiveness] = Field(None, alias="sea-level-rise")
     landslides: Optional[Effectiveness] = None
     storms: Optional[Effectiveness] = None
@@ -79,7 +69,13 @@ def get_effectiveness_per_hazard(
     action: dict,
 ) -> Tuple[Dict[str, Optional[str]], bool, str]:
     # Get the hazards and current effectiveness from the action
-    hazards = action["Hazard"]
+    hazards = action.get("Hazard", [])
+
+    # Handle empty hazards list
+    # If no hazards, return an empty dictionary and a success message
+    if not hazards:
+        return {}, True, "No hazards to process"
+
     current_effectiveness = action.get("AdaptationEffectiveness")
 
     # If there's only one hazard and we have an effectiveness score, use that
@@ -107,7 +103,10 @@ Example format:
 {{"floods": "high", "droughts": "medium", "storms": "low"}}
 
 IMPORTANT:
-Do not include any other text in your response like ```json ```
+1. Respond with ONLY a JSON object
+2. Use only "high", "medium", or "low" as values
+3. Include all hazards listed in the input
+4. Do not include any other text in your response like ```json ```
 </output>
 """
 
@@ -137,8 +136,6 @@ Remember:
         # Get the parsed Pydantic model from the response
         parsed_response = response.choices[0].message.parsed
 
-        print(parsed_response)
-
         if parsed_response is None:
             return (
                 {hazard: None for hazard in hazards},
@@ -167,6 +164,7 @@ def main():
 
     # Initialize tracking variables
     processed_count = 0
+    skipped_count = 0
     error_count = 0
     error_details = []
 
@@ -175,14 +173,26 @@ def main():
         # Initialize the field with None for all actions
         climate_action["AdaptationEffectivenessPerHazard"] = None
 
-        # Only process adaptation actions with hazards
-        if (
-            "adaptation" not in climate_action["ActionType"]
-            or not climate_action["Hazard"]
-        ):
+        # Check if it's an adaptation action
+        is_adaptation = "adaptation" in climate_action.get("ActionType", "")
+
+        # Get hazards (safely)
+        hazards = climate_action.get("Hazard", [])
+
+        # Skip if not an adaptation action
+        if not is_adaptation:
             print(
-                f"\nSkipping action {climate_action['ActionID']} - not an adaptation action or no hazards"
+                f"\nSkipping action {climate_action.get('ActionID', 'Unknown')} - not an adaptation action"
             )
+            skipped_count += 1
+            continue
+
+        # Skip if no hazards (but it is an adaptation action)
+        if not hazards:
+            print(
+                f"\nSkipping action {climate_action.get('ActionID', 'Unknown')} - adaptation action with no hazards"
+            )
+            skipped_count += 1
             continue
 
         # Get effectiveness scores for each hazard
@@ -196,11 +206,14 @@ def main():
         # Track success/failure
         if success:
             processed_count += 1
+            print(
+                f"\nProcessed action {climate_action.get('ActionID', 'Unknown')} - {len(effectiveness_per_hazard)} hazards"
+            )
         else:
             error_count += 1
             error_details.append(
                 {
-                    "ActionID": climate_action["ActionID"],
+                    "ActionID": climate_action.get("ActionID", "Unknown"),
                     "ActionName": climate_action.get("ActionName", "Unknown"),
                     "Error": error_message,
                 }
@@ -212,6 +225,7 @@ def main():
     # Print summary
     print("\n=== Processing Summary ===")
     print(f"Total actions processed: {processed_count}")
+    print(f"Actions skipped: {skipped_count}")
     print(f"Actions with errors: {error_count}")
 
     if error_details:

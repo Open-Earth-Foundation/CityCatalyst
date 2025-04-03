@@ -187,7 +187,7 @@ export const api = createApi({
           country: string;
           regionLocode: string;
           countryLocode: string;
-          projectId: string;
+          projectId?: string;
         }
       >({
         query: (data) => ({
@@ -1044,8 +1044,15 @@ export const api = createApi({
           method: "GET",
           url: `/user/projects`,
         }),
-        transformResponse: (response: ProjectResponse[]) => response,
-        providesTags: ["ProjectUsers"],
+        transformResponse: (response: ProjectWithCities[]) => response,
+        providesTags: ["Projects"],
+      }),
+      getAllCitiesInSystem: builder.query({
+        query: () => ({
+          method: "GET",
+          url: `city/admin`,
+        }),
+        transformResponse: (response: { data: any }) => response.data,
       }),
       getAllCitiesInSystem: builder.query({
         query: () => ({
@@ -1147,5 +1154,6 @@ export const {
   useGetProjectUsersQuery,
   useGetUserAccessStatusQuery,
   useGetAllCitiesInSystemQuery,
+  useGetUserProjectsQuery,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

@@ -4711,7 +4711,7 @@
     ],
     "PowersAndMandates": null,
     "AdaptationEffectivenessPerHazard": null,
-    "biome": "wetlands"
+    "biome": "none"
   },
   {
     "ActionID": "ipcc_0061",
@@ -6480,7 +6480,7 @@
       "sea-level-rise": "high",
       "storms": "high"
     },
-    "biome": "coastal_marine"
+    "biome": "none"
   },
   {
     "ActionID": "ipcc_0104",
@@ -9056,7 +9056,7 @@
     ],
     "PowersAndMandates": ["national"],
     "AdaptationEffectivenessPerHazard": null,
-    "biome": "coastal_marine"
+    "biome": "none"
   },
   {
     "ActionID": "icare_0060",
@@ -12066,7 +12066,7 @@
     ],
     "PowersAndMandates": ["national"],
     "AdaptationEffectivenessPerHazard": null,
-    "biome": "tropical_rainforest"
+    "biome": "none"
   },
   {
     "ActionID": "icare_0135",
@@ -14087,7 +14087,7 @@
       "landslides": "high",
       "storms": "medium"
     },
-    "biome": "mountains"
+    "biome": "none"
   },
   {
     "ActionID": "icare_0184",

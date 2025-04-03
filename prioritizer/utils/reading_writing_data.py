@@ -76,7 +76,8 @@ def read_actions():
             "TimelineForImplementation": item.get("TimelineForImplementation"),
             "Dependencies": item.get("Dependencies"),
             "KeyPerformanceIndicators": item.get("KeyPerformanceIndicators"),
-            "PowersAndMandates": item.get("PowersAndMandates"),  # Added key
+            "PowersAndMandates": item.get("PowersAndMandates"),
+            "biome": item.get("biome"),
         }
         actions.append(action)
     return actions

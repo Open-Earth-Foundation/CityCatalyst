@@ -44,6 +44,7 @@
       "Percentage of urban development projects incorporating green spaces"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -93,6 +94,7 @@
       "Compliance rate with building standards"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -144,6 +146,7 @@
       "Improvement in indoor air quality"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -195,6 +198,7 @@
       "Feedback from building occupants on comfort and sustainability"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -244,6 +248,7 @@
       "Compliance rate with building standards"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -296,6 +301,7 @@
       "Compliance rate with existing building standards"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -348,6 +354,7 @@
       "Time taken for compliance with standards"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -400,6 +407,7 @@
       "Reduction in operational costs"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -452,6 +460,7 @@
       "Average payback period for energy efficiency investments"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -504,6 +513,7 @@
       "Return on investment (ROI) for retrofitting projects"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -556,6 +566,7 @@
       "Number of eco-friendly initiatives implemented"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -607,6 +618,7 @@
       "Reduction in energy consumption (MWh/year)"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -657,6 +669,7 @@
       "Number of new installations of solar, geothermal, or district energy systems"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -706,6 +719,7 @@
       "Percentage reduction in nitrogen oxides (NOx) emissions"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -756,6 +770,7 @@
       "Marine ecosystem health indicators"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "coastal_marine"
   },
   {
@@ -805,6 +820,7 @@
       "Number of logistics companies adopting sustainable practices"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -856,6 +872,7 @@
       "Investment in sustainable transportation infrastructure"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -907,6 +924,7 @@
       "Percentage of rail network electrified"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -959,6 +977,7 @@
       "Reduction in noise pollution"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -1011,6 +1030,7 @@
       "Operational efficiency improvements"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -1063,6 +1083,7 @@
       "Frequency of service improvements"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -1114,6 +1135,7 @@
       "Reduction in traffic congestion levels"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -1166,6 +1188,7 @@
       "Change in property values in 15/30-minute areas"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -1215,6 +1238,7 @@
       "Carbon footprint reduction associated with material bans"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -1264,6 +1288,7 @@
       "Operational efficiency of waste collection routes"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -1313,6 +1338,7 @@
       "Compliance with environmental regulations"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -1363,6 +1389,7 @@
       "Reduction in greenhouse gas emissions from waste management"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -1412,6 +1439,7 @@
       "Increase in landfill lifespan"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -1460,6 +1488,7 @@
       "Change in composting rates"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -1511,6 +1540,7 @@
       "Public awareness and education outreach metrics"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -1554,6 +1584,9 @@
       "Biodiversity health in coastal areas"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": {
+      "floods": "high"
+    },
     "biome": "coastal_marine"
   },
   {
@@ -1599,6 +1632,9 @@
       "Reduction in water-related conflicts"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": {
+      "droughts": "high"
+    },
     "biome": "none"
   },
   {
@@ -1642,6 +1678,9 @@
       "Public awareness and education on drainage issues"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": {
+      "floods": "high"
+    },
     "biome": "none"
   },
   {
@@ -1686,6 +1725,9 @@
       "Partnerships with local organizations for shelter management"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": {
+      "floods": "high"
+    },
     "biome": "coastal_marine"
   },
   {
@@ -1729,6 +1771,9 @@
       "Community engagement and participation in shading initiatives"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": {
+      "heatwaves": "high"
+    },
     "biome": "none"
   },
   {
@@ -1772,6 +1817,9 @@
       "Longevity and durability of materials used"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": {
+      "heatwaves": "high"
+    },
     "biome": "none"
   },
   {
@@ -1814,6 +1862,9 @@
       "Frequency of maintenance and operational efficiency of systems"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": {
+      "droughts": "high"
+    },
     "biome": "none"
   },
   {
@@ -1860,6 +1911,9 @@
       "Reduction in water scarcity incidents"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": {
+      "droughts": "high"
+    },
     "biome": "none"
   },
   {
@@ -1905,6 +1959,9 @@
       "Monitoring and reporting frequency"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": {
+      "droughts": "high"
+    },
     "biome": "none"
   },
   {
@@ -1949,6 +2006,9 @@
       "Assessment scores of community resilience before and after preparedness measures"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": {
+      "storms": "high"
+    },
     "biome": "none"
   },
   {
@@ -1992,6 +2052,9 @@
       "Frequency of drills and simulations conducted"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": {
+      "storms": "high"
+    },
     "biome": "none"
   },
   {
@@ -2036,6 +2099,9 @@
       "Environmental impact assessments post-relocation"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": {
+      "storms": "medium"
+    },
     "biome": "coastal_marine"
   },
   {
@@ -2079,6 +2145,9 @@
       "Impact on local water resources sustainability"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": {
+      "droughts": "high"
+    },
     "biome": "none"
   },
   {
@@ -2124,6 +2193,9 @@
       "Reduction in environmental impact assessments"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": {
+      "droughts": "medium"
+    },
     "biome": "none"
   },
   {
@@ -2173,6 +2245,7 @@
       "Increase in awareness of sustainable cooking methods"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -2215,6 +2288,7 @@
       "improved walkability index"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -2257,6 +2331,7 @@
       "reduction in car usage for short trips"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -2299,6 +2374,7 @@
       "emissions reduction per passenger kilometer"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -2341,6 +2417,7 @@
       "increased adoption of circular economy practices"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -2383,6 +2460,7 @@
       "decreased transport-related emissions"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -2425,6 +2503,7 @@
       "decreased transport-related emissions"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -2467,6 +2546,7 @@
       "decreased transport-related emissions"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -2510,6 +2590,7 @@
       "reduced operating costs"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -2552,6 +2633,7 @@
       "emissions reductions in freight logistics"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -2595,6 +2677,7 @@
       "increased accessibility for marginalized groups"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -2637,6 +2720,7 @@
       "infrastructure deployment metrics"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -2680,6 +2764,7 @@
       "availability of charging infrastructure"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -2724,6 +2809,7 @@
       "cost parity with diesel vehicles"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -2767,6 +2853,7 @@
       "share of lightweighted vehicles in the fleet"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -2810,6 +2897,7 @@
       "fuel cost savings"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -2855,6 +2943,7 @@
       "adherence to eco-driving practices among trained drivers"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -2897,6 +2986,7 @@
       "adoption rate of advanced aircraft designs"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -2941,6 +3031,7 @@
       "advancements in fuel production technologies"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -2983,6 +3074,7 @@
       "measurable reductions in transportation sector GHG emissions"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -3027,7 +3119,8 @@
       "advancements in bunkering and storage infrastructure"
     ],
     "PowersAndMandates": null,
-    "biome": "coastal_marine"
+    "AdaptationEffectivenessPerHazard": null,
+    "biome": "none"
   },
   {
     "ActionID": "ipcc_0021",
@@ -3070,6 +3163,7 @@
       "improvements in port infrastructure to support electric propulsion systems"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -3115,6 +3209,7 @@
       "efficiency improvements in port operations"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "coastal_marine"
   },
   {
@@ -3159,6 +3254,7 @@
       "recycling rates"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -3203,6 +3299,7 @@
       "reduced production of hazardous wastes"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -3248,6 +3345,7 @@
       "process controls"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -3290,6 +3388,7 @@
       "percentage of heat reused through high-efficiency systems"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -3332,6 +3431,7 @@
       "reduction in GHG emissions per ton of steel produced"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -3374,6 +3474,7 @@
       "reduction in GHG emissions from mining operations"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -3416,6 +3517,7 @@
       "reduction in GHG emissions from manufacturing processes"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -3458,6 +3560,7 @@
       "percentage improvement in process efficiency"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -3500,6 +3603,7 @@
       "energy savings in production stages"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -3542,6 +3646,7 @@
       "decrease in GHG emissions intensity in industrial processes"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -3584,6 +3689,7 @@
       "the number of CCS/CCU projects implemented"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -3626,6 +3732,7 @@
       "market penetration of CCU-derived products"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -3669,6 +3776,7 @@
       "operational capacity of CCS projects globally"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -3714,6 +3822,7 @@
       "reduction in GHG emissions from production processes"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -3757,6 +3866,7 @@
       "reduction in GHG emissions per unit of material produced"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -3799,6 +3909,7 @@
       "decrease in GHG emissions per unit of product lifecycle"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -3844,6 +3955,7 @@
       "resource recovery metrics"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -3886,6 +3998,7 @@
       "increased adoption of alternative materials in cement production"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -3928,6 +4041,7 @@
       "reduced greenhouse gas emissions from waste management"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -3970,6 +4084,7 @@
       "measurable decreases in associated emissions"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -4012,6 +4127,7 @@
       "decrease in GHG emissions from product manufacturing"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -4055,6 +4171,7 @@
       "reduction in GHG emissions from material production and waste"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -4097,6 +4214,7 @@
       "overall CO2 emissions reductions in cement production"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -4139,6 +4257,7 @@
       "improvement in recycling and reuse statistics"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -4181,6 +4300,7 @@
       "increased adoption of sustainable consumption practices"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -4224,7 +4344,8 @@
       "the amount of GHG emissions avoided per year"
     ],
     "PowersAndMandates": null,
-    "biome": "none"
+    "AdaptationEffectivenessPerHazard": null,
+    "biome": "tropical_rainforest"
   },
   {
     "ActionID": "ipcc_0053",
@@ -4268,6 +4389,7 @@
       "ecosystem service metrics such as water regulation and soil quality"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -4313,6 +4435,7 @@
       "reduction in soil erosion and water-related issues"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -4357,6 +4480,7 @@
       "Improvement in biodiversity and soil health metrics"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -4401,6 +4525,7 @@
       "measurable reduction in GHG emissions from targeted areas"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "grassland_savanna"
   },
   {
@@ -4447,6 +4572,7 @@
       "improvements in biodiversity and water quality metrics"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "wetlands"
   },
   {
@@ -4491,6 +4617,7 @@
       "policies to incentivize restoration efforts"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "wetlands"
   },
   {
@@ -4534,7 +4661,8 @@
       "ecosystem resilience"
     ],
     "PowersAndMandates": null,
-    "biome": "wetlands"
+    "AdaptationEffectivenessPerHazard": null,
+    "biome": "coastal_marine"
   },
   {
     "ActionID": "ipcc_0060",
@@ -4582,7 +4710,8 @@
       "water quality improvements"
     ],
     "PowersAndMandates": null,
-    "biome": "coastal_marine"
+    "AdaptationEffectivenessPerHazard": null,
+    "biome": "wetlands"
   },
   {
     "ActionID": "ipcc_0061",
@@ -4625,6 +4754,7 @@
       "biodiversity enhancements"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -4669,6 +4799,7 @@
       "displacement of fossil fuel use through pyrolysis gases"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -4716,6 +4847,7 @@
       "adoption rates of agroforestry systems"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -4758,6 +4890,7 @@
       "increase in production efficiency per unit of livestock product"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -4802,6 +4935,7 @@
       "adoption rate of improved rice cultivation techniques"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "wetlands"
   },
   {
@@ -4845,6 +4979,7 @@
       "reduction in fertilizer use per hectare"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -4889,6 +5024,7 @@
       "enhanced biogas production"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -4933,6 +5069,7 @@
       "GHG emissions reduction from displaced fossil fuel use"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -4977,6 +5114,7 @@
       "improvement in public health metrics related to diet-related diseases"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -5020,6 +5158,7 @@
       "measurable GHG emission reductions across the food supply chain"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -5063,6 +5202,7 @@
       "increase in recycled wood product utilization rates"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -5107,6 +5247,7 @@
       "lower per capita energy use in urban areas"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -5151,6 +5292,7 @@
       "improved accessibility to jobs and housing"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -5193,6 +5335,7 @@
       "proportion of urban population with access to green areas"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -5240,6 +5383,7 @@
       "improved urban air quality"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -5285,6 +5429,7 @@
       "improvement in sustainable forestry practices"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -5330,6 +5475,7 @@
       "improved thermal comfort"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -5376,6 +5522,7 @@
       "employment opportunities created in waste management"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -5412,6 +5559,10 @@
       "Number of roads raised"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": {
+      "floods": "high",
+      "sea-level-rise": "medium"
+    },
     "biome": "coastal_marine"
   },
   {
@@ -5449,6 +5600,12 @@
       "Restoration of ecosystem services in retreat zones"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": {
+      "sea-level-rise": "high",
+      "floods": "high",
+      "storms": "high",
+      "landslides": "high"
+    },
     "biome": "coastal_marine"
   },
   {
@@ -5487,6 +5644,12 @@
       "Carbon sequestration capacity"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": {
+      "sea-level-rise": "high",
+      "floods": "high",
+      "storms": "high",
+      "droughts": "medium"
+    },
     "biome": "coastal_marine"
   },
   {
@@ -5528,6 +5691,13 @@
       "Increase in habitat connectivity"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": {
+      "droughts": "medium",
+      "floods": "high",
+      "sea-level-rise": "high",
+      "wildfires": "medium",
+      "storms": "high"
+    },
     "biome": "none"
   },
   {
@@ -5580,6 +5750,12 @@
       "Enhanced ecosystem health"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": {
+      "storms": "high",
+      "sea-level-rise": "high",
+      "heatwaves": "high",
+      "floods": "high"
+    },
     "biome": "none"
   },
   {
@@ -5615,6 +5791,11 @@
       "Increased capacity for housing and energy systems"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": {
+      "floods": "high",
+      "droughts": "medium",
+      "heatwaves": "high"
+    },
     "biome": "none"
   },
   {
@@ -5650,6 +5831,10 @@
       "Implementation rate of eco-parks and eco-gardens in vulnerable areas"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": {
+      "floods": "high",
+      "landslides": "high"
+    },
     "biome": "none"
   },
   {
@@ -5691,6 +5876,11 @@
       "Improved resilience of coastal areas"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": {
+      "floods": "medium",
+      "heatwaves": "medium",
+      "sea-level-rise": "medium"
+    },
     "biome": "coastal_marine"
   },
   {
@@ -5727,6 +5917,11 @@
       "Adoption of index-based insurance products"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": {
+      "droughts": "high",
+      "floods": "medium",
+      "storms": "medium"
+    },
     "biome": "none"
   },
   {
@@ -5763,6 +5958,10 @@
       "reduction in overexploitation of marine species"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": {
+      "storms": "high",
+      "sea-level-rise": "high"
+    },
     "biome": "coastal_marine"
   },
   {
@@ -5799,6 +5998,12 @@
       "Participation in social protection programs"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": {
+      "droughts": "high",
+      "heatwaves": "high",
+      "floods": "medium",
+      "storms": "medium"
+    },
     "biome": "none"
   },
   {
@@ -5835,6 +6040,12 @@
       "number of resilient health facilities developed"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": {
+      "droughts": "high",
+      "floods": "high",
+      "sea-level-rise": "high",
+      "diseases": "high"
+    },
     "biome": "none"
   },
   {
@@ -5873,6 +6084,11 @@
       "Improved water and sanitation access metrics"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": {
+      "heatwaves": "high",
+      "floods": "high",
+      "droughts": "high"
+    },
     "biome": "none"
   },
   {
@@ -5911,6 +6127,11 @@
       "Community adoption of protective measures"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": {
+      "heatwaves": "high",
+      "droughts": "medium",
+      "storms": "high"
+    },
     "biome": "none"
   },
   {
@@ -5948,6 +6169,13 @@
       "Reduction in climate-related yield losses"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": {
+      "droughts": "high",
+      "heatwaves": "high",
+      "floods": "medium",
+      "wildfires": "low",
+      "storms": "medium"
+    },
     "biome": "none"
   },
   {
@@ -5986,6 +6214,12 @@
       "Shortened supply chains"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": {
+      "droughts": "high",
+      "floods": "high",
+      "storms": "high",
+      "heatwaves": "high"
+    },
     "biome": "none"
   },
   {
@@ -6024,6 +6258,12 @@
       "Reduction in GHG emissions from food systems"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": {
+      "droughts": "high",
+      "heatwaves": "medium",
+      "floods": "medium",
+      "wildfires": "low"
+    },
     "biome": "none"
   },
   {
@@ -6066,6 +6306,11 @@
       "stability in agricultural yields"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": {
+      "droughts": "high",
+      "floods": "high",
+      "storms": "high"
+    },
     "biome": "none"
   },
   {
@@ -6105,6 +6350,10 @@
       "Regional collaboration metrics"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": {
+      "droughts": "high",
+      "heatwaves": "medium"
+    },
     "biome": "none"
   },
   {
@@ -6141,6 +6390,11 @@
       "Enhanced urban water infiltration capacity"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": {
+      "droughts": "high",
+      "floods": "high",
+      "storms": "high"
+    },
     "biome": "none"
   },
   {
@@ -6177,6 +6431,11 @@
       "Enhanced management of transboundary fisheries"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": {
+      "sea-level-rise": "medium",
+      "storms": "medium",
+      "droughts": "low"
+    },
     "biome": "coastal_marine"
   },
   {
@@ -6217,6 +6476,10 @@
       "Integration of adaptive co-management in fisheries governance"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": {
+      "sea-level-rise": "high",
+      "storms": "high"
+    },
     "biome": "coastal_marine"
   },
   {
@@ -6258,6 +6521,11 @@
       "Improvement in migrant livelihoods and employment rates"
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": {
+      "floods": "high",
+      "landslides": "medium",
+      "sea-level-rise": "medium"
+    },
     "biome": "none"
   },
   {
@@ -6300,6 +6568,7 @@
       "Percentage of industrial energy needs met by solar power systems (%)."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -6341,6 +6610,7 @@
       "Estimated reduction in emissions (tCO₂e/year) due to the energy efficiency of labeled buildings."
     ],
     "PowersAndMandates": ["national"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -6382,6 +6652,7 @@
       "Estimated reduction in CO₂ equivalent emissions from retrofitting measures."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -6424,6 +6695,7 @@
       "Estimated reduction in CO₂ equivalent emissions from reduced peak-hour energy usage."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -6466,6 +6738,7 @@
       "Estimated reduction in CO₂ equivalent emissions from wind energy adoption."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -6508,6 +6781,7 @@
       "Annual reduction in CO₂ equivalent emissions from rural electrification projects."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -6550,6 +6824,7 @@
       "Estimated reduction in CO₂ equivalent emissions from energy-efficient HVAC systems."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -6592,6 +6867,7 @@
       "Reduction in energy losses across the grid (%)."
     ],
     "PowersAndMandates": ["national"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -6634,6 +6910,7 @@
       "Estimated reduction in CO₂ equivalent emissions from industrial cogeneration."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -6676,6 +6953,7 @@
       "Estimated reduction in CO₂ equivalent emissions from green building practices."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -6718,6 +6996,7 @@
       "Estimated reduction in CO₂ equivalent emissions from renewable energy adoption."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -6760,6 +7039,7 @@
       "Annual reduction in CO2 equivalent emissions from the adoption of solar energy"
     ],
     "PowersAndMandates": ["national"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -6802,6 +7082,7 @@
       "Estimated reduction in CO₂ equivalent emissions from energy-efficient refrigeration systems."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -6844,6 +7125,7 @@
       "The estimated reduction in CO₂ equivalent emissions from energy savings is given."
     ],
     "PowersAndMandates": ["national"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -6886,6 +7168,7 @@
       "Estimated reduction in CO₂ equivalent emissions from replacing fossil fuels with renewable sources."
     ],
     "PowersAndMandates": ["national"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -6928,6 +7211,7 @@
       "Estimated reduction in CO₂ equivalent emissions from the adoption of solar thermal energy."
     ],
     "PowersAndMandates": ["national"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -6970,6 +7254,7 @@
       "Estimated reduction in CO₂ equivalent emissions from improved waste management practices."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -7012,6 +7297,7 @@
       "Estimated reduction in CO₂ equivalent emissions from sustainable logistics measures (tons/year)."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -7054,6 +7340,7 @@
       "Estimated reduction in CO₂ equivalent emissions from the energy transition in public facilities."
     ],
     "PowersAndMandates": ["state"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -7096,6 +7383,7 @@
       "Annual reduction in CO₂ equivalent emissions from circular economy initiatives."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -7138,6 +7426,7 @@
       "Reduction in CO₂ equivalent emissions from reduced motorized transportation (tons/year)."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -7180,6 +7469,7 @@
       "Estimated reduction in CO₂ equivalent emissions from municipal energy efficiency efforts."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -7221,6 +7511,7 @@
       "Increased reliability and uptime of the electrical grid (%)."
     ],
     "PowersAndMandates": ["state"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -7263,6 +7554,7 @@
       "GHG emissions avoided (tons CO₂e)"
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -7305,6 +7597,7 @@
       "Decrease in energy bills for low-income households (USD)."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -7347,6 +7640,7 @@
       "Annual reduction in GHG emissions due to optimized energy use (tons CO₂e)."
     ],
     "PowersAndMandates": ["state"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -7389,6 +7683,7 @@
       "Increase in renewable energy capacity installed (MW)."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -7431,6 +7726,7 @@
       "Temperature resilience improvements in monitored buildings (°C)."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -7473,6 +7769,7 @@
       "Decrease in building-related GHG emissions (tons CO₂e)."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -7514,6 +7811,7 @@
       "Public awareness increase measured via surveys (%)."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -7556,6 +7854,7 @@
       "GHG emissions avoided by biogas use (tons CO₂e)."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -7598,6 +7897,7 @@
       "Annual GHG emissions reduction (tons CO₂e)."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -7639,6 +7939,7 @@
       "GHG emissions avoided by replacing fossil fuels (tons CO₂e)."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -7681,6 +7982,7 @@
       "Increase in clean technology-related jobs created due to tax incentives."
     ],
     "PowersAndMandates": ["state"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -7722,6 +8024,7 @@
       "Estimated reduction in CO₂ equivalent emissions from energy-efficient industrial processes."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -7764,6 +8067,7 @@
       "Adoption rate of renewable technologies among the public."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -7806,6 +8110,7 @@
       "Annual GHG emissions avoided due to energy efficiency (tons CO₂e)."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -7847,6 +8152,7 @@
       "GHG emissions avoided through solar energy production (tons CO₂e)"
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -7889,6 +8195,7 @@
       "Reduction in GHG emissions from industrial processes (tons CO₂e)."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -7931,6 +8238,7 @@
       "GHG emissions avoided (tons CO₂e)."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -7973,6 +8281,7 @@
       "Reduction in GHG emissions (tons CO₂e) attributed to developed technologies."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -8015,6 +8324,7 @@
       "Reduction in municipal carbon emissions due to --renewable energy adoption (tons CO₂e/year)."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -8057,6 +8367,7 @@
       "Cost savings for residents or businesses using geothermal energy compared to traditional heating methods (USD/year)."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -8099,6 +8410,7 @@
       "Reduction in urban transport emissions (%)."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -8141,6 +8453,7 @@
       "Percentage of rural households adopting sustainable practices."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -8183,6 +8496,7 @@
       "Increase in green jobs created through circular economy and zero-carbon initiatives (%)."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -8225,6 +8539,7 @@
       "Increase in product certifications for sustainable practices (%)"
     ],
     "PowersAndMandates": ["national"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -8267,6 +8582,7 @@
       "Reduction in CO₂ emissions avoided by photovoltaic generation (tCO₂e/year)."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -8309,6 +8625,7 @@
       "Annual GHG emissions avoided by renewable energy generation (tons CO₂e)."
     ],
     "PowersAndMandates": ["state"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -8351,6 +8668,7 @@
       "Increase in carbon sequestration in agroforestry systems (tons of CO₂e/year)."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -8393,6 +8711,7 @@
       "Reduction in CO₂ emissions related to electricity consumption (tCO₂e/year)."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -8435,6 +8754,7 @@
       "Reduction in energy costs for participating municipalities (USD)."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -8477,6 +8797,7 @@
       "Volume of recyclable materials collected by cooperatives (tons/year)."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -8519,6 +8840,7 @@
       "GHG emissions avoided (tons CO₂e)."
     ],
     "PowersAndMandates": ["state"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -8561,6 +8883,7 @@
       "Number of cities or regions adopting innovations developed through partnerships."
     ],
     "PowersAndMandates": ["state"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -8603,6 +8926,7 @@
       "Accuracy of emission reduction reports (% verified)."
     ],
     "PowersAndMandates": ["national"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -8645,6 +8969,7 @@
       "Reduction in private vehicle usage (number of trips avoided/year)."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -8687,6 +9012,7 @@
       "Annual reduction in GHG emissions (tons CO₂e)."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -8729,7 +9055,8 @@
       "GHG emissions reduction from port and airport modernization (tons CO₂e)."
     ],
     "PowersAndMandates": ["national"],
-    "biome": "none"
+    "AdaptationEffectivenessPerHazard": null,
+    "biome": "coastal_marine"
   },
   {
     "ActionID": "icare_0060",
@@ -8771,6 +9098,7 @@
       "Public satisfaction rate with modular transport systems (%)."
     ],
     "PowersAndMandates": ["state"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -8813,6 +9141,7 @@
       "Maintenance cost reduction for electric machinery compared to diesel counterparts (%)."
     ],
     "PowersAndMandates": ["state"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -8855,6 +9184,7 @@
       "Reduction in net GHG emissions from targeted sectors (tons CO₂e)."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -8897,6 +9227,7 @@
       "GHG emissions avoided through transport electrification (tons CO₂e)."
     ],
     "PowersAndMandates": ["state"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -8939,6 +9270,7 @@
       "GHG emissions avoided (tons CO₂e)."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -8981,6 +9313,7 @@
       "GHG emissions avoided by hydrogen adoption (tons CO₂e)."
     ],
     "PowersAndMandates": ["state"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -9023,6 +9356,7 @@
       "GHG emissions avoided through proper waste management (tons CO₂e)."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -9065,6 +9399,7 @@
       "Reduction in lead time for EV component delivery (days)."
     ],
     "PowersAndMandates": ["national"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -9107,6 +9442,7 @@
       "Reduction in noise pollution levels in urban areas"
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -9149,6 +9485,7 @@
       "Reduction of cultivated areas in high-risk climate zones (hectares or %)\""
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -9191,6 +9528,7 @@
       "Reduction in raw material costs for manufacturers (%)."
     ],
     "PowersAndMandates": ["state"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -9233,6 +9571,7 @@
       "Market share of sustainable materials compared to traditional materials in local industries (%)."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -9275,6 +9614,7 @@
       "Percentage of key industries engaged in emissions reduction partnerships (%)."
     ],
     "PowersAndMandates": ["national"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -9317,6 +9657,7 @@
       "Percentage of local businesses receiving support for transitioning (%)."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -9359,6 +9700,7 @@
       "Reduction in carbon emissions in industries participating in research projects (tons of CO₂/year)."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -9401,6 +9743,7 @@
       "Increase in adoption of renewable energy sources by industries (%)."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -9443,6 +9786,7 @@
       "Number of facilities transitioning to low-emission fuel sources"
     ],
     "PowersAndMandates": ["state"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -9485,6 +9829,7 @@
       "Cost reduction achieved through alternative material adoption (%)."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -9527,6 +9872,7 @@
       "Amount of waste-to-energy conversion achieved (MWh/year)"
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -9569,6 +9915,7 @@
       "Average time to implement energy efficiency measures post-audit (months)."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -9611,6 +9958,7 @@
       "Number of partnerships established for sustainable cement innovation."
     ],
     "PowersAndMandates": ["state"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -9653,6 +10001,7 @@
       "Increase in the use of recycled materials in final products (%)"
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -9695,6 +10044,7 @@
       "Reduction in average energy costs for industries that transitioned to renewables (%)."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -9737,6 +10087,7 @@
       "Water savings in industrial processes due to the adoption of cleaner technologies (liters/unit)."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -9779,6 +10130,7 @@
       "Growth in biodiversity in agroforestry areas (% of identified species)."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -9821,6 +10173,7 @@
       "Impact on total production costs due to the adoption of agroecological practices (%)."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -9863,6 +10216,7 @@
       "Public satisfaction rate with the free transportation initiative (%)."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -9905,6 +10259,7 @@
       "Reduction in tire wear rates for vehicles using the new pavement (%)."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -9947,6 +10302,7 @@
       "Reduction in traffic congestion caused by delivery vehicles (%)."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -9989,6 +10345,7 @@
       "Public acceptance rate of prioritized routes for sustainable vehicles (%)."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -10031,6 +10388,7 @@
       "Number of businesses utilizing micro-logistics hubs for deliveries."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -10073,6 +10431,7 @@
       "Increase in agricultural yield attributed to improved monitoring techniques (%)."
     ],
     "PowersAndMandates": ["state"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -10115,6 +10474,7 @@
       "Percentage of biomethane sourced locally versus imported."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -10157,6 +10517,7 @@
       "Number of tax incentives or subsidies granted (in R$ or number of beneficiaries)."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -10199,6 +10560,7 @@
       "Reduction in the use of chemical fertilizers and pesticides (kilograms/hectare/year)."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -10241,6 +10603,7 @@
       "Reduction in CO₂ emissions through distributed generation (tCO₂e/year)."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -10283,6 +10646,7 @@
       "Reduction in the use of synthetic inputs (e.g., fertilizers, pesticides)."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -10325,6 +10689,7 @@
       "Number of regenerative agriculture pilot projects implemented."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -10367,6 +10732,7 @@
       "Percentage of farmers trained to operate low-emission machinery."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -10409,6 +10775,7 @@
       "Reduction in water usage for agriculture (liters or m³/hectare/year)."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -10451,6 +10818,7 @@
       "Post-event adoption of clean energy technologies by participants (%)."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -10493,6 +10861,7 @@
       "Annual reduction in GHG emissions (tons CO₂e)."
     ],
     "PowersAndMandates": ["state"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -10535,6 +10904,7 @@
       "GHG emissions avoided through reduced energy losses (tons CO₂e)."
     ],
     "PowersAndMandates": ["state"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -10577,6 +10947,7 @@
       "Reduction of water pollution in monitored water bodies."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -10619,6 +10990,7 @@
       "Annual reduction in methane (CH₄) emissions converted to CO₂ equivalent."
     ],
     "PowersAndMandates": ["state"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -10661,6 +11033,7 @@
       "Estimated reduction in CO₂ equivalent emissions due to proper construction waste management."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -10703,6 +11076,7 @@
       "Annual estimated reduction in CO₂ equivalent emissions through material reuse and recycling."
     ],
     "PowersAndMandates": ["state"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -10745,6 +11119,7 @@
       "Volume of wastewater treated compared to volume collected (system efficiency, %)."
     ],
     "PowersAndMandates": ["state"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -10787,6 +11162,7 @@
       "Estimated reduction in CO₂ equivalent emissions due to increased recycling rates."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -10829,6 +11205,7 @@
       "Estimated reduction in CO₂ equivalent emissions from the replacement of conventional vehicles."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -10871,6 +11248,7 @@
       "Estimated reduction in CO₂ equivalent emissions from adopting energy efficiency measures."
     ],
     "PowersAndMandates": ["national"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -10913,6 +11291,7 @@
       "Estimated reduction in CO₂ equivalent emissions from replacing fossil fuels with renewables."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -10955,6 +11334,7 @@
       "Estimated reduction in CO₂ equivalent emissions due to increased public transportation use."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -10997,6 +11377,7 @@
       "Estimated reduction in CO₂ equivalent emissions from the shift to cycling."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -11039,6 +11420,7 @@
       "The estimated reduction in methane emissions from organic waste decomposition in landfills is a key indicator of environmental impact."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -11081,6 +11463,7 @@
       "Estimated reduction in CO₂ equivalent emissions from energy-efficient public procurement."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -11123,6 +11506,7 @@
       "Estimated reduction in CO₂ equivalent emissions from the adoption of electric bike-sharing."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -11165,6 +11549,7 @@
       "Improvement in local biodiversity indices within eco-park areas."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -11207,6 +11592,7 @@
       "Reduction of greenhouse gas emissions (CH₄ and CO₂) from organic waste (tCO₂e/year)."
     ],
     "PowersAndMandates": ["state"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -11249,6 +11635,7 @@
       "Reduction of CO₂ emissions compared to fossil fuel use (tCO₂e/year)."
     ],
     "PowersAndMandates": ["national"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -11291,6 +11678,7 @@
       "Participation of airlines in carbon offsetting programmes (%)."
     ],
     "PowersAndMandates": ["national"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -11333,6 +11721,7 @@
       "Reduction of CO₂ emissions from aviation through the use of alternative fuels (tCO₂e/year)."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -11375,6 +11764,7 @@
       "Annual reduction in greenhouse gas emissions (tCO₂e) due to regularisation."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -11417,6 +11807,7 @@
       "Amount of carbon sequestered or emissions avoided through PES actions (tCO₂e/year)."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -11459,6 +11850,7 @@
       "Reduction in soil degradation or increase in vegetation cover (hectares)."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -11501,6 +11893,7 @@
       "Reduced vulnerability of properties to climate risk (%).\""
     ],
     "PowersAndMandates": ["state"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -11543,6 +11936,7 @@
       "Number of agroecological producers benefiting from public purchases."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -11585,6 +11979,7 @@
       "Reduction in emissions associated with food transport (tCO₂e)."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -11627,6 +12022,7 @@
       "Reduction in urban heat island effect temperatures (°C)"
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -11669,7 +12065,8 @@
       "Amount of emissions avoided by reducing deforestation (tCO₂e)."
     ],
     "PowersAndMandates": ["national"],
-    "biome": "none"
+    "AdaptationEffectivenessPerHazard": null,
+    "biome": "tropical_rainforest"
   },
   {
     "ActionID": "icare_0135",
@@ -11711,6 +12108,7 @@
       "Estimated reduction in CO2 equivalent emissions from fleet electrification."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -11753,6 +12151,7 @@
       "Acreage or number of properties benefiting from conservation practices as a result of incentives."
     ],
     "PowersAndMandates": ["state"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -11795,6 +12194,7 @@
       "Reduction of CO₂ emissions related to public lighting (tCO₂e/year)."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -11837,6 +12237,7 @@
       "Energy savings achieved in participating buildings (kWh/year)."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -11878,6 +12279,7 @@
       "Revenue generated by the implementation of the urban congestion charge (R$)."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -11914,6 +12316,9 @@
       "Habitat health"
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": {
+      "landslides": "high"
+    },
     "biome": "mountains"
   },
   {
@@ -11946,6 +12351,10 @@
       "Maintenance costs"
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": {
+      "diseases": "low",
+      "floods": "low"
+    },
     "biome": "wetlands"
   },
   {
@@ -11982,6 +12391,9 @@
       "Sanitation coverage"
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": {
+      "floods": "high"
+    },
     "biome": "none"
   },
   {
@@ -12018,6 +12430,7 @@
       "Community participation"
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -12063,6 +12476,16 @@
       "Community resilience"
     ],
     "PowersAndMandates": ["state"],
+    "AdaptationEffectivenessPerHazard": {
+      "droughts": "medium",
+      "heatwaves": "medium",
+      "diseases": "medium",
+      "landslides": "medium",
+      "wildfires": "medium",
+      "floods": "medium",
+      "sea-level-rise": "medium",
+      "storms": "medium"
+    },
     "biome": "none"
   },
   {
@@ -12107,6 +12530,14 @@
       "."
     ],
     "PowersAndMandates": ["national"],
+    "AdaptationEffectivenessPerHazard": {
+      "heatwaves": "high",
+      "diseases": "medium",
+      "landslides": "medium",
+      "floods": "high",
+      "storms": "high",
+      "droughts": "medium"
+    },
     "biome": "none"
   },
   {
@@ -12143,6 +12574,7 @@
       "Reduction in dependency on external food supplies for vulnerable households (%)."
     ],
     "PowersAndMandates": ["national"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -12188,6 +12620,16 @@
       "Number of training sessions held for city planners on climate justice."
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": {
+      "droughts": "low",
+      "heatwaves": "low",
+      "diseases": "low",
+      "landslides": "low",
+      "floods": "medium",
+      "wildfires": "low",
+      "storms": "medium",
+      "sea-level-rise": "medium"
+    },
     "biome": "none"
   },
   {
@@ -12233,6 +12675,16 @@
       "Public engagement in forum initiatives (measured by event attendance or surveys)"
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": {
+      "droughts": "medium",
+      "diseases": "medium",
+      "heatwaves": "medium",
+      "landslides": "low",
+      "floods": "medium",
+      "wildfires": "medium",
+      "sea-level-rise": "medium",
+      "storms": "medium"
+    },
     "biome": "none"
   },
   {
@@ -12269,6 +12721,13 @@
       "Increase in biodiversity indicators on managed lands (e.g., species count, habitat quality)"
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": {
+      "droughts": "medium",
+      "heatwaves": "medium",
+      "landslides": "high",
+      "floods": "medium",
+      "wildfires": "medium"
+    },
     "biome": "none"
   },
   {
@@ -12305,6 +12764,11 @@
       "Number of new water supply sources implemented."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": {
+      "droughts": "high",
+      "heatwaves": "high",
+      "diseases": "medium"
+    },
     "biome": "none"
   },
   {
@@ -12347,6 +12811,13 @@
       "Public investments allocated to ZEIS areas (currency amount)."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": {
+      "sea-level-rise": "medium",
+      "floods": "medium",
+      "landslides": "low",
+      "diseases": "medium",
+      "heatwaves": "high"
+    },
     "biome": "none"
   },
   {
@@ -12383,6 +12854,12 @@
       "Number of local communities engaged in restoration projects"
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": {
+      "droughts": "high",
+      "heatwaves": "high",
+      "landslides": "high",
+      "floods": "high"
+    },
     "biome": "none"
   },
   {
@@ -12419,6 +12896,11 @@
       "Number of communities benefiting from coastal management measures."
     ],
     "PowersAndMandates": ["national"],
+    "AdaptationEffectivenessPerHazard": {
+      "heatwaves": "medium",
+      "sea-level-rise": "high",
+      "floods": "high"
+    },
     "biome": "coastal_marine"
   },
   {
@@ -12454,6 +12936,9 @@
       "Maintenance costs"
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": {
+      "floods": "medium"
+    },
     "biome": "none"
   },
   {
@@ -12490,6 +12975,11 @@
       "Monitored water quality (IQA)."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": {
+      "heatwaves": "medium",
+      "floods": "high",
+      "landslides": "medium"
+    },
     "biome": "none"
   },
   {
@@ -12526,6 +13016,11 @@
       "Number of direct beneficiaries."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": {
+      "heatwaves": "high",
+      "landslides": "low",
+      "floods": "medium"
+    },
     "biome": "none"
   },
   {
@@ -12562,6 +13057,12 @@
       "Reduction of erosion and siltation of water bodies (tonnes/year)."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": {
+      "heatwaves": "medium",
+      "landslides": "high",
+      "floods": "high",
+      "droughts": "medium"
+    },
     "biome": "none"
   },
   {
@@ -12598,6 +13099,9 @@
       "Investments allocated to adaptation infrastructure (currency amount)."
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": {
+      "sea-level-rise": "high"
+    },
     "biome": "coastal_marine"
   },
   {
@@ -12634,6 +13138,11 @@
       "Tons of CO₂ equivalent sequestered per yea"
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": {
+      "floods": "high",
+      "sea-level-rise": "high",
+      "heatwaves": "high"
+    },
     "biome": "coastal_marine"
   },
   {
@@ -12675,6 +13184,16 @@
       "Number of proposals accepted and implemented through public consultations."
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": {
+      "storms": "low",
+      "sea-level-rise": "low",
+      "wildfires": "low",
+      "floods": "low",
+      "landslides": "low",
+      "diseases": "medium",
+      "heatwaves": "medium",
+      "droughts": "medium"
+    },
     "biome": "none"
   },
   {
@@ -12707,6 +13226,12 @@
       "Number of stakeholders participating in policy research discussions annually."
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": {
+      "floods": "high",
+      "landslides": "high",
+      "diseases": "low",
+      "heatwaves": "medium"
+    },
     "biome": "none"
   },
   {
@@ -12743,6 +13268,12 @@
       "Number of conservation programs strengthened annually."
     ],
     "PowersAndMandates": ["state"],
+    "AdaptationEffectivenessPerHazard": {
+      "floods": "high",
+      "landslides": "high",
+      "heatwaves": "medium",
+      "diseases": "medium"
+    },
     "biome": "none"
   },
   {
@@ -12779,6 +13310,9 @@
       "Fire suppression effetiveness"
     ],
     "PowersAndMandates": ["state"],
+    "AdaptationEffectivenessPerHazard": {
+      "wildfires": "medium"
+    },
     "biome": "none"
   },
   {
@@ -12815,6 +13349,11 @@
       "Mitigation effectiveness"
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": {
+      "droughts": "high",
+      "floods": "high",
+      "storms": "high"
+    },
     "biome": "none"
   },
   {
@@ -12851,6 +13390,7 @@
       "Policy and program influence"
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -12887,6 +13427,10 @@
       "Average time for data processing and dissemination from monitoring systems (hours)."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": {
+      "heatwaves": "high",
+      "storms": "medium"
+    },
     "biome": "none"
   },
   {
@@ -12923,6 +13467,9 @@
       "Percentage reduction in water shortages or service interruptions during drought periods, measured through water supply metrics."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": {
+      "heatwaves": "medium"
+    },
     "biome": "none"
   },
   {
@@ -12959,6 +13506,9 @@
       "Percentage reduction in water scarcity during drought periods (%)."
     ],
     "PowersAndMandates": ["state"],
+    "AdaptationEffectivenessPerHazard": {
+      "droughts": "medium"
+    },
     "biome": "none"
   },
   {
@@ -13004,6 +13554,16 @@
       "Percentage reduction in casualties and damages during extreme weather events annually (%)."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": {
+      "droughts": "medium",
+      "heatwaves": "high",
+      "diseases": "medium",
+      "landslides": "high",
+      "floods": "high",
+      "wildfires": "high",
+      "sea-level-rise": "low",
+      "storms": "high"
+    },
     "biome": "none"
   },
   {
@@ -13040,6 +13600,12 @@
       "Number of urban rehabilitation projects completed annually."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": {
+      "storms": "high",
+      "floods": "high",
+      "landslides": "high",
+      "heatwaves": "medium"
+    },
     "biome": "none"
   },
   {
@@ -13072,6 +13638,12 @@
       "Percentage reduction in damage caused by extreme weather events annually (%)."
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": {
+      "droughts": "low",
+      "landslides": "medium",
+      "floods": "high",
+      "storms": "high"
+    },
     "biome": "none"
   },
   {
@@ -13108,6 +13680,11 @@
       "Reduction in the number of people affected by climate-related disasters annually."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": {
+      "landslides": "high",
+      "floods": "high",
+      "storms": "medium"
+    },
     "biome": "none"
   },
   {
@@ -13143,6 +13720,10 @@
       "Number of reported flood incidents."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": {
+      "floods": "high",
+      "storms": "medium"
+    },
     "biome": "none"
   },
   {
@@ -13175,6 +13756,7 @@
       "Improvement in soil health indicators in urban agricultural areas."
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": null,
     "biome": "none"
   },
   {
@@ -13210,6 +13792,11 @@
       "Community engagement in green space activities."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": {
+      "heatwaves": "high",
+      "floods": "high",
+      "wildfires": "medium"
+    },
     "biome": "none"
   },
   {
@@ -13255,6 +13842,16 @@
       "Investment in climate mitigation and adaptation projects."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": {
+      "storms": "medium",
+      "sea-level-rise": "medium",
+      "wildfires": "medium",
+      "floods": "medium",
+      "landslides": "medium",
+      "diseases": "medium",
+      "heatwaves": "medium",
+      "droughts": "medium"
+    },
     "biome": "none"
   },
   {
@@ -13291,6 +13888,9 @@
       "Percentage of flood-prone areas with early-warning systems installed"
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": {
+      "floods": "medium"
+    },
     "biome": "none"
   },
   {
@@ -13327,6 +13927,10 @@
       "Increase in green spaces linked to water features (hectares)."
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": {
+      "heatwaves": "medium",
+      "floods": "high"
+    },
     "biome": "none"
   },
   {
@@ -13363,6 +13967,11 @@
       "Percentage of public spaces complying with new permeable surface regulations."
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": {
+      "floods": "high",
+      "landslides": "medium",
+      "heatwaves": "medium"
+    },
     "biome": "none"
   },
   {
@@ -13399,6 +14008,10 @@
       "Flood risk reduction."
     ],
     "PowersAndMandates": ["state"],
+    "AdaptationEffectivenessPerHazard": {
+      "landslides": "high",
+      "floods": "high"
+    },
     "biome": "none"
   },
   {
@@ -13431,6 +14044,9 @@
       "Water usage and conservation"
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": {
+      "heatwaves": "high"
+    },
     "biome": "none"
   },
   {
@@ -13467,7 +14083,11 @@
       "Reduction in economic losses"
     ],
     "PowersAndMandates": ["state"],
-    "biome": "none"
+    "AdaptationEffectivenessPerHazard": {
+      "landslides": "high",
+      "storms": "medium"
+    },
+    "biome": "mountains"
   },
   {
     "ActionID": "icare_0184",
@@ -13503,7 +14123,10 @@
       "Performance of drainage systems"
     ],
     "PowersAndMandates": ["state"],
-    "biome": "mountains"
+    "AdaptationEffectivenessPerHazard": {
+      "landslides": "medium"
+    },
+    "biome": "none"
   },
   {
     "ActionID": "icare_0185",
@@ -13539,6 +14162,9 @@
       "Community health outcomes"
     ],
     "PowersAndMandates": ["national"],
+    "AdaptationEffectivenessPerHazard": {
+      "diseases": "medium"
+    },
     "biome": "none"
   },
   {
@@ -13575,6 +14201,9 @@
       "Infrastructure condition"
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": {
+      "sea-level-rise": "medium"
+    },
     "biome": "coastal_marine"
   },
   {
@@ -13610,6 +14239,9 @@
       "Mitigation effectiveness"
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": {
+      "floods": "medium"
+    },
     "biome": "none"
   },
   {
@@ -13646,6 +14278,12 @@
       "Number of individuals receiving medical assistance due to environmental health issues."
     ],
     "PowersAndMandates": null,
+    "AdaptationEffectivenessPerHazard": {
+      "droughts": "low",
+      "heatwaves": "medium",
+      "diseases": "high",
+      "floods": "low"
+    },
     "biome": "none"
   },
   {
@@ -13682,6 +14320,12 @@
       "Increase in the diversity of integrated systems (e.g., crops, forestry, and livestock)"
     ],
     "PowersAndMandates": ["local"],
+    "AdaptationEffectivenessPerHazard": {
+      "droughts": "medium",
+      "heatwaves": "medium",
+      "landslides": "medium",
+      "floods": "low"
+    },
     "biome": "none"
   }
 ]

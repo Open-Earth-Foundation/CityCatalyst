@@ -323,17 +323,16 @@ def filter_actions_by_biome(actions, city):
         print(f"City biome: {city_biome}")
         
         for action in actions:
-            print(action)
             if action["biome"] != "none":
                 print(f"Action biome: {action['biome']}")
                 if action["biome"] == city_biome:
                     actions_final.append(action)
                 else:
-                    print(f"actions skipped{i}")
                     i += 1
                     pass
             else:
                 actions_final.append(action)
+    print(f"actions skipped: {i}")
     return actions_final
 
 

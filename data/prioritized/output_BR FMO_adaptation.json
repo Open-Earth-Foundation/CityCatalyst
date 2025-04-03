@@ -1,204 +1,202 @@
-{
-    "actions": [
-        {
-            "locode": "USA001",
-            "cityName": "Metropolis",
-            "region": "East Coast",
-            "regionName": "USA East",
-            "actionId": "A1",
-            "actionName": "New Building Standards",
-            "actionPriority": 1,
-            "explanation": "This action is highly prioritized because it significantly improves energy efficiency in urban buildings, a major source of emissions in the city. It is well aligned with the dense urban fabric and environmental context of Metropolis, ensuring cost-effective and timely benefits. The approach also reduces long-term climate risks by enhancing overall building resilience."
-        },
-        {
-            "locode": "USA001",
-            "cityName": "Metropolis",
-            "region": "East Coast",
-            "regionName": "USA East",
-            "actionId": "A2",
-            "actionName": "Bus Emissions Retrofit",
-            "actionPriority": 2,
-            "explanation": "This intervention focuses on upgrading urban bus fleets to incorporate cleaner technologies, thereby contributing to gradual improvements in air quality. It targets the transportation sector and addresses environmental challenges with a mindful approach to implementation. However, the action entails longer timelines and certain technological dependencies that need careful consideration."
-        },
-        {
-            "locode": "USA001",
-            "cityName": "Metropolis",
-            "region": "East Coast",
-            "regionName": "USA East",
-            "actionId": "A3",
-            "actionName": "Renewable Energy Expansion",
-            "actionPriority": 3,
-            "explanation": "This action emphasizes the development of renewable energy sources to reduce dependence on fossil fuels and lower overall emissions. It leverages the city's capacity to integrate sustainable energy solutions while aligning with long-term environmental objectives. The strategy represents a balanced intervention aimed at enhancing urban sustainability."
-        },
-        {
-            "locode": "USA001",
-            "cityName": "Metropolis",
-            "region": "East Coast",
-            "regionName": "USA East",
-            "actionId": "A4",
-            "actionName": "Urban Green Spaces Development",
-            "actionPriority": 4,
-            "explanation": "Developing urban green spaces contributes to carbon sequestration and improves the quality of the urban environment. The initiative not only mitigates urban heat island effects but also provides enhanced community well-being. It is well integrated into the city’s sustainable planning framework, making it a valuable ecological strategy."
-        },
-        {
-            "locode": "USA001",
-            "cityName": "Metropolis",
-            "region": "East Coast",
-            "regionName": "USA East",
-            "actionId": "A5",
-            "actionName": "Public Transit Enhancement",
-            "actionPriority": 5,
-            "explanation": "Enhancing public transit systems is an effective measure to reduce vehicle emissions and ease urban congestion. This action supports sustainable commuting options that align with the city’s environmental goals. Its focus on cleaner mobility also contributes positively to overall urban air quality."
-        },
-        {
-            "locode": "USA001",
-            "cityName": "Metropolis",
-            "region": "East Coast",
-            "regionName": "USA East",
-            "actionId": "A6",
-            "actionName": "Energy Efficiency Programs",
-            "actionPriority": 6,
-            "explanation": "Energy efficiency programs are designed to minimize energy consumption and lower greenhouse gas emissions through optimized resource use. They are compatible with existing urban infrastructure, requiring fewer dependencies for successful implementation. This approach presents a cost-effective and straightforward way to achieve significant environmental benefits."
-        },
-        {
-            "locode": "USA001",
-            "cityName": "Metropolis",
-            "region": "East Coast",
-            "regionName": "USA East",
-            "actionId": "A7",
-            "actionName": "Smart Grid Implementation",
-            "actionPriority": 7,
-            "explanation": "Implementing a smart grid modernizes the energy distribution network and enhances the efficient use of power resources. The action facilitates higher integration of renewable energy and improves overall system reliability. Although it requires upfront infrastructural investments, its long-term benefits in emissions control are substantial."
-        },
-        {
-            "locode": "USA001",
-            "cityName": "Metropolis",
-            "region": "East Coast",
-            "regionName": "USA East",
-            "actionId": "A8",
-            "actionName": "Water Conservation Initiatives",
-            "actionPriority": 8,
-            "explanation": "Water conservation initiatives help ensure sustainable management of urban water resources, which is essential in adapting to climate variability. These measures can also curtail the energy demands associated with water processing. The action is well-suited to the city’s environmental conditions and promotes overall resource sustainability."
-        },
-        {
-            "locode": "USA001",
-            "cityName": "Metropolis",
-            "region": "East Coast",
-            "regionName": "USA East",
-            "actionId": "A9",
-            "actionName": "Waste Management Improvements",
-            "actionPriority": 9,
-            "explanation": "Upgrading waste management systems reduces emissions associated with improper disposal and organic waste processing. Emphasizing recycling and efficient treatment, this action supports urban sustainability goals. It integrates effectively with current infrastructure, making it a reliable measure for environmental improvement."
-        },
-        {
-            "locode": "USA001",
-            "cityName": "Metropolis",
-            "region": "East Coast",
-            "regionName": "USA East",
-            "actionId": "A10",
-            "actionName": "Sustainable Urban Planning",
-            "actionPriority": 10,
-            "explanation": "Sustainable urban planning lays the groundwork for balanced city growth that harmonizes development with environmental stewardship. It coordinates land use, transportation, and green infrastructure to optimize long-term emissions reduction. This strategic action fosters an integrated approach to urban development and climate resilience."
-        },
-        {
-            "locode": "USA001",
-            "cityName": "Metropolis",
-            "region": "East Coast",
-            "regionName": "USA East",
-            "actionId": "A11",
-            "actionName": "Coastal Flood Defenses",
-            "actionPriority": 11,
-            "explanation": "Coastal flood defenses are critical for protecting vulnerable urban areas from the impacts of sea-level rise and extreme weather. The action strengthens both infrastructure and natural barriers to address immediate climate hazards. It represents a focused approach to risk reduction that is tailored to the city's coastal context."
-        },
-        {
-            "locode": "USA001",
-            "cityName": "Metropolis",
-            "region": "East Coast",
-            "regionName": "USA East",
-            "actionId": "A12",
-            "actionName": "Air Quality Monitoring Expansion",
-            "actionPriority": 12,
-            "explanation": "Expanding air quality monitoring is essential for building a detailed understanding of pollution sources and trends within the city. This action supports informed decision-making and helps target future climate interventions effectively. It serves as a fundamental tool to guide and enhance overall environmental management strategies."
-        },
-        {
-            "locode": "USA001",
-            "cityName": "Metropolis",
-            "region": "East Coast",
-            "regionName": "USA East",
-            "actionId": "A13",
-            "actionName": "Forest Conservation Efforts",
-            "actionPriority": 13,
-            "explanation": "Forest conservation efforts maintain vital natural carbon sinks that are crucial for offsetting urban emissions. The action promotes biodiversity while indirectly supporting the city's emission reduction targets. It is an environmentally compatible measure that underpins long-term ecological balance."
-        },
-        {
-            "locode": "USA001",
-            "cityName": "Metropolis",
-            "region": "East Coast",
-            "regionName": "USA East",
-            "actionId": "A14",
-            "actionName": "Electric Vehicle Incentives",
-            "actionPriority": 14,
-            "explanation": "Incentivizing electric vehicles encourages a transition towards cleaner transportation alternatives. This action helps reduce fossil fuel dependency and minimizes tailpipe emissions in the urban environment. It contributes to a broader shift in consumer behavior, supporting the city’s sustainability objectives."
-        },
-        {
-            "locode": "USA001",
-            "cityName": "Metropolis",
-            "region": "East Coast",
-            "regionName": "USA East",
-            "actionId": "A15",
-            "actionName": "Climate Education and Engagement",
-            "actionPriority": 15,
-            "explanation": "Climate education and engagement build community awareness and support for sustainable practices. This action fosters a culture of resilience by empowering citizens with knowledge about climate challenges and solutions. It plays a crucial role in ensuring long-term commitment to environmental initiatives in the city."
-        },
-        {
-            "locode": "USA001",
-            "cityName": "Metropolis",
-            "region": "East Coast",
-            "regionName": "USA East",
-            "actionId": "A16",
-            "actionName": "Urban Heat Island Mitigation",
-            "actionPriority": 16,
-            "explanation": "Mitigating urban heat islands involves interventions that lower ambient temperatures through increased vegetation and reflective materials. This action is tailored to the urban context, reducing energy demands for cooling and improving public health. It offers an indirect pathway to lower emissions by curbing excessive energy use."
-        },
-        {
-            "locode": "USA001",
-            "cityName": "Metropolis",
-            "region": "East Coast",
-            "regionName": "USA East",
-            "actionId": "A17",
-            "actionName": "Disaster Preparedness Programs",
-            "actionPriority": 17,
-            "explanation": "Disaster preparedness programs enhance the city's ability to respond to climate-induced hazards and emergencies. The action emphasizes proactive risk management and swift recovery strategies, ensuring public safety. It integrates seamlessly with broader efforts to build a resilient urban infrastructure."
-        },
-        {
-            "locode": "USA001",
-            "cityName": "Metropolis",
-            "region": "East Coast",
-            "regionName": "USA East",
-            "actionId": "A18",
-            "actionName": "Agricultural Resilience Enhancements",
-            "actionPriority": 18,
-            "explanation": "Enhancing agricultural resilience is key to maintaining sustainable food systems in the face of climate challenges. This action supports adaptive farming practices that mitigate environmental impacts and secure local food supplies. It bridges rural and urban interests by promoting both economic and ecological sustainability."
-        },
-        {
-            "locode": "USA001",
-            "cityName": "Metropolis",
-            "region": "East Coast",
-            "regionName": "USA East",
-            "actionId": "A19",
-            "actionName": "Industrial Emission Controls",
-            "actionPriority": 19,
-            "explanation": "Industrial emission controls focus on reducing pollution from high-emission sectors, contributing directly to overall emission reduction efforts. This action aligns with stringent regulatory measures and modernizes industrial practices. It is implemented with careful planning to balance operational challenges with significant environmental gains."
-        },
-        {
-            "locode": "USA001",
-            "cityName": "Metropolis",
-            "region": "East Coast",
-            "regionName": "USA East",
-            "actionId": "A20",
-            "actionName": "Renewable Transportation Infrastructure",
-            "actionPriority": 20,
-            "explanation": "Investing in renewable transportation infrastructure supports the development of low-carbon mobility systems across the city. This action fosters cleaner commuting options and enhances overall urban sustainability through innovative design. It reinforces the city's commitment to environmentally responsible transportation by integrating renewable energy solutions."
-        }
-    ]
-}
+[
+    {
+        "locode": "BR FMO",
+        "cityName": "Formosa",
+        "region": "GO",
+        "regionName": "Goi\u00e1s",
+        "actionId": "icare_0169",
+        "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
+        "actionPriority": 1,
+        "explanation": "Ranked #1 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR FMO",
+        "cityName": "Formosa",
+        "region": "GO",
+        "regionName": "Goi\u00e1s",
+        "actionId": "icare_0176",
+        "actionName": "Development of Climate Action Plan",
+        "actionPriority": 2,
+        "explanation": "Ranked #2 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR FMO",
+        "cityName": "Formosa",
+        "region": "GO",
+        "regionName": "Goi\u00e1s",
+        "actionId": "icare_0162",
+        "actionName": "Strengthen programs for control and conservation of protected areas",
+        "actionPriority": 3,
+        "explanation": "Ranked #3 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR FMO",
+        "cityName": "Formosa",
+        "region": "GO",
+        "regionName": "Goi\u00e1s",
+        "actionId": "icare_0152",
+        "actionName": "Recovery of degraded areas",
+        "actionPriority": 4,
+        "explanation": "Ranked #4 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR FMO",
+        "cityName": "Formosa",
+        "region": "GO",
+        "regionName": "Goi\u00e1s",
+        "actionId": "icare_0151",
+        "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
+        "actionPriority": 5,
+        "explanation": "Ranked #5 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR FMO",
+        "cityName": "Formosa",
+        "region": "GO",
+        "regionName": "Goi\u00e1s",
+        "actionId": "ipcc_0094",
+        "actionName": "Access to health care",
+        "actionPriority": 6,
+        "explanation": "Ranked #6 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR FMO",
+        "cityName": "Formosa",
+        "region": "GO",
+        "regionName": "Goi\u00e1s",
+        "actionId": "ipcc_0096",
+        "actionName": "Farm/fishery improvements",
+        "actionPriority": 7,
+        "explanation": "Ranked #7 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR FMO",
+        "cityName": "Formosa",
+        "region": "GO",
+        "regionName": "Goi\u00e1s",
+        "actionId": "ipcc_0097",
+        "actionName": "Food storage/distribution improvements",
+        "actionPriority": 8,
+        "explanation": "Ranked #8 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR FMO",
+        "cityName": "Formosa",
+        "region": "GO",
+        "regionName": "Goi\u00e1s",
+        "actionId": "icare_0145",
+        "actionName": "Strengthen the healthcare network to attend to climate victims",
+        "actionPriority": 9,
+        "explanation": "Ranked #9 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR FMO",
+        "cityName": "Formosa",
+        "region": "GO",
+        "regionName": "Goi\u00e1s",
+        "actionId": "icare_0157",
+        "actionName": "Maintenance and Revitalization of Riparian Forests",
+        "actionPriority": 10,
+        "explanation": "Ranked #10 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR FMO",
+        "cityName": "Formosa",
+        "region": "GO",
+        "regionName": "Goi\u00e1s",
+        "actionId": "icare_0149",
+        "actionName": "Encourage sustainable land use practices",
+        "actionPriority": 11,
+        "explanation": "Ranked #11 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR FMO",
+        "cityName": "Formosa",
+        "region": "GO",
+        "regionName": "Goi\u00e1s",
+        "actionId": "ipcc_0093",
+        "actionName": "Availability of health infrastructure",
+        "actionPriority": 12,
+        "explanation": "Ranked #12 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR FMO",
+        "cityName": "Formosa",
+        "region": "GO",
+        "regionName": "Goi\u00e1s",
+        "actionId": "icare_0148",
+        "actionName": "Create the Municipal Climate Change Forum",
+        "actionPriority": 13,
+        "explanation": "Ranked #13 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR FMO",
+        "cityName": "Formosa",
+        "region": "GO",
+        "regionName": "Goi\u00e1s",
+        "actionId": "icare_0181",
+        "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
+        "actionPriority": 14,
+        "explanation": "Ranked #14 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR FMO",
+        "cityName": "Formosa",
+        "region": "GO",
+        "regionName": "Goi\u00e1s",
+        "actionId": "icare_0144",
+        "actionName": "Creation of a Financial Support Program to Adress Extreme Weather Events",
+        "actionPriority": 15,
+        "explanation": "Ranked #15 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR FMO",
+        "cityName": "Formosa",
+        "region": "GO",
+        "regionName": "Goi\u00e1s",
+        "actionId": "ipcc_0092",
+        "actionName": "Social safety nets",
+        "actionPriority": 16,
+        "explanation": "Ranked #16 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR FMO",
+        "cityName": "Formosa",
+        "region": "GO",
+        "regionName": "Goi\u00e1s",
+        "actionId": "icare_0164",
+        "actionName": "Hydrological Monitoring System with Telemetry Stations",
+        "actionPriority": 17,
+        "explanation": "Ranked #17 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR FMO",
+        "cityName": "Formosa",
+        "region": "GO",
+        "regionName": "Goi\u00e1s",
+        "actionId": "icare_0156",
+        "actionName": "Implementation of urban gardens",
+        "actionPriority": 18,
+        "explanation": "Ranked #18 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR FMO",
+        "cityName": "Formosa",
+        "region": "GO",
+        "regionName": "Goi\u00e1s",
+        "actionId": "icare_0180",
+        "actionName": "Implement permeable pavements and increase green areas in roadways",
+        "actionPriority": 19,
+        "explanation": "Ranked #19 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR FMO",
+        "cityName": "Formosa",
+        "region": "GO",
+        "regionName": "Goi\u00e1s",
+        "actionId": "ipcc_0098",
+        "actionName": "Behaviour change in diets and food waste",
+        "actionPriority": 20,
+        "explanation": "Ranked #20 by tournament ranking algorithm"
+    }
+]

@@ -1,204 +1,202 @@
-{
-    "actions": [
-        {
-            "locode": "CITY001",
-            "cityName": "Example City",
-            "region": "North",
-            "regionName": "Northern Region",
-            "actionId": "A1",
-            "actionName": "New Building Standards",
-            "actionPriority": 1,
-            "explanation": "For Example City, New Building Standards has been prioritized due to its capability to significantly reduce emissions across the expanding urban infrastructure. This action is well-suited to the city's rapid growth and addresses one of the largest emission sources by ensuring that future developments meet high sustainability standards. Its implementation supports long-term resilience and offers multiple co-benefits such as improved energy efficiency and reduced climate risks."
-        },
-        {
-            "locode": "CITY001",
-            "cityName": "Example City",
-            "region": "North",
-            "regionName": "Northern Region",
-            "actionId": "A2",
-            "actionName": "Renewable Energy Incentives",
-            "actionPriority": 2,
-            "explanation": "In Example City, Renewable Energy Incentives are recognized for their strong potential to shift the energy mix towards cleaner sources. This action is particularly relevant given the city's high energy demand and favorable geographic conditions for renewable installations. It also encourages local investment and supports economic growth while promoting sustainable energy practices."
-        },
-        {
-            "locode": "CITY001",
-            "cityName": "Example City",
-            "region": "North",
-            "regionName": "Northern Region",
-            "actionId": "A3",
-            "actionName": "Urban Tree Planting",
-            "actionPriority": 3,
-            "explanation": "Urban Tree Planting is prioritized in Example City as it not only enhances local air quality but also increases urban green cover, contributing to a healthier environment. The initiative is well aligned with the city's landscape and tackles the urban heat island effect by adding natural cooling benefits. It also provides community well-being improvements and supports overall environmental resilience."
-        },
-        {
-            "locode": "CITY001",
-            "cityName": "Example City",
-            "region": "North",
-            "regionName": "Northern Region",
-            "actionId": "A4",
-            "actionName": "Energy Efficiency Programs",
-            "actionPriority": 4,
-            "explanation": "Energy Efficiency Programs are highly valued in Example City because they directly reduce energy consumption while lowering operational costs across multiple sectors. This action supports the city's broader environmental goals by minimizing waste and enhancing sustainability. Its design leverages existing infrastructure and aligns effectively with the city's ability to implement efficient energy solutions."
-        },
-        {
-            "locode": "CITY001",
-            "cityName": "Example City",
-            "region": "North",
-            "regionName": "Northern Region",
-            "actionId": "A5",
-            "actionName": "Coastal Flood Defenses",
-            "actionPriority": 5,
-            "explanation": "Coastal Flood Defenses have been prioritized for Example City as they address critical risks associated with sea level rise and extreme weather events. This action is essential for protecting vulnerable coastal areas and ensuring that key infrastructure is safeguarded. Its targeted risk reduction approach supports long-term adaptation and aligns with the city's unique environmental challenges."
-        },
-        {
-            "locode": "CITY001",
-            "cityName": "Example City",
-            "region": "North",
-            "regionName": "Northern Region",
-            "actionId": "A6",
-            "actionName": "Stormwater Management",
-            "actionPriority": 6,
-            "explanation": "Stormwater Management is a key action for Example City as it effectively mitigates flood risks and enhances water quality in urban settings. The strategy is highly compatible with the city’s climatic conditions, addressing hazards associated with heavy rainfall. Furthermore, it contributes to improved urban livability while supporting sustainable infrastructure development."
-        },
-        {
-            "locode": "CITY001",
-            "cityName": "Example City",
-            "region": "North",
-            "regionName": "Northern Region",
-            "actionId": "A7",
-            "actionName": "Public Transit Expansion",
-            "actionPriority": 7,
-            "explanation": "Public Transit Expansion has been prioritized in Example City because it plays a vital role in reducing emissions from the transportation sector. By providing efficient mobility options and reducing traffic congestion, it improves overall urban air quality. The initiative also meets socio-demographic needs and supports a more sustainable, connected community."
-        },
-        {
-            "locode": "CITY001",
-            "cityName": "Example City",
-            "region": "North",
-            "regionName": "Northern Region",
-            "actionId": "A8",
-            "actionName": "Smart Grid Deployments",
-            "actionPriority": 8,
-            "explanation": "Smart Grid Deployments have been given priority in Example City because they enhance energy distribution efficiency and bolster grid resilience. This action contributes to improved energy system management and supports emissions reduction indirectly through optimized energy use. Its technological orientation complements the city's modernization efforts and supports sustainable development."
-        },
-        {
-            "locode": "CITY001",
-            "cityName": "Example City",
-            "region": "North",
-            "regionName": "Northern Region",
-            "actionId": "A9",
-            "actionName": "Electric Vehicle Subsidies",
-            "actionPriority": 9,
-            "explanation": "Electric Vehicle Subsidies are valued in Example City for promoting the transition to cleaner transportation alternatives. By reducing entry barriers for sustainable mobility, this action supports the reduction of urban emissions. It also stimulates market growth in green technologies and aligns with broader national climate strategies for cleaner air."
-        },
-        {
-            "locode": "CITY001",
-            "cityName": "Example City",
-            "region": "North",
-            "regionName": "Northern Region",
-            "actionId": "A10",
-            "actionName": "Bus Emissions",
-            "actionPriority": 10,
-            "explanation": "In Example City, Bus Emissions reduction initiatives have received moderate priority as they contribute to lowering transportation sector pollutants. While the approach offers tangible benefits, it faces challenges such as fleet turnover rates and current infrastructure limits. Its impact is recognized, but comparatively, other actions offer broader systemic advantages in the city's climate strategy."
-        },
-        {
-            "locode": "CITY001",
-            "cityName": "Example City",
-            "region": "North",
-            "regionName": "Northern Region",
-            "actionId": "A11",
-            "actionName": "Waste Management Optimization",
-            "actionPriority": 11,
-            "explanation": "Waste Management Optimization is important for Example City as it tackles methane emissions and enhances resource recovery practices. The action aligns well with local waste handling challenges and supports environmental and public health improvements. It is considered a strong contributor to the city's efforts to achieve a cleaner, more sustainable urban environment."
-        },
-        {
-            "locode": "CITY001",
-            "cityName": "Example City",
-            "region": "North",
-            "regionName": "Northern Region",
-            "actionId": "A12",
-            "actionName": "Water Conservation Measures",
-            "actionPriority": 12,
-            "explanation": "Water Conservation Measures have been prioritized in Example City due to their role in addressing water scarcity and promoting efficient resource use. This action is well-integrated with the city's environmental conditions and supports both ecological balance and economic sustainability. Its emphasis on long-term resource management contributes to overall urban resilience."
-        },
-        {
-            "locode": "CITY001",
-            "cityName": "Example City",
-            "region": "North",
-            "regionName": "Northern Region",
-            "actionId": "A13",
-            "actionName": "Green Roof Initiatives",
-            "actionPriority": 13,
-            "explanation": "Green Roof Initiatives are implemented in Example City as a means to improve building insulation and reduce energy consumption. They add significant value by managing stormwater and lowering urban temperatures, which enhances overall environmental quality. The approach also contributes to increased urban biodiversity and offers aesthetic as well as functional benefits."
-        },
-        {
-            "locode": "CITY001",
-            "cityName": "Example City",
-            "region": "North",
-            "regionName": "Northern Region",
-            "actionId": "A14",
-            "actionName": "Urban Cooling Pavilions",
-            "actionPriority": 14,
-            "explanation": "Urban Cooling Pavilions have been introduced in Example City to address the urban heat island effect and create comfortable public spaces. They serve as a community-focused solution that improves thermal comfort during heat events. This intervention supports both environmental adaptation and public health without requiring significant alterations to existing infrastructure."
-        },
-        {
-            "locode": "CITY001",
-            "cityName": "Example City",
-            "region": "North",
-            "regionName": "Northern Region",
-            "actionId": "A15",
-            "actionName": "Sustainable Agriculture Support",
-            "actionPriority": 15,
-            "explanation": "Sustainable Agriculture Support is tailored for Example City to encourage farming practices that reduce emissions and improve soil health in rural-adjacent zones. This action aligns with local food system development and supports ecosystem services. It offers a balanced approach by integrating economic benefits with environmental sustainability, even if its immediate urban impact is indirect."
-        },
-        {
-            "locode": "CITY001",
-            "cityName": "Example City",
-            "region": "North",
-            "regionName": "Northern Region",
-            "actionId": "A16",
-            "actionName": "Disaster Preparedness Training",
-            "actionPriority": 16,
-            "explanation": "Disaster Preparedness Training is valued in Example City for building community resilience against climate-related hazards. This educational initiative equips citizens with the necessary skills to respond effectively to emergencies. It serves as a proactive measure to reduce long-term risks by fostering a culture of preparedness and risk reduction."
-        },
-        {
-            "locode": "CITY001",
-            "cityName": "Example City",
-            "region": "North",
-            "regionName": "Northern Region",
-            "actionId": "A17",
-            "actionName": "Climate Education Campaigns",
-            "actionPriority": 17,
-            "explanation": "Climate Education Campaigns are an essential action in Example City because they promote public awareness and engagement in sustainable practices. This initiative fosters informed community participation, which can lead to gradual but lasting behavioral changes toward climate resilience. It lays the groundwork for a cultural shift that supports broader sustainability goals over time."
-        },
-        {
-            "locode": "CITY001",
-            "cityName": "Example City",
-            "region": "North",
-            "regionName": "Northern Region",
-            "actionId": "A18",
-            "actionName": "Renewable Heat Incentives",
-            "actionPriority": 18,
-            "explanation": "Renewable Heat Incentives target a specific area in Example City by encouraging the transition away from fossil fuels in heating systems. This action diversifies the clean energy portfolio and contributes to systematic emissions reduction. Although its impact is tempered by existing infrastructure challenges, it supports long-term climate objectives and energy diversification."
-        },
-        {
-            "locode": "CITY001",
-            "cityName": "Example City",
-            "region": "North",
-            "regionName": "Northern Region",
-            "actionId": "A19",
-            "actionName": "Low-Carbon Infrastructure",
-            "actionPriority": 19,
-            "explanation": "Low-Carbon Infrastructure is designed to integrate sustainable practices into Example City's urban development projects. This initiative emphasizes reducing emissions over the long term by embedding climate considerations into core infrastructure planning. It aligns with the city’s strategic goal of promoting sustainable growth while minimizing environmental impacts."
-        },
-        {
-            "locode": "CITY001",
-            "cityName": "Example City",
-            "region": "North",
-            "regionName": "Northern Region",
-            "actionId": "A20",
-            "actionName": "Community Resilience Hubs",
-            "actionPriority": 20,
-            "explanation": "Community Resilience Hubs have been incorporated in Example City's action plan to strengthen local capacity in dealing with climate challenges. This community-centric approach facilitates rapid response and resource sharing during emergencies, thereby enhancing overall resilience. While it requires initial investment in capacity building, it is a strategic measure to foster a unified and prepared community."
-        }
-    ]
-}
+[
+    {
+        "locode": "BR RNV",
+        "cityName": "Ribeir\u00e3o das Neves",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0169",
+        "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
+        "actionPriority": 1,
+        "explanation": "Ranked #1 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR RNV",
+        "cityName": "Ribeir\u00e3o das Neves",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0176",
+        "actionName": "Development of Climate Action Plan",
+        "actionPriority": 2,
+        "explanation": "Ranked #2 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR RNV",
+        "cityName": "Ribeir\u00e3o das Neves",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0162",
+        "actionName": "Strengthen programs for control and conservation of protected areas",
+        "actionPriority": 3,
+        "explanation": "Ranked #3 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR RNV",
+        "cityName": "Ribeir\u00e3o das Neves",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0152",
+        "actionName": "Recovery of degraded areas",
+        "actionPriority": 4,
+        "explanation": "Ranked #4 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR RNV",
+        "cityName": "Ribeir\u00e3o das Neves",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0151",
+        "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
+        "actionPriority": 5,
+        "explanation": "Ranked #5 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR RNV",
+        "cityName": "Ribeir\u00e3o das Neves",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0145",
+        "actionName": "Strengthen the healthcare network to attend to climate victims",
+        "actionPriority": 6,
+        "explanation": "Ranked #6 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR RNV",
+        "cityName": "Ribeir\u00e3o das Neves",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0157",
+        "actionName": "Maintenance and Revitalization of Riparian Forests",
+        "actionPriority": 7,
+        "explanation": "Ranked #7 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR RNV",
+        "cityName": "Ribeir\u00e3o das Neves",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0149",
+        "actionName": "Encourage sustainable land use practices",
+        "actionPriority": 8,
+        "explanation": "Ranked #8 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR RNV",
+        "cityName": "Ribeir\u00e3o das Neves",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "ipcc_0094",
+        "actionName": "Access to health care",
+        "actionPriority": 9,
+        "explanation": "Ranked #9 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR RNV",
+        "cityName": "Ribeir\u00e3o das Neves",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "ipcc_0097",
+        "actionName": "Food storage/distribution improvements",
+        "actionPriority": 10,
+        "explanation": "Ranked #10 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR RNV",
+        "cityName": "Ribeir\u00e3o das Neves",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0181",
+        "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
+        "actionPriority": 11,
+        "explanation": "Ranked #11 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR RNV",
+        "cityName": "Ribeir\u00e3o das Neves",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0148",
+        "actionName": "Create the Municipal Climate Change Forum",
+        "actionPriority": 12,
+        "explanation": "Ranked #12 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR RNV",
+        "cityName": "Ribeir\u00e3o das Neves",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0156",
+        "actionName": "Implementation of urban gardens",
+        "actionPriority": 13,
+        "explanation": "Ranked #13 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR RNV",
+        "cityName": "Ribeir\u00e3o das Neves",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "ipcc_0096",
+        "actionName": "Farm/fishery improvements",
+        "actionPriority": 14,
+        "explanation": "Ranked #14 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR RNV",
+        "cityName": "Ribeir\u00e3o das Neves",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "ipcc_0093",
+        "actionName": "Availability of health infrastructure",
+        "actionPriority": 15,
+        "explanation": "Ranked #15 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR RNV",
+        "cityName": "Ribeir\u00e3o das Neves",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "ipcc_0092",
+        "actionName": "Social safety nets",
+        "actionPriority": 16,
+        "explanation": "Ranked #16 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR RNV",
+        "cityName": "Ribeir\u00e3o das Neves",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0144",
+        "actionName": "Creation of a Financial Support Program to Adress Extreme Weather Events",
+        "actionPriority": 17,
+        "explanation": "Ranked #17 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR RNV",
+        "cityName": "Ribeir\u00e3o das Neves",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0164",
+        "actionName": "Hydrological Monitoring System with Telemetry Stations",
+        "actionPriority": 18,
+        "explanation": "Ranked #18 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR RNV",
+        "cityName": "Ribeir\u00e3o das Neves",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0175",
+        "actionName": "Recovery and preservation of green areas",
+        "actionPriority": 19,
+        "explanation": "Ranked #19 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR RNV",
+        "cityName": "Ribeir\u00e3o das Neves",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0180",
+        "actionName": "Implement permeable pavements and increase green areas in roadways",
+        "actionPriority": 20,
+        "explanation": "Ranked #20 by tournament ranking algorithm"
+    }
+]

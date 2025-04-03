@@ -1,204 +1,202 @@
-{
-    "actions": [
-        {
-            "locode": "US-NYC",
-            "cityName": "New York",
-            "region": "US",
-            "regionName": "United States",
-            "actionId": "A1",
-            "actionName": "New Building Standards",
-            "actionPriority": 1,
-            "explanation": "For the city New York, new building standards were chosen over bus emissions because they effectively target the building sector, which is a significant source of emissions in a densely populated urban environment. This action offers substantial improvements in energy efficiency and urban resilience by promoting sustainable design practices. It aligns well with ongoing infrastructure upgrades, ensuring long-term environmental compatibility. The approach supports a forward-thinking strategy to reduce overall emissions while enhancing community well-being."
-        },
-        {
-            "locode": "US-LAX",
-            "cityName": "Los Angeles",
-            "region": "US",
-            "regionName": "United States",
-            "actionId": "A2",
-            "actionName": "Transit Electrification",
-            "actionPriority": -1,
-            "explanation": "In Los Angeles, transit electrification was prioritized over renewable energy expansion because the city's transportation sector is a major contributor to emissions. This action directly addresses urban congestion and air quality issues while leveraging existing transit frameworks. It fits naturally into the city’s efforts to modernize public transportation and reduce dependency on fossil fuels. Overall, the strategy supports a cleaner urban mobility system that is immediately beneficial for public health and environmental quality."
-        },
-        {
-            "locode": "US-CHI",
-            "cityName": "Chicago",
-            "region": "US",
-            "regionName": "United States",
-            "actionId": "A3",
-            "actionName": "Green Urban Planning",
-            "actionPriority": 1,
-            "explanation": "For Chicago, green urban planning was given precedence as it offers a holistic means to address the urban emission challenges while also enhancing livability. This action integrates innovative design, green spaces, and sustainable policies to create a more resilient city environment. It provides multiple co-benefits such as improved public spaces and community health. The approach ensures that urban development aligns with environmental sustainability and future-proofing measures."
-        },
-        {
-            "locode": "US-HOU",
-            "cityName": "Houston",
-            "region": "US",
-            "regionName": "United States",
-            "actionId": "A4",
-            "actionName": "Flood Risk Management",
-            "actionPriority": -1,
-            "explanation": "In Houston, flood risk management was prioritized over energy efficiency in refineries due to the city's vulnerability to climate-induced flooding events. This action directly tackles risks that affect critical infrastructure and community safety in flood-prone areas. Its comprehensive design offers robust risk reduction while ensuring long-term urban resilience. The strategy is well-tailored to address local environmental hazards inherent to Houston’s coastal and industrial context."
-        },
-        {
-            "locode": "US-PHX",
-            "cityName": "Phoenix",
-            "region": "US",
-            "regionName": "United States",
-            "actionId": "A5",
-            "actionName": "Solar Energy Adoption",
-            "actionPriority": 1,
-            "explanation": "Phoenix opted for solar energy adoption over water conservation programs, leveraging its abundant sunlight to reduce reliance on fossil fuels. This action aligns well with the city’s natural advantages and sustainability goals. By enhancing renewable energy capacity, it offers significant emission reductions and economic development opportunities in the clean energy sector. The strategy is a natural fit with Phoenix’s broader clean energy initiatives and urban development plans."
-        },
-        {
-            "locode": "GB-LON",
-            "cityName": "London",
-            "region": "GB",
-            "regionName": "United Kingdom",
-            "actionId": "A6",
-            "actionName": "Green Public Transportation",
-            "actionPriority": -1,
-            "explanation": "For London, green public transportation was preferred over building retrofitting because it has a more direct impact on reducing emissions in the city's busy transit networks. This action enhances urban mobility and contributes to improved air quality by encouraging sustainable travel options. It resonates with the city’s commitment to high-capacity and environmentally friendly public services. The approach is designed to create tangible benefits for both the environment and public health in a densely populated urban context."
-        },
-        {
-            "locode": "GB-MAN",
-            "cityName": "Manchester",
-            "region": "GB",
-            "regionName": "United Kingdom",
-            "actionId": "A7",
-            "actionName": "Urban Tree Canopy Expansion",
-            "actionPriority": 1,
-            "explanation": "Manchester prioritized urban tree canopy expansion over industrial energy audits as it provides widespread environmental and social benefits in a compact urban setting. Increasing green areas helps improve air quality, reduce heat, and enhance urban biodiversity. The approach supports community engagement and offers resilient benefits that extend beyond traditional emission reductions. It aligns well with local strategies for creating healthier, more sustainable urban environments."
-        },
-        {
-            "locode": "DE-BER",
-            "cityName": "Berlin",
-            "region": "DE",
-            "regionName": "Germany",
-            "actionId": "A8",
-            "actionName": "Bicycle Infrastructure Enhancement",
-            "actionPriority": -1,
-            "explanation": "Berlin selected bicycle infrastructure enhancement over renewable energy integration due to its strong potential to reduce short-distance vehicular emissions. The development of safe and extensive cycling routes directly supports sustainable urban mobility and environmental quality. It fits seamlessly with Berlin’s goals of reducing congestion and promoting active transportation. This strategy also brings broader social benefits by encouraging a healthier lifestyle and reducing overall traffic-related emissions."
-        },
-        {
-            "locode": "DE-MUC",
-            "cityName": "Munich",
-            "region": "DE",
-            "regionName": "Germany",
-            "actionId": "A9",
-            "actionName": "Waste Reduction Initiatives",
-            "actionPriority": 1,
-            "explanation": "In Munich, waste reduction initiatives were prioritized as they address key environmental concerns by minimizing landfill use and curbing harmful emissions from waste. This action supports a sustainable cycle of resource management and complements existing recycling efforts. It emphasizes a proactive, community-based approach to environmental stewardship. The initiative is well-integrated with local policies, making it both cost-effective and beneficial for urban sustainability."
-        },
-        {
-            "locode": "FR-PAR",
-            "cityName": "Paris",
-            "region": "FR",
-            "regionName": "France",
-            "actionId": "A10",
-            "actionName": "Carbon Pricing Implementation",
-            "actionPriority": -1,
-            "explanation": "Paris favored carbon pricing implementation over energy-efficient renovation because it establishes a broad incentive to lower emissions across multiple sectors. This market-based approach encourages systemic change and drives long-term behavioral adjustments among industries and consumers alike. The mechanism integrates well with existing policy frameworks and supports sustainable urban development. Overall, it represents a strategic move to balance economic activity with environmental risk reduction."
-        },
-        {
-            "locode": "FR-LYO",
-            "cityName": "Lyon",
-            "region": "FR",
-            "regionName": "France",
-            "actionId": "A11",
-            "actionName": "Sustainable Urban Drainage",
-            "actionPriority": 1,
-            "explanation": "In Lyon, sustainable urban drainage was prioritized over electric vehicle incentives because it directly mitigates the risk of urban flooding while improving water management. This action supports critical infrastructure that enhances public safety and environmental resilience. Its design is particularly well-suited to managing the regional climate challenges and urban density patterns. By integrating natural water management techniques, it contributes to both ecological stability and long-term urban efficiency."
-        },
-        {
-            "locode": "ES-MAD",
-            "cityName": "Madrid",
-            "region": "ES",
-            "regionName": "Spain",
-            "actionId": "A12",
-            "actionName": "Heat Island Mitigation",
-            "actionPriority": -1,
-            "explanation": "Madrid opted for heat island mitigation over smart energy grids due to its pressing need to address rising urban temperatures and associated health risks. This action uses natural solutions like green spaces and reflective surfaces to reduce heat buildup across dense city areas. It provides immediate improvements in public comfort and reduces the strain on energy resources during extreme weather conditions. The approach is closely aligned with the city's response to local climate challenges and urban density issues."
-        },
-        {
-            "locode": "ES-BCN",
-            "cityName": "Barcelona",
-            "region": "ES",
-            "regionName": "Spain",
-            "actionId": "A13",
-            "actionName": "Coastal Ecosystem Restoration",
-            "actionPriority": 1,
-            "explanation": "Barcelona selected coastal ecosystem restoration as a priority over public transit modernization because it enhances natural defenses against sea level rise and storm surges. This action directly improves the resilience of coastal buffers, safeguarding both human settlements and natural habitats. It offers long-term environmental benefits and contributes to biodiversity while reinforcing climate adaptation strategies. The initiative is well-suited to Barcelona’s maritime context and supports sustainable community development."
-        },
-        {
-            "locode": "IT-ROM",
-            "cityName": "Rome",
-            "region": "IT",
-            "regionName": "Italy",
-            "actionId": "A14",
-            "actionName": "Ancient Building Preservation Adaptations",
-            "actionPriority": -1,
-            "explanation": "For Rome, ancient building preservation adaptations were emphasized over urban energy efficiency upgrades because they respect the city’s rich cultural heritage while enhancing climate resilience. This action carefully balances the need to protect historical structures with the imperative to mitigate climatic risks. It preserves the architectural integrity that is central to Rome’s identity while implementing subtle efficiency improvements. The strategy reflects a thoughtful integration of environmental protection with socio-cultural priorities."
-        },
-        {
-            "locode": "IT-MIL",
-            "cityName": "Milan",
-            "region": "IT",
-            "regionName": "Italy",
-            "actionId": "A15",
-            "actionName": "District Heating Improvements",
-            "actionPriority": 1,
-            "explanation": "In Milan, district heating improvements were chosen as a priority because they offer an effective way to reduce urban emissions and enhance energy efficiency in densely populated neighborhoods. This action leverages existing infrastructure to modernize energy delivery and reduce dependence on fossil fuels. It is closely aligned with the city's sustainability goals and provides timely benefits. The approach integrates cost-effectiveness with a tangible reduction in local air pollutants, contributing to overall urban well-being."
-        },
-        {
-            "locode": "JP-TYO",
-            "cityName": "Tokyo",
-            "region": "JP",
-            "regionName": "Japan",
-            "actionId": "A16",
-            "actionName": "Smart Transportation Systems",
-            "actionPriority": -1,
-            "explanation": "Tokyo opted to prioritize smart transportation systems over residential energy retrofits because this action offers broad improvements in urban mobility and emission reductions. It harnesses advanced technologies to optimize traffic flow and reduce congestion, addressing one of the city’s most pressing environmental challenges. The strategy is well-aligned with Tokyo's capacity for innovative solutions and large-scale implementations. This comprehensive approach helps improve public safety and overall city efficiency."
-        },
-        {
-            "locode": "JP-OSA",
-            "cityName": "Osaka",
-            "region": "JP",
-            "regionName": "Japan",
-            "actionId": "A17",
-            "actionName": "Industrial Process Optimization",
-            "actionPriority": 1,
-            "explanation": "In Osaka, industrial process optimization was prioritized over urban green space expansion as it directly targets a significant source of emissions in the local manufacturing sector. The action focuses on enhancing energy efficiency and reducing risks associated with industrial operations. By refining production processes, it aligns with broader environmental strategies and leverages the city's industrial strengths. This targeted approach is well-suited to Osaka's economic structure and supports long-term emission reduction goals."
-        },
-        {
-            "locode": "AU-SYD",
-            "cityName": "Sydney",
-            "region": "AU",
-            "regionName": "Australia",
-            "actionId": "A18",
-            "actionName": "Water Resource Management",
-            "actionPriority": -1,
-            "explanation": "Sydney placed greater emphasis on water resource management over renewable energy policy reforms because it addresses the city's acute water scarcity challenges. This action is designed to mitigate climate-induced hydrological risks, ensuring a sustainable and secure water supply. It directly responds to local conditions while enhancing both environmental and social resilience. The strategy reflects a tailored approach that prioritizes essential natural resource management in a region prone to water stress."
-        },
-        {
-            "locode": "AU-MEL",
-            "cityName": "Melbourne",
-            "region": "AU",
-            "regionName": "Australia",
-            "actionId": "A19",
-            "actionName": "Urban Heat Mitigation",
-            "actionPriority": 1,
-            "explanation": "Melbourne prioritized urban heat mitigation over public lighting efficiency because the intervention addresses the significant risks posed by rising temperatures in densely built environments. This action focuses on reducing heat absorption through increased green spaces and reflective urban surfaces, thereby enhancing public comfort. It supports a proactive approach to climate adaptation and aligns well with local sustainability objectives. The strategy effectively balances immediate benefits with long-term urban resilience."
-        },
-        {
-            "locode": "CA-MON",
-            "cityName": "Montreal",
-            "region": "CA",
-            "regionName": "Canada",
-            "actionId": "A20",
-            "actionName": "Energy Sector Modernization",
-            "actionPriority": -1,
-            "explanation": "In Montreal, energy sector modernization was favored over building insulation upgrades because it offers a comprehensive strategy to reduce emissions across diverse urban sectors. This approach leverages technological advancements and policy reforms to address climatic risks at a systemic level. It is designed to drive transformative changes that align with regional sustainability goals while balancing economic considerations. The action strategically enhances resilience and supports a broad transition towards a cleaner energy future."
-        }
-    ]
-}
+[
+    {
+        "locode": "BR SCV",
+        "cityName": "S\u00e3o Crist\u00f3v\u00e3o",
+        "region": "SE",
+        "regionName": "Sergipe",
+        "actionId": "icare_0176",
+        "actionName": "Development of Climate Action Plan",
+        "actionPriority": 1,
+        "explanation": "Ranked #1 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR SCV",
+        "cityName": "S\u00e3o Crist\u00f3v\u00e3o",
+        "region": "SE",
+        "regionName": "Sergipe",
+        "actionId": "icare_0162",
+        "actionName": "Strengthen programs for control and conservation of protected areas",
+        "actionPriority": 2,
+        "explanation": "Ranked #2 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR SCV",
+        "cityName": "S\u00e3o Crist\u00f3v\u00e3o",
+        "region": "SE",
+        "regionName": "Sergipe",
+        "actionId": "icare_0169",
+        "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
+        "actionPriority": 3,
+        "explanation": "Ranked #3 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR SCV",
+        "cityName": "S\u00e3o Crist\u00f3v\u00e3o",
+        "region": "SE",
+        "regionName": "Sergipe",
+        "actionId": "icare_0151",
+        "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
+        "actionPriority": 4,
+        "explanation": "Ranked #4 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR SCV",
+        "cityName": "S\u00e3o Crist\u00f3v\u00e3o",
+        "region": "SE",
+        "regionName": "Sergipe",
+        "actionId": "icare_0152",
+        "actionName": "Recovery of degraded areas",
+        "actionPriority": 5,
+        "explanation": "Ranked #5 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR SCV",
+        "cityName": "S\u00e3o Crist\u00f3v\u00e3o",
+        "region": "SE",
+        "regionName": "Sergipe",
+        "actionId": "icare_0145",
+        "actionName": "Strengthen the healthcare network to attend to climate victims",
+        "actionPriority": 6,
+        "explanation": "Ranked #6 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR SCV",
+        "cityName": "S\u00e3o Crist\u00f3v\u00e3o",
+        "region": "SE",
+        "regionName": "Sergipe",
+        "actionId": "icare_0157",
+        "actionName": "Maintenance and Revitalization of Riparian Forests",
+        "actionPriority": 7,
+        "explanation": "Ranked #7 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR SCV",
+        "cityName": "S\u00e3o Crist\u00f3v\u00e3o",
+        "region": "SE",
+        "regionName": "Sergipe",
+        "actionId": "icare_0181",
+        "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
+        "actionPriority": 8,
+        "explanation": "Ranked #8 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR SCV",
+        "cityName": "S\u00e3o Crist\u00f3v\u00e3o",
+        "region": "SE",
+        "regionName": "Sergipe",
+        "actionId": "icare_0149",
+        "actionName": "Encourage sustainable land use practices",
+        "actionPriority": 9,
+        "explanation": "Ranked #9 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR SCV",
+        "cityName": "S\u00e3o Crist\u00f3v\u00e3o",
+        "region": "SE",
+        "regionName": "Sergipe",
+        "actionId": "ipcc_0094",
+        "actionName": "Access to health care",
+        "actionPriority": 10,
+        "explanation": "Ranked #10 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR SCV",
+        "cityName": "S\u00e3o Crist\u00f3v\u00e3o",
+        "region": "SE",
+        "regionName": "Sergipe",
+        "actionId": "ipcc_0097",
+        "actionName": "Food storage/distribution improvements",
+        "actionPriority": 11,
+        "explanation": "Ranked #11 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR SCV",
+        "cityName": "S\u00e3o Crist\u00f3v\u00e3o",
+        "region": "SE",
+        "regionName": "Sergipe",
+        "actionId": "icare_0144",
+        "actionName": "Creation of a Financial Support Program to Adress Extreme Weather Events",
+        "actionPriority": 12,
+        "explanation": "Ranked #12 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR SCV",
+        "cityName": "S\u00e3o Crist\u00f3v\u00e3o",
+        "region": "SE",
+        "regionName": "Sergipe",
+        "actionId": "icare_0156",
+        "actionName": "Implementation of urban gardens",
+        "actionPriority": 13,
+        "explanation": "Ranked #13 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR SCV",
+        "cityName": "S\u00e3o Crist\u00f3v\u00e3o",
+        "region": "SE",
+        "regionName": "Sergipe",
+        "actionId": "icare_0180",
+        "actionName": "Implement permeable pavements and increase green areas in roadways",
+        "actionPriority": 14,
+        "explanation": "Ranked #14 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR SCV",
+        "cityName": "S\u00e3o Crist\u00f3v\u00e3o",
+        "region": "SE",
+        "regionName": "Sergipe",
+        "actionId": "icare_0175",
+        "actionName": "Recovery and preservation of green areas",
+        "actionPriority": 15,
+        "explanation": "Ranked #15 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR SCV",
+        "cityName": "S\u00e3o Crist\u00f3v\u00e3o",
+        "region": "SE",
+        "regionName": "Sergipe",
+        "actionId": "icare_0148",
+        "actionName": "Create the Municipal Climate Change Forum",
+        "actionPriority": 16,
+        "explanation": "Ranked #16 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR SCV",
+        "cityName": "S\u00e3o Crist\u00f3v\u00e3o",
+        "region": "SE",
+        "regionName": "Sergipe",
+        "actionId": "ipcc_0096",
+        "actionName": "Farm/fishery improvements",
+        "actionPriority": 17,
+        "explanation": "Ranked #17 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR SCV",
+        "cityName": "S\u00e3o Crist\u00f3v\u00e3o",
+        "region": "SE",
+        "regionName": "Sergipe",
+        "actionId": "ipcc_0093",
+        "actionName": "Availability of health infrastructure",
+        "actionPriority": 18,
+        "explanation": "Ranked #18 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR SCV",
+        "cityName": "S\u00e3o Crist\u00f3v\u00e3o",
+        "region": "SE",
+        "regionName": "Sergipe",
+        "actionId": "ipcc_0088",
+        "actionName": "Building codes",
+        "actionPriority": 19,
+        "explanation": "Ranked #19 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR SCV",
+        "cityName": "S\u00e3o Crist\u00f3v\u00e3o",
+        "region": "SE",
+        "regionName": "Sergipe",
+        "actionId": "ipcc_0086",
+        "actionName": "Ecosystem-based adaptation",
+        "actionPriority": 20,
+        "explanation": "Ranked #20 by tournament ranking algorithm"
+    }
+]

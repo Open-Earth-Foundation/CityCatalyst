@@ -1,204 +1,182 @@
-{
-    "actions": [
-        {
-            "locode": "USGNV",
-            "cityName": "Greenvale",
-            "region": "CA",
-            "regionName": "California",
-            "actionId": "A1",
-            "actionName": "Urban Tree Planting",
-            "actionPriority": 1,
-            "explanation": "For the city Greenvale, Urban Tree Planting was ranked highly because it directly contributes to reducing greenhouse gas emissions by sequestering carbon and cooling urban hotspots. This action is particularly relevant to the city’s dense urban fabric and enhances local biodiversity. Its implementation is relatively straightforward and offers multiple co-benefits such as improved air quality and community well-being."
-        },
-        {
-            "locode": "USGNV",
-            "cityName": "Greenvale",
-            "region": "CA",
-            "regionName": "California",
-            "actionId": "A2",
-            "actionName": "Renewable Energy Promotion",
-            "actionPriority": 2,
-            "explanation": "In Greenvale, Renewable Energy Promotion is prioritized because it effectively targets the major sources of emissions by shifting energy generation towards sustainable sources. The action aligns well with the city’s environmental ambitions and leverages existing capacities to support clean technologies. It also has the added benefit of stimulating local economic growth and enhancing energy resilience."
-        },
-        {
-            "locode": "USGNV",
-            "cityName": "Greenvale",
-            "region": "CA",
-            "regionName": "California",
-            "actionId": "A3",
-            "actionName": "Energy Efficient Buildings",
-            "actionPriority": 3,
-            "explanation": "For Greenvale, Energy Efficient Buildings have been prioritized due to their direct impact on reducing energy consumption and lowering greenhouse gas emissions. This measure is highly relevant to the city where building operations account for a large share of energy use. Its implementation supports long-term cost savings and improves the overall urban environment."
-        },
-        {
-            "locode": "USGNV",
-            "cityName": "Greenvale",
-            "region": "CA",
-            "regionName": "California",
-            "actionId": "A4",
-            "actionName": "Improved Public Transportation",
-            "actionPriority": 4,
-            "explanation": "For the city Greenvale, Improved Public Transportation is valued for its ability to address high urban emissions by reducing reliance on private vehicles. The action is well-suited to Greenvale’s demographic and spatial characteristics, easing congestion and improving air quality. It also offers broader social benefits by enhancing mobility and reducing overall travel costs for residents."
-        },
-        {
-            "locode": "USGNV",
-            "cityName": "Greenvale",
-            "region": "CA",
-            "regionName": "California",
-            "actionId": "A5",
-            "actionName": "Sustainable Waste Management",
-            "actionPriority": 5,
-            "explanation": "Sustainable Waste Management in Greenvale is prioritized because it effectively reduces emissions from waste disposal and supports recycling initiatives. This action fits well with the city’s infrastructure and resource management plans. Its broader environmental benefits include reduced landfill use and enhanced urban cleanliness."
-        },
-        {
-            "locode": "USGNV",
-            "cityName": "Greenvale",
-            "region": "CA",
-            "regionName": "California",
-            "actionId": "A6",
-            "actionName": "Water Conservation Measures",
-            "actionPriority": 6,
-            "explanation": "For Greenvale, Water Conservation Measures are important as they address both resource scarcity and environmental stress. The action is particularly suitable given the city’s climatic conditions and aims to optimize water use efficiency. It also supports community resilience and reduces potential climate risk related to water shortages."
-        },
-        {
-            "locode": "USGNV",
-            "cityName": "Greenvale",
-            "region": "CA",
-            "regionName": "California",
-            "actionId": "A7",
-            "actionName": "Green Infrastructure Development",
-            "actionPriority": 7,
-            "explanation": "Green Infrastructure Development in Greenvale is recognized for its ability to harmonize urban development and natural ecosystems. It directly contributes to managing stormwater, reducing urban heat island effects, and increasing overall sustainability of the environment. The action is cost-effective and promotes long-term ecological balance alongside urban growth."
-        },
-        {
-            "locode": "USGNV",
-            "cityName": "Greenvale",
-            "region": "CA",
-            "regionName": "California",
-            "actionId": "A8",
-            "actionName": "Flood Defense Systems",
-            "actionPriority": 8,
-            "explanation": "For Greenvale, Flood Defense Systems have been ranked to mitigate risks linked to climate-induced heavy rainfall and rising water levels. This action addresses critical vulnerabilities within the city’s infrastructure and ensures public safety. It is well-designed to integrate with local environmental conditions and reduce long-term risk exposure."
-        },
-        {
-            "locode": "USGNV",
-            "cityName": "Greenvale",
-            "region": "CA",
-            "regionName": "California",
-            "actionId": "A9",
-            "actionName": "Heat Wave Preparedness",
-            "actionPriority": 9,
-            "explanation": "Heat Wave Preparedness is prioritized for Greenvale as it specifically addresses the risks associated with increasing urban temperatures. The action is strategically aligned with the city’s demographic profiles and infrastructure capabilities, ensuring readiness during extreme weather events. It fosters community safety and enhances overall resilience to climate variability."
-        },
-        {
-            "locode": "USGNV",
-            "cityName": "Greenvale",
-            "region": "CA",
-            "regionName": "California",
-            "actionId": "A10",
-            "actionName": "Advanced Recycling Programs",
-            "actionPriority": 10,
-            "explanation": "For the city Greenvale, Advanced Recycling Programs rank well due to their role in reducing greenhouse gas emissions associated with waste. This action is relevant for enhancing resource efficiency and decreasing the environmental burden of discarded materials. Its implementation supports community involvement and contributes to a circular economy framework."
-        },
-        {
-            "locode": "USGNV",
-            "cityName": "Greenvale",
-            "region": "CA",
-            "regionName": "California",
-            "actionId": "A11",
-            "actionName": "Solar Panel Subsidization",
-            "actionPriority": 11,
-            "explanation": "Solar Panel Subsidization is recognized in Greenvale as an effective means to promote clean energy adoption and reduce reliance on fossil fuels. The action is particularly suitable given the local climate and abundant sunlight the city enjoys. It catalyzes broader adoption of renewable technologies while generating ancillary economic benefits for residents."
-        },
-        {
-            "locode": "USGNV",
-            "cityName": "Greenvale",
-            "region": "CA",
-            "regionName": "California",
-            "actionId": "A12",
-            "actionName": "High-Speed Rail Upgrades",
-            "actionPriority": 12,
-            "explanation": "For Greenvale, High-Speed Rail Upgrades are seen as a strategic intervention to reduce overall transportation emissions by shifting travel away from car-dependent systems. The action fits well with long-term urban mobility planning and sustainable growth. It enhances intercity connectivity while contributing to reduced traffic congestion and improved air quality."
-        },
-        {
-            "locode": "USGNV",
-            "cityName": "Greenvale",
-            "region": "CA",
-            "regionName": "California",
-            "actionId": "A13",
-            "actionName": "Low-Emission Zones",
-            "actionPriority": 13,
-            "explanation": "Low-Emission Zones in Greenvale are prioritized as they encourage cleaner transportation options within the city limits. This action directly contributes to reducing urban air pollution and aligns with policy measures aimed at curbing emissions from high-traffic areas. Its clear environmental benefits and focus on sector-specific challenges make it a key part of the climate strategy."
-        },
-        {
-            "locode": "USGNV",
-            "cityName": "Greenvale",
-            "region": "CA",
-            "regionName": "California",
-            "actionId": "A14",
-            "actionName": "Green Roof Initiatives",
-            "actionPriority": 14,
-            "explanation": "For Greenvale, Green Roof Initiatives have been introduced to enhance urban cooling and improve stormwater management. This action is well-aligned with the city’s environmental goals, as it offers multiple benefits including energy savings and improved urban aesthetics. It is particularly appropriate for densely built areas where additional green space is scarce."
-        },
-        {
-            "locode": "USGNV",
-            "cityName": "Greenvale",
-            "region": "CA",
-            "regionName": "California",
-            "actionId": "A15",
-            "actionName": "Electric Vehicle Incentives",
-            "actionPriority": 15,
-            "explanation": "Electric Vehicle Incentives in Greenvale are valued for their ability to reduce emissions from the transportation sector. The action promotes cleaner mobility while supporting a shift towards sustainable urban transport. It is also complementary to existing infrastructure upgrades and can gradually transform the city’s vehicular landscape."
-        },
-        {
-            "locode": "USGNV",
-            "cityName": "Greenvale",
-            "region": "CA",
-            "regionName": "California",
-            "actionId": "A16",
-            "actionName": "District Energy Systems",
-            "actionPriority": 16,
-            "explanation": "For Greenvale, District Energy Systems are recognized for their efficiency in centralized energy distribution, which helps in lowering overall greenhouse gas emissions. This approach fits the city's current infrastructure and offers a scalable solution for improving energy efficiency. Its design minimizes dependencies and supports long term sustainable urban energy management."
-        },
-        {
-            "locode": "USGNV",
-            "cityName": "Greenvale",
-            "region": "CA",
-            "regionName": "California",
-            "actionId": "A17",
-            "actionName": "Biomass Energy Projects",
-            "actionPriority": 17,
-            "explanation": "Biomass Energy Projects in Greenvale have been ranked for their potential to convert waste into energy and reduce overall reliance on fossil fuels. The action is particularly suited to areas with rich organic waste resources and complements the city’s emphasis on renewable energy. It also provides a sustainable path to managing waste while generating energy and reducing emissions."
-        },
-        {
-            "locode": "USGNV",
-            "cityName": "Greenvale",
-            "region": "CA",
-            "regionName": "California",
-            "actionId": "A18",
-            "actionName": "LED Street Lighting",
-            "actionPriority": 18,
-            "explanation": "For the city of Greenvale, upgrading to LED Street Lighting is an action that helps reduce energy consumption with minimal disruption. It is an effective measure for cutting unnecessary emissions while improving urban lighting quality and safety. The action’s relatively quick implementation and cost-effectiveness also contribute to its overall favorable ranking."
-        },
-        {
-            "locode": "USGNV",
-            "cityName": "Greenvale",
-            "region": "CA",
-            "regionName": "California",
-            "actionId": "A19",
-            "actionName": "Waterfront Revitalization",
-            "actionPriority": 19,
-            "explanation": "Waterfront Revitalization in Greenvale has been included in the climate plan due to its multifaceted benefits, including improved flood defenses and enhancement of local ecosystems. The action contributes to both adaptation and mitigation by integrating natural buffers and public spaces. Its approach is sensitive to local environmental conditions, supporting both economic activity and climate resilience."
-        },
-        {
-            "locode": "USGNV",
-            "cityName": "Greenvale",
-            "region": "CA",
-            "regionName": "California",
-            "actionId": "A20",
-            "actionName": "Community Climate Education",
-            "actionPriority": 20,
-            "explanation": "For Greenvale, Community Climate Education was ranked to ensure public awareness and support for broader climate actions. Although its direct emissions reduction might be less compared to infrastructural changes, it plays a crucial role in building long-term resilience by empowering citizens. This action strengthens community engagement and helps pave the way for successful implementation of other climate initiatives."
-        }
-    ]
-}
+[
+    {
+        "locode": "BR CCY",
+        "cityName": "Caracara\u00ed",
+        "region": "RR",
+        "regionName": "Roraima",
+        "actionId": "icare_0050",
+        "actionName": "Implement Agroforestry Systems",
+        "actionPriority": 1
+    },
+    {
+        "locode": "BR CCY",
+        "cityName": "Caracara\u00ed",
+        "region": "RR",
+        "regionName": "Roraima",
+        "actionId": "icare_0133",
+        "actionName": "Promote Urban Reforestation and Green Corridors",
+        "actionPriority": 2
+    },
+    {
+        "locode": "BR CCY",
+        "cityName": "Caracara\u00ed",
+        "region": "RR",
+        "regionName": "Roraima",
+        "actionId": "icare_0134",
+        "actionName": "Strengthen Mechanisms for Deforestation Control",
+        "actionPriority": 3
+    },
+    {
+        "locode": "BR CCY",
+        "cityName": "Caracara\u00ed",
+        "region": "RR",
+        "regionName": "Roraima",
+        "actionId": "icare_0129",
+        "actionName": "Facilitate Technology Transfer for Conservation Practices",
+        "actionPriority": 4
+    },
+    {
+        "locode": "BR CCY",
+        "cityName": "Caracara\u00ed",
+        "region": "RR",
+        "regionName": "Roraima",
+        "actionId": "icare_0128",
+        "actionName": "Establish Municipal Programs for Payment for Environmental Services (PES)",
+        "actionPriority": 5
+    },
+    {
+        "locode": "BR CCY",
+        "cityName": "Caracara\u00ed",
+        "region": "RR",
+        "regionName": "Roraima",
+        "actionId": "icare_0130",
+        "actionName": "Conduct Technical Assistance and Rural Extension (ATER) Actions",
+        "actionPriority": 6
+    },
+    {
+        "locode": "BR CCY",
+        "cityName": "Caracara\u00ed",
+        "region": "RR",
+        "regionName": "Roraima",
+        "actionId": "icare_0100",
+        "actionName": "Support Regenerative Agriculture Practices",
+        "actionPriority": 7
+    },
+    {
+        "locode": "BR CCY",
+        "cityName": "Caracara\u00ed",
+        "region": "RR",
+        "regionName": "Roraima",
+        "actionId": "icare_0084",
+        "actionName": "Create Incentives for Agroforestry Practices in Livestock Systems",
+        "actionPriority": 8
+    },
+    {
+        "locode": "BR CCY",
+        "cityName": "Caracara\u00ed",
+        "region": "RR",
+        "regionName": "Roraima",
+        "actionId": "icare_0102",
+        "actionName": "Promote Sustainable Agricultural Practices",
+        "actionPriority": 9
+    },
+    {
+        "locode": "BR CCY",
+        "cityName": "Caracara\u00ed",
+        "region": "RR",
+        "regionName": "Roraima",
+        "actionId": "icare_0096",
+        "actionName": "Promote Organic Farming",
+        "actionPriority": 10
+    },
+    {
+        "locode": "BR CCY",
+        "cityName": "Caracara\u00ed",
+        "region": "RR",
+        "regionName": "Roraima",
+        "actionId": "icare_0127",
+        "actionName": "Accelerate Environmental Regularization of Rural Properties",
+        "actionPriority": 11
+    },
+    {
+        "locode": "BR CCY",
+        "cityName": "Caracara\u00ed",
+        "region": "RR",
+        "regionName": "Roraima",
+        "actionId": "icare_0101",
+        "actionName": "Encourage the Use of Low-Emission Agricultural Machinery",
+        "actionPriority": 12
+    },
+    {
+        "locode": "BR CCY",
+        "cityName": "Caracara\u00ed",
+        "region": "RR",
+        "regionName": "Roraima",
+        "actionId": "icare_0131",
+        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
+        "actionPriority": 13
+    },
+    {
+        "locode": "BR CCY",
+        "cityName": "Caracara\u00ed",
+        "region": "RR",
+        "regionName": "Roraima",
+        "actionId": "ipcc_0061",
+        "actionName": "Soil Carbon Management in Croplands and Grasslands",
+        "actionPriority": 14
+    },
+    {
+        "locode": "BR CCY",
+        "cityName": "Caracara\u00ed",
+        "region": "RR",
+        "regionName": "Roraima",
+        "actionId": "icare_0132",
+        "actionName": "Encourage Local Agroecological Production and Short Supply Chains",
+        "actionPriority": 15
+    },
+    {
+        "locode": "BR CCY",
+        "cityName": "Caracara\u00ed",
+        "region": "RR",
+        "regionName": "Roraima",
+        "actionId": "icare_0099",
+        "actionName": "Support Agroecological Certification Programs",
+        "actionPriority": 16
+    },
+    {
+        "locode": "BR CCY",
+        "cityName": "Caracara\u00ed",
+        "region": "RR",
+        "regionName": "Roraima",
+        "actionId": "icare_0085",
+        "actionName": "Promote the Adoption of Agroecological Pest Control",
+        "actionPriority": 17
+    },
+    {
+        "locode": "BR CCY",
+        "cityName": "Caracara\u00ed",
+        "region": "RR",
+        "regionName": "Roraima",
+        "actionId": "icare_0136",
+        "actionName": "Support the Implementation of Ecological Fiscal Incentives",
+        "actionPriority": 18
+    },
+    {
+        "locode": "BR CCY",
+        "cityName": "Caracara\u00ed",
+        "region": "RR",
+        "regionName": "Roraima",
+        "actionId": "ipcc_0052",
+        "actionName": "Reduce Deforestation and Degradation",
+        "actionPriority": 19
+    },
+    {
+        "locode": "BR CCY",
+        "cityName": "Caracara\u00ed",
+        "region": "RR",
+        "regionName": "Roraima",
+        "actionId": "ipcc_0053",
+        "actionName": "Afforestation, Reforestation and Forest Ecosystem Restoration",
+        "actionPriority": 20
+    }
+]

@@ -1,204 +1,182 @@
-{
-    "actions": [
-        {
-            "locode": "GF001",
-            "cityName": "Greenfield",
-            "region": "RG1",
-            "regionName": "Northern Region",
-            "actionId": "A1",
-            "actionName": "New Building Standards",
-            "actionPriority": 1,
-            "explanation": "For the city Greenfield, implementing New Building Standards is highly valued because it directly addresses one of the largest sources of emissions by improving energy efficiency in urban infrastructure. This action aligns closely with the local urban density and modern construction practices, ensuring it is well-suited to the city’s evolving needs. It offers strong environmental benefits by reducing greenhouse gas emissions and provides long-term resilience through improved building quality and energy savings."
-        },
-        {
-            "locode": "GF001",
-            "cityName": "Greenfield",
-            "region": "RG1",
-            "regionName": "Northern Region",
-            "actionId": "A2",
-            "actionName": "Bus Emissions",
-            "actionPriority": 2,
-            "explanation": "For Greenfield, addressing Bus Emissions is prioritized as it directly targets the transportation sector, a key contributor to the city’s overall emissions. This action is designed to enhance air quality by reducing pollutant outputs from public transit systems. It is practical in its implementation and offers co-benefits such as improved public health, making it a reliable option to tackle urban climate challenges effectively."
-        },
-        {
-            "locode": "GF001",
-            "cityName": "Greenfield",
-            "region": "RG1",
-            "regionName": "Northern Region",
-            "actionId": "A3",
-            "actionName": "Urban Tree Plan",
-            "actionPriority": 3,
-            "explanation": "The Urban Tree Plan was recognized in Greenfield for its holistic approach to mitigating climate change through enhanced carbon sequestration and urban cooling. This action not only contributes to reducing atmospheric carbon but also improves the city’s landscape and biodiversity. Its benefits extend to public health and environmental quality, making it a key initiative for sustainable urban development."
-        },
-        {
-            "locode": "GF001",
-            "cityName": "Greenfield",
-            "region": "RG1",
-            "regionName": "Northern Region",
-            "actionId": "A4",
-            "actionName": "Renewable Energy Deployment",
-            "actionPriority": 4,
-            "explanation": "Renewable Energy Deployment is highly regarded in Greenfield as it transitions the city away from fossil fuels towards cleaner energy sources. This action effectively targets major emission sectors and is well-integrated with the city’s long-term sustainability goals. Its focus on advancing clean power solutions and reducing dependency on conventional energy sources makes it a strategic priority."
-        },
-        {
-            "locode": "GF001",
-            "cityName": "Greenfield",
-            "region": "RG1",
-            "regionName": "Northern Region",
-            "actionId": "A5",
-            "actionName": "Energy Efficiency Upgrades",
-            "actionPriority": 5,
-            "explanation": "Energy Efficiency Upgrades in Greenfield offer a strong strategy to cut emissions through improvements in existing infrastructures. The action is well-suited to the city’s current building stock and industrial frameworks, contributing to significant operational savings. Its benefits include reduced energy consumption and enhanced resilience, making it both an immediately impactful and sustainable choice."
-        },
-        {
-            "locode": "GF001",
-            "cityName": "Greenfield",
-            "region": "RG1",
-            "regionName": "Northern Region",
-            "actionId": "A6",
-            "actionName": "Waste-to-Energy Facilities",
-            "actionPriority": 6,
-            "explanation": "For Greenfield, developing Waste-to-Energy Facilities is a forward-thinking approach that simultaneously addresses waste management and energy production. This action is designed to convert municipal waste into renewable energy, thereby reducing landfill pressures and associated emissions. The strategy is cost-effective over the long term and aligns with the city’s sustainability and circular economy objectives."
-        },
-        {
-            "locode": "GF001",
-            "cityName": "Greenfield",
-            "region": "RG1",
-            "regionName": "Northern Region",
-            "actionId": "A7",
-            "actionName": "Green Roof Incentives",
-            "actionPriority": 7,
-            "explanation": "Green Roof Incentives in Greenfield promote both environmental and social benefits by enhancing insulation and stormwater management. This action contributes to reducing urban heat island effects and supports biodiversity in densely built areas. It is appreciated for its adaptability and the way it integrates with broader urban greening initiatives, offering sustainable benefits with moderate investment."
-        },
-        {
-            "locode": "GF001",
-            "cityName": "Greenfield",
-            "region": "RG1",
-            "regionName": "Northern Region",
-            "actionId": "A8",
-            "actionName": "Bicycle Infrastructure",
-            "actionPriority": 8,
-            "explanation": "Investing in Bicycle Infrastructure in Greenfield is valued for its dual benefits of easing urban congestion and reducing carbon-intensive transportation. This action supports a healthier lifestyle while also playing a role in lowering transportation emissions. Its compatibility with existing urban transit plans and potential to foster community engagement makes it an effectively ranked option."
-        },
-        {
-            "locode": "GF001",
-            "cityName": "Greenfield",
-            "region": "RG1",
-            "regionName": "Northern Region",
-            "actionId": "A9",
-            "actionName": "Smart Grid Implementation",
-            "actionPriority": 9,
-            "explanation": "Smart Grid Implementation is recognized for its potential to optimize energy distribution in Greenfield and support a more flexible energy system. This action lays the groundwork for future integration of renewable sources and promotes efficient energy management. Its technological integration and forward-looking benefits ensure that it contributes meaningfully to the city's overall resilience and sustainability."
-        },
-        {
-            "locode": "GF001",
-            "cityName": "Greenfield",
-            "region": "RG1",
-            "regionName": "Northern Region",
-            "actionId": "A10",
-            "actionName": "Water Conservation Program",
-            "actionPriority": 10,
-            "explanation": "The Water Conservation Program in Greenfield addresses rising concerns around water scarcity and climate-induced variability. It is designed to improve the efficiency of water usage across various sectors, ensuring that the city's natural resources are managed sustainably. By promoting conservation measures and reducing the associated energy costs, this action is well-aligned with both environmental and socio-economic priorities."
-        },
-        {
-            "locode": "GF001",
-            "cityName": "Greenfield",
-            "region": "RG1",
-            "regionName": "Northern Region",
-            "actionId": "A11",
-            "actionName": "Community Solar Projects",
-            "actionPriority": 11,
-            "explanation": "Community Solar Projects are important for Greenfield as they democratize access to renewable energy and stimulate local economic benefits. This action empowers residents through shared investments in solar energy, aligning with the city’s social and environmental objectives. The collaborative nature of these projects enhances community resilience while contributing to sustainable energy generation."
-        },
-        {
-            "locode": "GF001",
-            "cityName": "Greenfield",
-            "region": "RG1",
-            "regionName": "Northern Region",
-            "actionId": "A12",
-            "actionName": "Electric Vehicle Incentives",
-            "actionPriority": 12,
-            "explanation": "For Greenfield, Electric Vehicle Incentives are viewed as a progressive measure to reduce transportation emissions by encouraging cleaner mobility options. This action helps shift consumer behavior towards lower-emission vehicles, aligning with urban sustainability goals. It offers advantages in reducing fossil fuel dependence and improves overall air quality, making it a timely initiative that addresses both environmental and public health concerns."
-        },
-        {
-            "locode": "GF001",
-            "cityName": "Greenfield",
-            "region": "RG1",
-            "regionName": "Northern Region",
-            "actionId": "A13",
-            "actionName": "Heatwave Response Strategies",
-            "actionPriority": 13,
-            "explanation": "Heatwave Response Strategies have been tailored for Greenfield to enhance public safety and infrastructure resilience in the face of rising temperatures. This action proactively addresses climate risks by ensuring that vulnerable communities are better prepared. Its focus on rapid response and long-term adaptation measures is crucial given the city's exposure to heat-related challenges."
-        },
-        {
-            "locode": "GF001",
-            "cityName": "Greenfield",
-            "region": "RG1",
-            "regionName": "Northern Region",
-            "actionId": "A14",
-            "actionName": "Flood Risk Management",
-            "actionPriority": 14,
-            "explanation": "Flood Risk Management is an essential action for Greenfield, aimed at reducing vulnerability to increasing flood events. This initiative involves improving drainage systems and reinforcing infrastructure to withstand heavy rains and rising water levels. Its focus on risk reduction and resilience building ensures that the city adapts effectively to changing extreme weather patterns."
-        },
-        {
-            "locode": "GF001",
-            "cityName": "Greenfield",
-            "region": "RG1",
-            "regionName": "Northern Region",
-            "actionId": "A15",
-            "actionName": "Urban Cooling Initiatives",
-            "actionPriority": 15,
-            "explanation": "Urban Cooling Initiatives in Greenfield aim to counteract the urban heat island effect and mitigate climate impacts on densely populated areas. By increasing green spaces and reflective surfaces, this action improves the livability of the urban environment. Its emphasis on enhancing thermal comfort and resilience against rising temperatures makes it a valuable component of the city's climate strategy."
-        },
-        {
-            "locode": "GF001",
-            "cityName": "Greenfield",
-            "region": "RG1",
-            "regionName": "Northern Region",
-            "actionId": "A16",
-            "actionName": "Sustainable Public Transit",
-            "actionPriority": 16,
-            "explanation": "Sustainable Public Transit was prioritized in Greenfield because it promotes lower emissions through efficient and eco-friendly transportation solutions. This action is designed to reduce reliance on private, carbon-intensive vehicles and encourages a shift towards greener alternatives. Its integration with the city’s broader mobility network and contribution to reduced congestion highlights its role in sustainable urban planning."
-        },
-        {
-            "locode": "GF001",
-            "cityName": "Greenfield",
-            "region": "RG1",
-            "regionName": "Northern Region",
-            "actionId": "A17",
-            "actionName": "Coastal Restoration",
-            "actionPriority": 17,
-            "explanation": "Coastal Restoration in Greenfield is geared toward preserving natural buffers and enhancing the resilience of coastal ecosystems. This action supports both environmental and community safety goals by protecting against storm surges and erosion. Its focus on natural habitats and long-term ecological benefits makes it an essential, though context-specific, climate adaptation strategy."
-        },
-        {
-            "locode": "GF001",
-            "cityName": "Greenfield",
-            "region": "RG1",
-            "regionName": "Northern Region",
-            "actionId": "A18",
-            "actionName": "Air Quality Monitoring",
-            "actionPriority": 18,
-            "explanation": "Air Quality Monitoring was designed for Greenfield to provide continuous insights into the city’s environmental health and to support data-driven climate actions. This initiative enhances the ability to track the effectiveness of various emission reduction strategies. Its role in early warning and maintaining public health adds important value to the city’s overall climate resilience framework."
-        },
-        {
-            "locode": "GF001",
-            "cityName": "Greenfield",
-            "region": "RG1",
-            "regionName": "Northern Region",
-            "actionId": "A19",
-            "actionName": "Climate Education Initiatives",
-            "actionPriority": 19,
-            "explanation": "Climate Education Initiatives in Greenfield are instrumental in building community awareness and fostering sustainable practices from the ground up. This action focuses on empowering citizens with the knowledge to support and engage in climate solutions. Its strong socio-demographic relevance and long-term impact on behavioral change contribute to a resilient and well-informed community."
-        },
-        {
-            "locode": "GF001",
-            "cityName": "Greenfield",
-            "region": "RG1",
-            "regionName": "Northern Region",
-            "actionId": "A20",
-            "actionName": "Natural Gas Transition",
-            "actionPriority": 20,
-            "explanation": "The Natural Gas Transition in Greenfield is considered with caution as it involves shifting from a conventional fuel source to a more sustainable alternative. While it offers an intermediate step towards reducing emissions, its benefits are measured against the availability of cleaner options. The action is evaluated with an eye on ensuring cost-effectiveness and risk reduction, and its role is seen as part of a broader transition strategy."
-        }
-    ]
-}
+[
+    {
+        "locode": "BR IIP",
+        "cityName": "Itapipoca",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0042",
+        "actionName": "Encourage renewable energy policies at the municipal level",
+        "actionPriority": 1
+    },
+    {
+        "locode": "BR IIP",
+        "cityName": "Itapipoca",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0131",
+        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
+        "actionPriority": 2
+    },
+    {
+        "locode": "BR IIP",
+        "cityName": "Itapipoca",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0024",
+        "actionName": "Integrate renewables into municipal water systems",
+        "actionPriority": 3
+    },
+    {
+        "locode": "BR IIP",
+        "cityName": "Itapipoca",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0050",
+        "actionName": "Implement Agroforestry Systems",
+        "actionPriority": 4
+    },
+    {
+        "locode": "BR IIP",
+        "cityName": "Itapipoca",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0099",
+        "actionName": "Support Agroecological Certification Programs",
+        "actionPriority": 5
+    },
+    {
+        "locode": "BR IIP",
+        "cityName": "Itapipoca",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0134",
+        "actionName": "Strengthen Mechanisms for Deforestation Control",
+        "actionPriority": 6
+    },
+    {
+        "locode": "BR IIP",
+        "cityName": "Itapipoca",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0133",
+        "actionName": "Promote Urban Reforestation and Green Corridors",
+        "actionPriority": 7
+    },
+    {
+        "locode": "BR IIP",
+        "cityName": "Itapipoca",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0130",
+        "actionName": "Conduct Technical Assistance and Rural Extension (ATER) Actions",
+        "actionPriority": 8
+    },
+    {
+        "locode": "BR IIP",
+        "cityName": "Itapipoca",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0128",
+        "actionName": "Establish Municipal Programs for Payment for Environmental Services (PES)",
+        "actionPriority": 9
+    },
+    {
+        "locode": "BR IIP",
+        "cityName": "Itapipoca",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0097",
+        "actionName": "Support Distributed Energy Generation in Residences and Businesses",
+        "actionPriority": 10
+    },
+    {
+        "locode": "BR IIP",
+        "cityName": "Itapipoca",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0129",
+        "actionName": "Facilitate Technology Transfer for Conservation Practices",
+        "actionPriority": 11
+    },
+    {
+        "locode": "BR IIP",
+        "cityName": "Itapipoca",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0121",
+        "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
+        "actionPriority": 12
+    },
+    {
+        "locode": "BR IIP",
+        "cityName": "Itapipoca",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0100",
+        "actionName": "Support Regenerative Agriculture Practices",
+        "actionPriority": 13
+    },
+    {
+        "locode": "BR IIP",
+        "cityName": "Itapipoca",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0136",
+        "actionName": "Support the Implementation of Ecological Fiscal Incentives",
+        "actionPriority": 14
+    },
+    {
+        "locode": "BR IIP",
+        "cityName": "Itapipoca",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0132",
+        "actionName": "Encourage Local Agroecological Production and Short Supply Chains",
+        "actionPriority": 15
+    },
+    {
+        "locode": "BR IIP",
+        "cityName": "Itapipoca",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0085",
+        "actionName": "Promote the Adoption of Agroecological Pest Control",
+        "actionPriority": 16
+    },
+    {
+        "locode": "BR IIP",
+        "cityName": "Itapipoca",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0088",
+        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
+        "actionPriority": 17
+    },
+    {
+        "locode": "BR IIP",
+        "cityName": "Itapipoca",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0038",
+        "actionName": "Promote community solar farms",
+        "actionPriority": 18
+    },
+    {
+        "locode": "BR IIP",
+        "cityName": "Itapipoca",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0033",
+        "actionName": "Install biodigesters in rural properties",
+        "actionPriority": 19
+    },
+    {
+        "locode": "BR IIP",
+        "cityName": "Itapipoca",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0011",
+        "actionName": "Provide tax incentives for renewable energy in residential projects",
+        "actionPriority": 20
+    }
+]

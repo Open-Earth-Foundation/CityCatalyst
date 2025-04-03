@@ -1,204 +1,182 @@
-{
-    "actions": [
-        {
-            "locode": "MET",
-            "cityName": "Metroville",
-            "region": "North",
-            "regionName": "Northern Region",
-            "actionId": "A01",
-            "actionName": "New Building Standards",
-            "actionPriority": 1,
-            "explanation": "For Metroville, New Building Standards was prioritized over Bus Emissions because it directly addresses emissions from the building sector, which is a critical source given the city's dense urban development. The standards are designed to enhance energy efficiency and reduce greenhouse gas emissions while aligning well with local environmental conditions. This intervention leverages existing construction practices with moderate implementation requirements, resulting in significant long-term risk reduction and urban resilience."
-        },
-        {
-            "locode": "MET",
-            "cityName": "Metroville",
-            "region": "North",
-            "regionName": "Northern Region",
-            "actionId": "B01",
-            "actionName": "Bus Emissions",
-            "actionPriority": 2,
-            "explanation": "Although reducing bus emissions can improve urban air quality and contribute to lower transportation-related emissions, it was ranked lower because it does not target Metroville's primary emission source as effectively. The action relies on broader systemic changes in the transit sector and may encounter more dependencies during implementation. Its overall impact is beneficial but comparatively limited in addressing the city's critical emission challenges."
-        },
-        {
-            "locode": "MET",
-            "cityName": "Metroville",
-            "region": "North",
-            "regionName": "Northern Region",
-            "actionId": "C01",
-            "actionName": "Urban Tree Planting",
-            "actionPriority": 3,
-            "explanation": "Urban Tree Planting is valued for its ability to mitigate urban heat islands and sequester carbon, which is particularly beneficial in Metroville’s densely built environment. The action also enhances local biodiversity and offers significant recreational and aesthetic co-benefits for residents. Its relatively straightforward implementation makes it an attractive intervention for fostering environmental and community health."
-        },
-        {
-            "locode": "MET",
-            "cityName": "Metroville",
-            "region": "North",
-            "regionName": "Northern Region",
-            "actionId": "D01",
-            "actionName": "Renewable Energy Incentives",
-            "actionPriority": 4,
-            "explanation": "Renewable Energy Incentives are instrumental in accelerating the adoption of clean energy sources within Metroville. This action supports long-term greenhouse gas emissions reduction by facilitating a transition away from fossil fuels. It is well-aligned with the city's energy transition objectives and leverages market dynamics to drive cost-effective and scalable environmental improvements."
-        },
-        {
-            "locode": "MET",
-            "cityName": "Metroville",
-            "region": "North",
-            "regionName": "Northern Region",
-            "actionId": "E01",
-            "actionName": "Flood Defense Infrastructure",
-            "actionPriority": 5,
-            "explanation": "Flood Defense Infrastructure is critical for Metroville given its vulnerability to extreme rainfall and rising sea levels. This action not only protects lives and property but also improves the city's overall resilience to climate-induced disasters. Its focus on risk reduction and long-term urban planning makes it a valuable component of the city’s climate adaptation strategy."
-        },
-        {
-            "locode": "MET",
-            "cityName": "Metroville",
-            "region": "North",
-            "regionName": "Northern Region",
-            "actionId": "F01",
-            "actionName": "Bicycle Infrastructure Expansion",
-            "actionPriority": 6,
-            "explanation": "Expanding bicycle infrastructure supports a shift towards sustainable urban mobility in Metroville by encouraging non-motorized transport. This action helps reduce fossil fuel dependence and improves public health through increased physical activity. Its relatively quick implementation and minimal dependencies make it a practical strategy for decreasing the city’s overall emissions."
-        },
-        {
-            "locode": "MET",
-            "cityName": "Metroville",
-            "region": "North",
-            "regionName": "Northern Region",
-            "actionId": "G01",
-            "actionName": "Waste Management Reform",
-            "actionPriority": 7,
-            "explanation": "Waste Management Reform is essential for minimizing landfill emissions and promoting resource recovery in Metroville. By modernizing waste handling and recycling processes, the action supports a cleaner urban environment and reduces pollution. Its compatibility with existing infrastructure and potential for community benefit further underline its role in building a sustainable city."
-        },
-        {
-            "locode": "MET",
-            "cityName": "Metroville",
-            "region": "North",
-            "regionName": "Northern Region",
-            "actionId": "H01",
-            "actionName": "Coastal Restoration",
-            "actionPriority": 8,
-            "explanation": "Coastal Restoration is aimed at protecting Metroville’s shoreline by restoring natural buffers that mitigate storm surges and erosion. This action enhances the resilience of coastal communities while supporting local biodiversity. The restoration efforts also contribute to broader environmental sustainability by reestablishing ecosystems that act as natural defenses against climate impacts."
-        },
-        {
-            "locode": "MET",
-            "cityName": "Metroville",
-            "region": "North",
-            "regionName": "Northern Region",
-            "actionId": "I01",
-            "actionName": "Energy Efficient Public Lighting",
-            "actionPriority": 9,
-            "explanation": "Upgrading to energy efficient public lighting offers Metroville a cost-effective way to reduce urban energy consumption and associated emissions. This measure is relatively straightforward to implement and yields immediate benefits in lowering energy use. It also supports broader sustainability goals by integrating modern technology into public infrastructure."
-        },
-        {
-            "locode": "MET",
-            "cityName": "Metroville",
-            "region": "North",
-            "regionName": "Northern Region",
-            "actionId": "J01",
-            "actionName": "Smart Grid Implementation",
-            "actionPriority": 10,
-            "explanation": "Smart Grid Implementation is key for optimizing energy distribution and enhancing efficiency across Metroville’s power network. The action supports a higher integration of renewable energy sources and reduces energy wastage over time. While it requires careful planning, its long-term benefits in risk reduction and operational improvement are significant."
-        },
-        {
-            "locode": "MET",
-            "cityName": "Metroville",
-            "region": "North",
-            "regionName": "Northern Region",
-            "actionId": "K01",
-            "actionName": "Industrial Process Optimization",
-            "actionPriority": 11,
-            "explanation": "Industrial Process Optimization targets the manufacturing sector in Metroville by reducing inefficiencies and lowering greenhouse gas emissions. The action focuses on improving operational processes which directly contributes to emissions reduction while minimizing waste. Its sector-specific approach makes it a relevant and effective intervention for the city’s industrial landscape."
-        },
-        {
-            "locode": "MET",
-            "cityName": "Metroville",
-            "region": "North",
-            "regionName": "Northern Region",
-            "actionId": "L01",
-            "actionName": "Public Awareness Campaigns",
-            "actionPriority": 12,
-            "explanation": "Public Awareness Campaigns in Metroville play a crucial role in educating residents about sustainable practices and the importance of climate action. By fostering community engagement, these campaigns help drive behavioral change that supports broader emission reduction efforts. The strategy complements more technical interventions by ensuring that local populations are informed and prepared to adopt sustainable habits."
-        },
-        {
-            "locode": "MET",
-            "cityName": "Metroville",
-            "region": "North",
-            "regionName": "Northern Region",
-            "actionId": "M01",
-            "actionName": "Heatwave Early Warning Systems",
-            "actionPriority": 13,
-            "explanation": "Heatwave Early Warning Systems are an important risk reduction measure for Metroville, helping to protect residents during extreme temperature events. This action improves community preparedness and can significantly reduce the public health impacts of heatwaves. Its timely implementation supports other climate actions by enhancing overall urban resilience."
-        },
-        {
-            "locode": "MET",
-            "cityName": "Metroville",
-            "region": "North",
-            "regionName": "Northern Region",
-            "actionId": "N01",
-            "actionName": "Green Roof Initiatives",
-            "actionPriority": 14,
-            "explanation": "Green Roof Initiatives offer multiple benefits for Metroville by providing natural insulation, reducing building energy demands, and mitigating stormwater runoff. This intervention not only contributes to emissions reduction but also improves urban aesthetics and thermal comfort. Its adaptability to existing structures makes it a practical addition to the city’s sustainable development efforts."
-        },
-        {
-            "locode": "MET",
-            "cityName": "Metroville",
-            "region": "North",
-            "regionName": "Northern Region",
-            "actionId": "O01",
-            "actionName": "Urban Wetland Preservation",
-            "actionPriority": 15,
-            "explanation": "Preserving urban wetlands in Metroville is key to protecting natural water filtration systems and supporting biodiversity. These ecosystems function as natural carbon sinks and help mitigate flood risks in urban areas. The action reinforces environmental conservation and provides long-term ecological benefits that align with the city’s sustainability goals."
-        },
-        {
-            "locode": "MET",
-            "cityName": "Metroville",
-            "region": "North",
-            "regionName": "Northern Region",
-            "actionId": "P01",
-            "actionName": "Sustainable Urban Drainage Systems",
-            "actionPriority": 16,
-            "explanation": "Sustainable Urban Drainage Systems are designed to manage stormwater effectively in Metroville, reducing the risk of urban flooding. This approach is well integrated with the city's infrastructure and helps maintain water quality while mitigating runoff. It offers a balanced solution that complements other climate adaptation measures with minimal implementation complexity."
-        },
-        {
-            "locode": "MET",
-            "cityName": "Metroville",
-            "region": "North",
-            "regionName": "Northern Region",
-            "actionId": "Q01",
-            "actionName": "Solar Panel Subsidies",
-            "actionPriority": 17,
-            "explanation": "Solar Panel Subsidies encourage residents and businesses in Metroville to adopt renewable energy, thereby reducing reliance on fossil fuels. The financial support provided helps to overcome initial investment barriers and promotes wider adoption of clean technology. This action is adaptable to various scales and supports long-term emissions reduction while leveraging existing market trends."
-        },
-        {
-            "locode": "MET",
-            "cityName": "Metroville",
-            "region": "North",
-            "regionName": "Northern Region",
-            "actionId": "R01",
-            "actionName": "Climate Resilient Agriculture",
-            "actionPriority": 18,
-            "explanation": "Climate Resilient Agriculture is essential for supporting Metroville's surrounding farming communities and ensuring food security amid changing climate conditions. This approach advocates for sustainable practices that reduce environmental impact while adapting to climatic variability. It emphasizes local community engagement and long-term ecological balance, making it a crucial component of the area’s adaptation strategy."
-        },
-        {
-            "locode": "MET",
-            "cityName": "Metroville",
-            "region": "North",
-            "regionName": "Northern Region",
-            "actionId": "S01",
-            "actionName": "Electric Vehicle Adoption",
-            "actionPriority": 19,
-            "explanation": "Promoting Electric Vehicle Adoption in Metroville supports the city’s transition to a low-carbon transportation system by reducing emissions from conventional vehicles. The initiative is aligned with efforts to improve urban air quality and decrease fossil fuel dependence. Although it requires complementary infrastructure investments, its long-term benefits bolster sustainable urban mobility."
-        },
-        {
-            "locode": "MET",
-            "cityName": "Metroville",
-            "region": "North",
-            "regionName": "Northern Region",
-            "actionId": "T01",
-            "actionName": "Water Conservation Measures",
-            "actionPriority": 20,
-            "explanation": "Water Conservation Measures are vital for managing Metroville’s water resources, especially in the face of climate-induced water stress. This action promotes efficient use of water and protects local supplies, aligning with broader sustainability goals. Its emphasis on resource management makes it an important complement to the city's overall climate adaptation and mitigation portfolio."
-        }
-    ]
-}
+[
+    {
+        "locode": "BR MOC",
+        "cityName": "Montes Claros",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0139",
+        "actionName": "Implementation of urban toll.",
+        "actionPriority": 1
+    },
+    {
+        "locode": "BR MOC",
+        "cityName": "Montes Claros",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0121",
+        "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
+        "actionPriority": 2
+    },
+    {
+        "locode": "BR MOC",
+        "cityName": "Montes Claros",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0094",
+        "actionName": "Adoption of biomethane in public fleets.",
+        "actionPriority": 3
+    },
+    {
+        "locode": "BR MOC",
+        "cityName": "Montes Claros",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0088",
+        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
+        "actionPriority": 4
+    },
+    {
+        "locode": "BR MOC",
+        "cityName": "Montes Claros",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0090",
+        "actionName": "Adoption of electric drones for last-mile deliveries.",
+        "actionPriority": 5
+    },
+    {
+        "locode": "BR MOC",
+        "cityName": "Montes Claros",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0130",
+        "actionName": "Conduct Technical Assistance and Rural Extension (ATER) Actions",
+        "actionPriority": 6
+    },
+    {
+        "locode": "BR MOC",
+        "cityName": "Montes Claros",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0133",
+        "actionName": "Promote Urban Reforestation and Green Corridors",
+        "actionPriority": 7
+    },
+    {
+        "locode": "BR MOC",
+        "cityName": "Montes Claros",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0068",
+        "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
+        "actionPriority": 8
+    },
+    {
+        "locode": "BR MOC",
+        "cityName": "Montes Claros",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0129",
+        "actionName": "Facilitate Technology Transfer for Conservation Practices",
+        "actionPriority": 9
+    },
+    {
+        "locode": "BR MOC",
+        "cityName": "Montes Claros",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0128",
+        "actionName": "Establish Municipal Programs for Payment for Environmental Services (PES)",
+        "actionPriority": 10
+    },
+    {
+        "locode": "BR MOC",
+        "cityName": "Montes Claros",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0044",
+        "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
+        "actionPriority": 11
+    },
+    {
+        "locode": "BR MOC",
+        "cityName": "Montes Claros",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0050",
+        "actionName": "Implement Agroforestry Systems",
+        "actionPriority": 12
+    },
+    {
+        "locode": "BR MOC",
+        "cityName": "Montes Claros",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0057",
+        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
+        "actionPriority": 13
+    },
+    {
+        "locode": "BR MOC",
+        "cityName": "Montes Claros",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0131",
+        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
+        "actionPriority": 14
+    },
+    {
+        "locode": "BR MOC",
+        "cityName": "Montes Claros",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0085",
+        "actionName": "Promote the Adoption of Agroecological Pest Control",
+        "actionPriority": 15
+    },
+    {
+        "locode": "BR MOC",
+        "cityName": "Montes Claros",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0134",
+        "actionName": "Strengthen Mechanisms for Deforestation Control",
+        "actionPriority": 16
+    },
+    {
+        "locode": "BR MOC",
+        "cityName": "Montes Claros",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0102",
+        "actionName": "Promote Sustainable Agricultural Practices",
+        "actionPriority": 17
+    },
+    {
+        "locode": "BR MOC",
+        "cityName": "Montes Claros",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0136",
+        "actionName": "Support the Implementation of Ecological Fiscal Incentives",
+        "actionPriority": 18
+    },
+    {
+        "locode": "BR MOC",
+        "cityName": "Montes Claros",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0132",
+        "actionName": "Encourage Local Agroecological Production and Short Supply Chains",
+        "actionPriority": 19
+    },
+    {
+        "locode": "BR MOC",
+        "cityName": "Montes Claros",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0100",
+        "actionName": "Support Regenerative Agriculture Practices",
+        "actionPriority": 20
+    }
+]

@@ -1,204 +1,202 @@
-{
-    "actions": [
-        {
-            "locode": "LOC001",
-            "cityName": "Metroville",
-            "region": "NRT",
-            "regionName": "Northern Region",
-            "actionId": "ACT1",
-            "actionName": "New Building Standards",
-            "actionPriority": 1,
-            "explanation": "For the city Metroville, New Building Standards were prioritized because they directly address a major source of emissions in the urban building sector. This action integrates well with the existing dense infrastructure, offering improved energy efficiency and long‐term resilience. Its design supports cost-effective improvements while mitigating climate-related risks. Overall, it aligns strongly with the city’s sustainability goals and urban planning strategies."
-        },
-        {
-            "locode": "LOC002",
-            "cityName": "Metroville",
-            "region": "NRT",
-            "regionName": "Northern Region",
-            "actionId": "ACT2",
-            "actionName": "Bus Emissions Reduction",
-            "actionPriority": 2,
-            "explanation": "For the city Metroville, Bus Emissions Reduction was chosen for its capacity to lower greenhouse gas emissions within the public transportation sector. This action is well-suited to the urban transit framework and addresses air quality challenges. Its implementation is designed to complement existing mobility systems while offering practical risk mitigation. The approach contributes to a more sustainable and accessible transportation network."
-        },
-        {
-            "locode": "LOC003",
-            "cityName": "Metroville",
-            "region": "NRT",
-            "regionName": "Northern Region",
-            "actionId": "ACT3",
-            "actionName": "Solar Energy Incentives",
-            "actionPriority": 3,
-            "explanation": "For Metroville, Solar Energy Incentives were prioritized due to their strong potential in reducing emissions through the adoption of renewable energy. The action leverages the city’s sunny conditions and available rooftop spaces, aligning well with the local environmental context. It emphasizes cost-effectiveness over time and reduces dependency on fossil fuels. Furthermore, it promotes community engagement in sustainable energy practices."
-        },
-        {
-            "locode": "LOC004",
-            "cityName": "Metroville",
-            "region": "NRT",
-            "regionName": "Northern Region",
-            "actionId": "ACT4",
-            "actionName": "Urban Green Spaces Expansion",
-            "actionPriority": 4,
-            "explanation": "For Metroville, expanding urban green spaces was recognized for its multi-dimensional benefits, including improved air quality and enhanced biodiversity. The action supports local climate mitigation by reducing urban heat and bolstering natural cooling processes. It integrates seamlessly into the existing urban fabric and promotes community well-being. Overall, the strategy offers broad environmental and social co-benefits aligned with city objectives."
-        },
-        {
-            "locode": "LOC005",
-            "cityName": "Metroville",
-            "region": "NRT",
-            "regionName": "Northern Region",
-            "actionId": "ACT5",
-            "actionName": "Flood Defense Improvements",
-            "actionPriority": 5,
-            "explanation": "In Metroville, Flood Defense Improvements were prioritized because they directly address climate-induced risks such as extreme weather events. The action is well-tailored to the city's environmental challenges by enhancing resilience against flooding. It improves public safety and infrastructure stability while integrating with existing urban planning strategies. This proactive approach ensures long-term protection and sustainability for the city."
-        },
-        {
-            "locode": "LOC006",
-            "cityName": "Metroville",
-            "region": "NRT",
-            "regionName": "Northern Region",
-            "actionId": "ACT6",
-            "actionName": "Cycling Infrastructure Enhancement",
-            "actionPriority": 6,
-            "explanation": "For Metroville, enhancing cycling infrastructure was valued for its dual impact on reducing emissions and fostering sustainable urban mobility. The action encourages a shift away from fossil fuel-dependent transportation and promotes healthier lifestyles. It is highly compatible with the city’s layout and presents a cost-effective, rapid implementation opportunity. This strategy also strengthens community engagement in climate-positive practices."
-        },
-        {
-            "locode": "LOC007",
-            "cityName": "Metroville",
-            "region": "NRT",
-            "regionName": "Northern Region",
-            "actionId": "ACT7",
-            "actionName": "Waste Management Overhaul",
-            "actionPriority": 7,
-            "explanation": "For Metroville, a comprehensive waste management overhaul was prioritized for its potential to reduce emissions from waste-related activities. This action improves recycling processes and minimizes landfill dependency, contributing to a cleaner urban environment. It aligns with the city's sustainability objectives by addressing both environmental and public health aspects. The approach also supports job creation and community participation in green initiatives."
-        },
-        {
-            "locode": "LOC008",
-            "cityName": "Metroville",
-            "region": "NRT",
-            "regionName": "Northern Region",
-            "actionId": "ACT8",
-            "actionName": "Air Quality Monitoring Enhancement",
-            "actionPriority": 8,
-            "explanation": "For Metroville, enhancing air quality monitoring was considered essential for understanding and managing urban emissions. This action enables more targeted interventions by providing accurate environmental data. It effectively leverages the city’s current technological resources and regulatory frameworks. In doing so, it supports broader efforts to improve public health and environmental resilience."
-        },
-        {
-            "locode": "LOC009",
-            "cityName": "Metroville",
-            "region": "NRT",
-            "regionName": "Northern Region",
-            "actionId": "ACT9",
-            "actionName": "River Cleanup Program",
-            "actionPriority": 9,
-            "explanation": "For the city Metroville, the River Cleanup Program was prioritized for its role in restoring natural ecosystems and enhancing water quality. The action contributes to a healthier urban environment by mitigating pollution and bolstering local biodiversity. It encourages community involvement and integrates naturally with existing environmental policies. This initiative supports long-term sustainability and resilience against water-related issues."
-        },
-        {
-            "locode": "LOC010",
-            "cityName": "Metroville",
-            "region": "NRT",
-            "regionName": "Northern Region",
-            "actionId": "ACT10",
-            "actionName": "Smart Grid Upgrades",
-            "actionPriority": 10,
-            "explanation": "In Metroville, upgrading to a smart grid was recognized for its role in enhancing energy efficiency and supporting a cleaner energy mix. The action is in line with modern urban infrastructure trends and facilitates better management of renewable energy sources. It reduces operational risks and improves adaptability to changing energy demands. Overall, this approach significantly contributes to a more resilient and sustainable urban energy network."
-        },
-        {
-            "locode": "LOC011",
-            "cityName": "Metroville",
-            "region": "NRT",
-            "regionName": "Northern Region",
-            "actionId": "ACT11",
-            "actionName": "Water Conservation Measures",
-            "actionPriority": 11,
-            "explanation": "For Metroville, water conservation measures were prioritized due to their role in reducing energy consumption and managing resource stress. This action is well-adapted to local climatic conditions and enhances the efficiency of water use across the city. It aligns with both sustainability and cost-effectiveness goals while reducing indirect emissions. The strategy supports a proactive approach to environmental management and community resilience."
-        },
-        {
-            "locode": "LOC012",
-            "cityName": "Metroville",
-            "region": "NRT",
-            "regionName": "Northern Region",
-            "actionId": "ACT12",
-            "actionName": "Subsidized Public Transit Expansion",
-            "actionPriority": 12,
-            "explanation": "For Metroville, expanding subsidized public transit was favored for its effectiveness in reducing reliance on private vehicles and lowering overall emissions. The action is designed to improve urban mobility while addressing congestion and air quality concerns. It builds on the existing transportation framework, making it a practical and community-friendly choice. This strategy reinforces equitable access to sustainable transit options and supports long-term urban development."
-        },
-        {
-            "locode": "LOC013",
-            "cityName": "Metroville",
-            "region": "NRT",
-            "regionName": "Northern Region",
-            "actionId": "ACT13",
-            "actionName": "Urban Reforestation",
-            "actionPriority": 13,
-            "explanation": "For Metroville, urban reforestation was highlighted for its beneficial impact on carbon sequestration and mitigation of urban heat island effects. This action contributes to a healthier ecosystem by restoring natural green spaces within city limits. It supports community well-being and enhances the aesthetic as well as environmental resilience of the urban area. The initiative aligns with long-term sustainability and environmental balance objectives."
-        },
-        {
-            "locode": "LOC014",
-            "cityName": "Metroville",
-            "region": "NRT",
-            "regionName": "Northern Region",
-            "actionId": "ACT14",
-            "actionName": "Sustainable Agriculture Support",
-            "actionPriority": 14,
-            "explanation": "For Metroville, supporting sustainable agriculture practices was considered crucial for decreasing emissions associated with food production. The action promotes local food security and reduces dependency on carbon-intensive supply chains. It is designed to work in tandem with the city’s broader environmental strategies, ensuring ecological balance. This approach fosters economic viability while enhancing community resilience over the long term."
-        },
-        {
-            "locode": "LOC015",
-            "cityName": "Metroville",
-            "region": "NRT",
-            "regionName": "Northern Region",
-            "actionId": "ACT15",
-            "actionName": "Efficient Lighting Conversion",
-            "actionPriority": 15,
-            "explanation": "In Metroville, converting to efficient lighting was valued for its direct contribution to energy savings and emission reductions. The action is easily integrated into existing infrastructure with limited disruption. It offers clear long-term benefits in energy cost savings and reductions in overall consumption. This practical measure supports broader urban energy efficiency objectives and rapid implementation."
-        },
-        {
-            "locode": "LOC016",
-            "cityName": "Metroville",
-            "region": "NRT",
-            "regionName": "Northern Region",
-            "actionId": "ACT16",
-            "actionName": "High-Speed Rail Development",
-            "actionPriority": 16,
-            "explanation": "For Metroville, high-speed rail development was recognized for its transformative role in shifting regional transportation patterns toward lower emissions. This infrastructural investment fosters economic connectivity and reduces reliance on more carbon-intensive travel options. The action is aligned with long-term urban planning goals and supports sustainable mobility. Despite its complexity, it holds promise for reshaping regional transport in a climate-conscious manner."
-        },
-        {
-            "locode": "LOC017",
-            "cityName": "Metroville",
-            "region": "NRT",
-            "regionName": "Northern Region",
-            "actionId": "ACT17",
-            "actionName": "Renewable Heating Solutions",
-            "actionPriority": 17,
-            "explanation": "In Metroville, renewable heating solutions were prioritized for their potential to replace conventional, high-emission heating systems. The action is well-suited for the local climate and supports a transition to greener energy sources. It integrates with existing infrastructure while reducing long-term operational risks. This sustainable approach contributes significantly to improving urban energy efficiency and resilience."
-        },
-        {
-            "locode": "LOC018",
-            "cityName": "Metroville",
-            "region": "NRT",
-            "regionName": "Northern Region",
-            "actionId": "ACT18",
-            "actionName": "Energy Efficiency Retrofits",
-            "actionPriority": 18,
-            "explanation": "For Metroville, energy efficiency retrofits were highlighted for their pragmatic impact on reducing energy waste in existing structures. This action leverages incremental improvements to achieve notable reductions in consumption and emissions. It fits well within the city’s maintenance cycles and planning frameworks, ensuring affordability and ease of implementation. The approach reinforces the city's commitment to sustainable urban development."
-        },
-        {
-            "locode": "LOC019",
-            "cityName": "Metroville",
-            "region": "NRT",
-            "regionName": "Northern Region",
-            "actionId": "ACT19",
-            "actionName": "Stormwater Systems Upgrade",
-            "actionPriority": 19,
-            "explanation": "In Metroville, upgrading stormwater systems was identified as a key measure to mitigate climate risks related to extreme rainfall events. The action enhances urban resilience and protects critical infrastructure from water-related hazards. It is tightly woven into the city's risk management strategies and supports efficient resource management. This proactive approach helps safeguard both the environment and urban communities over the long term."
-        },
-        {
-            "locode": "LOC020",
-            "cityName": "Metroville",
-            "region": "NRT",
-            "regionName": "Northern Region",
-            "actionId": "ACT20",
-            "actionName": "Climate Resilient Urban Planning",
-            "actionPriority": 20,
-            "explanation": "For Metroville, climate resilient urban planning was chosen for its comprehensive strategy in integrating environmental, social, and economic factors into future urban development. The action addresses long-term challenges by embedding resilience into planning processes. It ensures that growth is managed with an eye on mitigating climate risks and enhancing sustainability. This forward-looking approach supports the city in adapting to evolving climate demands while fostering community wellbeing."
-        }
-    ]
-}
+[
+    {
+        "locode": "BR ARC",
+        "cityName": "Arapiraca",
+        "region": "AL",
+        "regionName": "Alagoas",
+        "actionId": "icare_0169",
+        "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
+        "actionPriority": 1,
+        "explanation": "Ranked #1 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR ARC",
+        "cityName": "Arapiraca",
+        "region": "AL",
+        "regionName": "Alagoas",
+        "actionId": "icare_0176",
+        "actionName": "Development of Climate Action Plan",
+        "actionPriority": 2,
+        "explanation": "Ranked #2 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR ARC",
+        "cityName": "Arapiraca",
+        "region": "AL",
+        "regionName": "Alagoas",
+        "actionId": "icare_0151",
+        "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
+        "actionPriority": 3,
+        "explanation": "Ranked #3 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR ARC",
+        "cityName": "Arapiraca",
+        "region": "AL",
+        "regionName": "Alagoas",
+        "actionId": "icare_0162",
+        "actionName": "Strengthen programs for control and conservation of protected areas",
+        "actionPriority": 4,
+        "explanation": "Ranked #4 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR ARC",
+        "cityName": "Arapiraca",
+        "region": "AL",
+        "regionName": "Alagoas",
+        "actionId": "icare_0152",
+        "actionName": "Recovery of degraded areas",
+        "actionPriority": 5,
+        "explanation": "Ranked #5 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR ARC",
+        "cityName": "Arapiraca",
+        "region": "AL",
+        "regionName": "Alagoas",
+        "actionId": "icare_0157",
+        "actionName": "Maintenance and Revitalization of Riparian Forests",
+        "actionPriority": 6,
+        "explanation": "Ranked #6 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR ARC",
+        "cityName": "Arapiraca",
+        "region": "AL",
+        "regionName": "Alagoas",
+        "actionId": "icare_0145",
+        "actionName": "Strengthen the healthcare network to attend to climate victims",
+        "actionPriority": 7,
+        "explanation": "Ranked #7 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR ARC",
+        "cityName": "Arapiraca",
+        "region": "AL",
+        "regionName": "Alagoas",
+        "actionId": "icare_0149",
+        "actionName": "Encourage sustainable land use practices",
+        "actionPriority": 8,
+        "explanation": "Ranked #8 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR ARC",
+        "cityName": "Arapiraca",
+        "region": "AL",
+        "regionName": "Alagoas",
+        "actionId": "icare_0156",
+        "actionName": "Implementation of urban gardens",
+        "actionPriority": 9,
+        "explanation": "Ranked #9 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR ARC",
+        "cityName": "Arapiraca",
+        "region": "AL",
+        "regionName": "Alagoas",
+        "actionId": "ipcc_0097",
+        "actionName": "Food storage/distribution improvements",
+        "actionPriority": 10,
+        "explanation": "Ranked #10 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR ARC",
+        "cityName": "Arapiraca",
+        "region": "AL",
+        "regionName": "Alagoas",
+        "actionId": "icare_0148",
+        "actionName": "Create the Municipal Climate Change Forum",
+        "actionPriority": 11,
+        "explanation": "Ranked #11 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR ARC",
+        "cityName": "Arapiraca",
+        "region": "AL",
+        "regionName": "Alagoas",
+        "actionId": "ipcc_0096",
+        "actionName": "Farm/fishery improvements",
+        "actionPriority": 12,
+        "explanation": "Ranked #12 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR ARC",
+        "cityName": "Arapiraca",
+        "region": "AL",
+        "regionName": "Alagoas",
+        "actionId": "ipcc_0094",
+        "actionName": "Access to health care",
+        "actionPriority": 13,
+        "explanation": "Ranked #13 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR ARC",
+        "cityName": "Arapiraca",
+        "region": "AL",
+        "regionName": "Alagoas",
+        "actionId": "icare_0181",
+        "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
+        "actionPriority": 14,
+        "explanation": "Ranked #14 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR ARC",
+        "cityName": "Arapiraca",
+        "region": "AL",
+        "regionName": "Alagoas",
+        "actionId": "icare_0144",
+        "actionName": "Creation of a Financial Support Program to Adress Extreme Weather Events",
+        "actionPriority": 15,
+        "explanation": "Ranked #15 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR ARC",
+        "cityName": "Arapiraca",
+        "region": "AL",
+        "regionName": "Alagoas",
+        "actionId": "icare_0175",
+        "actionName": "Recovery and preservation of green areas",
+        "actionPriority": 16,
+        "explanation": "Ranked #16 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR ARC",
+        "cityName": "Arapiraca",
+        "region": "AL",
+        "regionName": "Alagoas",
+        "actionId": "icare_0180",
+        "actionName": "Implement permeable pavements and increase green areas in roadways",
+        "actionPriority": 17,
+        "explanation": "Ranked #17 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR ARC",
+        "cityName": "Arapiraca",
+        "region": "AL",
+        "regionName": "Alagoas",
+        "actionId": "icare_0164",
+        "actionName": "Hydrological Monitoring System with Telemetry Stations",
+        "actionPriority": 18,
+        "explanation": "Ranked #18 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR ARC",
+        "cityName": "Arapiraca",
+        "region": "AL",
+        "regionName": "Alagoas",
+        "actionId": "ipcc_0088",
+        "actionName": "Building codes",
+        "actionPriority": 19,
+        "explanation": "Ranked #19 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR ARC",
+        "cityName": "Arapiraca",
+        "region": "AL",
+        "regionName": "Alagoas",
+        "actionId": "ipcc_0086",
+        "actionName": "Ecosystem-based adaptation",
+        "actionPriority": 20,
+        "explanation": "Ranked #20 by tournament ranking algorithm"
+    }
+]

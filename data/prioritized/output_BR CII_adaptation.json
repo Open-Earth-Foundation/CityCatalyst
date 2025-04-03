@@ -1,204 +1,202 @@
-{
-    "actions": [
-        {
-            "locode": "MTPL",
-            "cityName": "Metropolis",
-            "region": "MR",
-            "regionName": "Metro Region",
-            "actionId": "A1",
-            "actionName": "Renewable Energy Expansion",
-            "actionPriority": 1,
-            "explanation": "For Metropolis, Renewable Energy Expansion was prioritized because it strongly targets the city’s largest emission sources by shifting energy production away from fossil fuels. This action aligns well with local environmental conditions, taking advantage of the region’s solar and wind resources. It offers significant reductions in greenhouse gas emissions and lowers long-term energy costs, making it highly relevant in mitigating climate impacts."
-        },
-        {
-            "locode": "MTPL",
-            "cityName": "Metropolis",
-            "region": "MR",
-            "regionName": "Metro Region",
-            "actionId": "A2",
-            "actionName": "New Building Standards",
-            "actionPriority": 2,
-            "explanation": "In Metropolis, New Building Standards were given high priority due to their direct impact on reducing energy consumption and emissions from buildings. The updated standards improve long-term energy efficiency and foster a built environment that is resilient to climatic extremes. This approach also leverages local construction expertise, ensuring the action is both practical and cost-effective."
-        },
-        {
-            "locode": "MTPL",
-            "cityName": "Metropolis",
-            "region": "MR",
-            "regionName": "Metro Region",
-            "actionId": "A3",
-            "actionName": "Electric Vehicle Incentives",
-            "actionPriority": 3,
-            "explanation": "Electric Vehicle Incentives were ranked highly in Metropolis because they address urban transportation emissions directly, an increasingly critical sector in the city. The action is designed to improve air quality and reduce reliance on conventional fuels while being adaptable to existing transit infrastructure. Its implementation supports broader sustainability goals by encouraging a shift towards cleaner mobility solutions."
-        },
-        {
-            "locode": "MTPL",
-            "cityName": "Metropolis",
-            "region": "MR",
-            "regionName": "Metro Region",
-            "actionId": "A4",
-            "actionName": "Bus Emissions Reduction",
-            "actionPriority": 4,
-            "explanation": "The Bus Emissions Reduction initiative is valued in Metropolis for its targeted approach to cutting emissions in the public transport sector. By focusing on upgrading bus fleets and fuel technologies, it directly tackles urban air quality concerns. This action also capitalizes on existing public transit networks, presenting a viable solution within the city’s operational framework."
-        },
-        {
-            "locode": "MTPL",
-            "cityName": "Metropolis",
-            "region": "MR",
-            "regionName": "Metro Region",
-            "actionId": "A5",
-            "actionName": "Energy Efficiency Retrofits",
-            "actionPriority": 5,
-            "explanation": "Energy Efficiency Retrofits are prioritized in Metropolis because they offer a clear pathway to reduce energy demand in older buildings. This initiative not only diminishes emissions but also enhances occupant comfort and builds resilience against climate stress. It represents a cost-effective measure that can be deployed widely across the city’s diverse building stock."
-        },
-        {
-            "locode": "MTPL",
-            "cityName": "Metropolis",
-            "region": "MR",
-            "regionName": "Metro Region",
-            "actionId": "A6",
-            "actionName": "Urban Tree Planting",
-            "actionPriority": 6,
-            "explanation": "Urban Tree Planting was selected for its capability to improve air quality and provide thermal comfort in the densely populated areas of Metropolis. The action works well in tandem with other emission reduction strategies, enhancing urban biodiversity and offering natural cooling benefits. It supports local community well-being and adds resilience against urban heat islands."
-        },
-        {
-            "locode": "MTPL",
-            "cityName": "Metropolis",
-            "region": "MR",
-            "regionName": "Metro Region",
-            "actionId": "A7",
-            "actionName": "Green Roof Initiatives",
-            "actionPriority": 7,
-            "explanation": "Green Roof Initiatives have been incorporated into the city’s strategy because they contribute to improved insulation and reduced urban temperatures. In Metropolis, this action mitigates the urban heat island effect while also enhancing stormwater management. Its integration into existing building policies makes it a practical and environmentally beneficial measure."
-        },
-        {
-            "locode": "MTPL",
-            "cityName": "Metropolis",
-            "region": "MR",
-            "regionName": "Metro Region",
-            "actionId": "A8",
-            "actionName": "Community Resilience Programs",
-            "actionPriority": 8,
-            "explanation": "Community Resilience Programs are prioritized for their holistic approach to preparing Metropolis for climate-related challenges. By fostering local capacity and awareness, the program effectively supports vulnerable communities while complementing other mitigation measures. It enhances social cohesion and ensures that climate actions are inclusive and adaptive to local needs."
-        },
-        {
-            "locode": "MTPL",
-            "cityName": "Metropolis",
-            "region": "MR",
-            "regionName": "Metro Region",
-            "actionId": "A9",
-            "actionName": "Smart Grid Deployment",
-            "actionPriority": 9,
-            "explanation": "Smart Grid Deployment has been ranked favorably as it modernizes the city’s energy distribution with improved efficiency and reliability. In Metropolis, this action supports the integration of renewable sources and responsive energy management, further reducing the carbon footprint. The initiative also minimizes system vulnerabilities, which is vital for a city experiencing rapid energy transitions."
-        },
-        {
-            "locode": "MTPL",
-            "cityName": "Metropolis",
-            "region": "MR",
-            "regionName": "Metro Region",
-            "actionId": "A10",
-            "actionName": "Solar Panel Subsidies",
-            "actionPriority": 10,
-            "explanation": "Solar Panel Subsidies are an attractive option in Metropolis because they encourage distributed renewable energy generation among residents and businesses. This measure lowers the barriers to adopting clean energy and supports the city’s long-term decarbonization strategy. It is well-suited to the region’s climate and helps stimulate economic activity in the renewable sector."
-        },
-        {
-            "locode": "MTPL",
-            "cityName": "Metropolis",
-            "region": "MR",
-            "regionName": "Metro Region",
-            "actionId": "A11",
-            "actionName": "Public Transit Improvement",
-            "actionPriority": 11,
-            "explanation": "Public Transit Improvement is valued in Metropolis due to its emphasis on enhancing the efficiency and appeal of mass transportation. This action contributes to lower vehicular emissions by making public transit a more attractive option. Additionally, its broad societal benefits include reduced traffic congestion and improved air quality."
-        },
-        {
-            "locode": "MTPL",
-            "cityName": "Metropolis",
-            "region": "MR",
-            "regionName": "Metro Region",
-            "actionId": "A12",
-            "actionName": "Sustainable Urban Planning",
-            "actionPriority": 12,
-            "explanation": "Sustainable Urban Planning was integrated into the city’s strategy because it ensures that long-term development is aligned with environmental sustainability goals. In Metropolis, this action promotes compact, mixed-use development, reducing the need for extensive travel and associated emissions. It lays the groundwork for a resilient urban landscape that supports both economic and environmental objectives."
-        },
-        {
-            "locode": "MTPL",
-            "cityName": "Metropolis",
-            "region": "MR",
-            "regionName": "Metro Region",
-            "actionId": "A13",
-            "actionName": "Waste Management Optimization",
-            "actionPriority": 13,
-            "explanation": "Waste Management Optimization was recognized for its potential to reduce emissions generated by waste processing and disposal. The approach enhances resource recovery and lowers the environmental impact of municipal waste in Metropolis. This action also supports public health and urban cleanliness, reinforcing its role in comprehensive climate management."
-        },
-        {
-            "locode": "MTPL",
-            "cityName": "Metropolis",
-            "region": "MR",
-            "regionName": "Metro Region",
-            "actionId": "A14",
-            "actionName": "Heat Mitigation Strategies",
-            "actionPriority": 14,
-            "explanation": "Heat Mitigation Strategies are important in Metropolis as they directly address rising temperatures and the urban heat island effect. By implementing measures that reduce excessive heat, the action improves livability and reduces energy consumption for cooling. It also contributes to reducing climate risks, particularly during extreme weather events."
-        },
-        {
-            "locode": "MTPL",
-            "cityName": "Metropolis",
-            "region": "MR",
-            "regionName": "Metro Region",
-            "actionId": "A15",
-            "actionName": "Water Conservation Measures",
-            "actionPriority": 15,
-            "explanation": "Water Conservation Measures are designed to efficiently manage scarce water resources in Metropolis while minimizing the environmental impact of water usage. The action supports the city’s overall sustainability by reducing energy requirements in water supply and treatment processes. This makes it a practical and adaptable strategy, especially as climate variability affects water availability."
-        },
-        {
-            "locode": "MTPL",
-            "cityName": "Metropolis",
-            "region": "MR",
-            "regionName": "Metro Region",
-            "actionId": "A16",
-            "actionName": "Stormwater Management",
-            "actionPriority": 16,
-            "explanation": "Stormwater Management is an essential measure for Metropolis, aimed at reducing flood risks and managing runoff in urban areas. The action enhances the city’s resilience by mitigating damage from heavy rainfall events and improving water quality. Its implementation works in harmony with other environmental actions to create a safer and more sustainable urban infrastructure."
-        },
-        {
-            "locode": "MTPL",
-            "cityName": "Metropolis",
-            "region": "MR",
-            "regionName": "Metro Region",
-            "actionId": "A17",
-            "actionName": "Flood Defense Improvements",
-            "actionPriority": 17,
-            "explanation": "Flood Defense Improvements were selected for their role in protecting vulnerable areas of Metropolis from rising flood risks. This action prioritizes risk reduction by reinforcing barriers and enhancing drainage systems, which is crucial for a city with areas prone to flooding. Its strategic design supports long-term urban safety and stability despite evolving climate pressures."
-        },
-        {
-            "locode": "MTPL",
-            "cityName": "Metropolis",
-            "region": "MR",
-            "regionName": "Metro Region",
-            "actionId": "A18",
-            "actionName": "Coastal Barrier Construction",
-            "actionPriority": 18,
-            "explanation": "Coastal Barrier Construction is considered for areas of Metropolis that are susceptible to coastal flooding and storm surges. While it addresses significant climate risks associated with rising sea levels, its implementation is more dependent on site-specific conditions. This action has clear benefits in terms of protecting infrastructure, yet requires careful planning and resource allocation."
-        },
-        {
-            "locode": "MTPL",
-            "cityName": "Metropolis",
-            "region": "MR",
-            "regionName": "Metro Region",
-            "actionId": "A19",
-            "actionName": "Carbon Capture Initiatives",
-            "actionPriority": 19,
-            "explanation": "Carbon Capture Initiatives, while innovative, receive a slightly lower ranking in Metropolis due to their reliance on emerging technologies and infrastructure upgrades. This action does offer potential benefits in reducing greenhouse gas concentrations, but it depends on complex dependencies for effective deployment. Its role is seen as supportive, complementing more direct emission reduction strategies in the city."
-        },
-        {
-            "locode": "MTPL",
-            "cityName": "Metropolis",
-            "region": "MR",
-            "regionName": "Metro Region",
-            "actionId": "A20",
-            "actionName": "Climate Education Programs",
-            "actionPriority": 20,
-            "explanation": "Climate Education Programs are valued for raising awareness and building community capacity in Metropolis, but they are ranked lower in immediate climate impact compared to direct emission reduction strategies. This action plays a crucial role in long-term behavioral change and societal preparedness. Its strength lies in building understanding and support for broader climate initiatives across the community."
-        }
-    ]
-}
+[
+    {
+        "locode": "BR CII",
+        "cityName": "Cariacica",
+        "region": "ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0169",
+        "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
+        "actionPriority": 1,
+        "explanation": "Ranked #1 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CII",
+        "cityName": "Cariacica",
+        "region": "ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0176",
+        "actionName": "Development of Climate Action Plan",
+        "actionPriority": 2,
+        "explanation": "Ranked #2 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CII",
+        "cityName": "Cariacica",
+        "region": "ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0152",
+        "actionName": "Recovery of degraded areas",
+        "actionPriority": 3,
+        "explanation": "Ranked #3 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CII",
+        "cityName": "Cariacica",
+        "region": "ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0149",
+        "actionName": "Encourage sustainable land use practices",
+        "actionPriority": 4,
+        "explanation": "Ranked #4 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CII",
+        "cityName": "Cariacica",
+        "region": "ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0162",
+        "actionName": "Strengthen programs for control and conservation of protected areas",
+        "actionPriority": 5,
+        "explanation": "Ranked #5 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CII",
+        "cityName": "Cariacica",
+        "region": "ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0151",
+        "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
+        "actionPriority": 6,
+        "explanation": "Ranked #6 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CII",
+        "cityName": "Cariacica",
+        "region": "ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "ipcc_0094",
+        "actionName": "Access to health care",
+        "actionPriority": 7,
+        "explanation": "Ranked #7 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CII",
+        "cityName": "Cariacica",
+        "region": "ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "ipcc_0097",
+        "actionName": "Food storage/distribution improvements",
+        "actionPriority": 8,
+        "explanation": "Ranked #8 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CII",
+        "cityName": "Cariacica",
+        "region": "ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0157",
+        "actionName": "Maintenance and Revitalization of Riparian Forests",
+        "actionPriority": 9,
+        "explanation": "Ranked #9 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CII",
+        "cityName": "Cariacica",
+        "region": "ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0145",
+        "actionName": "Strengthen the healthcare network to attend to climate victims",
+        "actionPriority": 10,
+        "explanation": "Ranked #10 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CII",
+        "cityName": "Cariacica",
+        "region": "ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "ipcc_0093",
+        "actionName": "Availability of health infrastructure",
+        "actionPriority": 11,
+        "explanation": "Ranked #11 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CII",
+        "cityName": "Cariacica",
+        "region": "ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0144",
+        "actionName": "Creation of a Financial Support Program to Adress Extreme Weather Events",
+        "actionPriority": 12,
+        "explanation": "Ranked #12 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CII",
+        "cityName": "Cariacica",
+        "region": "ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0181",
+        "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
+        "actionPriority": 13,
+        "explanation": "Ranked #13 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CII",
+        "cityName": "Cariacica",
+        "region": "ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0148",
+        "actionName": "Create the Municipal Climate Change Forum",
+        "actionPriority": 14,
+        "explanation": "Ranked #14 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CII",
+        "cityName": "Cariacica",
+        "region": "ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "ipcc_0096",
+        "actionName": "Farm/fishery improvements",
+        "actionPriority": 15,
+        "explanation": "Ranked #15 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CII",
+        "cityName": "Cariacica",
+        "region": "ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0164",
+        "actionName": "Hydrological Monitoring System with Telemetry Stations",
+        "actionPriority": 16,
+        "explanation": "Ranked #16 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CII",
+        "cityName": "Cariacica",
+        "region": "ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0156",
+        "actionName": "Implementation of urban gardens",
+        "actionPriority": 17,
+        "explanation": "Ranked #17 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CII",
+        "cityName": "Cariacica",
+        "region": "ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "ipcc_0092",
+        "actionName": "Social safety nets",
+        "actionPriority": 18,
+        "explanation": "Ranked #18 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CII",
+        "cityName": "Cariacica",
+        "region": "ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0180",
+        "actionName": "Implement permeable pavements and increase green areas in roadways",
+        "actionPriority": 19,
+        "explanation": "Ranked #19 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CII",
+        "cityName": "Cariacica",
+        "region": "ES",
+        "regionName": "Esp\u00edrito Santo",
+        "actionId": "icare_0175",
+        "actionName": "Recovery and preservation of green areas",
+        "actionPriority": 20,
+        "explanation": "Ranked #20 by tournament ranking algorithm"
+    }
+]

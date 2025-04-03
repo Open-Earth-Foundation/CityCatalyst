@@ -1,204 +1,202 @@
-{
-    "actions": [
-        {
-            "locode": "EC001",
-            "cityName": "EcoCity",
-            "region": "SUS",
-            "regionName": "Sustainability Region",
-            "actionId": "action_1",
-            "actionName": "New Building Standards",
-            "actionPriority": 1,
-            "explanation": "For EcoCity, New Building Standards are given top priority because they directly improve energy performance in buildings, one of the key emission sources. This action is specifically tailored to an urban setting with dense construction and high energy use, ensuring long-term benefits. It also aligns well with the city's existing development framework, delivering lasting improvements in both cost management and environmental quality."
-        },
-        {
-            "locode": "EC001",
-            "cityName": "EcoCity",
-            "region": "SUS",
-            "regionName": "Sustainability Region",
-            "actionId": "action_2",
-            "actionName": "Bus Emissions",
-            "actionPriority": 2,
-            "explanation": "For EcoCity, addressing Bus Emissions is seen as an important measure to reduce pollution from urban transportation. This action focuses on a visible sector where improvements can have a direct impact on air quality. Although it requires coordination across multiple stakeholders, it significantly contributes to the city’s efforts to manage transport-related emissions and improve public health."
-        },
-        {
-            "locode": "EC001",
-            "cityName": "EcoCity",
-            "region": "SUS",
-            "regionName": "Sustainability Region",
-            "actionId": "action_3",
-            "actionName": "Renewable Energy Investment",
-            "actionPriority": 3,
-            "explanation": "In EcoCity, Renewable Energy Investment is prioritized because it offers a transformative approach to reducing dependency on fossil fuels. This action taps into the city's potential for cleaner energy alternatives while supporting long-term environmental sustainability. Its ability to integrate diverse renewable sources makes it a robust strategy for lowering overall emissions and enhancing energy security."
-        },
-        {
-            "locode": "EC001",
-            "cityName": "EcoCity",
-            "region": "SUS",
-            "regionName": "Sustainability Region",
-            "actionId": "action_4",
-            "actionName": "Urban Tree Planting",
-            "actionPriority": 4,
-            "explanation": "For EcoCity, Urban Tree Planting is valued for its dual benefits of capturing carbon and enhancing local air quality. This initiative is well-suited for creating green spaces in densely populated areas, thus improving urban livability. The action also contributes to mitigating heat island effects and promotes community well-being, making it a balanced nature-based solution."
-        },
-        {
-            "locode": "EC001",
-            "cityName": "EcoCity",
-            "region": "SUS",
-            "regionName": "Sustainability Region",
-            "actionId": "action_5",
-            "actionName": "Water Management Enhancement",
-            "actionPriority": 5,
-            "explanation": "For EcoCity, Water Management Enhancement is prioritized as it tackles both scarcity and flooding risks associated with urban growth. This action is closely aligned with the city’s need to optimize water resources in a changing climate. By emphasizing risk reduction and ensuring efficient water use, it promotes a resilient urban infrastructure while generating clear environmental benefits."
-        },
-        {
-            "locode": "EC001",
-            "cityName": "EcoCity",
-            "region": "SUS",
-            "regionName": "Sustainability Region",
-            "actionId": "action_6",
-            "actionName": "Coastal Flood Defenses",
-            "actionPriority": 6,
-            "explanation": "For EcoCity, Coastal Flood Defenses are essential due to the rising risks associated with sea-level changes and extreme weather events. This action is designed to protect vulnerable coastal areas while ensuring the continuity of urban life during intense storms. It effectively mitigates potential damages and reinforces the city's long-term resilience against climate-driven hazards."
-        },
-        {
-            "locode": "EC001",
-            "cityName": "EcoCity",
-            "region": "SUS",
-            "regionName": "Sustainability Region",
-            "actionId": "action_7",
-            "actionName": "Waste Management Optimization",
-            "actionPriority": 7,
-            "explanation": "For EcoCity, Waste Management Optimization is recognized for its role in reducing emissions from decomposing waste and improving recycling processes. By leveraging existing infrastructure, the action delivers environmental benefits in a cost-effective manner. It also helps to safeguard public health and supports broader sustainability goals by minimizing the urban ecological footprint."
-        },
-        {
-            "locode": "EC001",
-            "cityName": "EcoCity",
-            "region": "SUS",
-            "regionName": "Sustainability Region",
-            "actionId": "action_8",
-            "actionName": "Cycling Infrastructure Development",
-            "actionPriority": 8,
-            "explanation": "For EcoCity, Cycling Infrastructure Development is prioritized because it promotes low-emission transport and supports healthier lifestyles. This action addresses urban mobility challenges and reduces reliance on motor vehicles, thereby lowering overall emissions. It also contributes to a more connected and resilient city, meeting both environmental and social objectives."
-        },
-        {
-            "locode": "EC001",
-            "cityName": "EcoCity",
-            "region": "SUS",
-            "regionName": "Sustainability Region",
-            "actionId": "action_9",
-            "actionName": "Smart Grid Implementation",
-            "actionPriority": 9,
-            "explanation": "In EcoCity, Smart Grid Implementation is valued for modernizing energy distribution and enhancing efficiency across the network. This action facilitates the integration of renewable energy sources and minimizes energy losses, aligning with broader sustainability goals. It also offers the potential to improve grid reliability and support faster adaptation to emerging energy technologies."
-        },
-        {
-            "locode": "EC001",
-            "cityName": "EcoCity",
-            "region": "SUS",
-            "regionName": "Sustainability Region",
-            "actionId": "action_10",
-            "actionName": "Industrial Energy Efficiency",
-            "actionPriority": 10,
-            "explanation": "For EcoCity, Industrial Energy Efficiency is recognized for its ability to reduce emissions in the manufacturing sector while also lowering operating costs. This action supports both environmental and economic objectives by driving improvements in energy use. Its targeted approach makes it a practical measure for reducing the industrial carbon footprint with manageable implementation risks."
-        },
-        {
-            "locode": "EC001",
-            "cityName": "EcoCity",
-            "region": "SUS",
-            "regionName": "Sustainability Region",
-            "actionId": "action_11",
-            "actionName": "Climate Resilience Training",
-            "actionPriority": 11,
-            "explanation": "For EcoCity, Climate Resilience Training is an essential action that builds the capacity of local stakeholders to adapt effectively to climate challenges. It emphasizes community preparedness and enhances the city's ability to manage diverse climate risks. By fostering local knowledge and engagement, this action supports long-term resilience with relatively low infrastructural requirements."
-        },
-        {
-            "locode": "EC001",
-            "cityName": "EcoCity",
-            "region": "SUS",
-            "regionName": "Sustainability Region",
-            "actionId": "action_12",
-            "actionName": "Green Roof Incentives",
-            "actionPriority": 12,
-            "explanation": "For EcoCity, Green Roof Incentives are highlighted for their potential to reduce urban heat and improve energy efficiency. This action leverages building rooftops to provide additional insulation, mitigate stormwater runoff, and enhance aesthetic value. It integrates well with urban planning strategies while offering localized environmental and social benefits."
-        },
-        {
-            "locode": "EC001",
-            "cityName": "EcoCity",
-            "region": "SUS",
-            "regionName": "Sustainability Region",
-            "actionId": "action_13",
-            "actionName": "Stormwater Harvesting",
-            "actionPriority": 13,
-            "explanation": "For EcoCity, Stormwater Harvesting is prioritized due to its capability to capture and reuse rainwater, thus reducing flood risks and bolstering water security. This action seamlessly fits into the city's broader environmental strategy by making efficient use of available water resources. It offers a sustainable solution that not only minimizes infrastructure strain but also supports long-term resource management."
-        },
-        {
-            "locode": "EC001",
-            "cityName": "EcoCity",
-            "region": "SUS",
-            "regionName": "Sustainability Region",
-            "actionId": "action_14",
-            "actionName": "Solar Panel Subsidies",
-            "actionPriority": 14,
-            "explanation": "For EcoCity, Solar Panel Subsidies are embraced for their role in accelerating the adoption of renewable energy at the community level. This action leverages the city’s favorable climate conditions to reduce reliance on fossil fuels while promoting energy independence. It delivers clear environmental benefits and supports the growth of a decentralized, sustainable energy network."
-        },
-        {
-            "locode": "EC001",
-            "cityName": "EcoCity",
-            "region": "SUS",
-            "regionName": "Sustainability Region",
-            "actionId": "action_15",
-            "actionName": "Electric Vehicle Charging Infrastructure",
-            "actionPriority": 15,
-            "explanation": "For EcoCity, expanding Electric Vehicle Charging Infrastructure is seen as a key step in supporting cleaner transportation alternatives. This action promotes the shift from traditional fuels to electric mobility, thereby reducing urban emissions. It also facilitates the broader adoption of electric vehicles by ensuring convenient and accessible charging options across the city."
-        },
-        {
-            "locode": "EC001",
-            "cityName": "EcoCity",
-            "region": "SUS",
-            "regionName": "Sustainability Region",
-            "actionId": "action_16",
-            "actionName": "Local Food Production Enhancement",
-            "actionPriority": 16,
-            "explanation": "For EcoCity, enhancing Local Food Production is valued for its role in reducing the carbon footprint associated with long transport chains. By promoting community-based agriculture, this action supports food security and fosters sustainable land use. It also offers socio-economic benefits by strengthening local economies while diminishing reliance on external food sources."
-        },
-        {
-            "locode": "EC001",
-            "cityName": "EcoCity",
-            "region": "SUS",
-            "regionName": "Sustainability Region",
-            "actionId": "action_17",
-            "actionName": "Energy Storage Solutions",
-            "actionPriority": 17,
-            "explanation": "For EcoCity, Energy Storage Solutions are prioritized for their ability to balance supply and demand in a grid increasingly powered by renewables. This action enhances energy reliability and efficiency, supporting the city’s transition to a lower-carbon future. Its implementation facilitates better utilization of intermittent energy sources, strengthening overall grid resilience."
-        },
-        {
-            "locode": "EC001",
-            "cityName": "EcoCity",
-            "region": "SUS",
-            "regionName": "Sustainability Region",
-            "actionId": "action_18",
-            "actionName": "Public Awareness Campaigns",
-            "actionPriority": 18,
-            "explanation": "For EcoCity, Public Awareness Campaigns are essential as they empower residents with knowledge about climate change and sustainable practices. This action fosters community engagement and supports behavioral changes that contribute to emission reductions. It is a cost-effective approach that lays the groundwork for broader policy and community-based initiatives."
-        },
-        {
-            "locode": "EC001",
-            "cityName": "EcoCity",
-            "region": "SUS",
-            "regionName": "Sustainability Region",
-            "actionId": "action_19",
-            "actionName": "Green Finance Initiatives",
-            "actionPriority": 19,
-            "explanation": "For EcoCity, Green Finance Initiatives are crucial because they help channel investment into sustainable projects and innovations. This action creates a supportive economic framework that enables other climate actions to be more effective. It addresses financial barriers to sustainability, ensuring long-term resilience and fostering a dynamic environment for clean technology adoption."
-        },
-        {
-            "locode": "EC001",
-            "cityName": "EcoCity",
-            "region": "SUS",
-            "regionName": "Sustainability Region",
-            "actionId": "action_20",
-            "actionName": "Urban Cooling Strategies",
-            "actionPriority": 20,
-            "explanation": "For EcoCity, Urban Cooling Strategies are prioritized to address urban heat island effects and improve public comfort during extreme weather. This action employs a mix of innovative design and nature-based solutions to reduce ambient temperatures in dense urban areas. It aligns with the city’s adaptation needs while also mitigating related climate risks, making it an effective urban resilience measure."
-        }
-    ]
-}
+[
+    {
+        "locode": "BR POA",
+        "cityName": "Porto Alegre",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0176",
+        "actionName": "Development of Climate Action Plan",
+        "actionPriority": 1,
+        "explanation": "Ranked #1 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR POA",
+        "cityName": "Porto Alegre",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0162",
+        "actionName": "Strengthen programs for control and conservation of protected areas",
+        "actionPriority": 2,
+        "explanation": "Ranked #2 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR POA",
+        "cityName": "Porto Alegre",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0169",
+        "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
+        "actionPriority": 3,
+        "explanation": "Ranked #3 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR POA",
+        "cityName": "Porto Alegre",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0149",
+        "actionName": "Encourage sustainable land use practices",
+        "actionPriority": 4,
+        "explanation": "Ranked #4 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR POA",
+        "cityName": "Porto Alegre",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0152",
+        "actionName": "Recovery of degraded areas",
+        "actionPriority": 5,
+        "explanation": "Ranked #5 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR POA",
+        "cityName": "Porto Alegre",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0181",
+        "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
+        "actionPriority": 6,
+        "explanation": "Ranked #6 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR POA",
+        "cityName": "Porto Alegre",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0157",
+        "actionName": "Maintenance and Revitalization of Riparian Forests",
+        "actionPriority": 7,
+        "explanation": "Ranked #7 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR POA",
+        "cityName": "Porto Alegre",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0156",
+        "actionName": "Implementation of urban gardens",
+        "actionPriority": 8,
+        "explanation": "Ranked #8 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR POA",
+        "cityName": "Porto Alegre",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0180",
+        "actionName": "Implement permeable pavements and increase green areas in roadways",
+        "actionPriority": 9,
+        "explanation": "Ranked #9 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR POA",
+        "cityName": "Porto Alegre",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0164",
+        "actionName": "Hydrological Monitoring System with Telemetry Stations",
+        "actionPriority": 10,
+        "explanation": "Ranked #10 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR POA",
+        "cityName": "Porto Alegre",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "ipcc_0088",
+        "actionName": "Building codes",
+        "actionPriority": 11,
+        "explanation": "Ranked #11 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR POA",
+        "cityName": "Porto Alegre",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0151",
+        "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
+        "actionPriority": 12,
+        "explanation": "Ranked #12 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR POA",
+        "cityName": "Porto Alegre",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0175",
+        "actionName": "Recovery and preservation of green areas",
+        "actionPriority": 13,
+        "explanation": "Ranked #13 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR POA",
+        "cityName": "Porto Alegre",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "ipcc_0097",
+        "actionName": "Food storage/distribution improvements",
+        "actionPriority": 14,
+        "explanation": "Ranked #14 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR POA",
+        "cityName": "Porto Alegre",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "ipcc_0096",
+        "actionName": "Farm/fishery improvements",
+        "actionPriority": 15,
+        "explanation": "Ranked #15 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR POA",
+        "cityName": "Porto Alegre",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "ipcc_0094",
+        "actionName": "Access to health care",
+        "actionPriority": 16,
+        "explanation": "Ranked #16 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR POA",
+        "cityName": "Porto Alegre",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "icare_0145",
+        "actionName": "Strengthen the healthcare network to attend to climate victims",
+        "actionPriority": 17,
+        "explanation": "Ranked #17 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR POA",
+        "cityName": "Porto Alegre",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "ipcc_0092",
+        "actionName": "Social safety nets",
+        "actionPriority": 18,
+        "explanation": "Ranked #18 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR POA",
+        "cityName": "Porto Alegre",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "ipcc_0086",
+        "actionName": "Ecosystem-based adaptation",
+        "actionPriority": 19,
+        "explanation": "Ranked #19 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR POA",
+        "cityName": "Porto Alegre",
+        "region": "RS",
+        "regionName": "Rio Grande do Sul",
+        "actionId": "ipcc_0093",
+        "actionName": "Availability of health infrastructure",
+        "actionPriority": 20,
+        "explanation": "Ranked #20 by tournament ranking algorithm"
+    }
+]

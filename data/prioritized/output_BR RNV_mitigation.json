@@ -1,204 +1,182 @@
-{
-    "actions": [
-        {
-            "locode": "MET001",
-            "cityName": "Metropolis",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "A1",
-            "actionName": "New Building Standards",
-            "actionPriority": 1,
-            "explanation": "For the city of Metropolis, New Building Standards were prioritized over other potential actions because they directly target emissions from the dense urban building stock. This approach aligns well with local environmental challenges and the architectural context, offering significant improvements in energy efficiency and long-term risk reduction. Additionally, the action supports community safety and resilience by modernizing infrastructure in a rapidly growing city."
-        },
-        {
-            "locode": "GOT002",
-            "cityName": "Gotham",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "A2",
-            "actionName": "Bus Emissions Overhaul",
-            "actionPriority": 2,
-            "explanation": "For the city of Gotham, Bus Emissions Overhaul was chosen because it effectively tackles the sector responsible for a large portion of urban emissions. The action is designed to improve air quality and mitigate congestion, which is especially critical in a densely populated urban environment. Its focus on immediate risk reduction and cost-effective implementation further enhances its ranking relative to alternatives with longer timelines."
-        },
-        {
-            "locode": "SPR003",
-            "cityName": "Springfield",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "A3",
-            "actionName": "Renewable Energy Incentives",
-            "actionPriority": 3,
-            "explanation": "For Springfield, Renewable Energy Incentives were given priority because they foster a shift towards cleaner energy sources, addressing the city’s key emissions challenges. The strategy aligns with the local energy market dynamics and supports long-term environmental sustainability. It is recognized for its broad co-benefits, including community engagement and contribution to reduced operational risks in energy production."
-        },
-        {
-            "locode": "RIV004",
-            "cityName": "Rivertown",
-            "region": "EU",
-            "regionName": "European Union",
-            "actionId": "A4",
-            "actionName": "Urban Green Space Expansion",
-            "actionPriority": 4,
-            "explanation": "In Rivertown, Urban Green Space Expansion was prioritized as it not only reduces the urban heat island effect but also enhances local biodiversity. The action is well-suited to the city's environmental context by improving both physical and social urban landscapes. Its inclusion brings additional benefits such as improved air quality and recreational opportunities, aligning with broader sustainability goals."
-        },
-        {
-            "locode": "LAK005",
-            "cityName": "Lakeside",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "A5",
-            "actionName": "Coastal Flood Defense Upgrade",
-            "actionPriority": 5,
-            "explanation": "In Lakeside, Coastal Flood Defense Upgrade was prioritized due to the city's coastal vulnerability and increasing risk of flood events. This action is specifically designed to mitigate climate-induced hazards, thereby safeguarding both property and livelihoods. It offers significant risk reduction and resilience benefits by addressing the inherent environmental challenges of a coastal setting."
-        },
-        {
-            "locode": "HIG006",
-            "cityName": "Highland",
-            "region": "EU",
-            "regionName": "European Union",
-            "actionId": "A6",
-            "actionName": "Industrial Emissions Control",
-            "actionPriority": 6,
-            "explanation": "For Highland, Industrial Emissions Control was ranked highly because it targets the city's primary emissions source emanating from industrial activities. This action is particularly relevant given the local industrial profile and has the potential to yield significant environmental improvements. Its design emphasizes both cost-effectiveness and reduced operational risks, making it a sound climate action relative to other options."
-        },
-        {
-            "locode": "GRF007",
-            "cityName": "Greenfield",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "A7",
-            "actionName": "Energy Efficiency Retrofitting",
-            "actionPriority": 7,
-            "explanation": "For Greenfield, Energy Efficiency Retrofitting was prioritized because it offers an immediate reduction in energy demand while improving building performance. The action directly addresses local infrastructure challenges by lowering emissions and cutting energy costs. Its clear benefits in terms of rapid implementation and adaptability to existing structures justify its higher ranking."
-        },
-        {
-            "locode": "FVR008",
-            "cityName": "Fairview",
-            "region": "EU",
-            "regionName": "European Union",
-            "actionId": "A8",
-            "actionName": "Waste Management Improvement",
-            "actionPriority": 8,
-            "explanation": "In Fairview, Waste Management Improvement was chosen over alternatives because it tackles both emissions from waste and urban sanitation issues effectively. This action is well-aligned with the dense population and environmental pressures facing the city. Its dual focus on reducing greenhouse gases and improving public health establishes it as a strong climate priority."
-        },
-        {
-            "locode": "SUM009",
-            "cityName": "Summit",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "A9",
-            "actionName": "Public Transit Expansion",
-            "actionPriority": 9,
-            "explanation": "For Summit, Public Transit Expansion was prioritized for its capacity to alleviate traffic-induced emissions and improve urban mobility. The intervention targets a central aspect of the city’s pollution challenges and is designed to offer quicker benefits in reducing congestion. This holistic approach, which also enhances community connectivity, underscores its higher ranking compared to less comprehensive transport measures."
-        },
-        {
-            "locode": "COS010",
-            "cityName": "Coastline",
-            "region": "EU",
-            "regionName": "European Union",
-            "actionId": "A10",
-            "actionName": "Water Conservation Measures",
-            "actionPriority": 10,
-            "explanation": "For Coastline, Water Conservation Measures were prioritized due to the city's sensitivity to water scarcity and the need for sustainable resource management. The action is tuned to the local climatic conditions and helps safeguard water availability during dry periods. Its environmental compatibility and contribution to long-term resilience make it an essential strategy for the city's adaptation efforts."
-        },
-        {
-            "locode": "NEH011",
-            "cityName": "Newhaven",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "A11",
-            "actionName": "Solar Panel Subsidies",
-            "actionPriority": 11,
-            "explanation": "In Newhaven, Solar Panel Subsidies were ranked highly due to their strong role in reducing fossil fuel dependency and enhancing renewable energy uptake. This action aligns with the city's climate potential and encourages widespread adoption of clean technologies. By offering accessible incentives, it effectively supports both emissions reduction and the long-term sustainability of the urban energy landscape."
-        },
-        {
-            "locode": "BRK012",
-            "cityName": "Brookside",
-            "region": "EU",
-            "regionName": "European Union",
-            "actionId": "A12",
-            "actionName": "Reforestation Program",
-            "actionPriority": 12,
-            "explanation": "For Brookside, the Reforestation Program was prioritized due to its robust capacity for carbon sequestration and ecosystem restoration. This action not only reduces greenhouse gas concentrations but also improves local biodiversity and recreational spaces. Its integrative benefits across environmental and social dimensions make it a strategically sound choice within the city's climate action portfolio."
-        },
-        {
-            "locode": "PNW013",
-            "cityName": "Pinewood",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "A13",
-            "actionName": "Cycling Infrastructure Development",
-            "actionPriority": 13,
-            "explanation": "In Pinewood, Cycling Infrastructure Development was selected for its potential to reduce vehicular emissions while promoting a healthier lifestyle. The action is ideally suited to the city's compact layout and contributes immediately to lower urban congestion. Its rapid implementation and clear co-benefits for community health and the environment justify its prioritization over less effective transport options."
-        },
-        {
-            "locode": "BEC014",
-            "cityName": "Beacon",
-            "region": "EU",
-            "regionName": "European Union",
-            "actionId": "A14",
-            "actionName": "Smart Grid Implementation",
-            "actionPriority": 14,
-            "explanation": "For Beacon, Smart Grid Implementation was prioritized because it modernizes the energy distribution system, paving the way for enhanced integration of renewable sources. This action effectively reduces energy losses and aligns seamlessly with the city’s infrastructure modernization goals. Its focus on improving grid reliability and supporting sustainable energy transitions gives it a qualitative edge in the ranking process."
-        },
-        {
-            "locode": "EDG015",
-            "cityName": "Edgewater",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "A15",
-            "actionName": "Heat Wave Response Plan",
-            "actionPriority": 15,
-            "explanation": "In Edgewater, the Heat Wave Response Plan was chosen because it directly addresses the increasing threat of extreme temperature events. The action is designed to mitigate health risks and stress on urban infrastructure during heat waves, aligning with immediate adaptation needs. Its capacity to provide rapid relief and realign public safety measures distinguishes it from actions with delayed climate benefits."
-        },
-        {
-            "locode": "HVB016",
-            "cityName": "Harborview",
-            "region": "EU",
-            "regionName": "European Union",
-            "actionId": "A16",
-            "actionName": "Stormwater Management",
-            "actionPriority": 16,
-            "explanation": "For Harborview, Stormwater Management was prioritized due to its effectiveness in reducing flood risks and managing runoff during severe weather conditions. The approach is well-tailored to the city’s climatic challenges and enhances overall urban sustainability. By addressing both environmental hazards and infrastructure resilience, this action was favored over measures requiring extensive dependencies."
-        },
-        {
-            "locode": "EAS017",
-            "cityName": "Easton",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "A17",
-            "actionName": "Bus Emissions",
-            "actionPriority": 17,
-            "explanation": "In Easton, the focus on Bus Emissions was prioritized because it directly targets a major contributor to urban air pollution. This action is tailored to the city's existing public transport framework, enabling prompt improvements in air quality. Its ability to deliver swift benefits in reducing greenhouse gases and operational risks in transportation makes it a compelling choice compared to broader interventions."
-        },
-        {
-            "locode": "WES018",
-            "cityName": "Westfield",
-            "region": "EU",
-            "regionName": "European Union",
-            "actionId": "A18",
-            "actionName": "Building Renovation",
-            "actionPriority": 18,
-            "explanation": "For Westfield, Building Renovation was selected as a priority because it improves the energy performance of older structures and reduces overall emissions. The action is highly relevant in a city with an aging infrastructure, offering rapid benefits in energy savings and risk mitigation. Its dual focus on sustainability and cost-effectiveness provides a clear advantage over more complex, long-term retrofitting alternatives."
-        },
-        {
-            "locode": "MID019",
-            "cityName": "Midvale",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "A19",
-            "actionName": "Car Emission Reduction",
-            "actionPriority": 19,
-            "explanation": "In Midvale, Car Emission Reduction was prioritized because it targets one of the largest sources of urban pollution head-on. The action aligns closely with the city’s transportation challenges and supports a swift reduction in overall emissions. Its approach is well-calibrated to the urban context, providing tangible public health and environmental benefits that justify its higher ranking."
-        },
-        {
-            "locode": "CEN020",
-            "cityName": "Centralia",
-            "region": "EU",
-            "regionName": "European Union",
-            "actionId": "A20",
-            "actionName": "Electric Vehicle Incentives",
-            "actionPriority": 20,
-            "explanation": "For Centralia, Electric Vehicle Incentives were ranked highly due to their potential to transform urban mobility towards cleaner alternatives. This action fits well with local strategies for reducing reliance on fossil fuels and promotes an environment-friendly transport ecosystem. Its focus on enhancing socio-demographic benefits, such as cost savings and improved air quality, underpins its prioritized position."
-        }
-    ]
-}
+[
+    {
+        "locode": "BR RNV",
+        "cityName": "Ribeir\u00e3o das Neves",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0042",
+        "actionName": "Encourage renewable energy policies at the municipal level",
+        "actionPriority": 1
+    },
+    {
+        "locode": "BR RNV",
+        "cityName": "Ribeir\u00e3o das Neves",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0024",
+        "actionName": "Integrate renewables into municipal water systems",
+        "actionPriority": 2
+    },
+    {
+        "locode": "BR RNV",
+        "cityName": "Ribeir\u00e3o das Neves",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0038",
+        "actionName": "Promote community solar farms",
+        "actionPriority": 3
+    },
+    {
+        "locode": "BR RNV",
+        "cityName": "Ribeir\u00e3o das Neves",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0033",
+        "actionName": "Install biodigesters in rural properties",
+        "actionPriority": 4
+    },
+    {
+        "locode": "BR RNV",
+        "cityName": "Ribeir\u00e3o das Neves",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0040",
+        "actionName": "Adopt solar-powered street lighting in rural areas",
+        "actionPriority": 5
+    },
+    {
+        "locode": "BR RNV",
+        "cityName": "Ribeir\u00e3o das Neves",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0029",
+        "actionName": "Adopt policies for fossil fuel-free buildings",
+        "actionPriority": 6
+    },
+    {
+        "locode": "BR RNV",
+        "cityName": "Ribeir\u00e3o das Neves",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0097",
+        "actionName": "Support Distributed Energy Generation in Residences and Businesses",
+        "actionPriority": 7
+    },
+    {
+        "locode": "BR RNV",
+        "cityName": "Ribeir\u00e3o das Neves",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0011",
+        "actionName": "Provide tax incentives for renewable energy in residential projects",
+        "actionPriority": 8
+    },
+    {
+        "locode": "BR RNV",
+        "cityName": "Ribeir\u00e3o das Neves",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0105",
+        "actionName": "Reduce technical losses in energy distribution networks",
+        "actionPriority": 9
+    },
+    {
+        "locode": "BR RNV",
+        "cityName": "Ribeir\u00e3o das Neves",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0005",
+        "actionName": "Create credit lines for residential and community wind energy projects",
+        "actionPriority": 10
+    },
+    {
+        "locode": "BR RNV",
+        "cityName": "Ribeir\u00e3o das Neves",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0020",
+        "actionName": "Promote sustainable construction practices and encourage green technologies in public, residential, commercial, industrial, and service buildings.",
+        "actionPriority": 11
+    },
+    {
+        "locode": "BR RNV",
+        "cityName": "Ribeir\u00e3o das Neves",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0008",
+        "actionName": "Develop Smart Grids and Energy Storage Systems",
+        "actionPriority": 12
+    },
+    {
+        "locode": "BR RNV",
+        "cityName": "Ribeir\u00e3o das Neves",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0002",
+        "actionName": "Encourage the Use of the Brazilian Labeling Program for Buildings",
+        "actionPriority": 13
+    },
+    {
+        "locode": "BR RNV",
+        "cityName": "Ribeir\u00e3o das Neves",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0027",
+        "actionName": "Create financing programs for local renewable energy projects",
+        "actionPriority": 14
+    },
+    {
+        "locode": "BR RNV",
+        "cityName": "Ribeir\u00e3o das Neves",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0043",
+        "actionName": "Integrate geothermal energy for heating where feasible",
+        "actionPriority": 15
+    },
+    {
+        "locode": "BR RNV",
+        "cityName": "Ribeir\u00e3o das Neves",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0046",
+        "actionName": "Make efforts to promote socioeconomic development and improve the quality of life in the city from the perspective of a circular economy and zero carbon emissions.",
+        "actionPriority": 16
+    },
+    {
+        "locode": "BR RNV",
+        "cityName": "Ribeir\u00e3o das Neves",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0004",
+        "actionName": "Raise awareness to reduce peak-hour energy consumption",
+        "actionPriority": 17
+    },
+    {
+        "locode": "BR RNV",
+        "cityName": "Ribeir\u00e3o das Neves",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0022",
+        "actionName": "Set municipal energy efficiency targets",
+        "actionPriority": 18
+    },
+    {
+        "locode": "BR RNV",
+        "cityName": "Ribeir\u00e3o das Neves",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0121",
+        "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
+        "actionPriority": 19
+    },
+    {
+        "locode": "BR RNV",
+        "cityName": "Ribeir\u00e3o das Neves",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0131",
+        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
+        "actionPriority": 20
+    }
+]

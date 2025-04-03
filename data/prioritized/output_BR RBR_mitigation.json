@@ -1,204 +1,182 @@
-{
-    "actions": [
-        {
-            "locode": "USNYC",
-            "cityName": "New York",
-            "region": "NE",
-            "regionName": "Northeast",
-            "actionId": "A1",
-            "actionName": "New Building Standards",
-            "actionPriority": 1,
-            "explanation": "For New York, the implementation of new building standards represents a strong strategy that significantly reduces emissions associated with the extensive building sector. The action is carefully designed to address the challenges posed by a densely populated urban environment, ensuring that energy consumption is more efficient and sustainable. It offers lasting benefits by enhancing indoor comfort as well as reducing long-term operational costs. Overall, it aligns closely with the city's long-term planning objectives for environmental sustainability."
-        },
-        {
-            "locode": "USNYC",
-            "cityName": "New York",
-            "region": "NE",
-            "regionName": "Northeast",
-            "actionId": "A2",
-            "actionName": "Bus Emissions Reduction",
-            "actionPriority": -1,
-            "explanation": "In New York, the strategy to reduce bus emissions contributes to cleaner air and addresses a noticeable source of urban pollution. However, its overall impact on the most significant emission sources in the city is relatively limited. The action involves transitioning vehicle fleets, which introduces dependencies that might delay the quicker realization of benefits. As a result, while it is an important step in improving urban air quality, it is not prioritized as highly when compared to more direct high-impact measures."
-        },
-        {
-            "locode": "USCHI",
-            "cityName": "Chicago",
-            "region": "MW",
-            "regionName": "Midwest",
-            "actionId": "A3",
-            "actionName": "Renewable Energy Integration",
-            "actionPriority": 1,
-            "explanation": "Chicago benefits significantly from the renewable energy integration approach, as it directly replaces fossil fuels with sustainable energy sources. The action aligns well with the city’s high energy demand and environmental context, allowing for substantial emission reductions. It is designed to deliver prompt benefits, making efficient use of local resources while reducing long-term energy costs. This method also enhances the city's overall resilience against climate risks."
-        },
-        {
-            "locode": "USCHI",
-            "cityName": "Chicago",
-            "region": "MW",
-            "regionName": "Midwest",
-            "actionId": "A4",
-            "actionName": "Urban Green Spaces Expansion",
-            "actionPriority": -1,
-            "explanation": "Expanding urban green spaces in Chicago offers important benefits such as improved air quality and mitigation of urban heat effects. However, its direct impact on greenhouse gas emissions is more modest compared to initiatives that transform energy usage. While the project contributes positively to community well-being and environmental aesthetics, its cost-effectiveness in addressing major emission sources is less pronounced. This makes it a valuable supportive measure rather than a primary climate action."
-        },
-        {
-            "locode": "USELB",
-            "cityName": "El Paso",
-            "region": "SW",
-            "regionName": "Southwest",
-            "actionId": "A5",
-            "actionName": "Water Resource Management",
-            "actionPriority": 1,
-            "explanation": "In El Paso, water resource management is critical given the arid climate and ongoing water scarcity challenges. The action is exceptionally well-suited to the local environment, addressing not only water conservation but also associated climate risks. By promoting efficient water usage, it creates broader socio-economic benefits while reducing vulnerabilities to drought. This approach is both resilient and cost-effective, fitting seamlessly with El Paso's long-term sustainability goals."
-        },
-        {
-            "locode": "USELB",
-            "cityName": "El Paso",
-            "region": "SW",
-            "regionName": "Southwest",
-            "actionId": "A6",
-            "actionName": "Smart Grid Implementation",
-            "actionPriority": -1,
-            "explanation": "Smart grid implementation in El Paso modernizes energy infrastructure and enhances overall efficiency. Although it contributes positively by reducing energy wastage, its immediate impact on addressing the city's pressing water scarcity issues is less direct. The action introduces certain dependencies related to existing grid conditions, which could delay the realization of its full benefits. As such, while it is a robust long-term strategy, it is less prioritized when immediate resource challenges are considered."
-        },
-        {
-            "locode": "USATL",
-            "cityName": "Atlanta",
-            "region": "SE",
-            "regionName": "Southeast",
-            "actionId": "A7",
-            "actionName": "Energy Efficient Public Buildings",
-            "actionPriority": 1,
-            "explanation": "Atlanta's emphasis on energy efficient public buildings directly targets significant energy consumption and urban emissions associated with large public facilities. The action is highly aligned with the city’s dense urban landscape and offers commendable cost-effectiveness over time. It also enhances environmental comfort and public health, making it a multipronged strategy in tackling climate challenges. This integrated approach underpins its prioritization within the broader climate strategy."
-        },
-        {
-            "locode": "USATL",
-            "cityName": "Atlanta",
-            "region": "SE",
-            "regionName": "Southeast",
-            "actionId": "A8",
-            "actionName": "Urban Tree Canopy Expansion",
-            "actionPriority": -1,
-            "explanation": "Urban tree canopy expansion in Atlanta offers benefits such as improved air quality and reduced urban heat islands. However, its direct contribution to emissions reduction is less impactful compared to measures that address major energy use. The initiative relies on gradual adoption and long-term cultural changes, which can delay immediate outcomes. As a complement to more aggressive actions, it remains important but is ranked lower in terms of direct emission reduction priority."
-        },
-        {
-            "locode": "USSF",
-            "cityName": "San Francisco",
-            "region": "W",
-            "regionName": "West",
-            "actionId": "A9",
-            "actionName": "Electric Vehicle Adoption Incentives",
-            "actionPriority": 1,
-            "explanation": "San Francisco has a strong foundation for adopting electric vehicles due to its tech-savvy community and environmental commitments. The measure directly targets urban tailpipe emissions, leading to a cleaner transportation sector and improved air quality. It is well integrated into the city’s existing sustainable mobility framework, ensuring efficient emission reductions. The strategy thus aligns seamlessly with both environmental and economic goals, enhancing its overall appeal."
-        },
-        {
-            "locode": "USSF",
-            "cityName": "San Francisco",
-            "region": "W",
-            "regionName": "West",
-            "actionId": "A10",
-            "actionName": "Coastal Flood Defense Systems",
-            "actionPriority": -1,
-            "explanation": "Coastal flood defense systems in San Francisco are crucial for protecting vulnerable coastal areas from rising sea levels and extreme weather events. Though the action is indispensable for long-term resilience, its primary focus is on adaptation rather than direct emissions reduction. The approach requires extensive preparatory work and higher initial investment, which can delay rapid benefits. As a risk mitigation measure rather than a direct emission curbing strategy, it is positioned as a supportive priority."
-        },
-        {
-            "locode": "USHOU",
-            "cityName": "Houston",
-            "region": "S",
-            "regionName": "South",
-            "actionId": "A11",
-            "actionName": "Industrial Emissions Control",
-            "actionPriority": 1,
-            "explanation": "Given Houston's substantial industrial base, industrial emissions control is a highly strategic action that directly targets significant sources of greenhouse gases. The measure is well-tailored to address localized environmental challenges while enhancing public health through reduced pollution. It fits efficiently within the city’s broader industrial framework and risk reduction strategies. This focused intervention offers clear benefits that justify its higher prioritization within the climate action portfolio."
-        },
-        {
-            "locode": "USHOU",
-            "cityName": "Houston",
-            "region": "S",
-            "regionName": "South",
-            "actionId": "A12",
-            "actionName": "Green Roof Incentives",
-            "actionPriority": -1,
-            "explanation": "Green roof incentives in Houston are designed to provide benefits such as improved insulation and stormwater management. However, their overall potential to reduce significant greenhouse gas emissions is more limited when compared to direct industrial controls. The intervention also relies on sender participation and concentrated efforts across individual structures, which may slow down its broader effectiveness. Consequently, this action serves as a complementary measure rather than a primary approach to mitigating climate impacts."
-        },
-        {
-            "locode": "USEDC",
-            "cityName": "Edmonton",
-            "region": "CA",
-            "regionName": "Canada",
-            "actionId": "A13",
-            "actionName": "Energy Retrofit Programs",
-            "actionPriority": 1,
-            "explanation": "Edmonton’s energy retrofit programs are an effective approach for modernizing old buildings and reducing energy consumption. The strategy is particularly relevant in a cold climate, where efficient heating is essential and energy waste must be minimized. This action not only decreases emissions significantly but also improves overall building performance. Its focus on sustainable upgrades makes it highly aligned with the city's long-term energy and environmental goals."
-        },
-        {
-            "locode": "USEDC",
-            "cityName": "Edmonton",
-            "region": "CA",
-            "regionName": "Canada",
-            "actionId": "A14",
-            "actionName": "Urban Water Recycling",
-            "actionPriority": -1,
-            "explanation": "Urban water recycling in Edmonton is geared toward bolstering resource efficiency and addressing local water needs. While it serves an important role in enhancing sustainability, its direct effect on reducing greenhouse gas emissions is less pronounced. The process involves gradual implementation and requires changes in urban infrastructure, which can temper its immediacy. Therefore, it functions well as a supportive measure rather than a leading strategy for emissions reduction."
-        },
-        {
-            "locode": "UKLDN",
-            "cityName": "London",
-            "region": "EU",
-            "regionName": "Europe",
-            "actionId": "A15",
-            "actionName": "Low Emission Zones",
-            "actionPriority": 1,
-            "explanation": "London's low emission zones are a thoughtfully designed initiative that helps reduce vehicular pollution in densely populated urban areas. The approach is finely tuned to address crucial urban transportation challenges and improve air quality on a large scale. Its implementation is straightforward and cost-effective, making it highly suitable for a city with significant traffic volumes. By prioritizing this action, London demonstrates a strong commitment to sustainable urban mobility and emissions reduction."
-        },
-        {
-            "locode": "UKLDN",
-            "cityName": "London",
-            "region": "EU",
-            "regionName": "Europe",
-            "actionId": "A16",
-            "actionName": "Cycling Infrastructure Enhancement",
-            "actionPriority": -1,
-            "explanation": "Enhancing cycling infrastructure in London supports sustainable transportation and encourages healthier lifestyle choices. Although it contributes to reducing emissions, the effect is more gradual compared to measures that immediately curtail major pollution sources. The action requires broad cultural shifts and extended adoption periods to manifest significant benefits. As a result, it serves as a valuable complement to more direct emission-focused interventions rather than a primary strategy."
-        },
-        {
-            "locode": "AUSYD",
-            "cityName": "Sydney",
-            "region": "OC",
-            "regionName": "Oceania",
-            "actionId": "A17",
-            "actionName": "Solar Energy Deployment",
-            "actionPriority": 1,
-            "explanation": "Sydney’s initiative for solar energy deployment leverages the city’s abundant sunlight to offer a sustainable alternative to traditional energy sources. The action directly reduces reliance on fossil fuels, which leads to a meaningful reduction in greenhouse gas emissions. It is designed to be cost-effective over the long term, generating both environmental and economic benefits. This strategy is well-integrated with Sydney’s urban planning and propels the city toward a cleaner energy future."
-        },
-        {
-            "locode": "AUSYD",
-            "cityName": "Sydney",
-            "region": "OC",
-            "regionName": "Oceania",
-            "actionId": "A18",
-            "actionName": "Waterfront Flood Mitigation",
-            "actionPriority": -1,
-            "explanation": "Waterfront flood mitigation in Sydney is essential for protecting coastal communities from climate-induced risks, such as rising sea levels and extreme weather events. Although the measure is critical for adaptation and risk reduction, it does not directly target the city’s primary sources of greenhouse gas emissions. Its implementation is more complex and requires a longer-term commitment, which delays immediate benefits. This action is thus emphasized for resilience rather than serving as a leading emission reduction strategy."
-        },
-        {
-            "locode": "INMBI",
-            "cityName": "Mumbai",
-            "region": "AS",
-            "regionName": "Asia",
-            "actionId": "A19",
-            "actionName": "Mass Transit Development",
-            "actionPriority": 1,
-            "explanation": "Mumbai’s investment in mass transit development directly addresses the heavy burden of vehicular emissions in a densely populated urban environment. The action is designed to significantly improve urban mobility while reducing the overall carbon footprint of the city. Its focus on high-impact transportation infrastructure makes it both efficient and capable of delivering rapid benefits. The strategy aligns well with local socio-demographic needs and is central to achieving sustainable urban growth."
-        },
-        {
-            "locode": "INMBI",
-            "cityName": "Mumbai",
-            "region": "AS",
-            "regionName": "Asia",
-            "actionId": "A20",
-            "actionName": "Waste Management Modernization",
-            "actionPriority": -1,
-            "explanation": "Mumbai's approach to modernizing waste management systems aims to reduce pollution and improve the efficiency of urban sanitation services. While it is vital for managing overall urban environmental health, its direct contribution to reducing core greenhouse gas emissions is less significant compared to other sector-specific initiatives. The action depends on gradual behavioral changes and infrastructure updates, which may result in slower emission benefits. Accordingly, it is seen as a supportive component within a wider climate strategy rather than a primary focus for immediate emissions reduction."
-        }
-    ]
-}
+[
+    {
+        "locode": "BR RBR",
+        "cityName": "Rio Branco",
+        "region": "AC",
+        "regionName": "Acre",
+        "actionId": "icare_0050",
+        "actionName": "Implement Agroforestry Systems",
+        "actionPriority": 1
+    },
+    {
+        "locode": "BR RBR",
+        "cityName": "Rio Branco",
+        "region": "AC",
+        "regionName": "Acre",
+        "actionId": "icare_0134",
+        "actionName": "Strengthen Mechanisms for Deforestation Control",
+        "actionPriority": 2
+    },
+    {
+        "locode": "BR RBR",
+        "cityName": "Rio Branco",
+        "region": "AC",
+        "regionName": "Acre",
+        "actionId": "icare_0133",
+        "actionName": "Promote Urban Reforestation and Green Corridors",
+        "actionPriority": 3
+    },
+    {
+        "locode": "BR RBR",
+        "cityName": "Rio Branco",
+        "region": "AC",
+        "regionName": "Acre",
+        "actionId": "icare_0128",
+        "actionName": "Establish Municipal Programs for Payment for Environmental Services (PES)",
+        "actionPriority": 4
+    },
+    {
+        "locode": "BR RBR",
+        "cityName": "Rio Branco",
+        "region": "AC",
+        "regionName": "Acre",
+        "actionId": "icare_0130",
+        "actionName": "Conduct Technical Assistance and Rural Extension (ATER) Actions",
+        "actionPriority": 5
+    },
+    {
+        "locode": "BR RBR",
+        "cityName": "Rio Branco",
+        "region": "AC",
+        "regionName": "Acre",
+        "actionId": "icare_0129",
+        "actionName": "Facilitate Technology Transfer for Conservation Practices",
+        "actionPriority": 6
+    },
+    {
+        "locode": "BR RBR",
+        "cityName": "Rio Branco",
+        "region": "AC",
+        "regionName": "Acre",
+        "actionId": "icare_0096",
+        "actionName": "Promote Organic Farming",
+        "actionPriority": 7
+    },
+    {
+        "locode": "BR RBR",
+        "cityName": "Rio Branco",
+        "region": "AC",
+        "regionName": "Acre",
+        "actionId": "icare_0084",
+        "actionName": "Create Incentives for Agroforestry Practices in Livestock Systems",
+        "actionPriority": 8
+    },
+    {
+        "locode": "BR RBR",
+        "cityName": "Rio Branco",
+        "region": "AC",
+        "regionName": "Acre",
+        "actionId": "icare_0100",
+        "actionName": "Support Regenerative Agriculture Practices",
+        "actionPriority": 9
+    },
+    {
+        "locode": "BR RBR",
+        "cityName": "Rio Branco",
+        "region": "AC",
+        "regionName": "Acre",
+        "actionId": "icare_0102",
+        "actionName": "Promote Sustainable Agricultural Practices",
+        "actionPriority": 10
+    },
+    {
+        "locode": "BR RBR",
+        "cityName": "Rio Branco",
+        "region": "AC",
+        "regionName": "Acre",
+        "actionId": "icare_0127",
+        "actionName": "Accelerate Environmental Regularization of Rural Properties",
+        "actionPriority": 11
+    },
+    {
+        "locode": "BR RBR",
+        "cityName": "Rio Branco",
+        "region": "AC",
+        "regionName": "Acre",
+        "actionId": "icare_0101",
+        "actionName": "Encourage the Use of Low-Emission Agricultural Machinery",
+        "actionPriority": 12
+    },
+    {
+        "locode": "BR RBR",
+        "cityName": "Rio Branco",
+        "region": "AC",
+        "regionName": "Acre",
+        "actionId": "icare_0131",
+        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
+        "actionPriority": 13
+    },
+    {
+        "locode": "BR RBR",
+        "cityName": "Rio Branco",
+        "region": "AC",
+        "regionName": "Acre",
+        "actionId": "icare_0132",
+        "actionName": "Encourage Local Agroecological Production and Short Supply Chains",
+        "actionPriority": 14
+    },
+    {
+        "locode": "BR RBR",
+        "cityName": "Rio Branco",
+        "region": "AC",
+        "regionName": "Acre",
+        "actionId": "icare_0099",
+        "actionName": "Support Agroecological Certification Programs",
+        "actionPriority": 15
+    },
+    {
+        "locode": "BR RBR",
+        "cityName": "Rio Branco",
+        "region": "AC",
+        "regionName": "Acre",
+        "actionId": "icare_0136",
+        "actionName": "Support the Implementation of Ecological Fiscal Incentives",
+        "actionPriority": 16
+    },
+    {
+        "locode": "BR RBR",
+        "cityName": "Rio Branco",
+        "region": "AC",
+        "regionName": "Acre",
+        "actionId": "icare_0085",
+        "actionName": "Promote the Adoption of Agroecological Pest Control",
+        "actionPriority": 17
+    },
+    {
+        "locode": "BR RBR",
+        "cityName": "Rio Branco",
+        "region": "AC",
+        "regionName": "Acre",
+        "actionId": "ipcc_0052",
+        "actionName": "Reduce Deforestation and Degradation",
+        "actionPriority": 18
+    },
+    {
+        "locode": "BR RBR",
+        "cityName": "Rio Branco",
+        "region": "AC",
+        "regionName": "Acre",
+        "actionId": "ipcc_0061",
+        "actionName": "Soil Carbon Management in Croplands and Grasslands",
+        "actionPriority": 19
+    },
+    {
+        "locode": "BR RBR",
+        "cityName": "Rio Branco",
+        "region": "AC",
+        "regionName": "Acre",
+        "actionId": "ipcc_0053",
+        "actionName": "Afforestation, Reforestation and Forest Ecosystem Restoration",
+        "actionPriority": 20
+    }
+]

@@ -1,204 +1,202 @@
-{
-    "actions": [
-        {
-            "locode": "MTL001",
-            "cityName": "Metropolis",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "ACTION01",
-            "actionName": "New Building Standards",
-            "actionPriority": 1,
-            "explanation": "For the city Metropolis, New Building Standards is prioritized because it significantly reduces emissions from the building sector by setting rigorous efficiency benchmarks. This action is well aligned with the city’s infrastructural characteristics and focuses on a sector with high emissions. Additionally, it creates long‐term benefits by improving energy usage and community resilience through sustainable building practices."
-        },
-        {
-            "locode": "MTL002",
-            "cityName": "Metropolis",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "ACTION02",
-            "actionName": "Bus Emissions Reduction",
-            "actionPriority": 2,
-            "explanation": "For the city Metropolis, Bus Emissions Reduction is valued because it directly addresses a major urban emission source within public transportation. The action improves local air quality and reduces health risks while integrating efficiently with existing transit systems. Its focus on a critical sector and pragmatic implementation approach justify its prioritization."
-        },
-        {
-            "locode": "MTL003",
-            "cityName": "Metropolis",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "ACTION03",
-            "actionName": "Renewable Energy Incentives",
-            "actionPriority": 3,
-            "explanation": "For the city Metropolis, Renewable Energy Incentives are prioritized for their ability to drive a transition away from fossil fuels. This action supports the city’s clean energy transition through stimulating local adoption of renewable technologies in homes and businesses. Its design aligns well with the local sector needs while presenting manageable risks and promoting cost-effectiveness."
-        },
-        {
-            "locode": "MTL004",
-            "cityName": "Metropolis",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "ACTION04",
-            "actionName": "Urban Greening Programs",
-            "actionPriority": 4,
-            "explanation": "For the city Metropolis, Urban Greening Programs are emphasized due to their dual capacity to sequester carbon and enhance urban biodiversity. This initiative not only helps in moderating local temperatures but also improves community well-being by expanding green spaces. Its compatibility with the city’s environment and potential for addressing urban heat issues enhance its priority."
-        },
-        {
-            "locode": "MTL005",
-            "cityName": "Metropolis",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "ACTION05",
-            "actionName": "Energy Efficient Public Lighting",
-            "actionPriority": 5,
-            "explanation": "For the city Metropolis, Energy Efficient Public Lighting is favored because it offers a straightforward pathway to reduce energy consumption in public spaces. The action improves both emissions profiles and urban safety with minimal disruption. Its ease of implementation and cost-effective nature contribute to its strong position among prioritized actions."
-        },
-        {
-            "locode": "MTL006",
-            "cityName": "Metropolis",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "ACTION06",
-            "actionName": "Smart Grid Implementation",
-            "actionPriority": 6,
-            "explanation": "In Metropolis, Smart Grid Implementation is recognized for its capacity to optimize energy usage and integrate renewable sources into the existing grid infrastructure. This action supports robust emissions reduction by ensuring efficient energy distribution. Its technological adaptability and alignment with the city’s modern infrastructure needs make it a strategic choice."
-        },
-        {
-            "locode": "MTL007",
-            "cityName": "Metropolis",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "ACTION07",
-            "actionName": "Industrial Emissions Management",
-            "actionPriority": 7,
-            "explanation": "For Metropolis, Industrial Emissions Management is prioritized due to its direct targeting of significant emission sources within the industrial sector. This action improves environmental standards while supporting improved safety and operational practices. Its tailored approach for high-impact sectors and compatibility with economic activity underscore its ranking."
-        },
-        {
-            "locode": "MTL008",
-            "cityName": "Metropolis",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "ACTION08",
-            "actionName": "Waste-to-Energy Conversion",
-            "actionPriority": 8,
-            "explanation": "In Metropolis, Waste-to-Energy Conversion is prioritized as it effectively transforms waste management challenges into opportunities for clean energy generation. The dual impact of reducing landfill waste and lowering emissions makes it a multifaceted solution. Its alignment with the city’s drive for sustainable resource use and cost-effective implementation reinforces its importance."
-        },
-        {
-            "locode": "MTL009",
-            "cityName": "Metropolis",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "ACTION09",
-            "actionName": "Water Conservation Measures",
-            "actionPriority": 9,
-            "explanation": "For Metropolis, Water Conservation Measures are valued for preserving a critical resource while indirectly lowering energy demands associated with water processing. The action supports sustainable management practices and enhances resilience against climate variability. Its straightforward implementation and community-wide benefits justify its placement in the prioritization."
-        },
-        {
-            "locode": "MTL010",
-            "cityName": "Metropolis",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "ACTION10",
-            "actionName": "Coastal Flood Defenses",
-            "actionPriority": 10,
-            "explanation": "In Metropolis, Coastal Flood Defenses are a key action when addressing risks associated with sea level rise and extreme weather events. This measure strengthens the city’s resilience by protecting both infrastructure and vulnerable communities. Its targeted approach for high-risk areas and long-term risk reduction focus contribute to its prioritization despite complex preparatory requirements."
-        },
-        {
-            "locode": "MTL011",
-            "cityName": "Metropolis",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "ACTION11",
-            "actionName": "Heatwave Preparedness Plan",
-            "actionPriority": 11,
-            "explanation": "For Metropolis, a Heatwave Preparedness Plan is essential to mitigate the impacts of extreme temperature events on vulnerable populations. The action emphasizes prompt response mechanisms and protective measures that enhance public health and infrastructure resilience. Its relevance to immediate climate risks and capacity for rapid deployment support its ranking in the adaptation strategy."
-        },
-        {
-            "locode": "MTL012",
-            "cityName": "Metropolis",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "ACTION12",
-            "actionName": "Electric Vehicle Incentives",
-            "actionPriority": 12,
-            "explanation": "In Metropolis, Electric Vehicle Incentives are prioritized based on their capacity to lower urban transport emissions and improve air quality. The shift towards zero-emission vehicles complements the city’s existing infrastructure improvements and sustainable mobility goals. Its benefits extend across environmental and socio-economic spheres, making it an influential part of the climate action strategy."
-        },
-        {
-            "locode": "MTL013",
-            "cityName": "Metropolis",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "ACTION13",
-            "actionName": "Urban Heat Island Mitigation",
-            "actionPriority": 13,
-            "explanation": "For the city Metropolis, Urban Heat Island Mitigation is prioritized as it effectively addresses the challenges of rising urban temperatures and associated health risks. The strategy enhances livability by incorporating reflective materials and increasing green cover, which together moderate local climates. Its capacity to deliver rapid community benefits while aligning with environmental objectives underscores its significance."
-        },
-        {
-            "locode": "MTL014",
-            "cityName": "Metropolis",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "ACTION14",
-            "actionName": "Natural Disaster Risk Assessment",
-            "actionPriority": 14,
-            "explanation": "In Metropolis, Natural Disaster Risk Assessment is a key action given its proactive approach towards identifying and mitigating climate-related hazards. This initiative strengthens urban planning by revealing vulnerabilities and informing targeted interventions across sectors. Its comprehensive focus on risk reduction and long-term preparedness makes it a crucial element in the city’s climate strategy."
-        },
-        {
-            "locode": "MTL015",
-            "cityName": "Metropolis",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "ACTION15",
-            "actionName": "Community Solar Projects",
-            "actionPriority": 15,
-            "explanation": "For Metropolis, Community Solar Projects are valued for their ability to decentralize clean energy production and involve residents directly in the energy transition. This action supports local energy independence and fosters community engagement while reducing overall emissions. Its design is well suited to the socio-economic context of the city and offers a practical pathway for sustainable development."
-        },
-        {
-            "locode": "MTL016",
-            "cityName": "Metropolis",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "ACTION16",
-            "actionName": "Sustainable Transportation Infrastructure",
-            "actionPriority": 16,
-            "explanation": "In Metropolis, Sustainable Transportation Infrastructure is prioritized for its transformative impact on reducing car dependency and supporting cleaner transit options. The initiative streamlines urban mobility and contributes to substantial emissions reduction while being adaptable to evolving urban needs. Its long-term benefits and strategic alignment with growth plans bolster its position among climate actions."
-        },
-        {
-            "locode": "MTL017",
-            "cityName": "Metropolis",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "ACTION17",
-            "actionName": "Retrofitting Public Buildings",
-            "actionPriority": 17,
-            "explanation": "For the city Metropolis, Retrofitting Public Buildings is an effective action because it targets energy inefficiencies in key community infrastructures. By upgrading older structures, the approach reduces emissions and sets an example for sustainable operations. Its scalability, coupled with favorable cost and resource dynamics, endorses its placement within the overall action ranking."
-        },
-        {
-            "locode": "MTL018",
-            "cityName": "Metropolis",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "ACTION18",
-            "actionName": "Green Roof Initiatives",
-            "actionPriority": 18,
-            "explanation": "In Metropolis, Green Roof Initiatives are prioritized for their multifaceted benefits such as reducing energy loads, mitigating urban heat effects, and enhancing biodiversity. This nature-based solution supports urban sustainability without requiring major infrastructural overhauls. Its simplicity of integration and additional community aesthetic benefits further justify its ranking."
-        },
-        {
-            "locode": "MTL019",
-            "cityName": "Metropolis",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "ACTION19",
-            "actionName": "Public Awareness Campaigns",
-            "actionPriority": 19,
-            "explanation": "For Metropolis, Public Awareness Campaigns are valued as they build community understanding and support for a range of climate initiatives. This action mobilizes behavioral change and encourages participation in sustainable practices. Its broad social impact and complementarity with technical measures ensure it remains an important part of the overall strategy."
-        },
-        {
-            "locode": "MTL020",
-            "cityName": "Metropolis",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "ACTION20",
-            "actionName": "Climate Adaptation Strategy Roadmap",
-            "actionPriority": 20,
-            "explanation": "In Metropolis, a Climate Adaptation Strategy Roadmap is prioritized because it offers a comprehensive framework for addressing both current and future climate risks. This action provides clear guidance for integrating new initiatives with existing priorities while managing resource allocation efficiently. Its holistic approach to risk assessment, community capacity building, and long-term planning reinforces its critical role in guiding the city’s climate response."
-        }
-    ]
-}
+[
+    {
+        "locode": "BR SJM",
+        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
+        "region": "RJ",
+        "regionName": "Rio de Janeiro",
+        "actionId": "icare_0169",
+        "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
+        "actionPriority": 1,
+        "explanation": "Ranked #1 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR SJM",
+        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
+        "region": "RJ",
+        "regionName": "Rio de Janeiro",
+        "actionId": "icare_0176",
+        "actionName": "Development of Climate Action Plan",
+        "actionPriority": 2,
+        "explanation": "Ranked #2 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR SJM",
+        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
+        "region": "RJ",
+        "regionName": "Rio de Janeiro",
+        "actionId": "icare_0151",
+        "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
+        "actionPriority": 3,
+        "explanation": "Ranked #3 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR SJM",
+        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
+        "region": "RJ",
+        "regionName": "Rio de Janeiro",
+        "actionId": "icare_0162",
+        "actionName": "Strengthen programs for control and conservation of protected areas",
+        "actionPriority": 4,
+        "explanation": "Ranked #4 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR SJM",
+        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
+        "region": "RJ",
+        "regionName": "Rio de Janeiro",
+        "actionId": "icare_0152",
+        "actionName": "Recovery of degraded areas",
+        "actionPriority": 5,
+        "explanation": "Ranked #5 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR SJM",
+        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
+        "region": "RJ",
+        "regionName": "Rio de Janeiro",
+        "actionId": "icare_0149",
+        "actionName": "Encourage sustainable land use practices",
+        "actionPriority": 6,
+        "explanation": "Ranked #6 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR SJM",
+        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
+        "region": "RJ",
+        "regionName": "Rio de Janeiro",
+        "actionId": "ipcc_0094",
+        "actionName": "Access to health care",
+        "actionPriority": 7,
+        "explanation": "Ranked #7 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR SJM",
+        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
+        "region": "RJ",
+        "regionName": "Rio de Janeiro",
+        "actionId": "ipcc_0097",
+        "actionName": "Food storage/distribution improvements",
+        "actionPriority": 8,
+        "explanation": "Ranked #8 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR SJM",
+        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
+        "region": "RJ",
+        "regionName": "Rio de Janeiro",
+        "actionId": "icare_0157",
+        "actionName": "Maintenance and Revitalization of Riparian Forests",
+        "actionPriority": 9,
+        "explanation": "Ranked #9 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR SJM",
+        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
+        "region": "RJ",
+        "regionName": "Rio de Janeiro",
+        "actionId": "icare_0145",
+        "actionName": "Strengthen the healthcare network to attend to climate victims",
+        "actionPriority": 10,
+        "explanation": "Ranked #10 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR SJM",
+        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
+        "region": "RJ",
+        "regionName": "Rio de Janeiro",
+        "actionId": "icare_0148",
+        "actionName": "Create the Municipal Climate Change Forum",
+        "actionPriority": 11,
+        "explanation": "Ranked #11 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR SJM",
+        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
+        "region": "RJ",
+        "regionName": "Rio de Janeiro",
+        "actionId": "icare_0181",
+        "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
+        "actionPriority": 12,
+        "explanation": "Ranked #12 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR SJM",
+        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
+        "region": "RJ",
+        "regionName": "Rio de Janeiro",
+        "actionId": "icare_0156",
+        "actionName": "Implementation of urban gardens",
+        "actionPriority": 13,
+        "explanation": "Ranked #13 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR SJM",
+        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
+        "region": "RJ",
+        "regionName": "Rio de Janeiro",
+        "actionId": "ipcc_0096",
+        "actionName": "Farm/fishery improvements",
+        "actionPriority": 14,
+        "explanation": "Ranked #14 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR SJM",
+        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
+        "region": "RJ",
+        "regionName": "Rio de Janeiro",
+        "actionId": "ipcc_0093",
+        "actionName": "Availability of health infrastructure",
+        "actionPriority": 15,
+        "explanation": "Ranked #15 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR SJM",
+        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
+        "region": "RJ",
+        "regionName": "Rio de Janeiro",
+        "actionId": "ipcc_0092",
+        "actionName": "Social safety nets",
+        "actionPriority": 16,
+        "explanation": "Ranked #16 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR SJM",
+        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
+        "region": "RJ",
+        "regionName": "Rio de Janeiro",
+        "actionId": "icare_0180",
+        "actionName": "Implement permeable pavements and increase green areas in roadways",
+        "actionPriority": 17,
+        "explanation": "Ranked #17 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR SJM",
+        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
+        "region": "RJ",
+        "regionName": "Rio de Janeiro",
+        "actionId": "icare_0144",
+        "actionName": "Creation of a Financial Support Program to Adress Extreme Weather Events",
+        "actionPriority": 18,
+        "explanation": "Ranked #18 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR SJM",
+        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
+        "region": "RJ",
+        "regionName": "Rio de Janeiro",
+        "actionId": "icare_0164",
+        "actionName": "Hydrological Monitoring System with Telemetry Stations",
+        "actionPriority": 19,
+        "explanation": "Ranked #19 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR SJM",
+        "cityName": "S\u00e3o Jo\u00e3o de Meriti",
+        "region": "RJ",
+        "regionName": "Rio de Janeiro",
+        "actionId": "icare_0175",
+        "actionName": "Recovery and preservation of green areas",
+        "actionPriority": 20,
+        "explanation": "Ranked #20 by tournament ranking algorithm"
+    }
+]

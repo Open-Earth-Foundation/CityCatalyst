@@ -1,204 +1,182 @@
-{
-    "actions": [
-        {
-            "locode": "M123",
-            "cityName": "Metropolis",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "A001",
-            "actionName": "New Building Standards",
-            "actionPriority": 1,
-            "explanation": "For Metropolis, new building standards are prioritized due to their strong potential for reducing emissions through enhanced energy efficiency in buildings. This action aligns well with the city's rapid urban growth and specific environmental context. It addresses long-term sustainability while offering significant co-benefits such as reduced energy consumption and improved building performance. The initiative is also well matched to the city's capacity for implementing comprehensive regulatory improvements."
-        },
-        {
-            "locode": "M123",
-            "cityName": "Metropolis",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "A002",
-            "actionName": "Bus Emissions",
-            "actionPriority": 2,
-            "explanation": "The initiative targeting bus emissions is designed to address the transportation sector, which is a critical contributor to urban air quality issues. It employs strategies that encourage cleaner fuel options and modern fleet technologies, fitting the city's demographic and infrastructural needs. The action is appreciated for its potential to lower greenhouse gas outputs and improve public health. It is also seen as a flexible approach that adapts well to evolving urban transit challenges."
-        },
-        {
-            "locode": "M123",
-            "cityName": "Metropolis",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "A003",
-            "actionName": "Urban Green Spaces",
-            "actionPriority": 3,
-            "explanation": "Urban green spaces are valued for their ability to reduce the urban heat island effect and enhance local environmental quality. This action contributes not only to climate mitigation but also offers substantial social benefits by creating recreational areas and improving air quality. It is well-aligned with the city’s density challenges and the need to enhance community well-being. The approach reflects an integrated strategy to strengthen urban resilience."
-        },
-        {
-            "locode": "M123",
-            "cityName": "Metropolis",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "A004",
-            "actionName": "Renewable Energy Installations",
-            "actionPriority": 4,
-            "explanation": "Promoting renewable energy installations in Metropolis supports a significant reduction in carbon emissions by shifting energy production away from fossil fuels. This action is strongly aligned with the city's sustainability objectives and renewable energy targets. It offers long-term energy security and resilience while being economically beneficial in the extended view. The initiative also benefits from minimal dependencies and is well suited for the local environment."
-        },
-        {
-            "locode": "M123",
-            "cityName": "Metropolis",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "A005",
-            "actionName": "Water Efficiency Program",
-            "actionPriority": 5,
-            "explanation": "Implementing a water efficiency program is crucial for managing the city's water resources amid climate variability. This action improves water usage practices and reduces pressurized demand during extreme weather events. It is especially relevant given the environmental context and risk of water shortages in urban areas. The initiative also offers long-term cost-effectiveness by minimizing waste and enhancing resource stewardship."
-        },
-        {
-            "locode": "M123",
-            "cityName": "Metropolis",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "A006",
-            "actionName": "Waste Management Improvement",
-            "actionPriority": 6,
-            "explanation": "Upgrading waste management systems plays a key role in reducing emissions from landfills and lowering methane release. This action leverages innovative recycling and processing technologies that are suited to the city's urban structure. It contributes to broader environmental benefits while stimulating local economic activity. The approach is seamlessly integrated into existing urban infrastructure, enhancing overall sustainability."
-        },
-        {
-            "locode": "M123",
-            "cityName": "Metropolis",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "A007",
-            "actionName": "Public Transportation Upgrade",
-            "actionPriority": 7,
-            "explanation": "Enhancing public transportation is focused on reducing commuting-related emissions while easing urban congestion. This initiative reflects the city's commitment to sustainable mobility and addresses both environmental and socio-demographic challenges effectively. It offers tangible improvements in transit efficiency and has a positive impact on urban air quality. The action is designed to deliver benefits within a feasible timeline and with scalable potential."
-        },
-        {
-            "locode": "M123",
-            "cityName": "Metropolis",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "A008",
-            "actionName": "Cycling Infrastructure Expansion",
-            "actionPriority": 8,
-            "explanation": "Expanding cycling infrastructure encourages low-carbon urban mobility and supports public health objectives. This action is economically efficient and well aligned with the city's efforts to reduce road congestion and pollution. It creates a safer and more active transportation framework tailored to local needs. The initiative is both accessible and adaptable, making it a supportive element of the broader climate strategy."
-        },
-        {
-            "locode": "M123",
-            "cityName": "Metropolis",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "A009",
-            "actionName": "Flood Defense Systems",
-            "actionPriority": 9,
-            "explanation": "Developing flood defense systems is a critical adaptation measure designed to safeguard Metropolis against the increasing risk of flood events. The initiative strengthens the city's resilience by protecting infrastructure and communities in flood-prone areas. It offers a proactive approach to mitigating climate-related hazards. This action is particularly suited to local topographical and environmental conditions."
-        },
-        {
-            "locode": "M123",
-            "cityName": "Metropolis",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "A010",
-            "actionName": "Heatwave Preparedness",
-            "actionPriority": 10,
-            "explanation": "Heatwave preparedness strategies aim to protect citizens during periods of extreme temperatures and reduce climate-related health risks. In Metropolis, this action focuses on enhancing early warning systems and implementing urban design modifications to ease heat impacts. It is especially relevant given the emerging trend of higher frequency heatwaves. The strategy supports a resilient framework that is critical for public health and safety."
-        },
-        {
-            "locode": "M123",
-            "cityName": "Metropolis",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "A011",
-            "actionName": "Community Energy Programs",
-            "actionPriority": 11,
-            "explanation": "Community energy programs empower local neighborhoods to develop renewable energy projects and reduce dependency on centralized power sources. This decentralized approach promotes community engagement and energy self-sufficiency. It fits well within the socio-demographic landscape of Metropolis while offering scalable environmental benefits. The action is structured to enhance local resilience and cost-effectiveness over time."
-        },
-        {
-            "locode": "M123",
-            "cityName": "Metropolis",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "A012",
-            "actionName": "Tree Planting Initiative",
-            "actionPriority": 12,
-            "explanation": "A tree planting initiative is a natural and cost-effective strategy that contributes to carbon sequestration and urban cooling. In Metropolis, the action enhances green cover while providing community recreational spaces and improved air quality. It synergizes well with broader efforts in urban sustainability and environmental protection. The approach is adaptable and supports long-term ecological benefits."
-        },
-        {
-            "locode": "M123",
-            "cityName": "Metropolis",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "A013",
-            "actionName": "Electric Vehicle Incentives",
-            "actionPriority": 13,
-            "explanation": "Incentivizing electric vehicle adoption is a strategically focused action aimed at decarbonizing the urban transportation sector. This measure helps in reducing greenhouse gas emissions and facilitates a cleaner, more modern fleet on the city roads. It resonates with the city's commitment to sustainable urban mobility and public health improvements. The initiative is crafted to offer competitive benefits while being responsive to market demand."
-        },
-        {
-            "locode": "M123",
-            "cityName": "Metropolis",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "A014",
-            "actionName": "Energy Efficiency Retrofit",
-            "actionPriority": 14,
-            "explanation": "Retrofitting existing infrastructure for energy efficiency is a pragmatic approach to minimize emissions from older buildings. The action is tailored to the dense urban fabric of Metropolis and offers benefits in terms of lower energy consumption and improved building performance. It is a cost-effective measure that can be implemented relatively quickly. The strategy reinforces sustainable practices while addressing immediate climate challenges."
-        },
-        {
-            "locode": "M123",
-            "cityName": "Metropolis",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "A015",
-            "actionName": "Solar Panel Subsidies",
-            "actionPriority": 15,
-            "explanation": "Providing solar panel subsidies is an initiative that motivates both residential and commercial sectors to adopt renewable energy solutions. It aligns closely with the city's sustainability goals by reducing reliance on non-renewable energy. The action is praised for its long-term environmental benefits and compatibility with local solar potential. It is designed to ease adoption barriers while supporting a broader green energy transition."
-        },
-        {
-            "locode": "M123",
-            "cityName": "Metropolis",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "A016",
-            "actionName": "Industrial Process Optimization",
-            "actionPriority": 16,
-            "explanation": "Optimizing industrial processes is an effective means to reduce emissions from one of the key economic sectors of Metropolis. This action focuses on enhancing efficiency and reducing waste within industrial operations, contributing substantially to emission reductions. It is well-targeted to address both economic and environmental challenges inherent in heavy industrial areas. The initiative is designed to create lasting improvements with manageable implementation dependencies."
-        },
-        {
-            "locode": "M123",
-            "cityName": "Metropolis",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "A017",
-            "actionName": "Smart Grid Implementation",
-            "actionPriority": 17,
-            "explanation": "Implementing a smart grid system modernizes the energy infrastructure of Metropolis by integrating renewable energy sources and optimizing power distribution. This action not only supports effective emissions reduction but also enhances grid reliability and operational efficiency. It is well adapted for meeting current energy demands while preparing for future growth. The approach minimizes dependencies and contributes to long-term urban resilience."
-        },
-        {
-            "locode": "M123",
-            "cityName": "Metropolis",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "A018",
-            "actionName": "Coastal Resort Protection",
-            "actionPriority": 18,
-            "explanation": "Enhancing coastal resort protection measures addresses the unique vulnerability of Metropolis' coastal zones to climate impacts. The action is designed to safeguard critical infrastructure and natural assets against risks like storm surges and sea-level rise. It shows strong environmental compatibility with regional coastal conditions and focuses on risk reduction. This targeted approach reflects a commitment to preserving both economic and social value in affected communities."
-        },
-        {
-            "locode": "M123",
-            "cityName": "Metropolis",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "A019",
-            "actionName": "Air Quality Monitoring",
-            "actionPriority": 19,
-            "explanation": "Establishing robust air quality monitoring systems is an enabling action that informs policy decisions and supports emission reduction strategies in Metropolis. It enhances the city's ability to quickly detect and address pollution issues, thereby improving public health outcomes. While not a direct emission reduction measure, it plays a critical role in risk assessment and management. The initiative strengthens overall urban resilience through better-informed environmental governance."
-        },
-        {
-            "locode": "M123",
-            "cityName": "Metropolis",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "A020",
-            "actionName": "Sustainable Agricultural Practices",
-            "actionPriority": 20,
-            "explanation": "Adopting sustainable agricultural practices offers a tailored solution to reduce greenhouse gas emissions from food production while enhancing resource efficiency. In Metropolis, this action supports local food systems and addresses specific environmental challenges such as soil health and water usage. It bridges ecological sustainability with socio-economic benefits, making it a valuable part of the overall climate strategy. The approach is adaptable and designed to yield long-term resilience in areas closely linked to community livelihoods."
-        }
-    ]
-}
+[
+    {
+        "locode": "BR JZO",
+        "cityName": "Juazeiro",
+        "region": "BA",
+        "regionName": "Bahia",
+        "actionId": "icare_0050",
+        "actionName": "Implement Agroforestry Systems",
+        "actionPriority": 1
+    },
+    {
+        "locode": "BR JZO",
+        "cityName": "Juazeiro",
+        "region": "BA",
+        "regionName": "Bahia",
+        "actionId": "icare_0134",
+        "actionName": "Strengthen Mechanisms for Deforestation Control",
+        "actionPriority": 2
+    },
+    {
+        "locode": "BR JZO",
+        "cityName": "Juazeiro",
+        "region": "BA",
+        "regionName": "Bahia",
+        "actionId": "icare_0133",
+        "actionName": "Promote Urban Reforestation and Green Corridors",
+        "actionPriority": 3
+    },
+    {
+        "locode": "BR JZO",
+        "cityName": "Juazeiro",
+        "region": "BA",
+        "regionName": "Bahia",
+        "actionId": "icare_0130",
+        "actionName": "Conduct Technical Assistance and Rural Extension (ATER) Actions",
+        "actionPriority": 4
+    },
+    {
+        "locode": "BR JZO",
+        "cityName": "Juazeiro",
+        "region": "BA",
+        "regionName": "Bahia",
+        "actionId": "icare_0128",
+        "actionName": "Establish Municipal Programs for Payment for Environmental Services (PES)",
+        "actionPriority": 5
+    },
+    {
+        "locode": "BR JZO",
+        "cityName": "Juazeiro",
+        "region": "BA",
+        "regionName": "Bahia",
+        "actionId": "icare_0129",
+        "actionName": "Facilitate Technology Transfer for Conservation Practices",
+        "actionPriority": 6
+    },
+    {
+        "locode": "BR JZO",
+        "cityName": "Juazeiro",
+        "region": "BA",
+        "regionName": "Bahia",
+        "actionId": "icare_0102",
+        "actionName": "Promote Sustainable Agricultural Practices",
+        "actionPriority": 7
+    },
+    {
+        "locode": "BR JZO",
+        "cityName": "Juazeiro",
+        "region": "BA",
+        "regionName": "Bahia",
+        "actionId": "icare_0131",
+        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
+        "actionPriority": 8
+    },
+    {
+        "locode": "BR JZO",
+        "cityName": "Juazeiro",
+        "region": "BA",
+        "regionName": "Bahia",
+        "actionId": "icare_0099",
+        "actionName": "Support Agroecological Certification Programs",
+        "actionPriority": 9
+    },
+    {
+        "locode": "BR JZO",
+        "cityName": "Juazeiro",
+        "region": "BA",
+        "regionName": "Bahia",
+        "actionId": "icare_0084",
+        "actionName": "Create Incentives for Agroforestry Practices in Livestock Systems",
+        "actionPriority": 10
+    },
+    {
+        "locode": "BR JZO",
+        "cityName": "Juazeiro",
+        "region": "BA",
+        "regionName": "Bahia",
+        "actionId": "icare_0132",
+        "actionName": "Encourage Local Agroecological Production and Short Supply Chains",
+        "actionPriority": 11
+    },
+    {
+        "locode": "BR JZO",
+        "cityName": "Juazeiro",
+        "region": "BA",
+        "regionName": "Bahia",
+        "actionId": "icare_0136",
+        "actionName": "Support the Implementation of Ecological Fiscal Incentives",
+        "actionPriority": 12
+    },
+    {
+        "locode": "BR JZO",
+        "cityName": "Juazeiro",
+        "region": "BA",
+        "regionName": "Bahia",
+        "actionId": "icare_0096",
+        "actionName": "Promote Organic Farming",
+        "actionPriority": 13
+    },
+    {
+        "locode": "BR JZO",
+        "cityName": "Juazeiro",
+        "region": "BA",
+        "regionName": "Bahia",
+        "actionId": "icare_0085",
+        "actionName": "Promote the Adoption of Agroecological Pest Control",
+        "actionPriority": 14
+    },
+    {
+        "locode": "BR JZO",
+        "cityName": "Juazeiro",
+        "region": "BA",
+        "regionName": "Bahia",
+        "actionId": "icare_0100",
+        "actionName": "Support Regenerative Agriculture Practices",
+        "actionPriority": 15
+    },
+    {
+        "locode": "BR JZO",
+        "cityName": "Juazeiro",
+        "region": "BA",
+        "regionName": "Bahia",
+        "actionId": "icare_0042",
+        "actionName": "Encourage renewable energy policies at the municipal level",
+        "actionPriority": 16
+    },
+    {
+        "locode": "BR JZO",
+        "cityName": "Juazeiro",
+        "region": "BA",
+        "regionName": "Bahia",
+        "actionId": "icare_0127",
+        "actionName": "Accelerate Environmental Regularization of Rural Properties",
+        "actionPriority": 17
+    },
+    {
+        "locode": "BR JZO",
+        "cityName": "Juazeiro",
+        "region": "BA",
+        "regionName": "Bahia",
+        "actionId": "icare_0101",
+        "actionName": "Encourage the Use of Low-Emission Agricultural Machinery",
+        "actionPriority": 18
+    },
+    {
+        "locode": "BR JZO",
+        "cityName": "Juazeiro",
+        "region": "BA",
+        "regionName": "Bahia",
+        "actionId": "icare_0024",
+        "actionName": "Integrate renewables into municipal water systems",
+        "actionPriority": 19
+    },
+    {
+        "locode": "BR JZO",
+        "cityName": "Juazeiro",
+        "region": "BA",
+        "regionName": "Bahia",
+        "actionId": "icare_0139",
+        "actionName": "Implementation of urban toll.",
+        "actionPriority": 20
+    }
+]

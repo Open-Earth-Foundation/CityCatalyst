@@ -1,204 +1,202 @@
-{
-    "actions": [
-        {
-            "locode": "MV001",
-            "cityName": "Metroville",
-            "region": "R1",
-            "regionName": "Metro Region",
-            "actionId": "action_1",
-            "actionName": "New Building Standards",
-            "actionPriority": 1,
-            "explanation": "For the city Metroville, New Building Standards were prioritized as they offer significant reductions in energy use and greenhouse gas emissions from the construction sector. This action is well-aligned with the urban fabric and growth patterns of the city, addressing one of its key emission sources. Its long-term benefits include improved resilience and reduced climate-related risks, making it a strategic choice for urban sustainability. Moreover, the policy framework supporting it facilitates efficient and widespread implementation."
-        },
-        {
-            "locode": "MV001",
-            "cityName": "Metroville",
-            "region": "R1",
-            "regionName": "Metro Region",
-            "actionId": "action_2",
-            "actionName": "Bus Emissions",
-            "actionPriority": 2,
-            "explanation": "For the city Metroville, the Bus Emissions upgrade action was considered pivotal due to its targeted approach in reducing transportation-related emissions. This intervention directly addresses a significant urban emission source, enhancing air quality and urban public health. Its design integrates well with existing transit systems and supports a faster transition to a cleaner mobility framework. Additionally, the approach leverages cost-effectiveness and minimal dependencies on extensive infrastructural overhaul."
-        },
-        {
-            "locode": "MV001",
-            "cityName": "Metroville",
-            "region": "R1",
-            "regionName": "Metro Region",
-            "actionId": "action_3",
-            "actionName": "Solar Panel Expansion",
-            "actionPriority": 3,
-            "explanation": "For the city Metroville, Solar Panel Expansion offers a robust approach to embrace renewable energy, reducing reliance on fossil fuels. The action takes full advantage of the city's favorable sunlight conditions while significantly lowering greenhouse gas emissions. It is designed to be both sustainable and economically viable, aligning with existing energy policies. Furthermore, this initiative complements broader environmental goals by reinforcing energy independence and resilience."
-        },
-        {
-            "locode": "MV001",
-            "cityName": "Metroville",
-            "region": "R1",
-            "regionName": "Metro Region",
-            "actionId": "action_4",
-            "actionName": "Urban Tree Canopy Initiative",
-            "actionPriority": 4,
-            "explanation": "For the city Metroville, the Urban Tree Canopy Initiative was prioritized for its multi-faceted benefits, including carbon sequestration and urban cooling. This intervention suits the local environmental conditions by enhancing biodiversity and mitigating the heat island effect. Its co-benefits extend to improved air quality and recreational spaces, contributing to overall urban well-being. The initiative also builds community engagement and resilience against climate extremes."
-        },
-        {
-            "locode": "MV001",
-            "cityName": "Metroville",
-            "region": "R1",
-            "regionName": "Metro Region",
-            "actionId": "action_5",
-            "actionName": "Water Efficiency Programs",
-            "actionPriority": 5,
-            "explanation": "For the city Metroville, Water Efficiency Programs are valued for their role in optimizing resource management and lowering the climate impact of water consumption. The action aligns closely with the city’s environmental challenges, such as water scarcity and high energy demand for water processing. It delivers immediate benefits through reduced operational burdens and lower emissions in water-related sectors. Overall, this approach offers a balanced mix of sustainability, cost-effectiveness, and environmental resilience."
-        },
-        {
-            "locode": "MV001",
-            "cityName": "Metroville",
-            "region": "R1",
-            "regionName": "Metro Region",
-            "actionId": "action_6",
-            "actionName": "Green Roof Incentives",
-            "actionPriority": 6,
-            "explanation": "For the city Metroville, Green Roof Incentives have been highlighted for their capacity to mitigate urban heat islands and enhance insulation in buildings. This action supports environmental compatibility by introducing nature-based solutions amidst urban roofing. It additionally provides benefits such as stormwater management and improved urban aesthetics, which is important given the city's dense layout. The approach is both innovative and practical, fostering long-term energy savings and community well-being."
-        },
-        {
-            "locode": "MV001",
-            "cityName": "Metroville",
-            "region": "R1",
-            "regionName": "Metro Region",
-            "actionId": "action_7",
-            "actionName": "Electric Vehicle Infrastructure",
-            "actionPriority": 7,
-            "explanation": "For the city Metroville, investing in Electric Vehicle Infrastructure was prioritized to support a transition towards cleaner transportation. The action directly targets emissions in the transport sector, a major contributor to the city's pollution challenges. Its integration with the existing urban mobility network makes adoption smoother and more cost-effective. Additionally, the initiative underpins broader environmental and public health benefits by reducing dependency on traditional fuel sources."
-        },
-        {
-            "locode": "MV001",
-            "cityName": "Metroville",
-            "region": "R1",
-            "regionName": "Metro Region",
-            "actionId": "action_8",
-            "actionName": "Renewable Energy Transition",
-            "actionPriority": 8,
-            "explanation": "For the city Metroville, the Renewable Energy Transition is a strategic action aimed at shifting energy reliance from conventional sources to cleaner alternatives. This intervention is particularly relevant given the city's high energy demand and the need for sustainable long-term solutions. The action is designed to harmonize with local environmental conditions, ensuring that renewable sources are efficiently utilized. In doing so, it supports a resilient, cost-effective framework to reduce overall emissions and bolster energy security."
-        },
-        {
-            "locode": "MV001",
-            "cityName": "Metroville",
-            "region": "R1",
-            "regionName": "Metro Region",
-            "actionId": "action_9",
-            "actionName": "Waste-to-Energy Conversion",
-            "actionPriority": 9,
-            "explanation": "For the city Metroville, Waste-to-Energy Conversion transforms urban waste management challenges into opportunities for sustainable energy production. The action is effective in reducing emissions generated from landfill sites while promoting resource efficiency. It aligns with the city’s commitment to sustainable practices and offers added benefits in waste reduction. The approach is a creative integration of environmental management and energy generation, tailored to the city’s operational needs."
-        },
-        {
-            "locode": "MV001",
-            "cityName": "Metroville",
-            "region": "R1",
-            "regionName": "Metro Region",
-            "actionId": "action_10",
-            "actionName": "Industrial Emissions Controls",
-            "actionPriority": 10,
-            "explanation": "For the city Metroville, Industrial Emissions Controls were given attention because they focus on a critical sector contributing heavily to local air pollution. This action strategically targets high-impact industrial processes, ensuring meaningful reductions in greenhouse gas emissions. It is structured to improve both environmental quality and workplace safety within industrial zones. The intervention is technically sound and aligns with long-term urban sustainability and economic considerations."
-        },
-        {
-            "locode": "MV001",
-            "cityName": "Metroville",
-            "region": "R1",
-            "regionName": "Metro Region",
-            "actionId": "action_11",
-            "actionName": "Flood Protection Measures",
-            "actionPriority": 11,
-            "explanation": "For the city Metroville, Flood Protection Measures were prioritized due to the increasing risks of climate-induced flooding. The action is tailored to safeguard vulnerable urban areas and critical infrastructure against water-related hazards. It enhances the city's resilience by integrating both structural and non-structural solutions. In addition, the strategy contributes to safer urban development and long-term risk reduction in a changing climate."
-        },
-        {
-            "locode": "MV001",
-            "cityName": "Metroville",
-            "region": "R1",
-            "regionName": "Metro Region",
-            "actionId": "action_12",
-            "actionName": "Rainwater Harvesting Systems",
-            "actionPriority": 12,
-            "explanation": "For the city Metroville, Rainwater Harvesting Systems were prioritized for their potential to optimize water use during periods of high rainfall. This action is well-suited to address local water management challenges while reducing the energy demand for water processing. It offers practical benefits in enhancing urban resilience and promoting sustainable resource management. The initiative is designed to complement existing water conservation strategies within the city's infrastructure framework."
-        },
-        {
-            "locode": "MV001",
-            "cityName": "Metroville",
-            "region": "R1",
-            "regionName": "Metro Region",
-            "actionId": "action_13",
-            "actionName": "Coastal Resilience Strategies",
-            "actionPriority": 13,
-            "explanation": "For the city Metroville, Coastal Resilience Strategies were emphasized due to the city's proximity to vulnerable coastal areas. The action is designed to address rising sea levels and storm surge risks while protecting essential infrastructure. It carefully balances urban development with natural coastal dynamics, promoting long-term environmental stability. This approach not only mitigates risks but also reinforces the overall resilience of the coastal community."
-        },
-        {
-            "locode": "MV001",
-            "cityName": "Metroville",
-            "region": "R1",
-            "regionName": "Metro Region",
-            "actionId": "action_14",
-            "actionName": "District Heating Upgrade",
-            "actionPriority": 14,
-            "explanation": "For the city Metroville, the District Heating Upgrade was recognized for its capacity to improve energy efficiency and reduce emissions within densely populated areas. The intervention leverages existing heating infrastructures while promoting cleaner energy distribution. It offers both cost-effective solutions and long-term benefits by stabilizing energy consumption patterns. This action fits well with the urban density and broader sustainability goals of the city."
-        },
-        {
-            "locode": "MV001",
-            "cityName": "Metroville",
-            "region": "R1",
-            "regionName": "Metro Region",
-            "actionId": "action_15",
-            "actionName": "Public Bike Sharing System",
-            "actionPriority": 15,
-            "explanation": "For the city Metroville, the Public Bike Sharing System was promoted as it encourages sustainable urban transportation while reducing reliance on motor vehicles. This action plays a crucial role in lowering emissions in the transportation sector and improving public health through active mobility. Its design fits well within the city’s existing infrastructure and socio-demographic context, offering an inclusive mobility option. The initiative also exemplifies a cost-effective and low-dependency strategy, contributing to overall urban livability."
-        },
-        {
-            "locode": "MV001",
-            "cityName": "Metroville",
-            "region": "R1",
-            "regionName": "Metro Region",
-            "actionId": "action_16",
-            "actionName": "Sustainable Urban Mobility Plan",
-            "actionPriority": 16,
-            "explanation": "For the city Metroville, the Sustainable Urban Mobility Plan was prioritized as a comprehensive strategy to reshape urban transportation and reduce emissions. It tackles key mobility challenges by integrating various sustainable transit options and promoting non-motorized travel. The plan aligns well with the city’s overarching sustainability objectives and enhances public health benefits. Its multifaceted approach and adaptability make it a robust intervention for guiding long-term urban development."
-        },
-        {
-            "locode": "MV001",
-            "cityName": "Metroville",
-            "region": "R1",
-            "regionName": "Metro Region",
-            "actionId": "action_17",
-            "actionName": "Energy Efficiency Retrofits",
-            "actionPriority": 17,
-            "explanation": "For the city Metroville, Energy Efficiency Retrofits were emphasized for their critical role in reducing emissions from existing buildings. The action optimizes energy consumption and contributes to an overall decrease in greenhouse gas emissions. It is well-suited to the city’s infrastructure upgrade needs and offers clear benefits in energy conservation. The retrofitting approach is both practical and adaptable, ensuring improved resilience with minimal disruption."
-        },
-        {
-            "locode": "MV001",
-            "cityName": "Metroville",
-            "region": "R1",
-            "regionName": "Metro Region",
-            "actionId": "action_18",
-            "actionName": "Urban Agriculture Promotion",
-            "actionPriority": 18,
-            "explanation": "For the city Metroville, Urban Agriculture Promotion was prioritized for its potential to enhance local food production while reducing the carbon footprint of supply chains. The action creates green spaces and supports community engagement, which is integral to the city's socio-economic context. It is designed to improve environmental sustainability and local resilience through diversified food sources. The initiative fosters a healthier urban ecosystem and strengthens community ties, making it a well-rounded approach."
-        },
-        {
-            "locode": "MV001",
-            "cityName": "Metroville",
-            "region": "R1",
-            "regionName": "Metro Region",
-            "actionId": "action_19",
-            "actionName": "Community Awareness Campaign",
-            "actionPriority": 19,
-            "explanation": "For the city Metroville, the Community Awareness Campaign was valued for its role in educating residents on climate challenges and mobilizing collective action. This intervention provides a foundation for broader acceptance and success of various climate strategies by enhancing local understanding and participation. It is a low-cost yet impactful approach that complements technical and infrastructural measures. The campaign’s focus on inclusivity and stakeholder engagement makes it an essential component of the city’s climate response."
-        },
-        {
-            "locode": "MV001",
-            "cityName": "Metroville",
-            "region": "R1",
-            "regionName": "Metro Region",
-            "actionId": "action_20",
-            "actionName": "Low-Carbon Zones Implementation",
-            "actionPriority": 20,
-            "explanation": "For the city Metroville, Low-Carbon Zones Implementation was emphasized for its potential to systematically reduce urban emissions by restructuring energy use within designated areas. The action creates pockets of enhanced environmental performance, which align well with the city’s broader sustainability objectives. It combines infrastructural modifications with supportive policy measures to foster cleaner urban environments. In doing so, it sets a replicable model for sustainable urban planning and contributes to long-term climate resilience."
-        }
-    ]
-}
+[
+    {
+        "locode": "BR MGE",
+        "cityName": "Maranguape",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0176",
+        "actionName": "Development of Climate Action Plan",
+        "actionPriority": 1,
+        "explanation": "Ranked #1 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR MGE",
+        "cityName": "Maranguape",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0169",
+        "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
+        "actionPriority": 2,
+        "explanation": "Ranked #2 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR MGE",
+        "cityName": "Maranguape",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0151",
+        "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
+        "actionPriority": 3,
+        "explanation": "Ranked #3 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR MGE",
+        "cityName": "Maranguape",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0152",
+        "actionName": "Recovery of degraded areas",
+        "actionPriority": 4,
+        "explanation": "Ranked #4 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR MGE",
+        "cityName": "Maranguape",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "ipcc_0094",
+        "actionName": "Access to health care",
+        "actionPriority": 5,
+        "explanation": "Ranked #5 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR MGE",
+        "cityName": "Maranguape",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "ipcc_0097",
+        "actionName": "Food storage/distribution improvements",
+        "actionPriority": 6,
+        "explanation": "Ranked #6 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR MGE",
+        "cityName": "Maranguape",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0148",
+        "actionName": "Create the Municipal Climate Change Forum",
+        "actionPriority": 7,
+        "explanation": "Ranked #7 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR MGE",
+        "cityName": "Maranguape",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "ipcc_0093",
+        "actionName": "Availability of health infrastructure",
+        "actionPriority": 8,
+        "explanation": "Ranked #8 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR MGE",
+        "cityName": "Maranguape",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "ipcc_0096",
+        "actionName": "Farm/fishery improvements",
+        "actionPriority": 9,
+        "explanation": "Ranked #9 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR MGE",
+        "cityName": "Maranguape",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0162",
+        "actionName": "Strengthen programs for control and conservation of protected areas",
+        "actionPriority": 10,
+        "explanation": "Ranked #10 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR MGE",
+        "cityName": "Maranguape",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0157",
+        "actionName": "Maintenance and Revitalization of Riparian Forests",
+        "actionPriority": 11,
+        "explanation": "Ranked #11 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR MGE",
+        "cityName": "Maranguape",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "ipcc_0092",
+        "actionName": "Social safety nets",
+        "actionPriority": 12,
+        "explanation": "Ranked #12 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR MGE",
+        "cityName": "Maranguape",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0149",
+        "actionName": "Encourage sustainable land use practices",
+        "actionPriority": 13,
+        "explanation": "Ranked #13 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR MGE",
+        "cityName": "Maranguape",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0150",
+        "actionName": "Implement Loss Reduction and Control Program promoting water security for the municipality",
+        "actionPriority": 14,
+        "explanation": "Ranked #14 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR MGE",
+        "cityName": "Maranguape",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0144",
+        "actionName": "Creation of a Financial Support Program to Adress Extreme Weather Events",
+        "actionPriority": 15,
+        "explanation": "Ranked #15 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR MGE",
+        "cityName": "Maranguape",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0145",
+        "actionName": "Strengthen the healthcare network to attend to climate victims",
+        "actionPriority": 16,
+        "explanation": "Ranked #16 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR MGE",
+        "cityName": "Maranguape",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "ipcc_0095",
+        "actionName": "Disaster early warning",
+        "actionPriority": 17,
+        "explanation": "Ranked #17 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR MGE",
+        "cityName": "Maranguape",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0156",
+        "actionName": "Implementation of urban gardens",
+        "actionPriority": 18,
+        "explanation": "Ranked #18 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR MGE",
+        "cityName": "Maranguape",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "ipcc_0098",
+        "actionName": "Behaviour change in diets and food waste",
+        "actionPriority": 19,
+        "explanation": "Ranked #19 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR MGE",
+        "cityName": "Maranguape",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0164",
+        "actionName": "Hydrological Monitoring System with Telemetry Stations",
+        "actionPriority": 20,
+        "explanation": "Ranked #20 by tournament ranking algorithm"
+    }
+]

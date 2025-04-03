@@ -1,204 +1,202 @@
-{
-    "actions": [
-        {
-            "locode": "GC01",
-            "cityName": "GreenCity",
-            "region": "RC",
-            "regionName": "Region of Climate",
-            "actionId": "act001",
-            "actionName": "New Building Standards",
-            "actionPriority": 1,
-            "explanation": "For the city GreenCity, New Building Standards have been prioritized because they directly address the city’s high-emission construction sector while improving overall environmental resilience. This action not only reduces greenhouse gas emissions but also enhances energy efficiency across new developments. Additionally, it seamlessly aligns with local environmental conditions and is well-suited to the city’s resource capacity, making it a strategically sound investment."
-        },
-        {
-            "locode": "GC02",
-            "cityName": "GreenCity",
-            "region": "RC",
-            "regionName": "Region of Climate",
-            "actionId": "act002",
-            "actionName": "Bus Emissions Control",
-            "actionPriority": 2,
-            "explanation": "In GreenCity, Bus Emissions Control is recognized for its focused approach on reducing emissions from the public transportation sector. The measure targets a significant source of urban pollution, thereby supporting cleaner air and overall public health. It is also compatible with local infrastructure, ensuring that the benefits can be realized without extensive dependencies or delays."
-        },
-        {
-            "locode": "GC03",
-            "cityName": "GreenCity",
-            "region": "RC",
-            "regionName": "Region of Climate",
-            "actionId": "act003",
-            "actionName": "Urban Tree Planting",
-            "actionPriority": 3,
-            "explanation": "Urban Tree Planting has been given considerable weight in GreenCity due to its ability to enhance local air quality and mitigate urban heat islands. The initiative offers wide-ranging co-benefits by also contributing to improved biodiversity and community well-being. Its design fits well with the city’s green infrastructure plans, supporting a sustainable urban environment over the long term."
-        },
-        {
-            "locode": "GC04",
-            "cityName": "GreenCity",
-            "region": "RC",
-            "regionName": "Region of Climate",
-            "actionId": "act004",
-            "actionName": "Renewable Energy Transition",
-            "actionPriority": 4,
-            "explanation": "The Renewable Energy Transition action has been prioritized in GreenCity because it addresses the core issue of fossil fuel dependency with a forward-thinking approach. This action not only reduces greenhouse gas emissions but also brings long-term energy security and environmental compatibility. Its implementation leverages local renewable resources, demonstrating clear benefits aligned with the city’s sustainability goals."
-        },
-        {
-            "locode": "GC05",
-            "cityName": "GreenCity",
-            "region": "RC",
-            "regionName": "Region of Climate",
-            "actionId": "act005",
-            "actionName": "Coastal Protection",
-            "actionPriority": 5,
-            "explanation": "For GreenCity, Coastal Protection is valued for its role in mitigating the risks associated with rising sea levels and extreme weather. The action is designed to preserve critical coastal ecosystems while reducing potential damage from storms and erosion. Its strong alignment with the region’s environmental features makes it a prudent measure for safeguarding both natural habitats and urban infrastructure."
-        },
-        {
-            "locode": "GC06",
-            "cityName": "GreenCity",
-            "region": "RC",
-            "regionName": "Region of Climate",
-            "actionId": "act006",
-            "actionName": "Waste Management Improvement",
-            "actionPriority": 6,
-            "explanation": "Waste Management Improvement is recognized in GreenCity as an action that not only curbs emissions from waste decomposition but also enhances overall urban cleanliness. The measure is well-suited to the city’s infrastructure and addresses a critical environmental concern effectively. Its co-benefits include reduced environmental hazards and improved public health outcomes, making it a valuable addition to the city’s climate actions."
-        },
-        {
-            "locode": "GC07",
-            "cityName": "GreenCity",
-            "region": "RC",
-            "regionName": "Region of Climate",
-            "actionId": "act007",
-            "actionName": "Smart Grid Implementation",
-            "actionPriority": 7,
-            "explanation": "Smart Grid Implementation has been ranked favorably in GreenCity due to its potential to optimize energy distribution and support renewable integration. The action is tailored to the city’s modern infrastructure, promising to enhance efficiency and reduce energy losses. Its design considers the city’s capacity and minimizes dependencies, making it a forward-looking measure in the urban energy transition."
-        },
-        {
-            "locode": "GC08",
-            "cityName": "GreenCity",
-            "region": "RC",
-            "regionName": "Region of Climate",
-            "actionId": "act008",
-            "actionName": "Urban Cooling Strategies",
-            "actionPriority": 8,
-            "explanation": "Urban Cooling Strategies have been prioritized in GreenCity as they directly confront the challenges posed by increasing urban temperatures. This action is well aligned with the local climate, addressing both immediate heat-related health risks and broader environmental concerns. Its implementation supports overall urban livability while contributing to the city’s sustainable adaptation efforts."
-        },
-        {
-            "locode": "GC09",
-            "cityName": "GreenCity",
-            "region": "RC",
-            "regionName": "Region of Climate",
-            "actionId": "act009",
-            "actionName": "Flood Defenses",
-            "actionPriority": 9,
-            "explanation": "Flood Defenses are an important action for GreenCity, given the increasing risks of extreme weather events and heavy rains. This measure enhances the city’s resilience by protecting critical infrastructure and reducing long-term vulnerability to climate-induced flooding. Its integration into local planning demonstrates a keen awareness of the city’s environmental realities and the necessity for adaptive infrastructure."
-        },
-        {
-            "locode": "GC10",
-            "cityName": "GreenCity",
-            "region": "RC",
-            "regionName": "Region of Climate",
-            "actionId": "act010",
-            "actionName": "Water Conservation Measures",
-            "actionPriority": 10,
-            "explanation": "For GreenCity, Water Conservation Measures have been given attention due to their strong alignment with the city’s environmental constraints and demand pressures. This action is praised for addressing water scarcity risks and optimizing resource use without overburdening the city’s budget. Its focus on sustainable management makes it a pragmatic complement to other emission reduction strategies."
-        },
-        {
-            "locode": "GC11",
-            "cityName": "GreenCity",
-            "region": "RC",
-            "regionName": "Region of Climate",
-            "actionId": "act011",
-            "actionName": "Public Transit Expansion",
-            "actionPriority": 11,
-            "explanation": "Public Transit Expansion in GreenCity has been prioritized because it offers a strategic pathway to reducing transport-related emissions while enhancing accessibility. The action aligns well with the city’s demographic needs and provides broad socio-economic benefits. Its feasibility is strengthened by its potential to encourage a modal shift from private car use to more sustainable commuting options."
-        },
-        {
-            "locode": "GC12",
-            "cityName": "GreenCity",
-            "region": "RC",
-            "regionName": "Region of Climate",
-            "actionId": "act012",
-            "actionName": "Electric Vehicle Incentives",
-            "actionPriority": 12,
-            "explanation": "Electric Vehicle Incentives have been considered favorably in GreenCity because they encourage a shift towards cleaner transportation, thereby reducing road emissions effectively. This action is designed with sensitivity to the city’s growing emissions challenges and is socially appealing given the increasing interest in sustainable mobility. The approach is conducive to gradual fleet electrification without imposing heavy preconditions on local infrastructure."
-        },
-        {
-            "locode": "GC13",
-            "cityName": "GreenCity",
-            "region": "RC",
-            "regionName": "Region of Climate",
-            "actionId": "act013",
-            "actionName": "Industrial Efficiency Program",
-            "actionPriority": 13,
-            "explanation": "The Industrial Efficiency Program in GreenCity focuses on improving energy usage within key industrial sectors, which are major emission sources. This action is designed to optimize operational efficiencies and contribute to a noticeable reduction in greenhouse gases. Its compatibility with local industrial practices enhances its potential for widespread and sustained impact."
-        },
-        {
-            "locode": "GC14",
-            "cityName": "GreenCity",
-            "region": "RC",
-            "regionName": "Region of Climate",
-            "actionId": "act014",
-            "actionName": "Green Roof Incentives",
-            "actionPriority": 14,
-            "explanation": "Green Roof Incentives have been recommended in GreenCity for their dual benefits of energy conservation and urban beautification. The initiative is well-suited to tempering building heat gains while also improving stormwater management. Its relative ease of implementation and potential for widespread local adoption make it a valuable component of the city’s climate strategy."
-        },
-        {
-            "locode": "GC15",
-            "cityName": "GreenCity",
-            "region": "RC",
-            "regionName": "Region of Climate",
-            "actionId": "act015",
-            "actionName": "Solar Panel Subsidies",
-            "actionPriority": 15,
-            "explanation": "In GreenCity, Solar Panel Subsidies are recognized for promoting renewable energy uptake in both residential and commercial sectors. The action targets a significant pathway for reducing reliance on fossil fuels, while also offering ancillary benefits like increased local energy autonomy. Its cost-effectiveness and alignment with the city’s sunny climate conditions provide a compelling rationale for its prioritization."
-        },
-        {
-            "locode": "GC16",
-            "cityName": "GreenCity",
-            "region": "RC",
-            "regionName": "Region of Climate",
-            "actionId": "act016",
-            "actionName": "Reforestation Projects",
-            "actionPriority": 16,
-            "explanation": "Reforestation Projects in GreenCity are valued for their capacity to sequester carbon and restore natural ecosystems. This action not only supports emissions reduction but also enhances local biodiversity and landscape resilience. It aligns with broader environmental goals and supports community engagement in sustainable practices."
-        },
-        {
-            "locode": "GC17",
-            "cityName": "GreenCity",
-            "region": "RC",
-            "regionName": "Region of Climate",
-            "actionId": "act017",
-            "actionName": "Wetland Restoration",
-            "actionPriority": 17,
-            "explanation": "Wetland Restoration is an important action for GreenCity, as it helps protect natural water filtration systems and buffers extreme weather impacts. The action is particularly suitable given the city’s unique environmental conditions, offering both ecological and social benefits. Its implementation promotes improved habitat connectivity and contributes to long-term climate resilience."
-        },
-        {
-            "locode": "GC18",
-            "cityName": "GreenCity",
-            "region": "RC",
-            "regionName": "Region of Climate",
-            "actionId": "act018",
-            "actionName": "Community Awareness Programs",
-            "actionPriority": 18,
-            "explanation": "Community Awareness Programs have been included in GreenCity’s portfolio to bolster public engagement in climate action initiatives. This action supports behavioral changes that contribute indirectly to emission reductions while fostering a culture of sustainability. Its design considers socio-demographic factors and encourages proactive community involvement in environmental stewardship."
-        },
-        {
-            "locode": "GC19",
-            "cityName": "GreenCity",
-            "region": "RC",
-            "regionName": "Region of Climate",
-            "actionId": "act019",
-            "actionName": "Climate Resilience Hubs",
-            "actionPriority": 19,
-            "explanation": "Climate Resilience Hubs have been recognized in GreenCity for their role in centralizing resources and information for effective climate adaptation. This measure is tailored to support local capacity building, ensuring that the city can quickly respond to climate threats. The hubs foster coordinated action and resilience planning, aligning well with the city’s long-term adaptation strategy."
-        },
-        {
-            "locode": "GC20",
-            "cityName": "GreenCity",
-            "region": "RC",
-            "regionName": "Region of Climate",
-            "actionId": "act020",
-            "actionName": "Sustainable Agriculture Practices",
-            "actionPriority": 20,
-            "explanation": "Sustainable Agriculture Practices are prioritized in GreenCity for their potential to reduce emissions in the agricultural sector while improving food security. The action supports practices that enhance soil health and biodiversity, fitting the region’s environmental conditions and socio-economic context. Its emphasis on long-term sustainability makes it a robust complement to the city’s broader climate strategies."
-        }
-    ]
-}
+[
+    {
+        "locode": "BR JZO",
+        "cityName": "Juazeiro",
+        "region": "BA",
+        "regionName": "Bahia",
+        "actionId": "icare_0169",
+        "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
+        "actionPriority": 1,
+        "explanation": "Ranked #1 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR JZO",
+        "cityName": "Juazeiro",
+        "region": "BA",
+        "regionName": "Bahia",
+        "actionId": "icare_0176",
+        "actionName": "Development of Climate Action Plan",
+        "actionPriority": 2,
+        "explanation": "Ranked #2 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR JZO",
+        "cityName": "Juazeiro",
+        "region": "BA",
+        "regionName": "Bahia",
+        "actionId": "icare_0152",
+        "actionName": "Recovery of degraded areas",
+        "actionPriority": 3,
+        "explanation": "Ranked #3 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR JZO",
+        "cityName": "Juazeiro",
+        "region": "BA",
+        "regionName": "Bahia",
+        "actionId": "icare_0151",
+        "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
+        "actionPriority": 4,
+        "explanation": "Ranked #4 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR JZO",
+        "cityName": "Juazeiro",
+        "region": "BA",
+        "regionName": "Bahia",
+        "actionId": "icare_0162",
+        "actionName": "Strengthen programs for control and conservation of protected areas",
+        "actionPriority": 5,
+        "explanation": "Ranked #5 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR JZO",
+        "cityName": "Juazeiro",
+        "region": "BA",
+        "regionName": "Bahia",
+        "actionId": "ipcc_0094",
+        "actionName": "Access to health care",
+        "actionPriority": 6,
+        "explanation": "Ranked #6 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR JZO",
+        "cityName": "Juazeiro",
+        "region": "BA",
+        "regionName": "Bahia",
+        "actionId": "icare_0145",
+        "actionName": "Strengthen the healthcare network to attend to climate victims",
+        "actionPriority": 7,
+        "explanation": "Ranked #7 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR JZO",
+        "cityName": "Juazeiro",
+        "region": "BA",
+        "regionName": "Bahia",
+        "actionId": "ipcc_0097",
+        "actionName": "Food storage/distribution improvements",
+        "actionPriority": 8,
+        "explanation": "Ranked #8 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR JZO",
+        "cityName": "Juazeiro",
+        "region": "BA",
+        "regionName": "Bahia",
+        "actionId": "icare_0149",
+        "actionName": "Encourage sustainable land use practices",
+        "actionPriority": 9,
+        "explanation": "Ranked #9 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR JZO",
+        "cityName": "Juazeiro",
+        "region": "BA",
+        "regionName": "Bahia",
+        "actionId": "icare_0157",
+        "actionName": "Maintenance and Revitalization of Riparian Forests",
+        "actionPriority": 10,
+        "explanation": "Ranked #10 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR JZO",
+        "cityName": "Juazeiro",
+        "region": "BA",
+        "regionName": "Bahia",
+        "actionId": "icare_0181",
+        "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
+        "actionPriority": 11,
+        "explanation": "Ranked #11 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR JZO",
+        "cityName": "Juazeiro",
+        "region": "BA",
+        "regionName": "Bahia",
+        "actionId": "icare_0148",
+        "actionName": "Create the Municipal Climate Change Forum",
+        "actionPriority": 12,
+        "explanation": "Ranked #12 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR JZO",
+        "cityName": "Juazeiro",
+        "region": "BA",
+        "regionName": "Bahia",
+        "actionId": "ipcc_0093",
+        "actionName": "Availability of health infrastructure",
+        "actionPriority": 13,
+        "explanation": "Ranked #13 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR JZO",
+        "cityName": "Juazeiro",
+        "region": "BA",
+        "regionName": "Bahia",
+        "actionId": "ipcc_0096",
+        "actionName": "Farm/fishery improvements",
+        "actionPriority": 14,
+        "explanation": "Ranked #14 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR JZO",
+        "cityName": "Juazeiro",
+        "region": "BA",
+        "regionName": "Bahia",
+        "actionId": "icare_0156",
+        "actionName": "Implementation of urban gardens",
+        "actionPriority": 15,
+        "explanation": "Ranked #15 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR JZO",
+        "cityName": "Juazeiro",
+        "region": "BA",
+        "regionName": "Bahia",
+        "actionId": "icare_0144",
+        "actionName": "Creation of a Financial Support Program to Adress Extreme Weather Events",
+        "actionPriority": 16,
+        "explanation": "Ranked #16 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR JZO",
+        "cityName": "Juazeiro",
+        "region": "BA",
+        "regionName": "Bahia",
+        "actionId": "icare_0164",
+        "actionName": "Hydrological Monitoring System with Telemetry Stations",
+        "actionPriority": 17,
+        "explanation": "Ranked #17 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR JZO",
+        "cityName": "Juazeiro",
+        "region": "BA",
+        "regionName": "Bahia",
+        "actionId": "icare_0175",
+        "actionName": "Recovery and preservation of green areas",
+        "actionPriority": 18,
+        "explanation": "Ranked #18 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR JZO",
+        "cityName": "Juazeiro",
+        "region": "BA",
+        "regionName": "Bahia",
+        "actionId": "ipcc_0092",
+        "actionName": "Social safety nets",
+        "actionPriority": 19,
+        "explanation": "Ranked #19 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR JZO",
+        "cityName": "Juazeiro",
+        "region": "BA",
+        "regionName": "Bahia",
+        "actionId": "icare_0180",
+        "actionName": "Implement permeable pavements and increase green areas in roadways",
+        "actionPriority": 20,
+        "explanation": "Ranked #20 by tournament ranking algorithm"
+    }
+]

@@ -1,204 +1,202 @@
-{
-    "actions": [
-        {
-            "locode": "US-SPF",
-            "cityName": "Springfield",
-            "region": "Midwest",
-            "regionName": "Midwest Region",
-            "actionId": "A1",
-            "actionName": "New Building Standards",
-            "actionPriority": 1,
-            "explanation": "For the city Springfield, New Building Standards is prioritized as it directly targets a major emission contributor by enhancing energy efficiency in the urban building sector. This action aligns with the city’s capability to quickly adopt modern construction methods and reduce long-term energy consumption. Its implementation offers vital risk reduction benefits by preempting the need for costly retrofits in the future. Overall, it strategically supports a more sustainable built environment."
-        },
-        {
-            "locode": "US-SPF",
-            "cityName": "Springfield",
-            "region": "Midwest",
-            "regionName": "Midwest Region",
-            "actionId": "A2",
-            "actionName": "Bus Emissions Improvement",
-            "actionPriority": 2,
-            "explanation": "For the city Springfield, improving bus emissions is appreciated as it targets the transportation sector, a critical contributor to urban air pollution. This approach is well-aligned with the city's dense traffic conditions and public health priorities. It leverages existing transit infrastructure to bring about noticeable improvements in air quality and congestion. The action is also cost-effective in the long run by reducing dependency on fossil fuels."
-        },
-        {
-            "locode": "US-SPF",
-            "cityName": "Springfield",
-            "region": "Midwest",
-            "regionName": "Midwest Region",
-            "actionId": "A3",
-            "actionName": "Urban Greening Initiative",
-            "actionPriority": 3,
-            "explanation": "For Springfield, the Urban Greening Initiative stands out by enhancing the city’s resilience through natural climate solutions. It effectively addresses urban heat and air quality concerns while creating inviting green spaces for the community. The action is valuable for its broad environmental compatibility and support of local biodiversity. Although its full benefits emerge gradually, the long-term co-benefits make it a prudent choice."
-        },
-        {
-            "locode": "US-SPF",
-            "cityName": "Springfield",
-            "region": "Midwest",
-            "regionName": "Midwest Region",
-            "actionId": "A4",
-            "actionName": "Solar Panel Deployment on Public Buildings",
-            "actionPriority": 4,
-            "explanation": "In Springfield, deploying solar panels on public buildings is compelling because it directly reduces reliance on fossil fuels by harnessing renewable energy. This action complements the city’s infrastructure and taps into available solar potential efficiently. It offers the benefit of lowering energy costs while reinforcing energy security. The approach is manageable within the existing public sector capacity and sets a model for broader renewable integration."
-        },
-        {
-            "locode": "US-SPF",
-            "cityName": "Springfield",
-            "region": "Midwest",
-            "regionName": "Midwest Region",
-            "actionId": "A5",
-            "actionName": "Energy Efficient Appliances Promotion",
-            "actionPriority": 5,
-            "explanation": "For Springfield, promoting energy efficient appliances is recognized for its broad appeal in reducing residential energy consumption. This action ties closely with the city's objective to lower emissions from domestic sources while offering economic savings to households. The initiative is simple to implement and easily scalable across diverse neighborhoods. It also helps manage energy demand and reduce the overall carbon footprint."
-        },
-        {
-            "locode": "US-SPF",
-            "cityName": "Springfield",
-            "region": "Midwest",
-            "regionName": "Midwest Region",
-            "actionId": "A6",
-            "actionName": "Smart Grid Implementation",
-            "actionPriority": 6,
-            "explanation": "For Springfield, implementing a smart grid is highly valued for its potential to improve the efficiency and reliability of energy distribution. The action aligns well with modern urban infrastructure and is instrumental in integrating renewable sources into the existing energy system. It brings long-term benefits by reducing energy wastage and supporting rapid response to demand fluctuations. This technological upgrade also plays a key role in minimizing risks associated with energy disruptions."
-        },
-        {
-            "locode": "US-SPF",
-            "cityName": "Springfield",
-            "region": "Midwest",
-            "regionName": "Midwest Region",
-            "actionId": "A7",
-            "actionName": "Electric Vehicle Incentives",
-            "actionPriority": 7,
-            "explanation": "For Springfield, offering incentives for electric vehicles is appealing as it directly addresses transportation emissions and urban air quality challenges. This action is well-suited for a city with higher traffic density and demonstrates a commitment to reducing fossil fuel reliance. It complements public transit improvements by enhancing overall mobility sustainability. The initiative also supports broader environmental benefits despite requiring coordinated stakeholder engagement."
-        },
-        {
-            "locode": "US-SPF",
-            "cityName": "Springfield",
-            "region": "Midwest",
-            "regionName": "Midwest Region",
-            "actionId": "A8",
-            "actionName": "Industrial Emissions Reduction",
-            "actionPriority": 8,
-            "explanation": "For Springfield, addressing industrial emissions is critical as it focuses on a high-impact sector within the local economy. This action is carefully tailored to reduce large-scale emissions and improve air quality in industrial areas. It strategically mitigates future environmental and health costs while strengthening community resilience. Its cost-effectiveness and alignment with urban sustainability goals bolster its prioritization."
-        },
-        {
-            "locode": "US-SPF",
-            "cityName": "Springfield",
-            "region": "Midwest",
-            "regionName": "Midwest Region",
-            "actionId": "A9",
-            "actionName": "Waste-to-Energy Conversion",
-            "actionPriority": 9,
-            "explanation": "For Springfield, the Waste-to-Energy initiative is attractive because it simultaneously tackles waste management challenges and promotes renewable energy generation. This dual-purpose approach fits well within the city’s sustainability framework. It offers an integrated solution by reducing landfill use while mitigating greenhouse gas emissions. The method’s adaptability and supportive role in a circular economy make it a valuable climate action."
-        },
-        {
-            "locode": "US-SPF",
-            "cityName": "Springfield",
-            "region": "Midwest",
-            "regionName": "Midwest Region",
-            "actionId": "A10",
-            "actionName": "Rainwater Harvesting Systems",
-            "actionPriority": 10,
-            "explanation": "For Springfield, deploying rainwater harvesting systems is especially beneficial in managing water resources amid variable weather patterns. The action is well aligned with sustainable water use and reduces pressure on municipal supply systems. It enhances urban adaptation by mitigating flood risks and supporting decentralized water management. Overall, it represents a practical and resilient response to urban water challenges."
-        },
-        {
-            "locode": "US-SPF",
-            "cityName": "Springfield",
-            "region": "Midwest",
-            "regionName": "Midwest Region",
-            "actionId": "A11",
-            "actionName": "Flood Defense Infrastructure Enhancement",
-            "actionPriority": 11,
-            "explanation": "In Springfield, strengthening flood defense infrastructure is a prudent measure to address the increasing risks of heavy rainfall and flooding events. This action is directly tailored to protect urban areas and safeguard residents in vulnerable neighborhoods. It improves public safety and reduces potential damage to infrastructure over time. Its alignment with risk reduction priorities ensures a more resilient urban environment."
-        },
-        {
-            "locode": "US-SPF",
-            "cityName": "Springfield",
-            "region": "Midwest",
-            "regionName": "Midwest Region",
-            "actionId": "A12",
-            "actionName": "Coastal Restoration and Protection",
-            "actionPriority": 12,
-            "explanation": "Although Springfield is not a coastal city, implementing practices similar to coastal restoration can benefit local water bodies by enhancing natural buffers. This action focuses on restoring ecological balance to urban waterways, thereby reducing localized flood risks. It promotes environmental harmony and helps safeguard water quality and local biodiversity. The approach can be adapted to fit urban contexts where natural landscapes require recovery."
-        },
-        {
-            "locode": "US-SPF",
-            "cityName": "Springfield",
-            "region": "Midwest",
-            "regionName": "Midwest Region",
-            "actionId": "A13",
-            "actionName": "Public Transit Enhancement",
-            "actionPriority": 13,
-            "explanation": "For Springfield, enhancing public transit directly addresses urban emissions by reducing reliance on individual car usage. This action supports the city’s broader sustainability objectives by improving mobility and reducing congestion. It meets the socio-demographic needs of a diverse urban population with increased accessibility. Furthermore, it builds on the existing transit framework to deliver immediate air quality and public health benefits."
-        },
-        {
-            "locode": "US-SPF",
-            "cityName": "Springfield",
-            "region": "Midwest",
-            "regionName": "Midwest Region",
-            "actionId": "A14",
-            "actionName": "Urban Tree Planting",
-            "actionPriority": 14,
-            "explanation": "For Springfield, urban tree planting is valued for its ability to naturally cool the city and improve air quality over time. The initiative aligns with local environmental needs by reducing urban heat island effects and providing green recreational spaces. It fosters community engagement and improves overall urban aesthetics. The gradual but enduring positive impact on both the environment and public wellbeing underscores its importance."
-        },
-        {
-            "locode": "US-SPF",
-            "cityName": "Springfield",
-            "region": "Midwest",
-            "regionName": "Midwest Region",
-            "actionId": "A15",
-            "actionName": "LED Street Lighting Upgrade",
-            "actionPriority": 15,
-            "explanation": "For Springfield, upgrading to LED street lighting is a practical climate action that focuses on immediate energy efficiency improvements. The installation is straightforward and brings cost savings alongside reduced municipal energy consumption. It fits well within the city’s modernization efforts and reduces risks associated with outdated infrastructure. This action demonstrates a clear path to sustainable operational practices in public services."
-        },
-        {
-            "locode": "US-SPF",
-            "cityName": "Springfield",
-            "region": "Midwest",
-            "regionName": "Midwest Region",
-            "actionId": "A16",
-            "actionName": "Bike Lane Expansion",
-            "actionPriority": 16,
-            "explanation": "For Springfield, expanding bike lanes is an attractive option as it encourages active transportation and directly contributes to emission reductions. This action supports public health goals and reduces urban congestion while enhancing overall mobility. It is especially well-suited for a city looking to diversify its transportation options and lower its carbon footprint. The initiative is cost-efficient and aligns with broader sustainable urban planning objectives."
-        },
-        {
-            "locode": "US-SPF",
-            "cityName": "Springfield",
-            "region": "Midwest",
-            "regionName": "Midwest Region",
-            "actionId": "A17",
-            "actionName": "Green Roof Incentives",
-            "actionPriority": 17,
-            "explanation": "For Springfield, incentivizing green roofs is commendable for its role in mitigating urban heat and improving building energy performance. The action is tailored to dense urban areas where additional insulation and stormwater management are needed. It also offers aesthetic and ecological benefits by boosting urban biodiversity. The approach fits well with the city’s sustainability targets while offering long-term environmental co-benefits."
-        },
-        {
-            "locode": "US-SPF",
-            "cityName": "Springfield",
-            "region": "Midwest",
-            "regionName": "Midwest Region",
-            "actionId": "A18",
-            "actionName": "Energy-Efficient Retrofitting Grants",
-            "actionPriority": 18,
-            "explanation": "For Springfield, providing grants for energy-efficient retrofits tackles emissions from older infrastructure directly. This action is both cost-effective and aligned with the need to modernize aging buildings, reducing energy waste in the process. It supports the economic and environmental well-being of the community by lowering future energy costs and improving building safety. The coordinated approach ensures that the long-term benefits justify the initial investments."
-        },
-        {
-            "locode": "US-SPF",
-            "cityName": "Springfield",
-            "region": "Midwest",
-            "regionName": "Midwest Region",
-            "actionId": "A19",
-            "actionName": "Water Conservation Programs",
-            "actionPriority": 19,
-            "explanation": "For Springfield, water conservation programs are essential for ensuring sustainable management of local water resources amid climate variability. The action is designed to optimize usage and reduce waste in a manner that aligns with the city’s socio-economic realities. It enhances community resilience by promoting sustainable consumption and reducing environmental pressure. The program serves as an adaptable tool for both short-term relief and long-term resource management."
-        },
-        {
-            "locode": "US-SPF",
-            "cityName": "Springfield",
-            "region": "Midwest",
-            "regionName": "Midwest Region",
-            "actionId": "A20",
-            "actionName": "Renewable Energy Installations on Public Buildings",
-            "actionPriority": 20,
-            "explanation": "For Springfield, installing renewable energy systems on public buildings is prioritized as it directly reduces fossil fuel dependency and bolsters energy security. This action aligns seamlessly with the city’s commitment to a sustainable future and offers a replicable model across sectors. It integrates well with environmental goals by offering a reliable, long-term reduction in emissions. The initiative’s comprehensive approach also reinforces public confidence in the city's climate strategy."
-        }
-    ]
-}
+[
+    {
+        "locode": "BR CAJ",
+        "cityName": "Cajazeiras",
+        "region": "PB",
+        "regionName": "Para\u00edba",
+        "actionId": "icare_0176",
+        "actionName": "Development of Climate Action Plan",
+        "actionPriority": 1,
+        "explanation": "Ranked #1 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CAJ",
+        "cityName": "Cajazeiras",
+        "region": "PB",
+        "regionName": "Para\u00edba",
+        "actionId": "ipcc_0094",
+        "actionName": "Access to health care",
+        "actionPriority": 2,
+        "explanation": "Ranked #2 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CAJ",
+        "cityName": "Cajazeiras",
+        "region": "PB",
+        "regionName": "Para\u00edba",
+        "actionId": "icare_0151",
+        "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
+        "actionPriority": 3,
+        "explanation": "Ranked #3 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CAJ",
+        "cityName": "Cajazeiras",
+        "region": "PB",
+        "regionName": "Para\u00edba",
+        "actionId": "ipcc_0097",
+        "actionName": "Food storage/distribution improvements",
+        "actionPriority": 4,
+        "explanation": "Ranked #4 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CAJ",
+        "cityName": "Cajazeiras",
+        "region": "PB",
+        "regionName": "Para\u00edba",
+        "actionId": "icare_0169",
+        "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
+        "actionPriority": 5,
+        "explanation": "Ranked #5 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CAJ",
+        "cityName": "Cajazeiras",
+        "region": "PB",
+        "regionName": "Para\u00edba",
+        "actionId": "ipcc_0096",
+        "actionName": "Farm/fishery improvements",
+        "actionPriority": 6,
+        "explanation": "Ranked #6 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CAJ",
+        "cityName": "Cajazeiras",
+        "region": "PB",
+        "regionName": "Para\u00edba",
+        "actionId": "ipcc_0092",
+        "actionName": "Social safety nets",
+        "actionPriority": 7,
+        "explanation": "Ranked #7 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CAJ",
+        "cityName": "Cajazeiras",
+        "region": "PB",
+        "regionName": "Para\u00edba",
+        "actionId": "icare_0152",
+        "actionName": "Recovery of degraded areas",
+        "actionPriority": 8,
+        "explanation": "Ranked #8 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CAJ",
+        "cityName": "Cajazeiras",
+        "region": "PB",
+        "regionName": "Para\u00edba",
+        "actionId": "icare_0162",
+        "actionName": "Strengthen programs for control and conservation of protected areas",
+        "actionPriority": 9,
+        "explanation": "Ranked #9 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CAJ",
+        "cityName": "Cajazeiras",
+        "region": "PB",
+        "regionName": "Para\u00edba",
+        "actionId": "ipcc_0093",
+        "actionName": "Availability of health infrastructure",
+        "actionPriority": 10,
+        "explanation": "Ranked #10 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CAJ",
+        "cityName": "Cajazeiras",
+        "region": "PB",
+        "regionName": "Para\u00edba",
+        "actionId": "icare_0149",
+        "actionName": "Encourage sustainable land use practices",
+        "actionPriority": 11,
+        "explanation": "Ranked #11 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CAJ",
+        "cityName": "Cajazeiras",
+        "region": "PB",
+        "regionName": "Para\u00edba",
+        "actionId": "icare_0148",
+        "actionName": "Create the Municipal Climate Change Forum",
+        "actionPriority": 12,
+        "explanation": "Ranked #12 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CAJ",
+        "cityName": "Cajazeiras",
+        "region": "PB",
+        "regionName": "Para\u00edba",
+        "actionId": "ipcc_0098",
+        "actionName": "Behaviour change in diets and food waste",
+        "actionPriority": 13,
+        "explanation": "Ranked #13 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CAJ",
+        "cityName": "Cajazeiras",
+        "region": "PB",
+        "regionName": "Para\u00edba",
+        "actionId": "icare_0150",
+        "actionName": "Implement Loss Reduction and Control Program promoting water security for the municipality",
+        "actionPriority": 14,
+        "explanation": "Ranked #14 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CAJ",
+        "cityName": "Cajazeiras",
+        "region": "PB",
+        "regionName": "Para\u00edba",
+        "actionId": "icare_0144",
+        "actionName": "Creation of a Financial Support Program to Adress Extreme Weather Events",
+        "actionPriority": 15,
+        "explanation": "Ranked #15 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CAJ",
+        "cityName": "Cajazeiras",
+        "region": "PB",
+        "regionName": "Para\u00edba",
+        "actionId": "icare_0157",
+        "actionName": "Maintenance and Revitalization of Riparian Forests",
+        "actionPriority": 16,
+        "explanation": "Ranked #16 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CAJ",
+        "cityName": "Cajazeiras",
+        "region": "PB",
+        "regionName": "Para\u00edba",
+        "actionId": "icare_0145",
+        "actionName": "Strengthen the healthcare network to attend to climate victims",
+        "actionPriority": 17,
+        "explanation": "Ranked #17 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CAJ",
+        "cityName": "Cajazeiras",
+        "region": "PB",
+        "regionName": "Para\u00edba",
+        "actionId": "ipcc_0095",
+        "actionName": "Disaster early warning",
+        "actionPriority": 18,
+        "explanation": "Ranked #18 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CAJ",
+        "cityName": "Cajazeiras",
+        "region": "PB",
+        "regionName": "Para\u00edba",
+        "actionId": "icare_0164",
+        "actionName": "Hydrological Monitoring System with Telemetry Stations",
+        "actionPriority": 19,
+        "explanation": "Ranked #19 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CAJ",
+        "cityName": "Cajazeiras",
+        "region": "PB",
+        "regionName": "Para\u00edba",
+        "actionId": "icare_0156",
+        "actionName": "Implementation of urban gardens",
+        "actionPriority": 20,
+        "explanation": "Ranked #20 by tournament ranking algorithm"
+    }
+]

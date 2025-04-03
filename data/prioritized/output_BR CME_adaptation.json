@@ -1,204 +1,202 @@
-{
-    "actions": [
-        {
-            "locode": "MTV",
-            "cityName": "Metroville",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "ACT001",
-            "actionName": "New Building Energy Efficiency Standards",
-            "actionPriority": 1,
-            "explanation": "In Metroville, New Building Energy Efficiency Standards are prioritized because they offer a significant reduction in energy consumption and greenhouse gas emissions. This action is well-aligned with the city’s goals to modernize its infrastructure and improve sustainability. Its cost-effectiveness and long-term benefits in lowering energy demand further validate its high ranking."
-        },
-        {
-            "locode": "MTV",
-            "cityName": "Metroville",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "ACT002",
-            "actionName": "Urban Green Space Expansion",
-            "actionPriority": 2,
-            "explanation": "Urban Green Space Expansion is valued in Metroville for enhancing environmental compatibility by improving local air quality and mitigating urban heat. The action creates community benefits by offering recreational spaces that support mental and physical well-being. Its strategic fit with the city’s dense urban fabric makes it a relevant and effective measure."
-        },
-        {
-            "locode": "MTV",
-            "cityName": "Metroville",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "ACT003",
-            "actionName": "Public Transportation Electrification",
-            "actionPriority": 3,
-            "explanation": "Public Transportation Electrification is prioritized for its strong potential to reduce emissions from one of Metroville’s major sectors. The switch to electric transport aligns with the city’s sustainability targets while promoting cleaner air and reduced noise pollution. Its capability to deliver relatively quick benefits makes it an effective intervention for the urban environment."
-        },
-        {
-            "locode": "MTV",
-            "cityName": "Metroville",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "ACT004",
-            "actionName": "Industrial Emissions Reduction Program",
-            "actionPriority": 4,
-            "explanation": "The Industrial Emissions Reduction Program is designed to address emissions from heavy industry, a crucial sector in Metroville. Its targeted approach makes it a key action for mitigating climate impacts where industrial activities are concentrated. The program integrates modern practices that also enhance economic resilience and reduce operational risks."
-        },
-        {
-            "locode": "MTV",
-            "cityName": "Metroville",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "ACT005",
-            "actionName": "Waste-to-Energy Conversion",
-            "actionPriority": 5,
-            "explanation": "Waste-to-Energy Conversion is appreciated in Metroville for its dual benefits of managing waste and generating renewable energy. This action reduces landfill reliance while contributing to the city's overall energy mix, offering a sustainable solution to urban waste challenges. Its balanced approach provides moderate implementation complexity with noticeable environmental benefits."
-        },
-        {
-            "locode": "MTV",
-            "cityName": "Metroville",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "ACT006",
-            "actionName": "Renewable Energy Incentive Program",
-            "actionPriority": 6,
-            "explanation": "The Renewable Energy Incentive Program is prioritized for its capacity to diversify the energy portfolio of Metroville and reduce dependence on fossil fuels. By encouraging investments in sustainable energy projects, it aligns with the city's long-term environmental goals. Its design leverages existing capacities and minimizes complex dependencies, making it a practical choice."
-        },
-        {
-            "locode": "MTV",
-            "cityName": "Metroville",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "ACT007",
-            "actionName": "Coastal Flood Defenses",
-            "actionPriority": 7,
-            "explanation": "Coastal Flood Defenses are critical for Metroville, especially in mitigating risks associated with extreme weather events. This action enhances the city's resilience by protecting vital infrastructure against flooding and storm surges. Its strategic importance lies in addressing imminent climate risks while supporting long-term urban safety."
-        },
-        {
-            "locode": "MTV",
-            "cityName": "Metroville",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "ACT008",
-            "actionName": "Smart Grid Implementation",
-            "actionPriority": 8,
-            "explanation": "Smart Grid Implementation is valued for modernizing Metroville’s energy distribution system and improving overall operational efficiency. This action supports the integration of renewable energy sources, thereby reducing wastage and ensuring a more stable energy supply. Its forward-looking design aligns with the city’s sustainability and technological innovation aspirations."
-        },
-        {
-            "locode": "MTV",
-            "cityName": "Metroville",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "ACT009",
-            "actionName": "Water Conservation Campaign",
-            "actionPriority": 9,
-            "explanation": "The Water Conservation Campaign is an essential action in Metroville for managing scarce water resources more effectively. It promotes sustainable water use practices that are critical during periods of climate variability. The initiative also engages the community, helping to secure long-term benefits for resource management."
-        },
-        {
-            "locode": "MTV",
-            "cityName": "Metroville",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "ACT010",
-            "actionName": "Tree Planting and Urban Forestry",
-            "actionPriority": 10,
-            "explanation": "Tree Planting and Urban Forestry is recognized in Metroville for its range of environmental and social co-benefits. The initiative enhances air quality, moderates urban temperatures, and creates green recreational spaces, contributing to the overall quality of life. Its natural approach complements more technological strategies, ensuring broad-based community appeal."
-        },
-        {
-            "locode": "MTV",
-            "cityName": "Metroville",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "ACT011",
-            "actionName": "Sustainable Agriculture Support",
-            "actionPriority": 11,
-            "explanation": "Sustainable Agriculture Support is prioritized for its potential to revolutionize farming practices in Metroville’s surrounding areas. The action fosters methods that improve soil health and reduce emissions, aligning agricultural practices with environmental sustainability. It also supports local economies by encouraging resilient, community-focused food production."
-        },
-        {
-            "locode": "MTV",
-            "cityName": "Metroville",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "ACT012",
-            "actionName": "Air Quality Improvement Initiative",
-            "actionPriority": 12,
-            "explanation": "The Air Quality Improvement Initiative is central to improving public health and environmental conditions in Metroville. It targets the reduction of harmful pollutants and supports broader regulatory efforts aimed at cleaner urban air. By addressing these issues, the action also contributes to a healthier living environment and enhanced community wellbeing."
-        },
-        {
-            "locode": "MTV",
-            "cityName": "Metroville",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "ACT013",
-            "actionName": "Low-Carbon Cement Production",
-            "actionPriority": 13,
-            "explanation": "Low-Carbon Cement Production is instrumental in reducing the carbon footprint of construction and industrial activities within Metroville. The initiative promotes innovative production techniques that lessen greenhouse gas emissions. This approach allows traditional industries to modernize in a sustainable manner while supporting economic growth."
-        },
-        {
-            "locode": "MTV",
-            "cityName": "Metroville",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "ACT014",
-            "actionName": "Electric Vehicle Infrastructure Development",
-            "actionPriority": 14,
-            "explanation": "Electric Vehicle Infrastructure Development is key to transforming Metroville’s transportation network by encouraging the adoption of cleaner vehicles. This action supports the establishment of a robust charging network, thus reducing reliance on fossil fuels. Its capacity to integrate with urban planning initiatives further underlines its relevance and timely impact."
-        },
-        {
-            "locode": "MTV",
-            "cityName": "Metroville",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "ACT015",
-            "actionName": "Energy Storage Solutions",
-            "actionPriority": 15,
-            "explanation": "Energy Storage Solutions are considered important for improving the reliability and stability of Metroville’s energy system. This action enables efficient management of renewable energy fluctuations, ensuring a steady supply to meet demand. Its innovative approach makes it a critical component in the city's overall transition to cleaner energy."
-        },
-        {
-            "locode": "MTV",
-            "cityName": "Metroville",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "ACT016",
-            "actionName": "Climate-Resilient Infrastructure Upgrades",
-            "actionPriority": 16,
-            "explanation": "Climate-Resilient Infrastructure Upgrades are designed to strengthen Metroville's capacity to endure extreme weather events. This action focuses on reinforcing critical systems to ensure that urban functionality is maintained during climate disruptions. Its emphasis on durable, adaptive construction methods supports long-term urban resilience."
-        },
-        {
-            "locode": "MTV",
-            "cityName": "Metroville",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "ACT017",
-            "actionName": "Urban Heat Island Mitigation",
-            "actionPriority": 17,
-            "explanation": "Urban Heat Island Mitigation addresses the localized temperature increases in Metroville’s dense urban core. By incorporating measures like reflective surfaces and increased greenery, this action helps reduce ambient temperatures and alleviates energy demand. Its focus on modifying the urban microclimate makes it particularly suited to densely populated areas."
-        },
-        {
-            "locode": "MTV",
-            "cityName": "Metroville",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "ACT018",
-            "actionName": "Carbon Capture and Sequestration Pilot",
-            "actionPriority": 18,
-            "explanation": "The Carbon Capture and Sequestration Pilot is an innovative action aimed at exploring advanced methods to remove greenhouse gases from the atmosphere. In Metroville, it serves as a complementary strategy that supports broader emissions reduction efforts. Its experimental nature is balanced by its potential to yield significant long-term climate benefits."
-        },
-        {
-            "locode": "MTV",
-            "cityName": "Metroville",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "ACT019",
-            "actionName": "Community Solar Projects",
-            "actionPriority": 19,
-            "explanation": "Community Solar Projects empower local residents in Metroville by providing an accessible entry point into renewable energy. This action fosters community participation and shared benefits, ensuring that the shift towards clean energy is inclusive. Its design promotes the democratization of energy production while contributing to overall emissions reduction."
-        },
-        {
-            "locode": "MTV",
-            "cityName": "Metroville",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "ACT020",
-            "actionName": "Sustainable Urban Drainage Systems",
-            "actionPriority": 20,
-            "explanation": "Sustainable Urban Drainage Systems are essential for managing stormwater and reducing flood risks in Metroville. This action leverages natural processes to improve water quality and enhance urban resilience against heavy rainfall events. It balances environmental benefits with practical implementation, making it a key component of the city’s adaptation strategy."
-        }
-    ]
-}
+[
+    {
+        "locode": "BR CME",
+        "cityName": "Camaragibe",
+        "region": "PE",
+        "regionName": "Pernambuco",
+        "actionId": "icare_0169",
+        "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
+        "actionPriority": 1,
+        "explanation": "Ranked #1 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CME",
+        "cityName": "Camaragibe",
+        "region": "PE",
+        "regionName": "Pernambuco",
+        "actionId": "icare_0176",
+        "actionName": "Development of Climate Action Plan",
+        "actionPriority": 2,
+        "explanation": "Ranked #2 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CME",
+        "cityName": "Camaragibe",
+        "region": "PE",
+        "regionName": "Pernambuco",
+        "actionId": "icare_0152",
+        "actionName": "Recovery of degraded areas",
+        "actionPriority": 3,
+        "explanation": "Ranked #3 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CME",
+        "cityName": "Camaragibe",
+        "region": "PE",
+        "regionName": "Pernambuco",
+        "actionId": "icare_0162",
+        "actionName": "Strengthen programs for control and conservation of protected areas",
+        "actionPriority": 4,
+        "explanation": "Ranked #4 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CME",
+        "cityName": "Camaragibe",
+        "region": "PE",
+        "regionName": "Pernambuco",
+        "actionId": "icare_0145",
+        "actionName": "Strengthen the healthcare network to attend to climate victims",
+        "actionPriority": 5,
+        "explanation": "Ranked #5 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CME",
+        "cityName": "Camaragibe",
+        "region": "PE",
+        "regionName": "Pernambuco",
+        "actionId": "icare_0151",
+        "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
+        "actionPriority": 6,
+        "explanation": "Ranked #6 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CME",
+        "cityName": "Camaragibe",
+        "region": "PE",
+        "regionName": "Pernambuco",
+        "actionId": "ipcc_0094",
+        "actionName": "Access to health care",
+        "actionPriority": 7,
+        "explanation": "Ranked #7 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CME",
+        "cityName": "Camaragibe",
+        "region": "PE",
+        "regionName": "Pernambuco",
+        "actionId": "icare_0157",
+        "actionName": "Maintenance and Revitalization of Riparian Forests",
+        "actionPriority": 8,
+        "explanation": "Ranked #8 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CME",
+        "cityName": "Camaragibe",
+        "region": "PE",
+        "regionName": "Pernambuco",
+        "actionId": "ipcc_0097",
+        "actionName": "Food storage/distribution improvements",
+        "actionPriority": 9,
+        "explanation": "Ranked #9 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CME",
+        "cityName": "Camaragibe",
+        "region": "PE",
+        "regionName": "Pernambuco",
+        "actionId": "icare_0149",
+        "actionName": "Encourage sustainable land use practices",
+        "actionPriority": 10,
+        "explanation": "Ranked #10 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CME",
+        "cityName": "Camaragibe",
+        "region": "PE",
+        "regionName": "Pernambuco",
+        "actionId": "icare_0148",
+        "actionName": "Create the Municipal Climate Change Forum",
+        "actionPriority": 11,
+        "explanation": "Ranked #11 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CME",
+        "cityName": "Camaragibe",
+        "region": "PE",
+        "regionName": "Pernambuco",
+        "actionId": "ipcc_0096",
+        "actionName": "Farm/fishery improvements",
+        "actionPriority": 12,
+        "explanation": "Ranked #12 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CME",
+        "cityName": "Camaragibe",
+        "region": "PE",
+        "regionName": "Pernambuco",
+        "actionId": "ipcc_0093",
+        "actionName": "Availability of health infrastructure",
+        "actionPriority": 13,
+        "explanation": "Ranked #13 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CME",
+        "cityName": "Camaragibe",
+        "region": "PE",
+        "regionName": "Pernambuco",
+        "actionId": "icare_0144",
+        "actionName": "Creation of a Financial Support Program to Adress Extreme Weather Events",
+        "actionPriority": 14,
+        "explanation": "Ranked #14 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CME",
+        "cityName": "Camaragibe",
+        "region": "PE",
+        "regionName": "Pernambuco",
+        "actionId": "icare_0181",
+        "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
+        "actionPriority": 15,
+        "explanation": "Ranked #15 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CME",
+        "cityName": "Camaragibe",
+        "region": "PE",
+        "regionName": "Pernambuco",
+        "actionId": "icare_0164",
+        "actionName": "Hydrological Monitoring System with Telemetry Stations",
+        "actionPriority": 16,
+        "explanation": "Ranked #16 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CME",
+        "cityName": "Camaragibe",
+        "region": "PE",
+        "regionName": "Pernambuco",
+        "actionId": "icare_0156",
+        "actionName": "Implementation of urban gardens",
+        "actionPriority": 17,
+        "explanation": "Ranked #17 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CME",
+        "cityName": "Camaragibe",
+        "region": "PE",
+        "regionName": "Pernambuco",
+        "actionId": "ipcc_0098",
+        "actionName": "Behaviour change in diets and food waste",
+        "actionPriority": 18,
+        "explanation": "Ranked #18 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CME",
+        "cityName": "Camaragibe",
+        "region": "PE",
+        "regionName": "Pernambuco",
+        "actionId": "ipcc_0092",
+        "actionName": "Social safety nets",
+        "actionPriority": 19,
+        "explanation": "Ranked #19 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CME",
+        "cityName": "Camaragibe",
+        "region": "PE",
+        "regionName": "Pernambuco",
+        "actionId": "icare_0175",
+        "actionName": "Recovery and preservation of green areas",
+        "actionPriority": 20,
+        "explanation": "Ranked #20 by tournament ranking algorithm"
+    }
+]

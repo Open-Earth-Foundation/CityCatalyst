@@ -1,204 +1,182 @@
-{
-    "actions": [
-        {
-            "locode": "MT-RS1",
-            "cityName": "Metropolis",
-            "region": "NE",
-            "regionName": "Northeast",
-            "actionId": "A1",
-            "actionName": "Residential Solar Panel Installation",
-            "actionPriority": 1,
-            "explanation": "For Metropolis, the Residential Solar Panel Installation action was prioritized because it directly targets a substantial source of emissions by shifting residential energy dependence to renewable sources. The action aligns strongly with the city’s environmental conditions and leverages abundant sunlight, thereby enhancing its cost-effectiveness. It also presents lower implementation complexity and clear benefits in reducing greenhouse gas emissions in a timely manner."
-        },
-        {
-            "locode": "MT-CE2",
-            "cityName": "Metropolis",
-            "region": "NE",
-            "regionName": "Northeast",
-            "actionId": "A2",
-            "actionName": "Commercial Energy Efficiency Upgrades",
-            "actionPriority": 2,
-            "explanation": "In Metropolis, upgrading energy efficiency in commercial sectors was ranked highly due to its ability to effectively decrease the city’s emission footprint within a major economic segment. This action directly addresses high energy use patterns and supports the city’s sustainability framework with relatively predictable implementation steps. It also offers significant long-term cost savings and risk reduction in energy-related vulnerabilities."
-        },
-        {
-            "locode": "MT-PT3",
-            "cityName": "Metropolis",
-            "region": "NE",
-            "regionName": "Northeast",
-            "actionId": "A3",
-            "actionName": "Public Transportation Electrification",
-            "actionPriority": 3,
-            "explanation": "Electrifying the public transportation fleet in Metropolis is highly relevant as it targets a critical emission sector where urban mobility converges with high population density. The action supports the city's need for cleaner transit options while also reducing reliance on fossil fuels. Its alignment with environmental goals and potential for enhancing air quality makes it a pivotal climate action, despite requiring coordinated infrastructure upgrades."
-        },
-        {
-            "locode": "MT-UT4",
-            "cityName": "Metropolis",
-            "region": "NE",
-            "regionName": "Northeast",
-            "actionId": "A4",
-            "actionName": "Urban Tree Planting Initiative",
-            "actionPriority": 4,
-            "explanation": "The Urban Tree Planting Initiative in Metropolis is valued for its ability to absorb carbon dioxide and improve overall urban air quality. This action supports the environmental resilience of the city by enhancing green cover and mitigating heat island effects. Additionally, it resonates with community well-being and offers low-cost, scalable benefits that complement other emission reduction strategies."
-        },
-        {
-            "locode": "MT-BI5",
-            "cityName": "Metropolis",
-            "region": "NE",
-            "regionName": "Northeast",
-            "actionId": "A5",
-            "actionName": "Building Insulation Improvements",
-            "actionPriority": 5,
-            "explanation": "Metropolis can benefit from improved building insulation as it helps reduce energy consumption associated with heating and cooling. The action is particularly effective in sectors with aging infrastructure, providing a sustainable solution that lowers greenhouse gas emissions. It fits well within the socio-demographic context of the city by making living spaces more comfortable without requiring extensive system overhauls."
-        },
-        {
-            "locode": "MT-RE6",
-            "cityName": "Metropolis",
-            "region": "NE",
-            "regionName": "Northeast",
-            "actionId": "A6",
-            "actionName": "Renewable Energy Feasibility Study",
-            "actionPriority": 6,
-            "explanation": "Commissioning a Renewable Energy Feasibility Study helps Metropolis understand the optimal pathways for a broader shift toward renewables. This preparatory action is fundamental for strategic planning, allowing the city to identify high-impact sectors and potential cost savings. While it lays the groundwork for future interventions, its immediate benefits are realized through informed decision-making and tailored implementation."
-        },
-        {
-            "locode": "MT-BL7",
-            "cityName": "Metropolis",
-            "region": "NE",
-            "regionName": "Northeast",
-            "actionId": "A7",
-            "actionName": "Bike Lane Expansion",
-            "actionPriority": 7,
-            "explanation": "The Bike Lane Expansion initiative is favored in Metropolis as it promotes sustainable commuting and reduces vehicular emissions in densely populated areas. It is well-suited to the city’s urban landscape and addresses both environmental concerns and public health benefits. By offering a cost-effective solution with minimal infrastructure dependencies, the action serves as an attractive option for immediate risk reduction and enhanced mobility."
-        },
-        {
-            "locode": "MT-WM8",
-            "cityName": "Metropolis",
-            "region": "NE",
-            "regionName": "Northeast",
-            "actionId": "A8",
-            "actionName": "Waste Management Optimization",
-            "actionPriority": 8,
-            "explanation": "Optimizing waste management in Metropolis effectively reduces methane emissions and aligns with broader environmental and public health priorities. The action is well-suited to densely populated urban settings where efficient waste handling can prevent environmental contamination. It provides a balanced approach between emission reduction and cost-effectiveness, making it a complementary strategy within the city's climate framework."
-        },
-        {
-            "locode": "MT-FD9",
-            "cityName": "Metropolis",
-            "region": "NE",
-            "regionName": "Northeast",
-            "actionId": "A9",
-            "actionName": "Flood Defenses Upgrade",
-            "actionPriority": 9,
-            "explanation": "Upgrading flood defenses in Metropolis is an action that directly addresses climate-related risks, especially considering the city's vulnerability to extreme weather events. It enhances resilience by mitigating the impact of potential flooding and protecting densely built areas. Although the primary focus is on adaptation, its indirect benefits include safeguarding emission reduction investments and supporting sustainable urban development."
-        },
-        {
-            "locode": "MT-WC10",
-            "cityName": "Metropolis",
-            "region": "NE",
-            "regionName": "Northeast",
-            "actionId": "A10",
-            "actionName": "Water Conservation Technologies",
-            "actionPriority": 10,
-            "explanation": "Implementing water conservation technologies in Metropolis addresses both environmental and socio-economic challenges by reducing water wastage. The action is particularly relevant in areas experiencing water stress, promoting sustainable resource use. Its design ensures cost-effectiveness and rapid benefits, which are essential for long-term climate resilience and urban sustainability."
-        },
-        {
-            "locode": "MT-GR11",
-            "cityName": "Metropolis",
-            "region": "NE",
-            "regionName": "Northeast",
-            "actionId": "A11",
-            "actionName": "Green Roof Incentives",
-            "actionPriority": 11,
-            "explanation": "Green Roof Incentives in Metropolis are targeted to improve building energy efficiency and urban microclimates. By transforming rooftops into green spaces, this action assists in reducing the urban heat island effect and indirectly decreases energy demand. The initiative presents a balanced mix of environmental compatibility and manageable costs, making it a supportive measure in the city’s broader climate strategy."
-        },
-        {
-            "locode": "MT-IC12",
-            "cityName": "Metropolis",
-            "region": "NE",
-            "regionName": "Northeast",
-            "actionId": "A12",
-            "actionName": "Industrial Emission Controls",
-            "actionPriority": 12,
-            "explanation": "Enhancing industrial emission controls is key for Metropolis as it directly curbs significant greenhouse gas contributions from major industrial sectors. This action is tightly aligned with the city’s priority to target high emission sources and improve public health. Despite requiring careful regulatory coordination, its long-term benefits in reducing risks and boosting overall environmental quality are considerable."
-        },
-        {
-            "locode": "MT-SG13",
-            "cityName": "Metropolis",
-            "region": "NE",
-            "regionName": "Northeast",
-            "actionId": "A13",
-            "actionName": "Smart Grid Implementation",
-            "actionPriority": 13,
-            "explanation": "Smart Grid Implementation is valued in Metropolis for its ability to optimize energy distribution and promote the integration of renewable energy. This action addresses sector relevance by streamlining energy management and reducing operational losses. Its innovative approach fosters resilience and efficiency while ensuring adaptability to future technological developments, despite involving more complex coordination."
-        },
-        {
-            "locode": "MT-EV14",
-            "cityName": "Metropolis",
-            "region": "NE",
-            "regionName": "Northeast",
-            "actionId": "A14",
-            "actionName": "Electric Vehicle Charging Network",
-            "actionPriority": 14,
-            "explanation": "Developing an Electric Vehicle Charging Network in Metropolis is significant for stimulating a transition to cleaner transportation. The action aligns closely with the city’s goals of reducing transportation emissions in busy urban corridors. It is designed to be scalable and compatible with current urban infrastructure, though it requires some initial investment and coordination across multiple stakeholders."
-        },
-        {
-            "locode": "MT-CR15",
-            "cityName": "Metropolis",
-            "region": "NE",
-            "regionName": "Northeast",
-            "actionId": "A15",
-            "actionName": "Coastal Resilience Project",
-            "actionPriority": 15,
-            "explanation": "The Coastal Resilience Project is tailored for Metropolis, addressing risks associated with coastal flooding and severe weather conditions. By strengthening natural and built buffers, the action not only mitigates climate impacts but also protects critical infrastructure. Its focus on risk reduction and environmental compatibility makes it a strategic, though longer-term, investment compared to emission-focused measures."
-        },
-        {
-            "locode": "MT-GS16",
-            "cityName": "Metropolis",
-            "region": "NE",
-            "regionName": "Northeast",
-            "actionId": "A16",
-            "actionName": "Green Space Expansion",
-            "actionPriority": 16,
-            "explanation": "Expanding green spaces in Metropolis is valued for its contribution to both environmental improvement and community well-being. The action improves air quality and provides natural cooling, addressing urban heat challenges inherently linked to dense city environments. While its direct impact on emissions may be indirect, the co-benefits in terms of social and ecological resilience are significant."
-        },
-        {
-            "locode": "MT-UH17",
-            "cityName": "Metropolis",
-            "region": "NE",
-            "regionName": "Northeast",
-            "actionId": "A17",
-            "actionName": "Urban Heat Island Mitigation",
-            "actionPriority": 17,
-            "explanation": "In Metropolis, mitigating urban heat islands is a targeted effort to reduce energy consumption and improve overall livability. The action adapts urban design to better manage temperature extremes, which is vital in densely built areas. Its benefits include enhanced public health and reduced strain on cooling systems, making it a practical and context-sensitive intervention."
-        },
-        {
-            "locode": "MT-SM18",
-            "cityName": "Metropolis",
-            "region": "NE",
-            "regionName": "Northeast",
-            "actionId": "A18",
-            "actionName": "Smart Water Metering",
-            "actionPriority": 18,
-            "explanation": "Smart Water Metering in Metropolis is designed to optimize water use and improve resource management across the city. This action offers efficient monitoring that supports both conservation efforts and early detection of infrastructural issues. It is a useful measure for balancing environmental protection with operational efficiency, particularly in urban settings with diverse water demand patterns."
-        },
-        {
-            "locode": "MT-EV19",
-            "cityName": "Metropolis",
-            "region": "NE",
-            "regionName": "Northeast",
-            "actionId": "A19",
-            "actionName": "Electric Bus Fleet Adoption",
-            "actionPriority": 19,
-            "explanation": "Adopting an electric bus fleet in Metropolis addresses the need for reducing emissions in the transportation sector while serving a large urban population. The action is well-aligned with the city’s environmental values and offers significant benefits in reducing urban air pollution. Its effectiveness stems from lower operational risks and improved service reliability, even though it requires coordinated investment in new technologies."
-        },
-        {
-            "locode": "MT-CC20",
-            "cityName": "Metropolis",
-            "region": "NE",
-            "regionName": "Northeast",
-            "actionId": "A20",
-            "actionName": "Community Climate Education Program",
-            "actionPriority": 20,
-            "explanation": "The Community Climate Education Program in Metropolis is an initiative that emphasizes building local capacity and raising awareness about sustainable practices. It plays a supportive role by empowering citizens to contribute to emission reductions and adapt to climate challenges. Although it does not directly lower emissions, its societal benefits and long-term impact on community engagement make it an important complement to more technical measures."
-        }
-    ]
-}
+[
+    {
+        "locode": "BR CAT",
+        "cityName": "Crato",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0050",
+        "actionName": "Implement Agroforestry Systems",
+        "actionPriority": 1
+    },
+    {
+        "locode": "BR CAT",
+        "cityName": "Crato",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0134",
+        "actionName": "Strengthen Mechanisms for Deforestation Control",
+        "actionPriority": 2
+    },
+    {
+        "locode": "BR CAT",
+        "cityName": "Crato",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0042",
+        "actionName": "Encourage renewable energy policies at the municipal level",
+        "actionPriority": 3
+    },
+    {
+        "locode": "BR CAT",
+        "cityName": "Crato",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0133",
+        "actionName": "Promote Urban Reforestation and Green Corridors",
+        "actionPriority": 4
+    },
+    {
+        "locode": "BR CAT",
+        "cityName": "Crato",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0024",
+        "actionName": "Integrate renewables into municipal water systems",
+        "actionPriority": 5
+    },
+    {
+        "locode": "BR CAT",
+        "cityName": "Crato",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0130",
+        "actionName": "Conduct Technical Assistance and Rural Extension (ATER) Actions",
+        "actionPriority": 6
+    },
+    {
+        "locode": "BR CAT",
+        "cityName": "Crato",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0128",
+        "actionName": "Establish Municipal Programs for Payment for Environmental Services (PES)",
+        "actionPriority": 7
+    },
+    {
+        "locode": "BR CAT",
+        "cityName": "Crato",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0129",
+        "actionName": "Facilitate Technology Transfer for Conservation Practices",
+        "actionPriority": 8
+    },
+    {
+        "locode": "BR CAT",
+        "cityName": "Crato",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0088",
+        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
+        "actionPriority": 9
+    },
+    {
+        "locode": "BR CAT",
+        "cityName": "Crato",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0131",
+        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
+        "actionPriority": 10
+    },
+    {
+        "locode": "BR CAT",
+        "cityName": "Crato",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0084",
+        "actionName": "Create Incentives for Agroforestry Practices in Livestock Systems",
+        "actionPriority": 11
+    },
+    {
+        "locode": "BR CAT",
+        "cityName": "Crato",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0132",
+        "actionName": "Encourage Local Agroecological Production and Short Supply Chains",
+        "actionPriority": 12
+    },
+    {
+        "locode": "BR CAT",
+        "cityName": "Crato",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0102",
+        "actionName": "Promote Sustainable Agricultural Practices",
+        "actionPriority": 13
+    },
+    {
+        "locode": "BR CAT",
+        "cityName": "Crato",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0094",
+        "actionName": "Adoption of biomethane in public fleets.",
+        "actionPriority": 14
+    },
+    {
+        "locode": "BR CAT",
+        "cityName": "Crato",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0121",
+        "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
+        "actionPriority": 15
+    },
+    {
+        "locode": "BR CAT",
+        "cityName": "Crato",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0085",
+        "actionName": "Promote the Adoption of Agroecological Pest Control",
+        "actionPriority": 16
+    },
+    {
+        "locode": "BR CAT",
+        "cityName": "Crato",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0099",
+        "actionName": "Support Agroecological Certification Programs",
+        "actionPriority": 17
+    },
+    {
+        "locode": "BR CAT",
+        "cityName": "Crato",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0136",
+        "actionName": "Support the Implementation of Ecological Fiscal Incentives",
+        "actionPriority": 18
+    },
+    {
+        "locode": "BR CAT",
+        "cityName": "Crato",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0139",
+        "actionName": "Implementation of urban toll.",
+        "actionPriority": 19
+    },
+    {
+        "locode": "BR CAT",
+        "cityName": "Crato",
+        "region": "CE",
+        "regionName": "Cear\u00e1",
+        "actionId": "icare_0038",
+        "actionName": "Promote community solar farms",
+        "actionPriority": 20
+    }
+]

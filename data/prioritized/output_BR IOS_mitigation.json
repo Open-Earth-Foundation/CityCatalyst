@@ -1,204 +1,182 @@
-{
-    "actions": [
-        {
-            "locode": "MT001",
-            "cityName": "Metropolis",
-            "region": "M1",
-            "regionName": "Central Region",
-            "actionId": "A01",
-            "actionName": "Renewable Energy Integration",
-            "actionPriority": 1,
-            "explanation": "For Metropolis, Renewable Energy Integration is highly prioritized because it directly addresses the city's dependence on fossil fuels while offering a robust pathway for emissions reduction. This initiative leverages the local environmental conditions by harnessing abundant natural resources and aligns well with long-term sustainability efforts. The action is designed to be cost-effective over time and minimizes implementation complexities, making it a strategic fit for the city's energy framework."
-        },
-        {
-            "locode": "MT001",
-            "cityName": "Metropolis",
-            "region": "M1",
-            "regionName": "Central Region",
-            "actionId": "A02",
-            "actionName": "Urban Green Spaces Expansion",
-            "actionPriority": 2,
-            "explanation": "In Metropolis, expanding urban green spaces is valued for its role in improving local air quality and mitigating urban heat island effects. The approach is compatible with the city's environmental needs, adding recreational value and enhancing biodiversity. It supports community well-being and aligns with broader climate resilience efforts by integrating nature-based solutions into urban planning."
-        },
-        {
-            "locode": "MT001",
-            "cityName": "Metropolis",
-            "region": "M1",
-            "regionName": "Central Region",
-            "actionId": "A03",
-            "actionName": "Energy Efficiency in Public Buildings",
-            "actionPriority": 3,
-            "explanation": "Energy Efficiency in Public Buildings is a focal action in Metropolis as it tackles high energy consumption in key public sectors. The measure promises to lower greenhouse gas emissions by optimizing energy usage and reducing operational costs. It fits well with the city's infrastructural upgrade plans, offering timely benefits and enhancing overall public service sustainability."
-        },
-        {
-            "locode": "MT001",
-            "cityName": "Metropolis",
-            "region": "M1",
-            "regionName": "Central Region",
-            "actionId": "A04",
-            "actionName": "Waste Management Improvements",
-            "actionPriority": 4,
-            "explanation": "Waste Management Improvements are critical in Metropolis for reducing methane emissions and enhancing urban sanitation. The action is designed to improve recycling and proper disposal, which directly contributes to lowering the overall environmental footprint. It integrates well with the city's urban planning strategies and offers lasting benefits for community health and environmental protection."
-        },
-        {
-            "locode": "MT001",
-            "cityName": "Metropolis",
-            "region": "M1",
-            "regionName": "Central Region",
-            "actionId": "A05",
-            "actionName": "Electrification of Public Transport",
-            "actionPriority": 5,
-            "explanation": "Electrification of Public Transport is a transformative action for Metropolis, directly aiming at reducing emissions from one of the city's major sectors. This measure improves air quality and supports cleaner urban mobility while addressing key public health concerns. Alongside its strategic alignment with sustainable development, the action promises efficient implementation and long-term operational benefits."
-        },
-        {
-            "locode": "MT001",
-            "cityName": "Metropolis",
-            "region": "M1",
-            "regionName": "Central Region",
-            "actionId": "A06",
-            "actionName": "New Building Standards",
-            "actionPriority": 6,
-            "explanation": "Adopting New Building Standards in Metropolis is prioritized for its ability to systematically reduce energy consumption in both residential and commercial structures. The approach embeds modern efficiency practices into the city’s infrastructure, fostering improved indoor comfort and resilience. It is well-suited to the urban context, promoting consistent environmental improvements over time."
-        },
-        {
-            "locode": "MT001",
-            "cityName": "Metropolis",
-            "region": "M1",
-            "regionName": "Central Region",
-            "actionId": "A07",
-            "actionName": "Water Conservation Initiatives",
-            "actionPriority": 7,
-            "explanation": "Water Conservation Initiatives are key for Metropolis as they address both resource scarcity and energy usage in water management systems. This action is well-aligned with the city’s environmental challenges and promotes sustainable resource utilization. It reinforces broader climate mitigation efforts by ensuring that water use is managed efficiently and responsibly."
-        },
-        {
-            "locode": "MT001",
-            "cityName": "Metropolis",
-            "region": "M1",
-            "regionName": "Central Region",
-            "actionId": "A08",
-            "actionName": "Improved Insulation Programs",
-            "actionPriority": 8,
-            "explanation": "Improved Insulation Programs are recognized in Metropolis for their direct impact on reducing energy demands in residential and commercial buildings. The measure enhances comfort and drives efficiency by decreasing overall energy consumption, which in turn supports emissions reduction. Its practicality and ease of implementation make it a valuable component of the city's immediate climate action strategy."
-        },
-        {
-            "locode": "MT001",
-            "cityName": "Metropolis",
-            "region": "M1",
-            "regionName": "Central Region",
-            "actionId": "A09",
-            "actionName": "Smart Grid Deployment",
-            "actionPriority": 9,
-            "explanation": "Smart Grid Deployment is prioritized in Metropolis for its capacity to modernize the city's energy distribution network and optimize the integration of renewable sources. This action not only improves overall energy efficiency but also enhances the resilience of the power supply system. With fewer dependencies and strong alignment with technological advancements, it represents a forward-thinking step in urban sustainability."
-        },
-        {
-            "locode": "MT001",
-            "cityName": "Metropolis",
-            "region": "M1",
-            "regionName": "Central Region",
-            "actionId": "A10",
-            "actionName": "Retrofitting Industrial Facilities",
-            "actionPriority": 10,
-            "explanation": "Retrofitting Industrial Facilities addresses critical emissions from high-energy sectors in Metropolis by modernizing outdated infrastructure. This action is integral to managing industrial emissions and reducing operational risks associated with older technologies. It aligns with the city's economic activities while promoting long-term environmental risk reduction and sustainability."
-        },
-        {
-            "locode": "MT001",
-            "cityName": "Metropolis",
-            "region": "M1",
-            "regionName": "Central Region",
-            "actionId": "A11",
-            "actionName": "Cycling Infrastructure Development",
-            "actionPriority": 11,
-            "explanation": "Cycling Infrastructure Development plays an important role in reducing transport-related emissions in Metropolis. This strategy encourages low-carbon mobility and supports healthy lifestyle choices, aligning with broader urban sustainability goals. Its design is inherently adaptable to the city's dense urban environment, effectively transforming transportation networks while fostering community engagement."
-        },
-        {
-            "locode": "MT001",
-            "cityName": "Metropolis",
-            "region": "M1",
-            "regionName": "Central Region",
-            "actionId": "A12",
-            "actionName": "Tree Planting Programs",
-            "actionPriority": 12,
-            "explanation": "Tree Planting Programs are esteemed in Metropolis for their contribution to carbon sequestration and enhancement of urban biodiversity. The action supports the city's environmental balance by creating natural buffers and improving the urban microclimate. Its long-term benefits in terms of ecological enhancements and community aesthetics make it a valued initiative in building climate resilience."
-        },
-        {
-            "locode": "MT001",
-            "cityName": "Metropolis",
-            "region": "M1",
-            "regionName": "Central Region",
-            "actionId": "A13",
-            "actionName": "Community Solar Projects",
-            "actionPriority": 13,
-            "explanation": "Community Solar Projects are significant for Metropolis as they democratize access to clean energy and foster local engagement in climate actions. This initiative empowers residents by integrating renewable energy solutions directly into the community framework. It aligns with both socioeconomic and environmental objectives, paving the way for a distributed, resilient energy system."
-        },
-        {
-            "locode": "MT001",
-            "cityName": "Metropolis",
-            "region": "M1",
-            "regionName": "Central Region",
-            "actionId": "A14",
-            "actionName": "Bus Emissions Reduction",
-            "actionPriority": 14,
-            "explanation": "Addressing Bus Emissions Reduction is a targeted measure in Metropolis that focuses on a critical source of urban air pollution. The action is tailored to the city's public transport system and aims to directly alleviate climate-related health risks. Its implementation is complex but necessary, as it helps modernize transport emissions management and improves overall urban air quality."
-        },
-        {
-            "locode": "MT001",
-            "cityName": "Metropolis",
-            "region": "M1",
-            "regionName": "Central Region",
-            "actionId": "A15",
-            "actionName": "Subsidies for Electric Vehicles",
-            "actionPriority": 15,
-            "explanation": "Subsidies for Electric Vehicles are introduced in Metropolis to promote a shift from traditional fossil-fueled transport towards cleaner alternatives. The measure supports environmental objectives by reducing transport emissions and encourages market uptake of innovative technologies. It is well-suited to the city's economic landscape, fostering long-term behavioral change and contributing to a broader decarbonization strategy."
-        },
-        {
-            "locode": "MT001",
-            "cityName": "Metropolis",
-            "region": "M1",
-            "regionName": "Central Region",
-            "actionId": "A16",
-            "actionName": "Flood Risk Management",
-            "actionPriority": 16,
-            "explanation": "Flood Risk Management is critical for Metropolis given its exposure to climate-related hazards. This action is focused on enhancing urban resilience and safeguarding infrastructure against potential flood events. It blends proactive adaptation with protections that secure vulnerable communities, making it a central component of the city's overall risk reduction framework."
-        },
-        {
-            "locode": "MT001",
-            "cityName": "Metropolis",
-            "region": "M1",
-            "regionName": "Central Region",
-            "actionId": "A17",
-            "actionName": "Sustainable Agriculture Practices",
-            "actionPriority": 17,
-            "explanation": "Sustainable Agriculture Practices are promoted around Metropolis to reduce emissions linked to food systems and improve land management. The action supports environmental integrity by fostering practices that balance economic productivity with ecological stewardship. It encourages a more resilient rural-urban linkage, contributing to long-term climate adaptation and sustainability."
-        },
-        {
-            "locode": "MT001",
-            "cityName": "Metropolis",
-            "region": "M1",
-            "regionName": "Central Region",
-            "actionId": "A18",
-            "actionName": "Public Awareness Campaigns",
-            "actionPriority": 18,
-            "explanation": "Public Awareness Campaigns in Metropolis play a crucial role in building community understanding and support for climate initiatives. This action helps cultivate local engagement and ensures that residents are informed about both mitigation and adaptation strategies. While it indirectly influences emissions reduction, its strength lies in empowering the public to contribute to the broader climate objectives."
-        },
-        {
-            "locode": "MT001",
-            "cityName": "Metropolis",
-            "region": "M1",
-            "regionName": "Central Region",
-            "actionId": "A19",
-            "actionName": "Coastal Protection Initiatives",
-            "actionPriority": 19,
-            "explanation": "Coastal Protection Initiatives are essential for Metropolis, especially if coastal hazards pose a risk to the city. The action is designed to safeguard critical infrastructure while preserving natural buffers against climate impacts. By addressing the city's unique environmental vulnerabilities, it plays a key role in adaptation and long-term resilience planning."
-        },
-        {
-            "locode": "MT001",
-            "cityName": "Metropolis",
-            "region": "M1",
-            "regionName": "Central Region",
-            "actionId": "A20",
-            "actionName": "Disaster Resilient Housing",
-            "actionPriority": 20,
-            "explanation": "Disaster Resilient Housing is a vital initiative for Metropolis as it focuses on enhancing the safety and durability of living environments in the face of climate extremes. This action directly contributes to reducing risks associated with natural hazards by ensuring that housing meets higher resilience standards. It reflects a long-term commitment to protecting vulnerable communities and aligns strongly with the city's adaptation objectives."
-        }
-    ]
-}
+[
+    {
+        "locode": "BR IOS",
+        "cityName": "Ilh\u00e9us",
+        "region": "BA",
+        "regionName": "Bahia",
+        "actionId": "icare_0050",
+        "actionName": "Implement Agroforestry Systems",
+        "actionPriority": 1
+    },
+    {
+        "locode": "BR IOS",
+        "cityName": "Ilh\u00e9us",
+        "region": "BA",
+        "regionName": "Bahia",
+        "actionId": "icare_0134",
+        "actionName": "Strengthen Mechanisms for Deforestation Control",
+        "actionPriority": 2
+    },
+    {
+        "locode": "BR IOS",
+        "cityName": "Ilh\u00e9us",
+        "region": "BA",
+        "regionName": "Bahia",
+        "actionId": "icare_0133",
+        "actionName": "Promote Urban Reforestation and Green Corridors",
+        "actionPriority": 3
+    },
+    {
+        "locode": "BR IOS",
+        "cityName": "Ilh\u00e9us",
+        "region": "BA",
+        "regionName": "Bahia",
+        "actionId": "icare_0128",
+        "actionName": "Establish Municipal Programs for Payment for Environmental Services (PES)",
+        "actionPriority": 4
+    },
+    {
+        "locode": "BR IOS",
+        "cityName": "Ilh\u00e9us",
+        "region": "BA",
+        "regionName": "Bahia",
+        "actionId": "icare_0130",
+        "actionName": "Conduct Technical Assistance and Rural Extension (ATER) Actions",
+        "actionPriority": 5
+    },
+    {
+        "locode": "BR IOS",
+        "cityName": "Ilh\u00e9us",
+        "region": "BA",
+        "regionName": "Bahia",
+        "actionId": "icare_0129",
+        "actionName": "Facilitate Technology Transfer for Conservation Practices",
+        "actionPriority": 6
+    },
+    {
+        "locode": "BR IOS",
+        "cityName": "Ilh\u00e9us",
+        "region": "BA",
+        "regionName": "Bahia",
+        "actionId": "icare_0131",
+        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
+        "actionPriority": 7
+    },
+    {
+        "locode": "BR IOS",
+        "cityName": "Ilh\u00e9us",
+        "region": "BA",
+        "regionName": "Bahia",
+        "actionId": "icare_0100",
+        "actionName": "Support Regenerative Agriculture Practices",
+        "actionPriority": 8
+    },
+    {
+        "locode": "BR IOS",
+        "cityName": "Ilh\u00e9us",
+        "region": "BA",
+        "regionName": "Bahia",
+        "actionId": "icare_0096",
+        "actionName": "Promote Organic Farming",
+        "actionPriority": 9
+    },
+    {
+        "locode": "BR IOS",
+        "cityName": "Ilh\u00e9us",
+        "region": "BA",
+        "regionName": "Bahia",
+        "actionId": "icare_0132",
+        "actionName": "Encourage Local Agroecological Production and Short Supply Chains",
+        "actionPriority": 10
+    },
+    {
+        "locode": "BR IOS",
+        "cityName": "Ilh\u00e9us",
+        "region": "BA",
+        "regionName": "Bahia",
+        "actionId": "icare_0136",
+        "actionName": "Support the Implementation of Ecological Fiscal Incentives",
+        "actionPriority": 11
+    },
+    {
+        "locode": "BR IOS",
+        "cityName": "Ilh\u00e9us",
+        "region": "BA",
+        "regionName": "Bahia",
+        "actionId": "icare_0085",
+        "actionName": "Promote the Adoption of Agroecological Pest Control",
+        "actionPriority": 12
+    },
+    {
+        "locode": "BR IOS",
+        "cityName": "Ilh\u00e9us",
+        "region": "BA",
+        "regionName": "Bahia",
+        "actionId": "icare_0102",
+        "actionName": "Promote Sustainable Agricultural Practices",
+        "actionPriority": 13
+    },
+    {
+        "locode": "BR IOS",
+        "cityName": "Ilh\u00e9us",
+        "region": "BA",
+        "regionName": "Bahia",
+        "actionId": "icare_0084",
+        "actionName": "Create Incentives for Agroforestry Practices in Livestock Systems",
+        "actionPriority": 14
+    },
+    {
+        "locode": "BR IOS",
+        "cityName": "Ilh\u00e9us",
+        "region": "BA",
+        "regionName": "Bahia",
+        "actionId": "icare_0042",
+        "actionName": "Encourage renewable energy policies at the municipal level",
+        "actionPriority": 15
+    },
+    {
+        "locode": "BR IOS",
+        "cityName": "Ilh\u00e9us",
+        "region": "BA",
+        "regionName": "Bahia",
+        "actionId": "icare_0099",
+        "actionName": "Support Agroecological Certification Programs",
+        "actionPriority": 16
+    },
+    {
+        "locode": "BR IOS",
+        "cityName": "Ilh\u00e9us",
+        "region": "BA",
+        "regionName": "Bahia",
+        "actionId": "icare_0088",
+        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
+        "actionPriority": 17
+    },
+    {
+        "locode": "BR IOS",
+        "cityName": "Ilh\u00e9us",
+        "region": "BA",
+        "regionName": "Bahia",
+        "actionId": "icare_0094",
+        "actionName": "Adoption of biomethane in public fleets.",
+        "actionPriority": 18
+    },
+    {
+        "locode": "BR IOS",
+        "cityName": "Ilh\u00e9us",
+        "region": "BA",
+        "regionName": "Bahia",
+        "actionId": "icare_0024",
+        "actionName": "Integrate renewables into municipal water systems",
+        "actionPriority": 19
+    },
+    {
+        "locode": "BR IOS",
+        "cityName": "Ilh\u00e9us",
+        "region": "BA",
+        "regionName": "Bahia",
+        "actionId": "icare_0127",
+        "actionName": "Accelerate Environmental Regularization of Rural Properties",
+        "actionPriority": 20
+    }
+]

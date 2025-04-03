@@ -1,204 +1,182 @@
-{
-    "actions": [
-        {
-            "locode": "GF001",
-            "cityName": "Greenfield",
-            "region": "NW",
-            "regionName": "Northwest Region",
-            "actionId": "A1",
-            "actionName": "New Building Standards",
-            "actionPriority": 1,
-            "explanation": "For Greenfield, New Building Standards have been prioritized because they drive significant reductions in energy consumption and greenhouse gas emissions. This action is very well aligned with the city’s dense urban fabric and regulatory context. It also supports long-term climate resilience by reducing future risks associated with energy inefficiency and poor construction practices."
-        },
-        {
-            "locode": "GF001",
-            "cityName": "Greenfield",
-            "region": "NW",
-            "regionName": "Northwest Region",
-            "actionId": "A2",
-            "actionName": "Bus Emissions",
-            "actionPriority": 2,
-            "explanation": "For Greenfield, addressing Bus Emissions is compelling due to its direct impact on improving urban air quality. This action targets a key sector of transportation where emissions are concentrated, aligning with the city’s focus on sustainable mobility. Its implementation can lead to considerable environmental and public health benefits despite inherent challenges in fleet upgrades."
-        },
-        {
-            "locode": "GF001",
-            "cityName": "Greenfield",
-            "region": "NW",
-            "regionName": "Northwest Region",
-            "actionId": "A3",
-            "actionName": "Renewable Energy Investments",
-            "actionPriority": 3,
-            "explanation": "Renewable Energy Investments are prioritized in Greenfield due to their strong potential in transitioning the city towards a low-carbon future. This action leverages local natural resources and fits well within the city’s strategic plan to diversify its energy portfolio. It also emphasizes sustainable growth and long-term cost-effectiveness in reducing fossil fuel dependence."
-        },
-        {
-            "locode": "GF001",
-            "cityName": "Greenfield",
-            "region": "NW",
-            "regionName": "Northwest Region",
-            "actionId": "A4",
-            "actionName": "Urban Greening Initiatives",
-            "actionPriority": 4,
-            "explanation": "For Greenfield, Urban Greening Initiatives are highly valued because they create multiple benefits such as improved air quality and enhanced community well-being. This action effectively mitigates urban heat island effects while increasing local biodiversity. It also fits seamlessly with the city’s broader efforts to develop sustainable and resilient urban spaces."
-        },
-        {
-            "locode": "GF001",
-            "cityName": "Greenfield",
-            "region": "NW",
-            "regionName": "Northwest Region",
-            "actionId": "A5",
-            "actionName": "Flood Defense Systems",
-            "actionPriority": 5,
-            "explanation": "Flood Defense Systems are prioritized in Greenfield because the city faces significant risks from extreme weather events. This action is crucial in minimizing potential damages to infrastructure and protecting community well-being. It aligns with both the environmental and socio-demographic needs by enhancing the city’s resilience against flooding."
-        },
-        {
-            "locode": "GF001",
-            "cityName": "Greenfield",
-            "region": "NW",
-            "regionName": "Northwest Region",
-            "actionId": "A6",
-            "actionName": "Waste Management Improvements",
-            "actionPriority": 6,
-            "explanation": "Waste Management Improvements have been highlighted for Greenfield due to their ability to address emissions from waste decomposition while promoting efficient resource use. This action improves overall urban sustainability by reducing environmental hazards and public health risks. It is also adaptable to the city’s current capacity, ensuring a practical approach to wider environmental objectives."
-        },
-        {
-            "locode": "GF001",
-            "cityName": "Greenfield",
-            "region": "NW",
-            "regionName": "Northwest Region",
-            "actionId": "A7",
-            "actionName": "Public Transportation Expansion",
-            "actionPriority": 7,
-            "explanation": "Expanding Public Transportation in Greenfield is seen as a strong action because it encourages a shift away from private vehicle use, reducing overall urban emissions. This initiative is well adapted to the city’s demographic trends and urban layout, thus improving mobility and reducing congestion. The action’s focus on accessibility and cost-effectiveness strengthens its position within the climate strategy."
-        },
-        {
-            "locode": "GF001",
-            "cityName": "Greenfield",
-            "region": "NW",
-            "regionName": "Northwest Region",
-            "actionId": "A8",
-            "actionName": "Energy Efficiency Retrofits",
-            "actionPriority": 8,
-            "explanation": "In Greenfield, Energy Efficiency Retrofits are valued for their immediate impact on reducing energy usage and associated emissions. This action fits well with existing building infrastructures and enhances cost-effectiveness in the short term. It also supports the city’s sustainability goals and helps reduce operational risks associated with inefficient energy use."
-        },
-        {
-            "locode": "GF001",
-            "cityName": "Greenfield",
-            "region": "NW",
-            "regionName": "Northwest Region",
-            "actionId": "A9",
-            "actionName": "Solar Panel Subsidies",
-            "actionPriority": 9,
-            "explanation": "For Greenfield, Solar Panel Subsidies are an attractive policy due to the city's favorable solar conditions. The action encourages distributed renewable generation and reduces reliance on centralized fossil fuel systems. Additionally, it builds community resilience and offers supportive economic benefits, making it a practical addition to the city’s environmental strategy."
-        },
-        {
-            "locode": "GF001",
-            "cityName": "Greenfield",
-            "region": "NW",
-            "regionName": "Northwest Region",
-            "actionId": "A10",
-            "actionName": "Wind Energy Projects",
-            "actionPriority": 10,
-            "explanation": "Greenfield’s Wind Energy Projects are valued for their potential to capture local wind resources and contribute to a diversified renewable portfolio. This action is well integrated into the city’s goals for long-term low-carbon energy solutions. Its environmental compatibility with local resources underlines its strategic role in reducing greenhouse gas emissions."
-        },
-        {
-            "locode": "GF001",
-            "cityName": "Greenfield",
-            "region": "NW",
-            "regionName": "Northwest Region",
-            "actionId": "A11",
-            "actionName": "Water Conservation Programs",
-            "actionPriority": 11,
-            "explanation": "For Greenfield, Water Conservation Programs are prioritized as they address critical water resource challenges and promote sustainable usage. This action supports community resilience and environmental stewardship by mitigating the risk of shortages. Its practical implementation can lead to improved water management and overall urban sustainability."
-        },
-        {
-            "locode": "GF001",
-            "cityName": "Greenfield",
-            "region": "NW",
-            "regionName": "Northwest Region",
-            "actionId": "A12",
-            "actionName": "Cycle Infrastructure Development",
-            "actionPriority": 12,
-            "explanation": "Cycle Infrastructure Development in Greenfield is recognized for promoting active transportation while reducing reliance on fossil-fueled vehicles. This action enhances urban connectivity and public health and is perfectly suited to the city’s compact structure. Its cost-effectiveness and ease of implementation support its role in reducing overall emissions."
-        },
-        {
-            "locode": "GF001",
-            "cityName": "Greenfield",
-            "region": "NW",
-            "regionName": "Northwest Region",
-            "actionId": "A13",
-            "actionName": "Electric Vehicle Incentives",
-            "actionPriority": 13,
-            "explanation": "In Greenfield, Electric Vehicle Incentives are prioritized for their capacity to steer the transportation sector towards cleaner energy solutions. This approach targets a major emissions source and supports emerging trends in sustainable urban mobility. It also complements local infrastructure investments and is seen as an effective tool for reducing urban emissions."
-        },
-        {
-            "locode": "GF001",
-            "cityName": "Greenfield",
-            "region": "NW",
-            "regionName": "Northwest Region",
-            "actionId": "A14",
-            "actionName": "Green Roof Programs",
-            "actionPriority": 14,
-            "explanation": "Green Roof Programs in Greenfield have been prioritized because they contribute to temperature regulation and reduce the urban heat island effect. This action not only enhances building energy efficiency but also fosters urban biodiversity. Its alignment with local architectural practices and climate adaptation needs makes it a valuable part of the city’s environmental initiatives."
-        },
-        {
-            "locode": "GF001",
-            "cityName": "Greenfield",
-            "region": "NW",
-            "regionName": "Northwest Region",
-            "actionId": "A15",
-            "actionName": "Community Solar Farms",
-            "actionPriority": 15,
-            "explanation": "For Greenfield, Community Solar Farms are favored because they democratize access to renewable energy and engage local communities directly. This action creates both economic and environmental co-benefits, reinforcing the city’s transition to cleaner energy sources. It fits well within the local context by promoting inclusivity and sustainable resource management."
-        },
-        {
-            "locode": "GF001",
-            "cityName": "Greenfield",
-            "region": "NW",
-            "regionName": "Northwest Region",
-            "actionId": "A16",
-            "actionName": "Sustainable Urban Drainage Systems",
-            "actionPriority": 16,
-            "explanation": "Sustainable Urban Drainage Systems are prioritized in Greenfield as they address critical issues related to stormwater management and flood mitigation. This action effectively reduces climate-related risks while preserving water quality. Its adaptability and compatibility with the city’s infrastructure needs make it a strategic component of urban resilience."
-        },
-        {
-            "locode": "GF001",
-            "cityName": "Greenfield",
-            "region": "NW",
-            "regionName": "Northwest Region",
-            "actionId": "A17",
-            "actionName": "Urban Heat Island Mitigation",
-            "actionPriority": 17,
-            "explanation": "In Greenfield, Urban Heat Island Mitigation is considered an important action for enhancing urban livability. This measure is focused on reducing temperature extremes in densely built areas, thereby improving overall public health and comfort. It aligns with the city's environmental goals and adds resilience against temperature fluctuations and climate stresses."
-        },
-        {
-            "locode": "GF001",
-            "cityName": "Greenfield",
-            "region": "NW",
-            "regionName": "Northwest Region",
-            "actionId": "A18",
-            "actionName": "Tree Planting Campaigns",
-            "actionPriority": 18,
-            "explanation": "Greenfield’s Tree Planting Campaigns are recognized for their capacity to enhance carbon sequestration and improve urban air quality. This initiative provides diverse ecological and social benefits, contributing to a more sustainable urban environment. Its adaptability and community-focus make it a supportive measure within the broader climate strategy."
-        },
-        {
-            "locode": "GF001",
-            "cityName": "Greenfield",
-            "region": "NW",
-            "regionName": "Northwest Region",
-            "actionId": "A19",
-            "actionName": "Carbon Pricing Implementation",
-            "actionPriority": 19,
-            "explanation": "Carbon Pricing Implementation in Greenfield is valued for promoting market-based incentives to reduce greenhouse gas emissions. This action encourages behavioral changes within both industries and consumers, fostering a transition towards cleaner technologies. Its integration with existing economic policies reinforces its strategic importance for sustainable urban planning."
-        },
-        {
-            "locode": "GF001",
-            "cityName": "Greenfield",
-            "region": "NW",
-            "regionName": "Northwest Region",
-            "actionId": "A20",
-            "actionName": "Zero Waste Initiatives",
-            "actionPriority": 20,
-            "explanation": "For Greenfield, Zero Waste Initiatives have been prioritized as they promote a comprehensive approach to reducing resource waste and enhancing sustainability. This action aligns with circular economy principles and improves environmental health across the community. It also supports long-term efficiency by reducing the strain on municipal waste management systems while complementing overall climate resilience strategies."
-        }
-    ]
-}
+[
+    {
+        "locode": "BR CAJ",
+        "cityName": "Cajazeiras",
+        "region": "PB",
+        "regionName": "Para\u00edba",
+        "actionId": "icare_0050",
+        "actionName": "Implement Agroforestry Systems",
+        "actionPriority": 1
+    },
+    {
+        "locode": "BR CAJ",
+        "cityName": "Cajazeiras",
+        "region": "PB",
+        "regionName": "Para\u00edba",
+        "actionId": "icare_0133",
+        "actionName": "Promote Urban Reforestation and Green Corridors",
+        "actionPriority": 2
+    },
+    {
+        "locode": "BR CAJ",
+        "cityName": "Cajazeiras",
+        "region": "PB",
+        "regionName": "Para\u00edba",
+        "actionId": "icare_0134",
+        "actionName": "Strengthen Mechanisms for Deforestation Control",
+        "actionPriority": 3
+    },
+    {
+        "locode": "BR CAJ",
+        "cityName": "Cajazeiras",
+        "region": "PB",
+        "regionName": "Para\u00edba",
+        "actionId": "icare_0129",
+        "actionName": "Facilitate Technology Transfer for Conservation Practices",
+        "actionPriority": 4
+    },
+    {
+        "locode": "BR CAJ",
+        "cityName": "Cajazeiras",
+        "region": "PB",
+        "regionName": "Para\u00edba",
+        "actionId": "icare_0128",
+        "actionName": "Establish Municipal Programs for Payment for Environmental Services (PES)",
+        "actionPriority": 5
+    },
+    {
+        "locode": "BR CAJ",
+        "cityName": "Cajazeiras",
+        "region": "PB",
+        "regionName": "Para\u00edba",
+        "actionId": "icare_0130",
+        "actionName": "Conduct Technical Assistance and Rural Extension (ATER) Actions",
+        "actionPriority": 6
+    },
+    {
+        "locode": "BR CAJ",
+        "cityName": "Cajazeiras",
+        "region": "PB",
+        "regionName": "Para\u00edba",
+        "actionId": "icare_0131",
+        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
+        "actionPriority": 7
+    },
+    {
+        "locode": "BR CAJ",
+        "cityName": "Cajazeiras",
+        "region": "PB",
+        "regionName": "Para\u00edba",
+        "actionId": "icare_0100",
+        "actionName": "Support Regenerative Agriculture Practices",
+        "actionPriority": 8
+    },
+    {
+        "locode": "BR CAJ",
+        "cityName": "Cajazeiras",
+        "region": "PB",
+        "regionName": "Para\u00edba",
+        "actionId": "icare_0096",
+        "actionName": "Promote Organic Farming",
+        "actionPriority": 9
+    },
+    {
+        "locode": "BR CAJ",
+        "cityName": "Cajazeiras",
+        "region": "PB",
+        "regionName": "Para\u00edba",
+        "actionId": "icare_0102",
+        "actionName": "Promote Sustainable Agricultural Practices",
+        "actionPriority": 10
+    },
+    {
+        "locode": "BR CAJ",
+        "cityName": "Cajazeiras",
+        "region": "PB",
+        "regionName": "Para\u00edba",
+        "actionId": "icare_0042",
+        "actionName": "Encourage renewable energy policies at the municipal level",
+        "actionPriority": 11
+    },
+    {
+        "locode": "BR CAJ",
+        "cityName": "Cajazeiras",
+        "region": "PB",
+        "regionName": "Para\u00edba",
+        "actionId": "icare_0094",
+        "actionName": "Adoption of biomethane in public fleets.",
+        "actionPriority": 12
+    },
+    {
+        "locode": "BR CAJ",
+        "cityName": "Cajazeiras",
+        "region": "PB",
+        "regionName": "Para\u00edba",
+        "actionId": "icare_0084",
+        "actionName": "Create Incentives for Agroforestry Practices in Livestock Systems",
+        "actionPriority": 13
+    },
+    {
+        "locode": "BR CAJ",
+        "cityName": "Cajazeiras",
+        "region": "PB",
+        "regionName": "Para\u00edba",
+        "actionId": "icare_0121",
+        "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
+        "actionPriority": 14
+    },
+    {
+        "locode": "BR CAJ",
+        "cityName": "Cajazeiras",
+        "region": "PB",
+        "regionName": "Para\u00edba",
+        "actionId": "icare_0088",
+        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
+        "actionPriority": 15
+    },
+    {
+        "locode": "BR CAJ",
+        "cityName": "Cajazeiras",
+        "region": "PB",
+        "regionName": "Para\u00edba",
+        "actionId": "icare_0090",
+        "actionName": "Adoption of electric drones for last-mile deliveries.",
+        "actionPriority": 16
+    },
+    {
+        "locode": "BR CAJ",
+        "cityName": "Cajazeiras",
+        "region": "PB",
+        "regionName": "Para\u00edba",
+        "actionId": "icare_0085",
+        "actionName": "Promote the Adoption of Agroecological Pest Control",
+        "actionPriority": 17
+    },
+    {
+        "locode": "BR CAJ",
+        "cityName": "Cajazeiras",
+        "region": "PB",
+        "regionName": "Para\u00edba",
+        "actionId": "icare_0136",
+        "actionName": "Support the Implementation of Ecological Fiscal Incentives",
+        "actionPriority": 18
+    },
+    {
+        "locode": "BR CAJ",
+        "cityName": "Cajazeiras",
+        "region": "PB",
+        "regionName": "Para\u00edba",
+        "actionId": "icare_0099",
+        "actionName": "Support Agroecological Certification Programs",
+        "actionPriority": 19
+    },
+    {
+        "locode": "BR CAJ",
+        "cityName": "Cajazeiras",
+        "region": "PB",
+        "regionName": "Para\u00edba",
+        "actionId": "icare_0132",
+        "actionName": "Encourage Local Agroecological Production and Short Supply Chains",
+        "actionPriority": 20
+    }
+]

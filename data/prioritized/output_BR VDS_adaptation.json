@@ -1,204 +1,202 @@
-{
-    "actions": [
-        {
-            "locode": "GF01",
-            "cityName": "Greenfield",
-            "region": "NW",
-            "regionName": "Northwest",
-            "actionId": "A1",
-            "actionName": "New Building Standards",
-            "actionPriority": 1,
-            "explanation": "For Greenfield, the introduction of New Building Standards is prioritized as it directly addresses energy consumption within one of the city's largest emission sectors. This action harmonizes with urban development plans and targets high-impact areas effectively. It further reinforces community resilience by reducing long-term climate risks through improved building performance."
-        },
-        {
-            "locode": "GF01",
-            "cityName": "Greenfield",
-            "region": "NW",
-            "regionName": "Northwest",
-            "actionId": "A2",
-            "actionName": "Bus Emissions Reduction",
-            "actionPriority": 2,
-            "explanation": "For Greenfield, reducing bus emissions is significant because it addresses urban transportation, which is essential in a densely populated setting. This action improves air quality and eases public health risks while being adaptable to faster implementation timelines. Its focus on mitigating local transport emissions makes it an effective and relevant strategy for the city."
-        },
-        {
-            "locode": "GF01",
-            "cityName": "Greenfield",
-            "region": "NW",
-            "regionName": "Northwest",
-            "actionId": "A3",
-            "actionName": "Renewable Energy Increase",
-            "actionPriority": 3,
-            "explanation": "For Greenfield, increasing renewable energy sources is beneficial as it directly targets the city’s primary energy challenges. The action leverages natural resources available in the region and aligns closely with sustainable development goals. It fosters energy independence and reduces reliance on fossil fuels, making it a strategic choice for long-term emissions reduction."
-        },
-        {
-            "locode": "GF01",
-            "cityName": "Greenfield",
-            "region": "NW",
-            "regionName": "Northwest",
-            "actionId": "A4",
-            "actionName": "Urban Tree Planting",
-            "actionPriority": 4,
-            "explanation": "In Greenfield, urban tree planting is an effective measure for enhancing natural carbon sinks and improving air quality. This action integrates well with the city’s aesthetic and environmental goals, offering co-benefits such as reduced urban heat and improved community well-being. Its gradual but lasting impact supports a resilient urban ecosystem."
-        },
-        {
-            "locode": "GF01",
-            "cityName": "Greenfield",
-            "region": "NW",
-            "regionName": "Northwest",
-            "actionId": "A5",
-            "actionName": "Solar Panel Incentives",
-            "actionPriority": 5,
-            "explanation": "For Greenfield, incentivizing the adoption of solar panels taps into the city’s renewable resource potential and supports a transition away from fossil fuels. It is cost-effective in the long term and encourages community participation in sustainable energy practices. The initiative is attuned to local environmental conditions and delivers reliable benefits over its implementation timeline."
-        },
-        {
-            "locode": "GF01",
-            "cityName": "Greenfield",
-            "region": "NW",
-            "regionName": "Northwest",
-            "actionId": "A6",
-            "actionName": "Energy Efficiency Upgrade",
-            "actionPriority": 6,
-            "explanation": "Enhancing energy efficiency across buildings and infrastructure in Greenfield is a prioritized action due to its broad impact on reducing overall energy consumption and emissions. This upgrade is versatile and integrates smoothly with existing systems, matching the city’s capacity for implementation. It further minimizes climate-related risks by decreasing dependencies on non-renewable resources."
-        },
-        {
-            "locode": "GF01",
-            "cityName": "Greenfield",
-            "region": "NW",
-            "regionName": "Northwest",
-            "actionId": "A7",
-            "actionName": "Water Conservation Measures",
-            "actionPriority": 7,
-            "explanation": "In Greenfield, water conservation is essential given regional concerns about water availability and climate-driven variability. This action not only secures a critical resource for the community but also aligns well with cost-effectiveness considerations. Its role in reducing environmental stress helps ensure that the city can sustainably manage its water supply over time."
-        },
-        {
-            "locode": "GF01",
-            "cityName": "Greenfield",
-            "region": "NW",
-            "regionName": "Northwest",
-            "actionId": "A8",
-            "actionName": "Waste Management Improvement",
-            "actionPriority": 8,
-            "explanation": "For Greenfield, modernizing waste management systems is a strategic action to limit emissions from landfills and reduce environmental degradation. It offers benefits by lowering future remediation costs and risks associated with waste-related hazards. The improved practices foster urban sustainability and enhance overall public health in the community."
-        },
-        {
-            "locode": "GF01",
-            "cityName": "Greenfield",
-            "region": "NW",
-            "regionName": "Northwest",
-            "actionId": "A9",
-            "actionName": "Public Transit Expansion",
-            "actionPriority": 9,
-            "explanation": "Expanding public transit in Greenfield is prioritized as it effectively addresses the city's high transportation-related emissions and congestion. This action encourages a shift from private to communal travel, reducing urban pollution and supporting environmental and public health. Furthermore, its initiative aligns with the city’s strong socio-demographic profile by enhancing accessibility and efficiency."
-        },
-        {
-            "locode": "GF01",
-            "cityName": "Greenfield",
-            "region": "NW",
-            "regionName": "Northwest",
-            "actionId": "A10",
-            "actionName": "Flood Defense Strengthening",
-            "actionPriority": 10,
-            "explanation": "For Greenfield, strengthening flood defenses is an important response to the city’s exposure to severe weather events. This action mitigates climate-related risks by protecting infrastructure and vulnerable areas, ensuring community safety even during extreme conditions. Its alignment with local hazard profiles and proactive resilience planning makes it a vital component of the city's climate strategy."
-        },
-        {
-            "locode": "GF01",
-            "cityName": "Greenfield",
-            "region": "NW",
-            "regionName": "Northwest",
-            "actionId": "A11",
-            "actionName": "Green Infrastructure Investment",
-            "actionPriority": 11,
-            "explanation": "Investing in green infrastructure for Greenfield is valued for its dual focus on enhancing urban livability and directly contributing to emissions reduction. The action fosters natural solutions that manage stormwater, improve biodiversity, and create sustainable public spaces. Its comprehensive benefits support both economic and environmental goals, reflecting a balanced climate strategy."
-        },
-        {
-            "locode": "GF01",
-            "cityName": "Greenfield",
-            "region": "NW",
-            "regionName": "Northwest",
-            "actionId": "A12",
-            "actionName": "Carbon Capture Implementation",
-            "actionPriority": 12,
-            "explanation": "For Greenfield, implementing carbon capture technologies is a forward-looking strategy aimed at directly mitigating emissions from the largest sources. It embraces advanced methods to address environmental challenges and aligns with long-term sustainability targets. Even though it requires sophisticated infrastructure, its capacity to curb emissions positions it as a critical, innovative part of the city’s climate action plan."
-        },
-        {
-            "locode": "GF01",
-            "cityName": "Greenfield",
-            "region": "NW",
-            "regionName": "Northwest",
-            "actionId": "A13",
-            "actionName": "Smart Grid Deployment",
-            "actionPriority": 13,
-            "explanation": "Deploying smart grids is a valuable strategy in Greenfield as it modernizes the energy distribution network and facilitates a more efficient integration of renewable resources. This action supports quick adaptation to changing energy demands and enhances overall system resilience. Its ease of integration and alignment with the city's strategic objectives reinforce its importance in the evolving energy landscape."
-        },
-        {
-            "locode": "GF01",
-            "cityName": "Greenfield",
-            "region": "NW",
-            "regionName": "Northwest",
-            "actionId": "A14",
-            "actionName": "Bicycle Infrastructure Development",
-            "actionPriority": 14,
-            "explanation": "In Greenfield, developing infrastructure for bicycling promotes a shift towards cleaner transportation and supports healthier communities. This action effectively reduces reliance on fossil-fuel-based vehicles and enhances urban mobility. With relatively straightforward implementation and clear benefits to everyday life, it contributes positively to the city’s overall climate strategy."
-        },
-        {
-            "locode": "GF01",
-            "cityName": "Greenfield",
-            "region": "NW",
-            "regionName": "Northwest",
-            "actionId": "A15",
-            "actionName": "Heat Island Mitigation",
-            "actionPriority": 15,
-            "explanation": "For Greenfield, addressing the urban heat island effect is a critical action to enhance local climate conditions and mitigate excessive heat. This initiative not only improves outdoor comfort but also reduces energy demands for cooling, aligning well with broader climate mitigation goals. Its focus on environmental compatibility makes it a strategic measure for enhancing public health and urban livability."
-        },
-        {
-            "locode": "GF01",
-            "cityName": "Greenfield",
-            "region": "NW",
-            "regionName": "Northwest",
-            "actionId": "A16",
-            "actionName": "Coastal Ecosystem Restoration",
-            "actionPriority": 16,
-            "explanation": "Restoring coastal ecosystems in Greenfield is essential for buffering against climate impacts and preserving natural habitats. This action reinforces natural defenses against sea level rise and extreme weather while supporting biodiversity. Its environmental and community benefits validate the approach as both adaptive and sustainable in the long term."
-        },
-        {
-            "locode": "GF01",
-            "cityName": "Greenfield",
-            "region": "NW",
-            "regionName": "Northwest",
-            "actionId": "A17",
-            "actionName": "Urban Cooling Initiatives",
-            "actionPriority": 17,
-            "explanation": "For Greenfield, urban cooling initiatives are effective in moderating high city temperatures, thereby reducing heat-related risks and energy consumption. This approach introduces practical measures to enhance the comfort and health of urban residents. Its capacity to deliver relatively swift benefits affirms its role in the comprehensive climate action strategy."
-        },
-        {
-            "locode": "GF01",
-            "cityName": "Greenfield",
-            "region": "NW",
-            "regionName": "Northwest",
-            "actionId": "A18",
-            "actionName": "Electric Vehicle Incentives",
-            "actionPriority": 18,
-            "explanation": "In Greenfield, promoting electric vehicle incentives contributes to a gradual shift from traditional fuel-based transportation. This strategy supports the city’s efforts to reduce emissions and improve air quality, tailored to a tech-savvy and environmentally conscious population. Its ability to drive change in urban mobility, while being cost-adaptive, renders it a supportive measure in the broader climate framework."
-        },
-        {
-            "locode": "GF01",
-            "cityName": "Greenfield",
-            "region": "NW",
-            "regionName": "Northwest",
-            "actionId": "A19",
-            "actionName": "Community Solar Projects",
-            "actionPriority": 19,
-            "explanation": "Community solar projects in Greenfield are appealing because they empower local residents to participate directly in sustainable energy solutions. The action fosters inclusivity and has the ability to distribute benefits widely across the community. Its emphasis on equitable access and cost-sharing aligns with both environmental and socio-economic priorities in the city's climate strategy."
-        },
-        {
-            "locode": "GF01",
-            "cityName": "Greenfield",
-            "region": "NW",
-            "regionName": "Northwest",
-            "actionId": "A20",
-            "actionName": "Climate Education Programs",
-            "actionPriority": 20,
-            "explanation": "For Greenfield, climate education programs are invaluable as they cultivate a well-informed citizenry equipped to participate in climate solutions. This action builds long-term community resilience and supports proactive local engagement in sustainable practices. By nurturing an informed public, it lays the groundwork for broad-based and enduring climate action within the city."
-        }
-    ]
-}
+[
+    {
+        "locode": "BR VDS",
+        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
+        "region": "PE",
+        "regionName": "Pernambuco",
+        "actionId": "icare_0169",
+        "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
+        "actionPriority": 1,
+        "explanation": "Ranked #1 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR VDS",
+        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
+        "region": "PE",
+        "regionName": "Pernambuco",
+        "actionId": "icare_0176",
+        "actionName": "Development of Climate Action Plan",
+        "actionPriority": 2,
+        "explanation": "Ranked #2 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR VDS",
+        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
+        "region": "PE",
+        "regionName": "Pernambuco",
+        "actionId": "icare_0162",
+        "actionName": "Strengthen programs for control and conservation of protected areas",
+        "actionPriority": 3,
+        "explanation": "Ranked #3 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR VDS",
+        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
+        "region": "PE",
+        "regionName": "Pernambuco",
+        "actionId": "icare_0152",
+        "actionName": "Recovery of degraded areas",
+        "actionPriority": 4,
+        "explanation": "Ranked #4 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR VDS",
+        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
+        "region": "PE",
+        "regionName": "Pernambuco",
+        "actionId": "ipcc_0097",
+        "actionName": "Food storage/distribution improvements",
+        "actionPriority": 5,
+        "explanation": "Ranked #5 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR VDS",
+        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
+        "region": "PE",
+        "regionName": "Pernambuco",
+        "actionId": "ipcc_0094",
+        "actionName": "Access to health care",
+        "actionPriority": 6,
+        "explanation": "Ranked #6 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR VDS",
+        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
+        "region": "PE",
+        "regionName": "Pernambuco",
+        "actionId": "icare_0151",
+        "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
+        "actionPriority": 7,
+        "explanation": "Ranked #7 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR VDS",
+        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
+        "region": "PE",
+        "regionName": "Pernambuco",
+        "actionId": "icare_0145",
+        "actionName": "Strengthen the healthcare network to attend to climate victims",
+        "actionPriority": 8,
+        "explanation": "Ranked #8 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR VDS",
+        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
+        "region": "PE",
+        "regionName": "Pernambuco",
+        "actionId": "icare_0157",
+        "actionName": "Maintenance and Revitalization of Riparian Forests",
+        "actionPriority": 9,
+        "explanation": "Ranked #9 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR VDS",
+        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
+        "region": "PE",
+        "regionName": "Pernambuco",
+        "actionId": "icare_0149",
+        "actionName": "Encourage sustainable land use practices",
+        "actionPriority": 10,
+        "explanation": "Ranked #10 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR VDS",
+        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
+        "region": "PE",
+        "regionName": "Pernambuco",
+        "actionId": "ipcc_0096",
+        "actionName": "Farm/fishery improvements",
+        "actionPriority": 11,
+        "explanation": "Ranked #11 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR VDS",
+        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
+        "region": "PE",
+        "regionName": "Pernambuco",
+        "actionId": "ipcc_0093",
+        "actionName": "Availability of health infrastructure",
+        "actionPriority": 12,
+        "explanation": "Ranked #12 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR VDS",
+        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
+        "region": "PE",
+        "regionName": "Pernambuco",
+        "actionId": "ipcc_0092",
+        "actionName": "Social safety nets",
+        "actionPriority": 13,
+        "explanation": "Ranked #13 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR VDS",
+        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
+        "region": "PE",
+        "regionName": "Pernambuco",
+        "actionId": "icare_0148",
+        "actionName": "Create the Municipal Climate Change Forum",
+        "actionPriority": 14,
+        "explanation": "Ranked #14 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR VDS",
+        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
+        "region": "PE",
+        "regionName": "Pernambuco",
+        "actionId": "icare_0181",
+        "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
+        "actionPriority": 15,
+        "explanation": "Ranked #15 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR VDS",
+        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
+        "region": "PE",
+        "regionName": "Pernambuco",
+        "actionId": "icare_0144",
+        "actionName": "Creation of a Financial Support Program to Adress Extreme Weather Events",
+        "actionPriority": 16,
+        "explanation": "Ranked #16 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR VDS",
+        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
+        "region": "PE",
+        "regionName": "Pernambuco",
+        "actionId": "icare_0156",
+        "actionName": "Implementation of urban gardens",
+        "actionPriority": 17,
+        "explanation": "Ranked #17 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR VDS",
+        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
+        "region": "PE",
+        "regionName": "Pernambuco",
+        "actionId": "icare_0175",
+        "actionName": "Recovery and preservation of green areas",
+        "actionPriority": 18,
+        "explanation": "Ranked #18 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR VDS",
+        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
+        "region": "PE",
+        "regionName": "Pernambuco",
+        "actionId": "icare_0164",
+        "actionName": "Hydrological Monitoring System with Telemetry Stations",
+        "actionPriority": 19,
+        "explanation": "Ranked #19 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR VDS",
+        "cityName": "Vit\u00f3ria de Santo Ant\u00e3o",
+        "region": "PE",
+        "regionName": "Pernambuco",
+        "actionId": "icare_0180",
+        "actionName": "Implement permeable pavements and increase green areas in roadways",
+        "actionPriority": 20,
+        "explanation": "Ranked #20 by tournament ranking algorithm"
+    }
+]

@@ -1,204 +1,182 @@
-{
-    "actions": [
-        {
-            "locode": "GF001",
-            "cityName": "Greenfield",
-            "region": "MW",
-            "regionName": "Great Lakes Region",
-            "actionId": "A1",
-            "actionName": "New Building Standards",
-            "actionPriority": 1,
-            "explanation": "For Greenfield, new building standards are prioritized because they fundamentally reduce energy use in the construction sector, a major contributor to emissions. This action aligns closely with the city’s need for long-term resilience and infrastructure modernization. It also provides enhanced risk reduction by ensuring buildings are designed to withstand future climate challenges."
-        },
-        {
-            "locode": "GF001",
-            "cityName": "Greenfield",
-            "region": "MW",
-            "regionName": "Great Lakes Region",
-            "actionId": "A2",
-            "actionName": "Bus Emissions",
-            "actionPriority": 2,
-            "explanation": "For Greenfield, the initiative to reduce bus emissions is valued because it directly addresses urban transport pollution, improving local air quality. The action is particularly relevant in areas with high traffic densities and supports faster implementation through existing transit frameworks. Its focus on reducing harmful pollutants makes it an effective component of the city's overall climate strategy."
-        },
-        {
-            "locode": "GF001",
-            "cityName": "Greenfield",
-            "region": "MW",
-            "regionName": "Great Lakes Region",
-            "actionId": "A3",
-            "actionName": "Renewable Energy Deployment",
-            "actionPriority": 3,
-            "explanation": "For Greenfield, renewable energy deployment is prioritized for its potential to significantly decrease reliance on fossil fuels. This action leverages local renewable resources and aligns with the city’s long-term sustainability goals. Its integration into the energy sector promises both environmental and economic co-benefits, making it a key strategic initiative."
-        },
-        {
-            "locode": "GF001",
-            "cityName": "Greenfield",
-            "region": "MW",
-            "regionName": "Great Lakes Region",
-            "actionId": "A4",
-            "actionName": "Urban Green Space Expansion",
-            "actionPriority": 4,
-            "explanation": "For Greenfield, expanding urban green spaces is regarded as a vital action due to its role in enhancing air quality and providing natural cooling effects. The initiative also contributes to increased urban biodiversity and offers social benefits by creating recreational spaces. Its relevance to the city’s environmental context and ease of implementation add to its appeal."
-        },
-        {
-            "locode": "GF001",
-            "cityName": "Greenfield",
-            "region": "MW",
-            "regionName": "Great Lakes Region",
-            "actionId": "A5",
-            "actionName": "Flood Defense Enhancement",
-            "actionPriority": 5,
-            "explanation": "For Greenfield, enhancing flood defenses is prioritized because it effectively addresses climate risks related to heavy rainfall and flooding. The action is carefully attuned to the city’s specific environmental vulnerabilities, safeguarding critical infrastructure. Its emphasis on risk reduction and long-term community protection reinforces its importance."
-        },
-        {
-            "locode": "GF001",
-            "cityName": "Greenfield",
-            "region": "MW",
-            "regionName": "Great Lakes Region",
-            "actionId": "A6",
-            "actionName": "Energy Efficiency Programs",
-            "actionPriority": 6,
-            "explanation": "For Greenfield, energy efficiency programs are valued for their broad potential to reduce energy consumption and emissions across various sectors. The action is consistent with the city’s goals for cost-effectiveness and sustainable urban development. Its minimal dependencies allow for swift and scalable implementation that benefits multiple stakeholders."
-        },
-        {
-            "locode": "GF001",
-            "cityName": "Greenfield",
-            "region": "MW",
-            "regionName": "Great Lakes Region",
-            "actionId": "A7",
-            "actionName": "Waste Management Improvement",
-            "actionPriority": 7,
-            "explanation": "For Greenfield, improving waste management practices plays an important role in curbing emissions from decomposing organic waste. This action addresses environmental risks while promoting a circular economy. Its design encourages community participation, making it a practical and sustainable environmental initiative."
-        },
-        {
-            "locode": "GF001",
-            "cityName": "Greenfield",
-            "region": "MW",
-            "regionName": "Great Lakes Region",
-            "actionId": "A8",
-            "actionName": "Public Transit Expansion",
-            "actionPriority": 8,
-            "explanation": "For Greenfield, expanding public transit is prioritized as it reduces reliance on individual automobiles and mitigates urban traffic congestion. This action improves environmental quality by lowering emissions from the transportation sector while offering significant socio-economic benefits. Its relatively rapid implementation also helps in realizing timely improvements for commuters."
-        },
-        {
-            "locode": "GF001",
-            "cityName": "Greenfield",
-            "region": "MW",
-            "regionName": "Great Lakes Region",
-            "actionId": "A9",
-            "actionName": "Water Conservation Measures",
-            "actionPriority": 9,
-            "explanation": "For Greenfield, water conservation measures are important because they help manage local resources sustainably and foster environmental compatibility. The action addresses potential water scarcity and enhances resilience against climate variability. Its community-focused approach and low implementation complexity further underline its suitability."
-        },
-        {
-            "locode": "GF001",
-            "cityName": "Greenfield",
-            "region": "MW",
-            "regionName": "Great Lakes Region",
-            "actionId": "A10",
-            "actionName": "Forest Restoration",
-            "actionPriority": 10,
-            "explanation": "For Greenfield, forest restoration is prioritized due to its natural capacity for carbon sequestration and habitat improvement. This action not only contributes to long-term emissions reduction but also supports biodiversity and ecological balance. Its reliance on leveraging natural systems makes it a sustainable and contextually appropriate strategy."
-        },
-        {
-            "locode": "GF001",
-            "cityName": "Greenfield",
-            "region": "MW",
-            "regionName": "Great Lakes Region",
-            "actionId": "A11",
-            "actionName": "Carbon Capture",
-            "actionPriority": 11,
-            "explanation": "For Greenfield, carbon capture is viewed as a forward-thinking solution that addresses residual emissions in hard-to-abate sectors. This technology-driven approach reflects the city’s commitment to innovative climate solutions and long-term sustainability. Its adoption, while requiring substantial readiness, offers a promising pathway to complement renewable energy strategies."
-        },
-        {
-            "locode": "GF001",
-            "cityName": "Greenfield",
-            "region": "MW",
-            "regionName": "Great Lakes Region",
-            "actionId": "A12",
-            "actionName": "Solar Panel Subsidies",
-            "actionPriority": 12,
-            "explanation": "For Greenfield, subsidizing solar panels is prioritized because it rapidly expands access to renewable energy at the community and commercial levels. This action plays a significant role in reducing dependency on fossil fuels while promoting decentralized energy solutions. Its cost-effectiveness and potential for quick uptake make it a strategically favorable option."
-        },
-        {
-            "locode": "GF001",
-            "cityName": "Greenfield",
-            "region": "MW",
-            "regionName": "Great Lakes Region",
-            "actionId": "A13",
-            "actionName": "Electric Vehicle Incentives",
-            "actionPriority": 13,
-            "explanation": "For Greenfield, electric vehicle incentives are appealing due to their focus on modernizing transportation and reducing urban emissions. This action supports cleaner mobility options and provides additional benefits like improved air quality and quieter streets. Its alignment with emerging green technology trends and early adoption advantages positions it well within the city's climate framework."
-        },
-        {
-            "locode": "GF001",
-            "cityName": "Greenfield",
-            "region": "MW",
-            "regionName": "Great Lakes Region",
-            "actionId": "A14",
-            "actionName": "Stormwater Management",
-            "actionPriority": 14,
-            "explanation": "For Greenfield, improved stormwater management is important as it enhances the city's resilience against intense weather events and mitigates infrastructural damage. The action is well-suited to the local climate conditions and supports long-term urban stability. It serves as a practical risk reduction measure with clear environmental benefits."
-        },
-        {
-            "locode": "GF001",
-            "cityName": "Greenfield",
-            "region": "MW",
-            "regionName": "Great Lakes Region",
-            "actionId": "A15",
-            "actionName": "Coastal Erosion Protection",
-            "actionPriority": 15,
-            "explanation": "For Greenfield, coastal erosion protection is a critical action in areas vulnerable to rising sea levels and shoreline degradation. This initiative is designed to safeguard vital coastal infrastructures and preserve natural habitats. Its focus on long-term environmental stability and risk mitigation makes it an essential part of the city's climate adaptation strategy."
-        },
-        {
-            "locode": "GF001",
-            "cityName": "Greenfield",
-            "region": "MW",
-            "regionName": "Great Lakes Region",
-            "actionId": "A16",
-            "actionName": "Recycling Programs",
-            "actionPriority": 16,
-            "explanation": "For Greenfield, recycling programs are valued for promoting sustainable resource management and reducing waste-related emissions. This action supports the transition toward a circular economy and minimizes environmental hazards. Its community-friendly structure and ease of adoption make it a practical and effective initiative."
-        },
-        {
-            "locode": "GF001",
-            "cityName": "Greenfield",
-            "region": "MW",
-            "regionName": "Great Lakes Region",
-            "actionId": "A17",
-            "actionName": "Smart Grid Implementation",
-            "actionPriority": 17,
-            "explanation": "For Greenfield, smart grid implementation is prioritized due to its role in modernizing energy distribution systems and integrating renewable sources effectively. This action enhances the city's ability to manage energy demand and reduce overall emissions. Its technological sophistication and potential for optimizing energy use align well with long-term sustainability objectives."
-        },
-        {
-            "locode": "GF001",
-            "cityName": "Greenfield",
-            "region": "MW",
-            "regionName": "Great Lakes Region",
-            "actionId": "A18",
-            "actionName": "Sustainable Agriculture Practices",
-            "actionPriority": 18,
-            "explanation": "For Greenfield, sustainable agriculture practices are recognized for reducing the environmental footprint of food production and enhancing local food security. This action promotes improved soil health and minimizes reliance on intensive chemical inputs. Its benefits extend to both rural and urban interfaces, offering broad socio-economic and environmental advantages."
-        },
-        {
-            "locode": "GF001",
-            "cityName": "Greenfield",
-            "region": "MW",
-            "regionName": "Great Lakes Region",
-            "actionId": "A19",
-            "actionName": "Heat Wave Preparedness",
-            "actionPriority": 19,
-            "explanation": "For Greenfield, heat wave preparedness is prioritized because it directly addresses the increasing risks associated with extreme temperature events. This action enhances community resilience by implementing measures that safeguard public health and urban livability. Its focus on rapid response and risk mitigation makes it a critical component of the city’s climate adaptation plans."
-        },
-        {
-            "locode": "GF001",
-            "cityName": "Greenfield",
-            "region": "MW",
-            "regionName": "Great Lakes Region",
-            "actionId": "A20",
-            "actionName": "Bike Infrastructure Expansion",
-            "actionPriority": 20,
-            "explanation": "For Greenfield, expanding bike infrastructure is valued for its ability to reduce short-distance vehicular emissions and promote healthier urban lifestyles. This action offers a cost-effective and easily implementable solution that lowers traffic congestion and improves air quality. Its alignment with sustainable transportation trends makes it a positive addition to the city's climate improvement efforts."
-        }
-    ]
-}
+[
+    {
+        "locode": "BR CBA",
+        "cityName": "Cuiab\u00e1",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0139",
+        "actionName": "Implementation of urban toll.",
+        "actionPriority": 1
+    },
+    {
+        "locode": "BR CBA",
+        "cityName": "Cuiab\u00e1",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0088",
+        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
+        "actionPriority": 2
+    },
+    {
+        "locode": "BR CBA",
+        "cityName": "Cuiab\u00e1",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0121",
+        "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
+        "actionPriority": 3
+    },
+    {
+        "locode": "BR CBA",
+        "cityName": "Cuiab\u00e1",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0094",
+        "actionName": "Adoption of biomethane in public fleets.",
+        "actionPriority": 4
+    },
+    {
+        "locode": "BR CBA",
+        "cityName": "Cuiab\u00e1",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0044",
+        "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
+        "actionPriority": 5
+    },
+    {
+        "locode": "BR CBA",
+        "cityName": "Cuiab\u00e1",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0090",
+        "actionName": "Adoption of electric drones for last-mile deliveries.",
+        "actionPriority": 6
+    },
+    {
+        "locode": "BR CBA",
+        "cityName": "Cuiab\u00e1",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0068",
+        "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
+        "actionPriority": 7
+    },
+    {
+        "locode": "BR CBA",
+        "cityName": "Cuiab\u00e1",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0042",
+        "actionName": "Encourage renewable energy policies at the municipal level",
+        "actionPriority": 8
+    },
+    {
+        "locode": "BR CBA",
+        "cityName": "Cuiab\u00e1",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0118",
+        "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
+        "actionPriority": 9
+    },
+    {
+        "locode": "BR CBA",
+        "cityName": "Cuiab\u00e1",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0024",
+        "actionName": "Integrate renewables into municipal water systems",
+        "actionPriority": 10
+    },
+    {
+        "locode": "BR CBA",
+        "cityName": "Cuiab\u00e1",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0128",
+        "actionName": "Establish Municipal Programs for Payment for Environmental Services (PES)",
+        "actionPriority": 11
+    },
+    {
+        "locode": "BR CBA",
+        "cityName": "Cuiab\u00e1",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0057",
+        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
+        "actionPriority": 12
+    },
+    {
+        "locode": "BR CBA",
+        "cityName": "Cuiab\u00e1",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0131",
+        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
+        "actionPriority": 13
+    },
+    {
+        "locode": "BR CBA",
+        "cityName": "Cuiab\u00e1",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0050",
+        "actionName": "Implement Agroforestry Systems",
+        "actionPriority": 14
+    },
+    {
+        "locode": "BR CBA",
+        "cityName": "Cuiab\u00e1",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0133",
+        "actionName": "Promote Urban Reforestation and Green Corridors",
+        "actionPriority": 15
+    },
+    {
+        "locode": "BR CBA",
+        "cityName": "Cuiab\u00e1",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0129",
+        "actionName": "Facilitate Technology Transfer for Conservation Practices",
+        "actionPriority": 16
+    },
+    {
+        "locode": "BR CBA",
+        "cityName": "Cuiab\u00e1",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0097",
+        "actionName": "Support Distributed Energy Generation in Residences and Businesses",
+        "actionPriority": 17
+    },
+    {
+        "locode": "BR CBA",
+        "cityName": "Cuiab\u00e1",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0136",
+        "actionName": "Support the Implementation of Ecological Fiscal Incentives",
+        "actionPriority": 18
+    },
+    {
+        "locode": "BR CBA",
+        "cityName": "Cuiab\u00e1",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0130",
+        "actionName": "Conduct Technical Assistance and Rural Extension (ATER) Actions",
+        "actionPriority": 19
+    },
+    {
+        "locode": "BR CBA",
+        "cityName": "Cuiab\u00e1",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0092",
+        "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
+        "actionPriority": 20
+    }
+]

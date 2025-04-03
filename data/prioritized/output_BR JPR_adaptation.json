@@ -1,204 +1,202 @@
-{
-    "actions": [
-        {
-            "locode": "MT001",
-            "cityName": "Metropolis",
-            "region": "NR",
-            "regionName": "Northern Region",
-            "actionId": "action1",
-            "actionName": "New Building Standards",
-            "actionPriority": 1,
-            "explanation": "For the city Metropolis, New Building Standards was prioritized because it substantially targets a major emission sector by improving energy efficiency in residential and commercial structures. This action is well-aligned with the city's dense and diverse building stock and promises long-term benefits in reducing greenhouse gas emissions. It also presents valuable co-benefits like improved indoor environments and resilience, making it highly relevant in the local context."
-        },
-        {
-            "locode": "MT001",
-            "cityName": "Metropolis",
-            "region": "NR",
-            "regionName": "Northern Region",
-            "actionId": "action2",
-            "actionName": "Bus Emissions Reduction",
-            "actionPriority": 2,
-            "explanation": "In Metropolis, Bus Emissions Reduction is recognized for its direct impact on urban air quality and public health. The action specifically addresses emissions from public transport, a sector critical for a densely populated city. Its approach not only cuts greenhouse gas output but also contributes to reducing traffic-related pollutants, complementing the city’s overall climate strategy."
-        },
-        {
-            "locode": "MT001",
-            "cityName": "Metropolis",
-            "region": "NR",
-            "regionName": "Northern Region",
-            "actionId": "action3",
-            "actionName": "Solar Panel Installation",
-            "actionPriority": 3,
-            "explanation": "Solar Panel Installation is favored in Metropolis as it harnesses renewable energy resources that are well-suited to the local climate. This action contributes effectively towards reducing dependence on fossil fuels while lowering greenhouse gas emissions. Additionally, it offers community benefits by promoting local energy independence and reducing overall energy costs over time."
-        },
-        {
-            "locode": "MT001",
-            "cityName": "Metropolis",
-            "region": "NR",
-            "regionName": "Northern Region",
-            "actionId": "action4",
-            "actionName": "Urban Tree Plantation",
-            "actionPriority": 4,
-            "explanation": "Urban Tree Plantation is considered highly valuable in Metropolis because it not only sequesters carbon but also improves urban air quality and provides cooling benefits in dense areas. This action resonates well with the city’s environmental and social needs by enhancing green space, supporting biodiversity, and reducing urban heat island effects. The long-term ecological impact and community well-being it fosters make it a supportive measure for climate resilience."
-        },
-        {
-            "locode": "MT001",
-            "cityName": "Metropolis",
-            "region": "NR",
-            "regionName": "Northern Region",
-            "actionId": "action5",
-            "actionName": "Waste Recycling Improvement",
-            "actionPriority": 5,
-            "explanation": "Waste Recycling Improvement is prioritized in Metropolis due to its comprehensive approach to reducing landfill emissions and conserving resources. The action aligns with the city’s sustainability goals by transforming waste into valuable resources while cutting down related emissions. Its implementation supports both environmental and economic objectives, making it an integrated part of the city's climate mitigation strategy."
-        },
-        {
-            "locode": "MT001",
-            "cityName": "Metropolis",
-            "region": "NR",
-            "regionName": "Northern Region",
-            "actionId": "action6",
-            "actionName": "Water Conservation Measures",
-            "actionPriority": 6,
-            "explanation": "For Metropolis, Water Conservation Measures are integral in managing scarce water resources amidst growing urban demands. This action addresses climate risks related to water scarcity and supports sustainable urban planning by conserving and optimizing water use. It offers significant local benefits by contributing to overall resource efficiency and resilience against climate-driven water stress."
-        },
-        {
-            "locode": "MT001",
-            "cityName": "Metropolis",
-            "region": "NR",
-            "regionName": "Northern Region",
-            "actionId": "action7",
-            "actionName": "Green Roofs",
-            "actionPriority": 7,
-            "explanation": "Green Roofs are valued in Metropolis for their role in enhancing building insulation and reducing the urban heat island effect. The action is environmentally compatible, as it integrates nature into urban infrastructure while contributing modestly to overall emission reductions. Its additional benefits in stormwater management and urban aesthetics further support the city's adaptation and mitigation efforts."
-        },
-        {
-            "locode": "MT001",
-            "cityName": "Metropolis",
-            "region": "NR",
-            "regionName": "Northern Region",
-            "actionId": "action8",
-            "actionName": "Public Bike Sharing",
-            "actionPriority": 8,
-            "explanation": "Public Bike Sharing is prioritized for its potential to reduce reliance on fossil-fuel driven transportation in Metropolis. This initiative not only cuts down greenhouse gas emissions by offering a sustainable commuting option but also promotes healthier lifestyles. Its streamlined implementation and social appeal support a broader shift towards a lower-carbon urban transport system."
-        },
-        {
-            "locode": "MT001",
-            "cityName": "Metropolis",
-            "region": "NR",
-            "regionName": "Northern Region",
-            "actionId": "action9",
-            "actionName": "Energy-efficient Street Lighting",
-            "actionPriority": 9,
-            "explanation": "Energy-efficient Street Lighting is recognized in Metropolis for its cost-effectiveness and contribution to reducing ambient energy consumption. It provides a quick win in terms of lowering carbon footprints while enhancing public safety. The action’s minimal dependency on complex infrastructure upgrades makes it well-suited for rapid deployment across urban areas."
-        },
-        {
-            "locode": "MT001",
-            "cityName": "Metropolis",
-            "region": "NR",
-            "regionName": "Northern Region",
-            "actionId": "action10",
-            "actionName": "Industrial Emissions Control",
-            "actionPriority": 10,
-            "explanation": "Industrial Emissions Control is an important measure for Metropolis given the significant role of local manufacturing and industrial activities. This action effectively targets one of the major sources of greenhouse gas emissions and aligns with regulatory priorities. By mitigating environmental risks from industrial pollutants, it supports both public health and broader climate objectives in the city."
-        },
-        {
-            "locode": "MT001",
-            "cityName": "Metropolis",
-            "region": "NR",
-            "regionName": "Northern Region",
-            "actionId": "action11",
-            "actionName": "Encouraging Telecommuting",
-            "actionPriority": 11,
-            "explanation": "Encouraging Telecommuting is valued in Metropolis for its role in reducing commuter traffic and associated emissions. This action leverages available technology to alleviate urban congestion and lower the environmental footprint of daily travel. It also enhances work-life balance and is an adaptable solution that fits well with the socio-economic context of the city."
-        },
-        {
-            "locode": "MT001",
-            "cityName": "Metropolis",
-            "region": "NR",
-            "regionName": "Northern Region",
-            "actionId": "action12",
-            "actionName": "Sustainable Urban Drainage",
-            "actionPriority": 12,
-            "explanation": "Sustainable Urban Drainage is an action that stands out in Metropolis for its dual focus on enhancing flood resilience and improving water quality management. It aligns with the city’s environmental challenges by addressing the impacts of increased rainfall and urban runoff. The measure is effectively integrated into broader urban planning efforts, contributing to both risk reduction and enhanced ecological sustainability."
-        },
-        {
-            "locode": "MT001",
-            "cityName": "Metropolis",
-            "region": "NR",
-            "regionName": "Northern Region",
-            "actionId": "action13",
-            "actionName": "Climate Resilient Infrastructure",
-            "actionPriority": 13,
-            "explanation": "Climate Resilient Infrastructure is prioritized in Metropolis due to its focus on long-term durability and adaptation to changing climate patterns. This action targets vulnerabilities in critical urban systems, ensuring that infrastructure can withstand extreme weather events. Its emphasis on risk reduction and sustainability makes it a cornerstone in the city’s comprehensive climate strategy."
-        },
-        {
-            "locode": "MT001",
-            "cityName": "Metropolis",
-            "region": "NR",
-            "regionName": "Northern Region",
-            "actionId": "action14",
-            "actionName": "Flood Defense Systems",
-            "actionPriority": 14,
-            "explanation": "Flood Defense Systems have been identified as a key priority for Metropolis given the increasing frequency of extreme weather events. The action is tailored to protect vulnerable urban areas and safeguard critical infrastructure. Its strategic design and risk mitigation focus provide essential support to the city's long-term resilience planning."
-        },
-        {
-            "locode": "MT001",
-            "cityName": "Metropolis",
-            "region": "NR",
-            "regionName": "Northern Region",
-            "actionId": "action15",
-            "actionName": "Mangrove Restoration",
-            "actionPriority": 15,
-            "explanation": "Mangrove Restoration is an innovative action for Metropolis, particularly in coastal vicinities, as it naturally mitigates storm surges and sequesters carbon. This ecological approach fosters biodiversity and enhances the overall resilience of coastal ecosystems. The action also promotes community engagement in sustainable practices, making it a multifaceted solution for climate adaptation."
-        },
-        {
-            "locode": "MT001",
-            "cityName": "Metropolis",
-            "region": "NR",
-            "regionName": "Northern Region",
-            "actionId": "action16",
-            "actionName": "Electric Vehicle Incentives",
-            "actionPriority": 16,
-            "explanation": "Electric Vehicle Incentives are considered beneficial for Metropolis because they support a transition away from traditional combustion engines. This measure addresses urban air quality and helps reduce the overall carbon footprint from the transportation sector. Its design encourages both consumer uptake and infrastructure development, fitting well with the city’s broader environmental goals."
-        },
-        {
-            "locode": "MT001",
-            "cityName": "Metropolis",
-            "region": "NR",
-            "regionName": "Northern Region",
-            "actionId": "action17",
-            "actionName": "Smart Grid Deployment",
-            "actionPriority": 17,
-            "explanation": "Smart Grid Deployment is valued in Metropolis for its potential to optimize energy distribution and enhance grid reliability. By enabling more efficient management of renewable energy sources, this action supports a reduction in greenhouse gas emissions. Its forward-thinking design and compatibility with modern urban demands make it a significant component in the city's energy transition."
-        },
-        {
-            "locode": "MT001",
-            "cityName": "Metropolis",
-            "region": "NR",
-            "regionName": "Northern Region",
-            "actionId": "action18",
-            "actionName": "Cool Pavements",
-            "actionPriority": 18,
-            "explanation": "Cool Pavements are recognized in Metropolis for their role in mitigating urban heat islands, which is particularly beneficial in densely built areas. This action leverages innovative materials to reflect sunlight and reduce surface temperatures, thereby lowering ambient heat. Its contribution to both immediate urban comfort and long-term climate adaptation helps address the city's specific environmental challenges."
-        },
-        {
-            "locode": "MT001",
-            "cityName": "Metropolis",
-            "region": "NR",
-            "regionName": "Northern Region",
-            "actionId": "action19",
-            "actionName": "Permaculture Urban Farming",
-            "actionPriority": 19,
-            "explanation": "Permaculture Urban Farming is an action that integrates local food production with sustainable land management practices. In Metropolis, it offers a dual benefit by reducing supply chain emissions and promoting community resilience through local agriculture. This approach is particularly appealing given the city's interest in sustainable, community-driven solutions and efficient resource use."
-        },
-        {
-            "locode": "MT001",
-            "cityName": "Metropolis",
-            "region": "NR",
-            "regionName": "Northern Region",
-            "actionId": "action20",
-            "actionName": "Community Solar Projects",
-            "actionPriority": 20,
-            "explanation": "Community Solar Projects are prioritized in Metropolis as they empower local communities to share the benefits of renewable energy. This action is well-suited to the city’s socio-demographic landscape by providing accessible, distributed energy solutions. Its ability to drive both environmental and community progress makes it a compelling initiative in the broader climate action portfolio."
-        }
-    ]
-}
+[
+    {
+        "locode": "BR JPR",
+        "cityName": "Ji-Paran\u00e1",
+        "region": "RO",
+        "regionName": "Rond\u00f4nia",
+        "actionId": "icare_0169",
+        "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
+        "actionPriority": 1,
+        "explanation": "Ranked #1 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR JPR",
+        "cityName": "Ji-Paran\u00e1",
+        "region": "RO",
+        "regionName": "Rond\u00f4nia",
+        "actionId": "icare_0176",
+        "actionName": "Development of Climate Action Plan",
+        "actionPriority": 2,
+        "explanation": "Ranked #2 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR JPR",
+        "cityName": "Ji-Paran\u00e1",
+        "region": "RO",
+        "regionName": "Rond\u00f4nia",
+        "actionId": "ipcc_0094",
+        "actionName": "Access to health care",
+        "actionPriority": 3,
+        "explanation": "Ranked #3 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR JPR",
+        "cityName": "Ji-Paran\u00e1",
+        "region": "RO",
+        "regionName": "Rond\u00f4nia",
+        "actionId": "ipcc_0097",
+        "actionName": "Food storage/distribution improvements",
+        "actionPriority": 4,
+        "explanation": "Ranked #4 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR JPR",
+        "cityName": "Ji-Paran\u00e1",
+        "region": "RO",
+        "regionName": "Rond\u00f4nia",
+        "actionId": "icare_0152",
+        "actionName": "Recovery of degraded areas",
+        "actionPriority": 5,
+        "explanation": "Ranked #5 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR JPR",
+        "cityName": "Ji-Paran\u00e1",
+        "region": "RO",
+        "regionName": "Rond\u00f4nia",
+        "actionId": "ipcc_0096",
+        "actionName": "Farm/fishery improvements",
+        "actionPriority": 6,
+        "explanation": "Ranked #6 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR JPR",
+        "cityName": "Ji-Paran\u00e1",
+        "region": "RO",
+        "regionName": "Rond\u00f4nia",
+        "actionId": "icare_0151",
+        "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
+        "actionPriority": 7,
+        "explanation": "Ranked #7 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR JPR",
+        "cityName": "Ji-Paran\u00e1",
+        "region": "RO",
+        "regionName": "Rond\u00f4nia",
+        "actionId": "icare_0162",
+        "actionName": "Strengthen programs for control and conservation of protected areas",
+        "actionPriority": 8,
+        "explanation": "Ranked #8 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR JPR",
+        "cityName": "Ji-Paran\u00e1",
+        "region": "RO",
+        "regionName": "Rond\u00f4nia",
+        "actionId": "ipcc_0093",
+        "actionName": "Availability of health infrastructure",
+        "actionPriority": 9,
+        "explanation": "Ranked #9 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR JPR",
+        "cityName": "Ji-Paran\u00e1",
+        "region": "RO",
+        "regionName": "Rond\u00f4nia",
+        "actionId": "icare_0157",
+        "actionName": "Maintenance and Revitalization of Riparian Forests",
+        "actionPriority": 10,
+        "explanation": "Ranked #10 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR JPR",
+        "cityName": "Ji-Paran\u00e1",
+        "region": "RO",
+        "regionName": "Rond\u00f4nia",
+        "actionId": "icare_0150",
+        "actionName": "Implement Loss Reduction and Control Program promoting water security for the municipality",
+        "actionPriority": 11,
+        "explanation": "Ranked #11 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR JPR",
+        "cityName": "Ji-Paran\u00e1",
+        "region": "RO",
+        "regionName": "Rond\u00f4nia",
+        "actionId": "icare_0145",
+        "actionName": "Strengthen the healthcare network to attend to climate victims",
+        "actionPriority": 12,
+        "explanation": "Ranked #12 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR JPR",
+        "cityName": "Ji-Paran\u00e1",
+        "region": "RO",
+        "regionName": "Rond\u00f4nia",
+        "actionId": "ipcc_0092",
+        "actionName": "Social safety nets",
+        "actionPriority": 13,
+        "explanation": "Ranked #13 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR JPR",
+        "cityName": "Ji-Paran\u00e1",
+        "region": "RO",
+        "regionName": "Rond\u00f4nia",
+        "actionId": "icare_0149",
+        "actionName": "Encourage sustainable land use practices",
+        "actionPriority": 14,
+        "explanation": "Ranked #14 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR JPR",
+        "cityName": "Ji-Paran\u00e1",
+        "region": "RO",
+        "regionName": "Rond\u00f4nia",
+        "actionId": "icare_0148",
+        "actionName": "Create the Municipal Climate Change Forum",
+        "actionPriority": 15,
+        "explanation": "Ranked #15 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR JPR",
+        "cityName": "Ji-Paran\u00e1",
+        "region": "RO",
+        "regionName": "Rond\u00f4nia",
+        "actionId": "icare_0164",
+        "actionName": "Hydrological Monitoring System with Telemetry Stations",
+        "actionPriority": 16,
+        "explanation": "Ranked #16 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR JPR",
+        "cityName": "Ji-Paran\u00e1",
+        "region": "RO",
+        "regionName": "Rond\u00f4nia",
+        "actionId": "ipcc_0095",
+        "actionName": "Disaster early warning",
+        "actionPriority": 17,
+        "explanation": "Ranked #17 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR JPR",
+        "cityName": "Ji-Paran\u00e1",
+        "region": "RO",
+        "regionName": "Rond\u00f4nia",
+        "actionId": "ipcc_0098",
+        "actionName": "Behaviour change in diets and food waste",
+        "actionPriority": 18,
+        "explanation": "Ranked #18 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR JPR",
+        "cityName": "Ji-Paran\u00e1",
+        "region": "RO",
+        "regionName": "Rond\u00f4nia",
+        "actionId": "icare_0144",
+        "actionName": "Creation of a Financial Support Program to Adress Extreme Weather Events",
+        "actionPriority": 19,
+        "explanation": "Ranked #19 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR JPR",
+        "cityName": "Ji-Paran\u00e1",
+        "region": "RO",
+        "regionName": "Rond\u00f4nia",
+        "actionId": "icare_0156",
+        "actionName": "Implementation of urban gardens",
+        "actionPriority": 20,
+        "explanation": "Ranked #20 by tournament ranking algorithm"
+    }
+]

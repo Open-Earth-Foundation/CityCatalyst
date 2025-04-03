@@ -1,204 +1,182 @@
-{
-    "actions": [
-        {
-            "locode": "GC01",
-            "cityName": "GreenCity",
-            "region": "CA",
-            "regionName": "California",
-            "actionId": "action1",
-            "actionName": "New Building Standards",
-            "actionPriority": 1,
-            "explanation": "For GreenCity, New Building Standards are highly prioritized as they directly target emission reductions from one of the largest contributing sectors. This action is designed to boost energy efficiency and is well-suited to a densely built environment, which is key for this city's context. It also enhances long-term safety by ensuring modernized building practices and fits well with the city’s capacity for systematic upgrades."
-        },
-        {
-            "locode": "GC01",
-            "cityName": "GreenCity",
-            "region": "CA",
-            "regionName": "California",
-            "actionId": "action2",
-            "actionName": "Bus Emissions",
-            "actionPriority": 2,
-            "explanation": "For GreenCity, the Bus Emissions action is prioritized due to its direct impact on reducing urban transport-related emissions. It contributes significantly to better air quality by addressing a key component of the city’s emission profile. Additionally, this action is aligned with the city's efforts to improve public transportation and offers tangible benefits in terms of risk reduction in densely populated areas."
-        },
-        {
-            "locode": "GC01",
-            "cityName": "GreenCity",
-            "region": "CA",
-            "regionName": "California",
-            "actionId": "action3",
-            "actionName": "Renewable Energy Incentives",
-            "actionPriority": 3,
-            "explanation": "This action supports a significant shift towards sustainable energy and is well-aligned with GreenCity's drive for emissions reduction from conventional power sources. It leverages the city's natural advantages and regulatory environment to promote cleaner energy alternatives. The incentives are structured to be cost-effective over time, while offering extensive co-benefits such as enhanced energy independence and improved local air quality."
-        },
-        {
-            "locode": "GC01",
-            "cityName": "GreenCity",
-            "region": "CA",
-            "regionName": "California",
-            "actionId": "action4",
-            "actionName": "Urban Green Spaces",
-            "actionPriority": 4,
-            "explanation": "Urban Green Spaces are prioritized for their dual role in carbon sequestration and enhancement of urban microclimates in GreenCity. This action offers significant community benefits by improving local health outcomes and biodiversity. It is particularly well-suited for a densely populated urban area where even modest increases in green coverage can yield visible improvements in environmental quality."
-        },
-        {
-            "locode": "GC01",
-            "cityName": "GreenCity",
-            "region": "CA",
-            "regionName": "California",
-            "actionId": "action5",
-            "actionName": "Energy Efficiency Retrofit Programs",
-            "actionPriority": 5,
-            "explanation": "Energy Efficiency Retrofit Programs are favored because they upgrade existing infrastructure to perform better in terms of energy use, aligning with the city's commitment to reducing greenhouse gas emissions. This approach takes advantage of existing buildings and is economically viable for a city focused on incremental improvements. It not only improves energy performance but also enhances public safety by modernizing older structures."
-        },
-        {
-            "locode": "GC01",
-            "cityName": "GreenCity",
-            "region": "CA",
-            "regionName": "California",
-            "actionId": "action6",
-            "actionName": "Public Transportation Expansion",
-            "actionPriority": 6,
-            "explanation": "Public Transportation Expansion is valued in GreenCity for its ability to reduce reliance on private vehicles, thereby lowering overall emissions. The initiative aligns with both environmental goals and the city’s need for efficient, accessible transit options. Its implementation supports broad socio-demographic inclusion and enhances urban mobility, contributing to broader climate resilience."
-        },
-        {
-            "locode": "GC01",
-            "cityName": "GreenCity",
-            "region": "CA",
-            "regionName": "California",
-            "actionId": "action7",
-            "actionName": "Waste Management Reform",
-            "actionPriority": 7,
-            "explanation": "Waste Management Reform targets the reduction of emissions from waste processing and offers significant environmental benefits for GreenCity. This action is designed to mitigate local pollution risks and protect water systems, aligning with the city’s environmental priorities. It is considered a cost-effective measure that enhances overall urban sanitation and contributes to climate risk reduction."
-        },
-        {
-            "locode": "GC01",
-            "cityName": "GreenCity",
-            "region": "CA",
-            "regionName": "California",
-            "actionId": "action8",
-            "actionName": "Smart Grid Implementation",
-            "actionPriority": 8,
-            "explanation": "Smart Grid Implementation plays a crucial role in optimizing energy distribution and integrating renewable sources within GreenCity's infrastructure. This action contributes to reduced energy waste and improved grid resilience, which is essential for managing urban energy demands. Its strategic alignment with evolving energy requirements makes it a strong candidate for cost-effective and reliable modernization."
-        },
-        {
-            "locode": "GC01",
-            "cityName": "GreenCity",
-            "region": "CA",
-            "regionName": "California",
-            "actionId": "action9",
-            "actionName": "Coastal Flood Defense Improvements",
-            "actionPriority": 9,
-            "explanation": "For coastal areas of GreenCity, Flood Defense Improvements are crucial to safeguarding against the increasing risks of sea-level rise and extreme weather events. This adaptation measure is tailored to address the city's unique geographical vulnerabilities and protect critical infrastructure. Although it may require more upfront resources, its long-term benefits in terms of risk reduction and resilience are significant."
-        },
-        {
-            "locode": "GC01",
-            "cityName": "GreenCity",
-            "region": "CA",
-            "regionName": "California",
-            "actionId": "action10",
-            "actionName": "Water Conservation Programs",
-            "actionPriority": 10,
-            "explanation": "Water Conservation Programs are prioritized in GreenCity to address the challenges of water scarcity and environmental stress on local water resources. The action is well-aligned with the city's focus on sustainable resource management while offering broad community benefits. It is both a risk reduction and cost-effective approach that improves long-term water security."
-        },
-        {
-            "locode": "GC01",
-            "cityName": "GreenCity",
-            "region": "CA",
-            "regionName": "California",
-            "actionId": "action11",
-            "actionName": "Stormwater Management Infrastructure",
-            "actionPriority": 11,
-            "explanation": "Stormwater Management Infrastructure is crucial for GreenCity in mitigating urban flooding and managing heavy rainfall events effectively. It directly addresses climate-related risks and is seamlessly integrated with the city's existing infrastructure. This action reduces damage to public and private properties, ensuring improved environmental and public health outcomes."
-        },
-        {
-            "locode": "GC01",
-            "cityName": "GreenCity",
-            "region": "CA",
-            "regionName": "California",
-            "actionId": "action12",
-            "actionName": "Electric Vehicle Charging Network",
-            "actionPriority": 12,
-            "explanation": "The Electric Vehicle Charging Network supports GreenCity’s transition towards cleaner urban mobility by promoting the adoption of electric vehicles. It effectively targets the transportation sector's emissions and provides a scalable solution that meets the city’s future growth requirements. This infrastructure not only encourages environmental responsibility but also integrates smoothly with urban planning and public accessibility."
-        },
-        {
-            "locode": "GC01",
-            "cityName": "GreenCity",
-            "region": "CA",
-            "regionName": "California",
-            "actionId": "action13",
-            "actionName": "Sustainable Agriculture Practices Promotion",
-            "actionPriority": 13,
-            "explanation": "Sustainable Agriculture Practices Promotion is tailored to reduce emissions from local farming while encouraging environmentally friendly land use practices. This action is well-suited for rural or peri-urban areas where agriculture plays a key role in the economy. It not only reduces direct emissions but also fosters community resilience and supports long-term ecological balance."
-        },
-        {
-            "locode": "GC01",
-            "cityName": "GreenCity",
-            "region": "CA",
-            "regionName": "California",
-            "actionId": "action14",
-            "actionName": "Industrial Emission Controls",
-            "actionPriority": 14,
-            "explanation": "Industrial Emission Controls are implemented to directly capture and reduce emissions from heavy industrial activities in GreenCity. This action is specifically designed to address significant pollution sources within the industrial sector. It aligns with both emission reduction goals and regulatory standards, contributing to a safer and cleaner city environment over the long term."
-        },
-        {
-            "locode": "GC01",
-            "cityName": "GreenCity",
-            "region": "CA",
-            "regionName": "California",
-            "actionId": "action15",
-            "actionName": "Urban Heat Island Mitigation",
-            "actionPriority": 15,
-            "explanation": "Urban Heat Island Mitigation is an important action for reducing excessive urban temperatures in GreenCity. It focuses on lowering localized warming effects and decreasing energy demands for cooling. This strategy improves overall urban comfort and public health, making it especially relevant for densely populated neighborhoods."
-        },
-        {
-            "locode": "GC01",
-            "cityName": "GreenCity",
-            "region": "CA",
-            "regionName": "California",
-            "actionId": "action16",
-            "actionName": "Green Roof Policies",
-            "actionPriority": 16,
-            "explanation": "Green Roof Policies promote the integration of vegetation on rooftops, which can lead to improved building insulation and reduced urban heat effects in GreenCity. This action is well-suited for urban environments where space is limited but the potential for environmental benefits remains high. It represents a cost-effective measure that complements other sustainability initiatives while enhancing air quality and biodiversity."
-        },
-        {
-            "locode": "GC01",
-            "cityName": "GreenCity",
-            "region": "CA",
-            "regionName": "California",
-            "actionId": "action17",
-            "actionName": "Climate Education Campaigns",
-            "actionPriority": 17,
-            "explanation": "Climate Education Campaigns are essential for building broad public awareness and fostering community engagement around climate priorities in GreenCity. This approach uses educational outreach to encourage behavioral changes that support long-term sustainability. It is a cost-effective method that complements physical interventions by strengthening the city’s overall adaptive capacity."
-        },
-        {
-            "locode": "GC01",
-            "cityName": "GreenCity",
-            "region": "CA",
-            "regionName": "California",
-            "actionId": "action18",
-            "actionName": "Disaster Preparedness Training",
-            "actionPriority": 18,
-            "explanation": "Disaster Preparedness Training is targeted at enhancing the resilience of GreenCity by equipping residents and local authorities with the necessary skills to handle climate-induced emergencies. This action is particularly pertinent given the city's exposure to extreme weather events and other hazards. It focuses on reducing risk and building an informed community, ensuring that both short-term and long-term vulnerabilities are addressed."
-        },
-        {
-            "locode": "GC01",
-            "cityName": "GreenCity",
-            "region": "CA",
-            "regionName": "California",
-            "actionId": "action19",
-            "actionName": "Carbon Pricing Policies",
-            "actionPriority": 19,
-            "explanation": "Carbon Pricing Policies are designed to incentivize lower emissions across multiple sectors by embedding environmental costs into market transactions in GreenCity. This policy action is reflective of a systemic approach to emission reduction that aligns with the city’s economic and environmental objectives. It promotes accountability and gradual transitions toward greener practices, thereby supporting a wide spectrum of climate action initiatives."
-        },
-        {
-            "locode": "GC01",
-            "cityName": "GreenCity",
-            "region": "CA",
-            "regionName": "California",
-            "actionId": "action20",
-            "actionName": "Urban Bicycle Infrastructure",
-            "actionPriority": 20,
-            "explanation": "Urban Bicycle Infrastructure enhances sustainable mobility by providing safe and accessible cycling routes throughout GreenCity. This action is particularly effective in densely populated areas where alternatives to motorized transport can significantly contribute to emissions reduction. It offers tangible benefits in terms of public health and community connectivity, making it a practical and quickly implementable solution."
-        }
-    ]
-}
+[
+    {
+        "locode": "BR MRD",
+        "cityName": "Miranda",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0050",
+        "actionName": "Implement Agroforestry Systems",
+        "actionPriority": 1
+    },
+    {
+        "locode": "BR MRD",
+        "cityName": "Miranda",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0134",
+        "actionName": "Strengthen Mechanisms for Deforestation Control",
+        "actionPriority": 2
+    },
+    {
+        "locode": "BR MRD",
+        "cityName": "Miranda",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0133",
+        "actionName": "Promote Urban Reforestation and Green Corridors",
+        "actionPriority": 3
+    },
+    {
+        "locode": "BR MRD",
+        "cityName": "Miranda",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0129",
+        "actionName": "Facilitate Technology Transfer for Conservation Practices",
+        "actionPriority": 4
+    },
+    {
+        "locode": "BR MRD",
+        "cityName": "Miranda",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0130",
+        "actionName": "Conduct Technical Assistance and Rural Extension (ATER) Actions",
+        "actionPriority": 5
+    },
+    {
+        "locode": "BR MRD",
+        "cityName": "Miranda",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0128",
+        "actionName": "Establish Municipal Programs for Payment for Environmental Services (PES)",
+        "actionPriority": 6
+    },
+    {
+        "locode": "BR MRD",
+        "cityName": "Miranda",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0102",
+        "actionName": "Promote Sustainable Agricultural Practices",
+        "actionPriority": 7
+    },
+    {
+        "locode": "BR MRD",
+        "cityName": "Miranda",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0100",
+        "actionName": "Support Regenerative Agriculture Practices",
+        "actionPriority": 8
+    },
+    {
+        "locode": "BR MRD",
+        "cityName": "Miranda",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0096",
+        "actionName": "Promote Organic Farming",
+        "actionPriority": 9
+    },
+    {
+        "locode": "BR MRD",
+        "cityName": "Miranda",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0084",
+        "actionName": "Create Incentives for Agroforestry Practices in Livestock Systems",
+        "actionPriority": 10
+    },
+    {
+        "locode": "BR MRD",
+        "cityName": "Miranda",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0101",
+        "actionName": "Encourage the Use of Low-Emission Agricultural Machinery",
+        "actionPriority": 11
+    },
+    {
+        "locode": "BR MRD",
+        "cityName": "Miranda",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0127",
+        "actionName": "Accelerate Environmental Regularization of Rural Properties",
+        "actionPriority": 12
+    },
+    {
+        "locode": "BR MRD",
+        "cityName": "Miranda",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0131",
+        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
+        "actionPriority": 13
+    },
+    {
+        "locode": "BR MRD",
+        "cityName": "Miranda",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0061",
+        "actionName": "Soil Carbon Management in Croplands and Grasslands",
+        "actionPriority": 14
+    },
+    {
+        "locode": "BR MRD",
+        "cityName": "Miranda",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0085",
+        "actionName": "Promote the Adoption of Agroecological Pest Control",
+        "actionPriority": 15
+    },
+    {
+        "locode": "BR MRD",
+        "cityName": "Miranda",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0099",
+        "actionName": "Support Agroecological Certification Programs",
+        "actionPriority": 16
+    },
+    {
+        "locode": "BR MRD",
+        "cityName": "Miranda",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0132",
+        "actionName": "Encourage Local Agroecological Production and Short Supply Chains",
+        "actionPriority": 17
+    },
+    {
+        "locode": "BR MRD",
+        "cityName": "Miranda",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0136",
+        "actionName": "Support the Implementation of Ecological Fiscal Incentives",
+        "actionPriority": 18
+    },
+    {
+        "locode": "BR MRD",
+        "cityName": "Miranda",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0053",
+        "actionName": "Afforestation, Reforestation and Forest Ecosystem Restoration",
+        "actionPriority": 19
+    },
+    {
+        "locode": "BR MRD",
+        "cityName": "Miranda",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "c40_0042",
+        "actionName": "Biodiversity Expansion",
+        "actionPriority": 20
+    }
+]

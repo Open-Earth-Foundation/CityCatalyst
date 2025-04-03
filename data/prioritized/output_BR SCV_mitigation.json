@@ -1,204 +1,182 @@
-{
-    "actions": [
-        {
-            "locode": "LC001",
-            "cityName": "EcoCity",
-            "region": "R1",
-            "regionName": "Central Region",
-            "actionId": "ACT01",
-            "actionName": "New Building Standards",
-            "actionPriority": 1,
-            "explanation": "In EcoCity, new building standards are recognized for significantly reducing emissions from the construction and housing sector. The strategy addresses energy inefficiencies while aligning well with local environmental priorities. It provides long-term benefits by enhancing community resilience and urban comfort. The approach is thoughtful in balancing implementation requirements with substantial environmental returns."
-        },
-        {
-            "locode": "LC002",
-            "cityName": "EcoCity",
-            "region": "R1",
-            "regionName": "Central Region",
-            "actionId": "ACT02",
-            "actionName": "Bus Emissions Reduction",
-            "actionPriority": 2,
-            "explanation": "The bus emissions reduction initiative in EcoCity targets the transportation sector, a key contributor to urban greenhouse gas emissions. It is designed to improve air quality through cleaner transit options and modern technology upgrades. This action supports timely environmental benefits while bolstering sustainable urban mobility. Its implementation is in tune with the city's capacity and infrastructure readiness."
-        },
-        {
-            "locode": "LC003",
-            "cityName": "EcoCity",
-            "region": "R1",
-            "regionName": "Central Region",
-            "actionId": "ACT03",
-            "actionName": "Renewable Energy Incentives",
-            "actionPriority": 3,
-            "explanation": "Renewable energy incentives are prioritized in EcoCity for their role in transitioning energy systems away from fossil fuels. The measure is strategically aligned with reducing overall emissions and boosting sustainable development. It also offers layered benefits such as economic energy savings and enhanced energy independence over time. The initiative is well-adapted to the city's environmental ambitions and regulatory frameworks."
-        },
-        {
-            "locode": "LC004",
-            "cityName": "EcoCity",
-            "region": "R1",
-            "regionName": "Central Region",
-            "actionId": "ACT04",
-            "actionName": "Urban Green Spaces Expansion",
-            "actionPriority": 4,
-            "explanation": "Expanding urban green spaces in EcoCity contributes markedly to environmental quality and community well-being. The action reduces urban heat, enhances air quality, and serves as a cost-effective adaptation measure. It meshes well with the city’s green infrastructure goals while offering straightforward implementation. The added co-benefits reinforce its appeal within the urban development strategy."
-        },
-        {
-            "locode": "LC005",
-            "cityName": "EcoCity",
-            "region": "R1",
-            "regionName": "Central Region",
-            "actionId": "ACT05",
-            "actionName": "Water Efficiency Programs",
-            "actionPriority": 5,
-            "explanation": "Water efficiency programs in EcoCity are vital for reconciling resource management with climate adaptation needs. This approach ensures sustainable water use and prepares the city for potential drought challenges. The initiative is practical, combining technological innovation with environmental conservation. Its compatibility with local socio-economic factors makes it a well-judged move for urban resilience."
-        },
-        {
-            "locode": "LC006",
-            "cityName": "EcoCity",
-            "region": "R1",
-            "regionName": "Central Region",
-            "actionId": "ACT06",
-            "actionName": "Waste Management Improvements",
-            "actionPriority": 6,
-            "explanation": "Enhanced waste management practices are pivotal for EcoCity in reducing emissions associated with waste decomposition. This measure is designed to improve public health and urban livability while addressing environmental challenges. It presents a clear strategy that is both cost-effective and sensitive to local needs. The straightforward implementation further aligns with the city's operational capabilities."
-        },
-        {
-            "locode": "LC007",
-            "cityName": "EcoCity",
-            "region": "R1",
-            "regionName": "Central Region",
-            "actionId": "ACT07",
-            "actionName": "Cycling Infrastructure Development",
-            "actionPriority": 7,
-            "explanation": "Investing in cycling infrastructure in EcoCity serves as a catalyst for sustainable urban mobility. The initiative significantly reduces reliance on fossil-fuel-based transportation while fostering public health benefits. It is adaptable to the city's dense urban fabric and yields quick and effective environmental improvements. The action is also perceived as highly accessible with low implementation dependencies."
-        },
-        {
-            "locode": "LC008",
-            "cityName": "EcoCity",
-            "region": "R1",
-            "regionName": "Central Region",
-            "actionId": "ACT08",
-            "actionName": "Energy Efficiency Retrofits",
-            "actionPriority": 8,
-            "explanation": "Energy efficiency retrofits in EcoCity focus on optimizing existing building stock to reduce energy consumption and emissions. The strategy integrates seamlessly with urban structures and leverages proven technologies for quick benefits. It delivers additional value in lowering operational costs and enhancing comfort. This action is well-suited to the city's environment and long-term sustainability goals."
-        },
-        {
-            "locode": "LC009",
-            "cityName": "EcoCity",
-            "region": "R1",
-            "regionName": "Central Region",
-            "actionId": "ACT09",
-            "actionName": "Public Transit Expansion",
-            "actionPriority": 9,
-            "explanation": "Expanding public transit in EcoCity is key to reducing the emissions associated with private vehicle use. This initiative is well-tailored to address the core urban mobility challenges and promote more accessible transportation options. By enhancing connectivity and reducing congestion, it supports both environmental and social benefits. Its strategic fit with the city's transportation network underlines its value."
-        },
-        {
-            "locode": "LC010",
-            "cityName": "EcoCity",
-            "region": "R1",
-            "regionName": "Central Region",
-            "actionId": "ACT10",
-            "actionName": "Smart Grid Implementation",
-            "actionPriority": 10,
-            "explanation": "Smart grid implementation in EcoCity represents a forward-looking shift towards efficient and resilient energy distribution. The action is designed to reduce energy losses while facilitating the integration of renewable sources. It offers significant operational benefits through real-time monitoring and adaptive management. The initiative is proactive and well-aligned with future urban energy requirements."
-        },
-        {
-            "locode": "LC011",
-            "cityName": "EcoCity",
-            "region": "R1",
-            "regionName": "Central Region",
-            "actionId": "ACT11",
-            "actionName": "Green Roofs Incentives",
-            "actionPriority": 11,
-            "explanation": "In EcoCity, green roofs are encouraged to improve building insulation and mitigate the urban heat island effect. This action not only enhances energy efficiency but also bolsters aesthetics and stormwater management. It integrates naturally with urban design, offering measurable environmental co-benefits. The approach is a constructive blend of innovation and practicality within the city’s framework."
-        },
-        {
-            "locode": "LC012",
-            "cityName": "EcoCity",
-            "region": "R1",
-            "regionName": "Central Region",
-            "actionId": "ACT12",
-            "actionName": "Solar Panel Subsidies",
-            "actionPriority": 12,
-            "explanation": "Solar panel subsidies in EcoCity motivate a broader adoption of renewable energy by reducing economic barriers. The measure is instrumental in shifting energy practices towards more sustainable patterns. It fosters local energy independence and contributes to lowering overall emissions. This policy initiative is designed to be in harmony with the city's green energy goals and resource capacity."
-        },
-        {
-            "locode": "LC013",
-            "cityName": "EcoCity",
-            "region": "R1",
-            "regionName": "Central Region",
-            "actionId": "ACT13",
-            "actionName": "Tree Planting Programs",
-            "actionPriority": 13,
-            "explanation": "Tree planting programs in EcoCity are valued for their role in sequestering carbon and enhancing urban biodiversity. The initiative improves air quality and beautifies cityscapes while promoting community involvement. It stands as a cost-effective, adaptable solution that aligns well with local environmental objectives. The program supports long-term climate resilience and ecological balance."
-        },
-        {
-            "locode": "LC014",
-            "cityName": "EcoCity",
-            "region": "R1",
-            "regionName": "Central Region",
-            "actionId": "ACT14",
-            "actionName": "Flood Defense Infrastructure",
-            "actionPriority": 14,
-            "explanation": "Flood defense infrastructure is a critical intervention in EcoCity to mitigate severe water-related risks. The action is designed to protect key urban assets and ensure community safety under adverse conditions. It aligns with the city's broader climate adaptation strategy, emphasizing risk reduction and preparedness. The measure balances immediate protective benefits with long-term urban resilience planning."
-        },
-        {
-            "locode": "LC015",
-            "cityName": "EcoCity",
-            "region": "R1",
-            "regionName": "Central Region",
-            "actionId": "ACT15",
-            "actionName": "Urban Heat Island Mitigation",
-            "actionPriority": 15,
-            "explanation": "The urban heat island mitigation strategy in EcoCity targets excessive temperature increases in densely populated areas. This action employs techniques such as reflective surfaces and vegetation enhancements to moderate local temperatures. It is especially beneficial in improving public comfort and lowering energy demands for cooling. The intervention is carefully mapped to address both environmental and social dimensions of urban life."
-        },
-        {
-            "locode": "LC016",
-            "cityName": "EcoCity",
-            "region": "R1",
-            "regionName": "Central Region",
-            "actionId": "ACT16",
-            "actionName": "Retrofitting Public Facilities",
-            "actionPriority": 16,
-            "explanation": "Retrofitting public facilities in EcoCity is aimed at modernizing infrastructure to be more energy-efficient and sustainable. This undertaking supports a reduction in emissions from municipal operations while enhancing public service efficacy. The measure is practical, with clear cost savings and operational improvements. It integrates smoothly with existing city systems and long-term sustainability goals."
-        },
-        {
-            "locode": "LC017",
-            "cityName": "EcoCity",
-            "region": "R1",
-            "regionName": "Central Region",
-            "actionId": "ACT17",
-            "actionName": "Carbon Pricing Strategies",
-            "actionPriority": 17,
-            "explanation": "Carbon pricing strategies in EcoCity introduce economic incentives that discourage high-emission activities. The policy framework is carefully structured to encourage cleaner industry practices while generating revenue for further sustainable initiatives. This measure supports a broader shift towards environmental accountability and efficiency. It reflects a balanced approach between market mechanisms and public environmental priorities."
-        },
-        {
-            "locode": "LC018",
-            "cityName": "EcoCity",
-            "region": "R1",
-            "regionName": "Central Region",
-            "actionId": "ACT18",
-            "actionName": "Climate Resilient Agriculture Support",
-            "actionPriority": 18,
-            "explanation": "Supporting climate resilient agriculture in EcoCity helps secure local food systems against the unpredictability of climate change. The initiative enhances the stability of rural-urban food chains and promotes sustainable farming practices. It is crafted to address both environmental challenges and socio-economic needs of the community. This approach is forward-thinking, ensuring long-term resilience and balanced resource management."
-        },
-        {
-            "locode": "LC019",
-            "cityName": "EcoCity",
-            "region": "R1",
-            "regionName": "Central Region",
-            "actionId": "ACT19",
-            "actionName": "Carbon Capture and Storage Pilots",
-            "actionPriority": 19,
-            "explanation": "Carbon capture and storage pilots in EcoCity are designed to explore innovative methods for addressing industrial emissions effectively. The pilot projects focus on harnessing cutting-edge technology to potentially scale emission reductions in the future. This experimental approach is well-suited to learning from real-world applications while aligning with the city's environmental priorities. It marks a progressive step towards integrating new technologies into broader climate strategies."
-        },
-        {
-            "locode": "LC020",
-            "cityName": "EcoCity",
-            "region": "R1",
-            "regionName": "Central Region",
-            "actionId": "ACT20",
-            "actionName": "Sustainable Land Use Planning",
-            "actionPriority": 20,
-            "explanation": "Sustainable land use planning in EcoCity takes a strategic view of urban growth while minimizing climate impact. The approach is designed to harmonize development with environmental preservation, ensuring that future expansion supports natural ecosystems. This action integrates socio-demographic insights with effective planning practices to mitigate emissions. It provides a solid framework for long-term urban resilience and balanced resource distribution."
-        }
-    ]
-}
+[
+    {
+        "locode": "BR SCV",
+        "cityName": "S\u00e3o Crist\u00f3v\u00e3o",
+        "region": "SE",
+        "regionName": "Sergipe",
+        "actionId": "icare_0050",
+        "actionName": "Implement Agroforestry Systems",
+        "actionPriority": 1
+    },
+    {
+        "locode": "BR SCV",
+        "cityName": "S\u00e3o Crist\u00f3v\u00e3o",
+        "region": "SE",
+        "regionName": "Sergipe",
+        "actionId": "icare_0133",
+        "actionName": "Promote Urban Reforestation and Green Corridors",
+        "actionPriority": 2
+    },
+    {
+        "locode": "BR SCV",
+        "cityName": "S\u00e3o Crist\u00f3v\u00e3o",
+        "region": "SE",
+        "regionName": "Sergipe",
+        "actionId": "icare_0134",
+        "actionName": "Strengthen Mechanisms for Deforestation Control",
+        "actionPriority": 3
+    },
+    {
+        "locode": "BR SCV",
+        "cityName": "S\u00e3o Crist\u00f3v\u00e3o",
+        "region": "SE",
+        "regionName": "Sergipe",
+        "actionId": "icare_0128",
+        "actionName": "Establish Municipal Programs for Payment for Environmental Services (PES)",
+        "actionPriority": 4
+    },
+    {
+        "locode": "BR SCV",
+        "cityName": "S\u00e3o Crist\u00f3v\u00e3o",
+        "region": "SE",
+        "regionName": "Sergipe",
+        "actionId": "icare_0130",
+        "actionName": "Conduct Technical Assistance and Rural Extension (ATER) Actions",
+        "actionPriority": 5
+    },
+    {
+        "locode": "BR SCV",
+        "cityName": "S\u00e3o Crist\u00f3v\u00e3o",
+        "region": "SE",
+        "regionName": "Sergipe",
+        "actionId": "icare_0129",
+        "actionName": "Facilitate Technology Transfer for Conservation Practices",
+        "actionPriority": 6
+    },
+    {
+        "locode": "BR SCV",
+        "cityName": "S\u00e3o Crist\u00f3v\u00e3o",
+        "region": "SE",
+        "regionName": "Sergipe",
+        "actionId": "icare_0102",
+        "actionName": "Promote Sustainable Agricultural Practices",
+        "actionPriority": 7
+    },
+    {
+        "locode": "BR SCV",
+        "cityName": "S\u00e3o Crist\u00f3v\u00e3o",
+        "region": "SE",
+        "regionName": "Sergipe",
+        "actionId": "icare_0131",
+        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
+        "actionPriority": 8
+    },
+    {
+        "locode": "BR SCV",
+        "cityName": "S\u00e3o Crist\u00f3v\u00e3o",
+        "region": "SE",
+        "regionName": "Sergipe",
+        "actionId": "icare_0132",
+        "actionName": "Encourage Local Agroecological Production and Short Supply Chains",
+        "actionPriority": 9
+    },
+    {
+        "locode": "BR SCV",
+        "cityName": "S\u00e3o Crist\u00f3v\u00e3o",
+        "region": "SE",
+        "regionName": "Sergipe",
+        "actionId": "icare_0099",
+        "actionName": "Support Agroecological Certification Programs",
+        "actionPriority": 10
+    },
+    {
+        "locode": "BR SCV",
+        "cityName": "S\u00e3o Crist\u00f3v\u00e3o",
+        "region": "SE",
+        "regionName": "Sergipe",
+        "actionId": "icare_0085",
+        "actionName": "Promote the Adoption of Agroecological Pest Control",
+        "actionPriority": 11
+    },
+    {
+        "locode": "BR SCV",
+        "cityName": "S\u00e3o Crist\u00f3v\u00e3o",
+        "region": "SE",
+        "regionName": "Sergipe",
+        "actionId": "icare_0100",
+        "actionName": "Support Regenerative Agriculture Practices",
+        "actionPriority": 12
+    },
+    {
+        "locode": "BR SCV",
+        "cityName": "S\u00e3o Crist\u00f3v\u00e3o",
+        "region": "SE",
+        "regionName": "Sergipe",
+        "actionId": "icare_0084",
+        "actionName": "Create Incentives for Agroforestry Practices in Livestock Systems",
+        "actionPriority": 13
+    },
+    {
+        "locode": "BR SCV",
+        "cityName": "S\u00e3o Crist\u00f3v\u00e3o",
+        "region": "SE",
+        "regionName": "Sergipe",
+        "actionId": "icare_0136",
+        "actionName": "Support the Implementation of Ecological Fiscal Incentives",
+        "actionPriority": 14
+    },
+    {
+        "locode": "BR SCV",
+        "cityName": "S\u00e3o Crist\u00f3v\u00e3o",
+        "region": "SE",
+        "regionName": "Sergipe",
+        "actionId": "icare_0096",
+        "actionName": "Promote Organic Farming",
+        "actionPriority": 15
+    },
+    {
+        "locode": "BR SCV",
+        "cityName": "S\u00e3o Crist\u00f3v\u00e3o",
+        "region": "SE",
+        "regionName": "Sergipe",
+        "actionId": "icare_0042",
+        "actionName": "Encourage renewable energy policies at the municipal level",
+        "actionPriority": 16
+    },
+    {
+        "locode": "BR SCV",
+        "cityName": "S\u00e3o Crist\u00f3v\u00e3o",
+        "region": "SE",
+        "regionName": "Sergipe",
+        "actionId": "icare_0101",
+        "actionName": "Encourage the Use of Low-Emission Agricultural Machinery",
+        "actionPriority": 17
+    },
+    {
+        "locode": "BR SCV",
+        "cityName": "S\u00e3o Crist\u00f3v\u00e3o",
+        "region": "SE",
+        "regionName": "Sergipe",
+        "actionId": "icare_0127",
+        "actionName": "Accelerate Environmental Regularization of Rural Properties",
+        "actionPriority": 18
+    },
+    {
+        "locode": "BR SCV",
+        "cityName": "S\u00e3o Crist\u00f3v\u00e3o",
+        "region": "SE",
+        "regionName": "Sergipe",
+        "actionId": "icare_0052",
+        "actionName": "Develop projects for renewable energy and waste reuse",
+        "actionPriority": 19
+    },
+    {
+        "locode": "BR SCV",
+        "cityName": "S\u00e3o Crist\u00f3v\u00e3o",
+        "region": "SE",
+        "regionName": "Sergipe",
+        "actionId": "ipcc_0061",
+        "actionName": "Soil Carbon Management in Croplands and Grasslands",
+        "actionPriority": 20
+    }
+]

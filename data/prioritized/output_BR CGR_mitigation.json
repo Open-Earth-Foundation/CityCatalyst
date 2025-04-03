@@ -1,204 +1,182 @@
-{
-    "actions": [
-        {
-            "locode": "LC001",
-            "cityName": "EcoCity",
-            "region": "R1",
-            "regionName": "Green Region",
-            "actionId": "ACT1",
-            "actionName": "New Building Standards",
-            "actionPriority": 1,
-            "explanation": "For EcoCity, New Building Standards was selected primarily for its strong potential to reduce greenhouse gas emissions by upgrading construction practices. It aligns closely with the city’s regulatory framework and long-term sustainability goals while offering multiple co-benefits in energy efficiency. The initiative’s adaptability to local building trends makes it a strategic choice in the broader climate action plan."
-        },
-        {
-            "locode": "LC002",
-            "cityName": "EcoCity",
-            "region": "R1",
-            "regionName": "Green Region",
-            "actionId": "ACT2",
-            "actionName": "Bus Emissions",
-            "actionPriority": 2,
-            "explanation": "For EcoCity, the Bus Emissions initiative is highly valued as it directly addresses major urban sources of pollution by targeting the public transport sector. This approach not only reduces harmful emissions but also enhances overall air quality in a densely populated environment. Its alignment with the city’s mobility framework and low dependency on complex infrastructure further justify its ranking."
-        },
-        {
-            "locode": "LC003",
-            "cityName": "EcoCity",
-            "region": "R1",
-            "regionName": "Green Region",
-            "actionId": "ACT3",
-            "actionName": "Solar Energy Installation",
-            "actionPriority": 3,
-            "explanation": "For EcoCity, Solar Energy Installation was favored because it offers a robust shift towards renewable energy, effectively reducing emissions across the energy sector. Its compatibility with the local climate and the availability of adequate sunlight supports a smooth implementation process. The initiative’s potential to generate decentralized energy resources also reinforces its prioritization in the city’s sustainable development strategy."
-        },
-        {
-            "locode": "LC004",
-            "cityName": "EcoCity",
-            "region": "R1",
-            "regionName": "Green Region",
-            "actionId": "ACT4",
-            "actionName": "Urban Tree Planting",
-            "actionPriority": 4,
-            "explanation": "For EcoCity, Urban Tree Planting is recognized for its natural capacity to sequester carbon and enhance urban green spaces. It contributes to both local air quality improvements and community well-being by integrating nature into densely populated areas. Its ease of implementation and broad environmental benefits render it a well-suited measure within the city’s climate adaptation framework."
-        },
-        {
-            "locode": "LC005",
-            "cityName": "EcoCity",
-            "region": "R1",
-            "regionName": "Green Region",
-            "actionId": "ACT5",
-            "actionName": "Water Efficiency Program",
-            "actionPriority": 5,
-            "explanation": "For EcoCity, the Water Efficiency Program is prioritized because it addresses fundamental resource management issues amid growing climate variability. It not only promotes sustainable water usage practices but also contributes indirectly to reducing energy consumption and emissions. Its design is well aligned with the city's capacity for timely and cost-effective implementation."
-        },
-        {
-            "locode": "LC006",
-            "cityName": "EcoCity",
-            "region": "R1",
-            "regionName": "Green Region",
-            "actionId": "ACT6",
-            "actionName": "Waste-to-Energy",
-            "actionPriority": 6,
-            "explanation": "For EcoCity, the Waste-to-Energy action was given priority thanks to its dual approach that simultaneously tackles waste management and clean energy production. This initiative transforms waste challenges into opportunities for emissions reduction and resource recovery. Its compatibility with circular economy principles and local environmental goals further underscores its significance in the city’s climate action agenda."
-        },
-        {
-            "locode": "LC007",
-            "cityName": "EcoCity",
-            "region": "R1",
-            "regionName": "Green Region",
-            "actionId": "ACT7",
-            "actionName": "District Energy Systems",
-            "actionPriority": 7,
-            "explanation": "For EcoCity, District Energy Systems are valued for their efficiency in providing centralized heating and cooling solutions that significantly reduce urban energy use. This coordinated approach enhances operational efficiency while lowering greenhouse gas emissions. Moreover, its integration with existing urban infrastructure makes it a practical and attractive option for the city."
-        },
-        {
-            "locode": "LC008",
-            "cityName": "EcoCity",
-            "region": "R1",
-            "regionName": "Green Region",
-            "actionId": "ACT8",
-            "actionName": "Renewable Energy Subsidies",
-            "actionPriority": 8,
-            "explanation": "For EcoCity, Renewable Energy Subsidies were prioritized since they stimulate a broader shift towards renewable energy across multiple sectors. By offering financial support, these subsidies help overcome initial adoption barriers and encourage widespread environmental benefits. Their ease of implementation and potential to drive significant emissions reductions make them a practical component of the city’s sustainability strategy."
-        },
-        {
-            "locode": "LC009",
-            "cityName": "EcoCity",
-            "region": "R1",
-            "regionName": "Green Region",
-            "actionId": "ACT9",
-            "actionName": "Cycle Infrastructure",
-            "actionPriority": 9,
-            "explanation": "For EcoCity, investing in Cycle Infrastructure is an appealing action as it promotes sustainable mobility by reducing reliance on fossil-fueled transport. The initiative supports healthier lifestyles while indirectly decreasing vehicular emissions in a compact urban layout. Its inherent compatibility with the city's demographic and spatial characteristics makes it an effective measure in the overall climate action lineup."
-        },
-        {
-            "locode": "LC010",
-            "cityName": "EcoCity",
-            "region": "R1",
-            "regionName": "Green Region",
-            "actionId": "ACT10",
-            "actionName": "Electric Vehicle Incentives",
-            "actionPriority": 10,
-            "explanation": "For EcoCity, Electric Vehicle Incentives are highly regarded for facilitating a shift towards cleaner transportation technologies that lower overall urban emissions. This action targets a direct reduction in transportation-related pollutants while promoting eco-friendly consumer choices. Its straightforward implementation and alignment with emerging market trends support its placement in the action prioritization."
-        },
-        {
-            "locode": "LC011",
-            "cityName": "EcoCity",
-            "region": "R1",
-            "regionName": "Green Region",
-            "actionId": "ACT11",
-            "actionName": "Green Roof Initiatives",
-            "actionPriority": 11,
-            "explanation": "For EcoCity, Green Roof Initiatives offer a creative approach to reducing urban heat islands and enhancing building insulation, contributing indirectly to lower energy demand. This action integrates environmental aesthetics with functional benefits by blending nature into the built environment. Its compatibility with urban planning and its role in promoting local climate resilience justify its ranking."
-        },
-        {
-            "locode": "LC012",
-            "cityName": "EcoCity",
-            "region": "R1",
-            "regionName": "Green Region",
-            "actionId": "ACT12",
-            "actionName": "Industrial Process Efficiency",
-            "actionPriority": 12,
-            "explanation": "For EcoCity, Industrial Process Efficiency is prioritized due to its focus on reducing energy consumption and emissions within key industrial sectors. By optimizing operations, this action delivers significant environmental benefits while also offering operational cost savings. Its tailored approach to the city’s industrial landscape makes it a pertinent part of the overall climate strategy."
-        },
-        {
-            "locode": "LC013",
-            "cityName": "EcoCity",
-            "region": "R1",
-            "regionName": "Green Region",
-            "actionId": "ACT13",
-            "actionName": "Sustainable Urban Drainage",
-            "actionPriority": 13,
-            "explanation": "For EcoCity, Sustainable Urban Drainage is highlighted for its critical role in managing stormwater and mitigating flood risks amid a changing climate. The approach aligns urban water management with natural processes, offering resilience benefits alongside indirect emissions control. Its integration into existing urban landscapes further strengthens its suitability and prioritization."
-        },
-        {
-            "locode": "LC014",
-            "cityName": "EcoCity",
-            "region": "R1",
-            "regionName": "Green Region",
-            "actionId": "ACT14",
-            "actionName": "Energy Efficiency Retrofits",
-            "actionPriority": 14,
-            "explanation": "For EcoCity, Energy Efficiency Retrofits were favored because they leverage proven methods to significantly reduce energy consumption in existing buildings. This action directly contributes to lower emissions while improving the quality and sustainability of the urban infrastructure. Its practicality and ease of integration within current structures bolster its ranking as an effective climate measure."
-        },
-        {
-            "locode": "LC015",
-            "cityName": "EcoCity",
-            "region": "R1",
-            "regionName": "Green Region",
-            "actionId": "ACT15",
-            "actionName": "Rooftop Solar Panels",
-            "actionPriority": 15,
-            "explanation": "For EcoCity, Rooftop Solar Panels are recognized for their ability to turn underutilized urban spaces into decentralized energy generation units. This measure adapts effectively to the city's building landscape while reducing reliance on fossil fuels. Its scalable implementation and clear alignment with renewable energy targets make it an appropriate action in the current climate framework."
-        },
-        {
-            "locode": "LC016",
-            "cityName": "EcoCity",
-            "region": "R1",
-            "regionName": "Green Region",
-            "actionId": "ACT16",
-            "actionName": "Natural Disaster Preparedness",
-            "actionPriority": 16,
-            "explanation": "For EcoCity, Natural Disaster Preparedness is particularly important given the increasing risks posed by climate-related events. The action strengthens the city's resilience by preparing for extreme weather events and mitigating potential damages. Its strategic focus on risk reduction and community safety aligns well with local capacity and environmental challenges."
-        },
-        {
-            "locode": "LC017",
-            "cityName": "EcoCity",
-            "region": "R1",
-            "regionName": "Green Region",
-            "actionId": "ACT17",
-            "actionName": "Urban Heat Island Mitigation",
-            "actionPriority": 17,
-            "explanation": "For EcoCity, Urban Heat Island Mitigation was emphasized for its direct impact on reducing excessive urban temperatures and enhancing indoor comfort. The initiative incorporates environmental design elements that lower heat accumulation, thus contributing to energy savings and public health improvements. Its targeted focus on urban microclimates makes it a contextually relevant action for the city."
-        },
-        {
-            "locode": "LC018",
-            "cityName": "EcoCity",
-            "region": "R1",
-            "regionName": "Green Region",
-            "actionId": "ACT18",
-            "actionName": "Coastal Flood Defenses",
-            "actionPriority": 18,
-            "explanation": "For EcoCity, Coastal Flood Defenses are highly relevant given the city's vulnerability to rising sea levels and storm surges. This initiative focuses on protecting critical infrastructure and reducing socio-economic impacts from potential flooding events. The targeted risk reduction and environmental compatibility of the project highlight its importance in the climate action portfolio."
-        },
-        {
-            "locode": "LC019",
-            "cityName": "EcoCity",
-            "region": "R1",
-            "regionName": "Green Region",
-            "actionId": "ACT19",
-            "actionName": "Biodiversity Conservation",
-            "actionPriority": 19,
-            "explanation": "For EcoCity, Biodiversity Conservation is important for maintaining healthy urban ecosystems and ensuring long-term environmental balance. This action supports the preservation of local natural habitats and offers indirect benefits such as improved air and water quality. Its role in sustaining ecosystem services makes it a sensible and supportive measure within a broader climate adaptation strategy."
-        },
-        {
-            "locode": "LC020",
-            "cityName": "EcoCity",
-            "region": "R1",
-            "regionName": "Green Region",
-            "actionId": "ACT20",
-            "actionName": "Integrated Public Transport",
-            "actionPriority": 20,
-            "explanation": "For EcoCity, Integrated Public Transport is highly valued for its comprehensive approach to reducing greenhouse gas emissions from the transportation sector. By enhancing connectivity and reducing reliance on private vehicles, it addresses both environmental and socio-demographic needs. Its strategic impact on urban mobility and operational efficiency underlines its role as a key action in the city’s climate framework."
-        }
-    ]
-}
+[
+    {
+        "locode": "BR CGR",
+        "cityName": "Campo Grande",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0139",
+        "actionName": "Implementation of urban toll.",
+        "actionPriority": 1
+    },
+    {
+        "locode": "BR CGR",
+        "cityName": "Campo Grande",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0088",
+        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
+        "actionPriority": 2
+    },
+    {
+        "locode": "BR CGR",
+        "cityName": "Campo Grande",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0094",
+        "actionName": "Adoption of biomethane in public fleets.",
+        "actionPriority": 3
+    },
+    {
+        "locode": "BR CGR",
+        "cityName": "Campo Grande",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0044",
+        "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
+        "actionPriority": 4
+    },
+    {
+        "locode": "BR CGR",
+        "cityName": "Campo Grande",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0121",
+        "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
+        "actionPriority": 5
+    },
+    {
+        "locode": "BR CGR",
+        "cityName": "Campo Grande",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0068",
+        "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
+        "actionPriority": 6
+    },
+    {
+        "locode": "BR CGR",
+        "cityName": "Campo Grande",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0090",
+        "actionName": "Adoption of electric drones for last-mile deliveries.",
+        "actionPriority": 7
+    },
+    {
+        "locode": "BR CGR",
+        "cityName": "Campo Grande",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0130",
+        "actionName": "Conduct Technical Assistance and Rural Extension (ATER) Actions",
+        "actionPriority": 8
+    },
+    {
+        "locode": "BR CGR",
+        "cityName": "Campo Grande",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0057",
+        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
+        "actionPriority": 9
+    },
+    {
+        "locode": "BR CGR",
+        "cityName": "Campo Grande",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0050",
+        "actionName": "Implement Agroforestry Systems",
+        "actionPriority": 10
+    },
+    {
+        "locode": "BR CGR",
+        "cityName": "Campo Grande",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0129",
+        "actionName": "Facilitate Technology Transfer for Conservation Practices",
+        "actionPriority": 11
+    },
+    {
+        "locode": "BR CGR",
+        "cityName": "Campo Grande",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0128",
+        "actionName": "Establish Municipal Programs for Payment for Environmental Services (PES)",
+        "actionPriority": 12
+    },
+    {
+        "locode": "BR CGR",
+        "cityName": "Campo Grande",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0118",
+        "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
+        "actionPriority": 13
+    },
+    {
+        "locode": "BR CGR",
+        "cityName": "Campo Grande",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "c40_0026",
+        "actionName": "Vehicle Emissions",
+        "actionPriority": 14
+    },
+    {
+        "locode": "BR CGR",
+        "cityName": "Campo Grande",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0132",
+        "actionName": "Encourage Local Agroecological Production and Short Supply Chains",
+        "actionPriority": 15
+    },
+    {
+        "locode": "BR CGR",
+        "cityName": "Campo Grande",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0134",
+        "actionName": "Strengthen Mechanisms for Deforestation Control",
+        "actionPriority": 16
+    },
+    {
+        "locode": "BR CGR",
+        "cityName": "Campo Grande",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0085",
+        "actionName": "Promote the Adoption of Agroecological Pest Control",
+        "actionPriority": 17
+    },
+    {
+        "locode": "BR CGR",
+        "cityName": "Campo Grande",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0131",
+        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
+        "actionPriority": 18
+    },
+    {
+        "locode": "BR CGR",
+        "cityName": "Campo Grande",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0136",
+        "actionName": "Support the Implementation of Ecological Fiscal Incentives",
+        "actionPriority": 19
+    },
+    {
+        "locode": "BR CGR",
+        "cityName": "Campo Grande",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0126",
+        "actionName": "Implementation of green fuel supply infrastructure for aircraft, such as biofuels or green hydrogen.",
+        "actionPriority": 20
+    }
+]

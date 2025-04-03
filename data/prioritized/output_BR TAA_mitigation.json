@@ -1,204 +1,182 @@
-{
-    "actions": [
-        {
-            "locode": "GF-001",
-            "cityName": "Greenfield",
-            "region": "GF",
-            "regionName": "Green Region",
-            "actionId": "act-1",
-            "actionName": "New Building Standards",
-            "actionPriority": 1,
-            "explanation": "For the city Greenfield, New Building Standards were prioritized because they directly target major sources of emissions by ensuring that new constructions adhere to energy-efficient practices. This action aligns well with the city's urban development and environmental goals, offering a sustainable framework for future growth. Its clear implementation pathway and compatibility with local building regulations make it a strategically sound choice."
-        },
-        {
-            "locode": "GF-002",
-            "cityName": "Greenfield",
-            "region": "GF",
-            "regionName": "Green Region",
-            "actionId": "act-2",
-            "actionName": "Bus Emissions",
-            "actionPriority": -1,
-            "explanation": "For the city Greenfield, the Bus Emissions initiative was ranked lower because it does not directly address the primary emission sources of the region. Although it offers some benefits in reducing tailpipe pollutants, its overall impact on the city's dominant greenhouse gas sources is less pronounced. Additionally, the complexities in retrofitting existing transit systems and the longer timeline for benefits contribute to its lower prioritization."
-        },
-        {
-            "locode": "GF-003",
-            "cityName": "Greenfield",
-            "region": "GF",
-            "regionName": "Green Region",
-            "actionId": "act-3",
-            "actionName": "Renewable Energy Deployment",
-            "actionPriority": 1,
-            "explanation": "For the city Greenfield, Renewable Energy Deployment was prioritized because it offers a strong pathway to significantly reduce greenhouse gas emissions by shifting energy production to cleaner sources. The action is well-suited to the city's natural resource potential and supports long-term environmental sustainability. Its clear benefits in cost-effectiveness and reduced dependency on fossil fuels further strengthen its strategic importance."
-        },
-        {
-            "locode": "GF-004",
-            "cityName": "Greenfield",
-            "region": "GF",
-            "regionName": "Green Region",
-            "actionId": "act-4",
-            "actionName": "Urban Greening",
-            "actionPriority": 1,
-            "explanation": "For the city Greenfield, Urban Greening was given priority because it not only helps lower urban temperatures but also enhances the local environment by improving air quality and adding green spaces. This approach is highly compatible with the city's aesthetic and ecological objectives and offers community benefits beyond mere emissions reduction. Its ease of integration into existing urban settings and the immediate visual and environmental impacts made it a preferred action."
-        },
-        {
-            "locode": "GF-005",
-            "cityName": "Greenfield",
-            "region": "GF",
-            "regionName": "Green Region",
-            "actionId": "act-5",
-            "actionName": "Coastal Protection",
-            "actionPriority": -1,
-            "explanation": "For the city Greenfield, Coastal Protection was ranked lower because while it addresses important environmental risks, its direct impact on reducing the city's primary emissions is limited. The action involves complex planning and dependencies that may delay its benefits. Although it has merit in protecting vulnerable coastal areas, its overall cost-effectiveness and alignment with the city's immediate emission reduction priorities are less pronounced."
-        },
-        {
-            "locode": "GF-006",
-            "cityName": "Greenfield",
-            "region": "GF",
-            "regionName": "Green Region",
-            "actionId": "act-6",
-            "actionName": "Energy Efficiency in Industry",
-            "actionPriority": 1,
-            "explanation": "For the city Greenfield, Energy Efficiency in Industry was prioritized as it directly targets large-scale emissions from industrial processes. Its focus on reducing energy waste is well aligned with both environmental and economic objectives. The action also benefits from a relatively clear implementation strategy that leverages existing industrial capacities, making it appealing from a risk and cost perspective."
-        },
-        {
-            "locode": "GF-007",
-            "cityName": "Greenfield",
-            "region": "GF",
-            "regionName": "Green Region",
-            "actionId": "act-7",
-            "actionName": "Public Transit Expansion",
-            "actionPriority": -1,
-            "explanation": "For the city Greenfield, Public Transit Expansion was ranked lower because it faces challenges in rapidly reducing greenhouse gas emissions compared to other measures. The action requires significant infrastructural investments and has a longer timeline before observable benefits emerge. Its dependencies on coordinated urban planning and potential operational complexities further diminish its immediate appeal in the current context."
-        },
-        {
-            "locode": "GF-008",
-            "cityName": "Greenfield",
-            "region": "GF",
-            "regionName": "Green Region",
-            "actionId": "act-8",
-            "actionName": "Waste Management Improvements",
-            "actionPriority": 1,
-            "explanation": "For the city Greenfield, Waste Management Improvements were prioritized because they offer a dual benefit of reducing emissions and enhancing public health. This action effectively targets both direct emissions and secondary impacts from waste-related activities. Its relatively straightforward implementation and alignment with existing city sanitation programs contribute to its strategic relevance."
-        },
-        {
-            "locode": "GF-009",
-            "cityName": "Greenfield",
-            "region": "GF",
-            "regionName": "Green Region",
-            "actionId": "act-9",
-            "actionName": "Smart Grid Implementation",
-            "actionPriority": 1,
-            "explanation": "For the city Greenfield, Smart Grid Implementation was prioritized as it facilitates more efficient energy distribution and supports the integration of renewable sources. The action is particularly valuable in modernizing the local energy infrastructure, which contributes to a reduction in overall emissions. Its adaptability to existing systems and contribution to long-term resilience further justify its higher ranking."
-        },
-        {
-            "locode": "GF-010",
-            "cityName": "Greenfield",
-            "region": "GF",
-            "regionName": "Green Region",
-            "actionId": "act-10",
-            "actionName": "Water Conservation Measures",
-            "actionPriority": -1,
-            "explanation": "For the city Greenfield, Water Conservation Measures were ranked lower because, although important for environmental sustainability, they do not directly target the city’s primary greenhouse gas emission sources. The benefits of this action are more indirect and emerge over a longer period, which makes its immediate impact less compelling. Additionally, the approach requires additional coordination with water resource management strategies, reducing its prioritization in the current emission-focused framework."
-        },
-        {
-            "locode": "GF-011",
-            "cityName": "Greenfield",
-            "region": "GF",
-            "regionName": "Green Region",
-            "actionId": "act-11",
-            "actionName": "Electric Vehicle Incentives",
-            "actionPriority": 1,
-            "explanation": "For the city Greenfield, Electric Vehicle Incentives were prioritized because they directly contribute to the reduction of fossil fuel dependence by promoting cleaner transportation alternatives. This action aligns with the city’s goals of lowering urban emissions and supports a broader shift toward sustainable mobility. Its relatively accessible implementation and positive social acceptance further enhance its appeal as a forward-thinking solution."
-        },
-        {
-            "locode": "GF-012",
-            "cityName": "Greenfield",
-            "region": "GF",
-            "regionName": "Green Region",
-            "actionId": "act-12",
-            "actionName": "Urban Heat Island Mitigation",
-            "actionPriority": -1,
-            "explanation": "For the city Greenfield, Urban Heat Island Mitigation was ranked lower because, while it helps in adapting to climate change impacts, it does not directly address the primary sources of greenhouse gas emissions. The action also involves interventions that require longer timeframes to showcase tangible benefits. Although it can improve local living conditions, its overall emission reduction potential is less significant in the context of the city's urgent needs."
-        },
-        {
-            "locode": "GF-013",
-            "cityName": "Greenfield",
-            "region": "GF",
-            "regionName": "Green Region",
-            "actionId": "act-13",
-            "actionName": "Forest Conservation",
-            "actionPriority": 1,
-            "explanation": "For the city Greenfield, Forest Conservation was prioritized because it not only aids in sequestering carbon but also preserves biodiversity which is integral to the region's ecological balance. This approach is in tune with the city's environmental ecosystem, making it a valuable long-term mitigation strategy. Its low implementation complexity and natural co-benefits for both the economy and community further contributed to its selection."
-        },
-        {
-            "locode": "GF-014",
-            "cityName": "Greenfield",
-            "region": "GF",
-            "regionName": "Green Region",
-            "actionId": "act-14",
-            "actionName": "Climate Resilient Infrastructure",
-            "actionPriority": -1,
-            "explanation": "For the city Greenfield, Climate Resilient Infrastructure was ranked lower because while it is essential for adapting to longer-term climate risks, its immediate impact on reducing greenhouse gas emissions is limited. The approach requires complex planning and significant upfront investments, which can delay its effectiveness relative to other mitigation strategies. Its longer implementation timeline and dependency on additional supporting measures make it less attractive in the current prioritization framework."
-        },
-        {
-            "locode": "GF-015",
-            "cityName": "Greenfield",
-            "region": "GF",
-            "regionName": "Green Region",
-            "actionId": "act-15",
-            "actionName": "Sustainable Agriculture Practices",
-            "actionPriority": 1,
-            "explanation": "For the city Greenfield, Sustainable Agriculture Practices were prioritized due to their dual role in reducing emissions and promoting local food security. The action is tailored to the region’s agro-ecological context, offering benefits such as improved soil health and reduced reliance on chemical inputs. Its direct alignment with economic and environmental goals ensures an effective balance between mitigation and community well-being."
-        },
-        {
-            "locode": "GF-016",
-            "cityName": "Greenfield",
-            "region": "GF",
-            "regionName": "Green Region",
-            "actionId": "act-16",
-            "actionName": "Community Engagement Programs",
-            "actionPriority": -1,
-            "explanation": "For the city Greenfield, Community Engagement Programs were ranked lower because even though they play a vital role in raising awareness, they do not directly lead to significant reductions in greenhouse gas emissions. The benefits of these programs are more diffused and depend heavily on behavioral change over a prolonged period. Their indirect impact on emission levels and reliance on sustained community participation reduce their prioritization in the immediate mitigation strategy."
-        },
-        {
-            "locode": "GF-017",
-            "cityName": "Greenfield",
-            "region": "GF",
-            "regionName": "Green Region",
-            "actionId": "act-17",
-            "actionName": "Green Innovation Fund",
-            "actionPriority": 1,
-            "explanation": "For the city Greenfield, the Green Innovation Fund was prioritized because it fosters the development and implementation of cutting-edge, low-carbon technologies. This action encourages a dynamic approach to tackling emissions by supporting industry and research collaborations. Its flexible funding structure and ability to stimulate a variety of cost-effective solutions make it an attractive investment for accelerating the city’s climate objectives."
-        },
-        {
-            "locode": "GF-018",
-            "cityName": "Greenfield",
-            "region": "GF",
-            "regionName": "Green Region",
-            "actionId": "act-18",
-            "actionName": "Disaster Preparedness",
-            "actionPriority": -1,
-            "explanation": "For the city Greenfield, Disaster Preparedness was ranked lower because its primary focus is on managing risks associated with extreme weather rather than directly reducing greenhouse gas emissions. Although essential for long-term resilience, its immediate benefits in terms of emission reduction are limited. The action involves extensive planning and multiple dependencies, which makes its direct impact on the city’s climate mitigation goals less apparent."
-        },
-        {
-            "locode": "GF-019",
-            "cityName": "Greenfield",
-            "region": "GF",
-            "regionName": "Green Region",
-            "actionId": "act-19",
-            "actionName": "Clean Cooking Initiatives",
-            "actionPriority": -1,
-            "explanation": "For the city Greenfield, Clean Cooking Initiatives were ranked lower because, while they contribute to reducing household emissions, they address a relatively smaller segment of the city's overall emission profile. The action faces challenges in scaling rapidly, and its benefits are more localized. Given the broader emission sources in the urban context, this initiative was seen as less impactful compared to other higher-ranked actions."
-        },
-        {
-            "locode": "GF-020",
-            "cityName": "Greenfield",
-            "region": "GF",
-            "regionName": "Green Region",
-            "actionId": "act-20",
-            "actionName": "Air Quality Monitoring",
-            "actionPriority": -1,
-            "explanation": "For the city Greenfield, Air Quality Monitoring was ranked lower because it primarily functions as an assessment tool rather than directly reducing emissions. Although it provides valuable data for future interventions, its immediate benefits in terms of mitigation are limited. The action depends on follow-up measures to translate observations into concrete emission reductions, making it less prioritized in the current framework."
-        }
-    ]
-}
+[
+    {
+        "locode": "BR TAA",
+        "cityName": "Tarauac\u00e1",
+        "region": "AC",
+        "regionName": "Acre",
+        "actionId": "icare_0050",
+        "actionName": "Implement Agroforestry Systems",
+        "actionPriority": 1
+    },
+    {
+        "locode": "BR TAA",
+        "cityName": "Tarauac\u00e1",
+        "region": "AC",
+        "regionName": "Acre",
+        "actionId": "icare_0133",
+        "actionName": "Promote Urban Reforestation and Green Corridors",
+        "actionPriority": 2
+    },
+    {
+        "locode": "BR TAA",
+        "cityName": "Tarauac\u00e1",
+        "region": "AC",
+        "regionName": "Acre",
+        "actionId": "icare_0134",
+        "actionName": "Strengthen Mechanisms for Deforestation Control",
+        "actionPriority": 3
+    },
+    {
+        "locode": "BR TAA",
+        "cityName": "Tarauac\u00e1",
+        "region": "AC",
+        "regionName": "Acre",
+        "actionId": "icare_0129",
+        "actionName": "Facilitate Technology Transfer for Conservation Practices",
+        "actionPriority": 4
+    },
+    {
+        "locode": "BR TAA",
+        "cityName": "Tarauac\u00e1",
+        "region": "AC",
+        "regionName": "Acre",
+        "actionId": "icare_0130",
+        "actionName": "Conduct Technical Assistance and Rural Extension (ATER) Actions",
+        "actionPriority": 5
+    },
+    {
+        "locode": "BR TAA",
+        "cityName": "Tarauac\u00e1",
+        "region": "AC",
+        "regionName": "Acre",
+        "actionId": "icare_0128",
+        "actionName": "Establish Municipal Programs for Payment for Environmental Services (PES)",
+        "actionPriority": 6
+    },
+    {
+        "locode": "BR TAA",
+        "cityName": "Tarauac\u00e1",
+        "region": "AC",
+        "regionName": "Acre",
+        "actionId": "icare_0102",
+        "actionName": "Promote Sustainable Agricultural Practices",
+        "actionPriority": 7
+    },
+    {
+        "locode": "BR TAA",
+        "cityName": "Tarauac\u00e1",
+        "region": "AC",
+        "regionName": "Acre",
+        "actionId": "icare_0096",
+        "actionName": "Promote Organic Farming",
+        "actionPriority": 8
+    },
+    {
+        "locode": "BR TAA",
+        "cityName": "Tarauac\u00e1",
+        "region": "AC",
+        "regionName": "Acre",
+        "actionId": "icare_0100",
+        "actionName": "Support Regenerative Agriculture Practices",
+        "actionPriority": 9
+    },
+    {
+        "locode": "BR TAA",
+        "cityName": "Tarauac\u00e1",
+        "region": "AC",
+        "regionName": "Acre",
+        "actionId": "icare_0084",
+        "actionName": "Create Incentives for Agroforestry Practices in Livestock Systems",
+        "actionPriority": 10
+    },
+    {
+        "locode": "BR TAA",
+        "cityName": "Tarauac\u00e1",
+        "region": "AC",
+        "regionName": "Acre",
+        "actionId": "icare_0127",
+        "actionName": "Accelerate Environmental Regularization of Rural Properties",
+        "actionPriority": 11
+    },
+    {
+        "locode": "BR TAA",
+        "cityName": "Tarauac\u00e1",
+        "region": "AC",
+        "regionName": "Acre",
+        "actionId": "icare_0101",
+        "actionName": "Encourage the Use of Low-Emission Agricultural Machinery",
+        "actionPriority": 12
+    },
+    {
+        "locode": "BR TAA",
+        "cityName": "Tarauac\u00e1",
+        "region": "AC",
+        "regionName": "Acre",
+        "actionId": "ipcc_0061",
+        "actionName": "Soil Carbon Management in Croplands and Grasslands",
+        "actionPriority": 13
+    },
+    {
+        "locode": "BR TAA",
+        "cityName": "Tarauac\u00e1",
+        "region": "AC",
+        "regionName": "Acre",
+        "actionId": "icare_0131",
+        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
+        "actionPriority": 14
+    },
+    {
+        "locode": "BR TAA",
+        "cityName": "Tarauac\u00e1",
+        "region": "AC",
+        "regionName": "Acre",
+        "actionId": "icare_0132",
+        "actionName": "Encourage Local Agroecological Production and Short Supply Chains",
+        "actionPriority": 15
+    },
+    {
+        "locode": "BR TAA",
+        "cityName": "Tarauac\u00e1",
+        "region": "AC",
+        "regionName": "Acre",
+        "actionId": "icare_0099",
+        "actionName": "Support Agroecological Certification Programs",
+        "actionPriority": 16
+    },
+    {
+        "locode": "BR TAA",
+        "cityName": "Tarauac\u00e1",
+        "region": "AC",
+        "regionName": "Acre",
+        "actionId": "icare_0085",
+        "actionName": "Promote the Adoption of Agroecological Pest Control",
+        "actionPriority": 17
+    },
+    {
+        "locode": "BR TAA",
+        "cityName": "Tarauac\u00e1",
+        "region": "AC",
+        "regionName": "Acre",
+        "actionId": "icare_0136",
+        "actionName": "Support the Implementation of Ecological Fiscal Incentives",
+        "actionPriority": 18
+    },
+    {
+        "locode": "BR TAA",
+        "cityName": "Tarauac\u00e1",
+        "region": "AC",
+        "regionName": "Acre",
+        "actionId": "ipcc_0052",
+        "actionName": "Reduce Deforestation and Degradation",
+        "actionPriority": 19
+    },
+    {
+        "locode": "BR TAA",
+        "cityName": "Tarauac\u00e1",
+        "region": "AC",
+        "regionName": "Acre",
+        "actionId": "ipcc_0053",
+        "actionName": "Afforestation, Reforestation and Forest Ecosystem Restoration",
+        "actionPriority": 20
+    }
+]

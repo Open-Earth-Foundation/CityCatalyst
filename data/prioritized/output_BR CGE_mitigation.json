@@ -1,204 +1,182 @@
-{
-    "actions": [
-        {
-            "locode": "LOC001",
-            "cityName": "GreenCity",
-            "region": "R1",
-            "regionName": "Eastern Region",
-            "actionId": "A001",
-            "actionName": "Renewable Energy Incentives",
-            "actionPriority": 1,
-            "explanation": "For the city GreenCity, Renewable Energy Incentives was prioritized because it directly tackles the primary source of greenhouse gas emissions by promoting a shift to cleaner energy. The action is well aligned with the local environmental conditions and leverages the city’s renewable potential. It also reduces long-term fossil fuel reliance while integrating efficiently with existing community resources. This balanced approach makes it a compelling choice in the city's climate strategy."
-        },
-        {
-            "locode": "LOC002",
-            "cityName": "GreenCity",
-            "region": "R1",
-            "regionName": "Eastern Region",
-            "actionId": "A002",
-            "actionName": "New Building Standards",
-            "actionPriority": 2,
-            "explanation": "For the city GreenCity, New Building Standards were selected due to their capacity to enhance energy performance in one of the key sectors. This approach not only targets the production of unwanted emissions but also improves indoor comfort and overall building quality. It fits well with the region’s architectural trends and urban dynamics. The action’s systematic nature and compatibility with local resources further support its prioritization."
-        },
-        {
-            "locode": "LOC003",
-            "cityName": "GreenCity",
-            "region": "R1",
-            "regionName": "Eastern Region",
-            "actionId": "A003",
-            "actionName": "Bus Emissions",
-            "actionPriority": 3,
-            "explanation": "For the city GreenCity, reducing Bus Emissions was favored because it directly addresses significant urban transportation emissions. The action is designed to improve air quality and public health by reducing reliance on older, polluting transit systems. It integrates smoothly with the existing public transit framework and supports broader urban mobility improvements. These qualitative advantages make it a sound choice for lowering the city’s overall emission profile."
-        },
-        {
-            "locode": "LOC004",
-            "cityName": "GreenCity",
-            "region": "R1",
-            "regionName": "Eastern Region",
-            "actionId": "A004",
-            "actionName": "Urban Tree Planting",
-            "actionPriority": 4,
-            "explanation": "For the city GreenCity, Urban Tree Planting was valued for its multifaceted role in mitigating urban heat and improving air quality. This action leverages natural processes to sequester carbon and offers additional community benefits such as enhanced aesthetics and biodiversity. It is well suited to the local environment and climate conditions. Despite a gradual benefit realization, its synergy with other initiatives makes it a valuable addition to the climate action portfolio."
-        },
-        {
-            "locode": "LOC005",
-            "cityName": "GreenCity",
-            "region": "R1",
-            "regionName": "Eastern Region",
-            "actionId": "A005",
-            "actionName": "Energy Efficiency Retrofits",
-            "actionPriority": 5,
-            "explanation": "For the city GreenCity, Energy Efficiency Retrofits were chosen for their ability to curtail energy consumption in existing structures. The action is tailored to the city’s need to lower its operational energy demand and cut down corresponding emissions. It is considered cost-effective and fits comfortably within the city’s incremental upgrade plans. By reducing energy loads, it also lowers potential climate-related risks in the built environment."
-        },
-        {
-            "locode": "LOC006",
-            "cityName": "GreenCity",
-            "region": "R1",
-            "regionName": "Eastern Region",
-            "actionId": "A006",
-            "actionName": "Waste Management Improvements",
-            "actionPriority": 6,
-            "explanation": "For the city GreenCity, Waste Management Improvements were prioritized due to their capability to mitigate both methane and other pollutant emissions. This strategy addresses a vital urban challenge while promoting a circular economy and resource recovery. It supports enhanced public health through better waste handling practices and aligns with environmental sustainability goals. Its compatibility with existing municipal services further underpins its selection."
-        },
-        {
-            "locode": "LOC007",
-            "cityName": "GreenCity",
-            "region": "R1",
-            "regionName": "Eastern Region",
-            "actionId": "A007",
-            "actionName": "Water Conservation Programs",
-            "actionPriority": 7,
-            "explanation": "For the city GreenCity, Water Conservation Programs were highlighted because of the critical need to manage local water resources more sustainably. This action is well tailored to the environmental features of the region and helps protect vital water bodies. It contributes to both adaptation and resilience by ensuring sustainable usage. The program’s alignment with long-term planning objectives reinforces its role in the overall climate strategy."
-        },
-        {
-            "locode": "LOC008",
-            "cityName": "GreenCity",
-            "region": "R1",
-            "regionName": "Eastern Region",
-            "actionId": "A008",
-            "actionName": "Public Transport Expansion",
-            "actionPriority": 8,
-            "explanation": "For the city GreenCity, Public Transport Expansion was recognized for its broad impact on reducing urban vehicle emissions. The action improves accessibility while easing congestion, thereby delivering considerable environmental and social benefits. It builds on the existing transit framework and enhances urban mobility efficiently. Its scalable design and relative ease of integration make it a suitable choice for rapid climate action."
-        },
-        {
-            "locode": "LOC009",
-            "cityName": "GreenCity",
-            "region": "R1",
-            "regionName": "Eastern Region",
-            "actionId": "A009",
-            "actionName": "Cycling Infrastructure",
-            "actionPriority": 9,
-            "explanation": "For the city GreenCity, Cycling Infrastructure was valued for supporting low-carbon travel and promoting healthier lifestyles. The approach reduces dependence on motorized vehicles and contributes to diminishing urban emissions. It fits naturally within the city’s compact design and dense neighborhoods, offering direct co-benefits such as improved public health. Its ease of implementation and minimal resource requirements further contribute to its prioritization."
-        },
-        {
-            "locode": "LOC010",
-            "cityName": "GreenCity",
-            "region": "R1",
-            "regionName": "Eastern Region",
-            "actionId": "A010",
-            "actionName": "Flood Defense Systems",
-            "actionPriority": 10,
-            "explanation": "For the city GreenCity, Flood Defense Systems were considered valuable for addressing the growing climate-related flood risks. The action directly mitigates hazards from heavy rainfall and storm surges by protecting essential infrastructure. It contributes to urban resilience and supports sustained economic activities without significantly disrupting daily life. The design of the system integrates well with local geography while providing robust risk reduction."
-        },
-        {
-            "locode": "LOC011",
-            "cityName": "GreenCity",
-            "region": "R1",
-            "regionName": "Eastern Region",
-            "actionId": "A011",
-            "actionName": "Heatwave Preparedness",
-            "actionPriority": 11,
-            "explanation": "For the city GreenCity, Heatwave Preparedness was selected for its direct focus on mitigating health and infrastructural risks linked to extreme temperatures. The action enhances the city's ability to respond quickly to heat events, protecting vulnerable populations effectively. It is designed to integrate with current emergency management frameworks and offers timely benefits. This pragmatic approach to risk reduction underpins its role in the broader climate strategy."
-        },
-        {
-            "locode": "LOC012",
-            "cityName": "GreenCity",
-            "region": "R1",
-            "regionName": "Eastern Region",
-            "actionId": "A012",
-            "actionName": "Green Roofs Initiative",
-            "actionPriority": 12,
-            "explanation": "For the city GreenCity, the Green Roofs Initiative was prioritized due to its dual benefits in reducing urban heat and managing stormwater. The action contributes indirectly to lowering emissions by improving building performance and overall environmental quality. It resonates well with local architectural trends and offers an innovative approach that enhances urban aesthetics. Its integration with existing structures supports its feasibility and long-term impact."
-        },
-        {
-            "locode": "LOC013",
-            "cityName": "GreenCity",
-            "region": "R1",
-            "regionName": "Eastern Region",
-            "actionId": "A013",
-            "actionName": "Industrial Emissions Controls",
-            "actionPriority": 13,
-            "explanation": "For the city GreenCity, Industrial Emissions Controls were emphasized to directly target heavy-emitting sectors within local industry. The action is designed with a clear understanding of the industrial contribution to the city’s overall emissions profile. By reducing pollutants at the source, it helps align industrial activity with environmental goals. Its integration with existing regulations and infrastructure supports effective risk management."
-        },
-        {
-            "locode": "LOC014",
-            "cityName": "GreenCity",
-            "region": "R1",
-            "regionName": "Eastern Region",
-            "actionId": "A014",
-            "actionName": "Electric Vehicle Adoption",
-            "actionPriority": 14,
-            "explanation": "For the city GreenCity, Electric Vehicle Adoption was promoted due to its strong potential in reducing emissions from urban transportation. The strategy aligns with the city’s evolving mobility landscape and complements public transit upgrades. By lowering noise and air pollution, it contributes to improved urban quality of life. Its compatibility with ongoing infrastructure improvements makes this action a forward-thinking component of the climate agenda."
-        },
-        {
-            "locode": "LOC015",
-            "cityName": "GreenCity",
-            "region": "R1",
-            "regionName": "Eastern Region",
-            "actionId": "A015",
-            "actionName": "Carbon Pricing",
-            "actionPriority": 15,
-            "explanation": "For the city GreenCity, Carbon Pricing was regarded as a strategic measure that introduces market incentives for emission reductions. The action encourages cleaner production practices across sectors and supports economic instruments geared toward sustainability. It requires robust policy backing but offers a balanced means of aligning financial and environmental benefits. This approach contributes indirectly to risk mitigation while promoting accountability."
-        },
-        {
-            "locode": "LOC016",
-            "cityName": "GreenCity",
-            "region": "R1",
-            "regionName": "Eastern Region",
-            "actionId": "A016",
-            "actionName": "Community Solar Projects",
-            "actionPriority": 16,
-            "explanation": "For the city GreenCity, Community Solar Projects were included for their capacity to directly involve local residents in renewable energy efforts. The action supports decentralized energy production and improves energy independence within the community. It is well-suited to the city’s socio-demographic dynamics and fosters a sense of communal responsibility towards climate action. Its straightforward design and positive local impact justify its inclusion in the prioritized actions."
-        },
-        {
-            "locode": "LOC017",
-            "cityName": "GreenCity",
-            "region": "R1",
-            "regionName": "Eastern Region",
-            "actionId": "A017",
-            "actionName": "Sustainable Agriculture Practices",
-            "actionPriority": 17,
-            "explanation": "For the city GreenCity, Sustainable Agriculture Practices were noted for their role in reinforcing local food systems while reducing emissions from agricultural activities. The action aligns with regional environmental characteristics and promotes responsible land use. It offers benefits for community engagement and long-term ecosystem health. Although its outcomes may take longer to manifest, its integration with both mitigation and adaptation strategies supports its placement in the action list."
-        },
-        {
-            "locode": "LOC018",
-            "cityName": "GreenCity",
-            "region": "R1",
-            "regionName": "Eastern Region",
-            "actionId": "A018",
-            "actionName": "Land Use Planning",
-            "actionPriority": 18,
-            "explanation": "For the city GreenCity, refined Land Use Planning was pursued for its significant role in guiding sustainable urban development. The action supports coordinated growth and reduces indirect emissions by optimizing infrastructure placement. It enhances the city’s resilience and ensures that development remains aligned with environmental and community priorities. Its strategic influence across multiple sectors underpins its importance despite its complex implementation process."
-        },
-        {
-            "locode": "LOC019",
-            "cityName": "GreenCity",
-            "region": "R1",
-            "regionName": "Eastern Region",
-            "actionId": "A019",
-            "actionName": "Climate Education Programs",
-            "actionPriority": 19,
-            "explanation": "For the city GreenCity, Climate Education Programs were included to foster greater public awareness and engagement in climate initiatives. The action builds a foundation for informed community participation and supports long-term behavioral change. It is valued for its potential to gradually shift societal norms toward sustainability. While its immediate emissions impact is indirect, the investment in education is seen as crucial for sustained climate action."
-        },
-        {
-            "locode": "LOC020",
-            "cityName": "GreenCity",
-            "region": "R1",
-            "regionName": "Eastern Region",
-            "actionId": "A020",
-            "actionName": "Coastal Restoration",
-            "actionPriority": 20,
-            "explanation": "For the city GreenCity, Coastal Restoration was implemented with careful consideration of the environmental sensitivities of nearby coastal zones. The action helps protect natural buffers and enhances the ecosystem's capacity to sequester carbon naturally. It addresses long-term risks by preserving coastal habitats and mitigating climate-related hazards. Although the benefits require sustained commitment, the approach is well aligned with the city's ecological context."
-        }
-    ]
-}
+[
+    {
+        "locode": "BR CGE",
+        "cityName": "Contagem",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0139",
+        "actionName": "Implementation of urban toll.",
+        "actionPriority": 1
+    },
+    {
+        "locode": "BR CGE",
+        "cityName": "Contagem",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0121",
+        "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
+        "actionPriority": 2
+    },
+    {
+        "locode": "BR CGE",
+        "cityName": "Contagem",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0094",
+        "actionName": "Adoption of biomethane in public fleets.",
+        "actionPriority": 3
+    },
+    {
+        "locode": "BR CGE",
+        "cityName": "Contagem",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0088",
+        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
+        "actionPriority": 4
+    },
+    {
+        "locode": "BR CGE",
+        "cityName": "Contagem",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0068",
+        "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
+        "actionPriority": 5
+    },
+    {
+        "locode": "BR CGE",
+        "cityName": "Contagem",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0042",
+        "actionName": "Encourage renewable energy policies at the municipal level",
+        "actionPriority": 6
+    },
+    {
+        "locode": "BR CGE",
+        "cityName": "Contagem",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0044",
+        "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
+        "actionPriority": 7
+    },
+    {
+        "locode": "BR CGE",
+        "cityName": "Contagem",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "c40_0026",
+        "actionName": "Vehicle Emissions",
+        "actionPriority": 8
+    },
+    {
+        "locode": "BR CGE",
+        "cityName": "Contagem",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0090",
+        "actionName": "Adoption of electric drones for last-mile deliveries.",
+        "actionPriority": 9
+    },
+    {
+        "locode": "BR CGE",
+        "cityName": "Contagem",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0057",
+        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
+        "actionPriority": 10
+    },
+    {
+        "locode": "BR CGE",
+        "cityName": "Contagem",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0118",
+        "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
+        "actionPriority": 11
+    },
+    {
+        "locode": "BR CGE",
+        "cityName": "Contagem",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0024",
+        "actionName": "Integrate renewables into municipal water systems",
+        "actionPriority": 12
+    },
+    {
+        "locode": "BR CGE",
+        "cityName": "Contagem",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0021",
+        "actionName": "Encourage and promote measures for the sustainable and rational use of individual motorized transportation",
+        "actionPriority": 13
+    },
+    {
+        "locode": "BR CGE",
+        "cityName": "Contagem",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0117",
+        "actionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
+        "actionPriority": 14
+    },
+    {
+        "locode": "BR CGE",
+        "cityName": "Contagem",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0092",
+        "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
+        "actionPriority": 15
+    },
+    {
+        "locode": "BR CGE",
+        "cityName": "Contagem",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0038",
+        "actionName": "Promote community solar farms",
+        "actionPriority": 16
+    },
+    {
+        "locode": "BR CGE",
+        "cityName": "Contagem",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0060",
+        "actionName": "Introduction of modular and automated collective transport systems.",
+        "actionPriority": 17
+    },
+    {
+        "locode": "BR CGE",
+        "cityName": "Contagem",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0126",
+        "actionName": "Implementation of green fuel supply infrastructure for aircraft, such as biofuels or green hydrogen.",
+        "actionPriority": 18
+    },
+    {
+        "locode": "BR CGE",
+        "cityName": "Contagem",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0091",
+        "actionName": "Implementation of prioritized routes for sustainable vehicles.",
+        "actionPriority": 19
+    },
+    {
+        "locode": "BR CGE",
+        "cityName": "Contagem",
+        "region": "MG",
+        "regionName": "Minas Gerais",
+        "actionId": "icare_0033",
+        "actionName": "Install biodigesters in rural properties",
+        "actionPriority": 20
+    }
+]

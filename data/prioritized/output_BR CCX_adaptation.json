@@ -1,204 +1,202 @@
-{
-    "actions": [
-        {
-            "locode": "MET001",
-            "cityName": "Metropolis",
-            "region": "CTR",
-            "regionName": "Central Region",
-            "actionId": "A01",
-            "actionName": "New Building Standards",
-            "actionPriority": 1,
-            "explanation": "For Metropolis, New Building Standards is prioritized because it directly addresses emissions from the densely populated residential and commercial sectors. It ensures that future constructions are built with enhanced energy efficiency and reduced carbon footprints, which is vital for a city with significant urban development. The action is well aligned with long-term infrastructure planning and urban resilience."
-        },
-        {
-            "locode": "MET001",
-            "cityName": "Metropolis",
-            "region": "CTR",
-            "regionName": "Central Region",
-            "actionId": "A02",
-            "actionName": "Bus Emissions Reduction",
-            "actionPriority": -1,
-            "explanation": "For Metropolis, Bus Emissions Reduction is recognized for its direct impact on lowering transportation sector emissions. This action leverages the existing public transport network to achieve cleaner air and reduced congestion. Despite requiring operational adjustments, its alignment with the city's mobility challenges makes it a strong climate action focus."
-        },
-        {
-            "locode": "MET001",
-            "cityName": "Metropolis",
-            "region": "CTR",
-            "regionName": "Central Region",
-            "actionId": "A03",
-            "actionName": "Renewable Energy Incentives",
-            "actionPriority": 2,
-            "explanation": "For Metropolis, Renewable Energy Incentives are prioritized due to their potential to shift the city’s energy reliance away from fossil fuels. This approach supports a robust transition to renewable energy, which is essential in reducing long-term greenhouse gas emissions. The incentives foster both economic and environmental benefits, making them well suited to the city's urban profile."
-        },
-        {
-            "locode": "MET001",
-            "cityName": "Metropolis",
-            "region": "CTR",
-            "regionName": "Central Region",
-            "actionId": "A04",
-            "actionName": "Green Urban Infrastructure",
-            "actionPriority": 3,
-            "explanation": "For Metropolis, Green Urban Infrastructure is valued because it integrates nature-based solutions into the urban landscape. It not only mitigates the urban heat island effect but also enhances biodiversity and community well-being. The action’s compatibility with the city’s environmental fabric makes it a strong candidate for sustainable urban development."
-        },
-        {
-            "locode": "MET001",
-            "cityName": "Metropolis",
-            "region": "CTR",
-            "regionName": "Central Region",
-            "actionId": "A05",
-            "actionName": "Waste Management Improvement",
-            "actionPriority": 2,
-            "explanation": "For Metropolis, Waste Management Improvement is prioritized because it effectively reduces greenhouse gas emissions from decomposing waste. It addresses a significant environmental challenge by optimizing waste processing and resource recovery. The comprehensive nature of this action supports both emission reduction and urban cleanliness."
-        },
-        {
-            "locode": "MET001",
-            "cityName": "Metropolis",
-            "region": "CTR",
-            "regionName": "Central Region",
-            "actionId": "A06",
-            "actionName": "Energy Efficient Public Lighting",
-            "actionPriority": 1,
-            "explanation": "For Metropolis, Energy Efficient Public Lighting is recognized for its role in reducing overall energy consumption and related emissions. The action smartly utilizes existing urban infrastructure, ensuring that improvements come with minimal disruption. Its benefits also include enhanced public safety and a reduction in long-term operational costs."
-        },
-        {
-            "locode": "MET001",
-            "cityName": "Metropolis",
-            "region": "CTR",
-            "regionName": "Central Region",
-            "actionId": "A07",
-            "actionName": "Urban Tree Planting",
-            "actionPriority": 2,
-            "explanation": "For Metropolis, Urban Tree Planting is prioritized as it contributes directly to carbon sequestration and urban cooling. The action not only improves air quality but also offers aesthetic and recreational benefits to communities. Its nature-based approach fits well with the city’s need to counter urban heat island effects in a densely populated area."
-        },
-        {
-            "locode": "MET001",
-            "cityName": "Metropolis",
-            "region": "CTR",
-            "regionName": "Central Region",
-            "actionId": "A08",
-            "actionName": "Water Conservation Measures",
-            "actionPriority": 3,
-            "explanation": "For Metropolis, Water Conservation Measures are important for managing the city’s water resources amid increasing climate variability. The action brings together strategies that help in reducing waste and preserving water quality. Its holistic approach enhances urban sustainability by addressing both supply challenges and environmental preservation."
-        },
-        {
-            "locode": "MET001",
-            "cityName": "Metropolis",
-            "region": "CTR",
-            "regionName": "Central Region",
-            "actionId": "A09",
-            "actionName": "Cycling Infrastructure Expansion",
-            "actionPriority": 1,
-            "explanation": "For Metropolis, Cycling Infrastructure Expansion is valued for encouraging sustainable and active transportation. By facilitating safer cycling routes, the action helps reduce reliance on motor vehicles and thus lowers traffic emissions. It also improves overall mobility and promotes healthier lifestyles across the urban population."
-        },
-        {
-            "locode": "MET001",
-            "cityName": "Metropolis",
-            "region": "CTR",
-            "regionName": "Central Region",
-            "actionId": "A10",
-            "actionName": "Industrial Emission Controls",
-            "actionPriority": 3,
-            "explanation": "For Metropolis, Industrial Emission Controls are prioritized as they target significant emission sources within the industrial sector. This action involves upgrading processes and adopting cleaner technologies that benefit both air quality and public health. Its systematic approach ensures that long-standing industrial contributions to greenhouse gas emissions are effectively addressed."
-        },
-        {
-            "locode": "MET001",
-            "cityName": "Metropolis",
-            "region": "CTR",
-            "regionName": "Central Region",
-            "actionId": "A11",
-            "actionName": "Resilient Urban Drainage Systems",
-            "actionPriority": 2,
-            "explanation": "For Metropolis, Resilient Urban Drainage Systems are prioritized to mitigate risks associated with urban flooding. The action strengthens infrastructure to cope with extreme weather events, ensuring safety and continuity of urban services. Its strategic role in reducing climate-related hazards reinforces the city’s overall resilience."
-        },
-        {
-            "locode": "MET001",
-            "cityName": "Metropolis",
-            "region": "CTR",
-            "regionName": "Central Region",
-            "actionId": "A12",
-            "actionName": "Smart Grid Implementation",
-            "actionPriority": 3,
-            "explanation": "For Metropolis, Smart Grid Implementation is emphasized because it modernizes the energy distribution network and supports higher integration of renewable sources. The intelligent management of power aligns with the city’s sustainability goals while enhancing grid reliability. Its forward-thinking design supports both efficiency improvements and environmental benefits."
-        },
-        {
-            "locode": "MET001",
-            "cityName": "Metropolis",
-            "region": "CTR",
-            "regionName": "Central Region",
-            "actionId": "A13",
-            "actionName": "Green Roof Mandates",
-            "actionPriority": 1,
-            "explanation": "For Metropolis, Green Roof Mandates are recognized for their role in enhancing building insulation and reducing urban heat island intensity. This action promotes urban greening without requiring extensive new infrastructure, making it a practical enhancement for existing buildings. Its ability to offer both energy efficiency and aesthetic improvements makes it an important consideration."
-        },
-        {
-            "locode": "MET001",
-            "cityName": "Metropolis",
-            "region": "CTR",
-            "regionName": "Central Region",
-            "actionId": "A14",
-            "actionName": "Electric Vehicle Adoption",
-            "actionPriority": 2,
-            "explanation": "For Metropolis, Electric Vehicle Adoption is prioritized given its potential to significantly cut down tailpipe emissions. The initiative is aligned with the city's goal of modernizing its transportation sector and promoting cleaner alternatives. It leverages existing infrastructure while offering health and environmental benefits through reduced air pollution."
-        },
-        {
-            "locode": "MET001",
-            "cityName": "Metropolis",
-            "region": "CTR",
-            "regionName": "Central Region",
-            "actionId": "A15",
-            "actionName": "Sustainable Land Use Planning",
-            "actionPriority": 3,
-            "explanation": "For Metropolis, Sustainable Land Use Planning is essential because it promotes a balance between urban growth and environmental conservation. This action ensures that development occurs in a way that minimizes ecosystem disruption and preserves natural resources. The approach is tailored to the city’s long-term vision of resilient and sustainable urban expansion."
-        },
-        {
-            "locode": "MET001",
-            "cityName": "Metropolis",
-            "region": "CTR",
-            "regionName": "Central Region",
-            "actionId": "A16",
-            "actionName": "Building Retrofits for Energy Efficiency",
-            "actionPriority": 1,
-            "explanation": "For Metropolis, Building Retrofits for Energy Efficiency are valued for improving the performance of existing structures with minimal new construction. This action directly cuts energy usage and reduces carbon emissions across a wide segment of the urban built environment. Its ease of integration with ongoing city improvements supports both environmental and economic benefits."
-        },
-        {
-            "locode": "MET001",
-            "cityName": "Metropolis",
-            "region": "CTR",
-            "regionName": "Central Region",
-            "actionId": "A17",
-            "actionName": "Local Climate Adaptation Initiatives",
-            "actionPriority": 2,
-            "explanation": "For Metropolis, Local Climate Adaptation Initiatives are prioritized as they address pressing urban vulnerabilities such as heat stress and flooding. The action is designed to integrate with existing community structures and improve overall urban resilience. Its focus on immediate climate risks makes it a vital component of the city's adaptation strategy."
-        },
-        {
-            "locode": "MET001",
-            "cityName": "Metropolis",
-            "region": "CTR",
-            "regionName": "Central Region",
-            "actionId": "A18",
-            "actionName": "Incentivizing Energy Storage Solutions",
-            "actionPriority": 3,
-            "explanation": "For Metropolis, Incentivizing Energy Storage Solutions is considered strategic because it facilitates a more adaptable and reliable energy system. This action helps manage the fluctuations associated with renewable energy and ensures a steady supply for urban consumers. Its innovative approach provides long-term benefits that complement broader renewable integration efforts."
-        },
-        {
-            "locode": "MET001",
-            "cityName": "Metropolis",
-            "region": "CTR",
-            "regionName": "Central Region",
-            "actionId": "A19",
-            "actionName": "Upgrading Public Transit Systems",
-            "actionPriority": 2,
-            "explanation": "For Metropolis, Upgrading Public Transit Systems is emphasized as it improves the efficiency and sustainability of urban mobility. The action reduces emissions by modernizing vehicles and optimizing transit operations, directly addressing transportation-related challenges. Its capacity to deliver broad-based benefits enhances the city’s pursuit of a cleaner and more efficient transit network."
-        },
-        {
-            "locode": "MET001",
-            "cityName": "Metropolis",
-            "region": "CTR",
-            "regionName": "Central Region",
-            "actionId": "A20",
-            "actionName": "Community-based Renewable Projects",
-            "actionPriority": 1,
-            "explanation": "For Metropolis, Community-based Renewable Projects are prioritized due to their ability to engage local stakeholders in the sustainability transition. This action fosters community ownership and encourages widespread adoption of renewable energy among residents. Its decentralized approach not only reduces emissions but also builds a sense of collective responsibility for the urban environment."
-        }
-    ]
-}
+[
+    {
+        "locode": "BR CCX",
+        "cityName": "C\u00e1ceres",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0176",
+        "actionName": "Development of Climate Action Plan",
+        "actionPriority": 1,
+        "explanation": "Ranked #1 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CCX",
+        "cityName": "C\u00e1ceres",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "ipcc_0097",
+        "actionName": "Food storage/distribution improvements",
+        "actionPriority": 2,
+        "explanation": "Ranked #2 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CCX",
+        "cityName": "C\u00e1ceres",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "ipcc_0096",
+        "actionName": "Farm/fishery improvements",
+        "actionPriority": 3,
+        "explanation": "Ranked #3 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CCX",
+        "cityName": "C\u00e1ceres",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "ipcc_0094",
+        "actionName": "Access to health care",
+        "actionPriority": 4,
+        "explanation": "Ranked #4 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CCX",
+        "cityName": "C\u00e1ceres",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "ipcc_0093",
+        "actionName": "Availability of health infrastructure",
+        "actionPriority": 5,
+        "explanation": "Ranked #5 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CCX",
+        "cityName": "C\u00e1ceres",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0169",
+        "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
+        "actionPriority": 6,
+        "explanation": "Ranked #6 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CCX",
+        "cityName": "C\u00e1ceres",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "ipcc_0092",
+        "actionName": "Social safety nets",
+        "actionPriority": 7,
+        "explanation": "Ranked #7 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CCX",
+        "cityName": "C\u00e1ceres",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0162",
+        "actionName": "Strengthen programs for control and conservation of protected areas",
+        "actionPriority": 8,
+        "explanation": "Ranked #8 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CCX",
+        "cityName": "C\u00e1ceres",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0152",
+        "actionName": "Recovery of degraded areas",
+        "actionPriority": 9,
+        "explanation": "Ranked #9 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CCX",
+        "cityName": "C\u00e1ceres",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0151",
+        "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
+        "actionPriority": 10,
+        "explanation": "Ranked #10 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CCX",
+        "cityName": "C\u00e1ceres",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0144",
+        "actionName": "Creation of a Financial Support Program to Adress Extreme Weather Events",
+        "actionPriority": 11,
+        "explanation": "Ranked #11 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CCX",
+        "cityName": "C\u00e1ceres",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0145",
+        "actionName": "Strengthen the healthcare network to attend to climate victims",
+        "actionPriority": 12,
+        "explanation": "Ranked #12 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CCX",
+        "cityName": "C\u00e1ceres",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0164",
+        "actionName": "Hydrological Monitoring System with Telemetry Stations",
+        "actionPriority": 13,
+        "explanation": "Ranked #13 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CCX",
+        "cityName": "C\u00e1ceres",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0149",
+        "actionName": "Encourage sustainable land use practices",
+        "actionPriority": 14,
+        "explanation": "Ranked #14 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CCX",
+        "cityName": "C\u00e1ceres",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0148",
+        "actionName": "Create the Municipal Climate Change Forum",
+        "actionPriority": 15,
+        "explanation": "Ranked #15 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CCX",
+        "cityName": "C\u00e1ceres",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0156",
+        "actionName": "Implementation of urban gardens",
+        "actionPriority": 16,
+        "explanation": "Ranked #16 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CCX",
+        "cityName": "C\u00e1ceres",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "ipcc_0098",
+        "actionName": "Behaviour change in diets and food waste",
+        "actionPriority": 17,
+        "explanation": "Ranked #17 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CCX",
+        "cityName": "C\u00e1ceres",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0175",
+        "actionName": "Recovery and preservation of green areas",
+        "actionPriority": 18,
+        "explanation": "Ranked #18 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CCX",
+        "cityName": "C\u00e1ceres",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0150",
+        "actionName": "Implement Loss Reduction and Control Program promoting water security for the municipality",
+        "actionPriority": 19,
+        "explanation": "Ranked #19 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CCX",
+        "cityName": "C\u00e1ceres",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "ipcc_0095",
+        "actionName": "Disaster early warning",
+        "actionPriority": 20,
+        "explanation": "Ranked #20 by tournament ranking algorithm"
+    }
+]

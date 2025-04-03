@@ -1,204 +1,182 @@
-{
-    "actions": [
-        {
-            "locode": "EX001",
-            "cityName": "ExampleCity",
-            "region": "R1",
-            "regionName": "RegionOne",
-            "actionId": "A1",
-            "actionName": "New Building Standards",
-            "actionPriority": 1,
-            "explanation": "For ExampleCity, New Building Standards are prioritized as they directly address the city’s significant emissions from the built environment. This action effectively targets key emission sources while aligning with local climate and architectural practices. It also offers benefits in energy efficiency and urban resilience, making it a well-rounded measure."
-        },
-        {
-            "locode": "EX002",
-            "cityName": "ExampleCity",
-            "region": "R1",
-            "regionName": "RegionOne",
-            "actionId": "A2",
-            "actionName": "Bus Emissions Reduction",
-            "actionPriority": 2,
-            "explanation": "For ExampleCity, reducing Bus Emissions is important for lowering transport sector emissions. While it improves local air quality and provides some immediate benefits, its overall impact is less pronounced when compared to measures targeting larger emission sectors. It complements other actions but is ranked slightly lower due to its narrower scope."
-        },
-        {
-            "locode": "EX003",
-            "cityName": "ExampleCity",
-            "region": "R1",
-            "regionName": "RegionOne",
-            "actionId": "A3",
-            "actionName": "Renewable Energy Integration",
-            "actionPriority": 3,
-            "explanation": "Renewable Energy Integration is highlighted for ExampleCity due to its robust potential to shift the energy supply towards sustainable sources. It is well-aligned with the city’s environmental conditions and energy demands, offering long-term benefits. The action’s ability to reduce reliance on fossil fuels makes it a strategic priority despite moderate implementation challenges."
-        },
-        {
-            "locode": "EX004",
-            "cityName": "ExampleCity",
-            "region": "R1",
-            "regionName": "RegionOne",
-            "actionId": "A4",
-            "actionName": "Urban Green Spaces",
-            "actionPriority": 4,
-            "explanation": "For ExampleCity, Urban Green Spaces are valued for their role in mitigating urban heat islands and improving local air quality. This action enhances the urban microclimate while promoting community well-being and biodiversity. It is a strategic investment in both adaptation and co-benefits, balancing environmental and social outcomes."
-        },
-        {
-            "locode": "EX005",
-            "cityName": "ExampleCity",
-            "region": "R1",
-            "regionName": "RegionOne",
-            "actionId": "A5",
-            "actionName": "Water Conservation Measures",
-            "actionPriority": 5,
-            "explanation": "Water Conservation Measures are important for ExampleCity as they address local water management challenges and indirectly support emissions reduction. The action helps reduce energy use in water treatment and preserves vital local ecosystems. Its benefits to resource efficiency and environmental sustainability make it a beneficial priority."
-        },
-        {
-            "locode": "EX006",
-            "cityName": "ExampleCity",
-            "region": "R1",
-            "regionName": "RegionOne",
-            "actionId": "A6",
-            "actionName": "Waste Management Improvement",
-            "actionPriority": 6,
-            "explanation": "In ExampleCity, Waste Management Improvement is recognized for its ability to lower emissions from waste disposal and landfills. The action also contributes to improved air quality and reduced environmental contamination. Its integrated approach to municipal waste challenges makes it a commendable climate action."
-        },
-        {
-            "locode": "EX007",
-            "cityName": "ExampleCity",
-            "region": "R1",
-            "regionName": "RegionOne",
-            "actionId": "A7",
-            "actionName": "Energy Efficient Street Lighting",
-            "actionPriority": 7,
-            "explanation": "Energy Efficient Street Lighting is valued in ExampleCity for its role in reducing overall energy consumption. Even though its direct emissions impact may be moderate, the action offers long-term cost savings and modernizes urban infrastructure. Its ease of implementation and compatibility with existing systems support its ranking."
-        },
-        {
-            "locode": "EX008",
-            "cityName": "ExampleCity",
-            "region": "R1",
-            "regionName": "RegionOne",
-            "actionId": "A8",
-            "actionName": "Public Transit Expansion",
-            "actionPriority": 8,
-            "explanation": "For ExampleCity, Public Transit Expansion is an effective measure to reduce reliance on personal vehicles and lower transportation emissions. The action is particularly suited to high-density urban environments and improves mobility for residents. Though it may face scale-up challenges, its potential to significantly reduce overall emissions warrants its inclusion."
-        },
-        {
-            "locode": "EX009",
-            "cityName": "ExampleCity",
-            "region": "R1",
-            "regionName": "RegionOne",
-            "actionId": "A9",
-            "actionName": "Smart Grid Implementation",
-            "actionPriority": 9,
-            "explanation": "Smart Grid Implementation is prioritized in ExampleCity due to its capacity to optimize energy distribution and integrate renewable sources. This action supports the efficient use of energy and reduces inadvertent emissions from the power sector. Its focus on modernizing the grid infrastructure makes it a strategic, though resource-dependent, initiative."
-        },
-        {
-            "locode": "EX010",
-            "cityName": "ExampleCity",
-            "region": "R1",
-            "regionName": "RegionOne",
-            "actionId": "A10",
-            "actionName": "Industrial Process Optimization",
-            "actionPriority": 10,
-            "explanation": "Industrial Process Optimization is seen as beneficial for ExampleCity by targeting emissions in the industrial sector through enhanced efficiency. It focuses on modernizing production processes to lower environmental impacts. Despite practical implementation considerations, its targeted approach to emission reduction is a clear asset."
-        },
-        {
-            "locode": "EX011",
-            "cityName": "ExampleCity",
-            "region": "R1",
-            "regionName": "RegionOne",
-            "actionId": "A11",
-            "actionName": "Coastal Flood Defences",
-            "actionPriority": 11,
-            "explanation": "For coastal areas within ExampleCity, Coastal Flood Defences are crucial for mitigating the increasing risks from climate-induced flooding. While this action does not directly lower greenhouse gas emissions, it significantly bolsters community resilience and protects infrastructure. Its focus on risk reduction and adaptation to climate threats justifies its prioritization."
-        },
-        {
-            "locode": "EX012",
-            "cityName": "ExampleCity",
-            "region": "R1",
-            "regionName": "RegionOne",
-            "actionId": "A12",
-            "actionName": "Urban Heat Island Mitigation",
-            "actionPriority": 12,
-            "explanation": "Urban Heat Island Mitigation is chosen for ExampleCity to address rising urban temperatures and improve living conditions. Through measures such as reflective surfaces and increased vegetation, this action enhances the local climate comfort. Though its direct impact on emissions is modest, its role in climate adaptation supports a more resilient urban environment."
-        },
-        {
-            "locode": "EX013",
-            "cityName": "ExampleCity",
-            "region": "R1",
-            "regionName": "RegionOne",
-            "actionId": "A13",
-            "actionName": "Sustainable Agriculture Practices",
-            "actionPriority": 13,
-            "explanation": "Sustainable Agriculture Practices are relevant for ExampleCity as they drive improvements in local food systems and promote land efficiency. This initiative helps reduce emissions indirectly while bolstering rural sustainability and supporting local economies. Its integration into broader environmental strategies makes it a noteworthy, though secondary, priority."
-        },
-        {
-            "locode": "EX014",
-            "cityName": "ExampleCity",
-            "region": "R1",
-            "regionName": "RegionOne",
-            "actionId": "A14",
-            "actionName": "Deforestation Prevention",
-            "actionPriority": 14,
-            "explanation": "For ExampleCity and its surrounding regions, Deforestation Prevention is key to maintaining vital carbon sinks and protecting biodiversity. The action indirectly contributes to emissions reduction through ecosystem preservation. Though it may encounter policy and implementation complexities, its environmental benefits provide long-term value."
-        },
-        {
-            "locode": "EX015",
-            "cityName": "ExampleCity",
-            "region": "R1",
-            "regionName": "RegionOne",
-            "actionId": "A15",
-            "actionName": "River Basin Management",
-            "actionPriority": 15,
-            "explanation": "River Basin Management is seen as essential for ExampleCity to maintain water quality and manage flood risks effectively. While this action primarily focuses on water resources, it complements broader climate strategies by strengthening ecosystem resilience. Its integrated approach supports environmental sustainability in a holistic manner."
-        },
-        {
-            "locode": "EX016",
-            "cityName": "ExampleCity",
-            "region": "R1",
-            "regionName": "RegionOne",
-            "actionId": "A16",
-            "actionName": "Renewable Heating Initiatives",
-            "actionPriority": 16,
-            "explanation": "Renewable Heating Initiatives are prioritized for ExampleCity as they facilitate the replacement of fossil fuel-based heating systems. This action directly contributes to emissions reduction in the residential and commercial sectors. While infrastructural adjustments are necessary, its alignment with sustainability goals makes it a strategically viable option."
-        },
-        {
-            "locode": "EX017",
-            "cityName": "ExampleCity",
-            "region": "R1",
-            "regionName": "RegionOne",
-            "actionId": "A17",
-            "actionName": "Electric Vehicle Incentives",
-            "actionPriority": 17,
-            "explanation": "Electric Vehicle Incentives are promoted for ExampleCity to encourage a shift towards cleaner transportation options. This action supports a reduction in emissions by decreasing reliance on traditional motor vehicles and fostering new technology adoption. Implementation challenges such as building requisite infrastructure are acknowledged, but the overall contribution to sustainable mobility is clear."
-        },
-        {
-            "locode": "EX018",
-            "cityName": "ExampleCity",
-            "region": "R1",
-            "regionName": "RegionOne",
-            "actionId": "A18",
-            "actionName": "Energy Storage Solutions",
-            "actionPriority": 18,
-            "explanation": "Energy Storage Solutions are considered for ExampleCity for their role in enhancing the reliability of renewable energy systems. This action aids in managing intermittency issues and supports a stable transition to greener power sources. Although it requires significant initial investment and technical coordination, it remains an important complementary measure."
-        },
-        {
-            "locode": "EX019",
-            "cityName": "ExampleCity",
-            "region": "R1",
-            "regionName": "RegionOne",
-            "actionId": "A19",
-            "actionName": "Carbon Capture and Storage",
-            "actionPriority": 19,
-            "explanation": "Carbon Capture and Storage is viewed as a technologically advanced option for addressing hard-to-abate emissions in ExampleCity. While the action holds promise for reducing residual emissions, its reliance on cutting-edge technology and complex regulatory environments poses challenges. The approach is recognized for its long-term potential despite immediate practical limitations."
-        },
-        {
-            "locode": "EX020",
-            "cityName": "ExampleCity",
-            "region": "R1",
-            "regionName": "RegionOne",
-            "actionId": "A20",
-            "actionName": "Community Climate Education",
-            "actionPriority": 20,
-            "explanation": "Community Climate Education is prioritized for ExampleCity as a long-term strategy to build awareness and support for climate initiatives. While it does not directly reduce emissions, it lays the groundwork for informed community participation in sustainability efforts. Empowering citizens with knowledge creates a foundation for future climate actions and supports overall resilience."
-        }
-    ]
-}
+[
+    {
+        "locode": "BR ATB",
+        "cityName": "Abaetetuba",
+        "region": "PA",
+        "regionName": "Par\u00e1",
+        "actionId": "icare_0050",
+        "actionName": "Implement Agroforestry Systems",
+        "actionPriority": 1
+    },
+    {
+        "locode": "BR ATB",
+        "cityName": "Abaetetuba",
+        "region": "PA",
+        "regionName": "Par\u00e1",
+        "actionId": "icare_0133",
+        "actionName": "Promote Urban Reforestation and Green Corridors",
+        "actionPriority": 2
+    },
+    {
+        "locode": "BR ATB",
+        "cityName": "Abaetetuba",
+        "region": "PA",
+        "regionName": "Par\u00e1",
+        "actionId": "icare_0134",
+        "actionName": "Strengthen Mechanisms for Deforestation Control",
+        "actionPriority": 3
+    },
+    {
+        "locode": "BR ATB",
+        "cityName": "Abaetetuba",
+        "region": "PA",
+        "regionName": "Par\u00e1",
+        "actionId": "icare_0130",
+        "actionName": "Conduct Technical Assistance and Rural Extension (ATER) Actions",
+        "actionPriority": 4
+    },
+    {
+        "locode": "BR ATB",
+        "cityName": "Abaetetuba",
+        "region": "PA",
+        "regionName": "Par\u00e1",
+        "actionId": "icare_0128",
+        "actionName": "Establish Municipal Programs for Payment for Environmental Services (PES)",
+        "actionPriority": 5
+    },
+    {
+        "locode": "BR ATB",
+        "cityName": "Abaetetuba",
+        "region": "PA",
+        "regionName": "Par\u00e1",
+        "actionId": "icare_0129",
+        "actionName": "Facilitate Technology Transfer for Conservation Practices",
+        "actionPriority": 6
+    },
+    {
+        "locode": "BR ATB",
+        "cityName": "Abaetetuba",
+        "region": "PA",
+        "regionName": "Par\u00e1",
+        "actionId": "icare_0100",
+        "actionName": "Support Regenerative Agriculture Practices",
+        "actionPriority": 7
+    },
+    {
+        "locode": "BR ATB",
+        "cityName": "Abaetetuba",
+        "region": "PA",
+        "regionName": "Par\u00e1",
+        "actionId": "icare_0084",
+        "actionName": "Create Incentives for Agroforestry Practices in Livestock Systems",
+        "actionPriority": 8
+    },
+    {
+        "locode": "BR ATB",
+        "cityName": "Abaetetuba",
+        "region": "PA",
+        "regionName": "Par\u00e1",
+        "actionId": "icare_0096",
+        "actionName": "Promote Organic Farming",
+        "actionPriority": 9
+    },
+    {
+        "locode": "BR ATB",
+        "cityName": "Abaetetuba",
+        "region": "PA",
+        "regionName": "Par\u00e1",
+        "actionId": "icare_0102",
+        "actionName": "Promote Sustainable Agricultural Practices",
+        "actionPriority": 10
+    },
+    {
+        "locode": "BR ATB",
+        "cityName": "Abaetetuba",
+        "region": "PA",
+        "regionName": "Par\u00e1",
+        "actionId": "icare_0101",
+        "actionName": "Encourage the Use of Low-Emission Agricultural Machinery",
+        "actionPriority": 11
+    },
+    {
+        "locode": "BR ATB",
+        "cityName": "Abaetetuba",
+        "region": "PA",
+        "regionName": "Par\u00e1",
+        "actionId": "icare_0127",
+        "actionName": "Accelerate Environmental Regularization of Rural Properties",
+        "actionPriority": 12
+    },
+    {
+        "locode": "BR ATB",
+        "cityName": "Abaetetuba",
+        "region": "PA",
+        "regionName": "Par\u00e1",
+        "actionId": "icare_0131",
+        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
+        "actionPriority": 13
+    },
+    {
+        "locode": "BR ATB",
+        "cityName": "Abaetetuba",
+        "region": "PA",
+        "regionName": "Par\u00e1",
+        "actionId": "icare_0136",
+        "actionName": "Support the Implementation of Ecological Fiscal Incentives",
+        "actionPriority": 14
+    },
+    {
+        "locode": "BR ATB",
+        "cityName": "Abaetetuba",
+        "region": "PA",
+        "regionName": "Par\u00e1",
+        "actionId": "icare_0132",
+        "actionName": "Encourage Local Agroecological Production and Short Supply Chains",
+        "actionPriority": 15
+    },
+    {
+        "locode": "BR ATB",
+        "cityName": "Abaetetuba",
+        "region": "PA",
+        "regionName": "Par\u00e1",
+        "actionId": "icare_0085",
+        "actionName": "Promote the Adoption of Agroecological Pest Control",
+        "actionPriority": 16
+    },
+    {
+        "locode": "BR ATB",
+        "cityName": "Abaetetuba",
+        "region": "PA",
+        "regionName": "Par\u00e1",
+        "actionId": "icare_0099",
+        "actionName": "Support Agroecological Certification Programs",
+        "actionPriority": 17
+    },
+    {
+        "locode": "BR ATB",
+        "cityName": "Abaetetuba",
+        "region": "PA",
+        "regionName": "Par\u00e1",
+        "actionId": "ipcc_0052",
+        "actionName": "Reduce Deforestation and Degradation",
+        "actionPriority": 18
+    },
+    {
+        "locode": "BR ATB",
+        "cityName": "Abaetetuba",
+        "region": "PA",
+        "regionName": "Par\u00e1",
+        "actionId": "ipcc_0061",
+        "actionName": "Soil Carbon Management in Croplands and Grasslands",
+        "actionPriority": 19
+    },
+    {
+        "locode": "BR ATB",
+        "cityName": "Abaetetuba",
+        "region": "PA",
+        "regionName": "Par\u00e1",
+        "actionId": "icare_0045",
+        "actionName": "Promote organic and agroecological agriculture in the rural areas",
+        "actionPriority": 20
+    }
+]

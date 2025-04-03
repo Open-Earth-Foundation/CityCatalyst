@@ -1,204 +1,182 @@
-{
-    "actions": [
-        {
-            "locode": "EC123",
-            "cityName": "EcoCity",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "A1",
-            "actionName": "New Building Standards",
-            "actionPriority": 1,
-            "explanation": "For EcoCity, the action New Building Standards was prioritized because it directly addresses the construction sector, which is a major contributor to local emissions. Its design is well-aligned with the urban fabric and environmental goals of the city. Moreover, the approach is cost-effective with a shorter timeline for implementation and offers significant co-benefits for public health and indoor living conditions."
-        },
-        {
-            "locode": "EC123",
-            "cityName": "EcoCity",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "A2",
-            "actionName": "Bus Emissions Control",
-            "actionPriority": 2,
-            "explanation": "For EcoCity, Bus Emissions Control received a high ranking because it effectively targets the transport sector, a key area impacting the city’s air quality. The measure resonates with the existing urban mobility framework and offers co-benefits like reduced local pollution. Its implementation is achievable within a manageable timeline and is well suited to the city’s infrastructure."
-        },
-        {
-            "locode": "EC123",
-            "cityName": "EcoCity",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "A3",
-            "actionName": "Solar Energy Adoption",
-            "actionPriority": 3,
-            "explanation": "For EcoCity, Solar Energy Adoption was advanced in priority due to its strong potential for reducing greenhouse gas emissions. The action aligns with the city’s sunny climate and supports a shift towards renewable energy. Additionally, its cost-effectiveness and scalability, along with reduced dependency on fossil fuels, contribute to its favorable ranking."
-        },
-        {
-            "locode": "EC123",
-            "cityName": "EcoCity",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "A4",
-            "actionName": "Wind Energy Expansion",
-            "actionPriority": 4,
-            "explanation": "For EcoCity, Wind Energy Expansion is prioritized due to its ability to harness local wind resources effectively, thereby reducing reliance on conventional energy sources. The action fits well with the environmental context of the region and promotes a sustainable energy mix. Its implementation is considered practical with clear benefits in emissions reduction and risk mitigation."
-        },
-        {
-            "locode": "EC123",
-            "cityName": "EcoCity",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "A5",
-            "actionName": "Urban Tree Planting",
-            "actionPriority": 5,
-            "explanation": "For EcoCity, Urban Tree Planting is valued for its multiple benefits including carbon absorption and enhancement of urban biodiversity. The intervention complements local environmental conditions and improves urban microclimates. Its low cost, ease of deployment, and contribution to risk reduction through enhanced green spaces further support its ranking."
-        },
-        {
-            "locode": "EC123",
-            "cityName": "EcoCity",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "A6",
-            "actionName": "Energy Efficiency Programs",
-            "actionPriority": 6,
-            "explanation": "For EcoCity, Energy Efficiency Programs were ranked highly due to their focus on reducing energy waste and lowering overall emissions from key urban sectors. The action is compatible with the city’s infrastructure and offers practical, cost-effective improvements. It also presents a relatively quick return on investment and addresses essential socio-economic factors."
-        },
-        {
-            "locode": "EC123",
-            "cityName": "EcoCity",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "A7",
-            "actionName": "Water Conservation Initiatives",
-            "actionPriority": 7,
-            "explanation": "For EcoCity, Water Conservation Initiatives are prioritized as they address the critical need for managing water resources in changing climate conditions. The action is well-suited to the region’s environmental challenges and supports long-term sustainability. Its implementation can be integrated with existing urban policies while enhancing risk reduction and community resilience."
-        },
-        {
-            "locode": "EC123",
-            "cityName": "EcoCity",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "A8",
-            "actionName": "Sustainable Transport Infrastructure",
-            "actionPriority": 8,
-            "explanation": "For EcoCity, Sustainable Transport Infrastructure is valued for its role in reshaping urban mobility to lower emissions. The focus on modernizing transport networks aligns with the city’s development goals and reduces environmental strain. Its cost-effectiveness and ability to rapidly deliver benefits make it a strategically solid choice for urban sustainability."
-        },
-        {
-            "locode": "EC123",
-            "cityName": "EcoCity",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "A9",
-            "actionName": "Advanced Waste Management",
-            "actionPriority": 9,
-            "explanation": "For EcoCity, Advanced Waste Management was chosen to enhance resource recovery and reduce landfill emissions. The approach fits the city’s environmental challenges by turning waste into valuable resources. Its alignment with urban sustainability strategies and cost-effective measures contributes to lowering overall environmental risks."
-        },
-        {
-            "locode": "EC123",
-            "cityName": "EcoCity",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "A10",
-            "actionName": "Green Roofs Installation",
-            "actionPriority": 10,
-            "explanation": "For EcoCity, Green Roofs Installation is appreciated for its multifaceted benefits including reduced urban heat island effects and improved stormwater management. The measure aligns with the city's architectural trends and enhances environmental quality. Its relatively straightforward deployment and supplementary benefits in energy saving inform its ranking."
-        },
-        {
-            "locode": "EC123",
-            "cityName": "EcoCity",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "A11",
-            "actionName": "Retrofitting Buildings for Energy Efficiency",
-            "actionPriority": 11,
-            "explanation": "For EcoCity, Retrofitting Buildings for Energy Efficiency was prioritized due to its ability to significantly improve energy use in older infrastructure. The action suits the urban context and is recognized for delivering long-term emission reductions. Its integration with existing building policies and lower dependency on external resources further justify its ranking."
-        },
-        {
-            "locode": "EC123",
-            "cityName": "EcoCity",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "A12",
-            "actionName": "Industrial Emission Controls",
-            "actionPriority": 12,
-            "explanation": "For EcoCity, Industrial Emission Controls were advanced in the ranking because of their direct impact on reducing pollutants from a critical economic sector. The action aligns with the industrial profile of the city and addresses key environmental risks. Its design is attuned to feasible implementation and cost-effectiveness while offering substantial co-benefits."
-        },
-        {
-            "locode": "EC123",
-            "cityName": "EcoCity",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "A13",
-            "actionName": "Public Awareness Campaign on Climate Change",
-            "actionPriority": 13,
-            "explanation": "For EcoCity, the Public Awareness Campaign on Climate Change is valued for its role in engaging the community and driving behavioral change. This action reinforces the importance of a collective response and builds local capacity for sustainability. Its relatively low implementation cost and broad socio-demographic reach contribute to its supportive role in the overall climate strategy."
-        },
-        {
-            "locode": "EC123",
-            "cityName": "EcoCity",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "A14",
-            "actionName": "Flood Defense System Upgrade",
-            "actionPriority": 14,
-            "explanation": "For EcoCity, the Flood Defense System Upgrade was recognized for its focus on mitigating climate-induced risks in vulnerable areas. The action is particularly relevant given the local topography and hydrological challenges. Its strategic value in reducing potential damages and safeguarding the community underpins its ranking."
-        },
-        {
-            "locode": "EC123",
-            "cityName": "EcoCity",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "A15",
-            "actionName": "Coastal Restoration Projects",
-            "actionPriority": 15,
-            "explanation": "For EcoCity, Coastal Restoration Projects are seen as important for enhancing resilience against climate impacts along waterfront areas. The initiative not only contributes to improved natural barriers but also supports local biodiversity. Its compatibility with regional environmental conditions and longer-term benefits in risk reduction inform its selection."
-        },
-        {
-            "locode": "EC123",
-            "cityName": "EcoCity",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "A16",
-            "actionName": "Smart Grid Implementation",
-            "actionPriority": 16,
-            "explanation": "For EcoCity, Smart Grid Implementation is regarded as a transformative step toward modernizing the energy sector. The action enhances system efficiency and is designed to integrate renewable sources seamlessly while ensuring grid stability. Its forward-looking approach, even with necessary upfront investments, supports its placement within the action list."
-        },
-        {
-            "locode": "EC123",
-            "cityName": "EcoCity",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "A17",
-            "actionName": "Electric Vehicle Incentives",
-            "actionPriority": 17,
-            "explanation": "For EcoCity, Electric Vehicle Incentives are appreciated for their role in reducing transport emissions and promoting sustainable mobility. The policy is well aligned with urban transport strategies and offers added benefits to public health by lowering tailpipe emissions. Its design, aimed at accelerating market adoption, makes it a pragmatic component of the climate strategy."
-        },
-        {
-            "locode": "EC123",
-            "cityName": "EcoCity",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "A18",
-            "actionName": "Urban Green Spaces Development",
-            "actionPriority": 18,
-            "explanation": "For EcoCity, Urban Green Spaces Development is valued for enhancing the quality of urban life through increased vegetation and recreational areas. This action contributes indirectly to emissions reduction by supporting cooler urban microclimates. Its integration with community planning and the long-term socio-environmental benefits justify its role in the overall strategy."
-        },
-        {
-            "locode": "EC123",
-            "cityName": "EcoCity",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "A19",
-            "actionName": "Renewable Heating Transition",
-            "actionPriority": 19,
-            "explanation": "For EcoCity, Renewable Heating Transition is recognized for its capacity to shift heating systems away from fossil fuels toward more sustainable alternatives. The measure is appropriate given the city’s climate and infrastructure, and contributes modestly to overall emissions reductions. Its role in diversifying energy sources and aligning with future sustainability targets supports its considered placement."
-        },
-        {
-            "locode": "EC123",
-            "cityName": "EcoCity",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "A20",
-            "actionName": "Carbon Pricing Mechanisms",
-            "actionPriority": 20,
-            "explanation": "For EcoCity, Carbon Pricing Mechanisms are included to create market incentives for reducing emissions across various sectors. The approach is designed to promote cost-effective shifts toward greener alternatives and internalize environmental costs. While its impact is more systemic, the method supports long-term transformation in economic behavior and complements other climate actions."
-        }
-    ]
-}
+[
+    {
+        "locode": "BR JPR",
+        "cityName": "Ji-Paran\u00e1",
+        "region": "RO",
+        "regionName": "Rond\u00f4nia",
+        "actionId": "icare_0050",
+        "actionName": "Implement Agroforestry Systems",
+        "actionPriority": 1
+    },
+    {
+        "locode": "BR JPR",
+        "cityName": "Ji-Paran\u00e1",
+        "region": "RO",
+        "regionName": "Rond\u00f4nia",
+        "actionId": "icare_0134",
+        "actionName": "Strengthen Mechanisms for Deforestation Control",
+        "actionPriority": 2
+    },
+    {
+        "locode": "BR JPR",
+        "cityName": "Ji-Paran\u00e1",
+        "region": "RO",
+        "regionName": "Rond\u00f4nia",
+        "actionId": "icare_0133",
+        "actionName": "Promote Urban Reforestation and Green Corridors",
+        "actionPriority": 3
+    },
+    {
+        "locode": "BR JPR",
+        "cityName": "Ji-Paran\u00e1",
+        "region": "RO",
+        "regionName": "Rond\u00f4nia",
+        "actionId": "icare_0128",
+        "actionName": "Establish Municipal Programs for Payment for Environmental Services (PES)",
+        "actionPriority": 4
+    },
+    {
+        "locode": "BR JPR",
+        "cityName": "Ji-Paran\u00e1",
+        "region": "RO",
+        "regionName": "Rond\u00f4nia",
+        "actionId": "icare_0129",
+        "actionName": "Facilitate Technology Transfer for Conservation Practices",
+        "actionPriority": 5
+    },
+    {
+        "locode": "BR JPR",
+        "cityName": "Ji-Paran\u00e1",
+        "region": "RO",
+        "regionName": "Rond\u00f4nia",
+        "actionId": "icare_0130",
+        "actionName": "Conduct Technical Assistance and Rural Extension (ATER) Actions",
+        "actionPriority": 6
+    },
+    {
+        "locode": "BR JPR",
+        "cityName": "Ji-Paran\u00e1",
+        "region": "RO",
+        "regionName": "Rond\u00f4nia",
+        "actionId": "icare_0102",
+        "actionName": "Promote Sustainable Agricultural Practices",
+        "actionPriority": 7
+    },
+    {
+        "locode": "BR JPR",
+        "cityName": "Ji-Paran\u00e1",
+        "region": "RO",
+        "regionName": "Rond\u00f4nia",
+        "actionId": "icare_0100",
+        "actionName": "Support Regenerative Agriculture Practices",
+        "actionPriority": 8
+    },
+    {
+        "locode": "BR JPR",
+        "cityName": "Ji-Paran\u00e1",
+        "region": "RO",
+        "regionName": "Rond\u00f4nia",
+        "actionId": "icare_0096",
+        "actionName": "Promote Organic Farming",
+        "actionPriority": 9
+    },
+    {
+        "locode": "BR JPR",
+        "cityName": "Ji-Paran\u00e1",
+        "region": "RO",
+        "regionName": "Rond\u00f4nia",
+        "actionId": "icare_0084",
+        "actionName": "Create Incentives for Agroforestry Practices in Livestock Systems",
+        "actionPriority": 10
+    },
+    {
+        "locode": "BR JPR",
+        "cityName": "Ji-Paran\u00e1",
+        "region": "RO",
+        "regionName": "Rond\u00f4nia",
+        "actionId": "icare_0101",
+        "actionName": "Encourage the Use of Low-Emission Agricultural Machinery",
+        "actionPriority": 11
+    },
+    {
+        "locode": "BR JPR",
+        "cityName": "Ji-Paran\u00e1",
+        "region": "RO",
+        "regionName": "Rond\u00f4nia",
+        "actionId": "icare_0127",
+        "actionName": "Accelerate Environmental Regularization of Rural Properties",
+        "actionPriority": 12
+    },
+    {
+        "locode": "BR JPR",
+        "cityName": "Ji-Paran\u00e1",
+        "region": "RO",
+        "regionName": "Rond\u00f4nia",
+        "actionId": "icare_0131",
+        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
+        "actionPriority": 13
+    },
+    {
+        "locode": "BR JPR",
+        "cityName": "Ji-Paran\u00e1",
+        "region": "RO",
+        "regionName": "Rond\u00f4nia",
+        "actionId": "icare_0085",
+        "actionName": "Promote the Adoption of Agroecological Pest Control",
+        "actionPriority": 14
+    },
+    {
+        "locode": "BR JPR",
+        "cityName": "Ji-Paran\u00e1",
+        "region": "RO",
+        "regionName": "Rond\u00f4nia",
+        "actionId": "icare_0099",
+        "actionName": "Support Agroecological Certification Programs",
+        "actionPriority": 15
+    },
+    {
+        "locode": "BR JPR",
+        "cityName": "Ji-Paran\u00e1",
+        "region": "RO",
+        "regionName": "Rond\u00f4nia",
+        "actionId": "icare_0132",
+        "actionName": "Encourage Local Agroecological Production and Short Supply Chains",
+        "actionPriority": 16
+    },
+    {
+        "locode": "BR JPR",
+        "cityName": "Ji-Paran\u00e1",
+        "region": "RO",
+        "regionName": "Rond\u00f4nia",
+        "actionId": "icare_0136",
+        "actionName": "Support the Implementation of Ecological Fiscal Incentives",
+        "actionPriority": 17
+    },
+    {
+        "locode": "BR JPR",
+        "cityName": "Ji-Paran\u00e1",
+        "region": "RO",
+        "regionName": "Rond\u00f4nia",
+        "actionId": "ipcc_0052",
+        "actionName": "Reduce Deforestation and Degradation",
+        "actionPriority": 18
+    },
+    {
+        "locode": "BR JPR",
+        "cityName": "Ji-Paran\u00e1",
+        "region": "RO",
+        "regionName": "Rond\u00f4nia",
+        "actionId": "ipcc_0061",
+        "actionName": "Soil Carbon Management in Croplands and Grasslands",
+        "actionPriority": 19
+    },
+    {
+        "locode": "BR JPR",
+        "cityName": "Ji-Paran\u00e1",
+        "region": "RO",
+        "regionName": "Rond\u00f4nia",
+        "actionId": "ipcc_0053",
+        "actionName": "Afforestation, Reforestation and Forest Ecosystem Restoration",
+        "actionPriority": 20
+    }
+]

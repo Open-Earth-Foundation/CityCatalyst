@@ -1,204 +1,182 @@
-{
-    "actions": [
-        {
-            "locode": "MV",
-            "cityName": "Metroville",
-            "region": "R1",
-            "regionName": "Central Region",
-            "actionId": "A1",
-            "actionName": "New Building Standards",
-            "actionPriority": 1,
-            "explanation": "For Metroville, New Building Standards are prioritized because they focus on reducing emissions from high-energy consumption buildings, a key contributor to the city's overall greenhouse gas output. This action is designed with sector-specific strategies that match the city’s dominant construction and infrastructure profile. It aligns well with local environmental conditions and offers sustainable improvements that benefit both current and future residents."
-        },
-        {
-            "locode": "MV",
-            "cityName": "Metroville",
-            "region": "R1",
-            "regionName": "Central Region",
-            "actionId": "A2",
-            "actionName": "Public Transit Electrification",
-            "actionPriority": 2,
-            "explanation": "Public Transit Electrification is valued in Metroville as it directly targets a critical emission source by reducing reliance on fossil fuels in urban mobility. The strategy supports the city’s dense transportation network and improves air quality. Its implementation is relatively streamlined, promising timely benefits that align with Metroville’s sustainability objectives."
-        },
-        {
-            "locode": "MV",
-            "cityName": "Metroville",
-            "region": "R1",
-            "regionName": "Central Region",
-            "actionId": "A3",
-            "actionName": "Renewable Energy Incentives",
-            "actionPriority": 3,
-            "explanation": "Renewable Energy Incentives are well-suited for Metroville, as they foster a shift towards cleaner energy sources and lower overall emissions. The action supports the city’s transition to sustainable energy production, aligning with its long-term environmental goals. It is designed to be cost-effective and scalable, ensuring that environmental benefits are achieved with practical implementation within the urban context."
-        },
-        {
-            "locode": "MV",
-            "cityName": "Metroville",
-            "region": "R1",
-            "regionName": "Central Region",
-            "actionId": "A4",
-            "actionName": "Energy Efficiency Retrofits",
-            "actionPriority": 4,
-            "explanation": "Energy Efficiency Retrofits are prioritized in Metroville because they target energy-intensive infrastructures to improve performance and reduce emissions. This action is particularly relevant for the city’s established building stock, offering significant improvements in energy consumption patterns. It also contributes to risk reduction by enhancing the durability and sustainability of existing structures without complex dependencies."
-        },
-        {
-            "locode": "MV",
-            "cityName": "Metroville",
-            "region": "R1",
-            "regionName": "Central Region",
-            "actionId": "A5",
-            "actionName": "Solar Panel Subsidies",
-            "actionPriority": 5,
-            "explanation": "Solar Panel Subsidies are a strong candidate for Metroville owing to their direct role in reducing carbon emissions through clean energy generation. This action leverages the city’s favorable solar conditions to promote renewable energy adoption while being economically attractive. Its approach is designed to stimulate widespread adoption and community engagement, which reinforces the city's overall sustainability strategy."
-        },
-        {
-            "locode": "MV",
-            "cityName": "Metroville",
-            "region": "R1",
-            "regionName": "Central Region",
-            "actionId": "A6",
-            "actionName": "Industrial Emission Controls",
-            "actionPriority": 6,
-            "explanation": "Industrial Emission Controls in Metroville are important because they target emissions at their source within key economic sectors. This intervention is tailored to mitigate risks associated with industrial pollution while driving significant environmental improvements. It also aligns well with regulatory frameworks and supports long-term public health benefits across the city."
-        },
-        {
-            "locode": "MV",
-            "cityName": "Metroville",
-            "region": "R1",
-            "regionName": "Central Region",
-            "actionId": "A7",
-            "actionName": "Smart Grid Implementation",
-            "actionPriority": 7,
-            "explanation": "Smart Grid Implementation enhances Metroville's energy management by ensuring efficient distribution and reduced waste. The action is well integrated with the city’s capacity for technological innovation, enabling a more responsive energy system. It contributes to lowering emissions indirectly by optimizing energy usage across various sectors, which is critical for long-term sustainability."
-        },
-        {
-            "locode": "MV",
-            "cityName": "Metroville",
-            "region": "R1",
-            "regionName": "Central Region",
-            "actionId": "A8",
-            "actionName": "Urban Heat Mitigation",
-            "actionPriority": 8,
-            "explanation": "Urban Heat Mitigation measures are essential for addressing the elevated temperatures experienced in densely built areas of Metroville. By reducing the urban heat island effect, this action improves the overall quality of life and lessens energy demand for cooling. Its design is closely aligned with the city’s climatic challenges and contributes broadly to both public health and environmental resilience."
-        },
-        {
-            "locode": "MV",
-            "cityName": "Metroville",
-            "region": "R1",
-            "regionName": "Central Region",
-            "actionId": "A9",
-            "actionName": "Flood Defense Systems",
-            "actionPriority": 9,
-            "explanation": "Flood Defense Systems are strategically important for Metroville, given its vulnerability to climate-related water hazards. The action focuses on protecting critical infrastructure and communities from flood risks, matching the city's specific environmental challenges. It ensures effective risk reduction and aids in long-term resilience planning by incorporating foresight into urban development."
-        },
-        {
-            "locode": "MV",
-            "cityName": "Metroville",
-            "region": "R1",
-            "regionName": "Central Region",
-            "actionId": "A10",
-            "actionName": "Coastal Restoration",
-            "actionPriority": 10,
-            "explanation": "Coastal Restoration is aimed at strengthening natural buffers in Metroville, which is essential for mitigating storm surges and sea-level rise. This action supports ecosystem recovery and reinforces the city’s natural defenses, aligning with long-term environmental adaptation strategies. Its design underscores the importance of restoring natural habitats that deliver both protective and recreational benefits to the community."
-        },
-        {
-            "locode": "MV",
-            "cityName": "Metroville",
-            "region": "R1",
-            "regionName": "Central Region",
-            "actionId": "A11",
-            "actionName": "Tree Planting Initiative",
-            "actionPriority": 11,
-            "explanation": "A Tree Planting Initiative in Metroville offers multiple benefits by enhancing urban green spaces and improving air quality. It contributes to carbon sequestration over the long term while also creating a healthier living environment. Although its full impact unfolds gradually, this action is well aligned with community and environmental goals, fostering broader ecological improvement."
-        },
-        {
-            "locode": "MV",
-            "cityName": "Metroville",
-            "region": "R1",
-            "regionName": "Central Region",
-            "actionId": "A12",
-            "actionName": "Soil Carbon Sequestration",
-            "actionPriority": 12,
-            "explanation": "Soil Carbon Sequestration is an important action for Metroville as it leverages natural processes to absorb atmospheric carbon. This approach complements both urban and surrounding rural land management practices while enhancing soil fertility. It offers a sustainable pathway for climate mitigation that aligns with long-term environmental health and agricultural productivity."
-        },
-        {
-            "locode": "MV",
-            "cityName": "Metroville",
-            "region": "R1",
-            "regionName": "Central Region",
-            "actionId": "A13",
-            "actionName": "Bus Emissions",
-            "actionPriority": 13,
-            "explanation": "Efforts to reduce Bus Emissions in Metroville concentrate on modernizing transit fleets and adopting cleaner fuels. This action specifically benefits the public transportation sector by addressing emissions where a large segment of the population is affected. It is recognized for its contribution to urban air quality improvements and fits within the broader framework of sustainable mobility initiatives."
-        },
-        {
-            "locode": "MV",
-            "cityName": "Metroville",
-            "region": "R1",
-            "regionName": "Central Region",
-            "actionId": "A14",
-            "actionName": "Cycling Infrastructure",
-            "actionPriority": 14,
-            "explanation": "Cycling Infrastructure enhancements in Metroville promote an active and environmentally friendly mode of transport. This measure reduces dependency on motorized vehicles, thus lowering overall emissions while also benefiting public health through increased physical activity. Its integration into the urban framework supports both cost-effective mobility and a reduction in climate risks on a community level."
-        },
-        {
-            "locode": "MV",
-            "cityName": "Metroville",
-            "region": "R1",
-            "regionName": "Central Region",
-            "actionId": "A15",
-            "actionName": "Water Conservation Measures",
-            "actionPriority": 15,
-            "explanation": "Water Conservation Measures are vital for Metroville as they ensure the sustainable use of water resources amid growing urban demands. This action not only improves resource efficiency but also supports energy savings by reducing the need for intensive water treatment. It is well suited to the city’s environmental conditions and economic considerations, contributing to overall climate resilience."
-        },
-        {
-            "locode": "MV",
-            "cityName": "Metroville",
-            "region": "R1",
-            "regionName": "Central Region",
-            "actionId": "A16",
-            "actionName": "Sustainable Agricultural Practices",
-            "actionPriority": 16,
-            "explanation": "Sustainable Agricultural Practices are tailored for areas around Metroville where agriculture plays a significant role. This action promotes methods that reduce emissions, improve soil health, and enhance local biodiversity. Its implementation requires coordinated efforts but ultimately contributes to a balanced approach between economic needs and environmental stewardship."
-        },
-        {
-            "locode": "MV",
-            "cityName": "Metroville",
-            "region": "R1",
-            "regionName": "Central Region",
-            "actionId": "A17",
-            "actionName": "Waste-to-Energy",
-            "actionPriority": 17,
-            "explanation": "Waste-to-Energy initiatives in Metroville address two challenges simultaneously by managing waste and generating energy. This dual-purpose action supports a reduction in landfill use while contributing to a lower carbon footprint. Its technical design is aimed at resource optimization and plays an integral role in the city's broader strategy for sustainable energy practices."
-        },
-        {
-            "locode": "MV",
-            "cityName": "Metroville",
-            "region": "R1",
-            "regionName": "Central Region",
-            "actionId": "A18",
-            "actionName": "Waste Reduction Campaign",
-            "actionPriority": 18,
-            "explanation": "A Waste Reduction Campaign in Metroville focuses on lowering waste generation through public awareness and behavioral changes. This action is cost-effective and builds community resilience by promoting sustainable consumption patterns. Its emphasis on risk reduction and improved waste management supports a cleaner and more resource-efficient urban environment."
-        },
-        {
-            "locode": "MV",
-            "cityName": "Metroville",
-            "region": "R1",
-            "regionName": "Central Region",
-            "actionId": "A19",
-            "actionName": "Green Roof Adoption",
-            "actionPriority": 19,
-            "explanation": "Green Roof Adoption in Metroville is encouraged for its contribution to energy efficiency and urban cooling, reducing the strain on conventional air conditioning. This initiative also enhances building aesthetics and contributes to improved urban biodiversity. Its design aligns with sustainable building practices that gradually improve the city’s resilience to heat and environmental stresses."
-        },
-        {
-            "locode": "MV",
-            "cityName": "Metroville",
-            "region": "R1",
-            "regionName": "Central Region",
-            "actionId": "A20",
-            "actionName": "Green Investment Fund",
-            "actionPriority": 20,
-            "explanation": "A Green Investment Fund in Metroville is aimed at mobilizing financial resources to support a wide range of sustainable projects. This action underpins many climate-positive initiatives by encouraging investments that yield environmental and economic benefits. It opens avenues for innovation and broad participation, ensuring that multiple sectors contribute to the city’s long-term climate resilience."
-        }
-    ]
-}
+[
+    {
+        "locode": "BR BVB",
+        "cityName": "Boa Vista",
+        "region": "RR",
+        "regionName": "Roraima",
+        "actionId": "icare_0050",
+        "actionName": "Implement Agroforestry Systems",
+        "actionPriority": 1
+    },
+    {
+        "locode": "BR BVB",
+        "cityName": "Boa Vista",
+        "region": "RR",
+        "regionName": "Roraima",
+        "actionId": "icare_0133",
+        "actionName": "Promote Urban Reforestation and Green Corridors",
+        "actionPriority": 2
+    },
+    {
+        "locode": "BR BVB",
+        "cityName": "Boa Vista",
+        "region": "RR",
+        "regionName": "Roraima",
+        "actionId": "icare_0134",
+        "actionName": "Strengthen Mechanisms for Deforestation Control",
+        "actionPriority": 3
+    },
+    {
+        "locode": "BR BVB",
+        "cityName": "Boa Vista",
+        "region": "RR",
+        "regionName": "Roraima",
+        "actionId": "icare_0129",
+        "actionName": "Facilitate Technology Transfer for Conservation Practices",
+        "actionPriority": 4
+    },
+    {
+        "locode": "BR BVB",
+        "cityName": "Boa Vista",
+        "region": "RR",
+        "regionName": "Roraima",
+        "actionId": "icare_0130",
+        "actionName": "Conduct Technical Assistance and Rural Extension (ATER) Actions",
+        "actionPriority": 5
+    },
+    {
+        "locode": "BR BVB",
+        "cityName": "Boa Vista",
+        "region": "RR",
+        "regionName": "Roraima",
+        "actionId": "icare_0128",
+        "actionName": "Establish Municipal Programs for Payment for Environmental Services (PES)",
+        "actionPriority": 6
+    },
+    {
+        "locode": "BR BVB",
+        "cityName": "Boa Vista",
+        "region": "RR",
+        "regionName": "Roraima",
+        "actionId": "icare_0121",
+        "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
+        "actionPriority": 7
+    },
+    {
+        "locode": "BR BVB",
+        "cityName": "Boa Vista",
+        "region": "RR",
+        "regionName": "Roraima",
+        "actionId": "icare_0139",
+        "actionName": "Implementation of urban toll.",
+        "actionPriority": 8
+    },
+    {
+        "locode": "BR BVB",
+        "cityName": "Boa Vista",
+        "region": "RR",
+        "regionName": "Roraima",
+        "actionId": "icare_0131",
+        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
+        "actionPriority": 9
+    },
+    {
+        "locode": "BR BVB",
+        "cityName": "Boa Vista",
+        "region": "RR",
+        "regionName": "Roraima",
+        "actionId": "icare_0084",
+        "actionName": "Create Incentives for Agroforestry Practices in Livestock Systems",
+        "actionPriority": 10
+    },
+    {
+        "locode": "BR BVB",
+        "cityName": "Boa Vista",
+        "region": "RR",
+        "regionName": "Roraima",
+        "actionId": "icare_0088",
+        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
+        "actionPriority": 11
+    },
+    {
+        "locode": "BR BVB",
+        "cityName": "Boa Vista",
+        "region": "RR",
+        "regionName": "Roraima",
+        "actionId": "icare_0136",
+        "actionName": "Support the Implementation of Ecological Fiscal Incentives",
+        "actionPriority": 12
+    },
+    {
+        "locode": "BR BVB",
+        "cityName": "Boa Vista",
+        "region": "RR",
+        "regionName": "Roraima",
+        "actionId": "icare_0085",
+        "actionName": "Promote the Adoption of Agroecological Pest Control",
+        "actionPriority": 13
+    },
+    {
+        "locode": "BR BVB",
+        "cityName": "Boa Vista",
+        "region": "RR",
+        "regionName": "Roraima",
+        "actionId": "icare_0068",
+        "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
+        "actionPriority": 14
+    },
+    {
+        "locode": "BR BVB",
+        "cityName": "Boa Vista",
+        "region": "RR",
+        "regionName": "Roraima",
+        "actionId": "icare_0094",
+        "actionName": "Adoption of biomethane in public fleets.",
+        "actionPriority": 15
+    },
+    {
+        "locode": "BR BVB",
+        "cityName": "Boa Vista",
+        "region": "RR",
+        "regionName": "Roraima",
+        "actionId": "icare_0044",
+        "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
+        "actionPriority": 16
+    },
+    {
+        "locode": "BR BVB",
+        "cityName": "Boa Vista",
+        "region": "RR",
+        "regionName": "Roraima",
+        "actionId": "icare_0090",
+        "actionName": "Adoption of electric drones for last-mile deliveries.",
+        "actionPriority": 17
+    },
+    {
+        "locode": "BR BVB",
+        "cityName": "Boa Vista",
+        "region": "RR",
+        "regionName": "Roraima",
+        "actionId": "icare_0057",
+        "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
+        "actionPriority": 18
+    },
+    {
+        "locode": "BR BVB",
+        "cityName": "Boa Vista",
+        "region": "RR",
+        "regionName": "Roraima",
+        "actionId": "icare_0132",
+        "actionName": "Encourage Local Agroecological Production and Short Supply Chains",
+        "actionPriority": 19
+    },
+    {
+        "locode": "BR BVB",
+        "cityName": "Boa Vista",
+        "region": "RR",
+        "regionName": "Roraima",
+        "actionId": "icare_0102",
+        "actionName": "Promote Sustainable Agricultural Practices",
+        "actionPriority": 20
+    }
+]

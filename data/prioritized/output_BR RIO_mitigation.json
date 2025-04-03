@@ -1,204 +1,182 @@
-{
-    "actions": [
-        {
-            "locode": "CITY001",
-            "cityName": "Citysville",
-            "region": "NY",
-            "regionName": "New York",
-            "actionId": "ACT01",
-            "actionName": "New Building Standards",
-            "actionPriority": 1,
-            "explanation": "For Citysville, New Building Standards are prioritized as they effectively target the building sector—a major contributor to urban emissions—by improving energy performance and resilience. This action aligns with the city’s infrastructure needs and long-term growth plans. It offers benefits in reducing overall energy consumption while fostering sustainable development. The approach supports a strategic transition towards more environmentally compatible urban living."
-        },
-        {
-            "locode": "CITY001",
-            "cityName": "Citysville",
-            "region": "NY",
-            "regionName": "New York",
-            "actionId": "ACT02",
-            "actionName": "Bus Emissions",
-            "actionPriority": 2,
-            "explanation": "In Citysville, addressing Bus Emissions is critical given the high density of public transport and traffic congestion. This action focuses on reducing pollutants from one of the main urban emission sources through modernization of the transport fleet. It effectively contributes to improved air quality and public health while being well-suited for a densely populated environment. Its targeted nature makes it a strong candidate for immediate climate risk reduction."
-        },
-        {
-            "locode": "CITY001",
-            "cityName": "Citysville",
-            "region": "NY",
-            "regionName": "New York",
-            "actionId": "ACT03",
-            "actionName": "Renewable Energy Incentives",
-            "actionPriority": 3,
-            "explanation": "Renewable Energy Incentives are valuable for Citysville as they encourage the shift toward cleaner energy sources. This action leverages local renewable potentials while helping to diversify the city’s energy portfolio. It aligns well with environmental ambitions by promoting cost-effectiveness and long-term emission reductions. The initiative supports broader sustainability goals without imposing heavy operational dependencies."
-        },
-        {
-            "locode": "CITY001",
-            "cityName": "Citysville",
-            "region": "NY",
-            "regionName": "New York",
-            "actionId": "ACT04",
-            "actionName": "Urban Green Spaces",
-            "actionPriority": 4,
-            "explanation": "Urban Green Spaces are prioritized in Citysville for providing multiple co-benefits such as natural cooling and enhanced biodiversity. The action integrates seamlessly with the urban environment and addresses challenges associated with high-density developments. It contributes positively to both environmental health and community well-being. Its design emphasizes natural risk reduction alongside improvement in local quality of life."
-        },
-        {
-            "locode": "CITY001",
-            "cityName": "Citysville",
-            "region": "NY",
-            "regionName": "New York",
-            "actionId": "ACT05",
-            "actionName": "Water Conservation Policies",
-            "actionPriority": 5,
-            "explanation": "Water Conservation Policies are essential for Citysville, especially as the city adapts to changing water availability and climate conditions. This action addresses sustainable resource usage by mitigating potential water scarcity risks. Its strategic alignment with local environmental challenges allows for enhanced urban sustainability. The policy framework is designed to support long-term resource security while complementing other climate actions."
-        },
-        {
-            "locode": "CITY001",
-            "cityName": "Citysville",
-            "region": "NY",
-            "regionName": "New York",
-            "actionId": "ACT06",
-            "actionName": "Stormwater Management",
-            "actionPriority": 6,
-            "explanation": "Stormwater Management is a strategic priority in Citysville given the city's exposure to intense rainfall events. This action minimizes urban flooding risks and protects critical infrastructure. It integrates effectively with city planning, ensuring enhanced community safety and environmental compatibility. The approach not only reduces climate-related risks but also contributes to improved urban aesthetics."
-        },
-        {
-            "locode": "CITY001",
-            "cityName": "Citysville",
-            "region": "NY",
-            "regionName": "New York",
-            "actionId": "ACT07",
-            "actionName": "Waste Recycling Programs",
-            "actionPriority": 7,
-            "explanation": "Waste Recycling Programs in Citysville play a vital role in reducing landfill emissions and promoting resource reuse. The action is particularly well-suited to a densely populated city where efficient waste management is crucial. It generates both environmental and economic benefits by fostering a circular economy. The initiative reinforces sustainable urban practices and supports overall climate risk reduction."
-        },
-        {
-            "locode": "CITY001",
-            "cityName": "Citysville",
-            "region": "NY",
-            "regionName": "New York",
-            "actionId": "ACT08",
-            "actionName": "Smart Traffic Systems",
-            "actionPriority": 8,
-            "explanation": "Smart Traffic Systems address one of Citysville’s pressing challenges by optimizing vehicular flow and reducing emissions. This action leverages technological innovations to alleviate congestion and improve air quality. It is particularly effective in a high-density urban context where marginal efficiency gains have broad impacts. The strategy is integrated with urban mobility trends and supports longer term sustainability."
-        },
-        {
-            "locode": "CITY001",
-            "cityName": "Citysville",
-            "region": "NY",
-            "regionName": "New York",
-            "actionId": "ACT09",
-            "actionName": "Industrial Emission Regulations",
-            "actionPriority": 9,
-            "explanation": "Industrial Emission Regulations are crucial for Citysville as industrial activities significantly influence the overall emission profile. This action aims to reduce pollutants from key sectors and align industrial practices with environmental standards. It carefully balances economic activities with risk reduction and urban health. The regulatory framework provides a pathway to steady environmental improvements while managing inherent implementation complexities."
-        },
-        {
-            "locode": "CITY001",
-            "cityName": "Citysville",
-            "region": "NY",
-            "regionName": "New York",
-            "actionId": "ACT10",
-            "actionName": "Energy Efficiency Upgrades",
-            "actionPriority": 10,
-            "explanation": "Energy Efficiency Upgrades in Citysville target reductions in energy consumption across diverse sectors. This action emphasizes strengthening existing infrastructures to achieve long-term cost savings and emission reductions. It complements the city’s sustainable development plans by enhancing operational performance while delivering environmental benefits. Its pragmatic approach makes it a balanced, resilient choice in the overall climate strategy."
-        },
-        {
-            "locode": "CITY001",
-            "cityName": "Citysville",
-            "region": "NY",
-            "regionName": "New York",
-            "actionId": "ACT11",
-            "actionName": "Public Transit Expansion",
-            "actionPriority": 11,
-            "explanation": "Public Transit Expansion is a key action for Citysville, aiming to reduce reliance on private vehicles and lower associated emissions. By enhancing connectivity and accessibility, this initiative addresses urban mobility challenges effectively. It provides co-benefits in public health and economic efficiency while aligning with broader climate and sustainability goals. The action also supports a shift towards more resilient and inclusive transportation systems."
-        },
-        {
-            "locode": "CITY001",
-            "cityName": "Citysville",
-            "region": "NY",
-            "regionName": "New York",
-            "actionId": "ACT12",
-            "actionName": "Tree Planting Initiatives",
-            "actionPriority": 12,
-            "explanation": "Tree Planting Initiatives are valued in Citysville for their natural capacity to capture carbon and mitigate urban heat islands. The action beautifies the urban landscape while providing tangible environmental and community health benefits. It is straightforward to implement and enhances local biodiversity. This nature-based solution contributes to broader climate mitigation efforts by reinforcing ecosystem resilience."
-        },
-        {
-            "locode": "CITY001",
-            "cityName": "Citysville",
-            "region": "NY",
-            "regionName": "New York",
-            "actionId": "ACT13",
-            "actionName": "Coastal Defenses",
-            "actionPriority": 13,
-            "explanation": "Coastal Defenses are a targeted response in Citysville designed to protect vulnerable waterfronts from the impacts of sea level rise and storm surges. The action is strategically vital for areas facing heightened climate risks. It reinforces the city’s resilience by safeguarding critical infrastructure and communities. Despite inherent complexities, its role in long-term stability and environmental protection is well recognized."
-        },
-        {
-            "locode": "CITY001",
-            "cityName": "Citysville",
-            "region": "NY",
-            "regionName": "New York",
-            "actionId": "ACT14",
-            "actionName": "Flood Barrier Construction",
-            "actionPriority": 14,
-            "explanation": "Flood Barrier Construction addresses the increasing risk of flooding in Citysville by protecting key urban areas. This action is instrumental in mitigating potential damage to infrastructure and ensuring public safety. It is designed to work in tandem with other urban planning measures to build a more resilient city. While complex to implement, its focus on risk reduction makes it an essential part of the overall strategy."
-        },
-        {
-            "locode": "CITY001",
-            "cityName": "Citysville",
-            "region": "NY",
-            "regionName": "New York",
-            "actionId": "ACT15",
-            "actionName": "Heat Wave Response Plan",
-            "actionPriority": 15,
-            "explanation": "A Heat Wave Response Plan is crucial for Citysville, offering a proactive framework to protect residents during extreme temperature events. This action directly addresses public health risks by preparing for and mitigating the impact of heatwaves. It aligns with the city’s socio-demographic context, ensuring that vulnerable populations receive timely support. The plan complements broader adaptation strategies with its focus on immediate risk reduction."
-        },
-        {
-            "locode": "CITY001",
-            "cityName": "Citysville",
-            "region": "NY",
-            "regionName": "New York",
-            "actionId": "ACT16",
-            "actionName": "Air Quality Monitoring",
-            "actionPriority": 16,
-            "explanation": "Air Quality Monitoring in Citysville plays a critical role in informing and guiding effective environmental interventions. The gathered data enable targeted actions to improve air conditions and public health. This monitoring system is integral to adaptive management, ensuring that responses remain timely and relevant. Its implementation supports ongoing efforts to achieve sustained improvements in urban environmental quality."
-        },
-        {
-            "locode": "CITY001",
-            "cityName": "Citysville",
-            "region": "NY",
-            "regionName": "New York",
-            "actionId": "ACT17",
-            "actionName": "Electric Vehicle Subsidies",
-            "actionPriority": 17,
-            "explanation": "Electric Vehicle Subsidies are promoted in Citysville as a means to stimulate a shift toward cleaner transportation options. This action incentivizes the adoption of low-emission vehicles, thereby reducing reliance on fossil fuels. It integrates economic encouragement with environmental benefits, aligning with the city's transition to innovative climate solutions. The policy supports both improved urban air quality and a modern transportation framework."
-        },
-        {
-            "locode": "CITY001",
-            "cityName": "Citysville",
-            "region": "NY",
-            "regionName": "New York",
-            "actionId": "ACT18",
-            "actionName": "Low-Carbon Zones",
-            "actionPriority": 18,
-            "explanation": "Low-Carbon Zones are introduced in Citysville to localize efforts in reducing emissions within key urban areas. This action fosters cleaner practices by creating designated zones that encourage sustainable development. It is well aligned with economic activities while driving significant environmental improvements. Its strategic focus on reducing urban emissions reinforces its importance in the overall climate action framework."
-        },
-        {
-            "locode": "CITY001",
-            "cityName": "Citysville",
-            "region": "NY",
-            "regionName": "New York",
-            "actionId": "ACT19",
-            "actionName": "Virtual Work Promotion",
-            "actionPriority": 19,
-            "explanation": "Virtual Work Promotion is highlighted in Citysville as an innovative approach to reduce commuter-related emissions and ease urban congestion. This action leverages digital transformation trends to minimize the need for daily travel and lowers energy use. It supports a flexible, modern work culture that benefits both the environment and local quality of life. The initiative has strong socio-demographic relevance and is easily integrated into existing community practices."
-        },
-        {
-            "locode": "CITY001",
-            "cityName": "Citysville",
-            "region": "NY",
-            "regionName": "New York",
-            "actionId": "ACT20",
-            "actionName": "Energy Storage Projects",
-            "actionPriority": 20,
-            "explanation": "Energy Storage Projects in Citysville focus on enhancing grid resilience and supporting the integration of renewable energy sources. This action is designed to stabilize energy supply and manage variability effectively. It aligns with the city’s broader clean energy strategies and contributes to both environmental sustainability and risk management. By facilitating a smoother transition to renewables, this initiative strengthens long-term energy security."
-        }
-    ]
-}
+[
+    {
+        "locode": "BR RIO",
+        "cityName": "Rio de Janeiro",
+        "region": "RJ",
+        "regionName": "Rio de Janeiro",
+        "actionId": "icare_0042",
+        "actionName": "Encourage renewable energy policies at the municipal level",
+        "actionPriority": 1
+    },
+    {
+        "locode": "BR RIO",
+        "cityName": "Rio de Janeiro",
+        "region": "RJ",
+        "regionName": "Rio de Janeiro",
+        "actionId": "c40_0035",
+        "actionName": "Waste Efficiency",
+        "actionPriority": 2
+    },
+    {
+        "locode": "BR RIO",
+        "cityName": "Rio de Janeiro",
+        "region": "RJ",
+        "regionName": "Rio de Janeiro",
+        "actionId": "icare_0024",
+        "actionName": "Integrate renewables into municipal water systems",
+        "actionPriority": 3
+    },
+    {
+        "locode": "BR RIO",
+        "cityName": "Rio de Janeiro",
+        "region": "RJ",
+        "regionName": "Rio de Janeiro",
+        "actionId": "icare_0052",
+        "actionName": "Develop projects for renewable energy and waste reuse",
+        "actionPriority": 4
+    },
+    {
+        "locode": "BR RIO",
+        "cityName": "Rio de Janeiro",
+        "region": "RJ",
+        "regionName": "Rio de Janeiro",
+        "actionId": "icare_0097",
+        "actionName": "Support Distributed Energy Generation in Residences and Businesses",
+        "actionPriority": 5
+    },
+    {
+        "locode": "BR RIO",
+        "cityName": "Rio de Janeiro",
+        "region": "RJ",
+        "regionName": "Rio de Janeiro",
+        "actionId": "icare_0088",
+        "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
+        "actionPriority": 6
+    },
+    {
+        "locode": "BR RIO",
+        "cityName": "Rio de Janeiro",
+        "region": "RJ",
+        "regionName": "Rio de Janeiro",
+        "actionId": "icare_0131",
+        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
+        "actionPriority": 7
+    },
+    {
+        "locode": "BR RIO",
+        "cityName": "Rio de Janeiro",
+        "region": "RJ",
+        "regionName": "Rio de Janeiro",
+        "actionId": "icare_0121",
+        "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
+        "actionPriority": 8
+    },
+    {
+        "locode": "BR RIO",
+        "cityName": "Rio de Janeiro",
+        "region": "RJ",
+        "regionName": "Rio de Janeiro",
+        "actionId": "icare_0094",
+        "actionName": "Adoption of biomethane in public fleets.",
+        "actionPriority": 9
+    },
+    {
+        "locode": "BR RIO",
+        "cityName": "Rio de Janeiro",
+        "region": "RJ",
+        "regionName": "Rio de Janeiro",
+        "actionId": "icare_0033",
+        "actionName": "Install biodigesters in rural properties",
+        "actionPriority": 10
+    },
+    {
+        "locode": "BR RIO",
+        "cityName": "Rio de Janeiro",
+        "region": "RJ",
+        "regionName": "Rio de Janeiro",
+        "actionId": "icare_0038",
+        "actionName": "Promote community solar farms",
+        "actionPriority": 11
+    },
+    {
+        "locode": "BR RIO",
+        "cityName": "Rio de Janeiro",
+        "region": "RJ",
+        "regionName": "Rio de Janeiro",
+        "actionId": "icare_0132",
+        "actionName": "Encourage Local Agroecological Production and Short Supply Chains",
+        "actionPriority": 12
+    },
+    {
+        "locode": "BR RIO",
+        "cityName": "Rio de Janeiro",
+        "region": "RJ",
+        "regionName": "Rio de Janeiro",
+        "actionId": "icare_0136",
+        "actionName": "Support the Implementation of Ecological Fiscal Incentives",
+        "actionPriority": 13
+    },
+    {
+        "locode": "BR RIO",
+        "cityName": "Rio de Janeiro",
+        "region": "RJ",
+        "regionName": "Rio de Janeiro",
+        "actionId": "icare_0085",
+        "actionName": "Promote the Adoption of Agroecological Pest Control",
+        "actionPriority": 14
+    },
+    {
+        "locode": "BR RIO",
+        "cityName": "Rio de Janeiro",
+        "region": "RJ",
+        "regionName": "Rio de Janeiro",
+        "actionId": "icare_0099",
+        "actionName": "Support Agroecological Certification Programs",
+        "actionPriority": 15
+    },
+    {
+        "locode": "BR RIO",
+        "cityName": "Rio de Janeiro",
+        "region": "RJ",
+        "regionName": "Rio de Janeiro",
+        "actionId": "icare_0029",
+        "actionName": "Adopt policies for fossil fuel-free buildings",
+        "actionPriority": 16
+    },
+    {
+        "locode": "BR RIO",
+        "cityName": "Rio de Janeiro",
+        "region": "RJ",
+        "regionName": "Rio de Janeiro",
+        "actionId": "c40_0036",
+        "actionName": "Landfill Management",
+        "actionPriority": 17
+    },
+    {
+        "locode": "BR RIO",
+        "cityName": "Rio de Janeiro",
+        "region": "RJ",
+        "regionName": "Rio de Janeiro",
+        "actionId": "icare_0090",
+        "actionName": "Adoption of electric drones for last-mile deliveries.",
+        "actionPriority": 18
+    },
+    {
+        "locode": "BR RIO",
+        "cityName": "Rio de Janeiro",
+        "region": "RJ",
+        "regionName": "Rio de Janeiro",
+        "actionId": "icare_0005",
+        "actionName": "Create credit lines for residential and community wind energy projects",
+        "actionPriority": 19
+    },
+    {
+        "locode": "BR RIO",
+        "cityName": "Rio de Janeiro",
+        "region": "RJ",
+        "regionName": "Rio de Janeiro",
+        "actionId": "icare_0011",
+        "actionName": "Provide tax incentives for renewable energy in residential projects",
+        "actionPriority": 20
+    }
+]

@@ -1,204 +1,182 @@
-{
-    "actions": [
-        {
-            "locode": "CITY123",
-            "cityName": "GreenVille",
-            "region": "Region1",
-            "regionName": "Northern Region",
-            "actionId": "A1",
-            "actionName": "New Building Standards",
-            "actionPriority": 1,
-            "explanation": "For GreenVille, New Building Standards have been prioritized as they directly target emissions stemming from the built environment, a significant contributor to the city’s overall carbon footprint. This action supports long-term energy efficiency improvements and enhances the resilience of urban infrastructure. It is well-suited to address the challenges posed by dense urban development and evolving climate risks."
-        },
-        {
-            "locode": "CITY123",
-            "cityName": "GreenVille",
-            "region": "Region1",
-            "regionName": "Northern Region",
-            "actionId": "A2",
-            "actionName": "Bus Emissions Reduction",
-            "actionPriority": 2,
-            "explanation": "For GreenVille, reducing bus emissions is important because it directly addresses the transportation sector, which is a notable source of the city’s greenhouse gas emissions. The action is tailored to the high traffic density and urban mobility challenges of the city. Its implementation promises faster improvements in air quality and public health, making it an effective and practical step."
-        },
-        {
-            "locode": "CITY123",
-            "cityName": "GreenVille",
-            "region": "Region1",
-            "regionName": "Northern Region",
-            "actionId": "A3",
-            "actionName": "Renewable Energy Subsidies",
-            "actionPriority": 3,
-            "explanation": "Renewable Energy Subsidies have been given a strong priority in GreenVille as they encourage shifts away from fossil fuels, directly impacting the city’s power generation emissions. This action is aligned with local efforts to boost green energy investments and stimulate economic opportunities in sustainable sectors. It offers a clear pathway towards long-term reduction in emissions while supporting broader infrastructural adaptations."
-        },
-        {
-            "locode": "CITY123",
-            "cityName": "GreenVille",
-            "region": "Region1",
-            "regionName": "Northern Region",
-            "actionId": "A4",
-            "actionName": "Urban Tree Canopy",
-            "actionPriority": 4,
-            "explanation": "Enhancing the urban tree canopy in GreenVille is prioritized for its ability to naturally cool the city and sequester carbon. This action is especially relevant in dense urban cores where vegetation is limited and heat islands are a concern. Additionally, it provides co-benefits such as improved air quality and recreational spaces, which enrich community well-being."
-        },
-        {
-            "locode": "CITY123",
-            "cityName": "GreenVille",
-            "region": "Region1",
-            "regionName": "Northern Region",
-            "actionId": "A5",
-            "actionName": "Water Efficiency Improvements",
-            "actionPriority": 5,
-            "explanation": "Water Efficiency Improvements are highly valued in GreenVille due to the city’s sensitivity to water scarcity and the energy demands of water treatment. This action contributes to sustainable water management while indirectly reducing emissions associated with water processing. It aligns with the broader strategy of mitigating environmental risks through efficient resource use."
-        },
-        {
-            "locode": "CITY123",
-            "cityName": "GreenVille",
-            "region": "Region1",
-            "regionName": "Northern Region",
-            "actionId": "A6",
-            "actionName": "Green Infrastructure Development",
-            "actionPriority": 6,
-            "explanation": "Green Infrastructure Development has been prioritized because it holistically integrates natural systems into urban design. In GreenVille, such developments help mitigate flooding and improve the overall urban microclimate. This action offers significant co-benefits by enhancing public spaces and boosting ecological resilience alongside emissions reduction."
-        },
-        {
-            "locode": "CITY123",
-            "cityName": "GreenVille",
-            "region": "Region1",
-            "regionName": "Northern Region",
-            "actionId": "A7",
-            "actionName": "Flood Resilience Planning",
-            "actionPriority": 7,
-            "explanation": "Flood Resilience Planning is key for GreenVille, where climate variability increases the risk of extreme precipitation events. This action strengthens the city’s capacity to manage flood risks and safeguard critical infrastructure. By focusing on risk reduction, it ensures both community safety and long-term sustainable urban development."
-        },
-        {
-            "locode": "CITY123",
-            "cityName": "GreenVille",
-            "region": "Region1",
-            "regionName": "Northern Region",
-            "actionId": "A8",
-            "actionName": "Energy Efficiency Retrofits",
-            "actionPriority": 8,
-            "explanation": "Energy Efficiency Retrofits have been highly prioritized in GreenVille as they offer a viable method to reduce emissions in the existing building stock. Retrofitting improves energy usage patterns without major structural changes, making it a cost-effective approach. The action supports the city’s effort to upgrade older infrastructures and aligns well with broader climate mitigation goals."
-        },
-        {
-            "locode": "CITY123",
-            "cityName": "GreenVille",
-            "region": "Region1",
-            "regionName": "Northern Region",
-            "actionId": "A9",
-            "actionName": "Urban Heat Island Mitigation",
-            "actionPriority": 9,
-            "explanation": "Urban Heat Island Mitigation is an important action for GreenVille as it directly addresses the excess heat stress in dense urban areas. By introducing measures that alleviate heat accumulation, the city can enhance thermal comfort and reduce energy demand for cooling. It also contributes to improved public health and environmental quality, fitting well with overall climate resilience strategies."
-        },
-        {
-            "locode": "CITY123",
-            "cityName": "GreenVille",
-            "region": "Region1",
-            "regionName": "Northern Region",
-            "actionId": "A10",
-            "actionName": "Sustainable Transportation Expansion",
-            "actionPriority": 10,
-            "explanation": "Expanding sustainable transportation in GreenVille is prioritized because it effectively lowers emissions from the transport sector. By improving access to cleaner modes of travel, the action reduces the city’s dependency on traditional fossil fuel vehicles. The benefits extend beyond environmental impacts, fostering improved urban mobility and socio-economic opportunities for residents."
-        },
-        {
-            "locode": "CITY123",
-            "cityName": "GreenVille",
-            "region": "Region1",
-            "regionName": "Northern Region",
-            "actionId": "A11",
-            "actionName": "Waste Management Improvements",
-            "actionPriority": 11,
-            "explanation": "Improving waste management in GreenVille is critical for mitigating indirect emissions linked to inefficient waste handling and disposal. This action supports better recycling practices and resource recovery, which contributes to overall environmental sustainability. Enhanced waste management also helps reduce local environmental hazards and reinforces the city’s broader climate strategies."
-        },
-        {
-            "locode": "CITY123",
-            "cityName": "GreenVille",
-            "region": "Region1",
-            "regionName": "Northern Region",
-            "actionId": "A12",
-            "actionName": "District Heating Upgrades",
-            "actionPriority": 12,
-            "explanation": "Upgrading district heating systems in GreenVille is valued for its capacity to streamline energy distribution across communities. This action minimizes emissions by replacing less efficient local systems with a centralized, optimized solution. It also aligns with broader energy efficiency goals and enhances the reliability of essential urban services."
-        },
-        {
-            "locode": "CITY123",
-            "cityName": "GreenVille",
-            "region": "Region1",
-            "regionName": "Northern Region",
-            "actionId": "A13",
-            "actionName": "Industrial Process Optimization",
-            "actionPriority": 13,
-            "explanation": "Industrial Process Optimization is prioritized in GreenVille because it targets significant emission sources within the industrial sector. Streamlining operations and reducing waste helps lower the overall environmental impact without compromising economic productivity. This action supports a transition towards cleaner production methods, which is essential for long-term sustainability."
-        },
-        {
-            "locode": "CITY123",
-            "cityName": "GreenVille",
-            "region": "Region1",
-            "regionName": "Northern Region",
-            "actionId": "A14",
-            "actionName": "Carbon Pricing Implementation",
-            "actionPriority": 14,
-            "explanation": "Implementing Carbon Pricing in GreenVille is seen as an effective tool for encouraging emission reductions across various sectors. This action’s market-based approach incentivizes industries to transition toward cleaner technologies. By integrating economic instruments into environmental strategy, it supports long-term emissions control and sustainable growth."
-        },
-        {
-            "locode": "CITY123",
-            "cityName": "GreenVille",
-            "region": "Region1",
-            "regionName": "Northern Region",
-            "actionId": "A15",
-            "actionName": "Smart Grid Investments",
-            "actionPriority": 15,
-            "explanation": "Investing in Smart Grid technologies is a priority for GreenVille, as it enhances the efficiency and flexibility of the city’s energy distribution system. This action supports the integration of renewable energy sources and facilitates real-time energy management, contributing to overall emissions reduction. It aligns with long-term sustainability goals while bolstering the resilience of critical urban infrastructure."
-        },
-        {
-            "locode": "CITY123",
-            "cityName": "GreenVille",
-            "region": "Region1",
-            "regionName": "Northern Region",
-            "actionId": "A16",
-            "actionName": "Electrification of Municipal Vehicles",
-            "actionPriority": 16,
-            "explanation": "Electrification of Municipal Vehicles is prioritized in GreenVille as it directly reduces emissions from public sector transportation. Transitioning to electric fleets promotes cleaner air and sets a strong example for broader community action. The initiative is well-aligned with the city's environmental objectives and supports faster improvements in urban air quality."
-        },
-        {
-            "locode": "CITY123",
-            "cityName": "GreenVille",
-            "region": "Region1",
-            "regionName": "Northern Region",
-            "actionId": "A17",
-            "actionName": "Stormwater Management Systems",
-            "actionPriority": 17,
-            "explanation": "Enhancing Stormwater Management Systems is crucial for GreenVille to address the increasing risks of urban flooding. By improving water absorption and runoff control, this action protects critical infrastructure and public spaces. It is an essential component of the city’s broader resilience and risk reduction strategy, ensuring long-term environmental stability."
-        },
-        {
-            "locode": "CITY123",
-            "cityName": "GreenVille",
-            "region": "Region1",
-            "regionName": "Northern Region",
-            "actionId": "A18",
-            "actionName": "Community Awareness Programs",
-            "actionPriority": 18,
-            "explanation": "Community Awareness Programs are valued in GreenVille for their role in fostering a culture of environmental responsibility. These initiatives empower residents with the knowledge to adopt sustainable practices, reinforcing broader climate action. While indirectly contributing to emission reduction, they lay the foundation for sustainable behavior and community resilience."
-        },
-        {
-            "locode": "CITY123",
-            "cityName": "GreenVille",
-            "region": "Region1",
-            "regionName": "Northern Region",
-            "actionId": "A19",
-            "actionName": "Coastal Protection Measures",
-            "actionPriority": 19,
-            "explanation": "Coastal Protection Measures are prioritized for areas in GreenVille that face risks from rising sea levels and extreme weather events. This action focuses on safeguarding infrastructure and natural habitats along vulnerable coastal zones. It plays a key role in the city’s risk reduction strategy and supports long-term resilience in the face of climate change."
-        },
-        {
-            "locode": "CITY123",
-            "cityName": "GreenVille",
-            "region": "Region1",
-            "regionName": "Northern Region",
-            "actionId": "A20",
-            "actionName": "Reforestation Initiatives",
-            "actionPriority": 20,
-            "explanation": "Reforestation Initiatives in GreenVille are recognized for their potential to restore natural ecosystems and sequester carbon. This action contributes significantly to balancing emissions while enhancing biodiversity and green space availability. Its long-term ecological benefits support both environmental sustainability and community well-being."
-        }
-    ]
-}
+[
+    {
+        "locode": "BR PIN",
+        "cityName": "Parintins",
+        "region": "AM",
+        "regionName": "Amazonas",
+        "actionId": "icare_0050",
+        "actionName": "Implement Agroforestry Systems",
+        "actionPriority": 1
+    },
+    {
+        "locode": "BR PIN",
+        "cityName": "Parintins",
+        "region": "AM",
+        "regionName": "Amazonas",
+        "actionId": "icare_0134",
+        "actionName": "Strengthen Mechanisms for Deforestation Control",
+        "actionPriority": 2
+    },
+    {
+        "locode": "BR PIN",
+        "cityName": "Parintins",
+        "region": "AM",
+        "regionName": "Amazonas",
+        "actionId": "icare_0133",
+        "actionName": "Promote Urban Reforestation and Green Corridors",
+        "actionPriority": 3
+    },
+    {
+        "locode": "BR PIN",
+        "cityName": "Parintins",
+        "region": "AM",
+        "regionName": "Amazonas",
+        "actionId": "icare_0128",
+        "actionName": "Establish Municipal Programs for Payment for Environmental Services (PES)",
+        "actionPriority": 4
+    },
+    {
+        "locode": "BR PIN",
+        "cityName": "Parintins",
+        "region": "AM",
+        "regionName": "Amazonas",
+        "actionId": "icare_0130",
+        "actionName": "Conduct Technical Assistance and Rural Extension (ATER) Actions",
+        "actionPriority": 5
+    },
+    {
+        "locode": "BR PIN",
+        "cityName": "Parintins",
+        "region": "AM",
+        "regionName": "Amazonas",
+        "actionId": "icare_0129",
+        "actionName": "Facilitate Technology Transfer for Conservation Practices",
+        "actionPriority": 6
+    },
+    {
+        "locode": "BR PIN",
+        "cityName": "Parintins",
+        "region": "AM",
+        "regionName": "Amazonas",
+        "actionId": "icare_0096",
+        "actionName": "Promote Organic Farming",
+        "actionPriority": 7
+    },
+    {
+        "locode": "BR PIN",
+        "cityName": "Parintins",
+        "region": "AM",
+        "regionName": "Amazonas",
+        "actionId": "icare_0102",
+        "actionName": "Promote Sustainable Agricultural Practices",
+        "actionPriority": 8
+    },
+    {
+        "locode": "BR PIN",
+        "cityName": "Parintins",
+        "region": "AM",
+        "regionName": "Amazonas",
+        "actionId": "icare_0100",
+        "actionName": "Support Regenerative Agriculture Practices",
+        "actionPriority": 9
+    },
+    {
+        "locode": "BR PIN",
+        "cityName": "Parintins",
+        "region": "AM",
+        "regionName": "Amazonas",
+        "actionId": "icare_0084",
+        "actionName": "Create Incentives for Agroforestry Practices in Livestock Systems",
+        "actionPriority": 10
+    },
+    {
+        "locode": "BR PIN",
+        "cityName": "Parintins",
+        "region": "AM",
+        "regionName": "Amazonas",
+        "actionId": "icare_0101",
+        "actionName": "Encourage the Use of Low-Emission Agricultural Machinery",
+        "actionPriority": 11
+    },
+    {
+        "locode": "BR PIN",
+        "cityName": "Parintins",
+        "region": "AM",
+        "regionName": "Amazonas",
+        "actionId": "icare_0127",
+        "actionName": "Accelerate Environmental Regularization of Rural Properties",
+        "actionPriority": 12
+    },
+    {
+        "locode": "BR PIN",
+        "cityName": "Parintins",
+        "region": "AM",
+        "regionName": "Amazonas",
+        "actionId": "icare_0131",
+        "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
+        "actionPriority": 13
+    },
+    {
+        "locode": "BR PIN",
+        "cityName": "Parintins",
+        "region": "AM",
+        "regionName": "Amazonas",
+        "actionId": "icare_0136",
+        "actionName": "Support the Implementation of Ecological Fiscal Incentives",
+        "actionPriority": 14
+    },
+    {
+        "locode": "BR PIN",
+        "cityName": "Parintins",
+        "region": "AM",
+        "regionName": "Amazonas",
+        "actionId": "icare_0099",
+        "actionName": "Support Agroecological Certification Programs",
+        "actionPriority": 15
+    },
+    {
+        "locode": "BR PIN",
+        "cityName": "Parintins",
+        "region": "AM",
+        "regionName": "Amazonas",
+        "actionId": "icare_0085",
+        "actionName": "Promote the Adoption of Agroecological Pest Control",
+        "actionPriority": 16
+    },
+    {
+        "locode": "BR PIN",
+        "cityName": "Parintins",
+        "region": "AM",
+        "regionName": "Amazonas",
+        "actionId": "ipcc_0052",
+        "actionName": "Reduce Deforestation and Degradation",
+        "actionPriority": 17
+    },
+    {
+        "locode": "BR PIN",
+        "cityName": "Parintins",
+        "region": "AM",
+        "regionName": "Amazonas",
+        "actionId": "ipcc_0061",
+        "actionName": "Soil Carbon Management in Croplands and Grasslands",
+        "actionPriority": 18
+    },
+    {
+        "locode": "BR PIN",
+        "cityName": "Parintins",
+        "region": "AM",
+        "regionName": "Amazonas",
+        "actionId": "icare_0132",
+        "actionName": "Encourage Local Agroecological Production and Short Supply Chains",
+        "actionPriority": 19
+    },
+    {
+        "locode": "BR PIN",
+        "cityName": "Parintins",
+        "region": "AM",
+        "regionName": "Amazonas",
+        "actionId": "ipcc_0053",
+        "actionName": "Afforestation, Reforestation and Forest Ecosystem Restoration",
+        "actionPriority": 20
+    }
+]

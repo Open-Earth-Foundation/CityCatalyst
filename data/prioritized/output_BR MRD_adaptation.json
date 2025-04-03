@@ -1,204 +1,202 @@
-{
-    "actions": [
-        {
-            "locode": "EC001",
-            "cityName": "EcoCity",
-            "region": "R1",
-            "regionName": "Region One",
-            "actionId": "A1",
-            "actionName": "New Building Standards",
-            "actionPriority": 1,
-            "explanation": "For EcoCity, New Building Standards were prioritized because they directly address significant emissions from the construction and buildings sector. This action enhances energy efficiency and builds long-term resilience in urban infrastructure. It is well aligned with the city’s commitment to reducing its carbon footprint while improving public health and safety."
-        },
-        {
-            "locode": "EC001",
-            "cityName": "EcoCity",
-            "region": "R1",
-            "regionName": "Region One",
-            "actionId": "A2",
-            "actionName": "Bus Emissions",
-            "actionPriority": 2,
-            "explanation": "For EcoCity, addressing Bus Emissions is viewed as a critical step given the significant role of public transport in urban mobility. This measure is instrumental in reducing air pollution and enhancing the overall quality of life in the city. It supports the broader aim of mitigating climate risks while improving transit efficiency."
-        },
-        {
-            "locode": "EC001",
-            "cityName": "EcoCity",
-            "region": "R1",
-            "regionName": "Region One",
-            "actionId": "A3",
-            "actionName": "Urban Green Spaces",
-            "actionPriority": 3,
-            "explanation": "For EcoCity, expanding Urban Green Spaces has been emphasized because it contributes positively to the local environment and helps offset urban heat. This action improves biodiversity and creates essential recreational areas while moderating stormwater runoff. It is an effective approach to support both mitigation and adaptation strategies in the urban context."
-        },
-        {
-            "locode": "EC001",
-            "cityName": "EcoCity",
-            "region": "R1",
-            "regionName": "Region One",
-            "actionId": "A4",
-            "actionName": "Renewable Energy Installations",
-            "actionPriority": 4,
-            "explanation": "For EcoCity, Renewable Energy Installations are important for shifting the energy mix away from fossil fuels. This action supports long-term emissions reduction and aligns with the city’s sustainability objectives. It also promotes energy independence and resilience by enabling a more distributed energy network."
-        },
-        {
-            "locode": "EC001",
-            "cityName": "EcoCity",
-            "region": "R1",
-            "regionName": "Region One",
-            "actionId": "A5",
-            "actionName": "Waste Management Improvements",
-            "actionPriority": 5,
-            "explanation": "For EcoCity, Waste Management Improvements have been given priority as they directly influence the reduction of methane emissions and improve public health. This action promotes efficient resource recycling and minimizes environmental contamination. It supports a cleaner urban setting, contributing significantly to the city’s overall sustainability."
-        },
-        {
-            "locode": "EC001",
-            "cityName": "EcoCity",
-            "region": "R1",
-            "regionName": "Region One",
-            "actionId": "A6",
-            "actionName": "Water Conservation Measures",
-            "actionPriority": 6,
-            "explanation": "For EcoCity, Water Conservation Measures are recognized as essential for managing limited water resources and mitigating drought risks. This action is particularly well-suited to the local environmental conditions and supports sustainable resource use. It indirectly contributes to energy savings by reducing the load on water treatment systems."
-        },
-        {
-            "locode": "EC001",
-            "cityName": "EcoCity",
-            "region": "R1",
-            "regionName": "Region One",
-            "actionId": "A7",
-            "actionName": "Smart Grid Technology",
-            "actionPriority": 7,
-            "explanation": "For EcoCity, Smart Grid Technology has been prioritized because it enables more efficient and reliable energy distribution. This action supports the integration of renewable energy sources while minimizing energy losses. By modernizing energy management, it strengthens the city’s capacity for long-term sustainability and resilience."
-        },
-        {
-            "locode": "EC001",
-            "cityName": "EcoCity",
-            "region": "R1",
-            "regionName": "Region One",
-            "actionId": "A8",
-            "actionName": "Climate Resilience Infrastructure",
-            "actionPriority": 8,
-            "explanation": "For EcoCity, investing in Climate Resilience Infrastructure is instrumental in preparing for extreme weather events and other climate risks. This action fortifies the city’s physical and social systems against potential disruptions. It is a well-rounded approach that balances investment needs with long-term community safety and environmental sustainability."
-        },
-        {
-            "locode": "EC001",
-            "cityName": "EcoCity",
-            "region": "R1",
-            "regionName": "Region One",
-            "actionId": "A9",
-            "actionName": "Flood Defense Systems",
-            "actionPriority": 9,
-            "explanation": "For EcoCity, Flood Defense Systems have been highlighted due to the city's exposure to heavy rainfall events and potential flooding. This action improves the city’s capacity to safeguard critical infrastructure and public spaces. It also offers additional environmental benefits by protecting local ecosystems and reducing long-term recovery costs."
-        },
-        {
-            "locode": "EC001",
-            "cityName": "EcoCity",
-            "region": "R1",
-            "regionName": "Region One",
-            "actionId": "A10",
-            "actionName": "Energy Efficiency Retrofits",
-            "actionPriority": 10,
-            "explanation": "For EcoCity, Energy Efficiency Retrofits are valued for their ability to reduce energy consumption in existing structures. This action not only contributes to lowering greenhouse gas emissions but also enhances occupant comfort. Its focus on optimizing current assets makes it a cost-effective step toward overall urban sustainability."
-        },
-        {
-            "locode": "EC001",
-            "cityName": "EcoCity",
-            "region": "R1",
-            "regionName": "Region One",
-            "actionId": "A11",
-            "actionName": "Solar Panel Incentives",
-            "actionPriority": 11,
-            "explanation": "For EcoCity, Solar Panel Incentives are an attractive option as they promote the adoption of renewable energy at the community level. This action aids in significant emissions reduction by shifting away from traditional energy sources. It also engages residents directly, fostering a sense of participation in the city’s sustainability efforts."
-        },
-        {
-            "locode": "EC001",
-            "cityName": "EcoCity",
-            "region": "R1",
-            "regionName": "Region One",
-            "actionId": "A12",
-            "actionName": "Bike Path Expansions",
-            "actionPriority": 12,
-            "explanation": "For EcoCity, expanding Bike Path infrastructure is viewed as an effective strategy to encourage low-carbon transportation options. This action supports improved public health and reduced traffic congestion, while making active transportation more accessible. It aligns well with the city’s goals of lowering emissions and enhancing urban mobility."
-        },
-        {
-            "locode": "EC001",
-            "cityName": "EcoCity",
-            "region": "R1",
-            "regionName": "Region One",
-            "actionId": "A13",
-            "actionName": "Public Transit Modernization",
-            "actionPriority": 13,
-            "explanation": "For EcoCity, modernizing Public Transit is seen as a crucial step toward reducing the environmental impact of urban commuting. This action not only improves transit reliability but also directly contributes to lower greenhouse gas emissions. It thereby supports a range of co-benefits, including enhanced accessibility and better urban air quality."
-        },
-        {
-            "locode": "EC001",
-            "cityName": "EcoCity",
-            "region": "R1",
-            "regionName": "Region One",
-            "actionId": "A14",
-            "actionName": "Green Roof Programs",
-            "actionPriority": 14,
-            "explanation": "For EcoCity, Green Roof Programs support multiple environmental objectives by enhancing building insulation and managing stormwater runoff. This action contributes to urban cooling and creates more sustainable areas in dense city environments. It is an innovative approach that combines environmental, aesthetic, and energy-saving benefits."
-        },
-        {
-            "locode": "EC001",
-            "cityName": "EcoCity",
-            "region": "R1",
-            "regionName": "Region One",
-            "actionId": "A15",
-            "actionName": "Urban Tree Planting",
-            "actionPriority": 15,
-            "explanation": "For EcoCity, Urban Tree Planting initiatives are essential due to their role in improving air quality and providing natural cooling in densely populated areas. This action also enhances biodiversity and creates healthier living environments for communities. It aligns well with the city's long-term strategies for resilience and environmental improvement."
-        },
-        {
-            "locode": "EC001",
-            "cityName": "EcoCity",
-            "region": "R1",
-            "regionName": "Region One",
-            "actionId": "A16",
-            "actionName": "Stormwater Management",
-            "actionPriority": 16,
-            "explanation": "For EcoCity, implementing Stormwater Management measures is a proactive step to reduce flood risks and improve water quality. This action not only addresses immediate environmental challenges but also enhances the durability of urban infrastructure. Its integrated approach supports both ecological balance and community resilience."
-        },
-        {
-            "locode": "EC001",
-            "cityName": "EcoCity",
-            "region": "R1",
-            "regionName": "Region One",
-            "actionId": "A17",
-            "actionName": "Heatwave Preparedness",
-            "actionPriority": 17,
-            "explanation": "For EcoCity, Heatwave Preparedness initiatives are key to protecting vulnerable populations from rising temperature extremes. This action builds a framework for public safety and enhances the city’s capacity to cope with climate-related stress. It is timely and appropriate given the increasing frequency of extreme heat events."
-        },
-        {
-            "locode": "EC001",
-            "cityName": "EcoCity",
-            "region": "R1",
-            "regionName": "Region One",
-            "actionId": "A18",
-            "actionName": "Community Solar Projects",
-            "actionPriority": 18,
-            "explanation": "For EcoCity, Community Solar Projects stand out by promoting the benefits of renewable energy at a local level. This action fosters community involvement and ensures broader access to clean energy solutions. It is a collaborative approach that effectively contributes to reducing the city’s carbon footprint."
-        },
-        {
-            "locode": "EC001",
-            "cityName": "EcoCity",
-            "region": "R1",
-            "regionName": "Region One",
-            "actionId": "A19",
-            "actionName": "Cycling Infrastructure",
-            "actionPriority": 19,
-            "explanation": "For EcoCity, strengthening Cycling Infrastructure is an effective way to encourage low-emission transportation and promote healthier lifestyles. This measure supports sustainable urban mobility, reducing the reliance on motorized transport. It is well-suited to the city’s layout and helps lower overall urban emissions."
-        },
-        {
-            "locode": "EC001",
-            "cityName": "EcoCity",
-            "region": "R1",
-            "regionName": "Region One",
-            "actionId": "A20",
-            "actionName": "Electric Vehicle Incentives",
-            "actionPriority": 20,
-            "explanation": "For EcoCity, Electric Vehicle Incentives are designed to accelerate the transition toward cleaner transportation. This action supports substantive emissions reduction by encouraging the adoption of low-carbon vehicles. It builds on the city's vision for a sustainable future by reducing reliance on fossil fuels and enhancing environmental quality."
-        }
-    ]
-}
+[
+    {
+        "locode": "BR MRD",
+        "cityName": "Miranda",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0176",
+        "actionName": "Development of Climate Action Plan",
+        "actionPriority": 1,
+        "explanation": "Ranked #1 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR MRD",
+        "cityName": "Miranda",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0151",
+        "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
+        "actionPriority": 2,
+        "explanation": "Ranked #2 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR MRD",
+        "cityName": "Miranda",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0156",
+        "actionName": "Implementation of urban gardens",
+        "actionPriority": 3,
+        "explanation": "Ranked #3 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR MRD",
+        "cityName": "Miranda",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0175",
+        "actionName": "Recovery and preservation of green areas",
+        "actionPriority": 4,
+        "explanation": "Ranked #4 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR MRD",
+        "cityName": "Miranda",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0162",
+        "actionName": "Strengthen programs for control and conservation of protected areas",
+        "actionPriority": 5,
+        "explanation": "Ranked #5 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR MRD",
+        "cityName": "Miranda",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0149",
+        "actionName": "Encourage sustainable land use practices",
+        "actionPriority": 6,
+        "explanation": "Ranked #6 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR MRD",
+        "cityName": "Miranda",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0169",
+        "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
+        "actionPriority": 7,
+        "explanation": "Ranked #7 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR MRD",
+        "cityName": "Miranda",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0152",
+        "actionName": "Recovery of degraded areas",
+        "actionPriority": 8,
+        "explanation": "Ranked #8 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR MRD",
+        "cityName": "Miranda",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0095",
+        "actionName": "Disaster early warning",
+        "actionPriority": 9,
+        "explanation": "Ranked #9 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR MRD",
+        "cityName": "Miranda",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0094",
+        "actionName": "Access to health care",
+        "actionPriority": 10,
+        "explanation": "Ranked #10 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR MRD",
+        "cityName": "Miranda",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0097",
+        "actionName": "Food storage/distribution improvements",
+        "actionPriority": 11,
+        "explanation": "Ranked #11 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR MRD",
+        "cityName": "Miranda",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0180",
+        "actionName": "Implement permeable pavements and increase green areas in roadways",
+        "actionPriority": 12,
+        "explanation": "Ranked #12 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR MRD",
+        "cityName": "Miranda",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0157",
+        "actionName": "Maintenance and Revitalization of Riparian Forests",
+        "actionPriority": 13,
+        "explanation": "Ranked #13 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR MRD",
+        "cityName": "Miranda",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0181",
+        "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
+        "actionPriority": 14,
+        "explanation": "Ranked #14 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR MRD",
+        "cityName": "Miranda",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0096",
+        "actionName": "Farm/fishery improvements",
+        "actionPriority": 15,
+        "explanation": "Ranked #15 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR MRD",
+        "cityName": "Miranda",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0098",
+        "actionName": "Behaviour change in diets and food waste",
+        "actionPriority": 16,
+        "explanation": "Ranked #16 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR MRD",
+        "cityName": "Miranda",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0092",
+        "actionName": "Social safety nets",
+        "actionPriority": 17,
+        "explanation": "Ranked #17 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR MRD",
+        "cityName": "Miranda",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0086",
+        "actionName": "Ecosystem-based adaptation",
+        "actionPriority": 18,
+        "explanation": "Ranked #18 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR MRD",
+        "cityName": "Miranda",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0088",
+        "actionName": "Building codes",
+        "actionPriority": 19,
+        "explanation": "Ranked #19 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR MRD",
+        "cityName": "Miranda",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0148",
+        "actionName": "Create the Municipal Climate Change Forum",
+        "actionPriority": 20,
+        "explanation": "Ranked #20 by tournament ranking algorithm"
+    }
+]

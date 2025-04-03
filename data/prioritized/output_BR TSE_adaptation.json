@@ -1,204 +1,202 @@
-{
-    "actions": [
-        {
-            "locode": "USA-NYC",
-            "cityName": "New York",
-            "region": "US-NE",
-            "regionName": "Northeast USA",
-            "actionId": "A001",
-            "actionName": "New Building Standards",
-            "actionPriority": 1,
-            "explanation": "For New York, New Building Standards was ranked highly because it targets a critical emission sector by improving construction quality and energy efficiency, which is essential for a dense urban environment. The action is well-aligned with the city’s environmental conditions and offers significant co-benefits in reducing long-term energy use. It also fits well within the local capacity for implementation and addresses key urban challenges without requiring extensive preconditions."
-        },
-        {
-            "locode": "USA-LAX",
-            "cityName": "Los Angeles",
-            "region": "US-W",
-            "regionName": "Western USA",
-            "actionId": "A002",
-            "actionName": "Bus Emissions",
-            "actionPriority": 2,
-            "explanation": "For Los Angeles, the focus on reducing bus emissions was prioritized as it addresses the heavy transportation sector, a known contributor to the city's air quality challenges. The action is designed to mitigate climate risks by adopting cleaner fuels and modern technologies, which is particularly relevant given the region’s traffic congestion and environmental conditions. Its integration into existing public transport systems supports faster implementation and broad socio-demographic benefits."
-        },
-        {
-            "locode": "USA-CHI",
-            "cityName": "Chicago",
-            "region": "US-MW",
-            "regionName": "Midwestern USA",
-            "actionId": "A003",
-            "actionName": "Urban Tree Planting",
-            "actionPriority": 3,
-            "explanation": "In Chicago, Urban Tree Planting was given priority due to its capability to enhance local air quality and provide natural cooling in urban heat environments. The action supports climate mitigation by sequestering carbon and complements existing green space initiatives. Furthermore, it creates social benefits by improving neighborhood aesthetics and public health, which are essential in a densely populated city."
-        },
-        {
-            "locode": "USA-AUS",
-            "cityName": "Austin",
-            "region": "US-S",
-            "regionName": "Southern USA",
-            "actionId": "A004",
-            "actionName": "Renewable Energy Incentives",
-            "actionPriority": 4,
-            "explanation": "Austin’s Renewable Energy Incentives action was prioritized as it significantly addresses emissions from the power generation sector. The initiative is tailored to leverage local solar and wind resources while reducing reliance on fossil fuels. Its cost-effective nature and alignment with the city’s innovative culture make it an attractive option for rapid positive environmental impact."
-        },
-        {
-            "locode": "USA-SFO",
-            "cityName": "San Francisco",
-            "region": "US-W",
-            "regionName": "Western USA",
-            "actionId": "A005",
-            "actionName": "Efficient Waste Management",
-            "actionPriority": 5,
-            "explanation": "San Francisco’s Efficient Waste Management action was ranked favorably as it addresses the city's waste-related emissions and promotes resource recovery. The action is aligned with urban priorities by reducing landfill use and optimizing recycling processes. Its integration with existing infrastructure and favorable risk reduction profile contribute to its strong standing in climate mitigation efforts."
-        },
-        {
-            "locode": "USA-PHX",
-            "cityName": "Phoenix",
-            "region": "US-SW",
-            "regionName": "Southwestern USA",
-            "actionId": "A006",
-            "actionName": "Water Conservation Measures",
-            "actionPriority": 6,
-            "explanation": "Phoenix prioritized Water Conservation Measures due to its high relevance in an arid climate and growing water scarcity challenges. The action not only addresses the environmental risks associated with water shortages but also contributes to reducing energy usage in water management systems. Its design is cost-effective and tailored to meet the socio-demographic needs of the local population, making it a pragmatic climate action."
-        },
-        {
-            "locode": "NL-AMS",
-            "cityName": "Amsterdam",
-            "region": "EU-NE",
-            "regionName": "Northern Europe",
-            "actionId": "A007",
-            "actionName": "Cycling Infrastructure",
-            "actionPriority": 7,
-            "explanation": "Amsterdam’s investment in Cycling Infrastructure was prioritized because it effectively reduces transportation-related emissions while improving public health. The action supports a shift towards sustainable mobility in a city already known for its biking culture. Its compatibility with existing urban designs and the promise of quicker benefits in emissions reduction have made it a well-regarded measure."
-        },
-        {
-            "locode": "USA-NOL",
-            "cityName": "New Orleans",
-            "region": "US-SE",
-            "regionName": "Southeastern USA",
-            "actionId": "A008",
-            "actionName": "Flood Defense Improvements",
-            "actionPriority": 8,
-            "explanation": "For New Orleans, Flood Defense Improvements were prioritized because they address a critical vulnerability due to the city’s location and historical flood risks. The action enhances the city’s resilience against climate change-induced extreme weather events while protecting valuable infrastructure. Its emphasis on risk reduction and suitability for local environmental conditions supports its high ranking in terms of overall climate action effectiveness."
-        },
-        {
-            "locode": "DE-BER",
-            "cityName": "Berlin",
-            "region": "EU-CE",
-            "regionName": "Central Europe",
-            "actionId": "A009",
-            "actionName": "Green Roof Implementation",
-            "actionPriority": 9,
-            "explanation": "Berlin’s Green Roof Implementation action received strong consideration due to its ability to improve urban microclimates and reduce energy demands. The approach is compatible with existing building practices and offers additional benefits such as stormwater management and enhanced biodiversity. Its moderate implementation requirements and alignment with the city’s sustainability goals positioned it well within the action prioritization framework."
-        },
-        {
-            "locode": "USA-SDX",
-            "cityName": "San Diego",
-            "region": "US-W",
-            "regionName": "Western USA",
-            "actionId": "A010",
-            "actionName": "Solar Panel Installation",
-            "actionPriority": 10,
-            "explanation": "San Diego prioritized Solar Panel Installation because the action taps into abundant local sunshine to promote renewable energy generation. The initiative supports a major reduction in greenhouse gas emissions from the power sector while being well-suited for the city’s climate. Its practical implementation and long-term cost-effectiveness make it a competitive option for sustainable urban development."
-        },
-        {
-            "locode": "JP-TYO",
-            "cityName": "Tokyo",
-            "region": "AS-NE",
-            "regionName": "Northeast Asia",
-            "actionId": "A011",
-            "actionName": "High-Speed Rail",
-            "actionPriority": 11,
-            "explanation": "Tokyo’s High-Speed Rail action was ranked for its ability to shift transportation dynamics towards reduced emissions and improved energy efficiency. The measure fits well within the city’s advanced technological framework and addresses urban mobility challenges with a sustainable alternative. Its broad co-benefits, including alleviation of congestion and enhanced regional connectivity, support its strong qualitative ranking."
-        },
-        {
-            "locode": "UK-LON",
-            "cityName": "London",
-            "region": "EU-W",
-            "regionName": "Western Europe",
-            "actionId": "A012",
-            "actionName": "Public Awareness Campaign",
-            "actionPriority": 12,
-            "explanation": "In London, the Public Awareness Campaign was given consideration as it plays a vital role in mobilizing citizens towards sustainable behaviors and climate resilience. The action complements technological interventions by fostering a cultural shift towards energy conservation and waste reduction. Its suitability in a densely populated urban environment and potential for rapid influence make it a valuable complement to higher technology-driven measures."
-        },
-        {
-            "locode": "FR-PAR",
-            "cityName": "Paris",
-            "region": "EU-W",
-            "regionName": "Western Europe",
-            "actionId": "A013",
-            "actionName": "Electric Vehicle Incentives",
-            "actionPriority": 13,
-            "explanation": "Paris prioritized Electric Vehicle Incentives due to their strong potential to lower transportation-related emissions and modernize urban mobility. The action resonates with the city’s drive for cleaner air and lower carbon footprints, while encouraging shifts in consumer behavior. It is also aligned with urban infrastructure improvements, although its benefits depend partly on complementary charging network expansions."
-        },
-        {
-            "locode": "KR-SEL",
-            "cityName": "Seoul",
-            "region": "AS-NE",
-            "regionName": "Northeast Asia",
-            "actionId": "A014",
-            "actionName": "Grid Modernization",
-            "actionPriority": 14,
-            "explanation": "Seoul’s Grid Modernization action was chosen for its capacity to enhance energy efficiency and support the integration of renewable resources into the urban power grid. This action addresses critical infrastructure challenges and improves resilience against climate variability. Its systematic benefits include fostering long-term sustainability and reducing technical risks, making it a sound component of the city’s climate strategy."
-        },
-        {
-            "locode": "IN-BOM",
-            "cityName": "Mumbai",
-            "region": "AS-S",
-            "regionName": "South Asia",
-            "actionId": "A015",
-            "actionName": "Rainwater Harvesting",
-            "actionPriority": 15,
-            "explanation": "Mumbai’s Rainwater Harvesting action was prioritized because it directly addresses water scarcity and flood management challenges in a densely populated coastal environment. The method leverages local rainfall patterns to supplement water supplies and reduce urban flooding risks. Its focus on sustainability coupled with ease of integration into existing building practices makes it a valuable climate resilience measure."
-        },
-        {
-            "locode": "CA-TOR",
-            "cityName": "Toronto",
-            "region": "CA-ON",
-            "regionName": "Ontario, Canada",
-            "actionId": "A016",
-            "actionName": "Energy Efficiency Upgrades",
-            "actionPriority": 16,
-            "explanation": "Toronto’s Energy Efficiency Upgrades action was ranked for its potential to reduce emissions across residential and commercial sectors. The action is well suited to the city’s diverse building stock and integrates smoothly with modern retrofitting initiatives. Its emphasis on cost-effectiveness and quick implementation while addressing urban energy demands reinforces its overall positive impact."
-        },
-        {
-            "locode": "USA-MIA",
-            "cityName": "Miami",
-            "region": "US-SE",
-            "regionName": "Southeastern USA",
-            "actionId": "A017",
-            "actionName": "Coastal Protection",
-            "actionPriority": 17,
-            "explanation": "For Miami, Coastal Protection was ranked highly as it directly addresses the city’s vulnerability to sea level rise and storm surges. The action is tailored to safeguard critical infrastructure and local communities in a coastal environment, enhancing urban resilience. Its environmental compatibility and proactive risk reduction strategy are well aligned with the city’s long-term adaptation goals."
-        },
-        {
-            "locode": "SG-SIN",
-            "cityName": "Singapore",
-            "region": "AS-SE",
-            "regionName": "Southeast Asia",
-            "actionId": "A018",
-            "actionName": "Sustainable Urban Drainage",
-            "actionPriority": 18,
-            "explanation": "Singapore’s Sustainable Urban Drainage action was prioritized for its ability to manage heavy rainfall and reduce flood risks in a compact urban setting. The method integrates naturally with the city’s green infrastructure plans and enhances water quality. Its design is both environmentally compatible and cost-effective, making it a practical choice for urban resilience."
-        },
-        {
-            "locode": "AU-SYD",
-            "cityName": "Sydney",
-            "region": "AU-NSW",
-            "regionName": "New South Wales, Australia",
-            "actionId": "A019",
-            "actionName": "Urban Heat Island Mitigation",
-            "actionPriority": 19,
-            "explanation": "Sydney’s Urban Heat Island Mitigation action was ranked for its ability to tackle rising local temperatures and enhance outdoor comfort. The approach leverages urban greening and reflective materials to reduce heat retention, aligning well with Sydney’s climate challenges. Its integration with broader urban planning initiatives and potential for immediate local benefits underscore its prominence in the action list."
-        },
-        {
-            "locode": "DK-CPH",
-            "cityName": "Copenhagen",
-            "region": "EU-N",
-            "regionName": "Northern Europe",
-            "actionId": "A020",
-            "actionName": "Off-Peak Energy Pricing",
-            "actionPriority": 20,
-            "explanation": "Copenhagen’s Off-Peak Energy Pricing action was ranked due to its innovative approach in managing energy demand and promoting lower emissions during high-demand periods. The strategy is aligned with the city’s commitment to smart energy solutions and reducing peak load stress. Its design not only improves energy system efficiency but also supports financial and operational balance, making it a well-considered option in the overall climate action mix."
-        }
-    ]
-}
+[
+    {
+        "locode": "BR TSE",
+        "cityName": "Tangar\u00e1 da Serra",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0176",
+        "actionName": "Development of Climate Action Plan",
+        "actionPriority": 1,
+        "explanation": "Ranked #1 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR TSE",
+        "cityName": "Tangar\u00e1 da Serra",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "ipcc_0097",
+        "actionName": "Food storage/distribution improvements",
+        "actionPriority": 2,
+        "explanation": "Ranked #2 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR TSE",
+        "cityName": "Tangar\u00e1 da Serra",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "ipcc_0096",
+        "actionName": "Farm/fishery improvements",
+        "actionPriority": 3,
+        "explanation": "Ranked #3 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR TSE",
+        "cityName": "Tangar\u00e1 da Serra",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "ipcc_0094",
+        "actionName": "Access to health care",
+        "actionPriority": 4,
+        "explanation": "Ranked #4 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR TSE",
+        "cityName": "Tangar\u00e1 da Serra",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0151",
+        "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
+        "actionPriority": 5,
+        "explanation": "Ranked #5 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR TSE",
+        "cityName": "Tangar\u00e1 da Serra",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "ipcc_0092",
+        "actionName": "Social safety nets",
+        "actionPriority": 6,
+        "explanation": "Ranked #6 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR TSE",
+        "cityName": "Tangar\u00e1 da Serra",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0169",
+        "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
+        "actionPriority": 7,
+        "explanation": "Ranked #7 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR TSE",
+        "cityName": "Tangar\u00e1 da Serra",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "ipcc_0093",
+        "actionName": "Availability of health infrastructure",
+        "actionPriority": 8,
+        "explanation": "Ranked #8 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR TSE",
+        "cityName": "Tangar\u00e1 da Serra",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0164",
+        "actionName": "Hydrological Monitoring System with Telemetry Stations",
+        "actionPriority": 9,
+        "explanation": "Ranked #9 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR TSE",
+        "cityName": "Tangar\u00e1 da Serra",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0152",
+        "actionName": "Recovery of degraded areas",
+        "actionPriority": 10,
+        "explanation": "Ranked #10 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR TSE",
+        "cityName": "Tangar\u00e1 da Serra",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0156",
+        "actionName": "Implementation of urban gardens",
+        "actionPriority": 11,
+        "explanation": "Ranked #11 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR TSE",
+        "cityName": "Tangar\u00e1 da Serra",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0175",
+        "actionName": "Recovery and preservation of green areas",
+        "actionPriority": 12,
+        "explanation": "Ranked #12 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR TSE",
+        "cityName": "Tangar\u00e1 da Serra",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "ipcc_0098",
+        "actionName": "Behaviour change in diets and food waste",
+        "actionPriority": 13,
+        "explanation": "Ranked #13 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR TSE",
+        "cityName": "Tangar\u00e1 da Serra",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "ipcc_0095",
+        "actionName": "Disaster early warning",
+        "actionPriority": 14,
+        "explanation": "Ranked #14 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR TSE",
+        "cityName": "Tangar\u00e1 da Serra",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "ipcc_0099",
+        "actionName": "Water capture/storage",
+        "actionPriority": 15,
+        "explanation": "Ranked #15 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR TSE",
+        "cityName": "Tangar\u00e1 da Serra",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0149",
+        "actionName": "Encourage sustainable land use practices",
+        "actionPriority": 16,
+        "explanation": "Ranked #16 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR TSE",
+        "cityName": "Tangar\u00e1 da Serra",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "ipcc_0086",
+        "actionName": "Ecosystem-based adaptation",
+        "actionPriority": 17,
+        "explanation": "Ranked #17 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR TSE",
+        "cityName": "Tangar\u00e1 da Serra",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0148",
+        "actionName": "Create the Municipal Climate Change Forum",
+        "actionPriority": 18,
+        "explanation": "Ranked #18 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR TSE",
+        "cityName": "Tangar\u00e1 da Serra",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0162",
+        "actionName": "Strengthen programs for control and conservation of protected areas",
+        "actionPriority": 19,
+        "explanation": "Ranked #19 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR TSE",
+        "cityName": "Tangar\u00e1 da Serra",
+        "region": "MT",
+        "regionName": "Mato Grosso",
+        "actionId": "icare_0150",
+        "actionName": "Implement Loss Reduction and Control Program promoting water security for the municipality",
+        "actionPriority": 20,
+        "explanation": "Ranked #20 by tournament ranking algorithm"
+    }
+]

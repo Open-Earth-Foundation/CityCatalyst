@@ -1,204 +1,202 @@
-{
-    "actions": [
-        {
-            "locode": "CV01",
-            "cityName": "Cityville",
-            "region": "REG1",
-            "regionName": "RegionOne",
-            "actionId": "action_1",
-            "actionName": "New Building Standards",
-            "actionPriority": 1,
-            "explanation": "For Cityville, New Building Standards have been prioritized as they address a critical emission source by improving energy efficiency across numerous buildings. This action is well-suited to the urban fabric and specific environmental conditions of the city. It also provides long-term benefits such as improved structural resilience and lower operational emissions. The approach is comprehensive, balancing both immediate and sustained benefits for the local community."
-        },
-        {
-            "locode": "CV01",
-            "cityName": "Cityville",
-            "region": "REG1",
-            "regionName": "RegionOne",
-            "actionId": "action_2",
-            "actionName": "Bus Emissions",
-            "actionPriority": 2,
-            "explanation": "For Cityville, the initiative to reduce Bus Emissions is valued for its direct impact on urban air quality and public health. This action targets a crucial area in the transportation sector, which aligns with the city’s demographic and mobility needs. It offers potential for swift improvements, making it particularly appealing despite some transitional challenges. The overall strategy reinforces sustainable transit and reduces environmental risks in dense urban settings."
-        },
-        {
-            "locode": "CV01",
-            "cityName": "Cityville",
-            "region": "REG1",
-            "regionName": "RegionOne",
-            "actionId": "action_3",
-            "actionName": "Renewable Energy Incentives",
-            "actionPriority": 3,
-            "explanation": "For Cityville, Renewable Energy Incentives are prioritized for their capacity to accelerate the clean energy transition and reduce carbon footprints. The action effectively targets key energy sectors and is well-aligned with the local economic and environmental context. It also promotes sustainable job growth and increased energy independence. The combination of environmental and socio-economic benefits underlines its strong role in the overall climate action strategy."
-        },
-        {
-            "locode": "CV01",
-            "cityName": "Cityville",
-            "region": "REG1",
-            "regionName": "RegionOne",
-            "actionId": "action_4",
-            "actionName": "Urban Tree Canopy",
-            "actionPriority": 4,
-            "explanation": "For Cityville, expanding the Urban Tree Canopy is recognized for its multiple co-benefits, including enhanced air quality and improved urban microclimates. The initiative fits naturally with the city's existing green spaces and environmental efforts. It supports community health and increases resilience against urban heat, making it a valuable complement to other mitigation measures. The integration of nature-based solutions fosters sustainable urban development and local engagement."
-        },
-        {
-            "locode": "CV01",
-            "cityName": "Cityville",
-            "region": "REG1",
-            "regionName": "RegionOne",
-            "actionId": "action_5",
-            "actionName": "Green Roof Programs",
-            "actionPriority": 5,
-            "explanation": "For Cityville, Green Roof Programs are endorsed for their ability to reduce urban heat islands and improve building energy performance. These programs harmonize with the city’s climate needs by offering natural insulation and aesthetic enhancements. They contribute to environmental resilience while simultaneously supporting sustainable urban planning. Even though retrofitting buildings may present initial challenges, the long-term benefits justify their ranking."
-        },
-        {
-            "locode": "CV01",
-            "cityName": "Cityville",
-            "region": "REG1",
-            "regionName": "RegionOne",
-            "actionId": "action_6",
-            "actionName": "Energy Efficiency in Public Buildings",
-            "actionPriority": 6,
-            "explanation": "For Cityville, initiatives to enhance Energy Efficiency in Public Buildings have been prioritized for their broad impact on reducing operational emissions. This action addresses a sizeable portion of the city's energy consumption and aligns well with municipal management strategies. It leverages existing public infrastructures to deliver co-benefits such as cost savings and improved service delivery. Its strategic implementation supports longer-term resilience in the urban context."
-        },
-        {
-            "locode": "CV01",
-            "cityName": "Cityville",
-            "region": "REG1",
-            "regionName": "RegionOne",
-            "actionId": "action_7",
-            "actionName": "Bicycle Infrastructure",
-            "actionPriority": 7,
-            "explanation": "For Cityville, upgrading Bicycle Infrastructure is seen as a key measure for promoting sustainable transport and reducing fossil fuel reliance. This action is especially appropriate for a densely populated urban area, where enhancing non-motorized mobility directly benefits public health and local air quality. Its cost-effectiveness and potential for rapid deployment further contribute to its favorable ranking. The initiative also stimulates community engagement and supports long-term urban sustainability."
-        },
-        {
-            "locode": "CV01",
-            "cityName": "Cityville",
-            "region": "REG1",
-            "regionName": "RegionOne",
-            "actionId": "action_8",
-            "actionName": "Water Conservation",
-            "actionPriority": 8,
-            "explanation": "For Cityville, Water Conservation measures are crucial in ensuring a resilient response to climate variability. The action is designed to optimize local water resources while addressing environmental challenges specific to the region. It promotes sustainable usage, thereby helping to reduce related ecological risks. Through community-focused strategies, the initiative strengthens overall urban adaptability and resource management."
-        },
-        {
-            "locode": "CV01",
-            "cityName": "Cityville",
-            "region": "REG1",
-            "regionName": "RegionOne",
-            "actionId": "action_9",
-            "actionName": "Waste Management Improvements",
-            "actionPriority": 9,
-            "explanation": "For Cityville, advancing Waste Management Improvements is valued for its effective reduction of emissions from organic waste and improved recycling processes. This action aligns closely with broader environmental objectives by mitigating risks associated with improper waste disposal. It generates important co-benefits in terms of public health and urban cleanliness. The initiative’s comprehensive approach supports a more sustainable urban environment."
-        },
-        {
-            "locode": "CV01",
-            "cityName": "Cityville",
-            "region": "REG1",
-            "regionName": "RegionOne",
-            "actionId": "action_10",
-            "actionName": "Smart Grid Implementation",
-            "actionPriority": 10,
-            "explanation": "For Cityville, Smart Grid Implementation is prioritized because it enhances the efficiency and reliability of the energy distribution network. This action supports the integration of renewable energy sources and fosters adaptive management of urban power systems. Its alignment with modern technological capabilities and potential to optimize energy use makes it a valuable component of climate strategy. The measure also helps balance demand and supply in a sustainable, forward-looking manner."
-        },
-        {
-            "locode": "CV01",
-            "cityName": "Cityville",
-            "region": "REG1",
-            "regionName": "RegionOne",
-            "actionId": "action_11",
-            "actionName": "Coastal Restoration",
-            "actionPriority": 11,
-            "explanation": "For Cityville, Coastal Restoration projects have been emphasized for their direct role in safeguarding natural barriers and reducing flood-related risks. The action exploits natural processes to enhance shoreline resilience and protect critical ecosystems. It is well-tailored to the local environmental context, providing sustainable benefits over time. The strategy not only mitigates potential climate hazards but also enriches biodiversity and community well-being."
-        },
-        {
-            "locode": "CV01",
-            "cityName": "Cityville",
-            "region": "REG1",
-            "regionName": "RegionOne",
-            "actionId": "action_12",
-            "actionName": "Urban Cooling Initiatives",
-            "actionPriority": 12,
-            "explanation": "For Cityville, Urban Cooling Initiatives are important for moderating the effects of urban heat islands and ensuring public comfort during extreme weather. Such measures align with the city’s climatic challenges while addressing health and environmental quality. The action is designed to be integrated into existing infrastructures, thus accelerating its benefits despite ongoing maintenance needs. Overall, it supports immediate risk reduction and long-term urban resilience."
-        },
-        {
-            "locode": "CV01",
-            "cityName": "Cityville",
-            "region": "REG1",
-            "regionName": "RegionOne",
-            "actionId": "action_13",
-            "actionName": "Community Solar Projects",
-            "actionPriority": 13,
-            "explanation": "For Cityville, Community Solar Projects are recognized for promoting local participation in the renewable energy landscape. This action democratizes access to clean energy, aligning well with both environmental goals and socio-economic empowerment. It encourages collaborative ownership and reduces dependency on conventional fossil fuels. The initiative’s structure fosters community engagement and supports broader sustainable development objectives."
-        },
-        {
-            "locode": "CV01",
-            "cityName": "Cityville",
-            "region": "REG1",
-            "regionName": "RegionOne",
-            "actionId": "action_14",
-            "actionName": "Industrial Emissions Controls",
-            "actionPriority": 14,
-            "explanation": "For Cityville, Industrial Emissions Controls are prioritized due to their potential to significantly reduce pollution from key industrial sources. This targeted action addresses sectors that contribute notably to the city’s overall emissions profile. It offers dedicated improvements in operational processes that can lead to healthier urban environments. The intervention’s focused nature ensures that complex industrial challenges are met with effective strategies."
-        },
-        {
-            "locode": "CV01",
-            "cityName": "Cityville",
-            "region": "REG1",
-            "regionName": "RegionOne",
-            "actionId": "action_15",
-            "actionName": "Sustainable Land Use Planning",
-            "actionPriority": 15,
-            "explanation": "For Cityville, Sustainable Land Use Planning is valued for its long-term vision in managing urban growth and minimizing environmental impacts. This action helps align development patterns with climate objectives and reduces risks related to urban sprawl. It is well-matched to the city’s demographic trends and resource constraints. Strategic planning in this area fosters resilience and supports a balanced approach to future urban development."
-        },
-        {
-            "locode": "CV01",
-            "cityName": "Cityville",
-            "region": "REG1",
-            "regionName": "RegionOne",
-            "actionId": "action_16",
-            "actionName": "Flood Defense Systems",
-            "actionPriority": 16,
-            "explanation": "For Cityville, Flood Defense Systems are highlighted for their direct role in mitigating risks related to urban flooding. This action is especially pertinent in areas prone to heavy rainfall and rising water levels, making it crucial for public safety and infrastructure protection. It is well integrated with local risk management strategies and supports rapid-response capabilities. The emphasis on safeguarding community assets under changing climatic conditions underscores its importance."
-        },
-        {
-            "locode": "CV01",
-            "cityName": "Cityville",
-            "region": "REG1",
-            "regionName": "RegionOne",
-            "actionId": "action_17",
-            "actionName": "Air Quality Monitoring",
-            "actionPriority": 17,
-            "explanation": "For Cityville, improved Air Quality Monitoring is recognized as an essential enabler for broader environmental management strategies. The action helps in identifying pollution hotspots and informs decision-making for targeted emissions reductions. It is compatible with the city’s capacity to incorporate technological solutions and supports ongoing environmental oversight. By emphasizing data-driven approaches, the initiative underpins several higher-level climate actions."
-        },
-        {
-            "locode": "CV01",
-            "cityName": "Cityville",
-            "region": "REG1",
-            "regionName": "RegionOne",
-            "actionId": "action_18",
-            "actionName": "Public Transportation System Overhaul",
-            "actionPriority": 18,
-            "explanation": "For Cityville, a comprehensive Public Transportation System Overhaul is prioritized for its potential to significantly lessen urban congestion and lower emissions from private vehicles. The action improves the efficiency and reach of transit services, aligning well with sustainable urban mobility goals. It addresses both environmental and socio-economic dimensions by providing accessible clean transportation. Despite the complexity of circulation redesign, the transformative potential of this strategy reinforces its ranking."
-        },
-        {
-            "locode": "CV01",
-            "cityName": "Cityville",
-            "region": "REG1",
-            "regionName": "RegionOne",
-            "actionId": "action_19",
-            "actionName": "Energy Storage Deployment",
-            "actionPriority": 19,
-            "explanation": "For Cityville, Energy Storage Deployment has been highlighted as an innovative approach to support renewable energy integration. This action bolsters grid reliability while allowing for more flexible energy management. It is considered a forward-thinking measure that aligns with the city’s modern energy goals. The long-term benefits in sustaining a clean and robust power balance are key factors in its prioritization."
-        },
-        {
-            "locode": "CV01",
-            "cityName": "Cityville",
-            "region": "REG1",
-            "regionName": "RegionOne",
-            "actionId": "action_20",
-            "actionName": "Climate Resilient Infrastructure",
-            "actionPriority": 20,
-            "explanation": "For Cityville, Climate Resilient Infrastructure is essential for ensuring that urban facilities can withstand the challenges posed by climate change. This action focuses on integrating adaptive features into critical assets to mitigate long-term risks. Its recognition stems from a comprehensive understanding of the city’s infrastructural vulnerabilities and environmental needs. Emphasizing future-proofing measures, this initiative is fundamental in building a sustainable and secure urban landscape."
-        }
-    ]
-}
+[
+    {
+        "locode": "BR CMA",
+        "cityName": "Camet\u00e1",
+        "region": "PA",
+        "regionName": "Par\u00e1",
+        "actionId": "icare_0169",
+        "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
+        "actionPriority": 1,
+        "explanation": "Ranked #1 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CMA",
+        "cityName": "Camet\u00e1",
+        "region": "PA",
+        "regionName": "Par\u00e1",
+        "actionId": "icare_0176",
+        "actionName": "Development of Climate Action Plan",
+        "actionPriority": 2,
+        "explanation": "Ranked #2 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CMA",
+        "cityName": "Camet\u00e1",
+        "region": "PA",
+        "regionName": "Par\u00e1",
+        "actionId": "icare_0152",
+        "actionName": "Recovery of degraded areas",
+        "actionPriority": 3,
+        "explanation": "Ranked #3 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CMA",
+        "cityName": "Camet\u00e1",
+        "region": "PA",
+        "regionName": "Par\u00e1",
+        "actionId": "icare_0151",
+        "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
+        "actionPriority": 4,
+        "explanation": "Ranked #4 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CMA",
+        "cityName": "Camet\u00e1",
+        "region": "PA",
+        "regionName": "Par\u00e1",
+        "actionId": "icare_0162",
+        "actionName": "Strengthen programs for control and conservation of protected areas",
+        "actionPriority": 5,
+        "explanation": "Ranked #5 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CMA",
+        "cityName": "Camet\u00e1",
+        "region": "PA",
+        "regionName": "Par\u00e1",
+        "actionId": "ipcc_0097",
+        "actionName": "Food storage/distribution improvements",
+        "actionPriority": 6,
+        "explanation": "Ranked #6 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CMA",
+        "cityName": "Camet\u00e1",
+        "region": "PA",
+        "regionName": "Par\u00e1",
+        "actionId": "icare_0157",
+        "actionName": "Maintenance and Revitalization of Riparian Forests",
+        "actionPriority": 7,
+        "explanation": "Ranked #7 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CMA",
+        "cityName": "Camet\u00e1",
+        "region": "PA",
+        "regionName": "Par\u00e1",
+        "actionId": "icare_0145",
+        "actionName": "Strengthen the healthcare network to attend to climate victims",
+        "actionPriority": 8,
+        "explanation": "Ranked #8 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CMA",
+        "cityName": "Camet\u00e1",
+        "region": "PA",
+        "regionName": "Par\u00e1",
+        "actionId": "ipcc_0094",
+        "actionName": "Access to health care",
+        "actionPriority": 9,
+        "explanation": "Ranked #9 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CMA",
+        "cityName": "Camet\u00e1",
+        "region": "PA",
+        "regionName": "Par\u00e1",
+        "actionId": "ipcc_0096",
+        "actionName": "Farm/fishery improvements",
+        "actionPriority": 10,
+        "explanation": "Ranked #10 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CMA",
+        "cityName": "Camet\u00e1",
+        "region": "PA",
+        "regionName": "Par\u00e1",
+        "actionId": "ipcc_0093",
+        "actionName": "Availability of health infrastructure",
+        "actionPriority": 11,
+        "explanation": "Ranked #11 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CMA",
+        "cityName": "Camet\u00e1",
+        "region": "PA",
+        "regionName": "Par\u00e1",
+        "actionId": "ipcc_0092",
+        "actionName": "Social safety nets",
+        "actionPriority": 12,
+        "explanation": "Ranked #12 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CMA",
+        "cityName": "Camet\u00e1",
+        "region": "PA",
+        "regionName": "Par\u00e1",
+        "actionId": "icare_0149",
+        "actionName": "Encourage sustainable land use practices",
+        "actionPriority": 13,
+        "explanation": "Ranked #13 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CMA",
+        "cityName": "Camet\u00e1",
+        "region": "PA",
+        "regionName": "Par\u00e1",
+        "actionId": "icare_0148",
+        "actionName": "Create the Municipal Climate Change Forum",
+        "actionPriority": 14,
+        "explanation": "Ranked #14 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CMA",
+        "cityName": "Camet\u00e1",
+        "region": "PA",
+        "regionName": "Par\u00e1",
+        "actionId": "icare_0164",
+        "actionName": "Hydrological Monitoring System with Telemetry Stations",
+        "actionPriority": 15,
+        "explanation": "Ranked #15 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CMA",
+        "cityName": "Camet\u00e1",
+        "region": "PA",
+        "regionName": "Par\u00e1",
+        "actionId": "icare_0144",
+        "actionName": "Creation of a Financial Support Program to Adress Extreme Weather Events",
+        "actionPriority": 16,
+        "explanation": "Ranked #16 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CMA",
+        "cityName": "Camet\u00e1",
+        "region": "PA",
+        "regionName": "Par\u00e1",
+        "actionId": "icare_0156",
+        "actionName": "Implementation of urban gardens",
+        "actionPriority": 17,
+        "explanation": "Ranked #17 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CMA",
+        "cityName": "Camet\u00e1",
+        "region": "PA",
+        "regionName": "Par\u00e1",
+        "actionId": "icare_0175",
+        "actionName": "Recovery and preservation of green areas",
+        "actionPriority": 18,
+        "explanation": "Ranked #18 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CMA",
+        "cityName": "Camet\u00e1",
+        "region": "PA",
+        "regionName": "Par\u00e1",
+        "actionId": "ipcc_0098",
+        "actionName": "Behaviour change in diets and food waste",
+        "actionPriority": 19,
+        "explanation": "Ranked #19 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR CMA",
+        "cityName": "Camet\u00e1",
+        "region": "PA",
+        "regionName": "Par\u00e1",
+        "actionId": "icare_0180",
+        "actionName": "Implement permeable pavements and increase green areas in roadways",
+        "actionPriority": 20,
+        "explanation": "Ranked #20 by tournament ranking algorithm"
+    }
+]

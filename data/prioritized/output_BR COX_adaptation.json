@@ -1,204 +1,202 @@
-{
-    "actions": [
-        {
-            "locode": "GF-001",
-            "cityName": "Greenfield",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "A1",
-            "actionName": "New Building Standards",
-            "actionPriority": 1,
-            "explanation": "For the city of Greenfield, the New Building Standards action is prioritized because it directly addresses a major source of emissions by enhancing energy efficiency in the built environment. This action aligns well with the city’s current structural characteristics and the need for long-term sustainable development. It supports broader emissions reduction goals by modernizing infrastructure and reducing energy waste. Additionally, its alignment with local construction practices and capacity makes it a strategic investment for immediate improvements."
-        },
-        {
-            "locode": "GF-002",
-            "cityName": "Greenfield",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "A2",
-            "actionName": "Bus Emissions",
-            "actionPriority": 2,
-            "explanation": "For Greenfield, the Bus Emissions action is effective as it focuses on reducing pollutants from the transit sector, which is a significant contributor to urban emissions. The measure is well suited to a city with a dense public transportation network and provides clear improvements in air quality. It enhances the environmental compatibility of the city's transport system while offering health co-benefits. The streamlined implementation process and lower dependency factors further support its ranking."
-        },
-        {
-            "locode": "GF-003",
-            "cityName": "Greenfield",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "A3",
-            "actionName": "Renewable Energy Incentives",
-            "actionPriority": 3,
-            "explanation": "Renewable Energy Incentives are ranked highly for Greenfield because they encourage a shift to clean energy sources that substantially cut greenhouse gas emissions. The action is particularly relevant given the city's growing energy demands and commitment to sustainable development. It leverages local capacity and available resources to facilitate a faster transition. Moreover, its cost-effectiveness and compatibility with the city’s environment add to its strategic value."
-        },
-        {
-            "locode": "GF-004",
-            "cityName": "Greenfield",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "A4",
-            "actionName": "Urban Tree Planting",
-            "actionPriority": 4,
-            "explanation": "Urban Tree Planting is prioritized in Greenfield for its multiple co-benefits, including improved air quality and climate risk mitigation. This action enhances the urban ecosystem and provides localized cooling benefits in dense neighborhoods. It is well aligned with the city’s environmental features and public health goals. Additionally, its ability to naturally reduce emissions and moderate urban heat islands makes it a complementary asset to other climate actions."
-        },
-        {
-            "locode": "GF-005",
-            "cityName": "Greenfield",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "A5",
-            "actionName": "Water Conservation Programs",
-            "actionPriority": 5,
-            "explanation": "Water Conservation Programs are significant for Greenfield as they address both resource efficiency and resilience against climate variability. The action is designed to optimize water usage in urban areas, aligning with the city’s environmental conservation goals. It plays a vital role in risk reduction by preventing water scarcity during stress periods. Its strategic fit with local socio-demographic needs and lower dependency requirements further enhances its appeal."
-        },
-        {
-            "locode": "GF-006",
-            "cityName": "Greenfield",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "A6",
-            "actionName": "Green Roof Initiatives",
-            "actionPriority": 6,
-            "explanation": "Green Roof Initiatives are valued in Greenfield for their ability to reduce the urban heat island effect and improve building insulation. This action integrates well with the city's architectural profile and contributes to lowering energy demand during peak times. It offers additional benefits including improved stormwater management and enhanced urban biodiversity. The ease of integration with existing structures makes it a pragmatic option for sustainable urban development."
-        },
-        {
-            "locode": "GF-007",
-            "cityName": "Greenfield",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "A7",
-            "actionName": "Subsidized Electric Vehicles",
-            "actionPriority": 7,
-            "explanation": "Subsidized Electric Vehicles are prioritized for Greenfield because they target the transportation sector, one of the key contributors to urban greenhouse gas emissions. The action is well-suited to a city known for its traffic congestion and public demand for cleaner transportation alternatives. By facilitating a shift away from fossil-fueled vehicles, it contributes to significant emissions reduction and improved air quality. Its alignment with infrastructure upgrades and consumer incentives further reinforces its strategic role."
-        },
-        {
-            "locode": "GF-008",
-            "cityName": "Greenfield",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "A8",
-            "actionName": "Industrial Efficiency Upgrades",
-            "actionPriority": 8,
-            "explanation": "Industrial Efficiency Upgrades are considered important in Greenfield due to the city’s industrial activities contributing to overall emissions. This action helps modernize existing facilities, reducing energy consumption and emissions simultaneously. It is compatible with the city's larger strategy to boost economic productivity while meeting environmental goals. The approach offers long-term benefits through improved operational sustainability and risk management."
-        },
-        {
-            "locode": "GF-009",
-            "cityName": "Greenfield",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "A9",
-            "actionName": "Community Energy Projects",
-            "actionPriority": 9,
-            "explanation": "Community Energy Projects are prioritized as they empower local communities and promote decentralized clean energy solutions in Greenfield. This action fits well with the city’s emphasis on local engagement and socio-demographic suitability. It fosters a bottom-up approach to emissions reduction and offers a platform for co-benefits like job creation and community resilience. Its flexibility and lower dependency on complex infrastructure make it an attractive option in the urban context."
-        },
-        {
-            "locode": "GF-010",
-            "cityName": "Greenfield",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "A10",
-            "actionName": "Solar Panel Installations",
-            "actionPriority": 10,
-            "explanation": "The Solar Panel Installations action is valued in Greenfield for its direct role in transitioning to renewable energy sources. It is designed to harness the abundant solar potential of the region while reducing reliance on non-renewable power streams. The approach is both cost-effective in the long run and fitting for the city’s drive towards sustainable urban energy. It also has the capacity to empower households and reduce long-term energy expenditures."
-        },
-        {
-            "locode": "GF-011",
-            "cityName": "Greenfield",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "A11",
-            "actionName": "Wind Energy Projects",
-            "actionPriority": 11,
-            "explanation": "Wind Energy Projects are important in Greenfield as they provide a viable clean energy alternative that complements other renewable strategies. This action capitalizes on regional wind resources while contributing to a diversified energy mix. Its implementation supports long-term emissions reduction and enhances energy security. The project’s design is well aligned with the city’s environmental conditions and infrastructure capacity."
-        },
-        {
-            "locode": "GF-012",
-            "cityName": "Greenfield",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "A12",
-            "actionName": "Public Transit Expansion",
-            "actionPriority": 12,
-            "explanation": "Public Transit Expansion is emphasized for Greenfield because it directly addresses high emission levels from the transportation sector. By increasing the accessibility and efficiency of public transport, the action plays a critical role in reducing the city’s overall carbon footprint. It is particularly suitable for urban areas with high commuting demands, ensuring that benefits are broadly distributed among residents. Additionally, its ability to reduce traffic congestion contributes to both environmental and quality-of-life improvements."
-        },
-        {
-            "locode": "GF-013",
-            "cityName": "Greenfield",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "A13",
-            "actionName": "Cycling Infrastructure",
-            "actionPriority": 13,
-            "explanation": "The Cycling Infrastructure action is strategically chosen for Greenfield due to its potential to transform urban mobility with low-emission transportation alternatives. It supports healthier lifestyles and substantially reduces reliance on motorized transport in densely populated areas. This initiative is closely aligned with the city’s socio-demographic needs and local environmental goals. Its relatively quick implementation timeline and complementary benefits underline its importance in the broader climate action portfolio."
-        },
-        {
-            "locode": "GF-014",
-            "cityName": "Greenfield",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "A14",
-            "actionName": "Waste Management Improvements",
-            "actionPriority": 14,
-            "explanation": "Waste Management Improvements are prioritized in Greenfield because they address methane and other harmful emissions from waste decomposition. This action is well suited to improving both environmental quality and operational efficiency in urban waste handling. It offers clear risk reduction benefits by minimizing contamination and potential public health hazards. Moreover, the measure is aligned with the city's sustainability targets and helps optimize resource recovery processes."
-        },
-        {
-            "locode": "GF-015",
-            "cityName": "Greenfield",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "A15",
-            "actionName": "District Heating Systems",
-            "actionPriority": 15,
-            "explanation": "District Heating Systems are valuable for Greenfield due to their ability to efficiently distribute heat energy while reducing reliance on individual fossil-fuel-based systems. This centralized approach is particularly well-suited for areas with high building density and aligned with the city’s energy transition goals. The action improves overall energy use efficiency and is designed for long-term sustainability. Its integration potential and co-benefits in risk reduction support its role in the urban energy strategy."
-        },
-        {
-            "locode": "GF-016",
-            "cityName": "Greenfield",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "A16",
-            "actionName": "Rainwater Harvesting",
-            "actionPriority": 16,
-            "explanation": "Rainwater Harvesting is recognized in Greenfield for its potential to enhance water security and reduce strain on municipal water supplies. The strategy is contextually compatible with the city’s occasional water stress challenges and environmental objectives. It supports sustainable urban resource management while reducing dependency on external water sources. Additionally, its low-cost implementation and positive impact on local climate resilience make it an important action."
-        },
-        {
-            "locode": "GF-017",
-            "cityName": "Greenfield",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "A17",
-            "actionName": "Smart Grid Implementation",
-            "actionPriority": 17,
-            "explanation": "Smart Grid Implementation is prioritized as it modernizes the city’s electricity distribution network, paving the way for more efficient energy usage and integration of renewable sources. The action is strategically aligned with Greenfield’s evolving energy demands and digital infrastructure. By reducing energy losses and facilitating real-time management, it supports long-term environmental and economic benefits. Its design minimizes preconditions and allows for scalable improvements, fitting well with urban modernization plans."
-        },
-        {
-            "locode": "GF-018",
-            "cityName": "Greenfield",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "A18",
-            "actionName": "Zero-Emission Zones",
-            "actionPriority": 18,
-            "explanation": "Zero-Emission Zones are designed to create urban areas in Greenfield with significantly reduced air pollutants by banning high-emission vehicles and activities in certain zones. This action supports the city’s environmental compatibility goals and creates healthier urban spaces. It aligns with broader strategies to lower transportation emissions and improve public health. While requiring coordinated planning, the localized benefits make it a valuable measure for transformative urban change."
-        },
-        {
-            "locode": "GF-019",
-            "cityName": "Greenfield",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "A19",
-            "actionName": "Energy Storage Solutions",
-            "actionPriority": 19,
-            "explanation": "Energy Storage Solutions are important for stabilizing Greenfield’s renewable energy supply and enhancing grid reliability. The action helps balance intermittent energy sources with the city’s demand patterns, thereby supporting overall emissions reduction. It is especially relevant in the context of increasing renewable installations and the need for efficient energy management. The approach is forward-looking and aligns with the city’s strategic capacity expansion for safer and more reliable energy distribution."
-        },
-        {
-            "locode": "GF-020",
-            "cityName": "Greenfield",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "A20",
-            "actionName": "Climate Resilient Infrastructure",
-            "actionPriority": 20,
-            "explanation": "Climate Resilient Infrastructure is prioritized in Greenfield for its role in preparing the city to withstand adverse climate impacts. This action is closely tailored to address risks like extreme weather events, ensuring that critical services remain operational. It integrates considerations of environmental compatibility and long-term urban safety into the planning process. Although its implementation may require comprehensive planning, the benefits of increased resilience and adaptive capacity are key to its ranking."
-        }
-    ]
-}
+[
+    {
+        "locode": "BR COX",
+        "cityName": "Coxim",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0176",
+        "actionName": "Development of Climate Action Plan",
+        "actionPriority": 1,
+        "explanation": "Ranked #1 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR COX",
+        "cityName": "Coxim",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0096",
+        "actionName": "Farm/fishery improvements",
+        "actionPriority": 2,
+        "explanation": "Ranked #2 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR COX",
+        "cityName": "Coxim",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0151",
+        "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
+        "actionPriority": 3,
+        "explanation": "Ranked #3 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR COX",
+        "cityName": "Coxim",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0094",
+        "actionName": "Access to health care",
+        "actionPriority": 4,
+        "explanation": "Ranked #4 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR COX",
+        "cityName": "Coxim",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0169",
+        "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
+        "actionPriority": 5,
+        "explanation": "Ranked #5 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR COX",
+        "cityName": "Coxim",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0095",
+        "actionName": "Disaster early warning",
+        "actionPriority": 6,
+        "explanation": "Ranked #6 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR COX",
+        "cityName": "Coxim",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0164",
+        "actionName": "Hydrological Monitoring System with Telemetry Stations",
+        "actionPriority": 7,
+        "explanation": "Ranked #7 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR COX",
+        "cityName": "Coxim",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0098",
+        "actionName": "Behaviour change in diets and food waste",
+        "actionPriority": 8,
+        "explanation": "Ranked #8 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR COX",
+        "cityName": "Coxim",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0097",
+        "actionName": "Food storage/distribution improvements",
+        "actionPriority": 9,
+        "explanation": "Ranked #9 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR COX",
+        "cityName": "Coxim",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0092",
+        "actionName": "Social safety nets",
+        "actionPriority": 10,
+        "explanation": "Ranked #10 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR COX",
+        "cityName": "Coxim",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0152",
+        "actionName": "Recovery of degraded areas",
+        "actionPriority": 11,
+        "explanation": "Ranked #11 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR COX",
+        "cityName": "Coxim",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0149",
+        "actionName": "Encourage sustainable land use practices",
+        "actionPriority": 12,
+        "explanation": "Ranked #12 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR COX",
+        "cityName": "Coxim",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0156",
+        "actionName": "Implementation of urban gardens",
+        "actionPriority": 13,
+        "explanation": "Ranked #13 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR COX",
+        "cityName": "Coxim",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0093",
+        "actionName": "Availability of health infrastructure",
+        "actionPriority": 14,
+        "explanation": "Ranked #14 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR COX",
+        "cityName": "Coxim",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0148",
+        "actionName": "Create the Municipal Climate Change Forum",
+        "actionPriority": 15,
+        "explanation": "Ranked #15 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR COX",
+        "cityName": "Coxim",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0175",
+        "actionName": "Recovery and preservation of green areas",
+        "actionPriority": 16,
+        "explanation": "Ranked #16 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR COX",
+        "cityName": "Coxim",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0162",
+        "actionName": "Strengthen programs for control and conservation of protected areas",
+        "actionPriority": 17,
+        "explanation": "Ranked #17 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR COX",
+        "cityName": "Coxim",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "icare_0150",
+        "actionName": "Implement Loss Reduction and Control Program promoting water security for the municipality",
+        "actionPriority": 18,
+        "explanation": "Ranked #18 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR COX",
+        "cityName": "Coxim",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0099",
+        "actionName": "Water capture/storage",
+        "actionPriority": 19,
+        "explanation": "Ranked #19 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR COX",
+        "cityName": "Coxim",
+        "region": "MS",
+        "regionName": "Mato Grosso do Sul",
+        "actionId": "ipcc_0086",
+        "actionName": "Ecosystem-based adaptation",
+        "actionPriority": 20,
+        "explanation": "Ranked #20 by tournament ranking algorithm"
+    }
+]

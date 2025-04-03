@@ -1,204 +1,202 @@
-{
-    "actions": [
-        {
-            "locode": "LOC001",
-            "cityName": "Springfield",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "ACT001",
-            "actionName": "New Building Standards",
-            "actionPriority": 1,
-            "explanation": "For the city Springfield, the action New Building Standards was prioritized because it fundamentally targets emissions from the building sector, which is a significant contributor locally. Its alignment with the city’s specific environmental needs helps improve urban resilience while delivering practical co-benefits. The measure is recognized for being cost-effective with manageable implementation requirements, making it a well-suited option in the broader climate strategy."
-        },
-        {
-            "locode": "LOC002",
-            "cityName": "Riverton",
-            "region": "EU",
-            "regionName": "Europe",
-            "actionId": "ACT002",
-            "actionName": "Bus Emissions",
-            "actionPriority": -1,
-            "explanation": "For the city Riverton, the action Bus Emissions was ranked lower despite its potential to reduce transport-related emissions because it does not directly address the most critical emission sources. The sector focus presents challenges in fully aligning with the city’s dominant emission profile. Additionally, potential implementation complexities and trade-offs in cost-effectiveness led to a relatively reduced prioritization."
-        },
-        {
-            "locode": "LOC003",
-            "cityName": "Lakeside",
-            "region": "AS",
-            "regionName": "Asia",
-            "actionId": "ACT003",
-            "actionName": "Renewable Energy Integration",
-            "actionPriority": 1,
-            "explanation": "For the city Lakeside, Renewable Energy Integration was prioritized due to its strong potential to significantly reduce greenhouse gas emissions within the energy sector. The action aligns well with local environmental conditions and leverages the region’s renewable resources while reducing reliance on fossil fuels. Its capacity to deliver multiple co-benefits, including enhanced energy security, contributes to its favorable ranking."
-        },
-        {
-            "locode": "LOC004",
-            "cityName": "Greenport",
-            "region": "SA",
-            "regionName": "South America",
-            "actionId": "ACT004",
-            "actionName": "Urban Greening",
-            "actionPriority": -1,
-            "explanation": "For the city Greenport, Urban Greening was not ranked as highly because its direct impact on reducing primary emission sources is limited. While it does offer environmental enhancements and improved urban aesthetics, the measure falls short in delivering rapid reductions in greenhouse gases. Its longer-term nature and reliance on additional supporting measures reduce its overall immediate climate impact."
-        },
-        {
-            "locode": "LOC005",
-            "cityName": "Coastville",
-            "region": "AF",
-            "regionName": "Africa",
-            "actionId": "ACT005",
-            "actionName": "Waste Management Optimization",
-            "actionPriority": 1,
-            "explanation": "In Coastville, Waste Management Optimization was prioritized because it directly targets emissions arising from waste-related processes and improves resource recovery. The action fits well within the city’s urban management framework, offering benefits such as enhanced public health and environmental quality. Its strategic cost-effectiveness and the feasible implementation timeline further justify its selection."
-        },
-        {
-            "locode": "LOC006",
-            "cityName": "Hillcrest",
-            "region": "AU",
-            "regionName": "Australia",
-            "actionId": "ACT006",
-            "actionName": "Public Transit Electrification",
-            "actionPriority": -1,
-            "explanation": "For the city Hillcrest, Public Transit Electrification was ranked lower because, despite its role in reducing emissions from transportation, it does not directly address the city’s most critical emission challenges. The strategy faces sector-specific hurdles and involves a relatively complex implementation pathway. Such factors have curtailed its overall potential compared to measures that more directly tackle the primary emission sources."
-        },
-        {
-            "locode": "LOC007",
-            "cityName": "Riverbend",
-            "region": "EU",
-            "regionName": "Europe",
-            "actionId": "ACT007",
-            "actionName": "Industrial Emission Controls",
-            "actionPriority": 1,
-            "explanation": "In Riverbend, Industrial Emission Controls were prioritized because they focus on reducing greenhouse gas emissions from key industrial processes. The action effectively targets significant emission sources and aligns well with local environmental conditions, thereby enhancing overall urban resilience. Its balanced approach in risk mitigation, cost-efficiency, and feasibility of implementation supports its higher ranking."
-        },
-        {
-            "locode": "LOC008",
-            "cityName": "Sunnyside",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "ACT008",
-            "actionName": "Water Efficiency Programs",
-            "actionPriority": -1,
-            "explanation": "For Sunnyside, Water Efficiency Programs were given a lower ranking as their direct impact on reducing major greenhouse gas emissions is limited. Although the initiative contributes positively to resource management, it does not address the city’s most dominant emission sectors. The associated implementation challenges and relatively modest benefits have collectively led to a reduced prioritization."
-        },
-        {
-            "locode": "LOC009",
-            "cityName": "Meadowbrook",
-            "region": "AS",
-            "regionName": "Asia",
-            "actionId": "ACT009",
-            "actionName": "Smart Grid Deployment",
-            "actionPriority": 1,
-            "explanation": "In Meadowbrook, Smart Grid Deployment was prioritized as it modernizes the energy infrastructure to support efficient power distribution and significant emissions reduction. The action’s alignment with the city’s push for renewable integration and enhanced energy management makes it particularly suitable. Its promising balance of risk reduction, cost-effectiveness, and timely benefits underscores its favorable ranking."
-        },
-        {
-            "locode": "LOC010",
-            "cityName": "Oakwood",
-            "region": "AF",
-            "regionName": "Africa",
-            "actionId": "ACT010",
-            "actionName": "Reforestation Initiatives",
-            "actionPriority": -1,
-            "explanation": "For Oakwood, Reforestation Initiatives, while environmentally appealing, were ranked lower because their benefits in directly reducing urban greenhouse gas emissions are less immediate. The longer timeline required for trees to mature and sequester carbon limits short-term impact. Additionally, the dependency on natural growth processes means that supplementary measures might be necessary to achieve urgent climate mitigation objectives."
-        },
-        {
-            "locode": "LOC011",
-            "cityName": "Pineville",
-            "region": "SA",
-            "regionName": "South America",
-            "actionId": "ACT011",
-            "actionName": "Coastal Flood Defenses",
-            "actionPriority": 1,
-            "explanation": "In Pineville, Coastal Flood Defenses were prioritized because they directly mitigate the risks associated with rising sea levels and coastal flooding. The action is well-tailored to the city’s geography and urgent adaptation needs, offering significant protection against climate-induced hazards. Its clear focus on risk reduction along with feasible implementation strategies further reinforces its elevated ranking."
-        },
-        {
-            "locode": "LOC012",
-            "cityName": "Mapleton",
-            "region": "EU",
-            "regionName": "Europe",
-            "actionId": "ACT012",
-            "actionName": "Heat Island Mitigation",
-            "actionPriority": -1,
-            "explanation": "For Mapleton, Heat Island Mitigation strategies were ranked lower as their impact on reducing the core sources of greenhouse gas emissions is more indirect. Although these initiatives improve urban comfort and local microclimates, they do not fully address critical emission sectors. The resulting trade-offs in terms of cost-effectiveness and implementation ease contributed to a lower overall prioritization."
-        },
-        {
-            "locode": "LOC013",
-            "cityName": "Brookfield",
-            "region": "AS",
-            "regionName": "Asia",
-            "actionId": "ACT013",
-            "actionName": "Sustainable Urban Drainage",
-            "actionPriority": 1,
-            "explanation": "In Brookfield, Sustainable Urban Drainage was prioritized because it holistically addresses urban water management while reducing flood risks associated with climate change. Its action plan is well aligned with the local environmental profile and supports resilience through integrated planning. The practical benefits in risk reduction coupled with its cost-effective implementation bolster its higher ranking."
-        },
-        {
-            "locode": "LOC014",
-            "cityName": "Fairview",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "ACT014",
-            "actionName": "Energy Efficiency Retrofits",
-            "actionPriority": -1,
-            "explanation": "For Fairview, Energy Efficiency Retrofits were given a lower ranking because, while they enhance building performance, they fall short of transforming the city’s major emission sources at scale. The measure faces certain implementation challenges that may require broader systemic changes for full effectiveness. This comparatively limited scope in emissions reduction has led to a reduced prioritization within the overall climate action strategy."
-        },
-        {
-            "locode": "LOC015",
-            "cityName": "Westport",
-            "region": "AU",
-            "regionName": "Australia",
-            "actionId": "ACT015",
-            "actionName": "Low-Carbon Transportation Networks",
-            "actionPriority": 1,
-            "explanation": "In Westport, Low-Carbon Transportation Networks were prioritized because they offer a transformative approach to urban mobility by significantly reducing transportation emissions. The strategy is highly compatible with the city’s dense urban fabric and aligns with broader sustainability goals. Its integration with other green initiatives and overall cost-effectiveness further justify its elevated ranking."
-        },
-        {
-            "locode": "LOC016",
-            "cityName": "Eastgate",
-            "region": "AF",
-            "regionName": "Africa",
-            "actionId": "ACT016",
-            "actionName": "Green Roof Installations",
-            "actionPriority": -1,
-            "explanation": "For Eastgate, Green Roof Installations were ranked lower because their benefits, while locally enhancing urban cooling and aesthetics, do not comprehensively tackle the city’s most pressing greenhouse gas challenges. The action faces more complex implementation requirements relative to its scale of impact. These factors, combined with a dependency on supplementary measures, have led to a reduced overall prioritization."
-        },
-        {
-            "locode": "LOC017",
-            "cityName": "Clearview",
-            "region": "EU",
-            "regionName": "Europe",
-            "actionId": "ACT017",
-            "actionName": "Agricultural Emission Reductions",
-            "actionPriority": 1,
-            "explanation": "In Clearview, Agricultural Emission Reductions were prioritized because they effectively address key emissions emerging from the rural-urban interface and food production sectors. The action complements local agro-environmental practices while promoting sustainable land management. Its integrated approach, balancing cost and risk mitigation, makes it particularly relevant for the city’s climate resilience strategy."
-        },
-        {
-            "locode": "LOC018",
-            "cityName": "Newtown",
-            "region": "AS",
-            "regionName": "Asia",
-            "actionId": "ACT018",
-            "actionName": "Stormwater Management Systems",
-            "actionPriority": -1,
-            "explanation": "For Newtown, Stormwater Management Systems were ranked lower as their focus is on water risk management rather than directly reducing greenhouse gas emissions. The indirect contribution in emissions mitigation and the need for coordinated urban planning make their impact more gradual. These factors result in a less immediate benefit in the context of pressing climate challenges."
-        },
-        {
-            "locode": "LOC019",
-            "cityName": "Oldtown",
-            "region": "NA",
-            "regionName": "North America",
-            "actionId": "ACT019",
-            "actionName": "Flood Risk Mapping and Planning",
-            "actionPriority": 1,
-            "explanation": "In Oldtown, Flood Risk Mapping and Planning was prioritized because it provides a systematic approach to identifying and mitigating potential climate-induced hazards. The action aligns closely with the city’s urgent adaptation needs and enhances long-term resilience. Its straightforward implementation and direct focus on reducing risk support a higher overall ranking."
-        },
-        {
-            "locode": "LOC020",
-            "cityName": "Pleasantville",
-            "region": "SA",
-            "regionName": "South America",
-            "actionId": "ACT020",
-            "actionName": "Urban Heat Resilience Programs",
-            "actionPriority": -1,
-            "explanation": "For Pleasantville, Urban Heat Resilience Programs were ranked lower because they predominantly target temperature regulation rather than the broader challenge of reducing greenhouse gas emissions. The measure improves local thermal comfort but does not fully align with the city’s primary mitigation needs. Implementation complexities and the reliance on additional complementary strategies contribute to its reduced prioritization."
-        }
-    ]
-}
+[
+    {
+        "locode": "BR TAA",
+        "cityName": "Tarauac\u00e1",
+        "region": "AC",
+        "regionName": "Acre",
+        "actionId": "icare_0176",
+        "actionName": "Development of Climate Action Plan",
+        "actionPriority": 1,
+        "explanation": "Ranked #1 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR TAA",
+        "cityName": "Tarauac\u00e1",
+        "region": "AC",
+        "regionName": "Acre",
+        "actionId": "icare_0162",
+        "actionName": "Strengthen programs for control and conservation of protected areas",
+        "actionPriority": 2,
+        "explanation": "Ranked #2 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR TAA",
+        "cityName": "Tarauac\u00e1",
+        "region": "AC",
+        "regionName": "Acre",
+        "actionId": "icare_0169",
+        "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
+        "actionPriority": 3,
+        "explanation": "Ranked #3 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR TAA",
+        "cityName": "Tarauac\u00e1",
+        "region": "AC",
+        "regionName": "Acre",
+        "actionId": "icare_0151",
+        "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
+        "actionPriority": 4,
+        "explanation": "Ranked #4 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR TAA",
+        "cityName": "Tarauac\u00e1",
+        "region": "AC",
+        "regionName": "Acre",
+        "actionId": "icare_0152",
+        "actionName": "Recovery of degraded areas",
+        "actionPriority": 5,
+        "explanation": "Ranked #5 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR TAA",
+        "cityName": "Tarauac\u00e1",
+        "region": "AC",
+        "regionName": "Acre",
+        "actionId": "icare_0157",
+        "actionName": "Maintenance and Revitalization of Riparian Forests",
+        "actionPriority": 6,
+        "explanation": "Ranked #6 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR TAA",
+        "cityName": "Tarauac\u00e1",
+        "region": "AC",
+        "regionName": "Acre",
+        "actionId": "icare_0145",
+        "actionName": "Strengthen the healthcare network to attend to climate victims",
+        "actionPriority": 7,
+        "explanation": "Ranked #7 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR TAA",
+        "cityName": "Tarauac\u00e1",
+        "region": "AC",
+        "regionName": "Acre",
+        "actionId": "icare_0181",
+        "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
+        "actionPriority": 8,
+        "explanation": "Ranked #8 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR TAA",
+        "cityName": "Tarauac\u00e1",
+        "region": "AC",
+        "regionName": "Acre",
+        "actionId": "icare_0149",
+        "actionName": "Encourage sustainable land use practices",
+        "actionPriority": 9,
+        "explanation": "Ranked #9 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR TAA",
+        "cityName": "Tarauac\u00e1",
+        "region": "AC",
+        "regionName": "Acre",
+        "actionId": "ipcc_0097",
+        "actionName": "Food storage/distribution improvements",
+        "actionPriority": 10,
+        "explanation": "Ranked #10 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR TAA",
+        "cityName": "Tarauac\u00e1",
+        "region": "AC",
+        "regionName": "Acre",
+        "actionId": "icare_0156",
+        "actionName": "Implementation of urban gardens",
+        "actionPriority": 11,
+        "explanation": "Ranked #11 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR TAA",
+        "cityName": "Tarauac\u00e1",
+        "region": "AC",
+        "regionName": "Acre",
+        "actionId": "ipcc_0094",
+        "actionName": "Access to health care",
+        "actionPriority": 12,
+        "explanation": "Ranked #12 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR TAA",
+        "cityName": "Tarauac\u00e1",
+        "region": "AC",
+        "regionName": "Acre",
+        "actionId": "icare_0180",
+        "actionName": "Implement permeable pavements and increase green areas in roadways",
+        "actionPriority": 13,
+        "explanation": "Ranked #13 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR TAA",
+        "cityName": "Tarauac\u00e1",
+        "region": "AC",
+        "regionName": "Acre",
+        "actionId": "icare_0175",
+        "actionName": "Recovery and preservation of green areas",
+        "actionPriority": 14,
+        "explanation": "Ranked #14 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR TAA",
+        "cityName": "Tarauac\u00e1",
+        "region": "AC",
+        "regionName": "Acre",
+        "actionId": "ipcc_0092",
+        "actionName": "Social safety nets",
+        "actionPriority": 15,
+        "explanation": "Ranked #15 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR TAA",
+        "cityName": "Tarauac\u00e1",
+        "region": "AC",
+        "regionName": "Acre",
+        "actionId": "ipcc_0096",
+        "actionName": "Farm/fishery improvements",
+        "actionPriority": 16,
+        "explanation": "Ranked #16 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR TAA",
+        "cityName": "Tarauac\u00e1",
+        "region": "AC",
+        "regionName": "Acre",
+        "actionId": "icare_0148",
+        "actionName": "Create the Municipal Climate Change Forum",
+        "actionPriority": 17,
+        "explanation": "Ranked #17 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR TAA",
+        "cityName": "Tarauac\u00e1",
+        "region": "AC",
+        "regionName": "Acre",
+        "actionId": "ipcc_0088",
+        "actionName": "Building codes",
+        "actionPriority": 18,
+        "explanation": "Ranked #18 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR TAA",
+        "cityName": "Tarauac\u00e1",
+        "region": "AC",
+        "regionName": "Acre",
+        "actionId": "ipcc_0093",
+        "actionName": "Availability of health infrastructure",
+        "actionPriority": 19,
+        "explanation": "Ranked #19 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR TAA",
+        "cityName": "Tarauac\u00e1",
+        "region": "AC",
+        "regionName": "Acre",
+        "actionId": "icare_0155",
+        "actionName": "Preservation and Recovery of Water Bodies",
+        "actionPriority": 20,
+        "explanation": "Ranked #20 by tournament ranking algorithm"
+    }
+]

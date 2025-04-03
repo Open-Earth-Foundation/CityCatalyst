@@ -1,204 +1,202 @@
-{
-    "actions": [
-        {
-            "locode": "USA-SPF",
-            "cityName": "Springfield",
-            "region": "MW",
-            "regionName": "Midwest",
-            "actionId": "ACT01",
-            "actionName": "New Building Standards",
-            "actionPriority": 18,
-            "explanation": "For the city Springfield, New Building Standards were prioritized due to their significant potential for reducing emissions by ensuring that new constructions are energy efficient. This approach aligns with the city's urban density and addresses core emission sectors related to heating and cooling. It provides co-benefits like improved public health and long-term energy savings. The strategy is well-matched with Springfield’s regulatory framework and resource capacity, ensuring effective implementation."
-        },
-        {
-            "locode": "USA-SPF",
-            "cityName": "Springfield",
-            "region": "MW",
-            "regionName": "Midwest",
-            "actionId": "ACT02",
-            "actionName": "Bus Emissions",
-            "actionPriority": 12,
-            "explanation": "For Springfield, focusing on Bus Emissions delivers targeted improvements in the transportation sector, a notable contributor to urban air quality challenges. This action addresses a key emission source but offers benefits that are more sector-specific, with fewer broad co-benefits compared to integrated urban infrastructure measures. Its implementation requires careful coordination and management, fitting moderately within the city's operational capacity. This makes the approach effective yet limited in scope relative to other actions."
-        },
-        {
-            "locode": "USA-SPF",
-            "cityName": "Springfield",
-            "region": "MW",
-            "regionName": "Midwest",
-            "actionId": "ACT03",
-            "actionName": "Renewable Energy Incentives",
-            "actionPriority": 17,
-            "explanation": "Renewable Energy Incentives in Springfield are designed to substantially reduce carbon emissions by accelerating the transition from fossil fuels. This action leverages the city’s growing renewable sector and aligns with its long-term sustainability goals. It also encourages community participation and provides enduring economic and environmental benefits, which enhance the overall climate resilience of Springfield."
-        },
-        {
-            "locode": "USA-SPF",
-            "cityName": "Springfield",
-            "region": "MW",
-            "regionName": "Midwest",
-            "actionId": "ACT04",
-            "actionName": "Urban Tree Planting",
-            "actionPriority": 15,
-            "explanation": "Urban Tree Planting in Springfield serves multiple purposes by enhancing green cover and contributing to natural carbon sequestration. This action improves air quality and helps mitigate urban heat island effects, which are crucial for a densely built environment. The co-benefits include enhanced aesthetic appeal and improved community well-being, making it a supportive component of the city’s broader climate strategy."
-        },
-        {
-            "locode": "USA-SPF",
-            "cityName": "Springfield",
-            "region": "MW",
-            "regionName": "Midwest",
-            "actionId": "ACT05",
-            "actionName": "Heatwave Response Plans",
-            "actionPriority": 16,
-            "explanation": "Heatwave Response Plans are essential for Springfield given the increasing frequency of extreme temperature events in urban areas. This action emphasizes immediate risk reduction and safeguards vulnerable populations during heat incidents. Its focus on adaptive infrastructure and timely implementation makes it a vital measure to enhance public safety and urban resilience under changing climatic conditions."
-        },
-        {
-            "locode": "USA-SPF",
-            "cityName": "Springfield",
-            "region": "MW",
-            "regionName": "Midwest",
-            "actionId": "ACT06",
-            "actionName": "Flood Defenses",
-            "actionPriority": 14,
-            "explanation": "Flood Defenses are crucial for Springfield as they mitigate risks from increased precipitation and potential urban flooding. This action is tailored to protect critical infrastructure and reduce both economic and social disruptions in flood-prone areas. By integrating with city planning, it strengthens Springfield’s adaptive capacity and overall resilience to climate-induced hazards."
-        },
-        {
-            "locode": "USA-SPF",
-            "cityName": "Springfield",
-            "region": "MW",
-            "regionName": "Midwest",
-            "actionId": "ACT07",
-            "actionName": "Coastal Erosion Management",
-            "actionPriority": 10,
-            "explanation": "Coastal Erosion Management is a recognized climate action, though its direct relevance to Springfield is limited due to the city's inland location. The action is designed to mitigate risks and protect infrastructure in coastal regions through strategic interventions. While it demonstrates strong risk reduction and environmental protection strategies, its overall impact in Springfield is less pronounced compared to more urban-focused measures."
-        },
-        {
-            "locode": "USA-SPF",
-            "cityName": "Springfield",
-            "region": "MW",
-            "regionName": "Midwest",
-            "actionId": "ACT08",
-            "actionName": "Energy Efficiency Retrofitting",
-            "actionPriority": 19,
-            "explanation": "Energy Efficiency Retrofitting has been highly prioritized in Springfield because it directly targets significant energy use in existing urban buildings. This action supports a reduction in greenhouse gas emissions and improves overall energy performance, which is critical in a mature urban setting. It also offers cost-effective benefits by lowering long-term utility expenses and extending the lifespan of older infrastructures, making it highly aligned with local needs."
-        },
-        {
-            "locode": "USA-SPF",
-            "cityName": "Springfield",
-            "region": "MW",
-            "regionName": "Midwest",
-            "actionId": "ACT09",
-            "actionName": "Public Transit Expansion",
-            "actionPriority": 13,
-            "explanation": "Public Transit Expansion in Springfield focuses on enhancing the existing transportation network to reduce reliance on private vehicles. This action contributes to lowering emissions and alleviating urban congestion while promoting social equity by improving access. Its effectiveness depends on robust planning and community engagement, making it a moderate yet important addition to the city's climate action portfolio."
-        },
-        {
-            "locode": "USA-SPF",
-            "cityName": "Springfield",
-            "region": "MW",
-            "regionName": "Midwest",
-            "actionId": "ACT10",
-            "actionName": "Waste Management Improvements",
-            "actionPriority": 11,
-            "explanation": "Waste Management Improvements in Springfield focus on reducing landfill emissions and enhancing recycling initiatives. The action supports environmental health by lowering waste-related pollutants, though its direct impact on major emission sectors is more indirect. This measure complements broader climate initiatives by promoting sustainable resource use and protecting local ecosystems."
-        },
-        {
-            "locode": "USA-SPF",
-            "cityName": "Springfield",
-            "region": "MW",
-            "regionName": "Midwest",
-            "actionId": "ACT11",
-            "actionName": "Water Conservation Programs",
-            "actionPriority": 12,
-            "explanation": "Water Conservation Programs in Springfield aim to optimize resource use and enhance efficiency in water distribution systems. This action indirectly supports energy savings and reduces the strain on local water infrastructure. Its design is well-suited to the city’s sustainability goals, making it a relevant and supportive climate initiative."
-        },
-        {
-            "locode": "USA-SPF",
-            "cityName": "Springfield",
-            "region": "MW",
-            "regionName": "Midwest",
-            "actionId": "ACT12",
-            "actionName": "Green Roof Programs",
-            "actionPriority": 14,
-            "explanation": "Green Roof Programs enhance building insulation and reduce the urban heat island effect in Springfield’s dense built environment. This action not only supports energy efficiency but also improves stormwater management and aesthetic quality. Its multi-faceted benefits make it an appealing strategy for integrating environmental improvements with urban design."
-        },
-        {
-            "locode": "USA-SPF",
-            "cityName": "Springfield",
-            "region": "MW",
-            "regionName": "Midwest",
-            "actionId": "ACT13",
-            "actionName": "Bike Lane Development",
-            "actionPriority": 13,
-            "explanation": "Bike Lane Development in Springfield promotes a healthy, sustainable mode of transportation and helps reduce vehicular emissions. This action encourages active lifestyles and eases traffic congestion within urban communities. Its success is closely linked to community participation and infrastructure investment, delivering moderate benefits to both climate and public health objectives."
-        },
-        {
-            "locode": "USA-SPF",
-            "cityName": "Springfield",
-            "region": "MW",
-            "regionName": "Midwest",
-            "actionId": "ACT14",
-            "actionName": "Smart Grid Implementation",
-            "actionPriority": 17,
-            "explanation": "Smart Grid Implementation in Springfield is a forward-thinking measure that modernizes the energy distribution network and facilitates the integration of renewable resources. By enhancing grid efficiency, this action indirectly contributes to reducing overall emissions and optimizing energy use. It also reinforces the city's ability to adopt advanced technologies and supports long-term climate adaptation strategies."
-        },
-        {
-            "locode": "USA-SPF",
-            "cityName": "Springfield",
-            "region": "MW",
-            "regionName": "Midwest",
-            "actionId": "ACT15",
-            "actionName": "Industrial Emission Controls",
-            "actionPriority": 16,
-            "explanation": "Industrial Emission Controls in Springfield target the reduction of pollutants from manufacturing and processing facilities. This measure is specifically designed to address high-emission sectors and improve public health outcomes by curbing industrial emissions. Its focused approach supports broader urban climate goals by mitigating risk and ensuring a cleaner industrial footprint."
-        },
-        {
-            "locode": "USA-SPF",
-            "cityName": "Springfield",
-            "region": "MW",
-            "regionName": "Midwest",
-            "actionId": "ACT16",
-            "actionName": "Air Quality Monitoring",
-            "actionPriority": 15,
-            "explanation": "Air Quality Monitoring provides Springfield with essential data required to manage and reduce urban pollution effectively. This action enables timely intervention and supports informed decision-making processes for subsequent climate actions. Its reliance on data-driven strategies makes it a foundational element in the city’s ongoing environmental management plan."
-        },
-        {
-            "locode": "USA-SPF",
-            "cityName": "Springfield",
-            "region": "MW",
-            "regionName": "Midwest",
-            "actionId": "ACT17",
-            "actionName": "Urban Cooling Strategies",
-            "actionPriority": 14,
-            "explanation": "Urban Cooling Strategies in Springfield are designed to alleviate the effects of heat islands and improve community comfort during extreme weather. This measure integrates enhancements in urban design with adaptive technologies to lower temperature spikes in dense areas. Its proactive approach contributes to both energy efficiency and public well-being, reinforcing the city’s adaptation efforts."
-        },
-        {
-            "locode": "USA-SPF",
-            "cityName": "Springfield",
-            "region": "MW",
-            "regionName": "Midwest",
-            "actionId": "ACT18",
-            "actionName": "Community Resilience Workshops",
-            "actionPriority": 12,
-            "explanation": "Community Resilience Workshops in Springfield empower local residents with practical knowledge to prepare for and respond to climate challenges. This action emphasizes capacity building and fosters community cohesion, which are critical for long-term adaptive success. It plays a supportive role by enhancing public awareness and readiness, complementing more technical climate interventions."
-        },
-        {
-            "locode": "USA-SPF",
-            "cityName": "Springfield",
-            "region": "MW",
-            "regionName": "Midwest",
-            "actionId": "ACT19",
-            "actionName": "Stormwater Management",
-            "actionPriority": 15,
-            "explanation": "Stormwater Management in Springfield is vital for mitigating urban flooding and promoting sustainable water use. This action is designed to protect infrastructure during heavy rainfall and integrates with broader urban planning initiatives. Its focus on risk reduction and adaptive infrastructure supports the city’s overall resilience strategy under changing climatic conditions."
-        },
-        {
-            "locode": "USA-SPF",
-            "cityName": "Springfield",
-            "region": "MW",
-            "regionName": "Midwest",
-            "actionId": "ACT20",
-            "actionName": "Green Economy Subsidies",
-            "actionPriority": 16,
-            "explanation": "Green Economy Subsidies in Springfield aim to stimulate investments in sustainable technologies and environmentally friendly business practices. This action is designed to encourage a systemic shift towards greener industries and support local economic growth. By balancing environmental benefits with socio-economic opportunities, it aligns closely with the city’s long-term vision for resilience and innovation."
-        }
-    ]
-}
+[
+    {
+        "locode": "BR GYN",
+        "cityName": "Goi\u00e2nia",
+        "region": "GO",
+        "regionName": "Goi\u00e1s",
+        "actionId": "icare_0169",
+        "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
+        "actionPriority": 1,
+        "explanation": "Ranked #1 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR GYN",
+        "cityName": "Goi\u00e2nia",
+        "region": "GO",
+        "regionName": "Goi\u00e1s",
+        "actionId": "icare_0152",
+        "actionName": "Recovery of degraded areas",
+        "actionPriority": 2,
+        "explanation": "Ranked #2 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR GYN",
+        "cityName": "Goi\u00e2nia",
+        "region": "GO",
+        "regionName": "Goi\u00e1s",
+        "actionId": "icare_0176",
+        "actionName": "Development of Climate Action Plan",
+        "actionPriority": 3,
+        "explanation": "Ranked #3 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR GYN",
+        "cityName": "Goi\u00e2nia",
+        "region": "GO",
+        "regionName": "Goi\u00e1s",
+        "actionId": "icare_0151",
+        "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
+        "actionPriority": 4,
+        "explanation": "Ranked #4 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR GYN",
+        "cityName": "Goi\u00e2nia",
+        "region": "GO",
+        "regionName": "Goi\u00e1s",
+        "actionId": "icare_0162",
+        "actionName": "Strengthen programs for control and conservation of protected areas",
+        "actionPriority": 5,
+        "explanation": "Ranked #5 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR GYN",
+        "cityName": "Goi\u00e2nia",
+        "region": "GO",
+        "regionName": "Goi\u00e1s",
+        "actionId": "icare_0145",
+        "actionName": "Strengthen the healthcare network to attend to climate victims",
+        "actionPriority": 6,
+        "explanation": "Ranked #6 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR GYN",
+        "cityName": "Goi\u00e2nia",
+        "region": "GO",
+        "regionName": "Goi\u00e1s",
+        "actionId": "ipcc_0094",
+        "actionName": "Access to health care",
+        "actionPriority": 7,
+        "explanation": "Ranked #7 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR GYN",
+        "cityName": "Goi\u00e2nia",
+        "region": "GO",
+        "regionName": "Goi\u00e1s",
+        "actionId": "ipcc_0097",
+        "actionName": "Food storage/distribution improvements",
+        "actionPriority": 8,
+        "explanation": "Ranked #8 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR GYN",
+        "cityName": "Goi\u00e2nia",
+        "region": "GO",
+        "regionName": "Goi\u00e1s",
+        "actionId": "icare_0149",
+        "actionName": "Encourage sustainable land use practices",
+        "actionPriority": 9,
+        "explanation": "Ranked #9 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR GYN",
+        "cityName": "Goi\u00e2nia",
+        "region": "GO",
+        "regionName": "Goi\u00e1s",
+        "actionId": "icare_0157",
+        "actionName": "Maintenance and Revitalization of Riparian Forests",
+        "actionPriority": 10,
+        "explanation": "Ranked #10 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR GYN",
+        "cityName": "Goi\u00e2nia",
+        "region": "GO",
+        "regionName": "Goi\u00e1s",
+        "actionId": "ipcc_0092",
+        "actionName": "Social safety nets",
+        "actionPriority": 11,
+        "explanation": "Ranked #11 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR GYN",
+        "cityName": "Goi\u00e2nia",
+        "region": "GO",
+        "regionName": "Goi\u00e1s",
+        "actionId": "ipcc_0096",
+        "actionName": "Farm/fishery improvements",
+        "actionPriority": 12,
+        "explanation": "Ranked #12 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR GYN",
+        "cityName": "Goi\u00e2nia",
+        "region": "GO",
+        "regionName": "Goi\u00e1s",
+        "actionId": "icare_0181",
+        "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
+        "actionPriority": 13,
+        "explanation": "Ranked #13 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR GYN",
+        "cityName": "Goi\u00e2nia",
+        "region": "GO",
+        "regionName": "Goi\u00e1s",
+        "actionId": "icare_0148",
+        "actionName": "Create the Municipal Climate Change Forum",
+        "actionPriority": 14,
+        "explanation": "Ranked #14 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR GYN",
+        "cityName": "Goi\u00e2nia",
+        "region": "GO",
+        "regionName": "Goi\u00e1s",
+        "actionId": "ipcc_0093",
+        "actionName": "Availability of health infrastructure",
+        "actionPriority": 15,
+        "explanation": "Ranked #15 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR GYN",
+        "cityName": "Goi\u00e2nia",
+        "region": "GO",
+        "regionName": "Goi\u00e1s",
+        "actionId": "icare_0144",
+        "actionName": "Creation of a Financial Support Program to Adress Extreme Weather Events",
+        "actionPriority": 16,
+        "explanation": "Ranked #16 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR GYN",
+        "cityName": "Goi\u00e2nia",
+        "region": "GO",
+        "regionName": "Goi\u00e1s",
+        "actionId": "icare_0156",
+        "actionName": "Implementation of urban gardens",
+        "actionPriority": 17,
+        "explanation": "Ranked #17 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR GYN",
+        "cityName": "Goi\u00e2nia",
+        "region": "GO",
+        "regionName": "Goi\u00e1s",
+        "actionId": "icare_0164",
+        "actionName": "Hydrological Monitoring System with Telemetry Stations",
+        "actionPriority": 18,
+        "explanation": "Ranked #18 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR GYN",
+        "cityName": "Goi\u00e2nia",
+        "region": "GO",
+        "regionName": "Goi\u00e1s",
+        "actionId": "icare_0180",
+        "actionName": "Implement permeable pavements and increase green areas in roadways",
+        "actionPriority": 19,
+        "explanation": "Ranked #19 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR GYN",
+        "cityName": "Goi\u00e2nia",
+        "region": "GO",
+        "regionName": "Goi\u00e1s",
+        "actionId": "icare_0160",
+        "actionName": "Consolidate spaces for intersectoral coordination and public participation in climate policy",
+        "actionPriority": 20,
+        "explanation": "Ranked #20 by tournament ranking algorithm"
+    }
+]

@@ -1,204 +1,202 @@
-{
-    "actions": [
-        {
-            "locode": "USSPF",
-            "cityName": "Springfield",
-            "region": "IL",
-            "regionName": "Illinois",
-            "actionId": "A1",
-            "actionName": "New Building Standards",
-            "actionPriority": 1,
-            "explanation": "For the city Springfield, New Building Standards was prioritized because it effectively reduces emissions by ensuring that new constructions adhere to energy-efficient practices. This action resonates well with local economic and environmental goals, especially considering the current focus on sustainable urban development. It also offers long-term benefits by reducing future energy demands and aligns with the city’s capacity for modernizing infrastructure."
-        },
-        {
-            "locode": "USSPF",
-            "cityName": "Springfield",
-            "region": "IL",
-            "regionName": "Illinois",
-            "actionId": "A2",
-            "actionName": "Bus Emissions",
-            "actionPriority": 2,
-            "explanation": "For the city Springfield, reducing bus emissions was highlighted as it directly addresses urban transportation’s contribution to greenhouse gas levels. This approach is well-suited to the city's public transit structure and helps alleviate local air quality issues. It also lays the groundwork for enhancing public health and supports quicker benefits through shorter implementation periods."
-        },
-        {
-            "locode": "USSPF",
-            "cityName": "Springfield",
-            "region": "IL",
-            "regionName": "Illinois",
-            "actionId": "A3",
-            "actionName": "Solar Panel Incentives",
-            "actionPriority": 3,
-            "explanation": "For the city Springfield, Solar Panel Incentives was favored as it promotes a shift towards renewable energy while engaging local communities in sustainable practices. This action mitigates environmental impact by reducing reliance on fossil fuels and complements existing energy policies. The initiative is designed to be both cost-effective and adaptive to the city’s available resources."
-        },
-        {
-            "locode": "USSPF",
-            "cityName": "Springfield",
-            "region": "IL",
-            "regionName": "Illinois",
-            "actionId": "A4",
-            "actionName": "Urban Greening Programs",
-            "actionPriority": 4,
-            "explanation": "For the city Springfield, Urban Greening Programs were prioritized because they support a healthier urban environment and help reduce the overall temperature, thereby mitigating heat stress risks. This action enhances local biodiversity and contributes to improved air quality. It further provides co-benefits by beautifying neighborhoods and creating community spaces."
-        },
-        {
-            "locode": "USSPF",
-            "cityName": "Springfield",
-            "region": "IL",
-            "regionName": "Illinois",
-            "actionId": "A5",
-            "actionName": "Electrification of Public Transport",
-            "actionPriority": 5,
-            "explanation": "For the city Springfield, Electrification of Public Transport was ranked highly due to its potential to significantly reduce transport-related emissions. It directly targets a major source of local greenhouse gases and aligns with the city’s sustainability goals. Its implementation is considered practical given the existing transit infrastructure, and it offers additional benefits in terms of reduced noise and improved public health."
-        },
-        {
-            "locode": "USSPF",
-            "cityName": "Springfield",
-            "region": "IL",
-            "regionName": "Illinois",
-            "actionId": "A6",
-            "actionName": "Energy Efficiency Retrofit",
-            "actionPriority": 6,
-            "explanation": "For the city Springfield, Energy Efficiency Retrofit was chosen because it helps lower emissions from older buildings by upgrading them to modern standards. This action is well-aligned with the city’s objective to improve energy performance and reduce long-term costs. It leverages existing structures while minimizing disruption during implementation and enhancing overall resilience."
-        },
-        {
-            "locode": "USSPF",
-            "cityName": "Springfield",
-            "region": "IL",
-            "regionName": "Illinois",
-            "actionId": "A7",
-            "actionName": "Waste Management Improvements",
-            "actionPriority": 7,
-            "explanation": "For the city Springfield, Waste Management Improvements were prioritized because they directly address methane emissions and other environmental hazards associated with improper waste disposal. This action not only targets emissions but also contributes to a cleaner and healthier urban environment. Its implementation builds upon existing waste collection frameworks, making it a feasible and effective approach."
-        },
-        {
-            "locode": "USSPF",
-            "cityName": "Springfield",
-            "region": "IL",
-            "regionName": "Illinois",
-            "actionId": "A8",
-            "actionName": "Sustainable Water Management",
-            "actionPriority": 8,
-            "explanation": "For the city Springfield, Sustainable Water Management was highlighted due to its ability to mitigate flood risks and improve overall water quality. This action aligns well with local environmental concerns and enhances resilience to climate-related water challenges. The strategy supports both ecological sustainability and community well-being through integrated management practices."
-        },
-        {
-            "locode": "USSPF",
-            "cityName": "Springfield",
-            "region": "IL",
-            "regionName": "Illinois",
-            "actionId": "A9",
-            "actionName": "Tree Planting Initiatives",
-            "actionPriority": 9,
-            "explanation": "For the city Springfield, Tree Planting Initiatives were given focus because they effectively contribute to carbon sequestration and improve urban air quality. This nature-based solution is well-suited for the local climate and urban layout, providing both environmental and social benefits. The approach also helps in mitigating heat effects and enhancing community spaces, thus fitting smoothly into urban planning strategies."
-        },
-        {
-            "locode": "USSPF",
-            "cityName": "Springfield",
-            "region": "IL",
-            "regionName": "Illinois",
-            "actionId": "A10",
-            "actionName": "Bike/Lane Infrastructure",
-            "actionPriority": 10,
-            "explanation": "For the city Springfield, Bike/Lane Infrastructure was prioritized as it provides a sustainable alternative to car dependency, thereby cutting down urban emissions. This action is particularly relevant given the city's efforts to promote a healthier, more active lifestyle among residents. It also requires moderate investment and enhances overall urban connectivity without imposing significant dependencies."
-        },
-        {
-            "locode": "USSPF",
-            "cityName": "Springfield",
-            "region": "IL",
-            "regionName": "Illinois",
-            "actionId": "A11",
-            "actionName": "Community Solar Gardens",
-            "actionPriority": 11,
-            "explanation": "For the city Springfield, Community Solar Gardens was selected due to its ability to provide renewable energy access to a diverse range of residents. This action supports local energy resilience and encourages community involvement in sustainable practices. It is seen as an adaptable solution that leverages local resources while offering environmental benefits over time."
-        },
-        {
-            "locode": "USSPF",
-            "cityName": "Springfield",
-            "region": "IL",
-            "regionName": "Illinois",
-            "actionId": "A12",
-            "actionName": "Green Rooftop Incentives",
-            "actionPriority": 12,
-            "explanation": "For the city Springfield, Green Rooftop Incentives were included because they contribute subtly yet meaningfully to urban cooling and better stormwater management. This action integrates seamlessly with the existing urban fabric and enhances building energy performance. It is recognized for its cost-effectiveness and additional benefits such as improved air quality and aesthetic value."
-        },
-        {
-            "locode": "USSPF",
-            "cityName": "Springfield",
-            "region": "IL",
-            "regionName": "Illinois",
-            "actionId": "A13",
-            "actionName": "Low-Carbon Industrial Zones",
-            "actionPriority": 13,
-            "explanation": "For the city Springfield, Low-Carbon Industrial Zones were emphasized because they target the industrial sector's significant contribution to greenhouse gases. This action sets a framework for sustainable industrial practices that are essential for future economic resilience. It also complements broader environmental policies by integrating risk reduction and efficiency improvements."
-        },
-        {
-            "locode": "USSPF",
-            "cityName": "Springfield",
-            "region": "IL",
-            "regionName": "Illinois",
-            "actionId": "A14",
-            "actionName": "Climate Resilient Infrastructure",
-            "actionPriority": 14,
-            "explanation": "For the city Springfield, Climate Resilient Infrastructure was prioritized as it addresses key vulnerabilities in the urban environment. This action is critical for reducing future climate-related risks and supports a proactive approach to urban planning. Its implementation is seen as essential to ensure that the city adapts effectively to changing climatic conditions while offering multiple co-benefits."
-        },
-        {
-            "locode": "USSPF",
-            "cityName": "Springfield",
-            "region": "IL",
-            "regionName": "Illinois",
-            "actionId": "A15",
-            "actionName": "Smart Grid Implementation",
-            "actionPriority": 15,
-            "explanation": "For the city Springfield, Smart Grid Implementation was recommended because it modernizes the energy distribution network and enhances efficiency. This action directly contributes to a reduction in energy losses and enables better integration of renewable energy sources. The approach is forward-thinking and supports both cost-effectiveness and improved risk management in the energy sector."
-        },
-        {
-            "locode": "USSPF",
-            "cityName": "Springfield",
-            "region": "IL",
-            "regionName": "Illinois",
-            "actionId": "A16",
-            "actionName": "Carbon Capture and Storage",
-            "actionPriority": 16,
-            "explanation": "For the city Springfield, Carbon Capture and Storage was considered because it offers a strategic method to reduce atmospheric CO2 from concentrated sources. This action is designed to work in tandem with other emission reduction strategies and is mindful of the city’s industrial profile. It also provides long-term environmental benefits despite requiring advanced infrastructure and planning."
-        },
-        {
-            "locode": "USSPF",
-            "cityName": "Springfield",
-            "region": "IL",
-            "regionName": "Illinois",
-            "actionId": "A17",
-            "actionName": "Land Use and Zoning Reforms",
-            "actionPriority": 17,
-            "explanation": "For the city Springfield, Land Use and Zoning Reforms were prioritized for their potential to encourage sustainable urban development and reduce sprawl. This action is well-aligned with long-term environmental objectives and can optimize land resources in an efficient manner. It also supports community resilience by guiding growth in a controlled and informed way."
-        },
-        {
-            "locode": "USSPF",
-            "cityName": "Springfield",
-            "region": "IL",
-            "regionName": "Illinois",
-            "actionId": "A18",
-            "actionName": "Public Awareness Campaigns",
-            "actionPriority": 18,
-            "explanation": "For the city Springfield, Public Awareness Campaigns were included because they build community support for climate initiatives and encourage sustainable behavior. This action effectively raises the profile of environmental challenges and broadens the base for implementing more technical interventions. It plays a key role in shaping public perception and readiness without requiring large infrastructure investments."
-        },
-        {
-            "locode": "USSPF",
-            "cityName": "Springfield",
-            "region": "IL",
-            "regionName": "Illinois",
-            "actionId": "A19",
-            "actionName": "Incentives for Electric Vehicles",
-            "actionPriority": 19,
-            "explanation": "For the city Springfield, Incentives for Electric Vehicles were prioritized because they directly target the reduction of emissions in the transportation sector. This action encourages a transition away from fossil fuel dependency and is well-suited for the city’s growing infrastructure for clean mobility. Its cost-effective nature and potential to improve urban air quality make it an appealing strategy for sustainable growth."
-        },
-        {
-            "locode": "USSPF",
-            "cityName": "Springfield",
-            "region": "IL",
-            "regionName": "Illinois",
-            "actionId": "A20",
-            "actionName": "Renewable Energy Investments",
-            "actionPriority": 20,
-            "explanation": "For the city Springfield, Renewable Energy Investments were selected due to their broad impact on decreasing the city’s reliance on nonrenewable energy sources. This action promotes cleaner energy production and supports regional environmental objectives effectively. It is recognized for its long-term benefits and ability to foster a more resilient energy portfolio while integrating well with local policy frameworks."
-        }
-    ]
-}
+[
+    {
+        "locode": "BR BVB",
+        "cityName": "Boa Vista",
+        "region": "RR",
+        "regionName": "Roraima",
+        "actionId": "icare_0169",
+        "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
+        "actionPriority": 1,
+        "explanation": "Ranked #1 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR BVB",
+        "cityName": "Boa Vista",
+        "region": "RR",
+        "regionName": "Roraima",
+        "actionId": "icare_0176",
+        "actionName": "Development of Climate Action Plan",
+        "actionPriority": 2,
+        "explanation": "Ranked #2 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR BVB",
+        "cityName": "Boa Vista",
+        "region": "RR",
+        "regionName": "Roraima",
+        "actionId": "icare_0152",
+        "actionName": "Recovery of degraded areas",
+        "actionPriority": 3,
+        "explanation": "Ranked #3 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR BVB",
+        "cityName": "Boa Vista",
+        "region": "RR",
+        "regionName": "Roraima",
+        "actionId": "ipcc_0094",
+        "actionName": "Access to health care",
+        "actionPriority": 4,
+        "explanation": "Ranked #4 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR BVB",
+        "cityName": "Boa Vista",
+        "region": "RR",
+        "regionName": "Roraima",
+        "actionId": "icare_0162",
+        "actionName": "Strengthen programs for control and conservation of protected areas",
+        "actionPriority": 5,
+        "explanation": "Ranked #5 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR BVB",
+        "cityName": "Boa Vista",
+        "region": "RR",
+        "regionName": "Roraima",
+        "actionId": "ipcc_0096",
+        "actionName": "Farm/fishery improvements",
+        "actionPriority": 6,
+        "explanation": "Ranked #6 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR BVB",
+        "cityName": "Boa Vista",
+        "region": "RR",
+        "regionName": "Roraima",
+        "actionId": "icare_0149",
+        "actionName": "Encourage sustainable land use practices",
+        "actionPriority": 7,
+        "explanation": "Ranked #7 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR BVB",
+        "cityName": "Boa Vista",
+        "region": "RR",
+        "regionName": "Roraima",
+        "actionId": "icare_0151",
+        "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
+        "actionPriority": 8,
+        "explanation": "Ranked #8 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR BVB",
+        "cityName": "Boa Vista",
+        "region": "RR",
+        "regionName": "Roraima",
+        "actionId": "ipcc_0097",
+        "actionName": "Food storage/distribution improvements",
+        "actionPriority": 9,
+        "explanation": "Ranked #9 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR BVB",
+        "cityName": "Boa Vista",
+        "region": "RR",
+        "regionName": "Roraima",
+        "actionId": "icare_0157",
+        "actionName": "Maintenance and Revitalization of Riparian Forests",
+        "actionPriority": 10,
+        "explanation": "Ranked #10 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR BVB",
+        "cityName": "Boa Vista",
+        "region": "RR",
+        "regionName": "Roraima",
+        "actionId": "ipcc_0093",
+        "actionName": "Availability of health infrastructure",
+        "actionPriority": 11,
+        "explanation": "Ranked #11 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR BVB",
+        "cityName": "Boa Vista",
+        "region": "RR",
+        "regionName": "Roraima",
+        "actionId": "icare_0145",
+        "actionName": "Strengthen the healthcare network to attend to climate victims",
+        "actionPriority": 12,
+        "explanation": "Ranked #12 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR BVB",
+        "cityName": "Boa Vista",
+        "region": "RR",
+        "regionName": "Roraima",
+        "actionId": "icare_0148",
+        "actionName": "Create the Municipal Climate Change Forum",
+        "actionPriority": 13,
+        "explanation": "Ranked #13 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR BVB",
+        "cityName": "Boa Vista",
+        "region": "RR",
+        "regionName": "Roraima",
+        "actionId": "icare_0164",
+        "actionName": "Hydrological Monitoring System with Telemetry Stations",
+        "actionPriority": 14,
+        "explanation": "Ranked #14 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR BVB",
+        "cityName": "Boa Vista",
+        "region": "RR",
+        "regionName": "Roraima",
+        "actionId": "ipcc_0092",
+        "actionName": "Social safety nets",
+        "actionPriority": 15,
+        "explanation": "Ranked #15 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR BVB",
+        "cityName": "Boa Vista",
+        "region": "RR",
+        "regionName": "Roraima",
+        "actionId": "icare_0144",
+        "actionName": "Creation of a Financial Support Program to Adress Extreme Weather Events",
+        "actionPriority": 16,
+        "explanation": "Ranked #16 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR BVB",
+        "cityName": "Boa Vista",
+        "region": "RR",
+        "regionName": "Roraima",
+        "actionId": "icare_0156",
+        "actionName": "Implementation of urban gardens",
+        "actionPriority": 17,
+        "explanation": "Ranked #17 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR BVB",
+        "cityName": "Boa Vista",
+        "region": "RR",
+        "regionName": "Roraima",
+        "actionId": "icare_0175",
+        "actionName": "Recovery and preservation of green areas",
+        "actionPriority": 18,
+        "explanation": "Ranked #18 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR BVB",
+        "cityName": "Boa Vista",
+        "region": "RR",
+        "regionName": "Roraima",
+        "actionId": "icare_0181",
+        "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
+        "actionPriority": 19,
+        "explanation": "Ranked #19 by tournament ranking algorithm"
+    },
+    {
+        "locode": "BR BVB",
+        "cityName": "Boa Vista",
+        "region": "RR",
+        "regionName": "Roraima",
+        "actionId": "ipcc_0095",
+        "actionName": "Disaster early warning",
+        "actionPriority": 20,
+        "explanation": "Ranked #20 by tournament ranking algorithm"
+    }
+]

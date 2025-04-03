@@ -315,8 +315,27 @@ def filter_actions_by_biome(actions, city):
     If city has no biome, return all actions unfiltered.
     """
     city_biome = city.get("biome")
+    actions_final = []
+    i=0
     if not city_biome:
         return actions
+    else:
+        print(f"City biome: {city_biome}")
+        
+        for action in actions:
+            print(action)
+            if action["biome"] != "none":
+                print(f"Action biome: {action['biome']}")
+                if action["biome"] == city_biome:
+                    actions_final.append(action)
+                else:
+                    print(f"actions skipped{i}")
+                    i += 1
+                    pass
+            else:
+                actions_final.append(action)
+    return actions_final
+
 
     # Keep actions that either:
     # 1. Don't have a biome field, or

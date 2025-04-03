@@ -808,7 +808,7 @@ def ml_compare(city: dict, action_A: dict, action_B: dict) -> int:
     prediction = predict_xgb(df_transformed)
 
     # (Optional for explanation) Create a SHAP waterfall plot
-    create_shap_waterfall(df_transformed, loaded_model)
+    # create_shap_waterfall(df_transformed, loaded_model)
 
     return prediction
 

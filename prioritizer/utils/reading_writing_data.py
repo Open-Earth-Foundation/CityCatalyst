@@ -74,6 +74,9 @@ def read_actions():
             "Dependencies": item.get("Dependencies"),
             "KeyPerformanceIndicators": item.get("KeyPerformanceIndicators"),
             "PowersAndMandates": item.get("PowersAndMandates"),
+            "AdaptationEffectivenessPerHazard": item.get(
+                "AdaptationEffectivenessPerHazard"
+            ),
             "biome": item.get("biome"),
         }
         actions.append(action)

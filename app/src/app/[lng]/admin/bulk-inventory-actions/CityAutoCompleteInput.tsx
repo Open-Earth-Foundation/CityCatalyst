@@ -54,8 +54,6 @@ const CityAutocompleteInput: React.FC<CityAutocompleteInputProps> = ({
     },
   );
 
-  console.log("citiesData", citiesData);
-
   const handleSelectCity = (city: City) => {
     // Prevent duplicate entries
     if (!selectedCities.some((c) => c.actor_id === city.actor_id)) {

@@ -20,6 +20,7 @@ import { Trans } from "react-i18next";
 import CustomSelectableButton from "@/components/custom-selectable-buttons";
 import { Button } from "@/components/ui/button";
 import { RadioGroup } from "@/components/ui/custom-radio";
+import CityAutocompleteInput from "./CityAutoCompleteInput";
 
 interface BulkActionsTabContentProps {
   t: TFunction;
@@ -182,39 +183,19 @@ const BulkActionsTabContent: FC<BulkActionsTabContentProps> = ({ t }) => {
                 required: t("cities-input-required"),
               }}
               render={({ field, fieldState: { error } }) => (
-                <CommaSeperatedInput
-                  initialValues={field.value}
-                  onChange={handleCitiesChange}
-                  field="cities"
+                <CityAutocompleteInput
+                  // You can pass an empty array as the initial list or map your existing form values to the City type if available
+                  initialValues={[]}
+                  onChange={(selectedCities) => {
+                    // Update form field with only the cityLocode values
+                    field.onChange(selectedCities.map((city) => city.actor_id));
+                  }}
                   t={t}
-                  errors={error}
-                  inputType="text"
-                  tipContent={
-                    <Box
-                      display={"flex"}
-                      gap="8px"
-                      alignItems="center"
-                      fontSize="body.sm"
-                      color="content.tertiary"
-                      fontWeight="400"
-                    >
-                      <Icon
-                        as={MdInfoOutline}
-                        color="content.link"
-                        boxSize={4}
-                      />
-                      <Text>{t("know-your-city-tip")}</Text>
-                      <Link
-                        href="https://unece.org/trade/cefact/unlocode-code-list-country-and-territory"
-                        textDecor="underline"
-                      >
-                        {t("un-locode-link")}
-                      </Link>
-                    </Box>
-                  }
+                  error={error}
                 />
               )}
             />
+
             <Controller
               name="years"
               defaultValue={[]}

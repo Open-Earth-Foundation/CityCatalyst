@@ -30,10 +30,10 @@ export function UseErrorToast({
   description?: string;
   duration?: number;
 }) {
-  const showErrorToast = () => {
+  const showErrorToast = (data?: { title: string; description?: string }) => {
     return toaster.create({
-      title: title,
-      description: description,
+      title: data?.title ?? title,
+      description: data?.description ?? description,
       duration,
       type: "error",
     });

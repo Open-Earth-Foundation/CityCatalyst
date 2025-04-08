@@ -14,7 +14,7 @@ import {
 import { useTranslation } from "@/i18n/client";
 import { useSession } from "next-auth/react";
 
-export default function AdminLayout({
+export default function CitiesLayout({
   children,
   params: { lng },
 }: {
@@ -27,7 +27,7 @@ export default function AdminLayout({
   const { data } = useSession();
 
   useEffect(() => {
-    if (data?.user?.role !== Roles.Admin) {
+    if (data?.user.role !== Roles.Admin) {
       toaster.error({
         title: t("not-authorized"),
       });

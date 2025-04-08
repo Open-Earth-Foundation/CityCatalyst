@@ -50,6 +50,7 @@ import { Toaster } from "@/components/ui/toaster";
 import BulkActionsTabContent from "./bulk-inventory-actions/BulkActionsTabContent";
 import { OrganizationRole } from "@/util/types";
 import { toaster } from "@/components/ui/toaster";
+import ProgressLoader from "@/components/ProgressLoader";
 
 interface OrgData {
   contactEmail: string;
@@ -215,15 +216,7 @@ const AdminPage = ({ params: { lng } }: { params: { lng: string } }) => {
               </Button>
             </Box>
             <Box>
-              {isOrgDataLoading && (
-                <div className="flex items-center justify-center w-full">
-                  <Box className="w-full py-12 flex items-center justify-center">
-                    <ProgressCircleRoot value={null}>
-                      <ProgressCircleRing cap="round" />
-                    </ProgressCircleRoot>
-                  </Box>
-                </div>
-              )}
+              {isOrgDataLoading && <ProgressLoader />}
               {!isOrgDataLoading && orgData?.length === 0 && (
                 <Text color="content.tertiary" fontSize="body.lg">
                   {t("no-data")}

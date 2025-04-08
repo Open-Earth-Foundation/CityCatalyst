@@ -11,7 +11,7 @@ export const GET = apiHandler(async (_req, { session }) => {
       {
         model: db.models.Project,
         as: "project",
-        attributes: [],
+        attributes: ["organizationId", "name", "cityCountLimit"],
         include: [
           {
             model: db.models.Organization,

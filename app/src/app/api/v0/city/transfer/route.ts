@@ -34,12 +34,28 @@ export const PATCH = apiHandler(async (req, { session }) => {
     // confirm project exists
     const project = await db.models.Project.findByPk(body.projectId, {
       transaction: t,
+      include: [
+        {
+          model: db.models.City,
+          as: "cities",
+          attributes: ["cityId"],
+        },
+      ],
     });
 
     if (!project) {
       throw new createHttpError.NotFound(
         `Project not found for ID: ${body.projectId}`,
       );
+    }
+
+    // check if project city count limit is reached or will be with the new cityIds
+    const isValidTransfer =
+      Number(project.cities.length + body.cityIds.length) <=
+      Number(project.cityCountLimit);
+
+    if (!isValidTransfer) {
+      throw new createHttpError.BadRequest(`project-city-count-limit-exceeded`);
     }
 
     await db.models.City.update(

@@ -114,5 +114,6 @@
   "move-to": "Move to",
   "move-selected-cities-to": "Move selected cities to...",
   "project-city-count-limit-exceeded": "Project city count limit exceeded, please extend your project's city count limit to complete the transfer",
-  "city-transfer-error": "City transfer failed"
+  "city-transfer-error": "City transfer failed",
+  "search-city-placeholder": "Search city"
 }

@@ -1,24 +1,26 @@
+import { env } from "next-runtime-env";
+
 import { ACTION_TYPES, LANGUAGES } from "@/app/[lng]/[inventory]/CapTab/types";
 import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { CityAttributes } from "@/models/City";
 
 const getClient = () => {
   if (
-    !process.env.NEXT_AWS_REGION ||
-    !process.env.NEXT_AWS_ACCESS_KEY_ID ||
-    !process.env.NEXT_AWS_SECRET_ACCESS_KEY
+    !env("NEXT_PUBLIC_AWS_REGION") ||
+    !env("NEXT_PUBLIC_AWS_ACCESS_KEY_ID") ||
+    !env("NEXT_PUBLIC_AWS_SECRET_ACCESS_KEY")
   )
     throw new Error("missing-credentials");
   return new S3Client({
-    region: process.env.NEXT_AWS_REGION!,
+    region: env("NEXT_PUBLIC_AWS_REGION")!,
     credentials: {
-      accessKeyId: process.env.NEXT_AWS_ACCESS_KEY_ID!,
-      secretAccessKey: process.env.NEXT_AWS_SECRET_ACCESS_KEY!,
+      accessKeyId: env("NEXT_PUBLIC_AWS_ACCESS_KEY_ID")!,
+      secretAccessKey: env("NEXT_PUBLIC_AWS_SECRET_ACCESS_KEY")!,
     },
   });
 };
 
-const bucketName = process.env.NEXT_AWS_S3_BUCKET_ID;
+const bucketName = env("NEXT_PUBLIC_AWS_S3_BUCKET_ID");
 
 const streamToString = async (stream: any) => {
   const reader = stream.getReader();

@@ -1,0 +1,47 @@
+{
+  "action-type-mitigation": "Mitigação",
+  "action-type-adaptation": "Adaptação",
+  "tab-cap-title": "CAP",
+  "loading": "Carregando ações...",
+  "priority": "Prioridade",
+  "action-name": "Nome da ação",
+  "hazards": "Riscos",
+  "sector-label": "Setor",
+  "effectiveness": "Efetividade",
+  "ghg-reduction": "Redução de GEE",
+  "cost": "Custo",
+  "timeline-label": "Cronograma",
+  "n-a": "N/A",
+  "hazard": {
+    "droughts": "Secas",
+    "heatwaves": "Ondas de calor",
+    "diseases": "Doenças",
+    "landslides": "Deslizamentos",
+    "floods": "Enchentes",
+    "wildfires": "Incêndios florestais",
+    "sea-level-rise": "Aumento do nível do mar",
+    "storms": "Tempestades"
+  },
+  "sector": {
+    "stationary_energy": "Energia estacionária",
+    "transportation": "Transporte",
+    "waste": "Resíduos",
+    "ippu": "IPPU",
+    "afolu": "AFOLU"
+  },
+  "effectiveness-level": {
+    "high": "Alta",
+    "medium": "Média",
+    "low": "Baixa"
+  },
+  "cost-level": {
+    "low": "Baixo",
+    "medium": "Médio",
+    "high": "Alto"
+  },
+  "timeline": {
+    "<5 years": "Menos de 5 anos",
+    "5-10 years": "5 a 10 anos",
+    ">10 years": "Mais de 10 anos"
+  }
+} 

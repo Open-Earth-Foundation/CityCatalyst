@@ -1,0 +1,47 @@
+{
+  "action-type-mitigation": "Mitigation",
+  "action-type-adaptation": "Adaptation",
+  "tab-cap-title": "CAP",
+  "loading": "Loading actions...",
+  "priority": "Priority",
+  "action-name": "Action Name",
+  "hazards": "Hazards",
+  "sector-label": "Sector",
+  "effectiveness": "Effectiveness",
+  "ghg-reduction": "GHG Reduction",
+  "cost": "Cost",
+  "timeline-label": "Timeline",
+  "n-a": "N/A",
+  "hazard": {
+    "droughts": "Droughts",
+    "heatwaves": "Heatwaves",
+    "diseases": "Diseases",
+    "landslides": "Landslides",
+    "floods": "Floods",
+    "wildfires": "Wildfires",
+    "sea-level-rise": "Sea Level Rise",
+    "storms": "Storms"
+  },
+  "sector": {
+    "stationary_energy": "Stationary Energy",
+    "transportation": "Transportation",
+    "waste": "Waste",
+    "ippu": "IPPU",
+    "afolu": "AFOLU"
+  },
+  "effectiveness-level": {
+    "high": "High",
+    "medium": "Medium",
+    "low": "Low"
+  },
+  "cost-level": {
+    "low": "Low",
+    "medium": "Medium",
+    "high": "High"
+  },
+  "timeline": {
+    "<5 years": "Less than 5 years",
+    "5-10 years": "5 to 10 years",
+    ">10 years": "More than 10 years"
+  }
+}

@@ -91,19 +91,6 @@ export default function ProjectPage({
     skip: !project,
   });
   const [selectedCityId, setSelectedCityId] = useState<string | null>(null);
-
-  return (
-    <>
-      <ProjectMap
-        height={800}
-        width={800}
-        projectId={project}
-        setSelectedCityId={setSelectedCityId}
-      />
-      {JSON.stringify(projectSummary)}
-      {selectedCityId}
-    </>
-  );
   return (
     <HStack className="min-h-screen" gap={0} flexDirection="column">
       <NavigationBar lng={lng} isPublic />
@@ -111,7 +98,14 @@ export default function ProjectPage({
         <Hero />
         <PartnerLogos partners={partners} />
         <Metrics {...metricsProps} />
-        <ProjectMap height={800} width={800} projectId={project} />
+        <ProjectMap
+          height={800}
+          width={800}
+          projectId={project}
+          setSelectedCityId={setSelectedCityId}
+        />
+        {JSON.stringify(projectSummary)}
+        {selectedCityId}
       </Box>
       <Footer {...footerProps} />
     </HStack>

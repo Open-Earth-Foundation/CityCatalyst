@@ -1,11 +1,12 @@
 {
   "action-type-mitigation": "Mitigação",
   "action-type-adaptation": "Adaptação",
-  "tab-cap-title": "CAP",
+  "tab-cap-title": "Priorização de ações climáticas",
   "loading": "Carregando ações...",
   "priority": "Prioridade",
   "action-name": "Nome da ação",
   "hazards": "Perigos",
+  "hazards-covered": "Perigos cobertos",
   "sector-label": "Setor",
   "effectiveness": "Efetividade",
   "ghg-reduction": "Potencial de redução",

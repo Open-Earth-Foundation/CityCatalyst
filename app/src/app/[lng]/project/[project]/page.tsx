@@ -104,7 +104,7 @@ export default function ProjectPage({
   } = api.useGetProjectSummaryQuery(project!, {
     skip: !project,
   });
-  const [selectedCityId, setSelectedCityId] = useState<string | null>(null);
+  const [selectedCity, setSelectedCity] = useState<any | null>(null);
 
   // Metrics section content
   const metricsProps = {
@@ -143,12 +143,12 @@ export default function ProjectPage({
             height={569}
             width={1240}
             projectId={project}
-            setSelectedCityId={setSelectedCityId}
+            setSelectedCity={setSelectedCity}
           />
         </Center>
       </Box>
-      <Box bgColor="#EEE" borderRadius={8} p={4} mt={8} mx={8}>
-        <TitleLarge mb={4}>{selectedCityId} City</TitleLarge>
+      <Box bgColor="#EEE" borderRadius={8} p={4} m={8}>
+        <TitleLarge mb={4}>{selectedCity?.name}</TitleLarge>
         <HStack spaceX={4}>
           <LinkCard
             title="GHGI"

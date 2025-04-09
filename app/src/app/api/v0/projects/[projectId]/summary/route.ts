@@ -8,6 +8,7 @@ import PopulationService from "@/backend/PopulationService";
 export const GET = apiHandler(async (req, { params, session }) => {
   const { projectId } = params;
   // TODO perform access control by checking if the user is part of the organization/ project
+
   const project = await Project.findByPk(projectId as string, {
     include: [
       {
@@ -51,7 +52,7 @@ export const GET = apiHandler(async (req, { params, session }) => {
       )[0]?.year;
       if (!lastInventoryYear) {
         throw new createHttpError.UnprocessableEntity(
-          `last-inventory-year-missing`,
+          "last-inventory-year-missing",
         );
       }
       const population = await PopulationService.getPopulationDataForCityYear(

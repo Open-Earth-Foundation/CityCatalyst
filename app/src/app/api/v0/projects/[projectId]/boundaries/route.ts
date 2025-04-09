@@ -18,9 +18,14 @@ export const GET = apiHandler(async (req, { params, session }) => {
   const cityLocodes = project.cities.map((city) => city.locode);
 
   const boundaries = await Promise.all(
-    cityLocodes
-      .filter((cityLocode) => !!cityLocode)
-      .map((cityLocode) => CityBoundaryService.getCityBoundary(cityLocode!)),
+    project.cities
+      .filter((city) => !!city.locode)
+      .map(async (city) => {
+        const boundary = await CityBoundaryService.getCityBoundary(
+          city.locode!,
+        );
+        return { boundary, cityId: city.cityId };
+      }),
   );
 
   return NextResponse.json(boundaries);

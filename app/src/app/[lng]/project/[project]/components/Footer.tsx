@@ -10,7 +10,7 @@ export interface FooterProps {
 
 const Footer = ({ copyright, links }: FooterProps) => {
   return (
-    <Box className="bg-white py-8 px-6 border-t border-gray-200">
+    <Box className="bg-white py-8 px-6 border-t border-gray-200 w-full">
       <Box className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center">
         {/* Copyright text */}
         <Box className="mb-4 md:mb-0 text-sm text-gray-600">{copyright}</Box>

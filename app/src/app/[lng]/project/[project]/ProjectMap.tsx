@@ -74,7 +74,7 @@ function getBoundingBoxCenter(
   ]);
 }
 
-function PopupMarker({
+/*function PopupMarker({
   popupText,
   anchor,
   onClick,
@@ -115,7 +115,7 @@ function PopupMarker({
       )}
     </>
   );
-}
+}*/
 
 export const ProjectMap: FC<ProjectMapProps> = ({
   projectId,
@@ -211,9 +211,8 @@ export const ProjectMap: FC<ProjectMapProps> = ({
         {projectBoundaries?.map(
           (boundary: any) =>
             boundary.data && (
-              <PopupMarker
+              <Marker
                 key={boundary.cityId}
-                popupText="Test"
                 anchor={getBoundingBoxCenter(boundary.boundingBox)}
                 onClick={() => setSelectedCityId(boundary.cityId)}
               />

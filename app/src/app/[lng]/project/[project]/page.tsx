@@ -113,19 +113,19 @@ export default function ProjectPage({
       "Real-time data from Brazilian cities participating in the CHAMP initiative",
     metrics: [
       {
-        value: projectSummary?.totalCities,
+        value: projectSummary?.totalCities ?? "N/A",
         label: "Cities",
       },
       {
-        value: projectSummary?.totalEmissions,
+        value: projectSummary?.totalEmissions ?? "N/A",
         label: "Total Emissions",
       },
       {
-        value: projectSummary?.totalPopulation,
+        value: projectSummary?.totalPopulation ?? "N/A",
         label: "Population",
       },
       {
-        value: projectSummary?.totalDataSources,
+        value: projectSummary?.totalDataSources ?? "N/A",
         label: "Data Sources",
       },
     ] as MetricItem[],

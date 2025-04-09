@@ -10,7 +10,6 @@ import {
 } from "@chakra-ui/react";
 import Footer from "../components/Footer";
 import NavigationBar from "../components/Navbar";
-import Image from "next/image";
 
 const About = ({
   params: { project, lng },
@@ -25,6 +24,7 @@ const About = ({
       { label: "Contact", href: "#contact" },
     ],
   };
+
   return (
     <Box minH="100vh" display="flex" flexDirection="column">
       <NavigationBar lng={lng} project={project} />

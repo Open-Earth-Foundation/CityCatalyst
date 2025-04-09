@@ -11,13 +11,16 @@ const ProjectDashboardNavbar = ({
   return (
     <NavigationBar lng={lng} isPublic>
       <>
-        <Link href={`/${lng}/project/${project}`} className="flex items-center">
+        <Link
+          href={`/${lng}/public/project/${project}`}
+          className="flex items-center"
+        >
           <Heading color="base.light" size="md" className="opacity-75">
             {"dashboard"}
           </Heading>
         </Link>
         <Link
-          href={`/${lng}/project/${project}/about`}
+          href={`/${lng}/public/project/${project}/about`}
           className="flex items-center"
         >
           <Heading color="base.light" size="md" className="opacity-75">
@@ -25,7 +28,7 @@ const ProjectDashboardNavbar = ({
           </Heading>
         </Link>
         <Link
-          href={`/${lng}/project/${project}/collaborators`}
+          href={`/${lng}/public/project/${project}/collaborators`}
           className="flex items-center"
         >
           <Heading color="base.light" size="md" className="opacity-75">

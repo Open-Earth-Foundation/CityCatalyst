@@ -6,9 +6,9 @@ import ProjectMap from "./ProjectMap";
 import NavigationBar from "./components/Navbar";
 import { Box, Heading, HStack, Center, Link } from "@chakra-ui/react";
 import Footer from "./components/Footer";
-import Hero from "@/app/[lng]/project/[project]/components/Hero";
-import PartnerLogos from "@/app/[lng]/project/[project]/components/PartnerLogo";
-import Metrics from "@/app/[lng]/project/[project]/components/Metrics";
+import Hero from "@/app/[lng]/public/project/[project]/components/Hero";
+import PartnerLogos from "@/app/[lng]/public/project/[project]/components/PartnerLogo";
+import Metrics from "@/app/[lng]/public/project/[project]/components/Metrics";
 
 export interface PartnerLogo {
   id: string;

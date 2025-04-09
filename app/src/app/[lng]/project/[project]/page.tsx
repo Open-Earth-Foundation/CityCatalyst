@@ -2,6 +2,7 @@
 
 import { api } from "@/services/api";
 import ProjectMap from "./ProjectMap";
+import { useState } from "react";
 
 export default function ProjectPage({
   params: { project, lng },
@@ -15,11 +16,18 @@ export default function ProjectPage({
   } = api.useGetProjectSummaryQuery(project!, {
     skip: !project,
   });
+  const [selectedCityId, setSelectedCityId] = useState<string | null>(null);
 
   return (
     <>
-      <ProjectMap height={800} width={800} projectId={project} />
+      <ProjectMap
+        height={800}
+        width={800}
+        projectId={project}
+        setSelectedCityId={setSelectedCityId}
+      />
       {JSON.stringify(projectSummary)}
+      {selectedCityId}
     </>
   );
 }

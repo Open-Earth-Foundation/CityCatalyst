@@ -1,3 +1,6 @@
+"use client";
+
+import { api } from "@/services/api";
 import ProjectMap from "./ProjectMap";
 
 export default function ProjectPage({
@@ -5,5 +8,18 @@ export default function ProjectPage({
 }: {
   params: { project: string; lng: string };
 }) {
-  return <ProjectMap height={800} width={800} projectId={project} />;
+  const {
+    data: projectSummary,
+    isLoading,
+    error,
+  } = api.useGetProjectSummaryQuery(project!, {
+    skip: !project,
+  });
+
+  return (
+    <>
+      <ProjectMap height={800} width={800} projectId={project} />
+      {JSON.stringify(projectSummary)}
+    </>
+  );
 }

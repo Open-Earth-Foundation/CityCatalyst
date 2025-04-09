@@ -1,3 +1,4 @@
+/* eslint-disable i18next/no-literal-string */
 import { Box, Text } from "@chakra-ui/react";
 import Image from "next/image";
 

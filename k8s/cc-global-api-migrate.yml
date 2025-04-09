@@ -12,5 +12,8 @@ spec:
         image: ghcr.io/open-earth-foundation/citycatalyst-global-api:latest
         env:
         - name: ALEMBIC_URL
-          value: "postgresql://ccglobal:ccglobal@cc-global-api-db/ccglobal"
+          valueFrom:
+            configMapKeyRef:
+              name: cc-global-api-db-configmap
+              key: DB_URL
         command: ["alembic", "upgrade", "heads"]

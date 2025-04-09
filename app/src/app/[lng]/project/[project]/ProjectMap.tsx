@@ -84,7 +84,7 @@ export const ProjectMap: FC<ProjectMapProps> = ({
         onBoundsChanged={onBoundsChanged}
         attributionPrefix={false}
       >
-        {projectBoundaries.map((boundary: any) => (
+        {projectBoundaries?.map((boundary: any) => (
           <>
             <GeoJson
               svgAttributes={{
@@ -93,7 +93,7 @@ export const ProjectMap: FC<ProjectMapProps> = ({
                 stroke: "#648bff",
               }}
             >
-              {projectBoundaries?.data && (
+              {boundary.data && (
                 <GeoJsonFeature
                   feature={{
                     type: "Feature",
@@ -106,7 +106,7 @@ export const ProjectMap: FC<ProjectMapProps> = ({
               width={50}
               anchor={getBoundingBoxCenter(boundary.boundingBox)}
               color="#648bff"
-              onClick={() => setSelectedCityId(city)}
+              onClick={() => setSelectedCityId(boundary.cityId)}
             />
           </>
         ))}

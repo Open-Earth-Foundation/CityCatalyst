@@ -21,13 +21,12 @@ export default function ProjectPage({
   return (
     <>
       <ProjectMap
-        height={800}
-        width={800}
+        height={1240}
+        width={569}
         projectId={project}
         setSelectedCityId={setSelectedCityId}
       />
-      {JSON.stringify(projectSummary)}
-      {selectedCityId}
+      {JSON.stringify(projectSummary)} - {selectedCityId}
     </>
   );
 }

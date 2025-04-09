@@ -1054,6 +1054,13 @@ export const api = createApi({
         }),
         transformResponse: (response: { data: any }) => response.data,
       }),
+      getProjectBoundaries: builder.query({
+        query: (projectId: string) => ({
+          method: "GET",
+          url: `project/${projectId}/boundaries`,
+        }),
+        providesTags: ["Inventory"],
+      }),
     };
   },
 });

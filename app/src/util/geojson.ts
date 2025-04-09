@@ -13,7 +13,7 @@ export function getBoundsZoomLevel(
   const [swLng, swLat, neLng, neLat] = bounds;
 
   const latFraction =
-    (latitudeToRadians(neLat) - latitudeToRadians(swLat)) / Math.PI;
+    Math.abs(latitudeToRadians(neLat) - latitudeToRadians(swLat)) / Math.PI;
 
   const lngDiff = neLng - swLng;
   const lngFraction = (lngDiff < 0 ? lngDiff + 360 : lngDiff) / 360;

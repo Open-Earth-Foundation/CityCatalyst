@@ -2,8 +2,8 @@
 
 import { api } from "@/services/api";
 import ProjectMap from "./ProjectMap";
-import { NavigationBar } from "@/components/navigation-bar";
-import { Box, HStack } from "@chakra-ui/react";
+import NavigationBar from "./components/Navbar";
+import { Box, Heading, HStack, Link } from "@chakra-ui/react";
 import Footer from "./components/Footer";
 import Hero from "@/app/[lng]/project/[project]/components/Hero";
 import PartnerLogos from "@/app/[lng]/project/[project]/components/PartnerLogo";
@@ -93,7 +93,7 @@ export default function ProjectPage({
   const [selectedCityId, setSelectedCityId] = useState<string | null>(null);
   return (
     <HStack className="min-h-screen" gap={0} flexDirection="column">
-      <NavigationBar lng={lng} isPublic />
+      <NavigationBar lng={lng} project={project} />
       <Box flex={1} className="flex-grow" w="100%">
         <Hero />
         <PartnerLogos partners={partners} />

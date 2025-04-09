@@ -54,12 +54,14 @@ export function NavigationBar({
   isPublic = false,
   showMenu = false,
   isAuth = false,
+  children,
 }: {
   lng: string;
   showNav?: boolean;
   isPublic?: boolean;
   showMenu?: boolean;
   isAuth?: boolean;
+  children?: React.ReactNode;
 }) {
   const { t } = useTranslation(lng, "navigation");
   const { inventory: inventoryParam } = useParams();
@@ -173,6 +175,7 @@ export function NavigationBar({
           />
         </>
       )}
+      {children}
       <Box display="flex">
         <Box display="flex">
           <MenuRoot

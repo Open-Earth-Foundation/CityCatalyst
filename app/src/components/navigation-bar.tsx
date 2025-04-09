@@ -120,7 +120,7 @@ export function NavigationBar({
 
   return (
     <Box
-      className="flex flex-row px-8 py-4 align-middle space-x-12 items-center relative z-50"
+      className="flex flex-row px-8 py-4 align-middle space-x-12 items-center relative z-50 w-full"
       bgColor="content.alternative"
     >
       <Box className="flex" gap={6}>

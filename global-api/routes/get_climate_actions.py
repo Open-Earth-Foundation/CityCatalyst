@@ -46,8 +46,9 @@ def db_climate_actions() -> List[Dict[str, Any]]:
                 "Dependencies",
                 "KeyPerformanceIndicators",
                 "PowersAndMandates",
-                "Biome",
+                "Biome"
             FROM climate_action
+            ORDER BY "ActionID"
         """
         )
 

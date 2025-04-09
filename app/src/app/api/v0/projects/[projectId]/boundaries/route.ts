@@ -10,7 +10,11 @@ export const GET = apiHandler(async (req, { params, session }) => {
   const { projectId } = params;
   // TODO perform access control by checking if the user is part of the organization/ project
   const project = await Project.findByPk(projectId as string, {
-    include: { model: db.models.City, as: "cities", attributes: ["locode"] },
+    include: {
+      model: db.models.City,
+      as: "cities",
+      attributes: ["locode", "cityId"],
+    },
   });
   if (!project) {
     throw new createHttpError.NotFound("project-not-found");

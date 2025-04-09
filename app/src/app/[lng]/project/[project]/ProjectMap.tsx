@@ -129,7 +129,6 @@ export const ProjectMap: FC<ProjectMapProps> = ({
   } = api.useGetProjectBoundariesQuery(projectId!, {
     skip: !projectId,
   });
-  console.log("error", error);
 
   const [selectedCityId, setSelectedCityId] = useState<string | null>(null);
 
@@ -211,7 +210,7 @@ export const ProjectMap: FC<ProjectMapProps> = ({
 
         {projectBoundaries?.map(
           (boundary: any) =>
-            boundary.data && (
+            boundary.boundingBox && (
               <Marker
                 key={boundary.cityId}
                 anchor={getBoundingBoxCenter(boundary.boundingBox)}

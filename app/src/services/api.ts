@@ -1057,7 +1057,7 @@ export const api = createApi({
       getProjectBoundaries: builder.query({
         query: (projectId: string) => ({
           method: "GET",
-          url: `project/${projectId}/boundaries`,
+          url: `projects/${projectId}/boundaries`,
         }),
         providesTags: ["Inventory"],
       }),

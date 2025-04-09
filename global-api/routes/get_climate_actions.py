@@ -118,9 +118,12 @@ def get_climate_actions():
 
     Returns a list of climate actions with their details.
     """
-    response = db_climate_actions()
-
-    if not response:
-        raise HTTPException(status_code=404, detail="No climate actions found")
-
-    return response
+    try:
+        response = db_climate_actions()
+        if not response:
+            return []
+        return response
+    except Exception as e:
+        raise HTTPException(
+            status_code=500, detail=f"Error retrieving climate actions: {str(e)}"
+        )

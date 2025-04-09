@@ -20,14 +20,14 @@ depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
-        op.add_column(
+    op.add_column(
         'datasource',
         sa.Column('datasource_description', JSONB, nullable=True),
         schema='public'
     )
 
 def downgrade() -> None:
-        op.drop_column(
+    op.drop_column(
         'datasource',
         'datasource_description',
         schema='public'

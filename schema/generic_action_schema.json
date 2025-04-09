@@ -332,6 +332,31 @@
       "description": "The powers and mandates required to implement the action",
       "appliesTo": ["mitigation", "adaptation"],
       "generated": true
+    },
+    "biome": {
+      "oneOf": [
+        {
+          "type": "string",
+          "enum": [
+            "none",
+            "tropical_rainforest",
+            "temperate_forest",
+            "desert",
+            "grassland_savanna",
+            "tundra",
+            "wetlands",
+            "mountains",
+            "boreal_forest_taiga",
+            "coastal_marine"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "The biome the action is aligned with, or 'none' if not specific to a particular biome. Values align with the city schema biome classifications.",
+      "appliesTo": ["mitigation", "adaptation"],
+      "generated": true
     }
   },
   "required": [
@@ -352,6 +377,7 @@
     "Dependencies",
     "KeyPerformanceIndicators",
     "PowersAndMandates",
-    "AdaptationEffectivenessPerHazard"
+    "AdaptationEffectivenessPerHazard",
+    "biome"
   ]
 }

@@ -27,6 +27,7 @@ import {
   ProgressCircleRing,
   ProgressCircleRoot,
 } from "@/components/ui/progress-circle";
+import CapTab from "@/app/[lng]/[inventory]/CapTab";
 
 export default function HomePage({
   lng,
@@ -203,6 +204,7 @@ export default function HomePage({
                       {[
                         "tab-emission-inventory-calculation-title",
                         "tab-emission-inventory-results-title",
+                        "tab-cap-title",
                       ].map((tab, index) => (
                         <Tabs.Trigger key={index} value={tab}>
                           <Text
@@ -230,6 +232,9 @@ export default function HomePage({
                         population={population}
                         inventory={inventory}
                       />
+                    </Tabs.Content>
+                    <Tabs.Content value="tab-cap-title">
+                      <CapTab inventory={inventory} lng={lng} />
                     </Tabs.Content>
                   </Tabs.Root>
                 </>

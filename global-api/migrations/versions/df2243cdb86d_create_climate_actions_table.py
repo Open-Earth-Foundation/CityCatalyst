@@ -102,7 +102,7 @@ def upgrade() -> None:
             "check_ghg_reduction_potential_ippu",
         ),
         sa.CheckConstraint(
-            "\"GHGReductionPotentialAFOLU\" IS NULL or \"GHGReductionPotentialStationaryEnergy\" IN ('0-19', '20-39', '40-59', '60-79', '80-100')",
+            "\"GHGReductionPotentialAFOLU\" IS NULL or \"GHGReductionPotentialAFOLU\" IN ('0-19', '20-39', '40-59', '60-79', '80-100')",
             "check_ghg_reduction_potential_afolu",
         ),
         sa.CheckConstraint(

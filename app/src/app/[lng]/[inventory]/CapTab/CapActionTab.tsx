@@ -21,8 +21,8 @@ import {
   Row,
 } from "@tanstack/react-table";
 import { HiOutlineInformationCircle } from "react-icons/hi";
-
-const BarVisualization = ({ value, max, total }: { value: number; max: number; total: number }) => {
+import { ActionDrawer } from "./ActionDrawer";
+export const BarVisualization = ({ value, total }: { value: number; total: number }) => {
   return (
     <HStack gap={1}>
       {Array.from({ length: total }).map((_, index) => (
@@ -48,6 +48,7 @@ export function CapActionTab({
   const lng = i18next.language as LANGUAGES;
   const { t } = useTranslation(lng, "cap");
   const [actions, setActions] = useState<Action[]>([]);
+  const [selectedAction, setSelectedAction] = useState<Action | null>(null);
 
   useEffect(() => {
     const fetch = async () => {
@@ -63,7 +64,7 @@ export function CapActionTab({
   const columns: ColumnDef<Action>[] = [
     {
       accessorKey: "actionPriority",
-      header: t("priority"),
+      header: t("ranking"),
       cell: ({ row }: { row: Row<Action> }) => (
         <Badge colorScheme="blue">{row.original.actionPriority}</Badge>
       ),
@@ -104,8 +105,8 @@ export function CapActionTab({
                 medium: 2,
                 high: 3,
               };
-              const blueBars = effectivenessMap[action.action.AdaptationEffectiveness] || 1;
-              return <BarVisualization value={blueBars} max={3} total={3} />;
+              const blueBars = effectivenessMap[action.action.AdaptationEffectiveness] || 0;
+              return <BarVisualization value={blueBars} total={3} />;
             },
           },
         ]
@@ -136,7 +137,7 @@ export function CapActionTab({
                 .map(value => parseFloat(value))
                 .reduce((sum, value) => sum + value, 0);
               const blueBars = Math.min(Math.ceil(totalReduction / 20), 5);
-              return <BarVisualization value={blueBars} max={5} total={5} />;
+              return <BarVisualization value={blueBars} total={5} />;
             },
           },
         ]),
@@ -149,7 +150,7 @@ export function CapActionTab({
           variant="ghost"
           size="sm"
           onClick={() => {
-            // TODO: Open drawer with action details
+            setSelectedAction(row.original)
             console.log("Open drawer for action:", row.original);
           }}
         >
@@ -171,6 +172,14 @@ export function CapActionTab({
 
   return (
     <Box overflowX="auto">
+      {selectedAction && (
+        <ActionDrawer
+          action={selectedAction}
+          isOpen={!!selectedAction}
+          onClose={() => setSelectedAction(null)}
+          t={t}
+        />
+      )}
       <table style={{ width: "100%" }}>
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (

@@ -4,15 +4,15 @@
 import { useState } from "react";
 import { api } from "@/services/api";
 import ProjectMap from "./ProjectMap";
-import { NavigationBar } from "@/components/navigation-bar";
 import { Box, Button, Card, Center, HStack, VStack } from "@chakra-ui/react";
 import Footer from "./components/Footer";
-import Hero from "@/app/[lng]/project/[project]/components/Hero";
-import PartnerLogos from "@/app/[lng]/project/[project]/components/PartnerLogo";
-import Metrics from "@/app/[lng]/project/[project]/components/Metrics";
 import Link from "next/link";
 import { TitleLarge } from "@/components/Texts/Title";
 import LabelLarge from "@/components/Texts/Label";
+import Hero from "@/app/[lng]/public/project/[project]/components/Hero";
+import PartnerLogos from "@/app/[lng]/public/project/[project]/components/PartnerLogo";
+import Metrics from "@/app/[lng]/public/project/[project]/components/Metrics";
+import Navbar from "@/app/[lng]/public/project/[project]/components/Navbar";
 
 export interface PartnerLogo {
   id: string;
@@ -133,7 +133,7 @@ export default function ProjectPage({
 
   return (
     <VStack className="min-h-screen" gap={0} flexDirection="column">
-      <NavigationBar lng={lng} isPublic />
+      <Navbar lng={lng} project={project} />
       <Box flex={1} className="flex-grow" w="100%">
         <Hero />
         <PartnerLogos partners={partners} />

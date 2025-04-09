@@ -71,7 +71,7 @@ export function Hero({
                 <Box className="flex flex-col gap-2">
                   {!isPublic && (
                     <Link
-                      href={`/project/${inventory?.city?.project?.projectId}`}
+                      href={`/public/project/${inventory?.city?.project?.projectId}`}
                     >
                       <Text
                         fontSize="title.md"

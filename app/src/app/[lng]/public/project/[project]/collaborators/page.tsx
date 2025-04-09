@@ -1,3 +1,5 @@
+/* eslint-disable i18next/no-literal-string */
+
 "use client";
 import {
   Box,
@@ -146,6 +148,99 @@ const Collaborators = ({
               multilevel governance. Their support reflects a strategic
               investment in accelerating climate action across Global South
               cities.
+            </Text>
+          </Container>
+          <Container maxW="7xl" py="10">
+            <Heading
+              fontSize="display.md"
+              fontWeight="bold"
+              letterSpacing="wide"
+              color="content.secondary"
+              mb={8}
+            >
+              Technology Providers
+            </Heading>
+            <Text fontSize="body.lg" color="gray.900" mt={2} mb={8} maxW="3xl">
+              <Text mb={8}>
+                <Strong>
+                  Open-source digital infrastructure for climate data processing
+                  and planning
+                </Strong>
+              </Text>
+              <Text mb={2} mt={2}>
+                <Strong>Open Earth Foundation</Strong>
+              </Text>
+              OpenEarth Foundation OpenEarth is a non-profit organization
+              developing open digital systems to accelerate climate resilience.
+              In this project, it leads the technical architecture through the
+              CityCatalyst platform, enabling the automated generation of GHG
+              inventories and climate risk assessments for each participating
+              city.
+            </Text>
+          </Container>
+          <Container maxW="7xl" py="10">
+            <Heading
+              fontSize="display.md"
+              fontWeight="bold"
+              letterSpacing="wide"
+              color="content.secondary"
+              mb={8}
+            >
+              Local consultant & implementers
+            </Heading>
+            <Text fontSize="body.lg" color="gray.900" mt={2} mb={8} maxW="3xl">
+              <Text mb={10}>
+                <Strong>
+                  National technical experts ﻿engaged in city-level
+                  implementation and workshops.
+                </Strong>
+              </Text>
+              <Text mb={2} mt={2}>
+                <Strong>I Care Brasil</Strong>
+              </Text>
+              I Care Brasil is a sustainability consultancy with deep expertise
+              in climate action planning. As the technical lead on the ground,
+              they were responsible for producing city-level diagnostics,
+              coordinating local workshops, and refining mitigation and
+              adaptation measures with municipal stakeholders.
+              <Text mb={2} mt={2}>
+                <Strong>Brisa Soluções</Strong>
+              </Text>
+              Ambientais Brisa provided support in contextualizing technical
+              analyses and tailoring mitigation and adaptation measures to the
+              socio-environmental realities of participating cities.
+            </Text>
+          </Container>
+          <Container maxW="7xl" py="10">
+            <Heading
+              fontSize="display.md"
+              fontWeight="bold"
+              letterSpacing="wide"
+              color="content.secondary"
+              mb={8}
+            >
+              Local city networks & engagement <br /> partners
+            </Heading>
+            <Text fontSize="body.lg" color="gray.900" mt={2} mb={8} maxW="3xl">
+              <Text mb={10}>
+                <Strong>
+                  Organizations s﻿upporting municipal participation and peer
+                  learning.
+                </Strong>
+              </Text>
+              <Text mb={2} mt={2}>
+                <Strong>Frente Nacional de Prefeitos (FNP)</Strong>
+              </Text>
+              FNP is a prominent network representing Brazilian mayors. It
+              facilitated municipal engagement, promoted peer learning, and
+              helped ensure political buy-in across the 50 participating cities.
+              <Text mb={2} mt={2}>
+                <Strong>ICLEI Brasil</Strong>
+              </Text>
+              ICLEI Brasil supports local governments on their sustainability
+              journeys. For this initiative, ICLEI contributed to technical
+              support, city capacity-building, and dissemination of
+              methodologies for long-term local adoption.
             </Text>
           </Container>
         </Box>

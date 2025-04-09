@@ -1,16 +1,8 @@
-"use client";
-
 import { api } from "@/services/api";
 import { getBoundsZoomLevel } from "@/util/geojson";
 import { Box, Center, Spinner } from "@chakra-ui/react";
 import { FC, useEffect, useState } from "react";
-import { Map, GeoJson, GeoJsonFeature, Marker, Overlay } from "pigeon-maps";
-
-export interface ProjectMapProps {
-  projectId: string | null;
-  width: number;
-  height: number;
-}
+import { Map, GeoJson, GeoJsonFeature, Marker } from "pigeon-maps";
 
 type BoundingBox = [number, number, number, number];
 
@@ -33,7 +25,7 @@ function findGeoCenter(geolocations: [number, number][]): [number, number] {
   /**
    * Provide a relatively accurate center lat, lon returned as a tuple, given
    * a list of list pairs.
-   * ex: in: geolocations = [[lat1, lon1], [lat2, lon2],]
+   * ex: in: geolocations = [[lat1, lon1], [lat2, lon2]]
    * out: [center_lat, center_lon]
    */
   let x = 0;
@@ -74,7 +66,7 @@ function getBoundingBoxCenter(
   ]);
 }
 
-function PopupMarker({
+/*function PopupMarker({
   popupText,
   anchor,
   onClick,
@@ -115,12 +107,20 @@ function PopupMarker({
       )}
     </>
   );
+}*/
+
+export interface ProjectMapProps {
+  projectId: string | null;
+  width: number;
+  height: number;
+  setSelectedCityId: (cityId: string) => void;
 }
 
 export const ProjectMap: FC<ProjectMapProps> = ({
   projectId,
   width,
   height,
+  setSelectedCityId,
 }) => {
   const {
     data: projectBoundaries,
@@ -129,9 +129,6 @@ export const ProjectMap: FC<ProjectMapProps> = ({
   } = api.useGetProjectBoundariesQuery(projectId!, {
     skip: !projectId,
   });
-  console.log("error", error);
-
-  const [selectedCityId, setSelectedCityId] = useState<string | null>(null);
 
   const [center, setCenter] = useState<[number, number]>([34.0, -37.0]);
   const [zoom, setZoom] = useState(9);
@@ -203,6 +200,7 @@ export const ProjectMap: FC<ProjectMapProps> = ({
                     type: "Feature",
                     geometry: boundary.data,
                   }}
+                  onClick={() => setSelectedCityId(boundary.cityId)}
                 />
               ),
           )}
@@ -210,10 +208,9 @@ export const ProjectMap: FC<ProjectMapProps> = ({
 
         {projectBoundaries?.map(
           (boundary: any) =>
-            boundary.data && (
-              <PopupMarker
+            boundary.boundingBox && (
+              <Marker
                 key={boundary.cityId}
-                popupText="Test"
                 anchor={getBoundingBoxCenter(boundary.boundingBox)}
                 onClick={() => setSelectedCityId(boundary.cityId)}
               />

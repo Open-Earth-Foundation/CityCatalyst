@@ -13,13 +13,12 @@ export const GET = apiHandler(async (req, { params, session }) => {
       {
         model: db.models.City,
         as: "cities",
-        attributes: ["locode"],
+        attributes: ["locode", "cityId"],
         include: [
           {
             model: db.models.Inventory,
             as: "inventories",
             include: [
-              { model: db.models.Population, as: "population" },
               {
                 model: db.models.InventoryValue,
                 as: "inventoryValues",
@@ -58,7 +57,7 @@ export const GET = apiHandler(async (req, { params, session }) => {
         city.cityId,
         lastInventoryYear,
       );
-      return population.population ?? 0;
+      return Number(population.population) ?? 0;
     }),
   );
   const totalPopulation = latestUsedCityPopulations.reduce(

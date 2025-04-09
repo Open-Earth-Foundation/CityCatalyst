@@ -1061,6 +1061,13 @@ export const api = createApi({
         }),
         providesTags: ["Inventory"],
       }),
+      getProjectSummary: builder.query({
+        query: (projectId: string) => ({
+          method: "GET",
+          url: `projects/${projectId}/summary`,
+        }),
+        providesTags: ["Inventory"],
+      }),
     };
   },
 });

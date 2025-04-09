@@ -81,6 +81,8 @@ function LinkCard({
             href={methodologyLink}
             target="_blank"
             rel="noopener noreferrer"
+            color="interactive.secondary"
+            className="underline"
           >
             More about the methodology
           </Link>
@@ -144,28 +146,30 @@ export default function ProjectPage({
             setSelectedCityId={setSelectedCityId}
           />
         </Center>
-        {selectedCityId}
       </Box>
-      <HStack spaceX={4} mt={8} px={4}>
-        <LinkCard
-          title="GHGI"
-          description="Detailed emissions inventory, with focus on transportation and urban infrastructure."
-          link="https://citycatalyst.io/en/public/01170216-ab15-4fe0-a316-d09d84a80f8b"
-          methodologyLink=""
-        />
-        <LinkCard
-          title="CAP"
-          description="Climate risk assessment, focusing on vulnerabilities and adaptations strategies."
-          link="https://cap.openearth.dev/#/city/Caxias%20do%20Sul"
-          methodologyLink=""
-        />
-        <LinkCard
-          title="CCRA"
-          description="Climate action plan focusing on urban resilience and nature-based solutions for a coastal city."
-          link="https://citycatalyst-ccra.replit.app/cities/BR%20CXL"
-          methodologyLink=""
-        />
-      </HStack>
+      <Box bgColor="#EEE" borderRadius={8} p={4} mt={8} mx={8}>
+        <TitleLarge mb={4}>{selectedCityId} City</TitleLarge>
+        <HStack spaceX={4}>
+          <LinkCard
+            title="GHGI"
+            description="Detailed emissions inventory, with focus on transportation and urban infrastructure."
+            link="https://citycatalyst.io/en/public/01170216-ab15-4fe0-a316-d09d84a80f8b"
+            methodologyLink=""
+          />
+          <LinkCard
+            title="CAP"
+            description="Climate risk assessment, focusing on vulnerabilities and adaptations strategies."
+            link="https://cap.openearth.dev/#/city/Caxias%20do%20Sul"
+            methodologyLink=""
+          />
+          <LinkCard
+            title="CCRA"
+            description="Climate action plan focusing on urban resilience and nature-based solutions for a coastal city."
+            link="https://citycatalyst-ccra.replit.app/cities/BR%20CXL"
+            methodologyLink=""
+          />
+        </HStack>
+      </Box>
       <Footer {...footerProps} />
     </VStack>
   );

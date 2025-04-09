@@ -1,11 +1,18 @@
+/* eslint-disable i18next/no-literal-string */
 "use client";
 
 import { useState } from "react";
 import { api } from "@/services/api";
 import ProjectMap from "./ProjectMap";
-import NavigationBar from "./components/Navbar";
-import { Box, Heading, HStack, Center, Link } from "@chakra-ui/react";
+import { NavigationBar } from "@/components/navigation-bar";
+import { Box, Button, Card, Center, HStack, VStack } from "@chakra-ui/react";
 import Footer from "./components/Footer";
+import Hero from "@/app/[lng]/project/[project]/components/Hero";
+import PartnerLogos from "@/app/[lng]/project/[project]/components/PartnerLogo";
+import Metrics from "@/app/[lng]/project/[project]/components/Metrics";
+import Link from "next/link";
+import { TitleLarge } from "@/components/Texts/Title";
+import LabelLarge from "@/components/Texts/Label";
 import Hero from "@/app/[lng]/public/project/[project]/components/Hero";
 import PartnerLogos from "@/app/[lng]/public/project/[project]/components/PartnerLogo";
 import Metrics from "@/app/[lng]/public/project/[project]/components/Metrics";
@@ -53,6 +60,41 @@ interface MetricItem {
   label: string;
 }
 
+function LinkCard({
+  title,
+  description,
+  link,
+  methodologyLink,
+}: {
+  title: string;
+  description: string;
+  link: string;
+  methodologyLink: string;
+}) {
+  return (
+    <Card.Root rounded={8}>
+      <Card.Body borderRadius={8}>
+        <VStack spaceY={4} alignItems="left">
+          <TitleLarge color="interactive.secondary">{title}</TitleLarge>
+          <LabelLarge>{description}</LabelLarge>
+          <Link href={link} target="_blank" rel="noopener noreferrer">
+            <Button w="full">SEE RESULTS</Button>
+          </Link>
+          <Link
+            href={methodologyLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            color="interactive.secondary"
+            className="underline"
+          >
+            More about the methodology
+          </Link>
+        </VStack>
+      </Card.Body>
+    </Card.Root>
+  );
+}
+
 export default function ProjectPage({
   params: { project, lng },
 }: {
@@ -93,8 +135,8 @@ export default function ProjectPage({
   };
 
   return (
-    <HStack className="min-h-screen" gap={0} flexDirection="column">
-      <NavigationBar lng={lng} project={project} />
+    <VStack className="min-h-screen" gap={0} flexDirection="column">
+      <NavigationBar lng={lng} isPublic />
       <Box flex={1} className="flex-grow" w="100%">
         <Hero />
         <PartnerLogos partners={partners} />
@@ -108,7 +150,30 @@ export default function ProjectPage({
           />
         </Center>
       </Box>
+      <Box bgColor="#EEE" borderRadius={8} p={4} mt={8} mx={8}>
+        <TitleLarge mb={4}>{selectedCityId} City</TitleLarge>
+        <HStack spaceX={4}>
+          <LinkCard
+            title="GHGI"
+            description="Detailed emissions inventory, with focus on transportation and urban infrastructure."
+            link="https://citycatalyst.io/en/public/01170216-ab15-4fe0-a316-d09d84a80f8b"
+            methodologyLink=""
+          />
+          <LinkCard
+            title="CAP"
+            description="Climate risk assessment, focusing on vulnerabilities and adaptations strategies."
+            link="https://cap.openearth.dev/#/city/Caxias%20do%20Sul"
+            methodologyLink=""
+          />
+          <LinkCard
+            title="CCRA"
+            description="Climate action plan focusing on urban resilience and nature-based solutions for a coastal city."
+            link="https://citycatalyst-ccra.replit.app/cities/BR%20CXL"
+            methodologyLink=""
+          />
+        </HStack>
+      </Box>
       <Footer {...footerProps} />
-    </HStack>
+    </VStack>
   );
 }

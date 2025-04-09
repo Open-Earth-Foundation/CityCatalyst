@@ -4,7 +4,7 @@ import { api } from "@/services/api";
 import { getBoundsZoomLevel } from "@/util/geojson";
 import { Box, Center, Spinner } from "@chakra-ui/react";
 import { FC, useEffect, useState } from "react";
-import { Map, GeoJson, GeoJsonFeature, Marker, Overlay } from "pigeon-maps";
+import { Map, GeoJson, GeoJsonFeature, Marker } from "pigeon-maps";
 
 export interface ProjectMapProps {
   projectId: string | null;
@@ -203,6 +203,7 @@ export const ProjectMap: FC<ProjectMapProps> = ({
                     type: "Feature",
                     geometry: boundary.data,
                   }}
+                  onClick={() => setSelectedCityId(boundary.cityId)}
                 />
               ),
           )}

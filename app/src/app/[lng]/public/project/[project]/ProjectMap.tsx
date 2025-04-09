@@ -113,14 +113,14 @@ export interface ProjectMapProps {
   projectId: string | null;
   width: number;
   height: number;
-  setSelectedCityId: (cityId: string) => void;
+  setSelectedCity: (cityId: string) => void;
 }
 
 export const ProjectMap: FC<ProjectMapProps> = ({
   projectId,
   width,
   height,
-  setSelectedCityId,
+  setSelectedCity,
 }) => {
   const {
     data: projectBoundaries,
@@ -200,7 +200,7 @@ export const ProjectMap: FC<ProjectMapProps> = ({
                     type: "Feature",
                     geometry: boundary.data,
                   }}
-                  onClick={() => setSelectedCityId(boundary.cityId)}
+                  onClick={() => setSelectedCity(boundary.cityId)}
                 />
               ),
           )}
@@ -212,7 +212,7 @@ export const ProjectMap: FC<ProjectMapProps> = ({
               <Marker
                 key={boundary.cityId}
                 anchor={getBoundingBoxCenter(boundary.boundingBox)}
-                onClick={() => setSelectedCityId(boundary.cityId)}
+                onClick={() => setSelectedCity(boundary.cityId)}
               />
             ),
         )}

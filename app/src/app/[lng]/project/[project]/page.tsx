@@ -1,9 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import { api } from "@/services/api";
 import ProjectMap from "./ProjectMap";
 import { NavigationBar } from "@/components/navigation-bar";
-import { Box, HStack } from "@chakra-ui/react";
+import { Box, Center, HStack } from "@chakra-ui/react";
 import Footer from "./components/Footer";
 import Hero from "@/app/[lng]/project/[project]/components/Hero";
 import PartnerLogos from "@/app/[lng]/project/[project]/components/PartnerLogo";
@@ -52,32 +53,6 @@ interface MetricItem {
   label: string;
 }
 
-// Metrics section content
-const metricsProps = {
-  title: "Impact",
-  description:
-    "Real-time data from Brazilian cities participating in the CHAMP initiative",
-  metrics: [
-    {
-      value: 0,
-      label: "Cities",
-    },
-    {
-      value: 0,
-      label: "Emissions Sources",
-    },
-    {
-      value: 0,
-      label: "Population",
-    },
-    {
-      value: 0,
-      label: "Data Sources",
-    },
-  ] as MetricItem[],
-};
-import { useState } from "react";
-
 export default function ProjectPage({
   params: { project, lng },
 }: {
@@ -91,6 +66,32 @@ export default function ProjectPage({
     skip: !project,
   });
   const [selectedCityId, setSelectedCityId] = useState<string | null>(null);
+
+  // Metrics section content
+  const metricsProps = {
+    title: "Impact",
+    description:
+      "Real-time data from Brazilian cities participating in the CHAMP initiative",
+    metrics: [
+      {
+        value: projectSummary?.totalCities,
+        label: "Cities",
+      },
+      {
+        value: projectSummary?.totalEmissions,
+        label: "Total Emissions",
+      },
+      {
+        value: projectSummary?.totalPopulation,
+        label: "Population",
+      },
+      {
+        value: projectSummary?.totalDataSources,
+        label: "Data Sources",
+      },
+    ] as MetricItem[],
+  };
+
   return (
     <HStack className="min-h-screen" gap={0} flexDirection="column">
       <NavigationBar lng={lng} isPublic />
@@ -98,12 +99,14 @@ export default function ProjectPage({
         <Hero />
         <PartnerLogos partners={partners} />
         <Metrics {...metricsProps} />
-        <ProjectMap
-          height={800}
-          width={800}
-          projectId={project}
-          setSelectedCityId={setSelectedCityId}
-        />
+        <Center w="full">
+          <ProjectMap
+            height={569}
+            width={1240}
+            projectId={project}
+            setSelectedCityId={setSelectedCityId}
+          />
+        </Center>
         {JSON.stringify(projectSummary)}
         {selectedCityId}
       </Box>

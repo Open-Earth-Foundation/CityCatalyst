@@ -7,7 +7,6 @@ import PopulationService from "@/backend/PopulationService";
 
 export const GET = apiHandler(async (req, { params, session }) => {
   const { projectId } = params;
-  // TODO perform access control by checking if the user is part of the organization/ project
 
   const project = await Project.findByPk(projectId as string, {
     include: [

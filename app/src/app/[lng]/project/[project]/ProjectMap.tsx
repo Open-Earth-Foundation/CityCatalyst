@@ -4,7 +4,7 @@ import { api } from "@/services/api";
 import { getBoundsZoomLevel } from "@/util/geojson";
 import { Box, Center, Spinner } from "@chakra-ui/react";
 import { FC, useEffect, useState } from "react";
-import { Map, GeoJson, GeoJsonFeature, Marker } from "pigeon-maps";
+import { Map, GeoJson, GeoJsonFeature, Marker, Overlay } from "pigeon-maps";
 
 export interface ProjectMapProps {
   projectId: string | null;
@@ -12,16 +12,109 @@ export interface ProjectMapProps {
   height: number;
 }
 
-function getBoundingBoxCenter(boundingBox: {
-  bbox_west: number;
-  bbox_south: number;
-  bbox_east: number;
-  bbox_north: number;
-}): [number, number] {
-  return [
-    (boundingBox.bbox_west + boundingBox.bbox_east) / 2,
-    (boundingBox.bbox_south + boundingBox.bbox_north) / 2,
-  ];
+type BoundingBox = [number, number, number, number];
+
+function getCombinedBoundingBox(boundingBoxes: BoundingBox[]): BoundingBox {
+  const result = [...boundingBoxes[0]] as BoundingBox;
+  for (let i = 1; i < boundingBoxes.length; i++) {
+    let box = boundingBoxes[i];
+    result[0] = Math.min(result[0], box[0]);
+    result[1] = Math.max(result[1], box[1]);
+    result[2] = Math.max(result[2], box[2]);
+    result[3] = Math.min(result[3], box[3]);
+  }
+  return result;
+}
+// Constants for converting degrees to radians
+const DEG_TO_RAD = Math.PI / 180;
+const RAD_TO_DEG = 180 / Math.PI;
+
+function findGeoCenter(geolocations: [number, number][]): [number, number] {
+  /**
+   * Provide a relatively accurate center lat, lon returned as a tuple, given
+   * a list of list pairs.
+   * ex: in: geolocations = [[lat1, lon1], [lat2, lon2],]
+   * out: [center_lat, center_lon]
+   */
+  let x = 0;
+  let y = 0;
+  let z = 0;
+
+  for (const [lat, lon] of geolocations) {
+    // Convert lat, lon from degrees to radians
+    const latRad = lat * DEG_TO_RAD;
+    const lonRad = lon * DEG_TO_RAD;
+
+    x += Math.cos(latRad) * Math.cos(lonRad);
+    y += Math.cos(latRad) * Math.sin(lonRad);
+    z += Math.sin(latRad);
+  }
+
+  x = x / geolocations.length;
+  y = y / geolocations.length;
+  z = z / geolocations.length;
+
+  const centerLat = Math.atan2(y, x);
+  const centerLon = Math.atan2(z, Math.sqrt(x * x + y * y));
+
+  // Convert the result from radians back to degrees
+  const centerLatDeg = centerLat * RAD_TO_DEG;
+  const centerLonDeg = centerLon * RAD_TO_DEG;
+
+  return [centerLatDeg, centerLonDeg];
+}
+
+function getBoundingBoxCenter(
+  boundingBox: [number, number, number, number],
+): [number, number] {
+  const [west, south, east, north] = boundingBox;
+  return findGeoCenter([
+    [west, south] as [number, number],
+    [east, north] as [number, number],
+  ]);
+}
+
+function PopupMarker({
+  popupText,
+  anchor,
+  onClick,
+}: {
+  popupText: string;
+  anchor: [number, number];
+  onClick: any;
+}) {
+  const [hovered, setHovered] = useState(false);
+  return (
+    <>
+      <Marker
+        width={50}
+        color="#648bff"
+        anchor={anchor}
+        onClick={onClick}
+        onMouseOver={() => setHovered(true)}
+        onMouseOut={() => setHovered(false)}
+      />
+
+      {hovered && (
+        <Overlay anchor={anchor}>
+          <div
+            style={{
+              position: "absolute",
+              transform: "translate(-50%, -100%)",
+              backgroundColor: "white",
+              border: "1px solid black",
+              padding: "5px",
+              borderRadius: "5px",
+              zIndex: 1000, // Ensures the popup is above other map elements
+              pointerEvents: "none", // Prevents the popup from blocking interactions with the map
+            }}
+          >
+            {popupText}
+          </div>
+        </Overlay>
+      )}
+    </>
+  );
 }
 
 export const ProjectMap: FC<ProjectMapProps> = ({
@@ -29,10 +122,14 @@ export const ProjectMap: FC<ProjectMapProps> = ({
   width,
   height,
 }) => {
-  const { data: projectBoundaries, isLoading } =
-    api.useGetProjectBoundariesQuery(projectId!, {
-      skip: !projectId,
-    });
+  const {
+    data: projectBoundaries,
+    isLoading,
+    error,
+  } = api.useGetProjectBoundariesQuery(projectId!, {
+    skip: !projectId,
+  });
+  console.log("error", error);
 
   const [selectedCityId, setSelectedCityId] = useState<string | null>(null);
 
@@ -50,13 +147,19 @@ export const ProjectMap: FC<ProjectMapProps> = ({
   };
 
   useEffect(() => {
-    if (projectBoundaries?.boundingBox) {
-      const boundingBox = projectBoundaries.boundingBox;
-      if (boundingBox && !boundingBox.some(isNaN)) {
-        const newZoom = getBoundsZoomLevel(boundingBox, { width, height });
+    if (projectBoundaries) {
+      const boundingBoxes = projectBoundaries.map(
+        (boundary: any) => boundary.boundingBox,
+      );
+      const combinedBoundingBox = getCombinedBoundingBox(boundingBoxes);
+      if (combinedBoundingBox && !combinedBoundingBox.some(isNaN)) {
+        const newZoom = getBoundsZoomLevel(combinedBoundingBox, {
+          width,
+          height,
+        });
         const newCenter: [number, number] = [
-          (boundingBox[1] + boundingBox[3]) / 2,
-          (boundingBox[0] + boundingBox[2]) / 2,
+          (combinedBoundingBox[1] + combinedBoundingBox[3]) / 2,
+          (combinedBoundingBox[0] + combinedBoundingBox[2]) / 2,
         ];
         setCenter(newCenter);
         setZoom(newZoom);
@@ -84,32 +187,38 @@ export const ProjectMap: FC<ProjectMapProps> = ({
         onBoundsChanged={onBoundsChanged}
         attributionPrefix={false}
       >
-        {projectBoundaries?.map((boundary: any) => (
-          <>
-            <GeoJson
-              svgAttributes={{
-                fill: "#648bff99",
-                strokeWidth: "3",
-                stroke: "#648bff",
-              }}
-            >
-              {boundary.data && (
+        <GeoJson
+          svgAttributes={{
+            fill: "#648bff99",
+            strokeWidth: "3",
+            stroke: "#648bff",
+          }}
+        >
+          {projectBoundaries?.map(
+            (boundary: any) =>
+              boundary.data && (
                 <GeoJsonFeature
+                  key={boundary.cityId}
                   feature={{
                     type: "Feature",
-                    geometry: projectBoundaries.data,
+                    geometry: boundary.data,
                   }}
                 />
-              )}
-            </GeoJson>
-            <Marker
-              width={50}
-              anchor={getBoundingBoxCenter(boundary.boundingBox)}
-              color="#648bff"
-              onClick={() => setSelectedCityId(boundary.cityId)}
-            />
-          </>
-        ))}
+              ),
+          )}
+        </GeoJson>
+
+        {projectBoundaries?.map(
+          (boundary: any) =>
+            boundary.data && (
+              <PopupMarker
+                key={boundary.cityId}
+                popupText="Test"
+                anchor={getBoundingBoxCenter(boundary.boundingBox)}
+                onClick={() => setSelectedCityId(boundary.cityId)}
+              />
+            ),
+        )}
       </Map>
     </Box>
   );

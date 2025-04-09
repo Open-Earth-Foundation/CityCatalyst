@@ -15,8 +15,6 @@ export const GET = apiHandler(async (req, { params, session }) => {
   if (!project) {
     throw new createHttpError.NotFound("project-not-found");
   }
-  const cityLocodes = project.cities.map((city) => city.locode);
-
   const boundaries = await Promise.all(
     project.cities
       .filter((city) => !!city.locode)
@@ -24,7 +22,7 @@ export const GET = apiHandler(async (req, { params, session }) => {
         const boundary = await CityBoundaryService.getCityBoundary(
           city.locode!,
         );
-        return { boundary, cityId: city.cityId };
+        return { ...boundary, cityId: city.cityId };
       }),
   );
 

@@ -23,7 +23,7 @@ const PartnerLogos = ({ partners }: PartnerLogosProps) => {
                 <img
                   src={partner.logo}
                   alt={partner.name}
-                  className="max-h-full max-w-full object-contain grayscale opacity-80 hover:opacity-100 hover:grayscale-0 transition-all duration-300"
+                  className="max-h-full max-w-full object-contain hover:opacity-100 hover:grayscale-0 transition-all duration-300"
                 />
               )}
             </div>

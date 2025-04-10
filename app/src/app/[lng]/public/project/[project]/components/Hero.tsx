@@ -37,7 +37,7 @@ const Hero = () => {
         minHeight: "100vh",
       }}
     >
-      <div className="max-w-4xl mx-auto relative z-10 pt-20">
+      <div className="max-w-7xl mx-auto relative z-10 pt-20">
         {/* Overview label */}
         <div className="text-gray-100 uppercase text-sm tracking-wider font-medium mb-4">
           {heroText.overviewLabel}

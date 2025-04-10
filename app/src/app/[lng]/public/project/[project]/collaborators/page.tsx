@@ -312,32 +312,142 @@ const Collaborators = ({
             >
               Local city networks & engagement <br /> partners
             </Heading>
-            <Text fontSize="body.lg" color="gray.900" mt={2} mb={8} maxW="3xl">
+            <Box fontSize="body.lg" color="gray.900" mt={2} mb={8}>
               <Text mb={10}>
                 <Strong>
                   Organizations s﻿upporting municipal participation and peer
                   learning.
                 </Strong>
               </Text>
-              <Text mb={2} mt={2}>
-                <Strong>Frente Nacional de Prefeitos (FNP)</Strong>
+              <Flex justifyContent="space-between" alignItems="center">
+                <Text maxW="3xl">
+                  <Text mb={2} mt={2}>
+                    <Strong>Frente Nacional de Prefeitos (FNP)</Strong>
+                  </Text>
+                  FNP is a prominent network representing Brazilian mayors. It
+                  facilitated municipal engagement, promoted peer learning, and
+                  helped ensure political buy-in across the 50 participating
+                  cities.
+                </Text>
+                <img
+                  src="/assets/projects_dashboard/fnp.png"
+                  alt="fnp"
+                  style={{
+                    height: "70px",
+                  }}
+                />
+              </Flex>
+              <Flex
+                justifyContent="space-between"
+                gap="10"
+                alignItems="center"
+                mt={10}
+              >
+                <Text maxW="3xl">
+                  <Text mb={2} mt={2}>
+                    <Strong>ICLEI Brasil</Strong>
+                  </Text>
+                  ICLEI Brasil supports local governments on their
+                  sustainability journeys. For this initiative, ICLEI
+                  contributed to technical support, city capacity-building, and
+                  dissemination of methodologies for long-term local adoption.
+                </Text>
+                <img
+                  src="/assets/projects_dashboard/iclei.png"
+                  alt="fnp"
+                  height="150px"
+                  style={{
+                    marginRight: "50px",
+                  }}
+                />
+              </Flex>
+            </Box>
+          </Container>
+          <Container maxW="7xl" py="10">
+            <Heading
+              fontSize="display.md"
+              fontWeight="bold"
+              letterSpacing="wide"
+              color="content.secondary"
+              mb={8}
+            >
+              Data providers
+            </Heading>
+            <Box fontSize="body.lg" color="gray.900" mt={2} mb={8}>
+              <Text mb={10}>
+                <Strong>
+                  These platforms provided the foundational data for emissions
+                  and climate risk assessments.
+                </Strong>
               </Text>
-              FNP is a prominent network representing Brazilian mayors. It
-              facilitated municipal engagement, promoted peer learning, and
-              helped ensure political buy-in across the 50 participating cities.
-              <Text mb={2} mt={2}>
-                <Strong>ICLEI Brasil</Strong>
-              </Text>
-              ICLEI Brasil supports local governments on their sustainability
-              journeys. For this initiative, ICLEI contributed to technical
-              support, city capacity-building, and dissemination of
-              methodologies for long-term local adoption.
-            </Text>
+              <Flex justifyContent="space-between" alignItems="center">
+                <Text maxW="3xl">
+                  SEEG (Sistema de Estimativas de Emissões de GEE) SEEG offers
+                  robust subnational emissions estimates and served as the
+                  backbone for the GHG inventory work. Its publicly accessible
+                  data enabled rapid, transparent generation of baseline city
+                  profiles
+                </Text>
+                <img
+                  src="/assets/projects_dashboard/seeg.png"
+                  alt="openearth"
+                  style={{
+                    height: "60px",
+                    marginRight: "50px",
+                  }}
+                />
+              </Flex>
+              <Flex
+                justifyContent="space-between"
+                gap="10"
+                alignItems="center"
+                mt={10}
+              >
+                <Text maxW="3xl">
+                  <Text mb={2} mt={2}>
+                    <Strong>AdaptaBrasil</Strong>
+                  </Text>
+                  As Brazil’s primary climate risk platform, AdaptaBrasil
+                  provided detailed datasets on hazards and vulnerabilities,
+                  which were essential for constructing the Climate Risk and
+                  Vulnerability Assessments (CCRAs).
+                </Text>
+                <img
+                  src="/assets/projects_dashboard/adapta-brazil.png"
+                  alt="fnp"
+                  height="150px"
+                  style={{
+                    marginRight: "50px",
+                  }}
+                />
+              </Flex>
+              <Flex
+                justifyContent="space-between"
+                gap="10"
+                alignItems="center"
+                mt={10}
+              >
+                <Text maxW="3xl">
+                  <Text mb={2} mt={2}>
+                    <Strong>Climate Trace</Strong>
+                  </Text>
+                  Climate TRACE uses satellite data and AI to monitor global
+                  emissions. It was used in this project to enhance data quality
+                  and spatial validation, supporting emissions profiling with
+                  independent verification
+                </Text>
+                <img
+                  src="/assets/projects_dashboard/climate-trace.png"
+                  alt="fnp"
+                  height="150px"
+                  style={{
+                    marginRight: "50px",
+                  }}
+                />
+              </Flex>
+            </Box>
           </Container>
         </Box>
-
-        {/* Additional sections would follow similar Chakra UI structure */}
-        {/* You can replicate using <Box>, <Container>, <Grid>, <Flex>, <Image>, <Text>, <Heading>, <VStack> */}
       </Box>
       <Footer {...footerProps} />
     </Box>

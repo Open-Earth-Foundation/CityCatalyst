@@ -78,7 +78,7 @@ const Collaborators = ({
                   strategies.
                 </Strong>
               </Text>
-              <Flex justifyContent="space-between">
+              <Flex justifyContent="space-between" alignItems="center">
                 <Text maxW="3xl">
                   <Text mb={2}>
                     <Strong>
@@ -96,6 +96,9 @@ const Collaborators = ({
                   src="/assets/projects_dashboard/mma_big.png"
                   alt="Brazilian Government"
                   height="80px"
+                  style={{
+                    height: "80px",
+                  }}
                 />
               </Flex>
               <Flex justifyContent="space-between">
@@ -112,6 +115,9 @@ const Collaborators = ({
                 <img
                   src="/assets/projects_dashboard/moc.png"
                   alt="ministry of cities"
+                  style={{
+                    height: "80px",
+                  }}
                 />
               </Flex>
             </Box>
@@ -149,6 +155,9 @@ const Collaborators = ({
                   src="/assets/projects_dashboard/c40_cities_logo.png"
                   alt="ministry of cities"
                   width="100px"
+                  style={{
+                    height: "80px",
+                  }}
                 />
               </Flex>
               <Flex justifyContent="space-between" mt={10}>
@@ -167,6 +176,9 @@ const Collaborators = ({
                 <img
                   src="/assets/projects_dashboard/gcom_big.png"
                   alt="ministry of cities"
+                  style={{
+                    height: "80px",
+                  }}
                 />
               </Flex>
               <Flex justifyContent="space-between" mt={10}>
@@ -181,7 +193,7 @@ const Collaborators = ({
                 </Text>
                 <img src="/assets/projects_dashboard/cdp_big.png" alt="cdp" />
               </Flex>
-              <Flex justifyContent="space-between" mt={10}>
+              <Flex justifyContent="space-between" mt={10} alignItems="center">
                 <Text maxW="3xl">
                   <Text mb={2} mt={4}>
                     <Strong>Bloomberg Philanthropies</Strong>
@@ -195,6 +207,9 @@ const Collaborators = ({
                 <img
                   src="/assets/projects_dashboard/bloomberg_big.png"
                   alt="bloomberg"
+                  style={{
+                    height: "80px",
+                  }}
                 />
               </Flex>
             </Box>
@@ -216,7 +231,7 @@ const Collaborators = ({
                   and planning
                 </Strong>
               </Text>
-              <Flex justifyContent="space-between">
+              <Flex justifyContent="space-between" alignItems="center">
                 <Text maxW="3xl">
                   <Text mb={2} mt={2}>
                     <Strong>Open Earth Foundation</Strong>
@@ -231,8 +246,9 @@ const Collaborators = ({
                 <img
                   src="/assets/projects_dashboard/openearth_big.png"
                   alt="openearth"
-                  width="300px"
-                  height="80px"
+                  style={{
+                    height: "60px",
+                  }}
                 />
               </Flex>
             </Box>
@@ -247,28 +263,44 @@ const Collaborators = ({
             >
               Local consultant & implementers
             </Heading>
-            <Text fontSize="body.lg" color="gray.900" mt={2} mb={8} maxW="3xl">
+            <Box fontSize="body.lg" color="gray.900" mt={2} mb={8}>
               <Text mb={10}>
                 <Strong>
                   National technical experts ﻿engaged in city-level
                   implementation and workshops.
                 </Strong>
               </Text>
-              <Text mb={2} mt={2}>
-                <Strong>I Care Brasil</Strong>
-              </Text>
-              I Care Brasil is a sustainability consultancy with deep expertise
-              in climate action planning. As the technical lead on the ground,
-              they were responsible for producing city-level diagnostics,
-              coordinating local workshops, and refining mitigation and
-              adaptation measures with municipal stakeholders.
-              <Text mb={2} mt={2}>
-                <Strong>Brisa Soluções</Strong>
-              </Text>
-              Ambientais Brisa provided support in contextualizing technical
-              analyses and tailoring mitigation and adaptation measures to the
-              socio-environmental realities of participating cities.
-            </Text>
+              <Flex justifyContent="space-between" alignItems="center">
+                <Text maxW="3xl">
+                  <Text mb={2} mt={2}>
+                    <Strong>I Care Brasil</Strong>
+                  </Text>
+                  I Care Brasil is a sustainability consultancy with deep
+                  expertise in climate action planning. As the technical lead on
+                  the ground, they were responsible for producing city-level
+                  diagnostics, coordinating local workshops, and refining
+                  mitigation and adaptation measures with municipal
+                  stakeholders.
+                </Text>
+                <img
+                  src="/assets/projects_dashboard/icare_big.png"
+                  alt="openearth"
+                  style={{
+                    height: "60px",
+                  }}
+                />
+              </Flex>
+              <Flex justifyContent="space-between" alignItems="center" mt={10}>
+                <Text maxW="3xl">
+                  <Text mb={2} mt={2}>
+                    <Strong>Brisa Soluções</Strong>
+                  </Text>
+                  Ambientais Brisa provided support in contextualizing technical
+                  analyses and tailoring mitigation and adaptation measures to
+                  the socio-environmental realities of participating cities.
+                </Text>
+              </Flex>
+            </Box>
           </Container>
           <Container maxW="7xl" py="10">
             <Heading

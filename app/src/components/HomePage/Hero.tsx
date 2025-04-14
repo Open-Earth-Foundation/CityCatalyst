@@ -75,7 +75,7 @@ export function Hero({
                       fontWeight="semibold"
                       color="white"
                     >
-                      {inventory?.city.project.name}
+                      {inventory?.city?.project?.name}
                     </Text>
                   )}
                   <Box className="flex items-center gap-4">

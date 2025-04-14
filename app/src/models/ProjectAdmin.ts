@@ -1,5 +1,6 @@
 import * as Sequelize from "sequelize";
 import { DataTypes, Model, Optional } from "sequelize";
+import { Project } from "@/models/Project";
 
 // TODO this table can be extended for all project level roles.
 
@@ -28,6 +29,8 @@ export class ProjectAdmin
   userId!: string;
   created?: Date;
   lastUpdated?: Date;
+
+  project!: Project;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof ProjectAdmin {
     return ProjectAdmin.init(

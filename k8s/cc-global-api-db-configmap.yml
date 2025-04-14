@@ -9,3 +9,4 @@ data:
   DB_USER: "ccglobal"
   DB_PASSWORD: "ccglobal"
   DB_NAME: "ccglobal"
+  DB_URL: "postgresql://ccglobal:ccglobal@cc-global-api-db/ccglobal"

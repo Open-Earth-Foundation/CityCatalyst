@@ -1,5 +1,6 @@
 import * as Sequelize from "sequelize";
 import { DataTypes, Model, Optional } from "sequelize";
+import { Organization } from "@/models/Organization";
 
 export interface OrganizationAdminAttributes {
   organizationAdminId: string;
@@ -29,6 +30,9 @@ export class OrganizationAdmin
   userId!: string;
   created?: Date;
   lastUpdated?: Date;
+
+  // OrganizationAdmin belongsTo Organization via organizationId
+  organization!: Organization;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof OrganizationAdmin {
     return OrganizationAdmin.init(

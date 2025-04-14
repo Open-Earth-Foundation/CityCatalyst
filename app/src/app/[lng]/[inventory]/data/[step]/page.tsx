@@ -20,6 +20,7 @@ import { api } from "@/services/api";
 import { logger } from "@/services/logger";
 import {
   bytesToMB,
+  clamp,
   convertSectorReferenceNumberToNumber,
   nameToI18NKey,
 } from "@/util/helpers";
@@ -259,9 +260,12 @@ export default function AddDataSteps({
       if (sectorProgress.total === 0) {
         return step;
       }
-      const connectedProgress =
-        sectorProgress.thirdParty / sectorProgress.total;
-      const addedProgress = sectorProgress.uploaded / sectorProgress.total;
+      const connectedProgress = clamp(
+        sectorProgress.thirdParty / sectorProgress.total,
+      );
+      const addedProgress = clamp(
+        sectorProgress.uploaded / sectorProgress.total,
+      );
       step.connectedProgress = Math.max(
         connectedProgress,
         step.connectedProgress,
@@ -290,7 +294,7 @@ export default function AddDataSteps({
   }, [activeStep]);
 
   const totalStepCompletion = currentStep
-    ? currentStep.connectedProgress + currentStep.addedProgress
+    ? clamp(currentStep.connectedProgress + currentStep.addedProgress)
     : 0;
   const formatPercentage = (percentage: number) =>
     Math.round(percentage * 1000) / 10;

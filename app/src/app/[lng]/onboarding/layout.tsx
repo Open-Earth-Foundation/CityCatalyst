@@ -17,7 +17,7 @@ export default function OnboardingLayout({
       bg="background.backgroundLight"
       className="h-full flex flex-col"
     >
-      <NavigationBar lng={lng} showNav={false} />
+      <NavigationBar showMenu lng={lng} showNav={false} />
       <Toaster />
       <Box className="w-full h-full bg-no-repeat px-8">{children}</Box>
     </Box>

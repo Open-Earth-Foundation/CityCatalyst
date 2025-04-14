@@ -4,6 +4,8 @@ import { createCityRequest } from "@/util/validation";
 import createHttpError from "http-errors";
 import { NextResponse } from "next/server";
 import { randomUUID } from "node:crypto";
+import { logger } from "@/services/logger";
+import { DEFAULT_PROJECT_ID } from "@/util/constants";
 
 export const POST = apiHandler(async (req, { session }) => {
   const body = createCityRequest.parse(await req.json());
@@ -11,10 +13,28 @@ export const POST = apiHandler(async (req, { session }) => {
     throw new createHttpError.Unauthorized("Unauthorized");
   }
 
-  const project = await db.models.Project.findByPk(body.projectId);
+  const projectId = body.projectId;
+
+  if (!projectId) {
+    logger.info("Project ID is not provided, defaulting to Default Project");
+    body.projectId = DEFAULT_PROJECT_ID;
+  }
+
+  const project = await db.models.Project.findByPk(body.projectId, {
+    include: [
+      {
+        model: db.models.City,
+        as: "cities",
+      },
+    ],
+  });
 
   if (!project) {
-    throw new createHttpError.BadRequest("invalid-project-id");
+    throw new createHttpError.NotFound("Project not found");
+  }
+
+  if (project.cities.length === project.cityCountLimit) {
+    throw new createHttpError.BadRequest("city-count-limit-reached");
   }
 
   let city = await db.models.City.findOne({

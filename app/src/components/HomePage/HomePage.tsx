@@ -27,6 +27,7 @@ import {
   ProgressCircleRing,
   ProgressCircleRoot,
 } from "@/components/ui/progress-circle";
+import CapTab from "@/app/[lng]/[inventory]/CapTab";
 
 export default function HomePage({
   lng,
@@ -48,9 +49,6 @@ export default function HomePage({
   const { data: inventory, isLoading: isInventoryLoading } =
     api.useGetInventoryQuery((inventoryIdFromParam as string) || "default");
 
-  // TODO also add this to login logic or after email verification to prevent extra redirect?
-  // if the user doesn't have a default inventory or if path has a null inventory id, redirect to onboarding page
-
   useEffect(() => {
     if (!inventoryIdFromParam && !isInventoryLoading && inventory) {
       if (inventory.inventoryId) {
@@ -67,6 +65,7 @@ export default function HomePage({
         }
       } else {
         // fixes warning "Cannot update a component (`Router`) while rendering a different component (`Home`)"
+
         setTimeout(() => router.push(`/onboarding`), 0);
       }
     }
@@ -180,7 +179,7 @@ export default function HomePage({
                       gap="8px"
                       onClick={() =>
                         router.push(
-                          `/onboarding/setup?city=${inventory?.cityId}`,
+                          `/onboarding/setup?city=${inventory?.cityId}&project=${city?.projectId}`,
                         )
                       }
                     >
@@ -205,6 +204,7 @@ export default function HomePage({
                       {[
                         "tab-emission-inventory-calculation-title",
                         "tab-emission-inventory-results-title",
+                        "tab-cap-title",
                       ].map((tab, index) => (
                         <Tabs.Trigger key={index} value={tab}>
                           <Text
@@ -232,6 +232,9 @@ export default function HomePage({
                         population={population}
                         inventory={inventory}
                       />
+                    </Tabs.Content>
+                    <Tabs.Content value="tab-cap-title">
+                      <CapTab inventory={inventory} lng={lng} />
                     </Tabs.Content>
                   </Tabs.Root>
                 </>

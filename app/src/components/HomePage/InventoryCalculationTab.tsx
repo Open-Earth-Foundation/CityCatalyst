@@ -4,7 +4,7 @@ import { SectorCard } from "@/components/Cards/SectorCard";
 import { SegmentedProgress } from "@/components/SegmentedProgress";
 import { CircleIcon } from "@/components/icons";
 import { useTranslation } from "@/i18n/client";
-import { formatPercent } from "@/util/helpers";
+import { clamp, formatPercent } from "@/util/helpers";
 import { InventoryProgressResponse, InventoryResponse } from "@/util/types";
 import {
   Badge,
@@ -19,7 +19,6 @@ import { Trans } from "react-i18next/TransWithoutContext";
 import { TabHeader } from "@/components/HomePage/TabHeader";
 import { BlueSubtitle } from "@/components/Texts/BlueSubtitle";
 import { getSectorsForInventory, SECTORS } from "@/util/constants";
-import { UseErrorToast } from "@/hooks/Toasts";
 
 const getSectorProgresses = (
   inventoryProgress: InventoryProgressResponse,
@@ -47,9 +46,9 @@ export default function InventoryCalculationTab({
     uploadedProgress = 0;
   if (inventoryProgress && inventoryProgress.totalProgress.total > 0) {
     const { uploaded, thirdParty, total } = inventoryProgress.totalProgress;
-    totalProgress = (uploaded + thirdParty) / total;
-    thirdPartyProgress = thirdParty / total;
-    uploadedProgress = uploaded / total;
+    totalProgress = clamp((uploaded + thirdParty) / total);
+    thirdPartyProgress = clamp(thirdParty / total);
+    uploadedProgress = clamp(uploaded / total);
   }
 
   const sectorsForInventory = inventory

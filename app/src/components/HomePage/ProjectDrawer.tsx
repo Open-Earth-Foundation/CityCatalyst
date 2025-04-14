@@ -17,16 +17,21 @@ import {
 import { InputGroup } from "@/components/ui/input-group";
 import { LuSearch } from "react-icons/lu";
 import { ProjectWithCities, ProjectWithCitiesResponse } from "@/util/types";
-import { useGetProjectsQuery } from "@/services/api";
+import {
+  useGetProjectsQuery,
+  useGetProjectUsersQuery,
+  useGetUserProjectsQuery,
+} from "@/services/api";
 import {
   ProgressCircleRing,
   ProgressCircleRoot,
 } from "@/components/ui/progress-circle";
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { FaLocationDot } from "react-icons/fa6";
 import { useTranslation } from "@/i18n/client";
+import ProjectLimitModal from "@/components/project-limit";
 
 const SearchInput = ({
   searchTerm,
@@ -148,8 +153,17 @@ const SingleProjectView = ({
   currentInventoryId: string;
 }) => {
   const router = useRouter();
-  const goToOnboarding = () =>
-    router.push(`/onboarding/setup?project=${project.projectId}`);
+  const [isProjectLimitModalOpen, setIsProjectLimitModalOpen] = useState(false);
+  const goToOnboarding = () => {
+    if (
+      BigInt(project.cities.length) ===
+      BigInt(project.cityCountLimit as unknown as string)
+    ) {
+      setIsProjectLimitModalOpen(true);
+    } else {
+      router.push(`/onboarding/setup?project=${project.projectId}`);
+    }
+  };
 
   const goToInventory = (inventoryId: string) => {
     router.push(`/${inventoryId}`);
@@ -225,6 +239,12 @@ const SingleProjectView = ({
           </Button>
         ))}
       </HStack>
+      <ProjectLimitModal
+        isOpen={isProjectLimitModalOpen}
+        onClose={() => setIsProjectLimitModalOpen(false)}
+        t={t as any}
+        onOpenChange={setIsProjectLimitModalOpen}
+      />
     </HStack>
   );
 };
@@ -241,18 +261,11 @@ const ProjectDrawer = ({
   isOpen: boolean;
   onClose: () => void;
   onOpenChange: (val: OpenChangeDetails) => void;
-  organizationId: string;
-  currentInventoryId: string;
+  organizationId?: string;
+  currentInventoryId?: string;
 }) => {
   const { t } = useTranslation(lng, "dashboard");
-  const { data: projectsData, isLoading } = useGetProjectsQuery(
-    {
-      organizationId,
-    },
-    {
-      skip: !organizationId,
-    },
-  );
+  const { data: projectsData, isLoading } = useGetUserProjectsQuery({});
 
   const [selectedProject, setSelectedProject] = React.useState<string | null>();
 
@@ -314,7 +327,7 @@ const ProjectDrawer = ({
               selectProject={selectProject}
             />
           )}
-          {selectedProjectData && (
+          {selectedProjectData && currentInventoryId && (
             <SingleProjectView
               t={t}
               currentInventoryId={currentInventoryId}

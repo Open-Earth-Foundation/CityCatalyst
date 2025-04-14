@@ -44,3 +44,17 @@ export const GET = apiHandler(async (req, { params, session }) => {
 
   return NextResponse.json({ data: users });
 });
+
+export const DELETE = apiHandler(async (req, { params, session }) => {
+  UserService.validateIsAdmin(session);
+  const { city } = params;
+
+  const email = req.nextUrl.searchParams.get("email");
+  if (!email) {
+    throw new createHttpError.BadRequest("user-not-found");
+  }
+
+  await UserService.removeUserFromCity(city as string, email);
+
+  return NextResponse.json(null);
+});

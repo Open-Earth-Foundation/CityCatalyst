@@ -216,8 +216,6 @@ const ActivityTab: FC<ActivityTabProps> = ({
     }
   }, [inventoryValue]);
 
-  console.log(referenceNumber);
-
   return (
     <>
       <Box

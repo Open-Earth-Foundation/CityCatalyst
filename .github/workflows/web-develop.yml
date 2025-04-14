@@ -170,6 +170,7 @@ jobs:
             "GLOBAL_API_URL=https://ccglobal.openearth.dev" \
             "NEXT_PUBLIC_OPENCLIMATE_API_URL=https://openclimate.openearth.dev" \
             "OPENCLIMATE_API_URL=https://openclimate.openearth.dev" \
+            "NEXT_PUBLIC_FEATURE_FLAGS=ENTERPRISE_MODE" \
             CDP_API_KEY=${{secrets.CDP_API_KEY_TEST}}
           kubectl apply -f k8s/cc-sync-catalogue.yml -n default # cronjob
           kubectl create -f k8s/cc-sync-catalogue-manual.yml -n default # on deployment

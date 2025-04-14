@@ -30,7 +30,7 @@ export const createCityRequest = z.object({
   countryLocode: z.string().optional(),
   regionLocode: z.string().optional(),
   area: z.number().int().optional(),
-  projectId: z.string().uuid(),
+  projectId: z.string().uuid().optional(),
 });
 export type CreateCityRequest = z.infer<typeof createCityRequest>;
 
@@ -174,6 +174,12 @@ export const createUserInvite = z.object({
 export const AcceptInvite = z.object({
   email: z.string().email(),
   cityIds: z.array(z.string()),
+  token: z.string(),
+});
+
+export const AcceptOrganizationInvite = z.object({
+  email: z.string().email(),
+  organizationId: z.string().uuid(),
   token: z.string(),
 });
 

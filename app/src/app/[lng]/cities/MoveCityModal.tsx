@@ -241,7 +241,7 @@ const MoveCityModal = (props: MoveCityModalProps) => {
         clearSelections();
       })
       .catch((error) => {
-        console.error(error, "the error");
+        console.error("Failed to transfer city", error);
         showErrorToast({
           title: t("city-transfer-error"),
           description: t(error?.data?.error?.message),

@@ -42,7 +42,7 @@ const SearchInput = ({
               as={MdClose}
               className="opacity-50"
               boxSize={4}
-              color={"#414249"}
+              color={"colors.interactive.control"}
             />
           </IconButton>
         ) : null

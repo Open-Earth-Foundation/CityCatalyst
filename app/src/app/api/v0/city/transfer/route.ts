@@ -49,10 +49,14 @@ export const PATCH = apiHandler(async (req, { session }) => {
       );
     }
 
-    // check if project city count limit is reached or will be with the new cityIds
+    const newCityCount = body.cityIds.filter(
+      (id) => !project.cities.map((city) => city.cityId).includes(id),
+    ).length;
     const isValidTransfer =
-      Number(project.cities.length + body.cityIds.length) <=
+      Number(project.cities.length + newCityCount) <=
       Number(project.cityCountLimit);
+
+    // check if project city count limit is reached or will be with the new ci
 
     if (!isValidTransfer) {
       throw new createHttpError.BadRequest(`project-city-count-limit-exceeded`);

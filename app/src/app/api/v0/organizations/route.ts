@@ -4,7 +4,6 @@ import { createOrganizationRequest } from "@/util/validation";
 import { NextResponse } from "next/server";
 import UserService from "@/backend/UserService";
 import { apiHandler } from "@/util/api";
-import { OrganizationInvite } from "@/models/OrganizationInvite";
 import { db } from "@/models";
 
 export const POST = apiHandler(async (req, { params, session }) => {

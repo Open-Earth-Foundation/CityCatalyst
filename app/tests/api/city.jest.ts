@@ -132,7 +132,7 @@ describe("City API", () => {
     assert.equal(data.area, cityData.area);
   });
 
-  it("should prevent unauthorized access to add city data", async () => {
+  it("should prevent unauthorized access to all city data", async () => {
     Auth.getServerSession = jest.fn(() => Promise.resolve(mockSession));
     const req = mockRequest();
     const res = await getAllCities(req, { params: {} });

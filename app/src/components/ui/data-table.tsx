@@ -12,7 +12,6 @@ import {
   NativeSelectField,
   NativeSelectRoot,
 } from "@/components/ui/native-select";
-// import { Checkbox } from "@/components/ui/checkbox";
 import { IoIosArrowBack } from "react-icons/io";
 import { InputGroup } from "@/components/ui/input-group";
 import { MdSearch } from "react-icons/md";

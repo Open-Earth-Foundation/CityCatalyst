@@ -321,7 +321,6 @@ export function NavigationBar({
                       onClick={() => router.push(`/cities`)}
                     >
                       <Box display="flex" alignItems="center">
-                        {" "}
                         <Icon
                           as={MdApartment}
                           boxSize={6}

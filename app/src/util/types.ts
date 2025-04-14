@@ -451,7 +451,7 @@ export type CityWithProjectDataResponse = {
   populationYear: number;
   country: string;
   population: number;
-  project: {
+  project?: {
     name: string;
     cityCountLimit: number;
     organization: {

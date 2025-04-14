@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/menu";
 import { MdMoreVert, MdOutlineGroup } from "react-icons/md";
 import MoveCityModal from "@/app/[lng]/cities/MoveCityModal";
+import { CityWithProjectDataResponse } from "@/util/types";
 
 const CitiesPage = ({ params: { lng } }: { params: { lng: string } }) => {
   const { t } = useTranslation(lng, "admin");
@@ -32,7 +33,9 @@ const CitiesPage = ({ params: { lng } }: { params: { lng: string } }) => {
   const { data: organizationData, isLoading: isLoadingOrganizationData } =
     useGetOrganizationsQuery({});
 
-  const [selectedRowKeys, setSelectedRowKeys] = useState<string[]>([]);
+  const [selectedRowKeys, setSelectedRowKeys] = useState<
+    CityWithProjectDataResponse["cityId"][]
+  >([]);
   const [singleRowSelected, setSingleRowSelected] = useState<string | null>(
     null,
   );
@@ -41,10 +44,6 @@ const CitiesPage = ({ params: { lng } }: { params: { lng: string } }) => {
   const selectedCityIds = useMemo(() => {
     return singleRowSelected ? [singleRowSelected] : selectedRowKeys;
   }, [selectedRowKeys, singleRowSelected]);
-
-  const moveCityFunction = () => {
-    let ids = [];
-  };
 
   if (isLoading || isLoadingOrganizationData) {
     return <ProgressLoader />;
@@ -136,18 +135,22 @@ const CitiesPage = ({ params: { lng } }: { params: { lng: string } }) => {
             selectable
             selectKey="cityId"
             selectedRowKeys={selectedRowKeys}
-            onSelectRow={(selectedRows: any[]) => {
-              setSelectedRowKeys(selectedRows);
+            onSelectRow={(
+              selectedRows: CityWithProjectDataResponse[keyof CityWithProjectDataResponse][],
+            ) => {
+              setSelectedRowKeys(
+                selectedRows as CityWithProjectDataResponse["cityId"][],
+              );
             }}
             renderRow={(item, idx) => (
               <Table.Row key={idx}>
                 <Table.Cell>{item.name}</Table.Cell>
                 <Table.Cell>{item.country}</Table.Cell>
                 <Table.Cell>
-                  {item?.project?.organization?.name ?? "N/A"}
+                  {item?.project?.organization?.name ?? t("n-a")}
                 </Table.Cell>
                 <Table.Cell>
-                  {item?.project?.organization?.contactEmail ?? "N/A"}
+                  {item?.project?.organization?.contactEmail ?? t("n-a")}
                 </Table.Cell>
                 <Table.Cell>
                   <MenuRoot>
@@ -168,8 +171,8 @@ const CitiesPage = ({ params: { lng } }: { params: { lng: string } }) => {
                       px="0"
                     >
                       <MenuItem
-                        value={t("account-details")}
-                        valueText={t("account-details")}
+                        value={t("move-to")}
+                        valueText={t("move-to")}
                         p="16px"
                         display="flex"
                         alignItems="center"

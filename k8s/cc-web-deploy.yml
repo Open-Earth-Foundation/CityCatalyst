@@ -24,6 +24,8 @@ spec:
           envFrom:
             - configMapRef:
                 name: cc-db-configmap
+            - secretRef:
+                name: cc-web-aws-secret
           env:
             - name: NODE_ENV
               value: "production"

@@ -258,11 +258,11 @@ const CreateOrganizationModal: FC<CreateOrganizationModalProps> = ({
                     }
                     {...register("projectName")}
                   />
-                  {errors.projectName && (
+                  {errors?.projectName && (
                     <Box display="flex" gap="6px" alignItems="center" mt="6px">
                       <Icon as={MdWarning} color="sentiment.negativeDefault" />
                       <Text color="error" fontSize="body.sm">
-                        {t(errors.projectName.message as string)}
+                        {t(errors?.projectName.message as string)}
                       </Text>
                     </Box>
                   )}
@@ -274,11 +274,11 @@ const CreateOrganizationModal: FC<CreateOrganizationModalProps> = ({
                     }
                     {...register("description")}
                   />
-                  {errors.description && (
+                  {errors?.description && (
                     <Box display="flex" gap="6px" alignItems="center" mt="6px">
                       <Icon as={MdWarning} color="sentiment.negativeDefault" />
                       <Text color="error" fontSize="body.sm">
-                        {t(errors.description.message as string)}
+                        {t(errors?.description.message as string)}
                       </Text>
                     </Box>
                   )}

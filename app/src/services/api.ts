@@ -43,9 +43,11 @@ import {
   UsersInvitesResponse,
   YearOverYearResultsResponse,
   ProjectUserResponse,
+  CityWithProjectDataResponse,
 } from "@/util/types";
 import type { GeoJSON } from "geojson";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { TransferCitiesRequest } from "@/util/validation";
 
 export const api = createApi({
   reducerPath: "api",
@@ -73,6 +75,7 @@ export const api = createApi({
     "Project",
     "ProjectUsers",
     "UserAccessStatus",
+    "Cities",
   ],
   baseQuery: fetchBaseQuery({ baseUrl: "/api/v0/", credentials: "include" }),
   endpoints: (builder) => {
@@ -187,7 +190,7 @@ export const api = createApi({
           country: string;
           regionLocode: string;
           countryLocode: string;
-          projectId: string;
+          projectId?: string;
         }
       >({
         query: (data) => ({
@@ -902,7 +905,12 @@ export const api = createApi({
           },
         }),
         transformResponse: (response: ProjectResponse) => response,
-        invalidatesTags: ["Projects", "Project"],
+        invalidatesTags: [
+          "Projects",
+          "Project",
+          "Organizations",
+          "Organization",
+        ],
       }),
       deleteProject: builder.mutation({
         query: (projectId: string) => ({
@@ -945,7 +953,7 @@ export const api = createApi({
           method: "GET",
           url: `/organizations`,
         }),
-        transformResponse: (response: ListOrganizationsResponse) =>
+        transformResponse: (response: ListOrganizationsResponse[]) =>
           response.map((org) => ({
             ...org,
             status: org.organizationInvite.find(
@@ -1044,8 +1052,27 @@ export const api = createApi({
           method: "GET",
           url: `/user/projects`,
         }),
-        transformResponse: (response: ProjectResponse[]) => response,
-        providesTags: ["ProjectUsers"],
+        transformResponse: (response: ProjectWithCities[]) => response,
+        providesTags: ["Projects"],
+      }),
+      getAllCitiesInSystem: builder.query({
+        query: () => ({
+          method: "GET",
+          url: `/admin/all-cities`,
+        }),
+        transformResponse: (response: {
+          data: CityWithProjectDataResponse[];
+        }) => response.data,
+        providesTags: ["Cities"],
+      }),
+      transferCities: builder.mutation({
+        query: (data: { projectId: string; cityIds: string[] }) => ({
+          url: `/city/transfer`,
+          method: "PATCH",
+          body: data,
+        }),
+        transformResponse: (response: any) => response,
+        invalidatesTags: ["Cities", "Organizations"],
       }),
     };
   },
@@ -1139,5 +1166,8 @@ export const {
   useConnectDataSourcesMutation,
   useGetProjectUsersQuery,
   useGetUserAccessStatusQuery,
+  useGetAllCitiesInSystemQuery,
+  useGetUserProjectsQuery,
+  useTransferCitiesMutation,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

@@ -13,8 +13,9 @@ import {
 } from "@/components/ui/progress-circle";
 import { useTranslation } from "@/i18n/client";
 import { useSession } from "next-auth/react";
+import ProgressLoader from "@/components/ProgressLoader";
 
-export default function AdminLayout({
+export default function CitiesLayout({
   children,
   params: { lng },
 }: {
@@ -27,7 +28,7 @@ export default function AdminLayout({
   const { data } = useSession();
 
   useEffect(() => {
-    if (data?.user?.role !== Roles.Admin) {
+    if (data?.user.role !== Roles.Admin) {
       toaster.error({
         title: t("not-authorized"),
       });
@@ -37,24 +38,14 @@ export default function AdminLayout({
         router.push(fallbackPath);
       }, REDIRECT_DELAY_MS);
     }
-  }, [data, router, lng, t]);
+  }, [data?.user.role, lng, router, t]);
 
   return (
     <Box className="h-full flex flex-col" bg="background.backgroundLight">
       <NavigationBar lng={lng} />
       <Toaster />
       <div className="w-full h-full">
-        {data?.user?.role === Roles.Admin ? (
-          children
-        ) : (
-          <div className="flex items-center justify-center w-full">
-            <Box className="w-full py-12 flex items-center justify-center">
-              <ProgressCircleRoot value={null}>
-                <ProgressCircleRing cap="round" />
-              </ProgressCircleRoot>
-            </Box>
-          </div>
-        )}
+        {data?.user?.role === Roles.Admin ? children : <ProgressLoader />}
       </div>
     </Box>
   );

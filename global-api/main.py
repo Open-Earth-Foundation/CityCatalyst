@@ -7,12 +7,18 @@ from fastapi.middleware.cors import CORSMiddleware
 from settings import settings
 from utils.helpers import get_or_create_log_file
 from routes.health import api_router as health_check_route
-from routes.city_locode_endpoint_climatetrace import api_router as climatetrace_city_locode_route
+from routes.city_locode_endpoint_climatetrace import (
+    api_router as climatetrace_city_locode_route,
+)
 from routes.city_boundaries_endpoint import api_router as city_boundaries_route
-from routes.city_locode_endpoint_crosswalk import api_router as crosswalk_city_locode_route
+from routes.city_locode_endpoint_crosswalk import (
+    api_router as crosswalk_city_locode_route,
+)
 from routes.city_locode_endpoint_edgar import api_router as edgar_city_locode_route
 from routes.catalogue_endpoint import api_router as catalouge_route
-from routes.catalogue_last_update_endpoint import api_router as catalogue_last_update_endpoint
+from routes.catalogue_last_update_endpoint import (
+    api_router as catalogue_last_update_endpoint,
+)
 from routes.city_locode_endpoint_ghgrp import api_router as ghgrp_city_locode_route
 from routes.region_code_endpoint import api_router as region_code_endpoint_route
 from routes.country_code_endpoint import api_router as country_code_endpoint_route
@@ -21,6 +27,7 @@ from routes.ghgi_emissions import api_router as actor_emissions_route
 from routes.ccra_assessment import api_router as ccra_assessment
 from routes.ghgi_emission_forecast import api_router as emission_forecast
 from routes.city_context import api_router as city_context_route
+from routes.get_climate_actions import api_router as climate_actions_route
 
 """
 Logger instance initialized and configured
@@ -62,6 +69,7 @@ app.add_middleware(
 Function to generate custom OpenAPI documentation
 """
 
+
 def custom_openapi():
     # check if the OpenApI schema has already been generated
     if app.openapi_schema:
@@ -86,10 +94,12 @@ def custom_openapi():
 
 app.openapi = custom_openapi
 
+
 # Endpoints for Health
 @app.get("/")
 def read_root():
     return {"message": "Welcome"}
+
 
 app.include_router(
     health_check_route,
@@ -173,7 +183,12 @@ app.include_router(
     tags=["CCRA Assessment"],
 )
 
+## Endpoints for CAP
 
+app.include_router(
+    climate_actions_route,
+    tags=["Climate Actions"],
+)
 
 """
 Entry point of the fastapi application (Drive Code)

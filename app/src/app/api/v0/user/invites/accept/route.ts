@@ -43,7 +43,6 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
   });
   const inviteCityIds = invites.map((i) => i.cityId!);
   const citiesNotFound = difference(cityIds, inviteCityIds);
-
   if (citiesNotFound.length > 0) {
     console.error(
       "error in invites/accept/route PATCH: ",

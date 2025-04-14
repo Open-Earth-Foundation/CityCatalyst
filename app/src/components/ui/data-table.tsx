@@ -12,10 +12,11 @@ import {
   NativeSelectField,
   NativeSelectRoot,
 } from "@/components/ui/native-select";
-
 import { IoIosArrowBack } from "react-icons/io";
 import { InputGroup } from "@/components/ui/input-group";
 import { MdSearch } from "react-icons/md";
+import { Checkbox } from "@/components/ui/checkbox";
+import { CheckedChangeDetails } from "@zag-js/checkbox";
 
 type FilterOption<TValue> = TValue | { label: string; value: TValue };
 
@@ -30,6 +31,10 @@ type DataTableProps<T> = {
   filterProperty?: keyof T;
   filterOptions?: FilterOption<T[keyof T]>[];
   renderRow: (item: T, index: number) => React.ReactNode;
+  selectable?: boolean;
+  selectedRowKeys?: Array<T[keyof T]>;
+  onSelectRow?: (selectedRowKeys: Array<T[keyof T]>) => void;
+  selectKey?: keyof T;
 };
 
 function isLabelValueOption<TValue>(
@@ -54,6 +59,10 @@ function DataTable<T extends Record<string, any>>({
   filterProperty,
   filterOptions = [],
   renderRow,
+  selectable,
+  selectedRowKeys = [],
+  onSelectRow,
+  selectKey,
 }: DataTableProps<T>) {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -84,6 +93,40 @@ function DataTable<T extends Record<string, any>>({
 
   const totalPages =
     filteredData.length > 0 ? Math.ceil(filteredData.length / itemsPerPage) : 1;
+
+  const currentRowKeys =
+    selectable && selectKey ? paginatedData.map((item) => item[selectKey]) : [];
+  const allSelected =
+    currentRowKeys.length > 0 &&
+    currentRowKeys.every((key) => selectedRowKeys.includes(key));
+  const someSelected =
+    currentRowKeys.some((key) => selectedRowKeys.includes(key)) && !allSelected;
+
+  const toggleSelectAll = (e: CheckedChangeDetails) => {
+    let newSelected: Array<T[keyof T]> = [];
+    if (allSelected) {
+      // Deselect all rows on this page:
+      newSelected = selectedRowKeys.filter(
+        (key) => !currentRowKeys.includes(key),
+      );
+    } else {
+      // Select all rows on this page (avoiding duplicates):
+      newSelected = Array.from(
+        new Set([...selectedRowKeys, ...currentRowKeys]),
+      );
+    }
+    onSelectRow?.(newSelected);
+  };
+
+  const handleSelect = (e: CheckedChangeDetails, rowKey: T[keyof T]) => {
+    let newSelected: Array<T[keyof T]> = [];
+    if (!e.checked) {
+      newSelected = selectedRowKeys.filter((key) => key !== rowKey);
+    } else {
+      newSelected = [...selectedRowKeys, rowKey];
+    }
+    onSelectRow?.(newSelected);
+  };
 
   return (
     <Box className="bg-white" p={6} rounded={2} mt={12}>
@@ -182,6 +225,15 @@ function DataTable<T extends Record<string, any>>({
       >
         <Table.Header bg="background.backgroundLight">
           <Table.Row>
+            {selectable && (
+              <Table.ColumnHeader>
+                <Checkbox
+                  checked={someSelected ? "indeterminate" : allSelected}
+                  onCheckedChange={toggleSelectAll}
+                  onClick={(e) => e.stopPropagation()}
+                />
+              </Table.ColumnHeader>
+            )}
             {columns.map((col) => (
               <Table.ColumnHeader
                 truncate
@@ -207,7 +259,39 @@ function DataTable<T extends Record<string, any>>({
               </Table.Cell>
             </Table.Row>
           )}
-          {paginatedData.map((item, idx) => renderRow(item, idx))}
+          {paginatedData.map((item, idx) => {
+            const renderedRow = renderRow(item, idx);
+            // If selectable is enabled and renderRow returns a <Table.Row>,
+            // clone it to prepend a cell with a checkbox.
+            if (
+              selectable &&
+              selectKey &&
+              React.isValidElement(renderedRow) &&
+              renderedRow.type === Table.Row
+            ) {
+              const rowKey = item[selectKey];
+              const isSelected =
+                selectable && selectKey
+                  ? selectedRowKeys.includes(rowKey)
+                  : false;
+              const cells = React.Children.toArray(renderedRow.props.children);
+              return React.cloneElement(
+                renderedRow,
+                { key: rowKey },
+                <>
+                  <Table.Cell>
+                    <Checkbox
+                      checked={isSelected}
+                      onCheckedChange={(e) => handleSelect(e, rowKey)}
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                  </Table.Cell>
+                  {cells}
+                </>,
+              );
+            }
+            return renderedRow;
+          })}
         </Table.Body>
       </Table.Root>
     </Box>

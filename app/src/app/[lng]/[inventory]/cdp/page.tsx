@@ -28,7 +28,7 @@ function Page({
     const res: { data?: any; error?: any } = await connectToCDP({
       inventoryId: inventory,
     });
-    console.log("CDP response", res, res.error);
+
     if (res.error) {
       const message = res.error.data.error.message;
       setStatusMessage(message);

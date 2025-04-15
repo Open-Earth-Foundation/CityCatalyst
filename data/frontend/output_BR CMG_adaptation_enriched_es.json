@@ -7,7 +7,7 @@
         "actionId": "icare_0169",
         "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
         "actionPriority": 1,
-        "explanation": "Ranked #1 by tournament ranking algorithm",
+        "explanation": "Establishing a plan for preparation and emergency response measures in Corumb\u00e1 is crucial due to the high risk of extreme weather events such as droughts, heatwaves, and floods. The city faces significant threats to water resources, food security, and public health, with normalized risk scores reaching as high as 0.99 for several hazards. These risks necessitate a proactive approach to ensure the safety and resilience of the community. By prioritizing this action, Corumb\u00e1 can better protect its infrastructure and population from the adverse impacts of climate change.",
         "action": {
             "ActionID": "icare_0169",
             "ActionName": "Establecer un Plan de Preparaci\u00f3n y Medidas de Respuesta de Emergencia en caso de eventos clim\u00e1ticos extremos",
@@ -78,7 +78,7 @@
         "actionId": "icare_0176",
         "actionName": "Development of Climate Action Plan",
         "actionPriority": 2,
-        "explanation": "Ranked #2 by tournament ranking algorithm",
+        "explanation": "The development of a Climate Action Plan is crucial for Corumb\u00e1 due to its high vulnerability to climate-related hazards such as droughts, heatwaves, and floods. These hazards pose significant risks to water resources, food security, public health, and infrastructure. By creating a comprehensive plan, the city can strategically address these risks and enhance its resilience. Additionally, the plan will help in coordinating efforts to reduce emissions and adapt to climate impacts, ensuring sustainable development for the region.",
         "action": {
             "ActionID": "icare_0176",
             "ActionName": "Desarrollo del Plan de Acci\u00f3n Clim\u00e1tica",
@@ -149,7 +149,7 @@
         "actionId": "icare_0152",
         "actionName": "Recovery of degraded areas",
         "actionPriority": 3,
-        "explanation": "Ranked #3 by tournament ranking algorithm",
+        "explanation": "The action 'Recovery of degraded areas' is crucial for Corumb\u00e1 due to its significant land use emissions, which are the highest among all emission sources. Restoring degraded areas can help sequester carbon, thereby reducing these emissions. Additionally, the city's biome of grassland/savanna is susceptible to degradation, and recovery efforts can enhance biodiversity and ecosystem resilience. This action also aligns with addressing the high risk of droughts impacting water resources and food security, as healthy ecosystems can better withstand such hazards.",
         "action": {
             "ActionID": "icare_0152",
             "ActionName": "Recuperaci\u00f3n de \u00e1reas degradadas",
@@ -212,7 +212,7 @@
         "actionId": "icare_0162",
         "actionName": "Strengthen programs for control and conservation of protected areas",
         "actionPriority": 4,
-        "explanation": "Ranked #4 by tournament ranking algorithm",
+        "explanation": "Strengthening programs for control and conservation of protected areas is crucial for Corumb\u00e1 due to its significant land use emissions, which are the highest among all emission sources. The city's biome, primarily grassland and savanna, is vulnerable to environmental degradation, making conservation efforts vital for maintaining biodiversity and ecosystem services. Additionally, the city faces high risks from droughts and heatwaves, which can further threaten these protected areas. By enhancing conservation programs, Corumb\u00e1 can mitigate these risks and promote sustainable land management practices.",
         "action": {
             "ActionID": "icare_0162",
             "ActionName": "Fortalecer los programas de control y conservaci\u00f3n de \u00e1reas protegidas",
@@ -275,7 +275,7 @@
         "actionId": "icare_0151",
         "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
         "actionPriority": 5,
-        "explanation": "Ranked #5 by tournament ranking algorithm",
+        "explanation": "Developing diagnostics and restoring areas of Special Social Interest Zones (ZEIS) in Corumb\u00e1 is crucial due to the city's socio-economic context. With a low-income population, enhancing these areas can significantly improve living conditions and access to essential services. Additionally, restoring ZEIS can help mitigate the impacts of environmental hazards such as floods and landslides, which pose high risks to infrastructure and public health. This action aligns with the need to address vulnerabilities and enhance resilience in the face of climate-related challenges.",
         "action": {
             "ActionID": "icare_0151",
             "ActionName": "Desarrollar diagn\u00f3sticos y restaurar \u00e1reas de Zonas de Inter\u00e9s Social Especial (ZEIS)",
@@ -340,7 +340,7 @@
         "actionId": "ipcc_0097",
         "actionName": "Food storage/distribution improvements",
         "actionPriority": 6,
-        "explanation": "Ranked #6 by tournament ranking algorithm",
+        "explanation": "Improving food storage and distribution is crucial for Corumb\u00e1 due to its vulnerability to droughts and floods, which pose significant risks to food security. The city's low population density and large area make efficient distribution systems essential to ensure food reaches all residents, especially during extreme weather events. Enhancing these systems can help mitigate the impact of climate-related hazards on food availability and accessibility, thereby strengthening the city's resilience. Additionally, better food storage can reduce waste and improve the overall efficiency of the food supply chain in the region.",
         "action": {
             "ActionID": "ipcc_0097",
             "ActionName": "Mejoras en el almacenamiento/distribuci\u00f3n de alimentos",
@@ -406,7 +406,7 @@
         "actionId": "ipcc_0094",
         "actionName": "Access to health care",
         "actionPriority": 7,
-        "explanation": "Ranked #7 by tournament ranking algorithm",
+        "explanation": "Access to health care is a critical priority for Corumb\u00e1 due to the high risk of public health impacts from various hazards such as heatwaves, diseases, and floods. The city's vulnerability to these hazards, as indicated by the high normalized risk scores, underscores the need for robust health care systems to manage potential health crises. Improving access to health care can enhance the city's resilience by ensuring that residents receive timely medical attention during emergencies. Additionally, strengthening health care infrastructure can mitigate the adverse effects of climate-related health risks, contributing to overall community well-being.",
         "action": {
             "ActionID": "ipcc_0094",
             "ActionName": "Acceso a la atenci\u00f3n m\u00e9dica",
@@ -470,7 +470,7 @@
         "actionId": "icare_0149",
         "actionName": "Encourage sustainable land use practices",
         "actionPriority": 8,
-        "explanation": "Ranked #8 by tournament ranking algorithm",
+        "explanation": "Encouraging sustainable land use practices in Corumb\u00e1 is crucial due to the city's significant land use emissions, which are the highest among all emission categories. The region's biome, primarily grassland and savanna, is susceptible to degradation if not managed sustainably, which can exacerbate emissions and environmental risks. Implementing sustainable practices can help mitigate these emissions and protect the local ecosystem, contributing to long-term environmental and economic stability. Additionally, sustainable land use can enhance resilience against climate-related hazards such as droughts and floods, which pose high risks to the city's infrastructure and food security.",
         "action": {
             "ActionID": "icare_0149",
             "ActionName": "Fomentar pr\u00e1cticas sostenibles de uso de la tierra",
@@ -535,7 +535,7 @@
         "actionId": "ipcc_0096",
         "actionName": "Farm/fishery improvements",
         "actionPriority": 9,
-        "explanation": "Ranked #9 by tournament ranking algorithm",
+        "explanation": "Farm and fishery improvements are crucial for Corumb\u00e1 due to the high risk of droughts impacting water resources and food security. Enhancing agricultural practices can help mitigate these risks by increasing resilience to climate variability. Additionally, improving fisheries can support local economies and food supply, which are vital given the socio-economic context of the region. This action aligns with the need to address key vulnerabilities in the city's environmental and economic systems.",
         "action": {
             "ActionID": "ipcc_0096",
             "ActionName": "Mejoras en granjas/pesquer\u00edas",
@@ -603,7 +603,7 @@
         "actionId": "icare_0157",
         "actionName": "Maintenance and Revitalization of Riparian Forests",
         "actionPriority": 10,
-        "explanation": "Ranked #10 by tournament ranking algorithm",
+        "explanation": "The maintenance and revitalization of riparian forests in Corumb\u00e1 is crucial due to the city's significant land use emissions, which are the highest among all emission sources. Revitalizing these forests can help sequester carbon, thereby reducing overall emissions and mitigating climate change impacts. Additionally, healthy riparian forests can improve water quality and availability, which is vital given the high risk of droughts affecting water resources and food security in the region. This action also supports biodiversity, which is under threat from both droughts and heatwaves, by providing essential habitats and ecological corridors.",
         "action": {
             "ActionID": "icare_0157",
             "ActionName": "Mantenimiento y Revitalizaci\u00f3n de Bosques Ribere\u00f1os",
@@ -666,7 +666,7 @@
         "actionId": "icare_0145",
         "actionName": "Strengthen the healthcare network to attend to climate victims",
         "actionPriority": 11,
-        "explanation": "Ranked #11 by tournament ranking algorithm",
+        "explanation": "Strengthening the healthcare network in Corumb\u00e1 is crucial due to the high risk of climate-related health impacts. The city faces significant threats from heatwaves, droughts, and floods, all of which can severely affect public health. By enhancing healthcare services, the city can better manage and mitigate the health consequences of these climate hazards. This action is essential to ensure the well-being of the population, particularly in a region with low income and limited access to public services.",
         "action": {
             "ActionID": "icare_0145",
             "ActionName": "Fortalecer la red de atenci\u00f3n m\u00e9dica para atender a las v\u00edctimas del clima",
@@ -733,7 +733,7 @@
         "actionId": "ipcc_0093",
         "actionName": "Availability of health infrastructure",
         "actionPriority": 12,
-        "explanation": "Ranked #12 by tournament ranking algorithm",
+        "explanation": "The availability of health infrastructure is crucial for Corumb\u00e1, given the high risk of public health impacts from hazards such as heatwaves, diseases, and floods. These hazards have been identified as having significant risk scores, indicating a pressing need for robust health systems to manage potential crises. Improving health infrastructure can enhance the city's resilience against these threats, ensuring better preparedness and response capabilities. Additionally, strengthening health services can contribute to overall community well-being and reduce vulnerability to climate-related health risks.",
         "action": {
             "ActionID": "ipcc_0093",
             "ActionName": "Disponibilidad de infraestructura sanitaria",
@@ -797,7 +797,7 @@
         "actionId": "icare_0148",
         "actionName": "Create the Municipal Climate Change Forum",
         "actionPriority": 13,
-        "explanation": "Ranked #13 by tournament ranking algorithm",
+        "explanation": "Creating the Municipal Climate Change Forum in Corumb\u00e1 is a crucial step towards addressing the city's significant environmental challenges. The city faces high risks from climate-related hazards such as droughts, heatwaves, and floods, which impact water resources, food security, and public health. Establishing a dedicated forum will facilitate coordinated efforts among stakeholders to develop and implement effective climate adaptation and mitigation strategies. This initiative will also enhance community engagement and awareness, empowering residents to contribute to sustainable solutions.",
         "action": {
             "ActionID": "icare_0148",
             "ActionName": "Crear el Foro Municipal de Cambio Clim\u00e1tico",
@@ -868,7 +868,7 @@
         "actionId": "icare_0144",
         "actionName": "Creation of a Financial Support Program to Adress Extreme Weather Events",
         "actionPriority": 14,
-        "explanation": "Ranked #14 by tournament ranking algorithm",
+        "explanation": "The creation of a financial support program to address extreme weather events is crucial for Corumb\u00e1 due to its high vulnerability to climate-related hazards. The city faces significant risks from droughts, heatwaves, and floods, which can severely impact water resources, food security, and public health. Establishing a financial support program can help mitigate the economic impact of these events on the local population, particularly those with low income. Additionally, such a program can enhance the city's resilience by providing necessary resources for recovery and adaptation efforts.",
         "action": {
             "ActionID": "icare_0144",
             "ActionName": "Creaci\u00f3n de un Programa de Apoyo Financiero para Abordar Eventos Clim\u00e1ticos Extremos",
@@ -939,7 +939,7 @@
         "actionId": "icare_0181",
         "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
         "actionPriority": 15,
-        "explanation": "Ranked #15 by tournament ranking algorithm",
+        "explanation": "The action 'Relocation and Environmental Restoration in Vulnerable Areas' is crucial for Corumb\u00e1 due to its high vulnerability to natural hazards such as floods and landslides. These hazards pose significant risks to infrastructure and public health, as indicated by the high normalized risk scores. By relocating communities from high-risk areas and restoring the environment, the city can mitigate these risks and enhance resilience. Additionally, environmental restoration can help reduce emissions from land use, which is a major contributor to the city's total emissions. This action aligns with the need to address both immediate safety concerns and long-term environmental sustainability.",
         "action": {
             "ActionID": "icare_0181",
             "ActionName": "Reubicaci\u00f3n y Restauraci\u00f3n Ambiental en \u00c1reas Vulnerables",
@@ -998,7 +998,7 @@
         "actionId": "icare_0175",
         "actionName": "Recovery and preservation of green areas",
         "actionPriority": 16,
-        "explanation": "Ranked #16 by tournament ranking algorithm",
+        "explanation": "The action of recovering and preserving green areas in Corumb\u00e1 is crucial due to the city's biome, which is primarily grassland and savanna. These ecosystems are vital for maintaining biodiversity and providing natural buffers against climate hazards such as droughts and heatwaves, which are significant risks for the city. Additionally, green areas can help mitigate the effects of urban heat islands, improving public health and infrastructure resilience. Given the high emissions from land use, enhancing green spaces can also contribute to carbon sequestration, aiding in the reduction of overall emissions.",
         "action": {
             "ActionID": "icare_0175",
             "ActionName": "Recuperaci\u00f3n y preservaci\u00f3n de \u00e1reas verdes",
@@ -1058,7 +1058,7 @@
         "actionId": "icare_0164",
         "actionName": "Hydrological Monitoring System with Telemetry Stations",
         "actionPriority": 17,
-        "explanation": "Ranked #17 by tournament ranking algorithm",
+        "explanation": "Implementing a Hydrological Monitoring System with Telemetry Stations in Corumb\u00e1 is crucial due to the city's high risk of droughts and floods. These hazards pose significant threats to water resources and food security, both of which are vital for the city's sustainability. By establishing a monitoring system, the city can better predict and manage these risks, ensuring timely responses to mitigate potential impacts. Additionally, improved water management can enhance public health and infrastructure resilience, addressing some of the key vulnerabilities identified in the city's climate risk assessment.",
         "action": {
             "ActionID": "icare_0164",
             "ActionName": "Sistema de Monitoreo Hidrol\u00f3gico con Estaciones de Telemetr\u00eda",
@@ -1119,7 +1119,7 @@
         "actionId": "ipcc_0092",
         "actionName": "Social safety nets",
         "actionPriority": 18,
-        "explanation": "Ranked #18 by tournament ranking algorithm",
+        "explanation": "Implementing social safety nets in Corumb\u00e1 is crucial due to the high risk of climate-related hazards such as droughts, heatwaves, and floods, which significantly impact public health and food security. These safety nets can provide essential support to vulnerable populations, ensuring they have access to necessary resources during extreme weather events. Given the city's low-income socio-economic status, enhancing social safety nets can help mitigate the adverse effects of these hazards and improve overall community resilience. Additionally, by addressing these risks, the city can better protect its residents and infrastructure from the long-term impacts of climate change.",
         "action": {
             "ActionID": "ipcc_0092",
             "ActionName": "Redes de seguridad social",
@@ -1183,7 +1183,7 @@
         "actionId": "icare_0156",
         "actionName": "Implementation of urban gardens",
         "actionPriority": 19,
-        "explanation": "Ranked #19 by tournament ranking algorithm",
+        "explanation": "The implementation of urban gardens in Corumb\u00e1 is a strategic action to enhance food security, which is a critical concern given the high risk of droughts and floods impacting the region. Urban gardens can provide a sustainable source of fresh produce, reducing dependency on external food supplies and increasing resilience against climate-related disruptions. Additionally, these gardens can contribute to community well-being by promoting green spaces and offering educational opportunities about sustainable practices. This action aligns with the city's need to address socio-economic challenges and improve local food systems.",
         "action": {
             "ActionID": "icare_0156",
             "ActionName": "Implementaci\u00f3n de huertos urbanos",
@@ -1244,7 +1244,7 @@
         "actionId": "icare_0180",
         "actionName": "Implement permeable pavements and increase green areas in roadways",
         "actionPriority": 20,
-        "explanation": "Ranked #20 by tournament ranking algorithm",
+        "explanation": "Implementing permeable pavements and increasing green areas in roadways is crucial for Corumb\u00e1 due to its high risk of floods and landslides. These measures can significantly enhance the city's resilience by improving water absorption and reducing surface runoff, which are vital in managing flood risks. Additionally, increasing green areas can help mitigate the urban heat island effect, which is important given the high risk of heatwaves impacting public health and infrastructure. This action also supports biodiversity by providing more natural habitats within the urban environment.",
         "action": {
             "ActionID": "icare_0180",
             "ActionName": "Implementar pavimentos permeables y aumentar las \u00e1reas verdes en las v\u00edas p\u00fablicas",

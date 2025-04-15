@@ -7,7 +7,7 @@
         "actionId": "icare_0176",
         "actionName": "Development of Climate Action Plan",
         "actionPriority": 1,
-        "explanation": "Ranked #1 by tournament ranking algorithm",
+        "explanation": "The development of a Climate Action Plan is crucial for S\u00e3o Crist\u00f3v\u00e3o due to its high vulnerability to climate-related hazards such as floods, landslides, and heatwaves. These hazards pose significant risks to public health, infrastructure, and food security, making it imperative to have a strategic plan in place. Additionally, the city's total emissions are substantial, necessitating a comprehensive approach to reduce emissions and mitigate climate impacts. Implementing a Climate Action Plan will help coordinate efforts across sectors, ensuring a sustainable and resilient future for the city.",
         "action": {
             "ActionID": "icare_0176",
             "ActionName": "Development of Climate Action Plan",
@@ -78,7 +78,7 @@
         "actionId": "icare_0162",
         "actionName": "Strengthen programs for control and conservation of protected areas",
         "actionPriority": 2,
-        "explanation": "Ranked #2 by tournament ranking algorithm",
+        "explanation": "Strengthening programs for control and conservation of protected areas is crucial for S\u00e3o Crist\u00f3v\u00e3o due to its tropical rainforest biome, which is rich in biodiversity. The city faces significant risks from climate hazards such as droughts and heatwaves, which can severely impact biodiversity and ecosystem services. By enhancing conservation efforts, the city can mitigate these risks and preserve its natural resources, which are vital for maintaining ecological balance and supporting local livelihoods. Additionally, protecting these areas can help reduce emissions from land use changes, contributing to overall climate resilience.",
         "action": {
             "ActionID": "icare_0162",
             "ActionName": "Strengthen programs for control and conservation of protected areas",
@@ -141,7 +141,7 @@
         "actionId": "icare_0169",
         "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
         "actionPriority": 3,
-        "explanation": "Ranked #3 by tournament ranking algorithm",
+        "explanation": "Establishing a plan for preparation and emergency response measures in S\u00e3o Crist\u00f3v\u00e3o is crucial due to the high risk of extreme weather events such as floods and landslides. The city faces significant threats to public health and infrastructure from these hazards, as indicated by the high risk scores. Implementing this action will help mitigate the impacts of these events, ensuring the safety and well-being of the population. Additionally, a well-prepared emergency response plan can enhance the city's resilience and reduce potential economic losses.",
         "action": {
             "ActionID": "icare_0169",
             "ActionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
@@ -212,7 +212,7 @@
         "actionId": "icare_0151",
         "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
         "actionPriority": 4,
-        "explanation": "Ranked #4 by tournament ranking algorithm",
+        "explanation": "Developing diagnostics and restoring areas of Special Social Interest Zones (ZEIS) in S\u00e3o Crist\u00f3v\u00e3o is crucial due to the moderate socio-economic challenges faced by the city. These areas often house low-income populations who are more vulnerable to environmental hazards such as floods and landslides, which are significant risks in the region. By focusing on these zones, the city can improve living conditions, enhance resilience against climate impacts, and promote social equity. This action aligns with the need to address public health and infrastructure vulnerabilities, which are critical given the high risk scores associated with these hazards.",
         "action": {
             "ActionID": "icare_0151",
             "ActionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
@@ -277,7 +277,7 @@
         "actionId": "icare_0152",
         "actionName": "Recovery of degraded areas",
         "actionPriority": 5,
-        "explanation": "Ranked #5 by tournament ranking algorithm",
+        "explanation": "The recovery of degraded areas in S\u00e3o Crist\u00f3v\u00e3o is crucial due to the city's vulnerability to environmental hazards such as floods and landslides. Restoring these areas can help mitigate the impact of such events by improving soil stability and increasing vegetation cover, which can absorb excess water. Additionally, enhancing these areas contributes to biodiversity conservation, which is vital in a tropical rainforest biome. This action also supports the city's efforts to reduce land use emissions, which are currently significant.",
         "action": {
             "ActionID": "icare_0152",
             "ActionName": "Recovery of degraded areas",
@@ -340,7 +340,7 @@
         "actionId": "icare_0145",
         "actionName": "Strengthen the healthcare network to attend to climate victims",
         "actionPriority": 6,
-        "explanation": "Ranked #6 by tournament ranking algorithm",
+        "explanation": "Strengthening the healthcare network in S\u00e3o Crist\u00f3v\u00e3o is crucial due to the high risk of public health impacts from climate-related hazards such as heatwaves, diseases, and floods. The city faces significant challenges with public health risks, as indicated by the high normalized risk scores for these hazards. By enhancing the healthcare infrastructure, the city can better prepare for and respond to the increased demand for medical services during climate events. This action will help mitigate the adverse effects on the population's health and improve overall resilience to climate change.",
         "action": {
             "ActionID": "icare_0145",
             "ActionName": "Strengthen the healthcare network to attend to climate victims",
@@ -408,7 +408,7 @@
         "actionId": "icare_0157",
         "actionName": "Maintenance and Revitalization of Riparian Forests",
         "actionPriority": 7,
-        "explanation": "Ranked #7 by tournament ranking algorithm",
+        "explanation": "The maintenance and revitalization of riparian forests in S\u00e3o Crist\u00f3v\u00e3o is crucial due to the city's tropical rainforest biome, which supports a rich biodiversity. Riparian forests play a significant role in preventing soil erosion and reducing the risk of landslides, which is a high-risk hazard for the city's infrastructure and public health. Additionally, these forests help in maintaining water quality and availability, which is essential given the moderate risk of droughts affecting water resources. By enhancing these natural buffers, the city can mitigate some of the impacts of climate change, such as floods and landslides, thereby protecting both the environment and the community.",
         "action": {
             "ActionID": "icare_0157",
             "ActionName": "Maintenance and Revitalization of Riparian Forests",
@@ -471,7 +471,7 @@
         "actionId": "icare_0181",
         "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
         "actionPriority": 8,
-        "explanation": "Ranked #8 by tournament ranking algorithm",
+        "explanation": "The action of relocating and restoring the environment in vulnerable areas is crucial for S\u00e3o Crist\u00f3v\u00e3o due to its high risk of natural hazards such as floods and landslides. These hazards pose significant threats to public health and infrastructure, as indicated by the city's climate change risk assessment. By focusing on relocation and environmental restoration, the city can mitigate these risks, protect its population, and enhance resilience against future climate impacts. Additionally, this action supports the preservation of biodiversity and improves the overall quality of life for residents in affected areas.",
         "action": {
             "ActionID": "icare_0181",
             "ActionName": "Relocation and Environmental Restoration in Vulnerable Areas",
@@ -530,7 +530,7 @@
         "actionId": "icare_0149",
         "actionName": "Encourage sustainable land use practices",
         "actionPriority": 9,
-        "explanation": "Ranked #9 by tournament ranking algorithm",
+        "explanation": "Encouraging sustainable land use practices in S\u00e3o Crist\u00f3v\u00e3o is crucial due to the significant land use emissions, which are the highest among all emission sources in the city. By promoting sustainable practices, the city can effectively reduce its carbon footprint and mitigate the impact of climate change. Additionally, sustainable land use can help preserve the tropical rainforest biome, which is vital for maintaining biodiversity and ecological balance. This action also aligns with addressing the high risk of landslides and floods, as sustainable land management can enhance soil stability and water absorption.",
         "action": {
             "ActionID": "icare_0149",
             "ActionName": "Encourage sustainable land use practices",
@@ -595,7 +595,7 @@
         "actionId": "ipcc_0094",
         "actionName": "Access to health care",
         "actionPriority": 10,
-        "explanation": "Ranked #10 by tournament ranking algorithm",
+        "explanation": "Improving access to health care in S\u00e3o Crist\u00f3v\u00e3o is crucial due to the high risk of public health impacts from hazards such as heatwaves, diseases, and floods. The city's moderate low-income population may face challenges in accessing adequate health services, making this action a priority to ensure community resilience. Addressing health care access can mitigate the severe risks associated with these environmental hazards, ultimately protecting the well-being of the population.",
         "action": {
             "ActionID": "ipcc_0094",
             "ActionName": "Access to health care",
@@ -659,7 +659,7 @@
         "actionId": "ipcc_0097",
         "actionName": "Food storage/distribution improvements",
         "actionPriority": 11,
-        "explanation": "Ranked #11 by tournament ranking algorithm",
+        "explanation": "Improving food storage and distribution is crucial for S\u00e3o Crist\u00f3v\u00e3o due to its vulnerability to floods, which pose a significant risk to food security. The city's moderate low-income population may face challenges in accessing food during such events, making efficient storage and distribution systems vital. Additionally, enhancing these systems can help mitigate the impact of droughts, which also threaten food availability. By prioritizing this action, S\u00e3o Crist\u00f3v\u00e3o can strengthen its resilience against climate-related disruptions and ensure a stable food supply for its residents.",
         "action": {
             "ActionID": "ipcc_0097",
             "ActionName": "Food storage/distribution improvements",
@@ -725,7 +725,7 @@
         "actionId": "icare_0144",
         "actionName": "Creation of a Financial Support Program to Adress Extreme Weather Events",
         "actionPriority": 12,
-        "explanation": "Ranked #12 by tournament ranking algorithm",
+        "explanation": "The creation of a financial support program to address extreme weather events is crucial for S\u00e3o Crist\u00f3v\u00e3o due to its high vulnerability to climate-related hazards. The city faces significant risks from floods, landslides, and heatwaves, which can severely impact public health and infrastructure. Establishing a financial support program can help mitigate the economic burden on affected communities and enhance resilience against future events. This action is particularly important given the moderate socio-economic status of the population, which may limit their ability to recover from such events without external assistance.",
         "action": {
             "ActionID": "icare_0144",
             "ActionName": "Creation of a Financial Support Program to Adress Extreme Weather Events",
@@ -796,7 +796,7 @@
         "actionId": "icare_0156",
         "actionName": "Implementation of urban gardens",
         "actionPriority": 13,
-        "explanation": "Ranked #13 by tournament ranking algorithm",
+        "explanation": "The implementation of urban gardens in S\u00e3o Crist\u00f3v\u00e3o is a significant action due to its potential to enhance food security, which is a critical concern given the high risk of floods impacting food supply. Urban gardens can provide a sustainable source of fresh produce, reducing dependency on external food sources and increasing resilience against climate-related disruptions. Additionally, these gardens can improve community well-being by offering green spaces that contribute to public health and biodiversity, addressing some of the risks associated with heatwaves and diseases. Furthermore, urban gardens can help mitigate emissions by promoting local food production, thus contributing to the city's overall sustainability goals.",
         "action": {
             "ActionID": "icare_0156",
             "ActionName": "Implementation of urban gardens",
@@ -857,7 +857,7 @@
         "actionId": "icare_0180",
         "actionName": "Implement permeable pavements and increase green areas in roadways",
         "actionPriority": 14,
-        "explanation": "Ranked #14 by tournament ranking algorithm",
+        "explanation": "Implementing permeable pavements and increasing green areas in roadways is crucial for S\u00e3o Crist\u00f3v\u00e3o due to its vulnerability to floods and landslides. The city faces significant risks from these hazards, which can severely impact infrastructure and public health. By enhancing the permeability of surfaces and expanding green spaces, the city can improve stormwater management, reduce surface runoff, and mitigate the effects of heavy rainfall. This action not only addresses immediate environmental challenges but also contributes to the long-term resilience of the urban infrastructure.",
         "action": {
             "ActionID": "icare_0180",
             "ActionName": "Implement permeable pavements and increase green areas in roadways",
@@ -918,7 +918,7 @@
         "actionId": "icare_0175",
         "actionName": "Recovery and preservation of green areas",
         "actionPriority": 15,
-        "explanation": "Ranked #15 by tournament ranking algorithm",
+        "explanation": "The action of recovering and preserving green areas in S\u00e3o Crist\u00f3v\u00e3o is crucial due to the city's tropical rainforest biome, which is vital for maintaining biodiversity and ecological balance. Green areas can help mitigate the effects of heatwaves, which pose a significant risk to public health and infrastructure in the region. Additionally, preserving these areas can contribute to reducing emissions from land use, which is currently a major source of emissions in the city. By enhancing green spaces, the city can also improve its resilience against climate-related hazards such as floods and landslides, which are significant threats to both infrastructure and public health.",
         "action": {
             "ActionID": "icare_0175",
             "ActionName": "Recovery and preservation of green areas",
@@ -978,7 +978,7 @@
         "actionId": "icare_0148",
         "actionName": "Create the Municipal Climate Change Forum",
         "actionPriority": 16,
-        "explanation": "Ranked #16 by tournament ranking algorithm",
+        "explanation": "Creating the Municipal Climate Change Forum in S\u00e3o Crist\u00f3v\u00e3o is a crucial step towards addressing the city's environmental challenges. The city faces significant risks from climate-related hazards such as floods, heatwaves, and landslides, which threaten public health and infrastructure. Establishing a dedicated forum will facilitate collaboration among stakeholders, enabling the development of effective strategies to mitigate these risks. Additionally, it will provide a platform for community engagement and education, empowering residents to participate in climate action initiatives. This forum is essential for fostering a coordinated response to the city's pressing climate issues.",
         "action": {
             "ActionID": "icare_0148",
             "ActionName": "Create the Municipal Climate Change Forum",
@@ -1049,7 +1049,7 @@
         "actionId": "ipcc_0096",
         "actionName": "Farm/fishery improvements",
         "actionPriority": 17,
-        "explanation": "Ranked #17 by tournament ranking algorithm",
+        "explanation": "Farm and fishery improvements are crucial for S\u00e3o Crist\u00f3v\u00e3o due to the city's vulnerability to droughts, which significantly impact food security. Enhancing agricultural and fishery practices can help mitigate the effects of these hazards, ensuring a stable food supply for the population. Additionally, these improvements can contribute to economic resilience by supporting local livelihoods and reducing dependency on external food sources. Given the moderate socio-economic status of the population, such initiatives can also promote sustainable development and improve overall community well-being.",
         "action": {
             "ActionID": "ipcc_0096",
             "ActionName": "Farm/fishery improvements",
@@ -1117,7 +1117,7 @@
         "actionId": "ipcc_0093",
         "actionName": "Availability of health infrastructure",
         "actionPriority": 18,
-        "explanation": "Ranked #18 by tournament ranking algorithm",
+        "explanation": "The action to improve the availability of health infrastructure in S\u00e3o Crist\u00f3v\u00e3o is crucial due to the high risk of public health impacts from various hazards. The city faces significant threats from diseases, heatwaves, and floods, all of which can severely strain existing health services. Enhancing health infrastructure will help mitigate these risks by ensuring better preparedness and response capabilities. Additionally, improved health facilities can support the community's resilience against future climate-related challenges.",
         "action": {
             "ActionID": "ipcc_0093",
             "ActionName": "Availability of health infrastructure",
@@ -1181,7 +1181,7 @@
         "actionId": "ipcc_0088",
         "actionName": "Building codes",
         "actionPriority": 19,
-        "explanation": "Ranked #19 by tournament ranking algorithm",
+        "explanation": "Implementing and enforcing building codes in S\u00e3o Crist\u00f3v\u00e3o is crucial due to the high risk of natural hazards such as floods and landslides. These hazards pose significant threats to infrastructure and public safety, as indicated by the city's climate risk assessment. By strengthening building codes, the city can enhance the resilience of its infrastructure, reducing potential damage and ensuring the safety of its residents. Additionally, improved building standards can help mitigate the impacts of heatwaves, which are also a concern for public health and infrastructure.",
         "action": {
             "ActionID": "ipcc_0088",
             "ActionName": "Building codes",
@@ -1240,7 +1240,7 @@
         "actionId": "ipcc_0086",
         "actionName": "Ecosystem-based adaptation",
         "actionPriority": 20,
-        "explanation": "Ranked #20 by tournament ranking algorithm",
+        "explanation": "Ecosystem-based adaptation is crucial for S\u00e3o Crist\u00f3v\u00e3o due to its tropical rainforest biome, which is highly sensitive to climate change impacts such as droughts and heatwaves. Implementing this action can enhance the resilience of local ecosystems, thereby supporting biodiversity and providing natural buffers against climate hazards. Given the city's moderate socio-economic status and the significant risks to public health and infrastructure from climate-related events, ecosystem-based adaptation can offer cost-effective solutions that also improve community well-being. This approach aligns with the need to address high-risk factors like floods and landslides, which threaten both the environment and the population.",
         "action": {
             "ActionID": "ipcc_0086",
             "ActionName": "Ecosystem-based adaptation",

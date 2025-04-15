@@ -7,6 +7,7 @@
         "actionId": "icare_0139",
         "actionName": "Implementation of urban toll.",
         "actionPriority": 1,
+        "explanation": "The implementation of an urban toll in Caxias do Sul is a priority due to the high transportation emissions, which are a significant contributor to the city's total emissions. By introducing a toll, the city can effectively manage traffic congestion, encouraging the use of public transportation and reducing vehicle emissions. This action is crucial in addressing the environmental impact of transportation, which is currently the largest source of emissions in the city. Additionally, reducing traffic can improve air quality and public health, aligning with the city's goals to mitigate climate risks and enhance the quality of life for its residents.",
         "action": {
             "ActionID": "icare_0139",
             "ActionName": "Implementaci\u00f3n de peaje urbano.",
@@ -68,6 +69,7 @@
         "actionId": "icare_0121",
         "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
         "actionPriority": 2,
+        "explanation": "The action to incentivize bike-sharing programs, particularly with electric bikes, is crucial for Caxias do Sul due to its high transportation emissions. Encouraging the use of bikes can significantly reduce the reliance on motor vehicles, thereby decreasing emissions and improving air quality. Additionally, promoting electric bikes can make cycling more accessible in the city's hilly terrain, enhancing mobility for residents. This initiative also aligns with the city's need to address public health risks associated with air pollution and sedentary lifestyles. Overall, this action supports sustainable urban mobility and contributes to the city's environmental and health goals.",
         "action": {
             "ActionID": "icare_0121",
             "ActionName": "Incentivo para crear programas de bicicletas compartidas en \u00e1reas urbanas, con un enfoque en bicicletas el\u00e9ctricas.",
@@ -130,6 +132,7 @@
         "actionId": "icare_0094",
         "actionName": "Adoption of biomethane in public fleets.",
         "actionPriority": 3,
+        "explanation": "The adoption of biomethane in public fleets in Caxias do Sul is a significant action due to the city's high transportation emissions, which are a major contributor to its total emissions. By transitioning to biomethane, the city can reduce its reliance on fossil fuels, thereby decreasing greenhouse gas emissions and improving air quality. This action is particularly important given the city's vulnerability to climate-related hazards such as floods and landslides, which can be exacerbated by climate change. Additionally, using biomethane supports local energy security and aligns with sustainable development goals by promoting cleaner energy sources.",
         "action": {
             "ActionID": "icare_0094",
             "ActionName": "Adopci\u00f3n de biometano en flotas p\u00fablicas.",
@@ -192,6 +195,7 @@
         "actionId": "icare_0088",
         "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
         "actionPriority": 4,
+        "explanation": "The implementation of free public transportation programs during peak hours in Caxias do Sul is a strategic action to address the high transportation emissions, which are a significant contributor to the city's total emissions. By encouraging the use of public transport, the city can reduce the reliance on individual vehicles, thereby decreasing traffic congestion and lowering emissions. This initiative also aligns with the city's socio-economic context, as it can provide financial relief to residents with very low income, enhancing their mobility and access to opportunities. Additionally, reducing vehicle emissions can improve air quality, contributing to better public health outcomes in the city.",
         "action": {
             "ActionID": "icare_0088",
             "ActionName": "Implementaci\u00f3n de programas de transporte p\u00fablico gratuito durante las horas pico para reducir el uso de veh\u00edculos individuales",
@@ -254,6 +258,7 @@
         "actionId": "icare_0044",
         "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
         "actionPriority": 5,
+        "explanation": "Expanding cycling infrastructure and building public walkways in Caxias do Sul is crucial due to the city's high transportation emissions, which are a significant contributor to its total emissions. By promoting cycling and walking, the city can reduce reliance on motor vehicles, thereby decreasing emissions and improving air quality. Additionally, creating infrastructure that is resilient to climate threats, such as floods and landslides, is essential given the city's high risk scores for these hazards. This action not only addresses environmental concerns but also enhances public health and safety by providing safer, more sustainable transportation options.",
         "action": {
             "ActionID": "icare_0044",
             "ActionName": "Expandir la infraestructura para bicicletas y construir paseos p\u00fablicos y aceras accesibles, priorizando medidas resilientes a las amenazas clim\u00e1ticas.",
@@ -316,6 +321,7 @@
         "actionId": "icare_0068",
         "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
         "actionPriority": 6,
+        "explanation": "Deploying on-demand transport systems with 100% electric fleets in Caxias do Sul is a strategic move to address the city's high transportation emissions, which are a significant contributor to its total emissions. This action can help reduce the carbon footprint and improve air quality, benefiting public health. Additionally, the electric fleet aligns with the city's need to enhance energy security and reduce reliance on fossil fuels. By implementing this system, the city can also improve mobility and accessibility for its residents, particularly in areas with limited public transport options.",
         "action": {
             "ActionID": "icare_0068",
             "ActionName": "Desplegar sistemas de transporte bajo demanda con flotas 100% el\u00e9ctricas.",
@@ -378,6 +384,7 @@
         "actionId": "icare_0090",
         "actionName": "Adoption of electric drones for last-mile deliveries.",
         "actionPriority": 7,
+        "explanation": "The adoption of electric drones for last-mile deliveries in Caxias do Sul is a strategic move to reduce transportation emissions, which are currently the highest among the city's emission sources. By transitioning to electric drones, the city can significantly cut down on carbon emissions associated with traditional delivery vehicles. This action also aligns with the city's need to address climate risks, as reducing emissions can mitigate the impact of climate-related hazards such as floods and landslides. Furthermore, electric drones can enhance delivery efficiency and reduce traffic congestion, contributing to a more sustainable urban environment.",
         "action": {
             "ActionID": "icare_0090",
             "ActionName": "Adopci\u00f3n de drones el\u00e9ctricos para entregas de \u00faltima milla.",
@@ -440,6 +447,7 @@
         "actionId": "icare_0042",
         "actionName": "Encourage renewable energy policies at the municipal level",
         "actionPriority": 8,
+        "explanation": "Encouraging renewable energy policies at the municipal level in Caxias do Sul is crucial due to the city's significant stationary energy emissions. Transitioning to renewable energy sources can help reduce these emissions, contributing to a cleaner environment and improved air quality. Additionally, renewable energy can enhance energy security, which is vital given the city's vulnerability to droughts that can impact energy resources. Implementing these policies aligns with global sustainability goals and can position Caxias do Sul as a leader in environmental responsibility within the region.",
         "action": {
             "ActionID": "icare_0042",
             "ActionName": "Fomentar pol\u00edticas de energ\u00eda renovable a nivel municipal",
@@ -502,6 +510,7 @@
         "actionId": "icare_0057",
         "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
         "actionPriority": 9,
+        "explanation": "The expansion of mass transit systems on rails, such as metros, LRTs, and monorails, is a crucial action for Caxias do Sul due to its significant transportation emissions. With transportation being a major contributor to the city's total emissions, enhancing public transit can help reduce reliance on personal vehicles, thereby lowering emissions. Additionally, improved mass transit can alleviate traffic congestion, making the city more accessible and reducing travel times for residents. This action also supports sustainable urban development by promoting efficient land use and reducing the environmental impact of urban sprawl.",
         "action": {
             "ActionID": "icare_0057",
             "ActionName": "Expansi\u00f3n de los sistemas de transporte masivo sobre rieles (metros, LRTs y monorra\u00edles).",
@@ -564,6 +573,7 @@
         "actionId": "c40_0026",
         "actionName": "Vehicle Emissions",
         "actionPriority": 10,
+        "explanation": "The action to address vehicle emissions in Caxias do Sul is a priority due to the significant contribution of transportation to the city's overall emissions. With transportation emissions accounting for a substantial portion of the total emissions, reducing vehicle emissions can have a major impact on improving air quality and reducing the city's carbon footprint. Additionally, addressing vehicle emissions can help mitigate the risks associated with climate change impacts, such as heatwaves and public health issues, which are prevalent in the region. By prioritizing this action, Caxias do Sul can enhance its sustainability and resilience against environmental hazards.",
         "action": {
             "ActionID": "c40_0026",
             "ActionName": "Emisiones de Veh\u00edculos",
@@ -633,6 +643,7 @@
         "actionId": "icare_0092",
         "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
         "actionPriority": 11,
+        "explanation": "The development of micro-logistics hubs to encourage the use of electric cargo bikes in Caxias do Sul is a strategic action to address transportation emissions, which are a significant contributor to the city's total emissions. By promoting electric cargo bikes, the city can reduce its reliance on traditional fossil fuel-powered vehicles, thereby decreasing air pollution and greenhouse gas emissions. This initiative also aligns with the city's need to improve public health, as it can lead to cleaner air and reduced traffic congestion. Additionally, the action supports sustainable urban mobility, which is crucial for a city with a growing population and urban density.",
         "action": {
             "ActionID": "icare_0092",
             "ActionName": "Desarrollo de micro-centros log\u00edsticos para fomentar el uso de bicicletas de carga el\u00e9ctricas.",
@@ -695,6 +706,7 @@
         "actionId": "icare_0118",
         "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
         "actionPriority": 12,
+        "explanation": "Promoting the use of bicycles in Caxias do Sul is a crucial action due to the city's high transportation emissions, which are a significant contributor to its total emissions. By expanding bicycle infrastructure and raising awareness, the city can reduce its reliance on motor vehicles, thereby decreasing emissions and improving air quality. Additionally, this initiative can enhance public health by encouraging physical activity and reducing the risk of diseases associated with sedentary lifestyles. Furthermore, as the city faces risks from climate-related hazards like floods and landslides, reducing emissions through sustainable transport options can contribute to broader climate resilience efforts.",
         "action": {
             "ActionID": "icare_0118",
             "ActionName": "Promover el uso de bicicletas como un modo de transporte regular mediante la expansi\u00f3n de la infraestructura y estrategias de concienciaci\u00f3n y comunicaci\u00f3n.",
@@ -757,6 +769,7 @@
         "actionId": "icare_0024",
         "actionName": "Integrate renewables into municipal water systems",
         "actionPriority": 13,
+        "explanation": "Integrating renewables into municipal water systems in Caxias do Sul is a strategic action due to the city's high total emissions and the need to reduce its carbon footprint. The city faces significant risks from climate-related hazards such as droughts and floods, which can impact water resources and infrastructure. By incorporating renewable energy, the city can enhance the resilience of its water systems against these hazards while also promoting sustainable energy use. This action aligns with the city's need to address both environmental sustainability and energy security, making it a crucial step towards a more sustainable future.",
         "action": {
             "ActionID": "icare_0024",
             "ActionName": "Integrar energ\u00edas renovables en los sistemas de agua municipales",
@@ -819,6 +832,7 @@
         "actionId": "icare_0021",
         "actionName": "Encourage and promote measures for the sustainable and rational use of individual motorized transportation",
         "actionPriority": 14,
+        "explanation": "Encouraging and promoting sustainable and rational use of individual motorized transportation in Caxias do Sul is crucial due to the high transportation emissions, which are a significant contributor to the city's total emissions. By focusing on this action, the city can effectively reduce its carbon footprint and improve air quality, benefiting public health. Additionally, promoting sustainable transportation can alleviate traffic congestion, leading to more efficient urban mobility and enhancing the overall quality of life for residents.",
         "action": {
             "ActionID": "icare_0021",
             "ActionName": "Fomentar y promover medidas para el uso sostenible y racional del transporte motorizado individual",
@@ -881,6 +895,7 @@
         "actionId": "icare_0128",
         "actionName": "Establish Municipal Programs for Payment for Environmental Services (PES)",
         "actionPriority": 15,
+        "explanation": "Establishing Municipal Programs for Payment for Environmental Services (PES) in Caxias do Sul is a strategic action to enhance environmental conservation efforts. The city faces significant environmental challenges, including high emissions and risks from natural hazards such as floods and landslides. Implementing PES can incentivize landowners to maintain and improve ecosystem services, which can help mitigate these risks. Additionally, PES programs can contribute to biodiversity conservation and improve water resource management, addressing some of the key impacts identified in the city's climate risk assessment. This action aligns with the city's need to balance development with environmental sustainability.",
         "action": {
             "ActionID": "icare_0128",
             "ActionName": "Establecer Programas Municipales de Pago por Servicios Ambientales (PES)",
@@ -943,6 +958,7 @@
         "actionId": "icare_0129",
         "actionName": "Facilitate Technology Transfer for Conservation Practices",
         "actionPriority": 16,
+        "explanation": "Facilitating technology transfer for conservation practices in Caxias do Sul is crucial due to the city's significant environmental challenges. The city faces high emissions from transportation and stationary energy, which contribute to its total emissions. By adopting advanced conservation technologies, Caxias do Sul can effectively reduce its carbon footprint and mitigate the impact of these emissions. Additionally, the city is at risk from various climate hazards such as floods and landslides, which can be better managed through improved conservation practices. This action supports sustainable development and resilience against environmental risks.",
         "action": {
             "ActionID": "icare_0129",
             "ActionName": "Facilitar la Transferencia de Tecnolog\u00eda para Pr\u00e1cticas de Conservaci\u00f3n",
@@ -1005,6 +1021,7 @@
         "actionId": "icare_0100",
         "actionName": "Support Regenerative Agriculture Practices",
         "actionPriority": 17,
+        "explanation": "Supporting regenerative agriculture practices in Caxias do Sul is crucial due to the city's vulnerability to climate-related hazards such as droughts and floods, which directly impact food security. By promoting these practices, the city can enhance soil health, increase biodiversity, and improve water retention, thereby mitigating the effects of these hazards. Additionally, regenerative agriculture can contribute to reducing emissions from land use, which is a significant source of the city's total emissions. This action aligns with the need to build resilience in the agricultural sector, ensuring sustainable food production and security for the population.",
         "action": {
             "ActionID": "icare_0100",
             "ActionName": "Apoyar las Pr\u00e1cticas de Agricultura Regenerativa",
@@ -1067,6 +1084,7 @@
         "actionId": "icare_0126",
         "actionName": "Implementation of green fuel supply infrastructure for aircraft, such as biofuels or green hydrogen.",
         "actionPriority": 18,
+        "explanation": "The implementation of green fuel supply infrastructure for aircraft in Caxias do Sul is a significant step towards reducing transportation emissions, which are a major contributor to the city's total emissions. By transitioning to biofuels or green hydrogen, the city can significantly lower its carbon footprint, aligning with global sustainability goals. Additionally, this action supports the city's efforts to mitigate climate change impacts, particularly in a region where transportation emissions are notably high. Furthermore, investing in green fuel infrastructure can stimulate local economic growth by creating new jobs and fostering innovation in the renewable energy sector.",
         "action": {
             "ActionID": "icare_0126",
             "ActionName": "Implementaci\u00f3n de infraestructura de suministro de combustibles verdes para aeronaves, como biocombustibles o hidr\u00f3geno verde.",
@@ -1129,6 +1147,7 @@
         "actionId": "icare_0130",
         "actionName": "Conduct Technical Assistance and Rural Extension (ATER) Actions",
         "actionPriority": 19,
+        "explanation": "Conducting Technical Assistance and Rural Extension (ATER) actions in Caxias do Sul is crucial due to the city's vulnerability to climate-related hazards such as droughts and floods, which significantly impact food security. By providing technical support and education to rural communities, these actions can enhance agricultural resilience and productivity, mitigating the effects of these hazards. Additionally, ATER initiatives can promote sustainable farming practices, reducing emissions from land use and contributing to overall environmental sustainability. This action aligns with the city's need to address socio-economic challenges and improve the livelihoods of its rural population.",
         "action": {
             "ActionID": "icare_0130",
             "ActionName": "Realizar Acciones de Asistencia T\u00e9cnica y Extensi\u00f3n Rural (ATER)",
@@ -1191,6 +1210,7 @@
         "actionId": "icare_0038",
         "actionName": "Promote community solar farms",
         "actionPriority": 20,
+        "explanation": "Promoting community solar farms in Caxias do Sul is a strategic action to reduce the city's reliance on traditional energy sources, which contribute significantly to stationary energy emissions. Given the city's tropical rainforest biome, there is potential for harnessing solar energy effectively. This initiative can also enhance energy security, which is crucial given the risks associated with droughts and heatwaves. Additionally, community solar farms can provide economic benefits by reducing energy costs for residents, aligning with the city's socio-economic context of very low-income levels.",
         "action": {
             "ActionID": "icare_0038",
             "ActionName": "Promover granjas solares comunitarias",

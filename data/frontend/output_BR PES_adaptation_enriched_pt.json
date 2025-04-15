@@ -7,7 +7,7 @@
         "actionId": "icare_0169",
         "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
         "actionPriority": 1,
-        "explanation": "Ranked #1 by tournament ranking algorithm",
+        "explanation": "Establishing a plan for preparation and emergency response measures in Petr\u00f3polis is crucial due to the city's high vulnerability to extreme weather events. The city faces significant risks from hazards such as floods, landslides, and heatwaves, which can severely impact public health and infrastructure. By prioritizing this action, Petr\u00f3polis can enhance its resilience and reduce the potential damage and disruption caused by these events. Additionally, a well-prepared emergency response plan can save lives and protect the community's well-being during such crises.",
         "action": {
             "ActionID": "icare_0169",
             "ActionName": "Estabelecer um Plano de Prepara\u00e7\u00e3o e Medidas de Resposta a Emerg\u00eancias em caso de eventos clim\u00e1ticos extremos",
@@ -78,7 +78,7 @@
         "actionId": "icare_0176",
         "actionName": "Development of Climate Action Plan",
         "actionPriority": 2,
-        "explanation": "Ranked #2 by tournament ranking algorithm",
+        "explanation": "The development of a Climate Action Plan is crucial for Petr\u00f3polis due to its high vulnerability to climate-related hazards such as floods, landslides, and heatwaves. These hazards pose significant risks to public health, infrastructure, and food security, making it imperative to have a strategic plan in place. Additionally, the city's total emissions are substantial, necessitating a comprehensive approach to reduce its carbon footprint and enhance resilience. Implementing a Climate Action Plan will help coordinate efforts across sectors to address these challenges effectively.",
         "action": {
             "ActionID": "icare_0176",
             "ActionName": "Desenvolvimento do Plano de A\u00e7\u00e3o Clim\u00e1tica",
@@ -149,7 +149,7 @@
         "actionId": "icare_0162",
         "actionName": "Strengthen programs for control and conservation of protected areas",
         "actionPriority": 3,
-        "explanation": "Ranked #3 by tournament ranking algorithm",
+        "explanation": "Strengthening programs for control and conservation of protected areas in Petr\u00f3polis is crucial due to its tropical rainforest biome, which is rich in biodiversity. The city faces significant risks from climate hazards such as droughts and heatwaves, which can severely impact biodiversity and ecosystem services. By enhancing conservation efforts, the city can mitigate these risks and preserve its natural resources, which are vital for maintaining ecological balance and supporting local livelihoods. Additionally, protecting these areas can help reduce emissions from land use changes, contributing to overall climate resilience.",
         "action": {
             "ActionID": "icare_0162",
             "ActionName": "Fortalecer programas de controle e conserva\u00e7\u00e3o de \u00e1reas protegidas",
@@ -212,7 +212,7 @@
         "actionId": "icare_0152",
         "actionName": "Recovery of degraded areas",
         "actionPriority": 4,
-        "explanation": "Ranked #4 by tournament ranking algorithm",
+        "explanation": "The recovery of degraded areas in Petr\u00f3polis is crucial due to the city's vulnerability to landslides and floods, which are exacerbated by environmental degradation. Restoring these areas can help stabilize the soil, reducing the risk of landslides that threaten infrastructure and public health. Additionally, rehabilitating degraded land can enhance biodiversity and improve the resilience of local ecosystems, which is vital in a region with a tropical rainforest biome. This action also supports long-term sustainability by potentially reducing emissions from land use changes.",
         "action": {
             "ActionID": "icare_0152",
             "ActionName": "Recupera\u00e7\u00e3o de \u00e1reas degradadas",
@@ -275,7 +275,7 @@
         "actionId": "icare_0151",
         "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
         "actionPriority": 5,
-        "explanation": "Ranked #5 by tournament ranking algorithm",
+        "explanation": "Developing diagnostics and restoring areas of Special Social Interest Zones (ZEIS) in Petr\u00f3polis is crucial due to the city's socio-economic challenges. With a very low-income population, enhancing these areas can significantly improve living conditions and access to essential services. Additionally, addressing these zones can help mitigate the impacts of environmental hazards such as landslides and floods, which pose high risks to infrastructure and public health. This action supports sustainable urban development and resilience against climate-related threats.",
         "action": {
             "ActionID": "icare_0151",
             "ActionName": "Desenvolver diagn\u00f3sticos e restaurar \u00e1reas de Zonas Especiais de Interesse Social (ZEIS)",
@@ -340,7 +340,7 @@
         "actionId": "ipcc_0094",
         "actionName": "Access to health care",
         "actionPriority": 6,
-        "explanation": "Ranked #6 by tournament ranking algorithm",
+        "explanation": "Access to health care is a critical priority for Petr\u00f3polis due to the high risk of public health impacts from hazards such as heatwaves, diseases, and floods. The city's vulnerability to these hazards, as indicated by the high normalized risk scores, underscores the need for robust health care systems to manage potential health crises. Improving access to health care can enhance the city's resilience by ensuring that residents receive timely medical attention during emergencies. Additionally, strengthening health care infrastructure can mitigate the adverse effects of climate-related health risks, thereby safeguarding the well-being of the population.",
         "action": {
             "ActionID": "ipcc_0094",
             "ActionName": "Acesso aos cuidados de sa\u00fade",
@@ -404,7 +404,7 @@
         "actionId": "icare_0157",
         "actionName": "Maintenance and Revitalization of Riparian Forests",
         "actionPriority": 7,
-        "explanation": "Ranked #7 by tournament ranking algorithm",
+        "explanation": "The maintenance and revitalization of riparian forests in Petr\u00f3polis is crucial due to the city's vulnerability to floods and landslides. Riparian forests play a significant role in stabilizing soil and reducing the impact of heavy rainfall, which is essential given the high risk of infrastructure damage from these hazards. Additionally, these forests contribute to biodiversity conservation and improve water quality, addressing the moderate issue of inadequate water access. By prioritizing this action, Petr\u00f3polis can enhance its resilience against climate-related risks and improve the overall environmental health of the region.",
         "action": {
             "ActionID": "icare_0157",
             "ActionName": "Manuten\u00e7\u00e3o e Revitaliza\u00e7\u00e3o de Florestas Rip\u00e1rias",
@@ -467,7 +467,7 @@
         "actionId": "icare_0145",
         "actionName": "Strengthen the healthcare network to attend to climate victims",
         "actionPriority": 8,
-        "explanation": "Ranked #8 by tournament ranking algorithm",
+        "explanation": "Strengthening the healthcare network in Petr\u00f3polis is crucial due to the high risk of climate-related health impacts. The city faces significant threats from heatwaves, floods, and landslides, all of which can severely affect public health. By enhancing healthcare services, the city can better manage and respond to the increased demand for medical attention during such events. This action is essential to ensure the well-being of residents and to mitigate the adverse effects of climate change on public health.",
         "action": {
             "ActionID": "icare_0145",
             "ActionName": "Fortalecer a rede de sa\u00fade para atender \u00e0s v\u00edtimas do clima",
@@ -535,7 +535,7 @@
         "actionId": "icare_0156",
         "actionName": "Implementation of urban gardens",
         "actionPriority": 9,
-        "explanation": "Ranked #9 by tournament ranking algorithm",
+        "explanation": "The implementation of urban gardens in Petr\u00f3polis is a significant action due to its potential to enhance food security, which is a critical concern given the city's vulnerability to droughts and floods. Urban gardens can provide a sustainable source of fresh produce, reducing dependency on external food supplies and mitigating the impact of food shortages during extreme weather events. Additionally, these gardens can contribute to community resilience by fostering local engagement and education on sustainable practices. Furthermore, urban gardens can help improve the urban environment by increasing green spaces, which can aid in temperature regulation and enhance biodiversity.",
         "action": {
             "ActionID": "icare_0156",
             "ActionName": "Implementa\u00e7\u00e3o de hortas urbanas",
@@ -596,7 +596,7 @@
         "actionId": "ipcc_0097",
         "actionName": "Food storage/distribution improvements",
         "actionPriority": 10,
-        "explanation": "Ranked #10 by tournament ranking algorithm",
+        "explanation": "Improving food storage and distribution is crucial for Petr\u00f3polis due to its vulnerability to floods and droughts, which can severely impact food security. The city faces high risks from these hazards, making it essential to ensure a stable food supply chain. Enhancing these systems can help mitigate the effects of climate-related disruptions, ensuring that the population has consistent access to food. Additionally, better food distribution can support the city's socio-economic development by reducing waste and improving efficiency.",
         "action": {
             "ActionID": "ipcc_0097",
             "ActionName": "Melhorias no armazenamento/distribui\u00e7\u00e3o de alimentos",
@@ -662,7 +662,7 @@
         "actionId": "icare_0149",
         "actionName": "Encourage sustainable land use practices",
         "actionPriority": 11,
-        "explanation": "Ranked #11 by tournament ranking algorithm",
+        "explanation": "Encouraging sustainable land use practices in Petr\u00f3polis is crucial due to the city's vulnerability to landslides and floods, as indicated by the high risk scores for these hazards. The city's tropical rainforest biome and significant elevation make it susceptible to these natural disasters, which can severely impact infrastructure and public health. By promoting sustainable land use, Petr\u00f3polis can mitigate the effects of these hazards, protect its biodiversity, and enhance resilience against climate change impacts. Additionally, sustainable practices can help reduce land use emissions, contributing to the city's overall emission reduction goals.",
         "action": {
             "ActionID": "icare_0149",
             "ActionName": "Incentivar pr\u00e1ticas sustent\u00e1veis de uso da terra",
@@ -727,7 +727,7 @@
         "actionId": "icare_0181",
         "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
         "actionPriority": 12,
-        "explanation": "Ranked #12 by tournament ranking algorithm",
+        "explanation": "The action of relocating and restoring vulnerable areas in Petr\u00f3polis is crucial due to the city's high risk of landslides and floods, which pose significant threats to infrastructure and public health. Given the city's tropical rainforest biome and its elevation, these natural hazards are exacerbated, making certain areas particularly susceptible to environmental degradation and human risk. By prioritizing relocation and restoration, the city can mitigate these risks, protect its residents, and preserve its natural environment. This action also aligns with the need to address inadequate water access and improve overall resilience against climate-related hazards.",
         "action": {
             "ActionID": "icare_0181",
             "ActionName": "Reloca\u00e7\u00e3o e Restaura\u00e7\u00e3o Ambiental em \u00c1reas Vulner\u00e1veis",
@@ -786,7 +786,7 @@
         "actionId": "ipcc_0096",
         "actionName": "Farm/fishery improvements",
         "actionPriority": 13,
-        "explanation": "Ranked #13 by tournament ranking algorithm",
+        "explanation": "Farm and fishery improvements are crucial for Petr\u00f3polis due to the high risk of droughts impacting water resources and food security. Enhancing agricultural practices can help mitigate these risks by improving water efficiency and crop resilience. Additionally, these improvements can support the local economy by increasing productivity and sustainability in the face of climate challenges. Given the city's very low-income levels, such actions can also contribute to socio-economic development by providing more stable food sources and potential employment opportunities.",
         "action": {
             "ActionID": "ipcc_0096",
             "ActionName": "Melhorias na fazenda/pesqueira",
@@ -854,7 +854,7 @@
         "actionId": "ipcc_0093",
         "actionName": "Availability of health infrastructure",
         "actionPriority": 14,
-        "explanation": "Ranked #14 by tournament ranking algorithm",
+        "explanation": "The availability of health infrastructure is crucial for Petr\u00f3polis, given the high risk of public health impacts from hazards such as heatwaves, landslides, and floods. These hazards pose significant threats to the well-being of the population, necessitating robust health infrastructure to manage potential crises effectively. Improving health infrastructure can enhance the city's resilience, ensuring that residents have access to necessary medical services during emergencies. Additionally, strengthening health systems can mitigate the adverse effects of climate-related health risks, contributing to overall community safety and stability.",
         "action": {
             "ActionID": "ipcc_0093",
             "ActionName": "Disponibilidade de infraestrutura de sa\u00fade",
@@ -918,7 +918,7 @@
         "actionId": "ipcc_0098",
         "actionName": "Behaviour change in diets and food waste",
         "actionPriority": 15,
-        "explanation": "Ranked #15 by tournament ranking algorithm",
+        "explanation": "The action of promoting behavior change in diets and reducing food waste is crucial for Petr\u00f3polis due to its significant impact on food security. The city faces high risks from droughts and floods, which can severely affect food availability and stability. By encouraging sustainable dietary practices and minimizing food waste, the city can enhance its resilience against these climate-related hazards. Additionally, reducing food waste can contribute to lowering overall emissions, aligning with the city's need to address its substantial waste emissions.",
         "action": {
             "ActionID": "ipcc_0098",
             "ActionName": "Mudan\u00e7a de comportamento em dietas e desperd\u00edcio de alimentos",
@@ -984,7 +984,7 @@
         "actionId": "icare_0164",
         "actionName": "Hydrological Monitoring System with Telemetry Stations",
         "actionPriority": 16,
-        "explanation": "Ranked #16 by tournament ranking algorithm",
+        "explanation": "Implementing a Hydrological Monitoring System with Telemetry Stations in Petr\u00f3polis is crucial due to the city's vulnerability to floods and landslides. The city faces significant risks from these hazards, which can severely impact infrastructure and public health. By establishing a robust monitoring system, the city can enhance its ability to predict and respond to these events, thereby reducing potential damage and safeguarding its residents. Additionally, improved water resource management can help mitigate the effects of droughts, another critical risk for the region.",
         "action": {
             "ActionID": "icare_0164",
             "ActionName": "Sistema de Monitoramento Hidrol\u00f3gico com Esta\u00e7\u00f5es de Telemetria",
@@ -1045,7 +1045,7 @@
         "actionId": "icare_0148",
         "actionName": "Create the Municipal Climate Change Forum",
         "actionPriority": 17,
-        "explanation": "Ranked #17 by tournament ranking algorithm",
+        "explanation": "Creating the Municipal Climate Change Forum in Petr\u00f3polis is crucial due to the city's high vulnerability to climate-related hazards such as floods, landslides, and heatwaves. These hazards pose significant risks to public health, infrastructure, and food security, as indicated by the high normalized risk scores. Establishing a dedicated forum will facilitate coordinated efforts to address these challenges, engage stakeholders, and develop effective adaptation and mitigation strategies. Additionally, the forum can serve as a platform for raising awareness and fostering community resilience against the impacts of climate change.",
         "action": {
             "ActionID": "icare_0148",
             "ActionName": "Criar o F\u00f3rum Municipal de Mudan\u00e7as Clim\u00e1ticas",
@@ -1116,7 +1116,7 @@
         "actionId": "icare_0144",
         "actionName": "Creation of a Financial Support Program to Adress Extreme Weather Events",
         "actionPriority": 18,
-        "explanation": "Ranked #18 by tournament ranking algorithm",
+        "explanation": "The creation of a financial support program to address extreme weather events is crucial for Petr\u00f3polis due to its high vulnerability to natural hazards such as floods, landslides, and heatwaves. These events pose significant risks to public health, infrastructure, and food security, as indicated by the city's climate change risk assessment. Implementing a financial support program can help mitigate the economic impact on affected communities, ensuring quicker recovery and resilience building. Given the city's socio-economic challenges, such as very low-income levels, this program is essential to provide necessary aid and support to the most vulnerable populations.",
         "action": {
             "ActionID": "icare_0144",
             "ActionName": "Cria\u00e7\u00e3o de um Programa de Apoio Financeiro para Abordar Eventos Clim\u00e1ticos Extremos",
@@ -1187,7 +1187,7 @@
         "actionId": "icare_0175",
         "actionName": "Recovery and preservation of green areas",
         "actionPriority": 19,
-        "explanation": "Ranked #19 by tournament ranking algorithm",
+        "explanation": "The recovery and preservation of green areas in Petr\u00f3polis is crucial due to the city's tropical rainforest biome, which plays a significant role in maintaining biodiversity and ecological balance. Green areas can help mitigate the impacts of climate change, such as heatwaves and floods, which are significant risks for the city. Additionally, preserving these areas can improve public health by providing cleaner air and recreational spaces, which are essential for the well-being of the residents. Given the city's vulnerability to environmental hazards, this action supports long-term sustainability and resilience.",
         "action": {
             "ActionID": "icare_0175",
             "ActionName": "Recupera\u00e7\u00e3o e preserva\u00e7\u00e3o de \u00e1reas verdes",
@@ -1247,7 +1247,7 @@
         "actionId": "ipcc_0092",
         "actionName": "Social safety nets",
         "actionPriority": 20,
-        "explanation": "Ranked #20 by tournament ranking algorithm",
+        "explanation": "Implementing social safety nets in Petr\u00f3polis is crucial due to the city's vulnerability to various climate hazards such as floods, landslides, and heatwaves. These events pose significant risks to public health and infrastructure, making it essential to have systems in place to support affected populations. Additionally, with a very low-income population, social safety nets can provide necessary financial and social support to those most in need, enhancing community resilience. By prioritizing this action, the city can better prepare for and mitigate the impacts of climate-related disasters, ensuring a more secure and stable environment for its residents.",
         "action": {
             "ActionID": "ipcc_0092",
             "ActionName": "Redes de prote\u00e7\u00e3o social",

@@ -7,7 +7,7 @@
         "actionId": "icare_0169",
         "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
         "actionPriority": 1,
-        "explanation": "Ranked #1 by tournament ranking algorithm",
+        "explanation": "Establishing a plan for preparation and emergency response measures in the event of extreme weather events is crucial for Rio de Janeiro due to its high vulnerability to natural hazards. The city faces significant risks from floods, landslides, and heatwaves, all of which can have devastating impacts on public health and infrastructure. With a large population and dense urban environment, effective emergency response plans can mitigate the potential loss of life and property. Additionally, proactive measures can enhance the city's resilience, ensuring quicker recovery and reducing long-term socio-economic impacts.",
         "action": {
             "ActionID": "icare_0169",
             "ActionName": "Establecer un Plan de Preparaci\u00f3n y Medidas de Respuesta de Emergencia en caso de eventos clim\u00e1ticos extremos",
@@ -78,7 +78,7 @@
         "actionId": "icare_0176",
         "actionName": "Development of Climate Action Plan",
         "actionPriority": 2,
-        "explanation": "Ranked #2 by tournament ranking algorithm",
+        "explanation": "The development of a Climate Action Plan is crucial for Rio de Janeiro due to its high vulnerability to climate-related hazards such as heatwaves, floods, and landslides. These hazards pose significant risks to public health, infrastructure, and food security, making it imperative to have a strategic plan in place. Additionally, the city's substantial emissions from stationary energy and transportation highlight the need for a comprehensive approach to reduce its carbon footprint. Implementing a Climate Action Plan will help coordinate efforts across sectors to mitigate these risks and promote sustainable development.",
         "action": {
             "ActionID": "icare_0176",
             "ActionName": "Desarrollo del Plan de Acci\u00f3n Clim\u00e1tica",
@@ -149,7 +149,7 @@
         "actionId": "icare_0152",
         "actionName": "Recovery of degraded areas",
         "actionPriority": 3,
-        "explanation": "Ranked #3 by tournament ranking algorithm",
+        "explanation": "The action 'Recovery of degraded areas' is crucial for Rio de Janeiro due to its tropical rainforest biome, which is highly susceptible to degradation. Restoring these areas can enhance biodiversity, which is currently at risk from hazards like droughts and heatwaves. Additionally, recovery efforts can mitigate the impact of landslides and floods, which pose significant risks to infrastructure and public health. By prioritizing this action, the city can improve its resilience against climate change impacts and support sustainable development.",
         "action": {
             "ActionID": "icare_0152",
             "ActionName": "Recuperaci\u00f3n de \u00e1reas degradadas",
@@ -212,7 +212,7 @@
         "actionId": "icare_0162",
         "actionName": "Strengthen programs for control and conservation of protected areas",
         "actionPriority": 4,
-        "explanation": "Ranked #4 by tournament ranking algorithm",
+        "explanation": "Strengthening programs for control and conservation of protected areas in Rio de Janeiro is crucial due to the city's tropical rainforest biome, which is rich in biodiversity. The preservation of these areas is essential to mitigate the impacts of climate change, such as droughts and heatwaves, which pose significant risks to biodiversity and public health. Additionally, maintaining these protected areas can help reduce emissions from land use changes and support the city's overall environmental sustainability goals. Given the high population density and urbanization pressures, effective conservation efforts are vital to ensure the long-term ecological balance and resilience of the region.",
         "action": {
             "ActionID": "icare_0162",
             "ActionName": "Fortalecer los programas de control y conservaci\u00f3n de \u00e1reas protegidas",
@@ -275,7 +275,7 @@
         "actionId": "icare_0151",
         "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
         "actionPriority": 5,
-        "explanation": "Ranked #5 by tournament ranking algorithm",
+        "explanation": "Developing diagnostics and restoring areas of Special Social Interest Zones (ZEIS) in Rio de Janeiro is crucial due to the city's socio-economic challenges. These zones often house low-income populations who are particularly vulnerable to environmental hazards such as floods and landslides, which are significant risks in the region. By focusing on these areas, the city can improve living conditions, enhance resilience against climate impacts, and promote social equity. This action aligns with the need to address inadequate access to public services and mitigate the effects of climate change on vulnerable communities.",
         "action": {
             "ActionID": "icare_0151",
             "ActionName": "Desarrollar diagn\u00f3sticos y restaurar \u00e1reas de Zonas de Inter\u00e9s Social Especial (ZEIS)",
@@ -340,7 +340,7 @@
         "actionId": "icare_0145",
         "actionName": "Strengthen the healthcare network to attend to climate victims",
         "actionPriority": 6,
-        "explanation": "Ranked #6 by tournament ranking algorithm",
+        "explanation": "Strengthening the healthcare network in Rio de Janeiro is crucial due to the high risk of climate-related health impacts. The city faces significant threats from heatwaves, floods, and landslides, all of which can severely affect public health. By enhancing healthcare services, the city can better manage and mitigate the health consequences of these climate hazards. This action is particularly important given the city's large population and the potential for widespread health emergencies. Improving healthcare infrastructure will ensure that the city is better prepared to respond to and recover from climate-induced health crises.",
         "action": {
             "ActionID": "icare_0145",
             "ActionName": "Fortalecer la red de atenci\u00f3n m\u00e9dica para atender a las v\u00edctimas del clima",
@@ -407,7 +407,7 @@
         "actionId": "ipcc_0094",
         "actionName": "Access to health care",
         "actionPriority": 7,
-        "explanation": "Ranked #7 by tournament ranking algorithm",
+        "explanation": "Improving access to health care in Rio de Janeiro is crucial due to the high risk of public health impacts from climate-related hazards such as heatwaves, landslides, and floods. The city's dense population and very low-income levels exacerbate vulnerabilities, making it essential to ensure robust health care systems are in place. Enhancing health care access can mitigate the adverse effects of these hazards, protect vulnerable populations, and improve overall community resilience. Given the significant public health risks identified, prioritizing health care access is a strategic move to safeguard the well-being of Rio's residents.",
         "action": {
             "ActionID": "ipcc_0094",
             "ActionName": "Acceso a la atenci\u00f3n m\u00e9dica",
@@ -471,7 +471,7 @@
         "actionId": "ipcc_0097",
         "actionName": "Food storage/distribution improvements",
         "actionPriority": 8,
-        "explanation": "Ranked #8 by tournament ranking algorithm",
+        "explanation": "Improving food storage and distribution is crucial for Rio de Janeiro due to its vulnerability to food security risks, particularly from droughts and floods. These hazards can disrupt food supply chains, making efficient storage and distribution systems essential to ensure food availability. Additionally, enhancing these systems can help mitigate the impact of climate-related events on the city's food supply, supporting the well-being of its large population. By prioritizing this action, Rio de Janeiro can strengthen its resilience against climate-induced food shortages.",
         "action": {
             "ActionID": "ipcc_0097",
             "ActionName": "Mejoras en el almacenamiento/distribuci\u00f3n de alimentos",
@@ -537,7 +537,7 @@
         "actionId": "icare_0149",
         "actionName": "Encourage sustainable land use practices",
         "actionPriority": 9,
-        "explanation": "Ranked #9 by tournament ranking algorithm",
+        "explanation": "Encouraging sustainable land use practices in Rio de Janeiro is crucial due to the city's vulnerability to landslides and floods, which are exacerbated by improper land use. The city's tropical rainforest biome and high population density make it essential to manage land sustainably to protect biodiversity and reduce emissions. Additionally, sustainable land use can help mitigate the impacts of climate change, such as sea-level rise, which poses a risk to infrastructure. By prioritizing this action, Rio de Janeiro can enhance its resilience against environmental hazards and improve the quality of life for its residents.",
         "action": {
             "ActionID": "icare_0149",
             "ActionName": "Fomentar pr\u00e1cticas sostenibles de uso de la tierra",
@@ -602,7 +602,7 @@
         "actionId": "icare_0157",
         "actionName": "Maintenance and Revitalization of Riparian Forests",
         "actionPriority": 10,
-        "explanation": "Ranked #10 by tournament ranking algorithm",
+        "explanation": "The maintenance and revitalization of riparian forests in Rio de Janeiro is crucial due to the city's vulnerability to floods and landslides, as indicated by the high risk scores for these hazards. Riparian forests play a significant role in stabilizing soil and reducing erosion, which can mitigate the impact of these natural disasters. Additionally, these forests contribute to biodiversity conservation and improve water quality, which is essential for the city's water resources. Given the tropical rainforest biome of Rio de Janeiro, preserving and enhancing riparian zones aligns with the city's ecological characteristics and supports sustainable urban development.",
         "action": {
             "ActionID": "icare_0157",
             "ActionName": "Mantenimiento y Revitalizaci\u00f3n de Bosques Ribere\u00f1os",
@@ -665,7 +665,7 @@
         "actionId": "icare_0148",
         "actionName": "Create the Municipal Climate Change Forum",
         "actionPriority": 11,
-        "explanation": "Ranked #11 by tournament ranking algorithm",
+        "explanation": "Creating the Municipal Climate Change Forum in Rio de Janeiro is a crucial step towards addressing the city's significant environmental challenges. With high emissions from various sectors and a population density that exacerbates these issues, a dedicated forum can facilitate coordinated efforts to reduce emissions and enhance sustainability. Additionally, the city faces severe risks from climate-related hazards such as floods, heatwaves, and landslides, which threaten public health and infrastructure. Establishing this forum will enable stakeholders to collaboratively develop and implement strategies to mitigate these risks and improve resilience.",
         "action": {
             "ActionID": "icare_0148",
             "ActionName": "Crear el Foro Municipal de Cambio Clim\u00e1tico",
@@ -736,7 +736,7 @@
         "actionId": "ipcc_0093",
         "actionName": "Availability of health infrastructure",
         "actionPriority": 12,
-        "explanation": "Ranked #12 by tournament ranking algorithm",
+        "explanation": "Improving the availability of health infrastructure in Rio de Janeiro is crucial due to the high risk of public health impacts from hazards such as heatwaves, landslides, and floods. The city's dense population and very low income levels exacerbate the vulnerability of its residents to these hazards. Enhancing health infrastructure can significantly mitigate the adverse effects of these environmental challenges, ensuring better preparedness and response capabilities. This action is a priority as it directly addresses the critical need for robust health systems to protect the well-being of the population in the face of climate-related risks.",
         "action": {
             "ActionID": "ipcc_0093",
             "ActionName": "Disponibilidad de infraestructura sanitaria",
@@ -800,7 +800,7 @@
         "actionId": "ipcc_0096",
         "actionName": "Farm/fishery improvements",
         "actionPriority": 13,
-        "explanation": "Ranked #13 by tournament ranking algorithm",
+        "explanation": "Farm and fishery improvements are crucial for Rio de Janeiro due to the high risk of droughts impacting food security. Enhancing agricultural practices can help mitigate these risks by increasing resilience and productivity. Additionally, improving fisheries can support local economies and provide sustainable food sources, which is vital given the city's large population. These improvements can also contribute to reducing emissions from land use, aligning with broader environmental goals.",
         "action": {
             "ActionID": "ipcc_0096",
             "ActionName": "Mejoras en granjas/pesquer\u00edas",
@@ -868,7 +868,7 @@
         "actionId": "ipcc_0092",
         "actionName": "Social safety nets",
         "actionPriority": 14,
-        "explanation": "Ranked #14 by tournament ranking algorithm",
+        "explanation": "Implementing social safety nets in Rio de Janeiro is crucial due to the city's very low socio-economic status, particularly among low-income populations. These safety nets can provide essential support during environmental hazards such as floods and landslides, which pose significant risks to public health and infrastructure. By strengthening social safety nets, the city can enhance resilience and reduce vulnerability, ensuring that the most affected populations receive timely assistance. This action is vital for promoting social equity and stability in the face of climate-related challenges.",
         "action": {
             "ActionID": "ipcc_0092",
             "ActionName": "Redes de seguridad social",
@@ -932,7 +932,7 @@
         "actionId": "icare_0181",
         "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
         "actionPriority": 15,
-        "explanation": "Ranked #15 by tournament ranking algorithm",
+        "explanation": "The action 'Relocation and Environmental Restoration in Vulnerable Areas' is crucial for Rio de Janeiro due to the city's high risk of natural hazards such as landslides and floods. These hazards pose significant threats to public health and infrastructure, as indicated by the high risk scores. Relocating vulnerable populations and restoring the environment can mitigate these risks, enhancing safety and resilience. Additionally, such measures can improve the quality of life for low-income communities, who are often the most affected by environmental hazards.",
         "action": {
             "ActionID": "icare_0181",
             "ActionName": "Reubicaci\u00f3n y Restauraci\u00f3n Ambiental en \u00c1reas Vulnerables",
@@ -991,7 +991,7 @@
         "actionId": "icare_0144",
         "actionName": "Creation of a Financial Support Program to Adress Extreme Weather Events",
         "actionPriority": 16,
-        "explanation": "Ranked #16 by tournament ranking algorithm",
+        "explanation": "The creation of a financial support program to address extreme weather events is crucial for Rio de Janeiro due to its high vulnerability to climate-related hazards. The city faces significant risks from heatwaves, floods, and landslides, all of which can have devastating impacts on public health and infrastructure. By establishing a financial support program, the city can better prepare for and mitigate the effects of these events, ensuring quicker recovery and resilience. This action is particularly important given the socio-economic challenges faced by the population, which may limit their ability to cope with such disasters without external assistance.",
         "action": {
             "ActionID": "icare_0144",
             "ActionName": "Creaci\u00f3n de un Programa de Apoyo Financiero para Abordar Eventos Clim\u00e1ticos Extremos",
@@ -1062,7 +1062,7 @@
         "actionId": "icare_0164",
         "actionName": "Hydrological Monitoring System with Telemetry Stations",
         "actionPriority": 17,
-        "explanation": "Ranked #17 by tournament ranking algorithm",
+        "explanation": "Implementing a Hydrological Monitoring System with Telemetry Stations in Rio de Janeiro is crucial due to the city's vulnerability to floods and landslides. The city faces significant risks from these hazards, which can severely impact infrastructure and public health. By establishing a robust monitoring system, the city can better predict and manage water-related disasters, thereby reducing potential damage and enhancing public safety. Additionally, this system can provide valuable data to support long-term water resource management and planning, which is essential given the city's tropical rainforest biome and the challenges posed by climate change.",
         "action": {
             "ActionID": "icare_0164",
             "ActionName": "Sistema de Monitoreo Hidrol\u00f3gico con Estaciones de Telemetr\u00eda",
@@ -1123,7 +1123,7 @@
         "actionId": "icare_0156",
         "actionName": "Implementation of urban gardens",
         "actionPriority": 18,
-        "explanation": "Ranked #18 by tournament ranking algorithm",
+        "explanation": "The implementation of urban gardens in Rio de Janeiro is a significant action due to the city's high population density and the socio-economic challenges faced by its residents. Urban gardens can enhance food security, which is crucial given the city's vulnerability to droughts and floods that threaten food supply. Additionally, these gardens can improve public health by providing access to fresh produce and creating green spaces that mitigate the urban heat island effect. Furthermore, urban gardens can foster community engagement and resilience, empowering residents to take part in sustainable practices and improve their quality of life.",
         "action": {
             "ActionID": "icare_0156",
             "ActionName": "Implementaci\u00f3n de huertos urbanos",
@@ -1184,7 +1184,7 @@
         "actionId": "ipcc_0086",
         "actionName": "Ecosystem-based adaptation",
         "actionPriority": 19,
-        "explanation": "Ranked #19 by tournament ranking algorithm",
+        "explanation": "Ecosystem-based adaptation is crucial for Rio de Janeiro due to its tropical rainforest biome, which is highly sensitive to climate change impacts such as droughts and heatwaves. These natural solutions can enhance biodiversity, improve water management, and reduce the risk of landslides and floods, which are significant hazards for the city. By prioritizing this action, Rio can strengthen its resilience against climate-related risks while also supporting the well-being of its population. Additionally, ecosystem-based approaches can provide co-benefits such as improved air quality and recreational spaces, contributing to the overall quality of life in the city.",
         "action": {
             "ActionID": "ipcc_0086",
             "ActionName": "Adaptaci\u00f3n basada en ecosistemas",
@@ -1261,7 +1261,7 @@
         "actionId": "icare_0175",
         "actionName": "Recovery and preservation of green areas",
         "actionPriority": 20,
-        "explanation": "Ranked #20 by tournament ranking algorithm",
+        "explanation": "The recovery and preservation of green areas in Rio de Janeiro is crucial due to the city's tropical rainforest biome, which plays a significant role in maintaining biodiversity and ecological balance. Green areas help mitigate the impacts of climate change by absorbing carbon emissions, which is particularly important given the city's high total emissions. Additionally, preserving green spaces can enhance public health by providing cleaner air and reducing the urban heat island effect, which is a concern due to the high risk of heatwaves. Furthermore, green areas can help manage water resources and reduce the risk of floods and landslides, which are significant hazards for the city's infrastructure and public health.",
         "action": {
             "ActionID": "icare_0175",
             "ActionName": "Recuperaci\u00f3n y preservaci\u00f3n de \u00e1reas verdes",

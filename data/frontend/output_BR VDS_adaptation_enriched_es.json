@@ -7,7 +7,7 @@
         "actionId": "icare_0169",
         "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
         "actionPriority": 1,
-        "explanation": "Ranked #1 by tournament ranking algorithm",
+        "explanation": "For Vit\u00f3ria de Santo Ant\u00e3o, having a formal emergency response plan helps coordinate evacuations and rescue when storms or floods hit. This approach minimizes confusion and property damage by clearly defining roles and resources. Preparedness of this kind makes recovery faster and the city more resilient.",
         "action": {
             "ActionID": "icare_0169",
             "ActionName": "Establecer un Plan de Preparaci\u00f3n y Medidas de Respuesta de Emergencia en caso de eventos clim\u00e1ticos extremos",
@@ -78,7 +78,7 @@
         "actionId": "icare_0176",
         "actionName": "Development of Climate Action Plan",
         "actionPriority": 2,
-        "explanation": "Ranked #2 by tournament ranking algorithm",
+        "explanation": "For Vit\u00f3ria de Santo Ant\u00e3o, creating a unified Climate Action Plan sets measurable goals and strategies to address emissions and local vulnerabilities. By identifying climate risks early, resources can be allocated efficiently. This plan also provides direction for cross-sector collaboration, guiding the city toward more sustainable growth.",
         "action": {
             "ActionID": "icare_0176",
             "ActionName": "Desarrollo del Plan de Acci\u00f3n Clim\u00e1tica",
@@ -149,7 +149,7 @@
         "actionId": "icare_0162",
         "actionName": "Strengthen programs for control and conservation of protected areas",
         "actionPriority": 3,
-        "explanation": "Ranked #3 by tournament ranking algorithm",
+        "explanation": "For Vit\u00f3ria de Santo Ant\u00e3o, preserving key ecosystems ensures clean air, consistent water flow, and carbon storage. By keeping forests intact, the city mitigates the effects of extreme weather, supports biodiversity, and sustains crucial ecological services. Reinforcing protective measures fosters a healthier environment and bolsters climate resilience.",
         "action": {
             "ActionID": "icare_0162",
             "ActionName": "Fortalecer los programas de control y conservaci\u00f3n de \u00e1reas protegidas",
@@ -212,7 +212,7 @@
         "actionId": "icare_0152",
         "actionName": "Recovery of degraded areas",
         "actionPriority": 4,
-        "explanation": "Ranked #4 by tournament ranking algorithm",
+        "explanation": "For Vit\u00f3ria de Santo Ant\u00e3o, restoring damaged lands improves soil stability, boosts carbon absorption, and revitalizes vegetation. These efforts can also prevent flooding by improving natural water retention and reducing erosion. Over time, such rehabilitated landscapes become more resilient and contribute to local livelihoods.",
         "action": {
             "ActionID": "icare_0152",
             "ActionName": "Recuperaci\u00f3n de \u00e1reas degradadas",
@@ -275,7 +275,7 @@
         "actionId": "ipcc_0097",
         "actionName": "Food storage/distribution improvements",
         "actionPriority": 5,
-        "explanation": "Ranked #5 by tournament ranking algorithm",
+        "explanation": "For Vit\u00f3ria de Santo Ant\u00e3o, ensuring robust food storage and transport helps maintain supply chains when storms or heatwaves occur. With upgraded facilities, spoilage is reduced, and essential goods remain available during emergencies. This measure greatly contributes to food security and community well-being in uncertain times.",
         "action": {
             "ActionID": "ipcc_0097",
             "ActionName": "Mejoras en el almacenamiento/distribuci\u00f3n de alimentos",
@@ -341,7 +341,7 @@
         "actionId": "ipcc_0094",
         "actionName": "Access to health care",
         "actionPriority": 6,
-        "explanation": "Ranked #6 by tournament ranking algorithm",
+        "explanation": "For Vit\u00f3ria de Santo Ant\u00e3o, expanding medical coverage is critical to meeting health demands intensified by climate-related issues like heatstroke or waterborne diseases. Improving clinics and emergency services curbs fatalities and speeds recovery during crises. Overall, better health infrastructure strengthens the city\u2019s capacity to cope with emerging climate stresses.",
         "action": {
             "ActionID": "ipcc_0094",
             "ActionName": "Acceso a la atenci\u00f3n m\u00e9dica",
@@ -405,7 +405,7 @@
         "actionId": "icare_0151",
         "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
         "actionPriority": 7,
-        "explanation": "Ranked #7 by tournament ranking algorithm",
+        "explanation": "For Vit\u00f3ria de Santo Ant\u00e3o, mapping and improving ZEIS neighborhoods prevents vulnerabilities from worsening under severe weather. Reinforced housing and infrastructure make these areas safer and healthier. By enhancing living conditions for at-risk communities, the city promotes equitable resilience and a more robust urban fabric.",
         "action": {
             "ActionID": "icare_0151",
             "ActionName": "Desarrollar diagn\u00f3sticos y restaurar \u00e1reas de Zonas de Inter\u00e9s Social Especial (ZEIS)",
@@ -470,7 +470,7 @@
         "actionId": "icare_0145",
         "actionName": "Strengthen the healthcare network to attend to climate victims",
         "actionPriority": 8,
-        "explanation": "Ranked #8 by tournament ranking algorithm",
+        "explanation": "For Vit\u00f3ria de Santo Ant\u00e3o, improving hospitals and clinics ensures that residents receive rapid care during climate-related emergencies like floods or heatwaves. This action lowers injury rates, saves lives, and reduces longer-term health burdens. By prioritizing medical resilience, the city reinforces its ability to protect public health under changing conditions.",
         "action": {
             "ActionID": "icare_0145",
             "ActionName": "Fortalecer la red de atenci\u00f3n m\u00e9dica para atender a las v\u00edctimas del clima",
@@ -537,7 +537,7 @@
         "actionId": "icare_0157",
         "actionName": "Maintenance and Revitalization of Riparian Forests",
         "actionPriority": 9,
-        "explanation": "Ranked #9 by tournament ranking algorithm",
+        "explanation": "For Vit\u00f3ria de Santo Ant\u00e3o, preserving forests along rivers and streams secures natural flood control and improves water quality. These buffers limit soil erosion and moderate flow during heavy rainfall. Rejuvenating riparian zones also sustains local habitats, reinforcing the city\u2019s environmental resilience.",
         "action": {
             "ActionID": "icare_0157",
             "ActionName": "Mantenimiento y Revitalizaci\u00f3n de Bosques Ribere\u00f1os",
@@ -600,7 +600,7 @@
         "actionId": "icare_0149",
         "actionName": "Encourage sustainable land use practices",
         "actionPriority": 10,
-        "explanation": "Ranked #10 by tournament ranking algorithm",
+        "explanation": "For Vit\u00f3ria de Santo Ant\u00e3o, adopting sustainable land-use guidelines keeps development in balance with nature, reducing erosion and maintaining water sources. This measured approach also preserves habitats, mitigating heat and flood extremes. By guiding how land is used, the city protects essential resources for future growth and stability.",
         "action": {
             "ActionID": "icare_0149",
             "ActionName": "Fomentar pr\u00e1cticas sostenibles de uso de la tierra",
@@ -665,7 +665,7 @@
         "actionId": "ipcc_0096",
         "actionName": "Farm/fishery improvements",
         "actionPriority": 11,
-        "explanation": "Ranked #11 by tournament ranking algorithm",
+        "explanation": "For Vit\u00f3ria de Santo Ant\u00e3o, upgrading agricultural and fishery methods boosts yields while reducing environmental stress. Modern techniques in water management and crop rotation help producers cope with unpredictable climate patterns. This step secures local food supplies and supports the livelihoods of rural families.",
         "action": {
             "ActionID": "ipcc_0096",
             "ActionName": "Mejoras en granjas/pesquer\u00edas",
@@ -733,7 +733,7 @@
         "actionId": "ipcc_0093",
         "actionName": "Availability of health infrastructure",
         "actionPriority": 12,
-        "explanation": "Ranked #12 by tournament ranking algorithm",
+        "explanation": "For Vit\u00f3ria de Santo Ant\u00e3o, more hospitals and clinics expand the city\u2019s capacity to tackle both routine health needs and climate-induced crises. This reduces travel time for patients and keeps the medical system functioning under duress. Better coverage is a cornerstone of a resilient urban environment that safeguards public well-being.",
         "action": {
             "ActionID": "ipcc_0093",
             "ActionName": "Disponibilidad de infraestructura sanitaria",
@@ -797,7 +797,7 @@
         "actionId": "ipcc_0092",
         "actionName": "Social safety nets",
         "actionPriority": 13,
-        "explanation": "Ranked #13 by tournament ranking algorithm",
+        "explanation": "For Vit\u00f3ria de Santo Ant\u00e3o, strengthening welfare programs cushions economic and social shocks caused by floods, heatwaves, or other climate events. Timely assistance\u2014such as food aid or emergency housing\u2014reduces hardships and fosters a quicker return to stability. Such safety nets keep vulnerable groups from falling into deeper poverty during crises.",
         "action": {
             "ActionID": "ipcc_0092",
             "ActionName": "Redes de seguridad social",
@@ -861,7 +861,7 @@
         "actionId": "icare_0148",
         "actionName": "Create the Municipal Climate Change Forum",
         "actionPriority": 14,
-        "explanation": "Ranked #14 by tournament ranking algorithm",
+        "explanation": "For Vit\u00f3ria de Santo Ant\u00e3o, convening a climate change forum unites public officials, community leaders, and businesses in collaborative planning. This shared space drives innovation in adaptation and emissions reduction. By pooling resources and expertise, the city crafts measures that address its unique climate challenges effectively.",
         "action": {
             "ActionID": "icare_0148",
             "ActionName": "Crear el Foro Municipal de Cambio Clim\u00e1tico",
@@ -932,7 +932,7 @@
         "actionId": "icare_0181",
         "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
         "actionPriority": 15,
-        "explanation": "Ranked #15 by tournament ranking algorithm",
+        "explanation": "For Vit\u00f3ria de Santo Ant\u00e3o, moving communities out of disaster-prone zones prevents frequent rebuilding costs and recurring crises. After relocation, restoring these areas\u2019 ecosystems further mitigates flood or erosion risks. This proactive effort guards residents and reclaims habitats for longer-term stability.",
         "action": {
             "ActionID": "icare_0181",
             "ActionName": "Reubicaci\u00f3n y Restauraci\u00f3n Ambiental en \u00c1reas Vulnerables",
@@ -991,7 +991,7 @@
         "actionId": "icare_0144",
         "actionName": "Creation of a Financial Support Program to Adress Extreme Weather Events",
         "actionPriority": 16,
-        "explanation": "Ranked #16 by tournament ranking algorithm",
+        "explanation": "For Vit\u00f3ria de Santo Ant\u00e3o, offering financial assistance during climate emergencies helps families and businesses recover quickly from losses. This support stabilizes local markets, preventing widespread economic fallout. By cushioning the impacts of disasters, the city fosters social resilience and a faster return to normalcy.",
         "action": {
             "ActionID": "icare_0144",
             "ActionName": "Creaci\u00f3n de un Programa de Apoyo Financiero para Abordar Eventos Clim\u00e1ticos Extremos",
@@ -1062,7 +1062,7 @@
         "actionId": "icare_0156",
         "actionName": "Implementation of urban gardens",
         "actionPriority": 17,
-        "explanation": "Ranked #17 by tournament ranking algorithm",
+        "explanation": "For Vit\u00f3ria de Santo Ant\u00e3o, introducing gardens in vacant city lots lowers local temperatures and offers fresh produce. Greenery also absorbs excess rain, easing strain on drainage systems. Neighborhood participation encourages greater environmental awareness and fosters community connections.",
         "action": {
             "ActionID": "icare_0156",
             "ActionName": "Implementaci\u00f3n de huertos urbanos",
@@ -1123,7 +1123,7 @@
         "actionId": "icare_0175",
         "actionName": "Recovery and preservation of green areas",
         "actionPriority": 18,
-        "explanation": "Ranked #18 by tournament ranking algorithm",
+        "explanation": "For Vit\u00f3ria de Santo Ant\u00e3o, safeguarding and restoring forests or parks helps combat flooding and reduces heat. These habitats also support biodiversity and recreational activities for residents. Healthy green zones enhance local climate resilience while improving quality of life in the city.",
         "action": {
             "ActionID": "icare_0175",
             "ActionName": "Recuperaci\u00f3n y preservaci\u00f3n de \u00e1reas verdes",
@@ -1183,7 +1183,7 @@
         "actionId": "icare_0164",
         "actionName": "Hydrological Monitoring System with Telemetry Stations",
         "actionPriority": 19,
-        "explanation": "Ranked #19 by tournament ranking algorithm",
+        "explanation": "For Vit\u00f3ria de Santo Ant\u00e3o, tracking water levels and flows in real time provides early flood or drought warnings. Quick alerts reduce damages and allow authorities to coordinate timely evacuations if needed. Over time, this data supports more accurate water management plans and better preparedness for changing weather patterns.",
         "action": {
             "ActionID": "icare_0164",
             "ActionName": "Sistema de Monitoreo Hidrol\u00f3gico con Estaciones de Telemetr\u00eda",
@@ -1244,7 +1244,7 @@
         "actionId": "icare_0180",
         "actionName": "Implement permeable pavements and increase green areas in roadways",
         "actionPriority": 20,
-        "explanation": "Ranked #20 by tournament ranking algorithm",
+        "explanation": "For Vit\u00f3ria de Santo Ant\u00e3o, using permeable surfaces lets rainwater seep underground, preventing surface runoff and flash floods. Adding trees or flowerbeds along roads cools paved areas and improves local air quality. Together, these upgrades enhance road safety and reinforce the city\u2019s resilience to extreme rainfall.",
         "action": {
             "ActionID": "icare_0180",
             "ActionName": "Implementar pavimentos permeables y aumentar las \u00e1reas verdes en las v\u00edas p\u00fablicas",

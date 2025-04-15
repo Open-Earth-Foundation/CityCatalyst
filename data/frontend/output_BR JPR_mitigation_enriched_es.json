@@ -7,6 +7,7 @@
         "actionId": "icare_0050",
         "actionName": "Implement Agroforestry Systems",
         "actionPriority": 1,
+        "explanation": "Implementing agroforestry systems in Ji-Paran\u00e1 is a high priority due to the city's location in a tropical rainforest biome, which is highly suitable for such practices. Agroforestry can significantly contribute to reducing land use emissions, which are currently the largest source of emissions in the city. Additionally, this action can enhance biodiversity and improve resilience against climate hazards like droughts and heatwaves, which pose significant risks to water resources, food security, and public health. By integrating trees with crops and livestock, agroforestry can also improve soil health and water retention, further supporting the city's environmental and socio-economic stability.",
         "action": {
             "ActionID": "icare_0050",
             "ActionName": "Implementar Sistemas Agroforestales",
@@ -69,6 +70,7 @@
         "actionId": "icare_0134",
         "actionName": "Strengthen Mechanisms for Deforestation Control",
         "actionPriority": 2,
+        "explanation": "Strengthening mechanisms for deforestation control in Ji-Paran\u00e1 is crucial due to its location in a tropical rainforest biome, which is highly susceptible to deforestation. The city faces significant land use emissions, which are a major contributor to its total emissions profile. By enhancing deforestation control, Ji-Paran\u00e1 can mitigate these emissions and protect its rich biodiversity. Additionally, controlling deforestation can help in managing the risks associated with droughts and heatwaves, which are prevalent hazards in the region.",
         "action": {
             "ActionID": "icare_0134",
             "ActionName": "Fortalecer los Mecanismos para el Control de la Deforestaci\u00f3n",
@@ -131,6 +133,7 @@
         "actionId": "icare_0133",
         "actionName": "Promote Urban Reforestation and Green Corridors",
         "actionPriority": 3,
+        "explanation": "Promoting urban reforestation and green corridors in Ji-Paran\u00e1 is crucial due to its tropical rainforest biome, which is vital for maintaining biodiversity and ecological balance. The city faces significant environmental challenges, including high emissions from land use and transportation, which can be mitigated by increasing green spaces. Additionally, reforestation can help combat the effects of droughts and heatwaves, which pose a high risk to water resources, food security, and public health. By enhancing urban greenery, the city can improve air quality, reduce urban heat, and provide habitats for local wildlife, contributing to a more sustainable and resilient urban environment.",
         "action": {
             "ActionID": "icare_0133",
             "ActionName": "Promover la Reforestaci\u00f3n Urbana y los Corredores Verdes",
@@ -193,6 +196,7 @@
         "actionId": "icare_0128",
         "actionName": "Establish Municipal Programs for Payment for Environmental Services (PES)",
         "actionPriority": 4,
+        "explanation": "Establishing Municipal Programs for Payment for Environmental Services (PES) in Ji-Paran\u00e1 is crucial due to the city's location in a tropical rainforest biome, which is vital for biodiversity and climate regulation. The city faces significant environmental challenges, including high emissions from land use and transportation, which PES programs can help mitigate by incentivizing sustainable practices. Additionally, Ji-Paran\u00e1 is at high risk from climate hazards such as droughts and heatwaves, which threaten water resources, food security, and public health. Implementing PES can enhance ecosystem services, providing resilience against these risks and promoting sustainable development in the region.",
         "action": {
             "ActionID": "icare_0128",
             "ActionName": "Establecer Programas Municipales de Pago por Servicios Ambientales (PES)",
@@ -255,6 +259,7 @@
         "actionId": "icare_0129",
         "actionName": "Facilitate Technology Transfer for Conservation Practices",
         "actionPriority": 5,
+        "explanation": "Facilitating technology transfer for conservation practices in Ji-Paran\u00e1 is crucial due to the city's location in a tropical rainforest biome, which is highly sensitive to environmental changes. The city faces significant risks from droughts and heatwaves, impacting water resources, food security, and biodiversity. By adopting advanced conservation technologies, Ji-Paran\u00e1 can enhance its resilience against these climate hazards. Additionally, technology transfer can help reduce emissions from land use, which is a major contributor to the city's total emissions, thereby supporting sustainable development in the region.",
         "action": {
             "ActionID": "icare_0129",
             "ActionName": "Facilitar la Transferencia de Tecnolog\u00eda para Pr\u00e1cticas de Conservaci\u00f3n",
@@ -317,6 +322,7 @@
         "actionId": "icare_0130",
         "actionName": "Conduct Technical Assistance and Rural Extension (ATER) Actions",
         "actionPriority": 6,
+        "explanation": "Conducting Technical Assistance and Rural Extension (ATER) actions in Ji-Paran\u00e1 is crucial due to the city's significant land use emissions, which are the highest among its emission sources. These actions can help improve sustainable agricultural practices, reducing the environmental impact and enhancing food security, which is at risk from droughts and floods. Additionally, ATER can support local farmers in adapting to climate change impacts, thereby strengthening the resilience of the agricultural sector. This is particularly important given the high risk of droughts affecting water resources and energy security in the region.",
         "action": {
             "ActionID": "icare_0130",
             "ActionName": "Realizar Acciones de Asistencia T\u00e9cnica y Extensi\u00f3n Rural (ATER)",
@@ -379,6 +385,7 @@
         "actionId": "icare_0102",
         "actionName": "Promote Sustainable Agricultural Practices",
         "actionPriority": 7,
+        "explanation": "Promoting sustainable agricultural practices in Ji-Paran\u00e1 is crucial due to the city's location in a tropical rainforest biome, which is highly sensitive to environmental changes. The region faces significant risks from droughts, which threaten water resources, food security, and biodiversity. By adopting sustainable practices, the city can mitigate these risks, ensuring long-term agricultural productivity and environmental conservation. Additionally, sustainable agriculture can help reduce land use emissions, which are a major contributor to the city's total emissions, thereby supporting broader climate action goals.",
         "action": {
             "ActionID": "icare_0102",
             "ActionName": "Promover Pr\u00e1cticas Agr\u00edcolas Sostenibles",
@@ -441,6 +448,7 @@
         "actionId": "icare_0100",
         "actionName": "Support Regenerative Agriculture Practices",
         "actionPriority": 8,
+        "explanation": "Supporting regenerative agriculture practices in Ji-Paran\u00e1 is crucial due to the city's location in a tropical rainforest biome, which is highly sensitive to environmental changes. The city faces significant risks from droughts, which threaten water resources and food security. By promoting regenerative agriculture, Ji-Paran\u00e1 can enhance soil health, increase biodiversity, and improve water retention, thereby mitigating the impacts of droughts. Additionally, these practices can help reduce land use emissions, which are a major contributor to the city's total emissions, aligning with broader environmental sustainability goals.",
         "action": {
             "ActionID": "icare_0100",
             "ActionName": "Apoyar las Pr\u00e1cticas de Agricultura Regenerativa",
@@ -503,6 +511,7 @@
         "actionId": "icare_0096",
         "actionName": "Promote Organic Farming",
         "actionPriority": 9,
+        "explanation": "Promoting organic farming in Ji-Paran\u00e1 is a crucial action due to the city's vulnerability to climate-related hazards such as droughts and floods, which significantly impact food security. Organic farming practices can enhance soil health and water retention, making crops more resilient to these environmental stresses. Additionally, by reducing reliance on chemical fertilizers and pesticides, organic farming can help preserve the biodiversity of the tropical rainforest biome surrounding the city. This approach not only supports sustainable agriculture but also contributes to reducing emissions from land use, aligning with the city's need to address its high land use emissions.",
         "action": {
             "ActionID": "icare_0096",
             "ActionName": "Promover la Agricultura Org\u00e1nica",
@@ -565,6 +574,7 @@
         "actionId": "icare_0084",
         "actionName": "Create Incentives for Agroforestry Practices in Livestock Systems",
         "actionPriority": 10,
+        "explanation": "Creating incentives for agroforestry practices in livestock systems is crucial for Ji-Paran\u00e1 due to its location in a tropical rainforest biome. This action can help mitigate land use emissions, which are a significant contributor to the city's total emissions. By integrating trees into livestock systems, the city can enhance biodiversity and improve soil health, which are vital for long-term sustainability. Additionally, agroforestry can provide resilience against climate impacts such as droughts, which pose a high risk to water resources and food security in the region. Encouraging these practices aligns with the city's need to address environmental challenges while supporting local livelihoods.",
         "action": {
             "ActionID": "icare_0084",
             "ActionName": "Crear incentivos para pr\u00e1cticas de agroforester\u00eda en sistemas ganaderos",
@@ -627,6 +637,7 @@
         "actionId": "icare_0101",
         "actionName": "Encourage the Use of Low-Emission Agricultural Machinery",
         "actionPriority": 11,
+        "explanation": "Encouraging the use of low-emission agricultural machinery in Ji-Paran\u00e1 is crucial due to the significant land use emissions, which are the largest contributor to the city's total emissions. By adopting cleaner technologies in agriculture, the city can substantially reduce its carbon footprint and mitigate the environmental impact of its agricultural activities. This action also aligns with the need to address the high risk of droughts impacting water and food security, as more sustainable practices can help preserve these vital resources. Furthermore, promoting low-emission machinery supports the city's efforts to enhance energy security, which is currently at risk due to climate hazards.",
         "action": {
             "ActionID": "icare_0101",
             "ActionName": "Fomentar el uso de maquinaria agr\u00edcola de bajas emisiones",
@@ -689,6 +700,7 @@
         "actionId": "icare_0127",
         "actionName": "Accelerate Environmental Regularization of Rural Properties",
         "actionPriority": 12,
+        "explanation": "Accelerating the environmental regularization of rural properties in Ji-Paran\u00e1 is crucial due to the significant land use emissions, which are the largest contributor to the city's total emissions. This action can help mitigate the impact of deforestation and land degradation, which are prevalent in tropical rainforest biomes. By ensuring that rural properties comply with environmental regulations, the city can enhance its resilience against climate change impacts such as droughts and heatwaves, which pose high risks to water resources, food security, and biodiversity. Furthermore, this initiative supports sustainable land management practices, which are essential for maintaining the ecological balance and promoting long-term environmental health in the region.",
         "action": {
             "ActionID": "icare_0127",
             "ActionName": "Acelerar la Regularizaci\u00f3n Ambiental de Propiedades Rurales",
@@ -751,6 +763,7 @@
         "actionId": "icare_0131",
         "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
         "actionPriority": 13,
+        "explanation": "Prioritizing the procurement of locally produced agroecological products in public purchases is crucial for Ji-Paran\u00e1 due to its significant impact on food security and local economy. This action supports sustainable agricultural practices, which are essential in a region facing high risks from droughts and floods. By focusing on local agroecological products, the city can enhance its resilience against climate-related hazards, ensuring a stable food supply. Additionally, this initiative can stimulate the local economy by supporting local farmers and reducing dependency on external food sources.",
         "action": {
             "ActionID": "icare_0131",
             "ActionName": "Priorizar la Adquisici\u00f3n de Productos Agroecol\u00f3gicos de Producci\u00f3n Local en Compras P\u00fablicas",
@@ -813,6 +826,7 @@
         "actionId": "icare_0085",
         "actionName": "Promote the Adoption of Agroecological Pest Control",
         "actionPriority": 14,
+        "explanation": "Promoting the adoption of agroecological pest control in Ji-Paran\u00e1 is crucial due to the city's location in a tropical rainforest biome, which supports a rich biodiversity. This approach can help maintain ecological balance and reduce the reliance on chemical pesticides, which can harm the environment and human health. Additionally, agroecological methods can enhance food security by improving crop resilience to pests and diseases, which is vital given the high risk of droughts affecting food security in the region. Implementing this action aligns with sustainable agricultural practices, contributing to long-term environmental and economic benefits for the community.",
         "action": {
             "ActionID": "icare_0085",
             "ActionName": "Promover la Adopci\u00f3n del Control de Plagas Agroecol\u00f3gico",
@@ -875,6 +889,7 @@
         "actionId": "icare_0099",
         "actionName": "Support Agroecological Certification Programs",
         "actionPriority": 15,
+        "explanation": "Supporting agroecological certification programs in Ji-Paran\u00e1 is crucial due to the city's reliance on agriculture and the surrounding tropical rainforest biome. This action can help promote sustainable farming practices that protect biodiversity and reduce land use emissions, which are currently a significant contributor to the city's total emissions. Additionally, by encouraging agroecological methods, the city can enhance food security, which is at risk from hazards like droughts and floods. Implementing these programs can also improve resilience against climate change impacts, ensuring long-term sustainability for local communities.",
         "action": {
             "ActionID": "icare_0099",
             "ActionName": "Apoyar los Programas de Certificaci\u00f3n Agroecol\u00f3gica",
@@ -937,6 +952,7 @@
         "actionId": "icare_0132",
         "actionName": "Encourage Local Agroecological Production and Short Supply Chains",
         "actionPriority": 16,
+        "explanation": "Encouraging local agroecological production and short supply chains is crucial for Ji-Paran\u00e1 due to its vulnerability to climate-related risks such as droughts and floods, which threaten food security. By promoting sustainable agricultural practices, the city can enhance its resilience against these hazards and ensure a stable food supply. Additionally, local production reduces dependency on long supply chains, which can be disrupted by extreme weather events, thus improving food availability and economic stability. This action also supports biodiversity and reduces emissions associated with transportation, aligning with the city's need to address its significant land use and transportation emissions.",
         "action": {
             "ActionID": "icare_0132",
             "ActionName": "Fomentar la Producci\u00f3n Agroecol\u00f3gica Local y las Cadenas de Suministro Cortas",
@@ -999,6 +1015,7 @@
         "actionId": "icare_0136",
         "actionName": "Support the Implementation of Ecological Fiscal Incentives",
         "actionPriority": 17,
+        "explanation": "Supporting the implementation of ecological fiscal incentives in Ji-Paran\u00e1 is crucial due to the city's significant land use emissions, which are a major contributor to its total emissions. By promoting sustainable land management practices through fiscal incentives, the city can effectively reduce its carbon footprint and mitigate environmental degradation. Additionally, these incentives can encourage local stakeholders to adopt more sustainable practices, which is essential in a region characterized by a tropical rainforest biome. This action aligns with the city's need to address high emissions and environmental risks, particularly those related to biodiversity and land use.",
         "action": {
             "ActionID": "icare_0136",
             "ActionName": "Apoyar la Implementaci\u00f3n de Incentivos Fiscales Ecol\u00f3gicos",
@@ -1061,6 +1078,7 @@
         "actionId": "ipcc_0052",
         "actionName": "Reduce Deforestation and Degradation",
         "actionPriority": 18,
+        "explanation": "Reducing deforestation and degradation is crucial for Ji-Paran\u00e1, given its location in a tropical rainforest biome. The city faces significant land use emissions, which are the largest contributor to its total emissions. By addressing deforestation, Ji-Paran\u00e1 can significantly reduce its carbon footprint and mitigate climate change impacts. Additionally, preserving forest areas is vital for maintaining biodiversity and protecting water resources, which are at high risk due to droughts.",
         "action": {
             "ActionID": "ipcc_0052",
             "ActionName": "Reducir la deforestaci\u00f3n y la degradaci\u00f3n",
@@ -1122,6 +1140,7 @@
         "actionId": "ipcc_0061",
         "actionName": "Soil Carbon Management in Croplands and Grasslands",
         "actionPriority": 19,
+        "explanation": "Soil Carbon Management in Croplands and Grasslands is a crucial action for Ji-Paran\u00e1 due to its significant land use emissions, which are the largest contributor to the city's total emissions. By improving soil carbon management, the city can enhance carbon sequestration, thereby reducing its overall carbon footprint. Additionally, this action can improve soil health and productivity, which is vital for food security, especially in a region facing high risks from droughts. Implementing this action can also contribute to biodiversity conservation, as healthier soils support diverse ecosystems.",
         "action": {
             "ActionID": "ipcc_0061",
             "ActionName": "Gesti\u00f3n del Carbono del Suelo en Tierras de Cultivo y Pastizales",
@@ -1183,6 +1202,7 @@
         "actionId": "ipcc_0053",
         "actionName": "Afforestation, Reforestation and Forest Ecosystem Restoration",
         "actionPriority": 20,
+        "explanation": "Afforestation, reforestation, and forest ecosystem restoration are crucial for Ji-Paran\u00e1 due to its location in a tropical rainforest biome, which is vital for biodiversity and carbon sequestration. The city faces significant land use emissions, making forest restoration a key strategy to mitigate these emissions and enhance carbon sinks. Additionally, restoring forest ecosystems can help combat the high risk of droughts and heatwaves, which threaten water resources, food security, and public health. By prioritizing this action, Ji-Paran\u00e1 can improve its resilience to climate change impacts and support sustainable development in the region.",
         "action": {
             "ActionID": "ipcc_0053",
             "ActionName": "Aforestaci\u00f3n, Reforestaci\u00f3n y Restauraci\u00f3n de Ecosistemas Forestales",

@@ -7,7 +7,7 @@
         "actionId": "icare_0176",
         "actionName": "Development of Climate Action Plan",
         "actionPriority": 1,
-        "explanation": "Ranked #1 by tournament ranking algorithm",
+        "explanation": "For Tarauac\u00e1, creating a Climate Action Plan sets a unified direction for cutting emissions and tackling local climate issues. By identifying top vulnerabilities, the city can align resources and actions more effectively. This roadmap helps coordinate efforts across various sectors, fostering long-term environmental resilience.",
         "action": {
             "ActionID": "icare_0176",
             "ActionName": "Desenvolvimento do Plano de A\u00e7\u00e3o Clim\u00e1tica",
@@ -78,7 +78,7 @@
         "actionId": "icare_0162",
         "actionName": "Strengthen programs for control and conservation of protected areas",
         "actionPriority": 2,
-        "explanation": "Ranked #2 by tournament ranking algorithm",
+        "explanation": "For Tarauac\u00e1, reinforcing protected-area management preserves forests and wildlife habitats crucial for capturing carbon and regulating water flows. These natural systems also shield communities from environmental extremes. By safeguarding these zones, the city supports biodiversity and secures vital ecosystem services.",
         "action": {
             "ActionID": "icare_0162",
             "ActionName": "Fortalecer programas de controle e conserva\u00e7\u00e3o de \u00e1reas protegidas",
@@ -141,7 +141,7 @@
         "actionId": "icare_0169",
         "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
         "actionPriority": 3,
-        "explanation": "Ranked #3 by tournament ranking algorithm",
+        "explanation": "For Tarauac\u00e1, having a clear emergency plan for floods, storms, or heatwaves ensures quicker responses and minimized losses. Early coordination of evacuation routes, shelters, and rescue teams reduces harm to people and property. This measure helps the city recover faster and lowers economic disruptions.",
         "action": {
             "ActionID": "icare_0169",
             "ActionName": "Estabelecer um Plano de Prepara\u00e7\u00e3o e Medidas de Resposta a Emerg\u00eancias em caso de eventos clim\u00e1ticos extremos",
@@ -212,7 +212,7 @@
         "actionId": "icare_0151",
         "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
         "actionPriority": 4,
-        "explanation": "Ranked #4 by tournament ranking algorithm",
+        "explanation": "For Tarauac\u00e1, identifying infrastructure weaknesses in low-income or flood-prone neighborhoods allows for targeted repairs and improvements. Strengthening these areas reduces vulnerability to extreme weather, improving community safety. By focusing on at-risk zones, the city fosters equitable resilience and social well-being.",
         "action": {
             "ActionID": "icare_0151",
             "ActionName": "Desenvolver diagn\u00f3sticos e restaurar \u00e1reas de Zonas Especiais de Interesse Social (ZEIS)",
@@ -277,7 +277,7 @@
         "actionId": "icare_0152",
         "actionName": "Recovery of degraded areas",
         "actionPriority": 5,
-        "explanation": "Ranked #5 by tournament ranking algorithm",
+        "explanation": "For Tarauac\u00e1, restoring damaged lands revitalizes habitats and strengthens natural defenses against storms or droughts. Healthier soils improve water retention and carbon capture, supporting agriculture and biodiversity. This eco-friendly repair process protects the community and boosts ecological sustainability.",
         "action": {
             "ActionID": "icare_0152",
             "ActionName": "Recupera\u00e7\u00e3o de \u00e1reas degradadas",
@@ -340,7 +340,7 @@
         "actionId": "icare_0157",
         "actionName": "Maintenance and Revitalization of Riparian Forests",
         "actionPriority": 6,
-        "explanation": "Ranked #6 by tournament ranking algorithm",
+        "explanation": "For Tarauac\u00e1, restoring riparian forests along riverbanks cuts erosion and filters runoff, safeguarding water quality for the region. These vegetated buffers also provide habitats for local wildlife and help regulate floodwaters. Sustaining riparian zones thus reduces climate risks and preserves essential natural services.",
         "action": {
             "ActionID": "icare_0157",
             "ActionName": "Manuten\u00e7\u00e3o e Revitaliza\u00e7\u00e3o de Florestas Rip\u00e1rias",
@@ -403,7 +403,7 @@
         "actionId": "icare_0145",
         "actionName": "Strengthen the healthcare network to attend to climate victims",
         "actionPriority": 7,
-        "explanation": "Ranked #7 by tournament ranking algorithm",
+        "explanation": "For Tarauac\u00e1, improving medical facilities and training staff enables a swift response to climate-related health crises, like heatstroke or flood injuries. This measure reduces casualty rates by ensuring adequate treatment resources. By prioritizing healthcare resilience, the city safeguards community well-being under changing climate conditions.",
         "action": {
             "ActionID": "icare_0145",
             "ActionName": "Fortalecer a rede de sa\u00fade para atender \u00e0s v\u00edtimas do clima",
@@ -471,7 +471,7 @@
         "actionId": "icare_0181",
         "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
         "actionPriority": 8,
-        "explanation": "Ranked #8 by tournament ranking algorithm",
+        "explanation": "For Tarauac\u00e1, relocating residents from high-risk locations prevents recurring losses during extreme floods or storms. Restoring these areas to their natural state bolsters ecological defenses and helps contain future hazards. This proactive step secures long-term safety for communities and revives local habitats.",
         "action": {
             "ActionID": "icare_0181",
             "ActionName": "Reloca\u00e7\u00e3o e Restaura\u00e7\u00e3o Ambiental em \u00c1reas Vulner\u00e1veis",
@@ -530,7 +530,7 @@
         "actionId": "icare_0149",
         "actionName": "Encourage sustainable land use practices",
         "actionPriority": 9,
-        "explanation": "Ranked #9 by tournament ranking algorithm",
+        "explanation": "For Tarauac\u00e1, balancing urban expansion and agricultural activities with ecological preservation reduces erosion and protects water resources. Smart zoning and habitat conservation help stabilize local climates and maintain biodiversity. This land-use strategy drives sustainable development and fortifies the city against environmental pressures.",
         "action": {
             "ActionID": "icare_0149",
             "ActionName": "Incentivar pr\u00e1ticas sustent\u00e1veis de uso da terra",
@@ -595,7 +595,7 @@
         "actionId": "ipcc_0097",
         "actionName": "Food storage/distribution improvements",
         "actionPriority": 10,
-        "explanation": "Ranked #10 by tournament ranking algorithm",
+        "explanation": "For Tarauac\u00e1, upgrading facilities for food storage and transport safeguards essential supplies from spoilage or damage during emergencies. This measure helps maintain stable markets and ensures nourishment for residents, even when floods or other disruptions occur. Reliable food systems underpin overall community resilience and health.",
         "action": {
             "ActionID": "ipcc_0097",
             "ActionName": "Melhorias no armazenamento/distribui\u00e7\u00e3o de alimentos",
@@ -661,7 +661,7 @@
         "actionId": "icare_0156",
         "actionName": "Implementation of urban gardens",
         "actionPriority": 11,
-        "explanation": "Ranked #11 by tournament ranking algorithm",
+        "explanation": "For Tarauac\u00e1, cultivating gardens in vacant or underused spaces brings fresh produce closer to residents and moderates local temperatures. These patches of greenery absorb rain and reduce flooding potential during heavy downpours. They also invite community engagement and foster healthier, more sustainable living.",
         "action": {
             "ActionID": "icare_0156",
             "ActionName": "Implementa\u00e7\u00e3o de hortas urbanas",
@@ -722,7 +722,7 @@
         "actionId": "ipcc_0094",
         "actionName": "Access to health care",
         "actionPriority": 12,
-        "explanation": "Ranked #12 by tournament ranking algorithm",
+        "explanation": "For Tarauac\u00e1, expanding clinics and medical services strengthens the capacity to handle heat- or flood-related ailments. This measure prevents preventable deaths, particularly in remote or underserved areas. Enhanced healthcare access supports both everyday well-being and the capacity to cope with future climate challenges.",
         "action": {
             "ActionID": "ipcc_0094",
             "ActionName": "Acesso aos cuidados de sa\u00fade",
@@ -786,7 +786,7 @@
         "actionId": "icare_0180",
         "actionName": "Implement permeable pavements and increase green areas in roadways",
         "actionPriority": 13,
-        "explanation": "Ranked #13 by tournament ranking algorithm",
+        "explanation": "For Tarauac\u00e1, using permeable materials for roads and pavements lowers the chance of flash flooding by letting water seep into the soil. Adding greenery along these corridors reduces heat buildup and improves air quality. Together, these steps enhance road safety and bolster the city\u2019s resilience to heavy rains.",
         "action": {
             "ActionID": "icare_0180",
             "ActionName": "Implementar pavimentos perme\u00e1veis e aumentar as \u00e1reas verdes nas vias p\u00fablicas",
@@ -847,7 +847,7 @@
         "actionId": "icare_0175",
         "actionName": "Recovery and preservation of green areas",
         "actionPriority": 14,
-        "explanation": "Ranked #14 by tournament ranking algorithm",
+        "explanation": "For Tarauac\u00e1, protecting and restoring green zones around the city cools local climates, reduces soil erosion, and captures carbon. Healthy vegetation also buffers against flooding by absorbing excess water. These natural spaces offer recreational benefits and support ecological stability, making the city more livable.",
         "action": {
             "ActionID": "icare_0175",
             "ActionName": "Recupera\u00e7\u00e3o e preserva\u00e7\u00e3o de \u00e1reas verdes",
@@ -907,7 +907,7 @@
         "actionId": "ipcc_0092",
         "actionName": "Social safety nets",
         "actionPriority": 15,
-        "explanation": "Ranked #15 by tournament ranking algorithm",
+        "explanation": "For Tarauac\u00e1, robust social programs assist the most vulnerable populations during climate-induced emergencies, like severe floods or disease outbreaks. These safety nets provide food, shelter, and financial support, easing community recovery. Stable relief systems foster trust in local governance and strengthen overall resilience.",
         "action": {
             "ActionID": "ipcc_0092",
             "ActionName": "Redes de prote\u00e7\u00e3o social",
@@ -971,7 +971,7 @@
         "actionId": "ipcc_0096",
         "actionName": "Farm/fishery improvements",
         "actionPriority": 16,
-        "explanation": "Ranked #16 by tournament ranking algorithm",
+        "explanation": "For Tarauac\u00e1, upgrading farming and fishing practices increases yields while limiting environmental stress. Techniques like precision feeding, water conservation, and disease management help producers withstand climate fluctuations. This modernization secures local food supplies and bolsters the region\u2019s economic base.",
         "action": {
             "ActionID": "ipcc_0096",
             "ActionName": "Melhorias na fazenda/pesqueira",
@@ -1039,7 +1039,7 @@
         "actionId": "icare_0148",
         "actionName": "Create the Municipal Climate Change Forum",
         "actionPriority": 17,
-        "explanation": "Ranked #17 by tournament ranking algorithm",
+        "explanation": "For Tarauac\u00e1, forming a climate change forum unites local officials, residents, and businesses in addressing environmental challenges. This shared platform encourages collaboration, resource sharing, and innovative solutions tailored to the area\u2019s conditions. By exchanging ideas, the city develops more inclusive and effective climate strategies.",
         "action": {
             "ActionID": "icare_0148",
             "ActionName": "Criar o F\u00f3rum Municipal de Mudan\u00e7as Clim\u00e1ticas",
@@ -1110,7 +1110,7 @@
         "actionId": "ipcc_0088",
         "actionName": "Building codes",
         "actionPriority": 18,
-        "explanation": "Ranked #18 by tournament ranking algorithm",
+        "explanation": "For Tarauac\u00e1, adopting updated construction standards lowers the risk of structural failures during floods or high winds. These codes reduce repair costs and enhance public safety by ensuring buildings can handle local climate conditions. Gradually, climate-aware building practices become integral to new developments and renovations.",
         "action": {
             "ActionID": "ipcc_0088",
             "ActionName": "C\u00f3digos de constru\u00e7\u00e3o",
@@ -1169,7 +1169,7 @@
         "actionId": "ipcc_0093",
         "actionName": "Availability of health infrastructure",
         "actionPriority": 19,
-        "explanation": "Ranked #19 by tournament ranking algorithm",
+        "explanation": "For Tarauac\u00e1, increasing the number and capacity of hospitals and clinics ensures quick treatment when floods or heat waves cause injuries and illnesses. More facilities ease strain on existing services and reduce patient travel times. This level of preparedness is critical to coping with unpredictable climatic extremes.",
         "action": {
             "ActionID": "ipcc_0093",
             "ActionName": "Disponibilidade de infraestrutura de sa\u00fade",
@@ -1233,7 +1233,7 @@
         "actionId": "icare_0155",
         "actionName": "Preservation and Recovery of Water Bodies",
         "actionPriority": 20,
-        "explanation": "Ranked #20 by tournament ranking algorithm",
+        "explanation": "For Tarauac\u00e1, protecting and restoring rivers and lakes safeguards essential water sources for households, agriculture, and wildlife. Healthy waterways also buffer against severe floods by absorbing and regulating flows. Prioritizing water body preservation fortifies local ecology and underpins the city\u2019s long-term climate resilience.",
         "action": {
             "ActionID": "icare_0155",
             "ActionName": "Preserva\u00e7\u00e3o e Recupera\u00e7\u00e3o de Corpos H\u00eddricos",

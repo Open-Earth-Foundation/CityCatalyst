@@ -7,6 +7,7 @@
         "actionId": "icare_0042",
         "actionName": "Encourage renewable energy policies at the municipal level",
         "actionPriority": 1,
+        "explanation": "Encouraging renewable energy policies at the municipal level in S\u00e3o Jo\u00e3o de Meriti is crucial due to the city's high population density and significant stationary energy emissions. Transitioning to renewable energy sources can help reduce the city's total emissions, which are currently over half a million metric tons. Additionally, promoting renewable energy can enhance energy security, which is vital given the city's vulnerability to climate hazards like droughts and heatwaves. Implementing these policies can also contribute to improving public health by reducing air pollution and mitigating the impacts of climate change.",
         "action": {
             "ActionID": "icare_0042",
             "ActionName": "Fomentar pol\u00edticas de energ\u00eda renovable a nivel municipal",
@@ -69,6 +70,7 @@
         "actionId": "icare_0024",
         "actionName": "Integrate renewables into municipal water systems",
         "actionPriority": 2,
+        "explanation": "Integrating renewables into municipal water systems in S\u00e3o Jo\u00e3o de Meriti is a crucial step towards sustainable development. The city faces significant challenges with water resources, particularly due to the risk of droughts, which can be mitigated by ensuring a reliable and sustainable energy supply for water systems. By using renewable energy, the city can reduce its stationary energy emissions, contributing to a decrease in overall greenhouse gas emissions. This action not only supports environmental goals but also enhances the resilience of water infrastructure, ensuring consistent access to water for the population.",
         "action": {
             "ActionID": "icare_0024",
             "ActionName": "Integrar energ\u00edas renovables en los sistemas de agua municipales",
@@ -131,6 +133,7 @@
         "actionId": "icare_0038",
         "actionName": "Promote community solar farms",
         "actionPriority": 3,
+        "explanation": "Promoting community solar farms in S\u00e3o Jo\u00e3o de Meriti is a strategic action to address the city's high stationary energy emissions. With a dense population and limited land area, community solar projects can efficiently utilize available space to generate renewable energy. This initiative can also help reduce the city's reliance on non-renewable energy sources, contributing to lower overall emissions. Additionally, community solar farms can provide economic benefits by lowering energy costs for residents, particularly in a city with very low-income levels.",
         "action": {
             "ActionID": "icare_0038",
             "ActionName": "Promover granjas solares comunitarias",
@@ -192,6 +195,7 @@
         "actionId": "icare_0033",
         "actionName": "Install biodigesters in rural properties",
         "actionPriority": 4,
+        "explanation": "Installing biodigesters in rural properties in S\u00e3o Jo\u00e3o de Meriti can significantly reduce waste emissions, which are a notable contributor to the city's total emissions. Although the city is highly urbanized, any rural areas can benefit from this technology by converting organic waste into biogas, thus providing a renewable energy source. This action also aligns with the city's need to improve energy security and reduce reliance on traditional energy sources, which is crucial given the socio-economic challenges faced by the population. Additionally, biodigesters can help mitigate the impact of inadequate sanitation services by managing waste more effectively.",
         "action": {
             "ActionID": "icare_0033",
             "ActionName": "Instalar biodigestores en propiedades rurales",
@@ -253,6 +257,7 @@
         "actionId": "icare_0011",
         "actionName": "Provide tax incentives for renewable energy in residential projects",
         "actionPriority": 5,
+        "explanation": "Providing tax incentives for renewable energy in residential projects is crucial for S\u00e3o Jo\u00e3o de Meriti due to its high population density and significant stationary energy emissions. Encouraging the adoption of renewable energy can help reduce the city's overall emissions, which are currently substantial. Additionally, this action can alleviate some of the socio-economic challenges by potentially lowering energy costs for residents, thereby improving their quality of life. Given the city's vulnerability to climate-related hazards, such as heatwaves and floods, promoting sustainable energy solutions is a proactive step towards enhancing resilience and sustainability.",
         "action": {
             "ActionID": "icare_0011",
             "ActionName": "Proporcionar incentivos fiscales para la energ\u00eda renovable en proyectos residenciales",
@@ -315,6 +320,7 @@
         "actionId": "icare_0040",
         "actionName": "Adopt solar-powered street lighting in rural areas",
         "actionPriority": 6,
+        "explanation": "Adopting solar-powered street lighting in rural areas of S\u00e3o Jo\u00e3o de Meriti can significantly reduce the city's stationary energy emissions, which are currently a major contributor to its total emissions. This action aligns with the city's need to improve energy efficiency and sustainability, especially given the high population density and the associated demand for energy. Additionally, solar-powered lighting can enhance public safety and security in rural areas, which may lack adequate infrastructure. By reducing reliance on traditional energy sources, this initiative also supports the city's efforts to mitigate the impacts of climate change, such as heatwaves and droughts, which pose significant risks to public health and infrastructure.",
         "action": {
             "ActionID": "icare_0040",
             "ActionName": "Adoptar iluminaci\u00f3n de calles con energ\u00eda solar en \u00e1reas rurales",
@@ -377,6 +383,7 @@
         "actionId": "icare_0097",
         "actionName": "Support Distributed Energy Generation in Residences and Businesses",
         "actionPriority": 7,
+        "explanation": "Supporting distributed energy generation in residences and businesses is crucial for S\u00e3o Jo\u00e3o de Meriti due to its high population density and significant stationary energy emissions. By promoting local energy generation, the city can reduce its reliance on centralized power sources, which can help lower emissions and improve energy security. Additionally, this action can empower residents and businesses to become more energy independent, potentially reducing energy costs and increasing resilience against power outages. Given the city's socio-economic challenges, such initiatives can also stimulate local economic growth and job creation.",
         "action": {
             "ActionID": "icare_0097",
             "ActionName": "Apoyar la Generaci\u00f3n de Energ\u00eda Distribuida en Residencias y Negocios",
@@ -439,6 +446,7 @@
         "actionId": "icare_0029",
         "actionName": "Adopt policies for fossil fuel-free buildings",
         "actionPriority": 8,
+        "explanation": "Adopting policies for fossil fuel-free buildings in S\u00e3o Jo\u00e3o de Meriti is crucial due to the city's high population density and significant stationary energy emissions. Transitioning to cleaner energy sources in buildings can substantially reduce the city's overall emissions, contributing to improved air quality and public health. Additionally, as the city faces risks from heatwaves and other climate-related hazards, reducing reliance on fossil fuels can enhance energy security and resilience against these impacts. Implementing such policies aligns with global sustainability goals and can position the city as a leader in climate action within the region.",
         "action": {
             "ActionID": "icare_0029",
             "ActionName": "Adoptar pol\u00edticas para edificios libres de combustibles f\u00f3siles",
@@ -501,6 +509,7 @@
         "actionId": "icare_0105",
         "actionName": "Reduce technical losses in energy distribution networks",
         "actionPriority": 9,
+        "explanation": "Reducing technical losses in energy distribution networks is crucial for S\u00e3o Jo\u00e3o de Meriti due to its high population density and significant stationary energy emissions. By improving the efficiency of energy distribution, the city can lower its overall emissions, contributing to a cleaner environment. Additionally, this action can help mitigate the risk of energy insecurity, which is a concern given the city's vulnerability to droughts. Implementing this measure can also lead to cost savings for both the energy providers and consumers, enhancing the socio-economic conditions in a low-income area.",
         "action": {
             "ActionID": "icare_0105",
             "ActionName": "Reducir las p\u00e9rdidas t\u00e9cnicas en las redes de distribuci\u00f3n de energ\u00eda",
@@ -563,6 +572,7 @@
         "actionId": "icare_0005",
         "actionName": "Create credit lines for residential and community wind energy projects",
         "actionPriority": 10,
+        "explanation": "Creating credit lines for residential and community wind energy projects in S\u00e3o Jo\u00e3o de Meriti is a strategic action to address the city's high stationary energy emissions. With a population density of over 12,000 people per square kilometer, the demand for energy is significant, and transitioning to renewable sources can help reduce the carbon footprint. Additionally, the city's tropical rainforest biome offers potential for harnessing wind energy, which can be a sustainable alternative to traditional energy sources. This initiative not only supports environmental goals but also empowers local communities by providing them with access to cleaner energy solutions.",
         "action": {
             "ActionID": "icare_0005",
             "ActionName": "Crear l\u00edneas de cr\u00e9dito para proyectos de energ\u00eda e\u00f3lica residencial y comunitaria",
@@ -625,6 +635,7 @@
         "actionId": "icare_0020",
         "actionName": "Promote sustainable construction practices and encourage green technologies in public, residential, commercial, industrial, and service buildings.",
         "actionPriority": 11,
+        "explanation": "Promoting sustainable construction practices and encouraging green technologies in S\u00e3o Jo\u00e3o de Meriti is crucial due to the city's high population density and significant emissions from stationary energy sources. Implementing green building technologies can help reduce energy consumption and emissions, contributing to a healthier urban environment. Additionally, sustainable construction can improve resilience against climate-related hazards such as heatwaves and floods, which pose significant risks to public health and infrastructure. This action aligns with the city's need to address its socio-economic challenges by potentially creating jobs and reducing energy costs for residents.",
         "action": {
             "ActionID": "icare_0020",
             "ActionName": "Promover pr\u00e1cticas de construcci\u00f3n sostenible y fomentar tecnolog\u00edas verdes en edificios p\u00fablicos, residenciales, comerciales, industriales y de servicios.",
@@ -687,6 +698,7 @@
         "actionId": "icare_0046",
         "actionName": "Make efforts to promote socioeconomic development and improve the quality of life in the city from the perspective of a circular economy and zero carbon emissions.",
         "actionPriority": 12,
+        "explanation": "Promoting socioeconomic development in S\u00e3o Jo\u00e3o de Meriti is crucial due to its very low-income levels, which can significantly impact the quality of life for its residents. By focusing on a circular economy and zero carbon emissions, the city can address its high emissions from stationary energy and transportation, contributing to a more sustainable environment. This action also aligns with the need to mitigate risks associated with climate change impacts, such as heatwaves and floods, which pose significant threats to public health and infrastructure. Implementing this strategy can lead to long-term economic resilience and environmental sustainability, benefiting the community as a whole.",
         "action": {
             "ActionID": "icare_0046",
             "ActionName": "Hacer esfuerzos para promover el desarrollo socioecon\u00f3mico y mejorar la calidad de vida en la ciudad desde la perspectiva de una econom\u00eda circular y cero emisiones de carbono.",
@@ -749,6 +761,7 @@
         "actionId": "icare_0043",
         "actionName": "Integrate geothermal energy for heating where feasible",
         "actionPriority": 13,
+        "explanation": "Integrating geothermal energy for heating in S\u00e3o Jo\u00e3o de Meriti could significantly reduce stationary energy emissions, which are currently a major contributor to the city's total emissions. Given the city's tropical rainforest biome, geothermal energy could provide a sustainable and reliable source of heating, reducing reliance on fossil fuels. Although the action is ranked with a lower priority, its implementation could contribute to long-term energy security and help mitigate the impacts of climate change. Additionally, this action aligns with global trends towards renewable energy adoption, potentially positioning the city as a leader in sustainable practices.",
         "action": {
             "ActionID": "icare_0043",
             "ActionName": "Integrar la energ\u00eda geot\u00e9rmica para calefacci\u00f3n donde sea posible",
@@ -811,6 +824,7 @@
         "actionId": "icare_0027",
         "actionName": "Create financing programs for local renewable energy projects",
         "actionPriority": 14,
+        "explanation": "Creating financing programs for local renewable energy projects in S\u00e3o Jo\u00e3o de Meriti is crucial due to the city's high population density and significant stationary energy emissions. By promoting renewable energy, the city can reduce its carbon footprint and improve air quality, which is vital for public health. Additionally, such programs can stimulate local economic growth by creating jobs and fostering innovation in the energy sector. This action aligns with the city's need to address climate change impacts, such as heatwaves and public health risks, by transitioning to more sustainable energy sources.",
         "action": {
             "ActionID": "icare_0027",
             "ActionName": "Crear programas de financiamiento para proyectos locales de energ\u00eda renovable",
@@ -873,6 +887,7 @@
         "actionId": "icare_0026",
         "actionName": "Offer time-of-use tariffs for electricity consumption",
         "actionPriority": 15,
+        "explanation": "Offering time-of-use tariffs for electricity consumption in S\u00e3o Jo\u00e3o de Meriti can help manage energy demand more effectively. This action encourages residents to use electricity during off-peak hours, which can reduce the strain on the energy grid and lower emissions associated with peak energy production. Given the city's high population density and significant stationary energy emissions, this initiative could lead to more efficient energy use and cost savings for residents. Additionally, it aligns with efforts to improve energy security, which is crucial in a region facing climate-related risks such as heatwaves and droughts.",
         "action": {
             "ActionID": "icare_0026",
             "ActionName": "Ofrecer tarifas de tiempo de uso para el consumo de electricidad",
@@ -935,6 +950,7 @@
         "actionId": "icare_0010",
         "actionName": "Promote Net-Zero and Green Building Certifications",
         "actionPriority": 16,
+        "explanation": "Promoting Net-Zero and Green Building Certifications in S\u00e3o Jo\u00e3o de Meriti is crucial due to the city's high population density and significant stationary energy emissions. Implementing these certifications can lead to more energy-efficient buildings, reducing the overall carbon footprint and helping to mitigate climate change impacts. Additionally, as the city faces risks from heatwaves and public health hazards, green buildings can provide better insulation and air quality, improving residents' health and comfort. This action aligns with the city's need to address its environmental challenges while promoting sustainable urban development.",
         "action": {
             "ActionID": "icare_0010",
             "ActionName": "Promover Certificaciones de Edificios Verdes y de Cero Emisiones Netas",
@@ -997,6 +1013,7 @@
         "actionId": "icare_0088",
         "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
         "actionPriority": 17,
+        "explanation": "The implementation of free public transportation programs during peak hours in S\u00e3o Jo\u00e3o de Meriti is a strategic action to address the city's high population density and significant transportation emissions. By encouraging the use of public transport, this initiative aims to reduce the reliance on individual vehicles, thereby decreasing traffic congestion and lowering emissions. This action is particularly important given the city's socio-economic context, where many residents may benefit from cost-free transportation options. Additionally, reducing vehicle emissions can contribute to improved air quality and public health, which is crucial in a city facing high risks from heatwaves and diseases.",
         "action": {
             "ActionID": "icare_0088",
             "ActionName": "Implementaci\u00f3n de programas de transporte p\u00fablico gratuito durante las horas pico para reducir el uso de veh\u00edculos individuales",
@@ -1059,6 +1076,7 @@
         "actionId": "icare_0022",
         "actionName": "Set municipal energy efficiency targets",
         "actionPriority": 18,
+        "explanation": "Setting municipal energy efficiency targets in S\u00e3o Jo\u00e3o de Meriti is crucial due to the city's high population density and significant stationary energy emissions. By improving energy efficiency, the city can reduce its overall emissions, which are currently over half a million metric tons. This action can also help mitigate the impact of heatwaves, which pose a high risk to public health, by reducing the energy demand for cooling. Additionally, enhancing energy efficiency aligns with the city's need to address socio-economic challenges, as it can lead to cost savings for residents and improve their quality of life.",
         "action": {
             "ActionID": "icare_0022",
             "ActionName": "Establecer objetivos de eficiencia energ\u00e9tica municipal",
@@ -1121,6 +1139,7 @@
         "actionId": "icare_0094",
         "actionName": "Adoption of biomethane in public fleets.",
         "actionPriority": 19,
+        "explanation": "The adoption of biomethane in public fleets in S\u00e3o Jo\u00e3o de Meriti is a significant action due to the city's high population density and the associated transportation emissions. By transitioning to biomethane, the city can reduce its transportation emissions, which currently contribute significantly to the overall emissions profile. This action also aligns with the need to improve air quality and public health, as the city faces high risks from heatwaves and diseases. Furthermore, utilizing biomethane supports sustainable energy practices, which is crucial given the city's socio-economic challenges and the need for cost-effective solutions.",
         "action": {
             "ActionID": "icare_0094",
             "ActionName": "Adopci\u00f3n de biometano en flotas p\u00fablicas.",
@@ -1183,6 +1202,7 @@
         "actionId": "icare_0139",
         "actionName": "Implementation of urban toll.",
         "actionPriority": 20,
+        "explanation": "The implementation of an urban toll in S\u00e3o Jo\u00e3o de Meriti could help manage the high population density and reduce transportation emissions, which are significant contributors to the city's total emissions. By discouraging excessive use of private vehicles, the toll could promote the use of public transportation, thereby reducing traffic congestion and improving air quality. Additionally, the revenue generated from the toll could be reinvested into improving public transportation infrastructure, further enhancing the city's sustainability efforts. This action aligns with the need to address the city's environmental challenges, particularly in reducing emissions and improving public health.",
         "action": {
             "ActionID": "icare_0139",
             "ActionName": "Implementaci\u00f3n de peaje urbano.",

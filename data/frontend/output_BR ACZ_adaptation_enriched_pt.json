@@ -7,7 +7,7 @@
         "actionId": "icare_0176",
         "actionName": "Development of Climate Action Plan",
         "actionPriority": 1,
-        "explanation": "Ranked #1 by tournament ranking algorithm",
+        "explanation": "For the city of Aracruz, establishing a comprehensive Climate Action Plan unifies diverse sectors under one cohesive strategy to reduce emissions and address climate risks. This plan provides a clear framework for long-term resource allocation and adaptation measures. It lays the groundwork for coordinated actions that enhance overall resilience and sustainability.",
         "action": {
             "ActionID": "icare_0176",
             "ActionName": "Desenvolvimento do Plano de A\u00e7\u00e3o Clim\u00e1tica",
@@ -78,7 +78,7 @@
         "actionId": "ipcc_0094",
         "actionName": "Access to health care",
         "actionPriority": 2,
-        "explanation": "Ranked #2 by tournament ranking algorithm",
+        "explanation": "For Aracruz, improving access to health care ensures residents receive timely treatment during extreme weather events. Enhanced medical services reduce the impact of climate-related illnesses and emergencies. This strengthens the city's overall capacity to cope with environmental stresses while safeguarding public well-being.",
         "action": {
             "ActionID": "ipcc_0094",
             "ActionName": "Acesso aos cuidados de sa\u00fade",
@@ -142,7 +142,7 @@
         "actionId": "icare_0151",
         "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
         "actionPriority": 3,
-        "explanation": "Ranked #3 by tournament ranking algorithm",
+        "explanation": "For Aracruz, thoroughly assessing and upgrading vulnerable neighborhoods improves living conditions and lowers risks from floods or heatwaves. Targeted interventions in these areas ensure that the most at-risk communities are better protected. This approach enhances social equity and builds stronger, more resilient local infrastructure.",
         "action": {
             "ActionID": "icare_0151",
             "ActionName": "Desenvolver diagn\u00f3sticos e restaurar \u00e1reas de Zonas Especiais de Interesse Social (ZEIS)",
@@ -207,7 +207,7 @@
         "actionId": "ipcc_0093",
         "actionName": "Availability of health infrastructure",
         "actionPriority": 4,
-        "explanation": "Ranked #4 by tournament ranking algorithm",
+        "explanation": "For Aracruz, expanding the network of hospitals and clinics improves emergency preparedness and routine care. Enhanced health infrastructure provides critical support during disasters and extreme weather conditions. This preparedness underpins community resilience and ensures prompt response to climate-induced health issues.",
         "action": {
             "ActionID": "ipcc_0093",
             "ActionName": "Disponibilidade de infraestrutura de sa\u00fade",
@@ -271,7 +271,7 @@
         "actionId": "ipcc_0097",
         "actionName": "Food storage/distribution improvements",
         "actionPriority": 5,
-        "explanation": "Ranked #5 by tournament ranking algorithm",
+        "explanation": "For Aracruz, reinforcing food storage and distribution systems stabilizes supply chains during climate disruptions. Reliable cold storage and efficient logistics help prevent spoilage, ensuring that communities have steady access to essential supplies. This stability is key to maintaining public health and supporting local agricultural sectors.",
         "action": {
             "ActionID": "ipcc_0097",
             "ActionName": "Melhorias no armazenamento/distribui\u00e7\u00e3o de alimentos",
@@ -337,7 +337,7 @@
         "actionId": "icare_0169",
         "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
         "actionPriority": 6,
-        "explanation": "Ranked #6 by tournament ranking algorithm",
+        "explanation": "For Aracruz, a robust emergency response plan organizes rescue and relief efforts when severe weather strikes. This proactive strategy minimizes chaos and reduces damage by ensuring that services are mobilized efficiently. Clear response procedures help protect lives and maintain civic stability during climatic emergencies.",
         "action": {
             "ActionID": "icare_0169",
             "ActionName": "Estabelecer um Plano de Prepara\u00e7\u00e3o e Medidas de Resposta a Emerg\u00eancias em caso de eventos clim\u00e1ticos extremos",
@@ -408,7 +408,7 @@
         "actionId": "icare_0162",
         "actionName": "Strengthen programs for control and conservation of protected areas",
         "actionPriority": 7,
-        "explanation": "Ranked #7 by tournament ranking algorithm",
+        "explanation": "For Aracruz, enhancing the management of protected natural areas safeguards local biodiversity, water quality, and carbon sinks. These ecosystems naturally mitigate flood risks and stabilize the local climate. Conserving these resources ensures long-term environmental benefits for the community.",
         "action": {
             "ActionID": "icare_0162",
             "ActionName": "Fortalecer programas de controle e conserva\u00e7\u00e3o de \u00e1reas protegidas",
@@ -471,7 +471,7 @@
         "actionId": "icare_0152",
         "actionName": "Recovery of degraded areas",
         "actionPriority": 8,
-        "explanation": "Ranked #8 by tournament ranking algorithm",
+        "explanation": "For Aracruz, rehabilitating degraded lands restores essential ecosystem functions such as water retention and erosion control. These efforts create a healthier environment that can better withstand extreme weather events. Restored areas also contribute to regional sustainability by improving the quality of agricultural lands.",
         "action": {
             "ActionID": "icare_0152",
             "ActionName": "Recupera\u00e7\u00e3o de \u00e1reas degradadas",
@@ -534,7 +534,7 @@
         "actionId": "icare_0164",
         "actionName": "Hydrological Monitoring System with Telemetry Stations",
         "actionPriority": 9,
-        "explanation": "Ranked #9 by tournament ranking algorithm",
+        "explanation": "For Aracruz, real-time monitoring of water levels using telemetry stations enables early detection of flooding and droughts. Quick alerts allow for timely evacuations and resource management, reducing damage and saving lives. This data-driven approach supports proactive water and disaster management strategies.",
         "action": {
             "ActionID": "icare_0164",
             "ActionName": "Sistema de Monitoramento Hidrol\u00f3gico com Esta\u00e7\u00f5es de Telemetria",
@@ -595,7 +595,7 @@
         "actionId": "icare_0148",
         "actionName": "Create the Municipal Climate Change Forum",
         "actionPriority": 10,
-        "explanation": "Ranked #10 by tournament ranking algorithm",
+        "explanation": "For Aracruz, a dedicated climate change forum facilitates dialogue among government, businesses, and community members. This collaborative platform ensures that climate policies reflect local needs and harness diverse expertise. It plays a crucial role in shaping effective and inclusive adaptation strategies.",
         "action": {
             "ActionID": "icare_0148",
             "ActionName": "Criar o F\u00f3rum Municipal de Mudan\u00e7as Clim\u00e1ticas",
@@ -666,7 +666,7 @@
         "actionId": "icare_0145",
         "actionName": "Strengthen the healthcare network to attend to climate victims",
         "actionPriority": 11,
-        "explanation": "Ranked #11 by tournament ranking algorithm",
+        "explanation": "For Aracruz, bolstering healthcare infrastructure ensures prompt medical support during extreme events such as floods or heatwaves. Enhanced clinics and emergency services reduce the risk of severe health impacts among residents. This focus on public health strengthens community resilience in the face of climate challenges.",
         "action": {
             "ActionID": "icare_0145",
             "ActionName": "Fortalecer a rede de sa\u00fade para atender \u00e0s v\u00edtimas do clima",
@@ -734,7 +734,7 @@
         "actionId": "ipcc_0096",
         "actionName": "Farm/fishery improvements",
         "actionPriority": 12,
-        "explanation": "Ranked #12 by tournament ranking algorithm",
+        "explanation": "For Aracruz, enhancing agricultural and fishery practices boosts food security and resilience against climate extremes. Modern practices reduce water use and energy consumption while improving productivity. These improvements stabilize local economies and support sustainable livelihoods.",
         "action": {
             "ActionID": "ipcc_0096",
             "ActionName": "Melhorias na fazenda/pesqueira",
@@ -802,7 +802,7 @@
         "actionId": "icare_0175",
         "actionName": "Recovery and preservation of green areas",
         "actionPriority": 13,
-        "explanation": "Ranked #13 by tournament ranking algorithm",
+        "explanation": "For Aracruz, restoring and protecting green spaces contributes to natural cooling and flood mitigation. Healthy vegetation absorbs rainwater and reduces the heat island effect, making urban areas more livable. These efforts also enhance recreational opportunities and support local biodiversity.",
         "action": {
             "ActionID": "icare_0175",
             "ActionName": "Recupera\u00e7\u00e3o e preserva\u00e7\u00e3o de \u00e1reas verdes",
@@ -862,7 +862,7 @@
         "actionId": "ipcc_0092",
         "actionName": "Social safety nets",
         "actionPriority": 14,
-        "explanation": "Ranked #14 by tournament ranking algorithm",
+        "explanation": "For Aracruz, robust social safety systems provide essential support during climate-induced crises, such as floods or heatwaves. These programs ensure that vulnerable populations have access to food, shelter, and medical care when needed. By mitigating the social impact of extreme events, they help maintain community stability.",
         "action": {
             "ActionID": "ipcc_0092",
             "ActionName": "Redes de prote\u00e7\u00e3o social",
@@ -926,7 +926,7 @@
         "actionId": "icare_0181",
         "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
         "actionPriority": 15,
-        "explanation": "Ranked #15 by tournament ranking algorithm",
+        "explanation": "For Aracruz, relocating communities from high-risk zones minimizes repeated losses from floods or landslides. Restoring these areas revitalizes natural defenses and improves ecological function. This proactive measure protects lives while ensuring long-term environmental sustainability.",
         "action": {
             "ActionID": "icare_0181",
             "ActionName": "Reloca\u00e7\u00e3o e Restaura\u00e7\u00e3o Ambiental em \u00c1reas Vulner\u00e1veis",
@@ -985,7 +985,7 @@
         "actionId": "ipcc_0098",
         "actionName": "Behaviour change in diets and food waste",
         "actionPriority": 16,
-        "explanation": "Ranked #16 by tournament ranking algorithm",
+        "explanation": "For Aracruz, promoting shifts in dietary habits and reducing food waste lessen pressure on agricultural systems. These changes help cut emissions and lower resource demands while promoting healthier lifestyles. Widespread adoption of sustainable food practices ultimately contributes to broader climate goals.",
         "action": {
             "ActionID": "ipcc_0098",
             "ActionName": "Mudan\u00e7a de comportamento em dietas e desperd\u00edcio de alimentos",
@@ -1051,7 +1051,7 @@
         "actionId": "icare_0149",
         "actionName": "Encourage sustainable land use practices",
         "actionPriority": 17,
-        "explanation": "Ranked #17 by tournament ranking algorithm",
+        "explanation": "For Aracruz, implementing sustainable land use guidelines helps balance urban growth with natural resource preservation. Smart zoning and farming techniques reduce ecological degradation and lower flood risks. This alignment of development with environmental conservation fosters long-term community resilience.",
         "action": {
             "ActionID": "icare_0149",
             "ActionName": "Incentivar pr\u00e1ticas sustent\u00e1veis de uso da terra",
@@ -1116,7 +1116,7 @@
         "actionId": "icare_0156",
         "actionName": "Implementation of urban gardens",
         "actionPriority": 18,
-        "explanation": "Ranked #18 by tournament ranking algorithm",
+        "explanation": "For Aracruz, converting vacant urban spaces into gardens improves local food security and moderates urban heat. These gardens also offer community gathering spaces that promote well-being and environmental awareness. By reducing heat and managing stormwater, urban gardens enhance overall urban resilience.",
         "action": {
             "ActionID": "icare_0156",
             "ActionName": "Implementa\u00e7\u00e3o de hortas urbanas",
@@ -1177,7 +1177,7 @@
         "actionId": "ipcc_0086",
         "actionName": "Ecosystem-based adaptation",
         "actionPriority": 19,
-        "explanation": "Ranked #19 by tournament ranking algorithm",
+        "explanation": "For Aracruz, harnessing natural processes through ecosystem-based adaptation\u2014such as wetland and forest restoration\u2014helps buffer against climate extremes. These ecosystems naturally store carbon, regulate water flow, and cool urban areas. This cost-effective method reduces the need for heavy infrastructure while promoting biodiversity.",
         "action": {
             "ActionID": "ipcc_0086",
             "ActionName": "Adapta\u00e7\u00e3o baseada em ecossistemas",
@@ -1254,7 +1254,7 @@
         "actionId": "ipcc_0099",
         "actionName": "Water capture/storage",
         "actionPriority": 20,
-        "explanation": "Ranked #20 by tournament ranking algorithm",
+        "explanation": "For Aracruz, investing in water capture and storage systems ensures a reliable supply during droughts or peak demand periods. By collecting rainwater and maintaining reservoirs, the city reduces dependency on external water sources. This resilience measure supports agriculture and public consumption, stabilizing the region\u2019s water resources.",
         "action": {
             "ActionID": "ipcc_0099",
             "ActionName": "Captura/armazenamento de \u00e1gua",

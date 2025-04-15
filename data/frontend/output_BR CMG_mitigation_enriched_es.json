@@ -7,6 +7,7 @@
         "actionId": "icare_0050",
         "actionName": "Implement Agroforestry Systems",
         "actionPriority": 1,
+        "explanation": "Implementing agroforestry systems in Corumb\u00e1 is a high priority due to the city's significant land use emissions, which are the largest contributor to its total emissions. Agroforestry can help sequester carbon, reduce emissions, and improve soil health, which is crucial for a region with a grassland/savanna biome. Additionally, this action can enhance biodiversity and resilience against climate hazards such as droughts and floods, which pose high risks to the city's food security and infrastructure. By integrating trees with crops and livestock, agroforestry can also support local livelihoods and contribute to sustainable land management.",
         "action": {
             "ActionID": "icare_0050",
             "ActionName": "Implementar Sistemas Agroforestales",
@@ -69,6 +70,7 @@
         "actionId": "icare_0133",
         "actionName": "Promote Urban Reforestation and Green Corridors",
         "actionPriority": 2,
+        "explanation": "Promoting urban reforestation and green corridors in Corumb\u00e1 is crucial due to the city's vulnerability to climate hazards such as droughts and heatwaves. These green initiatives can help mitigate the urban heat island effect, improve air quality, and enhance biodiversity, which is currently at risk. Additionally, reforestation can play a significant role in carbon sequestration, helping to offset the high emissions from industrial processes and land use. By creating green spaces, the city can also improve the quality of life for its residents, providing areas for recreation and reducing the impact of extreme weather events.",
         "action": {
             "ActionID": "icare_0133",
             "ActionName": "Promover la Reforestaci\u00f3n Urbana y los Corredores Verdes",
@@ -131,6 +133,7 @@
         "actionId": "icare_0134",
         "actionName": "Strengthen Mechanisms for Deforestation Control",
         "actionPriority": 3,
+        "explanation": "Strengthening mechanisms for deforestation control in Corumb\u00e1 is crucial due to the city's significant land use emissions, which are the highest among all emission sources. The region's biome, primarily grassland and savanna, is vulnerable to deforestation, which can exacerbate climate change impacts and biodiversity loss. By enhancing deforestation control, Corumb\u00e1 can mitigate these emissions, protect its natural habitats, and contribute to global efforts in combating climate change. Additionally, effective deforestation control can help preserve water resources and improve resilience against droughts, which are identified as high-risk hazards for the city.",
         "action": {
             "ActionID": "icare_0134",
             "ActionName": "Fortalecer los Mecanismos para el Control de la Deforestaci\u00f3n",
@@ -193,6 +196,7 @@
         "actionId": "icare_0130",
         "actionName": "Conduct Technical Assistance and Rural Extension (ATER) Actions",
         "actionPriority": 4,
+        "explanation": "Conducting Technical Assistance and Rural Extension (ATER) actions in Corumb\u00e1 is crucial due to the city's significant land use emissions, which are the highest among its emission sources. These actions can help improve sustainable agricultural practices, reducing the environmental impact and enhancing food security, which is at high risk from droughts and floods. Additionally, ATER can support local communities in adapting to climate change impacts, thereby improving resilience against the frequent droughts and heatwaves that threaten water and energy security. By prioritizing this action, Corumb\u00e1 can address both environmental and socio-economic challenges effectively.",
         "action": {
             "ActionID": "icare_0130",
             "ActionName": "Realizar Acciones de Asistencia T\u00e9cnica y Extensi\u00f3n Rural (ATER)",
@@ -255,6 +259,7 @@
         "actionId": "icare_0128",
         "actionName": "Establish Municipal Programs for Payment for Environmental Services (PES)",
         "actionPriority": 5,
+        "explanation": "Establishing Municipal Programs for Payment for Environmental Services (PES) in Corumb\u00e1 is a high priority due to the city's significant land use emissions, which are the largest contributor to its total emissions. By incentivizing landowners to maintain and restore natural ecosystems, PES programs can help reduce these emissions and enhance biodiversity. Additionally, Corumb\u00e1 faces high risks from droughts and floods, which can be mitigated by improved land management practices supported by PES. This action aligns with the city's need to address environmental challenges while promoting sustainable development.",
         "action": {
             "ActionID": "icare_0128",
             "ActionName": "Establecer Programas Municipales de Pago por Servicios Ambientales (PES)",
@@ -317,6 +322,7 @@
         "actionId": "icare_0129",
         "actionName": "Facilitate Technology Transfer for Conservation Practices",
         "actionPriority": 6,
+        "explanation": "Facilitating technology transfer for conservation practices in Corumb\u00e1 is crucial due to the city's significant land use emissions, which are the highest among all emission categories. By adopting advanced conservation technologies, the city can effectively manage and reduce these emissions, contributing to a more sustainable environment. Additionally, Corumb\u00e1 faces high risks from climate hazards such as droughts and floods, which can be mitigated through improved conservation practices. This action supports the city's resilience against environmental challenges, ensuring long-term ecological and socio-economic benefits.",
         "action": {
             "ActionID": "icare_0129",
             "ActionName": "Facilitar la Transferencia de Tecnolog\u00eda para Pr\u00e1cticas de Conservaci\u00f3n",
@@ -379,6 +385,7 @@
         "actionId": "icare_0084",
         "actionName": "Create Incentives for Agroforestry Practices in Livestock Systems",
         "actionPriority": 7,
+        "explanation": "Creating incentives for agroforestry practices in livestock systems is crucial for Corumb\u00e1 due to its significant land use emissions, which are the highest among all emission sources. Agroforestry can help sequester carbon, reduce emissions, and improve biodiversity, addressing the high risk to biodiversity from droughts and heatwaves. Additionally, integrating trees into livestock systems can enhance soil health and water retention, mitigating the impacts of droughts on water resources and food security. This action aligns with the need to address the socio-economic factors and environmental challenges faced by the region.",
         "action": {
             "ActionID": "icare_0084",
             "ActionName": "Crear incentivos para pr\u00e1cticas de agroforester\u00eda en sistemas ganaderos",
@@ -441,6 +448,7 @@
         "actionId": "icare_0096",
         "actionName": "Promote Organic Farming",
         "actionPriority": 8,
+        "explanation": "Promoting organic farming in Corumb\u00e1 is a strategic action due to the city's significant land use emissions, which are the highest among its emission sources. By transitioning to organic farming practices, the city can reduce the environmental impact of agriculture, which is a major contributor to these emissions. Additionally, organic farming can enhance food security, a critical concern given the high risk of droughts affecting the region. This action also aligns with the need to protect biodiversity, which is threatened by both droughts and heatwaves, by promoting sustainable land management practices.",
         "action": {
             "ActionID": "icare_0096",
             "ActionName": "Promover la Agricultura Org\u00e1nica",
@@ -503,6 +511,7 @@
         "actionId": "icare_0102",
         "actionName": "Promote Sustainable Agricultural Practices",
         "actionPriority": 9,
+        "explanation": "Promoting sustainable agricultural practices in Corumb\u00e1 is crucial due to the city's significant land use emissions, which are the highest among all emission sources. By adopting sustainable methods, the city can reduce its environmental impact and improve the resilience of its agricultural sector against climate-related hazards such as droughts and floods. Additionally, sustainable agriculture can enhance food security, which is a key concern given the high risk of droughts affecting food resources. This action aligns with the need to mitigate the adverse effects of climate change on both the environment and the local economy.",
         "action": {
             "ActionID": "icare_0102",
             "ActionName": "Promover Pr\u00e1cticas Agr\u00edcolas Sostenibles",
@@ -565,6 +574,7 @@
         "actionId": "icare_0100",
         "actionName": "Support Regenerative Agriculture Practices",
         "actionPriority": 10,
+        "explanation": "Supporting regenerative agriculture practices in Corumb\u00e1 is crucial due to the city's significant land use emissions, which are the highest among all emission sources. By adopting regenerative practices, the city can enhance soil health, increase biodiversity, and sequester carbon, thereby reducing overall emissions. Additionally, these practices can improve food security, which is at high risk from droughts and floods, by making agricultural systems more resilient to climate impacts. This action aligns with the need to address key environmental challenges while supporting the local economy and community well-being.",
         "action": {
             "ActionID": "icare_0100",
             "ActionName": "Apoyar las Pr\u00e1cticas de Agricultura Regenerativa",
@@ -627,6 +637,7 @@
         "actionId": "icare_0127",
         "actionName": "Accelerate Environmental Regularization of Rural Properties",
         "actionPriority": 11,
+        "explanation": "Accelerating the environmental regularization of rural properties in Corumb\u00e1 is crucial due to the significant land use emissions, which are the highest among all emission sources in the city. This action can help mitigate the impact of these emissions by ensuring that rural properties adhere to environmental standards, thus preserving the grassland/savanna biome. Additionally, regularization can enhance the resilience of the local ecosystem against climate hazards such as droughts and floods, which pose high risks to water resources and food security. By prioritizing this action, Corumb\u00e1 can make substantial progress in reducing its overall environmental footprint and safeguarding its natural resources.",
         "action": {
             "ActionID": "icare_0127",
             "ActionName": "Acelerar la Regularizaci\u00f3n Ambiental de Propiedades Rurales",
@@ -689,6 +700,7 @@
         "actionId": "icare_0101",
         "actionName": "Encourage the Use of Low-Emission Agricultural Machinery",
         "actionPriority": 12,
+        "explanation": "Encouraging the use of low-emission agricultural machinery in Corumb\u00e1 is a significant action due to the city's high land use emissions, which are a major contributor to its total emissions profile. By promoting machinery that emits less, the city can effectively reduce its carbon footprint and mitigate its environmental impact. Additionally, this action aligns with the need to address the risks associated with climate change, such as droughts and heatwaves, which threaten local agriculture and food security. Implementing this action can also support sustainable agricultural practices, contributing to long-term economic and environmental resilience in the region.",
         "action": {
             "ActionID": "icare_0101",
             "ActionName": "Fomentar el uso de maquinaria agr\u00edcola de bajas emisiones",
@@ -751,6 +763,7 @@
         "actionId": "ipcc_0061",
         "actionName": "Soil Carbon Management in Croplands and Grasslands",
         "actionPriority": 13,
+        "explanation": "Soil Carbon Management in Croplands and Grasslands is a crucial action for Corumb\u00e1 due to its extensive grassland and savanna biome. This action can significantly enhance carbon sequestration, helping to mitigate the high land use emissions, which are a major contributor to the city's total emissions. Additionally, improving soil carbon can enhance soil fertility and water retention, which is vital for maintaining agricultural productivity in the face of frequent droughts. By prioritizing this action, Corumb\u00e1 can address both environmental and socio-economic challenges, promoting sustainable land management practices.",
         "action": {
             "ActionID": "ipcc_0061",
             "ActionName": "Gesti\u00f3n del Carbono del Suelo en Tierras de Cultivo y Pastizales",
@@ -812,6 +825,7 @@
         "actionId": "icare_0131",
         "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
         "actionPriority": 14,
+        "explanation": "Prioritizing the procurement of locally produced agroecological products in public purchases is crucial for Corumb\u00e1 due to its significant land use emissions. By supporting local agroecological practices, the city can reduce its carbon footprint and promote sustainable land management. This action also enhances food security, which is a key concern given the high risk of droughts affecting the region. Additionally, it supports the local economy and can improve resilience against climate-related hazards by fostering a more sustainable and self-sufficient food system.",
         "action": {
             "ActionID": "icare_0131",
             "ActionName": "Priorizar la Adquisici\u00f3n de Productos Agroecol\u00f3gicos de Producci\u00f3n Local en Compras P\u00fablicas",
@@ -874,6 +888,7 @@
         "actionId": "icare_0132",
         "actionName": "Encourage Local Agroecological Production and Short Supply Chains",
         "actionPriority": 15,
+        "explanation": "Encouraging local agroecological production and short supply chains is crucial for Corumb\u00e1 due to its vulnerability to climate-related hazards such as droughts and floods, which significantly impact food security. By promoting local production, the city can enhance its resilience against these risks, ensuring a more stable and sustainable food supply. Additionally, this action supports the local economy by reducing dependency on external sources and fostering community-based agricultural practices. It also contributes to lowering transportation emissions, aligning with the city's need to address its high total emissions.",
         "action": {
             "ActionID": "icare_0132",
             "ActionName": "Fomentar la Producci\u00f3n Agroecol\u00f3gica Local y las Cadenas de Suministro Cortas",
@@ -936,6 +951,7 @@
         "actionId": "icare_0136",
         "actionName": "Support the Implementation of Ecological Fiscal Incentives",
         "actionPriority": 16,
+        "explanation": "Supporting the implementation of ecological fiscal incentives in Corumb\u00e1 is crucial due to the city's significant land use emissions, which are the highest among its emission sources. By promoting sustainable land management practices through fiscal incentives, the city can effectively reduce these emissions. Additionally, Corumb\u00e1 faces high risks from environmental hazards such as droughts and floods, which can be mitigated by encouraging ecological conservation and restoration efforts. Implementing these incentives aligns with the city's need to address climate change impacts while promoting economic sustainability.",
         "action": {
             "ActionID": "icare_0136",
             "ActionName": "Apoyar la Implementaci\u00f3n de Incentivos Fiscales Ecol\u00f3gicos",
@@ -998,6 +1014,7 @@
         "actionId": "icare_0085",
         "actionName": "Promote the Adoption of Agroecological Pest Control",
         "actionPriority": 17,
+        "explanation": "Promoting the adoption of agroecological pest control in Corumb\u00e1 is crucial due to the city's reliance on agriculture and its vulnerability to climate-related hazards such as droughts and floods. Agroecological methods can enhance the resilience of local food systems by reducing dependency on chemical pesticides, which can be harmful to the environment and biodiversity. This approach aligns with the need to protect water resources and biodiversity, both of which are at high risk due to climate change impacts. Additionally, adopting sustainable pest control practices can contribute to long-term food security, a key concern given the high risk of droughts affecting the region.",
         "action": {
             "ActionID": "icare_0085",
             "ActionName": "Promover la Adopci\u00f3n del Control de Plagas Agroecol\u00f3gico",
@@ -1060,6 +1077,7 @@
         "actionId": "icare_0099",
         "actionName": "Support Agroecological Certification Programs",
         "actionPriority": 18,
+        "explanation": "Supporting agroecological certification programs in Corumb\u00e1 is crucial due to the city's significant land use emissions, which are the highest among its emission sources. Agroecological practices can help reduce these emissions by promoting sustainable land management and reducing deforestation. Additionally, these programs can enhance food security, which is at high risk from both droughts and floods, by encouraging resilient agricultural practices. Implementing such programs aligns with the city's need to address environmental and socio-economic challenges, fostering a more sustainable and secure future for its residents.",
         "action": {
             "ActionID": "icare_0099",
             "ActionName": "Apoyar los Programas de Certificaci\u00f3n Agroecol\u00f3gica",
@@ -1122,6 +1140,7 @@
         "actionId": "ipcc_0053",
         "actionName": "Afforestation, Reforestation and Forest Ecosystem Restoration",
         "actionPriority": 19,
+        "explanation": "Afforestation, reforestation, and forest ecosystem restoration are crucial for Corumb\u00e1 due to its significant land use emissions, which are the highest among all emission sources. Restoring forest ecosystems can help sequester carbon, thereby reducing the overall carbon footprint of the city. Additionally, these actions can enhance biodiversity and improve resilience against climate hazards such as droughts and heatwaves, which pose high risks to the region. By prioritizing this action, Corumb\u00e1 can also improve its natural water retention capabilities, mitigating the impacts of droughts and supporting water resources.",
         "action": {
             "ActionID": "ipcc_0053",
             "ActionName": "Aforestaci\u00f3n, Reforestaci\u00f3n y Restauraci\u00f3n de Ecosistemas Forestales",
@@ -1184,6 +1203,7 @@
         "actionId": "icare_0045",
         "actionName": "Promote organic and agroecological agriculture in the rural areas",
         "actionPriority": 20,
+        "explanation": "Promoting organic and agroecological agriculture in the rural areas of Corumb\u00e1 is a strategic action due to the city's significant land use emissions. By adopting sustainable agricultural practices, the city can reduce its environmental impact and enhance soil health, which is crucial given the region's grassland/savanna biome. Additionally, this action supports food security, a key concern in the face of climate hazards like droughts and floods. Implementing these practices can also improve the socio-economic conditions of rural communities by providing sustainable livelihoods.",
         "action": {
             "ActionID": "icare_0045",
             "ActionName": "Promover la agricultura org\u00e1nica y agroecol\u00f3gica en las \u00e1reas rurales",

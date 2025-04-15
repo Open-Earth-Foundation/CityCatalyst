@@ -3,200 +3,201 @@
         "locode": "BR ACZ",
         "cityName": "Aracruz",
         "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
+        "regionName": "Espírito Santo",
         "actionId": "icare_0176",
         "actionName": "Development of Climate Action Plan",
         "actionPriority": 1,
-        "explanation": "Ranked #1 by tournament ranking algorithm"
+        "explanation": "For the city of Aracruz, establishing a comprehensive Climate Action Plan unifies diverse sectors under one cohesive strategy to reduce emissions and address climate risks. This plan provides a clear framework for long-term resource allocation and adaptation measures. It lays the groundwork for coordinated actions that enhance overall resilience and sustainability."
     },
     {
         "locode": "BR ACZ",
         "cityName": "Aracruz",
         "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
+        "regionName": "Espírito Santo",
         "actionId": "ipcc_0094",
         "actionName": "Access to health care",
         "actionPriority": 2,
-        "explanation": "Ranked #2 by tournament ranking algorithm"
+        "explanation": "For Aracruz, improving access to health care ensures residents receive timely treatment during extreme weather events. Enhanced medical services reduce the impact of climate-related illnesses and emergencies. This strengthens the city's overall capacity to cope with environmental stresses while safeguarding public well-being."
     },
     {
         "locode": "BR ACZ",
         "cityName": "Aracruz",
         "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
+        "regionName": "Espírito Santo",
         "actionId": "icare_0151",
         "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
         "actionPriority": 3,
-        "explanation": "Ranked #3 by tournament ranking algorithm"
+        "explanation": "For Aracruz, thoroughly assessing and upgrading vulnerable neighborhoods improves living conditions and lowers risks from floods or heatwaves. Targeted interventions in these areas ensure that the most at-risk communities are better protected. This approach enhances social equity and builds stronger, more resilient local infrastructure."
     },
     {
         "locode": "BR ACZ",
         "cityName": "Aracruz",
         "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
+        "regionName": "Espírito Santo",
         "actionId": "ipcc_0093",
         "actionName": "Availability of health infrastructure",
         "actionPriority": 4,
-        "explanation": "Ranked #4 by tournament ranking algorithm"
+        "explanation": "For Aracruz, expanding the network of hospitals and clinics improves emergency preparedness and routine care. Enhanced health infrastructure provides critical support during disasters and extreme weather conditions. This preparedness underpins community resilience and ensures prompt response to climate-induced health issues."
     },
     {
         "locode": "BR ACZ",
         "cityName": "Aracruz",
         "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
+        "regionName": "Espírito Santo",
         "actionId": "ipcc_0097",
         "actionName": "Food storage/distribution improvements",
         "actionPriority": 5,
-        "explanation": "Ranked #5 by tournament ranking algorithm"
+        "explanation": "For Aracruz, reinforcing food storage and distribution systems stabilizes supply chains during climate disruptions. Reliable cold storage and efficient logistics help prevent spoilage, ensuring that communities have steady access to essential supplies. This stability is key to maintaining public health and supporting local agricultural sectors."
     },
     {
         "locode": "BR ACZ",
         "cityName": "Aracruz",
         "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
+        "regionName": "Espírito Santo",
         "actionId": "icare_0169",
         "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
         "actionPriority": 6,
-        "explanation": "Ranked #6 by tournament ranking algorithm"
+        "explanation": "For Aracruz, a robust emergency response plan organizes rescue and relief efforts when severe weather strikes. This proactive strategy minimizes chaos and reduces damage by ensuring that services are mobilized efficiently. Clear response procedures help protect lives and maintain civic stability during climatic emergencies."
     },
     {
         "locode": "BR ACZ",
         "cityName": "Aracruz",
         "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
+        "regionName": "Espírito Santo",
         "actionId": "icare_0162",
         "actionName": "Strengthen programs for control and conservation of protected areas",
         "actionPriority": 7,
-        "explanation": "Ranked #7 by tournament ranking algorithm"
+        "explanation": "For Aracruz, enhancing the management of protected natural areas safeguards local biodiversity, water quality, and carbon sinks. These ecosystems naturally mitigate flood risks and stabilize the local climate. Conserving these resources ensures long-term environmental benefits for the community."
     },
     {
         "locode": "BR ACZ",
         "cityName": "Aracruz",
         "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
+        "regionName": "Espírito Santo",
         "actionId": "icare_0152",
         "actionName": "Recovery of degraded areas",
         "actionPriority": 8,
-        "explanation": "Ranked #8 by tournament ranking algorithm"
+        "explanation": "For Aracruz, rehabilitating degraded lands restores essential ecosystem functions such as water retention and erosion control. These efforts create a healthier environment that can better withstand extreme weather events. Restored areas also contribute to regional sustainability by improving the quality of agricultural lands."
     },
     {
         "locode": "BR ACZ",
         "cityName": "Aracruz",
         "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
+        "regionName": "Espírito Santo",
         "actionId": "icare_0164",
         "actionName": "Hydrological Monitoring System with Telemetry Stations",
         "actionPriority": 9,
-        "explanation": "Ranked #9 by tournament ranking algorithm"
+        "explanation": "For Aracruz, real-time monitoring of water levels using telemetry stations enables early detection of flooding and droughts. Quick alerts allow for timely evacuations and resource management, reducing damage and saving lives. This data-driven approach supports proactive water and disaster management strategies."
     },
     {
         "locode": "BR ACZ",
         "cityName": "Aracruz",
         "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
+        "regionName": "Espírito Santo",
         "actionId": "icare_0148",
         "actionName": "Create the Municipal Climate Change Forum",
         "actionPriority": 10,
-        "explanation": "Ranked #10 by tournament ranking algorithm"
+        "explanation": "For Aracruz, a dedicated climate change forum facilitates dialogue among government, businesses, and community members. This collaborative platform ensures that climate policies reflect local needs and harness diverse expertise. It plays a crucial role in shaping effective and inclusive adaptation strategies."
     },
     {
         "locode": "BR ACZ",
         "cityName": "Aracruz",
         "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
+        "regionName": "Espírito Santo",
         "actionId": "icare_0145",
         "actionName": "Strengthen the healthcare network to attend to climate victims",
         "actionPriority": 11,
-        "explanation": "Ranked #11 by tournament ranking algorithm"
+        "explanation": "For Aracruz, bolstering healthcare infrastructure ensures prompt medical support during extreme events such as floods or heatwaves. Enhanced clinics and emergency services reduce the risk of severe health impacts among residents. This focus on public health strengthens community resilience in the face of climate challenges."
     },
     {
         "locode": "BR ACZ",
         "cityName": "Aracruz",
         "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
+        "regionName": "Espírito Santo",
         "actionId": "ipcc_0096",
         "actionName": "Farm/fishery improvements",
         "actionPriority": 12,
-        "explanation": "Ranked #12 by tournament ranking algorithm"
+        "explanation": "For Aracruz, enhancing agricultural and fishery practices boosts food security and resilience against climate extremes. Modern practices reduce water use and energy consumption while improving productivity. These improvements stabilize local economies and support sustainable livelihoods."
     },
     {
         "locode": "BR ACZ",
         "cityName": "Aracruz",
         "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
+        "regionName": "Espírito Santo",
         "actionId": "icare_0175",
         "actionName": "Recovery and preservation of green areas",
         "actionPriority": 13,
-        "explanation": "Ranked #13 by tournament ranking algorithm"
+        "explanation": "For Aracruz, restoring and protecting green spaces contributes to natural cooling and flood mitigation. Healthy vegetation absorbs rainwater and reduces the heat island effect, making urban areas more livable. These efforts also enhance recreational opportunities and support local biodiversity."
     },
     {
         "locode": "BR ACZ",
         "cityName": "Aracruz",
         "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
+        "regionName": "Espírito Santo",
         "actionId": "ipcc_0092",
         "actionName": "Social safety nets",
         "actionPriority": 14,
-        "explanation": "Ranked #14 by tournament ranking algorithm"
+        "explanation": "For Aracruz, robust social safety systems provide essential support during climate-induced crises, such as floods or heatwaves. These programs ensure that vulnerable populations have access to food, shelter, and medical care when needed. By mitigating the social impact of extreme events, they help maintain community stability."
     },
     {
         "locode": "BR ACZ",
         "cityName": "Aracruz",
         "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
+        "regionName": "Espírito Santo",
         "actionId": "icare_0181",
         "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
         "actionPriority": 15,
-        "explanation": "Ranked #15 by tournament ranking algorithm"
+        "explanation": "For Aracruz, relocating communities from high-risk zones minimizes repeated losses from floods or landslides. Restoring these areas revitalizes natural defenses and improves ecological function. This proactive measure protects lives while ensuring long-term environmental sustainability."
     },
     {
         "locode": "BR ACZ",
         "cityName": "Aracruz",
         "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
+        "regionName": "Espírito Santo",
         "actionId": "ipcc_0098",
         "actionName": "Behaviour change in diets and food waste",
         "actionPriority": 16,
-        "explanation": "Ranked #16 by tournament ranking algorithm"
+        "explanation": "For Aracruz, promoting shifts in dietary habits and reducing food waste lessen pressure on agricultural systems. These changes help cut emissions and lower resource demands while promoting healthier lifestyles. Widespread adoption of sustainable food practices ultimately contributes to broader climate goals."
     },
     {
         "locode": "BR ACZ",
         "cityName": "Aracruz",
         "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
+        "regionName": "Espírito Santo",
         "actionId": "icare_0149",
         "actionName": "Encourage sustainable land use practices",
         "actionPriority": 17,
-        "explanation": "Ranked #17 by tournament ranking algorithm"
+        "explanation": "For Aracruz, implementing sustainable land use guidelines helps balance urban growth with natural resource preservation. Smart zoning and farming techniques reduce ecological degradation and lower flood risks. This alignment of development with environmental conservation fosters long-term community resilience."
     },
     {
         "locode": "BR ACZ",
         "cityName": "Aracruz",
         "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
+        "regionName": "Espírito Santo",
         "actionId": "icare_0156",
         "actionName": "Implementation of urban gardens",
         "actionPriority": 18,
-        "explanation": "Ranked #18 by tournament ranking algorithm"
+        "explanation": "For Aracruz, converting vacant urban spaces into gardens improves local food security and moderates urban heat. These gardens also offer community gathering spaces that promote well-being and environmental awareness. By reducing heat and managing stormwater, urban gardens enhance overall urban resilience."
     },
     {
         "locode": "BR ACZ",
         "cityName": "Aracruz",
         "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
+        "regionName": "Espírito Santo",
         "actionId": "ipcc_0086",
         "actionName": "Ecosystem-based adaptation",
         "actionPriority": 19,
-        "explanation": "Ranked #19 by tournament ranking algorithm"
+        "explanation": "For Aracruz, harnessing natural processes through ecosystem-based adaptation—such as wetland and forest restoration—helps buffer against climate extremes. These ecosystems naturally store carbon, regulate water flow, and cool urban areas. This cost-effective method reduces the need for heavy infrastructure while promoting biodiversity."
     },
     {
         "locode": "BR ACZ",
         "cityName": "Aracruz",
         "region": "ES",
-        "regionName": "Esp\u00edrito Santo",
+        "regionName": "Espírito Santo",
         "actionId": "ipcc_0099",
         "actionName": "Water capture/storage",
         "actionPriority": 20,
-        "explanation": "Ranked #20 by tournament ranking algorithm"
+        "explanation": "For Aracruz, investing in water capture and storage systems ensures a reliable supply during droughts or peak demand periods. By collecting rainwater and maintaining reservoirs, the city reduces dependency on external water sources. This resilience measure supports agriculture and public consumption, stabilizing the region’s water resources."
     }
 ]
+ 

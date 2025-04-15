@@ -7,7 +7,7 @@
         "actionId": "icare_0176",
         "actionName": "Development of Climate Action Plan",
         "actionPriority": 1,
-        "explanation": "Ranked #1 by tournament ranking algorithm",
+        "explanation": "The development of a Climate Action Plan is crucial for Miranda due to its significant environmental challenges. The city faces high emissions, particularly from land use, which contribute to its total emissions of over 1.1 million tons. Additionally, Miranda is at risk from various climate hazards, including droughts and heatwaves, which threaten water resources, food security, and public health. By prioritizing a Climate Action Plan, the city can strategically address these risks and work towards reducing emissions, thereby enhancing resilience and sustainability.",
         "action": {
             "ActionID": "icare_0176",
             "ActionName": "Desarrollo del Plan de Acci\u00f3n Clim\u00e1tica",
@@ -78,7 +78,7 @@
         "actionId": "icare_0151",
         "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
         "actionPriority": 2,
-        "explanation": "Ranked #2 by tournament ranking algorithm",
+        "explanation": "The action to develop diagnostics and restore areas of Special Social Interest Zones (ZEIS) is crucial for Miranda due to its moderate socio-economic challenges and inadequate sanitation services. By focusing on ZEIS, the city can address these socio-economic disparities and improve living conditions for its residents. Additionally, restoring these areas can help mitigate the impacts of environmental hazards such as floods and landslides, which pose significant risks to infrastructure and public health. This action aligns with the city's need to enhance resilience against climate-related risks and improve overall quality of life.",
         "action": {
             "ActionID": "icare_0151",
             "ActionName": "Desarrollar diagn\u00f3sticos y restaurar \u00e1reas de Zonas de Inter\u00e9s Social Especial (ZEIS)",
@@ -143,7 +143,7 @@
         "actionId": "icare_0156",
         "actionName": "Implementation of urban gardens",
         "actionPriority": 3,
-        "explanation": "Ranked #3 by tournament ranking algorithm",
+        "explanation": "The implementation of urban gardens in Miranda is a significant action due to its potential to enhance food security, which is a key concern given the city's vulnerability to droughts. Urban gardens can provide a sustainable source of fresh produce, reducing reliance on external food supplies and mitigating the impact of food shortages. Additionally, these gardens can improve local biodiversity and contribute to community well-being by creating green spaces. This action also aligns with the city's socio-economic context, offering opportunities for community engagement and education on sustainable practices.",
         "action": {
             "ActionID": "icare_0156",
             "ActionName": "Implementaci\u00f3n de huertos urbanos",
@@ -204,7 +204,7 @@
         "actionId": "icare_0175",
         "actionName": "Recovery and preservation of green areas",
         "actionPriority": 4,
-        "explanation": "Ranked #4 by tournament ranking algorithm",
+        "explanation": "The recovery and preservation of green areas in Miranda is crucial due to the city's location in a grassland/savanna biome, which is sensitive to environmental changes. Green areas play a vital role in maintaining biodiversity and providing natural buffers against climate hazards such as droughts and heatwaves, which are significant risks for the city. Additionally, enhancing green spaces can improve public health by reducing heat stress and improving air quality. This action also supports the city's efforts to mitigate emissions, as green areas can act as carbon sinks, helping to offset some of the high land use emissions.",
         "action": {
             "ActionID": "icare_0175",
             "ActionName": "Recuperaci\u00f3n y preservaci\u00f3n de \u00e1reas verdes",
@@ -264,7 +264,7 @@
         "actionId": "icare_0162",
         "actionName": "Strengthen programs for control and conservation of protected areas",
         "actionPriority": 5,
-        "explanation": "Ranked #5 by tournament ranking algorithm",
+        "explanation": "Strengthening programs for control and conservation of protected areas is crucial for Miranda due to its significant land use emissions, which are the highest among all emission sources. The city's biome, grassland/savanna, is sensitive to changes and requires careful management to maintain biodiversity and ecosystem services. Additionally, the risk of droughts impacting water resources and biodiversity highlights the need for robust conservation efforts to mitigate these risks. By prioritizing this action, Miranda can enhance its resilience against environmental hazards and contribute to the preservation of its natural heritage.",
         "action": {
             "ActionID": "icare_0162",
             "ActionName": "Fortalecer los programas de control y conservaci\u00f3n de \u00e1reas protegidas",
@@ -327,7 +327,7 @@
         "actionId": "icare_0149",
         "actionName": "Encourage sustainable land use practices",
         "actionPriority": 6,
-        "explanation": "Ranked #6 by tournament ranking algorithm",
+        "explanation": "Encouraging sustainable land use practices in Miranda is crucial due to the significant land use emissions, which are the highest among all emission sources in the city. The region's grassland and savanna biome is particularly sensitive to unsustainable practices, which can exacerbate emissions and degrade the environment. By promoting sustainable land use, the city can mitigate its environmental impact and enhance the resilience of its ecosystems. Additionally, sustainable practices can help address the moderate socio-economic challenges by potentially providing more stable and sustainable livelihoods for the local population.",
         "action": {
             "ActionID": "icare_0149",
             "ActionName": "Fomentar pr\u00e1cticas sostenibles de uso de la tierra",
@@ -392,7 +392,7 @@
         "actionId": "icare_0169",
         "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
         "actionPriority": 7,
-        "explanation": "Ranked #7 by tournament ranking algorithm",
+        "explanation": "Establishing a plan for preparation and emergency response measures in Miranda is crucial due to the city's vulnerability to extreme weather events. The city faces significant risks from hazards such as droughts, heatwaves, and floods, which can severely impact infrastructure and public health. By having a robust emergency response plan, Miranda can mitigate the adverse effects of these events, ensuring the safety and well-being of its residents. Additionally, such a plan would enhance the city's resilience, allowing for quicker recovery and reduced long-term damage from climate-related incidents.",
         "action": {
             "ActionID": "icare_0169",
             "ActionName": "Establecer un Plan de Preparaci\u00f3n y Medidas de Respuesta de Emergencia en caso de eventos clim\u00e1ticos extremos",
@@ -463,7 +463,7 @@
         "actionId": "icare_0152",
         "actionName": "Recovery of degraded areas",
         "actionPriority": 8,
-        "explanation": "Ranked #8 by tournament ranking algorithm",
+        "explanation": "The action 'Recovery of degraded areas' is crucial for Miranda due to its significant land use emissions, which are the highest among all emission sources in the city. Restoring degraded areas can help sequester carbon, thereby reducing the overall carbon footprint of the city. Additionally, this action can enhance biodiversity and improve the resilience of local ecosystems, which are currently threatened by droughts and heatwaves. By prioritizing this action, Miranda can also address issues related to food security and water resources, which are impacted by environmental degradation.",
         "action": {
             "ActionID": "icare_0152",
             "ActionName": "Recuperaci\u00f3n de \u00e1reas degradadas",
@@ -526,7 +526,7 @@
         "actionId": "ipcc_0095",
         "actionName": "Disaster early warning",
         "actionPriority": 9,
-        "explanation": "Ranked #9 by tournament ranking algorithm",
+        "explanation": "Implementing a disaster early warning system in Miranda is crucial due to the city's vulnerability to various natural hazards, such as droughts, heatwaves, and floods. These hazards pose significant risks to infrastructure, public health, and food security, making early warnings essential for timely response and mitigation. Given the moderate population size and the socio-economic factors, an effective early warning system can help minimize the impact of these hazards on the community. Additionally, the city's low population density and large area make it important to have a robust communication system to ensure that warnings reach all residents promptly.",
         "action": {
             "ActionID": "ipcc_0095",
             "ActionName": "Alerta temprana de desastres",
@@ -591,7 +591,7 @@
         "actionId": "ipcc_0094",
         "actionName": "Access to health care",
         "actionPriority": 10,
-        "explanation": "Ranked #10 by tournament ranking algorithm",
+        "explanation": "Improving access to health care in Miranda is crucial due to the city's vulnerability to various climate-related hazards, such as heatwaves and diseases, which pose significant risks to public health. The moderate level of inadequate sanitation further exacerbates health challenges, making it essential to enhance healthcare services to prevent and manage potential outbreaks. Additionally, the city's low population density and moderate socio-economic status may limit residents' ability to access necessary medical care, highlighting the need for improved healthcare infrastructure and services. Addressing these issues will help build resilience against climate impacts and improve overall community well-being.",
         "action": {
             "ActionID": "ipcc_0094",
             "ActionName": "Acceso a la atenci\u00f3n m\u00e9dica",
@@ -655,7 +655,7 @@
         "actionId": "ipcc_0097",
         "actionName": "Food storage/distribution improvements",
         "actionPriority": 11,
-        "explanation": "Ranked #11 by tournament ranking algorithm",
+        "explanation": "Improving food storage and distribution is crucial for Miranda due to its vulnerability to droughts, which pose a significant risk to food security. With a moderate low-income population, enhancing food systems can help ensure consistent access to food, reducing the impact of supply disruptions. Additionally, better food storage can minimize waste emissions, contributing to a reduction in the city's overall emissions. This action supports the resilience of the local community by safeguarding food availability during climate-related events.",
         "action": {
             "ActionID": "ipcc_0097",
             "ActionName": "Mejoras en el almacenamiento/distribuci\u00f3n de alimentos",
@@ -721,7 +721,7 @@
         "actionId": "icare_0180",
         "actionName": "Implement permeable pavements and increase green areas in roadways",
         "actionPriority": 12,
-        "explanation": "Ranked #12 by tournament ranking algorithm",
+        "explanation": "Implementing permeable pavements and increasing green areas in roadways is crucial for Miranda due to its vulnerability to floods and landslides. The city's infrastructure is at significant risk from these hazards, and enhancing the permeability of surfaces can help manage stormwater more effectively, reducing flood risks. Additionally, increasing green areas can improve urban biodiversity and provide cooling effects, which are beneficial in mitigating the impacts of heatwaves. This action aligns with the need to enhance the city's resilience to climate-related hazards, making it a strategic priority.",
         "action": {
             "ActionID": "icare_0180",
             "ActionName": "Implementar pavimentos permeables y aumentar las \u00e1reas verdes en las v\u00edas p\u00fablicas",
@@ -782,7 +782,7 @@
         "actionId": "icare_0157",
         "actionName": "Maintenance and Revitalization of Riparian Forests",
         "actionPriority": 13,
-        "explanation": "Ranked #13 by tournament ranking algorithm",
+        "explanation": "The maintenance and revitalization of riparian forests in Miranda is crucial due to the city's significant land use emissions, which are the highest among its emission sources. Riparian forests play a vital role in stabilizing soil and reducing erosion, which can help mitigate the risk of landslides\u2014a notable hazard for the city's infrastructure. Additionally, these forests contribute to biodiversity conservation, which is important given the city's vulnerability to droughts and heatwaves that threaten local ecosystems. By enhancing riparian zones, the city can improve water quality and availability, addressing moderate issues with sanitation and supporting overall environmental resilience.",
         "action": {
             "ActionID": "icare_0157",
             "ActionName": "Mantenimiento y Revitalizaci\u00f3n de Bosques Ribere\u00f1os",
@@ -845,7 +845,7 @@
         "actionId": "icare_0181",
         "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
         "actionPriority": 14,
-        "explanation": "Ranked #14 by tournament ranking algorithm",
+        "explanation": "The action of relocating and restoring vulnerable areas in Miranda is crucial due to the city's exposure to various environmental hazards. With significant risks from droughts, heatwaves, and floods impacting infrastructure and public health, addressing these vulnerabilities is essential for the city's resilience. The low population density and moderate income levels suggest that targeted interventions can have a substantial impact on improving living conditions. Additionally, environmental restoration can help mitigate emissions and enhance biodiversity, contributing to long-term sustainability.",
         "action": {
             "ActionID": "icare_0181",
             "ActionName": "Reubicaci\u00f3n y Restauraci\u00f3n Ambiental en \u00c1reas Vulnerables",
@@ -904,7 +904,7 @@
         "actionId": "ipcc_0096",
         "actionName": "Farm/fishery improvements",
         "actionPriority": 15,
-        "explanation": "Ranked #15 by tournament ranking algorithm",
+        "explanation": "Farm and fishery improvements are crucial for Miranda due to its significant land use emissions and the moderate risk to food security from droughts and floods. Enhancing agricultural practices can help reduce emissions and improve resilience against climate impacts. Additionally, these improvements can support the local economy by increasing productivity and sustainability in the agricultural sector. Given the city's moderate socio-economic status, such actions can also contribute to better livelihoods for the community.",
         "action": {
             "ActionID": "ipcc_0096",
             "ActionName": "Mejoras en granjas/pesquer\u00edas",
@@ -972,7 +972,7 @@
         "actionId": "ipcc_0098",
         "actionName": "Behaviour change in diets and food waste",
         "actionPriority": 16,
-        "explanation": "Ranked #16 by tournament ranking algorithm",
+        "explanation": "The action of promoting behavior change in diets and reducing food waste is crucial for Miranda due to its potential impact on food security. The city faces risks from droughts and floods, which can disrupt food supply and increase vulnerability. By encouraging sustainable dietary practices and minimizing food waste, the city can enhance its resilience against these climate hazards. Additionally, reducing food waste can contribute to lowering overall emissions, aligning with the city's need to address its significant land use emissions. This action supports both environmental sustainability and socio-economic stability in the region.",
         "action": {
             "ActionID": "ipcc_0098",
             "ActionName": "Cambio de comportamiento en dietas y desperdicio de alimentos",
@@ -1038,7 +1038,7 @@
         "actionId": "ipcc_0092",
         "actionName": "Social safety nets",
         "actionPriority": 17,
-        "explanation": "Ranked #17 by tournament ranking algorithm",
+        "explanation": "Implementing social safety nets in Miranda is crucial due to the moderate level of low-income residents who may be vulnerable to economic shocks. The city faces significant risks from climate-related hazards such as droughts and heatwaves, which can exacerbate socio-economic challenges. By establishing robust social safety nets, the city can enhance resilience and provide support to its most vulnerable populations during times of crisis. This action is particularly important given the potential impacts on food security and public health, ensuring that residents have access to essential resources and services.",
         "action": {
             "ActionID": "ipcc_0092",
             "ActionName": "Redes de seguridad social",
@@ -1102,7 +1102,7 @@
         "actionId": "ipcc_0086",
         "actionName": "Ecosystem-based adaptation",
         "actionPriority": 18,
-        "explanation": "Ranked #18 by tournament ranking algorithm",
+        "explanation": "Ecosystem-based adaptation is crucial for Miranda due to its location in a grassland/savanna biome, which is sensitive to climate change impacts such as droughts and heatwaves. These hazards pose significant risks to biodiversity and water resources, which are vital for the city's ecological balance and agricultural activities. Implementing ecosystem-based strategies can enhance the resilience of natural systems, thereby supporting food security and reducing vulnerability to climate-related hazards. Additionally, such adaptation measures can provide co-benefits, including improved public health and infrastructure resilience, by mitigating the effects of extreme weather events.",
         "action": {
             "ActionID": "ipcc_0086",
             "ActionName": "Adaptaci\u00f3n basada en ecosistemas",
@@ -1179,7 +1179,7 @@
         "actionId": "ipcc_0088",
         "actionName": "Building codes",
         "actionPriority": 19,
-        "explanation": "Ranked #19 by tournament ranking algorithm",
+        "explanation": "Implementing building codes in Miranda is crucial due to the high risk of infrastructure damage from natural hazards such as heatwaves and landslides. The city faces significant threats from these events, which can severely impact public safety and economic stability. By enforcing stringent building codes, Miranda can enhance the resilience of its infrastructure, reducing the potential for damage and ensuring the safety of its residents. Additionally, improved building standards can contribute to energy efficiency, aligning with the city's need to manage its stationary energy emissions effectively.",
         "action": {
             "ActionID": "ipcc_0088",
             "ActionName": "C\u00f3digos de construcci\u00f3n",
@@ -1238,7 +1238,7 @@
         "actionId": "icare_0148",
         "actionName": "Create the Municipal Climate Change Forum",
         "actionPriority": 20,
-        "explanation": "Ranked #20 by tournament ranking algorithm",
+        "explanation": "Creating the Municipal Climate Change Forum in Miranda is a crucial step towards addressing the city's environmental challenges. With significant emissions from land use and stationary energy, the forum can facilitate discussions and strategies to reduce these emissions effectively. Additionally, the city faces various climate risks such as droughts and heatwaves, which impact water resources, food security, and public health. Establishing a dedicated forum will enable stakeholders to collaborate on adaptive measures and enhance the city's resilience to these climate hazards.",
         "action": {
             "ActionID": "icare_0148",
             "ActionName": "Crear el Foro Municipal de Cambio Clim\u00e1tico",

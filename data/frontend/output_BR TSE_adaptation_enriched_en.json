@@ -7,7 +7,7 @@
         "actionId": "icare_0176",
         "actionName": "Development of Climate Action Plan",
         "actionPriority": 1,
-        "explanation": "Ranked #1 by tournament ranking algorithm",
+        "explanation": "For Tangar\u00e1 da Serra, formulating a Climate Action Plan sets a unified direction for reducing emissions and preparing for climatic shifts. This overarching approach channels resources efficiently and clarifies the roles of various sectors. By focusing on key vulnerabilities early, the plan enhances both short-term readiness and long-term resilience.",
         "action": {
             "ActionID": "icare_0176",
             "ActionName": "Development of Climate Action Plan",
@@ -78,7 +78,7 @@
         "actionId": "ipcc_0097",
         "actionName": "Food storage/distribution improvements",
         "actionPriority": 2,
-        "explanation": "Ranked #2 by tournament ranking algorithm",
+        "explanation": "For Tangar\u00e1 da Serra, securing robust storage and transport networks ensures essential supplies remain available during extreme weather events. Upgraded infrastructure reduces spoilage and keeps local markets stable, even when roads or supply routes face disruptions. This measure bolsters community well-being and strengthens overall food security.",
         "action": {
             "ActionID": "ipcc_0097",
             "ActionName": "Food storage/distribution improvements",
@@ -144,7 +144,7 @@
         "actionId": "ipcc_0096",
         "actionName": "Farm/fishery improvements",
         "actionPriority": 3,
-        "explanation": "Ranked #3 by tournament ranking algorithm",
+        "explanation": "For Tangar\u00e1 da Serra, enhancing farming and fishery techniques increases productivity while lowering environmental pressures. Innovations in irrigation, feed, and disease control help local producers better withstand climate variability. This approach sustains rural livelihoods and supports a more stable food supply for the region.",
         "action": {
             "ActionID": "ipcc_0096",
             "ActionName": "Farm/fishery improvements",
@@ -212,7 +212,7 @@
         "actionId": "ipcc_0094",
         "actionName": "Access to health care",
         "actionPriority": 4,
-        "explanation": "Ranked #4 by tournament ranking algorithm",
+        "explanation": "For Tangar\u00e1 da Serra, bolstering medical services is crucial for managing health impacts linked to heatwaves, floods, or other climate-driven hazards. Stronger healthcare facilities reduce fatalities and long-term complications, particularly in underserved areas. By investing in clinics and trained staff, the city protects public health in a changing climate.",
         "action": {
             "ActionID": "ipcc_0094",
             "ActionName": "Access to health care",
@@ -276,7 +276,7 @@
         "actionId": "icare_0151",
         "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
         "actionPriority": 5,
-        "explanation": "Ranked #5 by tournament ranking algorithm",
+        "explanation": "For Tangar\u00e1 da Serra, targeted assessments in ZEIS zones highlight urgent infrastructure needs and flood or heat risks. By improving these at-risk neighborhoods, the city ensures equitable protection against extreme weather. This concentrated effort reduces damage costs and strengthens overall social resilience.",
         "action": {
             "ActionID": "icare_0151",
             "ActionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
@@ -341,7 +341,7 @@
         "actionId": "ipcc_0092",
         "actionName": "Social safety nets",
         "actionPriority": 6,
-        "explanation": "Ranked #6 by tournament ranking algorithm",
+        "explanation": "For Tangar\u00e1 da Serra, strong social support systems safeguard vulnerable groups when climate-related shocks, like floods or droughts, occur. Providing essentials like temporary housing and financial aid helps families bounce back quickly. This safety net lessens disruptions and keeps the local economy stable during crises.",
         "action": {
             "ActionID": "ipcc_0092",
             "ActionName": "Social safety nets",
@@ -405,7 +405,7 @@
         "actionId": "icare_0169",
         "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
         "actionPriority": 7,
-        "explanation": "Ranked #7 by tournament ranking algorithm",
+        "explanation": "For Tangar\u00e1 da Serra, a clear plan for dealing with floods, storms, or other extreme weather ensures timely evacuations and coordinated rescue efforts. This preparedness reduces both property damage and casualties, protecting local communities. By acting early, the city also lowers recovery costs and fosters public confidence.",
         "action": {
             "ActionID": "icare_0169",
             "ActionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
@@ -476,7 +476,7 @@
         "actionId": "ipcc_0093",
         "actionName": "Availability of health infrastructure",
         "actionPriority": 8,
-        "explanation": "Ranked #8 by tournament ranking algorithm",
+        "explanation": "For Tangar\u00e1 da Serra, expanding health clinics and hospitals provides vital support during crises, such as heatwaves, floods, or disease outbreaks. Adequate facilities and staff improve response times, limiting injuries and long-term disabilities. This foundational investment protects public health and enhances community stability in the face of climate extremes.",
         "action": {
             "ActionID": "ipcc_0093",
             "ActionName": "Availability of health infrastructure",
@@ -540,7 +540,7 @@
         "actionId": "icare_0164",
         "actionName": "Hydrological Monitoring System with Telemetry Stations",
         "actionPriority": 9,
-        "explanation": "Ranked #9 by tournament ranking algorithm",
+        "explanation": "For Tangar\u00e1 da Serra, continuously tracking river and reservoir levels provides early warnings of flood or drought risks. Swift notification allows communities and authorities to organize resources, evacuate if necessary, and protect infrastructure. This data-driven approach cuts recovery costs and enhances long-term water management.",
         "action": {
             "ActionID": "icare_0164",
             "ActionName": "Hydrological Monitoring System with Telemetry Stations",
@@ -601,7 +601,7 @@
         "actionId": "icare_0152",
         "actionName": "Recovery of degraded areas",
         "actionPriority": 10,
-        "explanation": "Ranked #10 by tournament ranking algorithm",
+        "explanation": "For Tangar\u00e1 da Serra, restoring lands that have lost vegetation or suffered erosion revives local ecosystems. Healthier landscapes reduce runoff, capture carbon, and improve agricultural potential. Such rehabilitation helps communities withstand extreme weather by stabilizing soil and conserving biodiversity.",
         "action": {
             "ActionID": "icare_0152",
             "ActionName": "Recovery of degraded areas",
@@ -664,7 +664,7 @@
         "actionId": "icare_0156",
         "actionName": "Implementation of urban gardens",
         "actionPriority": 11,
-        "explanation": "Ranked #11 by tournament ranking algorithm",
+        "explanation": "For Tangar\u00e1 da Serra, transforming unused spaces into communal gardens yields fresh produce and lowers urban heat. These green areas also reduce runoff, easing the pressure on storm drains during heavy rains. Involving residents in garden initiatives fosters stronger community ties and environmental awareness.",
         "action": {
             "ActionID": "icare_0156",
             "ActionName": "Implementation of urban gardens",
@@ -725,7 +725,7 @@
         "actionId": "icare_0175",
         "actionName": "Recovery and preservation of green areas",
         "actionPriority": 12,
-        "explanation": "Ranked #12 by tournament ranking algorithm",
+        "explanation": "For Tangar\u00e1 da Serra, replanting and protecting parks, forests, and other green zones helps capture carbon and regulate local climates. These natural spaces also support local wildlife and serve as communal recreational areas. Maintaining green cover reinforces ecological resilience, especially during heatwaves or intense storms.",
         "action": {
             "ActionID": "icare_0175",
             "ActionName": "Recovery and preservation of green areas",
@@ -785,7 +785,7 @@
         "actionId": "ipcc_0098",
         "actionName": "Behaviour change in diets and food waste",
         "actionPriority": 13,
-        "explanation": "Ranked #13 by tournament ranking algorithm",
+        "explanation": "For Tangar\u00e1 da Serra, promoting dietary shifts and cutting food waste lowers emissions tied to large-scale agriculture and disposal. Small, daily adjustments among households can reduce resource usage and ease pressure on landfills. This gradual change leads to a more sustainable food system that benefits both the environment and local communities.",
         "action": {
             "ActionID": "ipcc_0098",
             "ActionName": "Behaviour change in diets and food waste",
@@ -851,7 +851,7 @@
         "actionId": "ipcc_0095",
         "actionName": "Disaster early warning",
         "actionPriority": 14,
-        "explanation": "Ranked #14 by tournament ranking algorithm",
+        "explanation": "For Tangar\u00e1 da Serra, quick alerts about incoming storms or floods save lives and property by giving people time to prepare or evacuate. Accurate warnings reduce panic and allow authorities to coordinate rescue and relief operations effectively. This swift response mechanism is key to minimizing damage and hastening recovery.",
         "action": {
             "ActionID": "ipcc_0095",
             "ActionName": "Disaster early warning",
@@ -916,7 +916,7 @@
         "actionId": "ipcc_0099",
         "actionName": "Water capture/storage",
         "actionPriority": 15,
-        "explanation": "Ranked #15 by tournament ranking algorithm",
+        "explanation": "For Tangar\u00e1 da Serra, establishing robust systems for collecting and storing water helps manage supply during droughts or peak usage times. By reducing reliance on external sources, the city safeguards its agricultural and residential needs. This resilience measure is crucial as weather patterns shift and water becomes more scarce.",
         "action": {
             "ActionID": "ipcc_0099",
             "ActionName": "Water capture/storage",
@@ -981,7 +981,7 @@
         "actionId": "icare_0149",
         "actionName": "Encourage sustainable land use practices",
         "actionPriority": 16,
-        "explanation": "Ranked #16 by tournament ranking algorithm",
+        "explanation": "For Tangar\u00e1 da Serra, guiding urban growth and agriculture to respect ecological limits prevents habitat destruction and soil erosion. Responsible zoning and conservation measures protect water resources and biodiversity. This strategy lays the groundwork for a balanced, enduring relationship between development and nature.",
         "action": {
             "ActionID": "icare_0149",
             "ActionName": "Encourage sustainable land use practices",
@@ -1046,7 +1046,7 @@
         "actionId": "ipcc_0086",
         "actionName": "Ecosystem-based adaptation",
         "actionPriority": 17,
-        "explanation": "Ranked #17 by tournament ranking algorithm",
+        "explanation": "For Tangar\u00e1 da Serra, leveraging the natural resilience of forests, wetlands, and other habitats buffers against floods, heatwaves, and erosion. This nature-focused approach reduces the need for costly infrastructure projects and preserves biodiversity. Ecosystem-based adaptation helps maintain vital ecological services, ensuring long-term climate stability for the city.",
         "action": {
             "ActionID": "ipcc_0086",
             "ActionName": "Ecosystem-based adaptation",
@@ -1123,7 +1123,7 @@
         "actionId": "icare_0148",
         "actionName": "Create the Municipal Climate Change Forum",
         "actionPriority": 18,
-        "explanation": "Ranked #18 by tournament ranking algorithm",
+        "explanation": "For Tangar\u00e1 da Serra, assembling a forum brings together government, industry, and local communities to tackle climate challenges collectively. This inclusive platform pools resources and ideas, enabling coordinated adaptation and emissions-reduction efforts. By sharing information across sectors, the city develops more effective, homegrown solutions.",
         "action": {
             "ActionID": "icare_0148",
             "ActionName": "Create the Municipal Climate Change Forum",
@@ -1194,7 +1194,7 @@
         "actionId": "icare_0162",
         "actionName": "Strengthen programs for control and conservation of protected areas",
         "actionPriority": 19,
-        "explanation": "Ranked #19 by tournament ranking algorithm",
+        "explanation": "For Tangar\u00e1 da Serra, reinforcing protected-area management safeguards forests, wildlife, and waterways from degradation. These ecosystems serve as carbon sinks and help moderate local climates, making them crucial for long-term sustainability. Strengthened oversight preserves natural buffers that shield communities from extreme weather.",
         "action": {
             "ActionID": "icare_0162",
             "ActionName": "Strengthen programs for control and conservation of protected areas",
@@ -1257,7 +1257,7 @@
         "actionId": "icare_0150",
         "actionName": "Implement Loss Reduction and Control Program promoting water security for the municipality",
         "actionPriority": 20,
-        "explanation": "Ranked #20 by tournament ranking algorithm",
+        "explanation": "For Tangar\u00e1 da Serra, reducing leaks and inefficiencies in water systems ensures a steady supply in times of drought or high demand. By safeguarding this critical resource, the city can better endure hot spells and sudden spikes in usage. This measure underpins broader climate adaptation by guaranteeing reliability for both households and agriculture.",
         "action": {
             "ActionID": "icare_0150",
             "ActionName": "Implement Loss Reduction and Control Program promoting water security for the municipality",

@@ -7,7 +7,7 @@
         "actionId": "icare_0169",
         "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
         "actionPriority": 1,
-        "explanation": "Ranked #1 by tournament ranking algorithm",
+        "explanation": "Establishing a plan for preparation and emergency response measures in Altamira is crucial due to the high risk of extreme weather events such as droughts, heatwaves, and floods. The city faces significant challenges with water resources, food security, and public health, all of which are exacerbated by these hazards. With inadequate access to water and sanitation services, the population is particularly vulnerable to the impacts of these events. Implementing a comprehensive emergency response plan will help mitigate these risks and protect the community's well-being and infrastructure.",
         "action": {
             "ActionID": "icare_0169",
             "ActionName": "Establecer un Plan de Preparaci\u00f3n y Medidas de Respuesta de Emergencia en caso de eventos clim\u00e1ticos extremos",
@@ -78,7 +78,7 @@
         "actionId": "icare_0176",
         "actionName": "Development of Climate Action Plan",
         "actionPriority": 2,
-        "explanation": "Ranked #2 by tournament ranking algorithm",
+        "explanation": "The development of a Climate Action Plan is crucial for Altamira due to its significant environmental challenges. The city faces high risks from droughts, heatwaves, and floods, which threaten water resources, food security, and public health. With a vast area and low population density, implementing a structured plan can help manage emissions and improve resilience against climate hazards. Additionally, addressing inadequate access to water and sanitation through this plan can enhance the quality of life for residents. Overall, a Climate Action Plan is essential to mitigate risks and promote sustainable development in Altamira.",
         "action": {
             "ActionID": "icare_0176",
             "ActionName": "Desarrollo del Plan de Acci\u00f3n Clim\u00e1tica",
@@ -149,7 +149,7 @@
         "actionId": "icare_0162",
         "actionName": "Strengthen programs for control and conservation of protected areas",
         "actionPriority": 3,
-        "explanation": "Ranked #3 by tournament ranking algorithm",
+        "explanation": "Strengthening programs for control and conservation of protected areas in Altamira is crucial due to the city's location within a tropical rainforest biome. This region is highly susceptible to environmental degradation and biodiversity loss, which can be exacerbated by climate change impacts such as droughts and heatwaves. By enhancing conservation efforts, Altamira can protect its rich biodiversity and mitigate the risks associated with land use emissions, which are a significant contributor to the city's total emissions. Additionally, preserving these areas can help maintain ecosystem services that are vital for the local community's well-being and resilience against climate-related hazards.",
         "action": {
             "ActionID": "icare_0162",
             "ActionName": "Fortalecer los programas de control y conservaci\u00f3n de \u00e1reas protegidas",
@@ -212,7 +212,7 @@
         "actionId": "icare_0152",
         "actionName": "Recovery of degraded areas",
         "actionPriority": 4,
-        "explanation": "Ranked #4 by tournament ranking algorithm",
+        "explanation": "The action 'Recovery of degraded areas' is crucial for Altamira due to its significant land use emissions, which are a major contributor to the city's total emissions. Restoring degraded areas can help sequester carbon, reduce emissions, and improve biodiversity, which is vital given the city's tropical rainforest biome. Additionally, this action can mitigate the impacts of climate hazards such as droughts and floods, which pose high risks to food security and infrastructure. By prioritizing the recovery of degraded areas, Altamira can enhance its resilience to climate change and improve the quality of life for its residents.",
         "action": {
             "ActionID": "icare_0152",
             "ActionName": "Recuperaci\u00f3n de \u00e1reas degradadas",
@@ -275,7 +275,7 @@
         "actionId": "icare_0151",
         "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
         "actionPriority": 5,
-        "explanation": "Ranked #5 by tournament ranking algorithm",
+        "explanation": "Developing diagnostics and restoring areas of Special Social Interest Zones (ZEIS) in Altamira is crucial due to the city's socio-economic challenges and environmental vulnerabilities. The city faces significant risks from droughts, heatwaves, and floods, which can severely impact public health, infrastructure, and food security. By focusing on ZEIS, the action aims to improve living conditions and resilience in areas that are most vulnerable to these hazards. Additionally, addressing inadequate access to water and sanitation in these zones can significantly enhance the quality of life for residents, making this action a high priority for sustainable urban development.",
         "action": {
             "ActionID": "icare_0151",
             "ActionName": "Desarrollar diagn\u00f3sticos y restaurar \u00e1reas de Zonas de Inter\u00e9s Social Especial (ZEIS)",
@@ -340,7 +340,7 @@
         "actionId": "icare_0145",
         "actionName": "Strengthen the healthcare network to attend to climate victims",
         "actionPriority": 6,
-        "explanation": "Ranked #6 by tournament ranking algorithm",
+        "explanation": "Strengthening the healthcare network in Altamira is crucial due to the high risk of climate-related health impacts. The city faces significant threats from heatwaves, diseases, and floods, all of which can severely strain existing healthcare services. By enhancing the healthcare infrastructure, Altamira can better manage the increased demand for medical care during climate emergencies. This action is vital to protect public health and ensure the community's resilience against climate-induced challenges.",
         "action": {
             "ActionID": "icare_0145",
             "ActionName": "Fortalecer la red de atenci\u00f3n m\u00e9dica para atender a las v\u00edctimas del clima",
@@ -407,7 +407,7 @@
         "actionId": "ipcc_0097",
         "actionName": "Food storage/distribution improvements",
         "actionPriority": 7,
-        "explanation": "Ranked #7 by tournament ranking algorithm",
+        "explanation": "Improving food storage and distribution is crucial for Altamira due to its high risk of food insecurity caused by droughts and floods. These hazards can severely disrupt food supply chains, making efficient storage and distribution systems vital to ensure food availability. Additionally, enhancing these systems can help mitigate the impact of climate-related disruptions, supporting the city's resilience against future climate risks. Given the moderate income levels, improving food systems can also contribute to economic stability and community well-being.",
         "action": {
             "ActionID": "ipcc_0097",
             "ActionName": "Mejoras en el almacenamiento/distribuci\u00f3n de alimentos",
@@ -473,7 +473,7 @@
         "actionId": "ipcc_0094",
         "actionName": "Access to health care",
         "actionPriority": 8,
-        "explanation": "Ranked #8 by tournament ranking algorithm",
+        "explanation": "Improving access to health care in Altamira is crucial due to the high risk of public health impacts from various hazards such as heatwaves, diseases, and floods. The city's inadequate access to sanitation and water services further exacerbates health vulnerabilities, making it imperative to enhance healthcare infrastructure. Addressing these health care needs can significantly mitigate the risks associated with climate-related health hazards, ensuring better resilience for the population. Additionally, improved health care access can contribute to overall socio-economic stability by reducing the burden of disease and enhancing the quality of life for residents.",
         "action": {
             "ActionID": "ipcc_0094",
             "ActionName": "Acceso a la atenci\u00f3n m\u00e9dica",
@@ -537,7 +537,7 @@
         "actionId": "icare_0157",
         "actionName": "Maintenance and Revitalization of Riparian Forests",
         "actionPriority": 9,
-        "explanation": "Ranked #9 by tournament ranking algorithm",
+        "explanation": "The maintenance and revitalization of riparian forests in Altamira is crucial due to the city's location in a tropical rainforest biome, which is highly sensitive to environmental changes. Riparian forests play a vital role in maintaining water quality and preventing soil erosion, which is particularly important given the city's high risk of floods and landslides. Additionally, these forests contribute to biodiversity conservation, which is under threat from both droughts and heatwaves. By prioritizing this action, Altamira can enhance its resilience against climate-related hazards and support the ecological balance necessary for sustainable development.",
         "action": {
             "ActionID": "icare_0157",
             "ActionName": "Mantenimiento y Revitalizaci\u00f3n de Bosques Ribere\u00f1os",
@@ -600,7 +600,7 @@
         "actionId": "icare_0149",
         "actionName": "Encourage sustainable land use practices",
         "actionPriority": 10,
-        "explanation": "Ranked #10 by tournament ranking algorithm",
+        "explanation": "Encouraging sustainable land use practices in Altamira is crucial due to the city's significant land use emissions, which are a major contributor to its total emissions. The tropical rainforest biome of the region is highly sensitive to unsustainable land practices, which can lead to deforestation and biodiversity loss. Implementing sustainable practices can help mitigate these impacts, preserving the natural environment and reducing emissions. Additionally, sustainable land use can enhance resilience against climate-related hazards such as droughts and floods, which pose high risks to the city's infrastructure and public health.",
         "action": {
             "ActionID": "icare_0149",
             "ActionName": "Fomentar pr\u00e1cticas sostenibles de uso de la tierra",
@@ -665,7 +665,7 @@
         "actionId": "icare_0148",
         "actionName": "Create the Municipal Climate Change Forum",
         "actionPriority": 11,
-        "explanation": "Ranked #11 by tournament ranking algorithm",
+        "explanation": "Creating the Municipal Climate Change Forum in Altamira is a crucial step towards addressing the city's significant environmental challenges. The city faces high risks from climate-related hazards such as droughts, heatwaves, and floods, which threaten water resources, food security, and public health. Establishing a dedicated forum will facilitate coordinated efforts among stakeholders to develop and implement effective climate adaptation and mitigation strategies. This initiative will also enhance community engagement and awareness, empowering residents to contribute to sustainable solutions. Overall, the forum is essential for fostering resilience and ensuring the long-term well-being of Altamira's population and environment.",
         "action": {
             "ActionID": "icare_0148",
             "ActionName": "Crear el Foro Municipal de Cambio Clim\u00e1tico",
@@ -736,7 +736,7 @@
         "actionId": "ipcc_0096",
         "actionName": "Farm/fishery improvements",
         "actionPriority": 12,
-        "explanation": "Ranked #12 by tournament ranking algorithm",
+        "explanation": "Farm and fishery improvements are crucial for Altamira due to the high risk of droughts impacting food security. Enhancing agricultural practices can help mitigate the effects of climate change, ensuring a stable food supply for the population. Additionally, these improvements can support the local economy by increasing productivity and resilience against environmental hazards. Given the city's moderate low-income levels, such actions can also contribute to socio-economic development by providing more reliable sources of income for residents.",
         "action": {
             "ActionID": "ipcc_0096",
             "ActionName": "Mejoras en granjas/pesquer\u00edas",
@@ -804,7 +804,7 @@
         "actionId": "ipcc_0093",
         "actionName": "Availability of health infrastructure",
         "actionPriority": 13,
-        "explanation": "Ranked #13 by tournament ranking algorithm",
+        "explanation": "The availability of health infrastructure is crucial for Altamira, given the high risk of public health impacts from hazards such as heatwaves, diseases, and floods. The city's inadequate access to sanitation and water services further exacerbates these health risks, making robust health infrastructure a priority. Improving health infrastructure can enhance the city's resilience to climate-related health challenges and ensure better public health outcomes for its residents.",
         "action": {
             "ActionID": "ipcc_0093",
             "ActionName": "Disponibilidad de infraestructura sanitaria",
@@ -868,7 +868,7 @@
         "actionId": "icare_0156",
         "actionName": "Implementation of urban gardens",
         "actionPriority": 14,
-        "explanation": "Ranked #14 by tournament ranking algorithm",
+        "explanation": "The implementation of urban gardens in Altamira is a significant action due to its potential to enhance food security, which is a critical issue given the high risk of droughts affecting the region. Urban gardens can provide a sustainable source of fresh produce, reducing dependency on external food supplies and mitigating the impact of food shortages. Additionally, these gardens can improve community resilience by promoting local food production and fostering community engagement. Furthermore, urban gardens can contribute to biodiversity and environmental health by increasing green spaces in urban areas, which is particularly important in a tropical rainforest biome.",
         "action": {
             "ActionID": "icare_0156",
             "ActionName": "Implementaci\u00f3n de huertos urbanos",
@@ -929,7 +929,7 @@
         "actionId": "icare_0144",
         "actionName": "Creation of a Financial Support Program to Adress Extreme Weather Events",
         "actionPriority": 15,
-        "explanation": "Ranked #15 by tournament ranking algorithm",
+        "explanation": "The creation of a financial support program to address extreme weather events is crucial for Altamira due to its high vulnerability to climate-related hazards. The city faces significant risks from droughts, heatwaves, and floods, which can severely impact water resources, food security, and public health. Establishing a financial support program would provide necessary resources to mitigate these impacts and enhance the city's resilience. Additionally, such a program could help in the rapid recovery of affected communities, ensuring that the socio-economic stability of the region is maintained.",
         "action": {
             "ActionID": "icare_0144",
             "ActionName": "Creaci\u00f3n de un Programa de Apoyo Financiero para Abordar Eventos Clim\u00e1ticos Extremos",
@@ -1000,7 +1000,7 @@
         "actionId": "icare_0181",
         "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
         "actionPriority": 16,
-        "explanation": "Ranked #16 by tournament ranking algorithm",
+        "explanation": "The action of relocating and restoring vulnerable areas in Altamira is crucial due to the city's high risk of natural hazards such as floods and landslides. These hazards pose significant threats to public health and infrastructure, as indicated by the high normalized risk scores. Additionally, the city's inadequate access to water and sanitation services exacerbates the vulnerability of its population. By prioritizing environmental restoration and relocation, Altamira can mitigate these risks and improve the resilience of its communities against climate-related impacts.",
         "action": {
             "ActionID": "icare_0181",
             "ActionName": "Reubicaci\u00f3n y Restauraci\u00f3n Ambiental en \u00c1reas Vulnerables",
@@ -1059,7 +1059,7 @@
         "actionId": "ipcc_0092",
         "actionName": "Social safety nets",
         "actionPriority": 17,
-        "explanation": "Ranked #17 by tournament ranking algorithm",
+        "explanation": "Implementing social safety nets in Altamira is crucial due to the city's moderate low-income population and the high risk of climate-related hazards such as droughts and floods. These safety nets can provide essential support to vulnerable communities, ensuring they have access to basic needs during times of crisis. Given the inadequate access to water and sanitation services, social safety nets can also help mitigate the impact of these deficiencies on public health. Furthermore, with the city's significant land use emissions, social safety nets can aid in transitioning communities towards more sustainable practices, reducing overall environmental impact.",
         "action": {
             "ActionID": "ipcc_0092",
             "ActionName": "Redes de seguridad social",
@@ -1123,7 +1123,7 @@
         "actionId": "icare_0164",
         "actionName": "Hydrological Monitoring System with Telemetry Stations",
         "actionPriority": 18,
-        "explanation": "Ranked #18 by tournament ranking algorithm",
+        "explanation": "Implementing a Hydrological Monitoring System with Telemetry Stations in Altamira is crucial due to the city's high risk of droughts and floods. These hazards pose significant threats to water resources, food security, and public health, as indicated by the city's climate change risk assessment. By providing real-time data on water levels and flow, the system can help manage water resources more effectively and mitigate the impacts of these extreme weather events. Additionally, improved monitoring can support better planning and response strategies, enhancing the city's resilience to climate-related challenges.",
         "action": {
             "ActionID": "icare_0164",
             "ActionName": "Sistema de Monitoreo Hidrol\u00f3gico con Estaciones de Telemetr\u00eda",
@@ -1184,7 +1184,7 @@
         "actionId": "icare_0175",
         "actionName": "Recovery and preservation of green areas",
         "actionPriority": 19,
-        "explanation": "Ranked #19 by tournament ranking algorithm",
+        "explanation": "The action of recovering and preserving green areas in Altamira is crucial due to the city's location in a tropical rainforest biome, which is vital for biodiversity and climate regulation. Given the high risk of droughts and heatwaves impacting energy security and public health, enhancing green spaces can help mitigate these effects by providing natural cooling and improving air quality. Additionally, green areas can play a significant role in managing flood risks by improving water absorption and reducing runoff. This action supports the city's resilience against climate hazards and contributes to the overall well-being of its residents.",
         "action": {
             "ActionID": "icare_0175",
             "ActionName": "Recuperaci\u00f3n y preservaci\u00f3n de \u00e1reas verdes",
@@ -1244,7 +1244,7 @@
         "actionId": "ipcc_0095",
         "actionName": "Disaster early warning",
         "actionPriority": 20,
-        "explanation": "Ranked #20 by tournament ranking algorithm",
+        "explanation": "Implementing a disaster early warning system in Altamira is crucial due to the high risk of natural hazards such as droughts, heatwaves, and floods. These hazards pose significant threats to public health, infrastructure, and food security, as indicated by the city's climate change risk assessment. An early warning system can help mitigate these risks by providing timely alerts, allowing residents and authorities to take preventive measures. This action is particularly important given the city's inadequate access to public services, which can exacerbate the impact of disasters.",
         "action": {
             "ActionID": "ipcc_0095",
             "ActionName": "Alerta temprana de desastres",

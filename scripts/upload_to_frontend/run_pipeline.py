@@ -9,7 +9,7 @@ python -m scripts.upload_to_frontend.run_pipeline --locode "BR BHZ"
 """
 
 import argparse
-from prioritizer.prioritizer import main as prioritizer_main
+#from prioritizer.prioritizer import main as prioritizer_main
 from scripts.upload_to_frontend.enrich_for_frontend_schema import main as enricher_main
 from scripts.upload_to_frontend.upload_to_s3 import upload_to_s3
 

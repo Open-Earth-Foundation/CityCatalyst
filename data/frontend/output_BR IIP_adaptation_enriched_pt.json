@@ -7,7 +7,7 @@
         "actionId": "icare_0169",
         "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
         "actionPriority": 1,
-        "explanation": "Ranked #1 by tournament ranking algorithm",
+        "explanation": "Establishing a plan for preparation and emergency response measures in Itapipoca is crucial due to the high risk of extreme weather events such as droughts, heatwaves, and floods. The city faces significant challenges with water resources, food security, and public health, all of which are exacerbated by these hazards. By prioritizing this action, Itapipoca can enhance its resilience and protect its vulnerable population, particularly given the very high levels of low income and inadequate access to public services. This proactive approach will help mitigate the impacts of climate-related events and ensure a more secure and sustainable future for the community.",
         "action": {
             "ActionID": "icare_0169",
             "ActionName": "Estabelecer um Plano de Prepara\u00e7\u00e3o e Medidas de Resposta a Emerg\u00eancias em caso de eventos clim\u00e1ticos extremos",
@@ -78,7 +78,7 @@
         "actionId": "icare_0176",
         "actionName": "Development of Climate Action Plan",
         "actionPriority": 2,
-        "explanation": "Ranked #2 by tournament ranking algorithm",
+        "explanation": "The development of a Climate Action Plan is crucial for Itapipoca due to its high vulnerability to climate-related hazards such as droughts, heatwaves, and floods. These hazards pose significant risks to water resources, food security, energy security, and public health, making it imperative to have a strategic plan in place. A comprehensive Climate Action Plan will help the city prioritize and implement effective measures to mitigate these risks and enhance resilience. Additionally, given the city's socio-economic challenges, such as very high low-income levels and inadequate access to water and sanitation, a targeted plan can address these issues while promoting sustainable development.",
         "action": {
             "ActionID": "icare_0176",
             "ActionName": "Desenvolvimento do Plano de A\u00e7\u00e3o Clim\u00e1tica",
@@ -149,7 +149,7 @@
         "actionId": "icare_0151",
         "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
         "actionPriority": 3,
-        "explanation": "Ranked #3 by tournament ranking algorithm",
+        "explanation": "The action to develop diagnostics and restore areas of Special Social Interest Zones (ZEIS) in Itapipoca is crucial due to the city's socio-economic challenges. With a very high percentage of low-income residents, improving these zones can significantly enhance living conditions and access to essential services. Additionally, addressing inadequate water and sanitation access in these areas can mitigate public health risks, especially given the high risk of diseases and heatwaves. Restoring ZEIS can also contribute to better land use management, reducing emissions and enhancing resilience against climate hazards like droughts and floods.",
         "action": {
             "ActionID": "icare_0151",
             "ActionName": "Desenvolver diagn\u00f3sticos e restaurar \u00e1reas de Zonas Especiais de Interesse Social (ZEIS)",
@@ -214,7 +214,7 @@
         "actionId": "icare_0162",
         "actionName": "Strengthen programs for control and conservation of protected areas",
         "actionPriority": 4,
-        "explanation": "Ranked #4 by tournament ranking algorithm",
+        "explanation": "Strengthening programs for control and conservation of protected areas is crucial for Itapipoca due to its vulnerability to environmental hazards such as droughts and heatwaves. The city is located in a desert biome, which makes it particularly susceptible to biodiversity loss and ecosystem degradation. By enhancing conservation efforts, Itapipoca can mitigate the impacts of these hazards, preserve its natural resources, and support biodiversity. Additionally, effective management of protected areas can contribute to the city's resilience against climate change and improve the quality of life for its residents.",
         "action": {
             "ActionID": "icare_0162",
             "ActionName": "Fortalecer programas de controle e conserva\u00e7\u00e3o de \u00e1reas protegidas",
@@ -277,7 +277,7 @@
         "actionId": "icare_0152",
         "actionName": "Recovery of degraded areas",
         "actionPriority": 5,
-        "explanation": "Ranked #5 by tournament ranking algorithm",
+        "explanation": "The recovery of degraded areas in Itapipoca is crucial due to the city's vulnerability to environmental hazards such as droughts and heatwaves. Restoring these areas can enhance biodiversity and improve the resilience of local ecosystems, which are currently under threat. Additionally, rehabilitating degraded lands can contribute to better water retention and soil health, mitigating the impacts of droughts and supporting food security. This action aligns with the need to address high emissions from land use and improve the overall environmental health of the region.",
         "action": {
             "ActionID": "icare_0152",
             "ActionName": "Recupera\u00e7\u00e3o de \u00e1reas degradadas",
@@ -340,7 +340,7 @@
         "actionId": "icare_0157",
         "actionName": "Maintenance and Revitalization of Riparian Forests",
         "actionPriority": 6,
-        "explanation": "Ranked #6 by tournament ranking algorithm",
+        "explanation": "The maintenance and revitalization of riparian forests in Itapipoca is crucial due to the city's vulnerability to droughts and its desert biome. Riparian forests play a significant role in maintaining water quality and availability, which is essential given the high risk of water resource impacts from droughts. Additionally, these forests can help mitigate the effects of heatwaves by providing shade and cooling, which is vital for public health and biodiversity. Revitalizing these areas can also enhance biodiversity, offering habitats for various species and contributing to ecological balance.",
         "action": {
             "ActionID": "icare_0157",
             "ActionName": "Manuten\u00e7\u00e3o e Revitaliza\u00e7\u00e3o de Florestas Rip\u00e1rias",
@@ -403,7 +403,7 @@
         "actionId": "ipcc_0094",
         "actionName": "Access to health care",
         "actionPriority": 7,
-        "explanation": "Ranked #7 by tournament ranking algorithm",
+        "explanation": "Improving access to health care in Itapipoca is crucial due to the high risk of public health impacts from heatwaves, diseases, and landslides. The city's socio-economic factors, such as very high low-income levels, exacerbate the vulnerability of its population to health-related hazards. Additionally, inadequate access to public services like water and sanitation further increases the need for robust health care systems. Addressing health care access can significantly enhance the community's resilience against climate-related health risks. Therefore, prioritizing this action is essential for safeguarding public health in the face of environmental challenges.",
         "action": {
             "ActionID": "ipcc_0094",
             "ActionName": "Acesso aos cuidados de sa\u00fade",
@@ -467,7 +467,7 @@
         "actionId": "ipcc_0097",
         "actionName": "Food storage/distribution improvements",
         "actionPriority": 8,
-        "explanation": "Ranked #8 by tournament ranking algorithm",
+        "explanation": "Improving food storage and distribution is crucial for Itapipoca due to its high vulnerability to droughts, which severely impact food security. The city faces significant risks from climate hazards, including droughts and floods, which can disrupt food supply chains. Enhancing food storage and distribution systems can help mitigate these risks by ensuring a more reliable food supply during adverse conditions. Additionally, with a very high low-income population, improving food distribution can help alleviate food insecurity and support the community's resilience against climate impacts.",
         "action": {
             "ActionID": "ipcc_0097",
             "ActionName": "Melhorias no armazenamento/distribui\u00e7\u00e3o de alimentos",
@@ -533,7 +533,7 @@
         "actionId": "ipcc_0093",
         "actionName": "Availability of health infrastructure",
         "actionPriority": 9,
-        "explanation": "Ranked #9 by tournament ranking algorithm",
+        "explanation": "Improving the availability of health infrastructure in Itapipoca is crucial due to the high risk of public health impacts from heatwaves and diseases. The city faces significant challenges with inadequate access to water and sanitation, which can exacerbate health issues. Enhancing health infrastructure will help mitigate these risks and improve the overall resilience of the community. Additionally, better health facilities can provide essential services during extreme weather events, which are expected to increase in frequency and intensity.",
         "action": {
             "ActionID": "ipcc_0093",
             "ActionName": "Disponibilidade de infraestrutura de sa\u00fade",
@@ -597,7 +597,7 @@
         "actionId": "ipcc_0096",
         "actionName": "Farm/fishery improvements",
         "actionPriority": 10,
-        "explanation": "Ranked #10 by tournament ranking algorithm",
+        "explanation": "Farm and fishery improvements are crucial for Itapipoca due to the high risk of droughts impacting water resources and food security. The city's socio-economic factors, such as very high low-income levels, make it essential to enhance agricultural productivity and resilience. By improving farming and fishery practices, the city can better withstand climate-related challenges, ensuring food availability and supporting local livelihoods. Additionally, these improvements can contribute to reducing emissions from land use, aligning with broader environmental goals.",
         "action": {
             "ActionID": "ipcc_0096",
             "ActionName": "Melhorias na fazenda/pesqueira",
@@ -665,7 +665,7 @@
         "actionId": "icare_0149",
         "actionName": "Encourage sustainable land use practices",
         "actionPriority": 11,
-        "explanation": "Ranked #11 by tournament ranking algorithm",
+        "explanation": "Encouraging sustainable land use practices in Itapipoca is crucial due to the high land use emissions reported in the city. With a significant portion of emissions stemming from land use, implementing sustainable practices can help mitigate these emissions and contribute to overall environmental health. Additionally, the city faces severe risks from droughts, which can be exacerbated by poor land management. Sustainable land use can improve resilience against such climate hazards, ensuring better food security and biodiversity conservation.",
         "action": {
             "ActionID": "icare_0149",
             "ActionName": "Incentivar pr\u00e1ticas sustent\u00e1veis de uso da terra",
@@ -730,7 +730,7 @@
         "actionId": "icare_0148",
         "actionName": "Create the Municipal Climate Change Forum",
         "actionPriority": 12,
-        "explanation": "Ranked #12 by tournament ranking algorithm",
+        "explanation": "Creating the Municipal Climate Change Forum in Itapipoca is a crucial step towards addressing the city's significant environmental challenges. The city faces high risks from droughts, heatwaves, and other climate-related hazards, which threaten water resources, food security, and public health. Establishing a dedicated forum will facilitate collaboration among stakeholders, enabling the development of effective strategies to mitigate these risks. Additionally, the forum can serve as a platform for raising awareness and engaging the community in climate action, which is essential given the city's socio-economic vulnerabilities.",
         "action": {
             "ActionID": "icare_0148",
             "ActionName": "Criar o F\u00f3rum Municipal de Mudan\u00e7as Clim\u00e1ticas",
@@ -801,7 +801,7 @@
         "actionId": "icare_0144",
         "actionName": "Creation of a Financial Support Program to Adress Extreme Weather Events",
         "actionPriority": 13,
-        "explanation": "Ranked #13 by tournament ranking algorithm",
+        "explanation": "The creation of a financial support program to address extreme weather events is crucial for Itapipoca due to its high vulnerability to climate-related hazards such as droughts, heatwaves, and floods. These events pose significant risks to water resources, food security, energy security, and public health, as indicated by the city's climate change risk assessment. Given the socio-economic challenges, including a very high low-income population, financial support can help mitigate the adverse impacts on the most vulnerable communities. This program would provide essential resources to enhance resilience and recovery efforts, ensuring the city can better withstand and adapt to these extreme weather conditions.",
         "action": {
             "ActionID": "icare_0144",
             "ActionName": "Cria\u00e7\u00e3o de um Programa de Apoio Financeiro para Abordar Eventos Clim\u00e1ticos Extremos",
@@ -872,7 +872,7 @@
         "actionId": "icare_0145",
         "actionName": "Strengthen the healthcare network to attend to climate victims",
         "actionPriority": 14,
-        "explanation": "Ranked #14 by tournament ranking algorithm",
+        "explanation": "Strengthening the healthcare network in Itapipoca is crucial due to the high risk of climate-related health impacts. The city faces significant threats from heatwaves, droughts, and diseases, all of which can severely affect public health. By enhancing healthcare services, the city can better manage and mitigate the health consequences of these climate hazards. This action is essential to ensure the resilience of the community and to protect vulnerable populations from the adverse effects of climate change.",
         "action": {
             "ActionID": "icare_0145",
             "ActionName": "Fortalecer a rede de sa\u00fade para atender \u00e0s v\u00edtimas do clima",
@@ -940,7 +940,7 @@
         "actionId": "icare_0181",
         "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
         "actionPriority": 15,
-        "explanation": "Ranked #15 by tournament ranking algorithm",
+        "explanation": "The action of relocating and restoring the environment in vulnerable areas is crucial for Itapipoca due to its high risk of natural hazards such as droughts, heatwaves, and floods. These hazards pose significant threats to water resources, food security, and public health, making it imperative to address the vulnerabilities in these areas. By focusing on relocation and environmental restoration, the city can mitigate the impacts of these hazards, protect its population, and enhance resilience against climate change. Additionally, improving the environmental conditions in these areas can lead to better living standards and reduce socio-economic disparities.",
         "action": {
             "ActionID": "icare_0181",
             "ActionName": "Reloca\u00e7\u00e3o e Restaura\u00e7\u00e3o Ambiental em \u00c1reas Vulner\u00e1veis",
@@ -999,7 +999,7 @@
         "actionId": "icare_0156",
         "actionName": "Implementation of urban gardens",
         "actionPriority": 16,
-        "explanation": "Ranked #16 by tournament ranking algorithm",
+        "explanation": "The implementation of urban gardens in Itapipoca is a significant action due to the city's high risk of droughts impacting water resources and food security. Urban gardens can help mitigate these risks by promoting local food production and reducing dependency on external food sources. Additionally, they can improve community resilience by providing a sustainable food supply and enhancing green spaces, which can also help in managing heatwaves. This action aligns with the need to address socio-economic challenges, as it can offer opportunities for community engagement and potentially improve the livelihoods of low-income residents.",
         "action": {
             "ActionID": "icare_0156",
             "ActionName": "Implementa\u00e7\u00e3o de hortas urbanas",
@@ -1060,7 +1060,7 @@
         "actionId": "ipcc_0092",
         "actionName": "Social safety nets",
         "actionPriority": 17,
-        "explanation": "Ranked #17 by tournament ranking algorithm",
+        "explanation": "Implementing social safety nets in Itapipoca is crucial due to the very high levels of low income among its population. These safety nets can provide essential support to vulnerable groups, especially in times of economic instability or natural disasters. Given the high risk of droughts and heatwaves impacting water resources, food security, and public health, social safety nets can help mitigate these impacts by ensuring access to basic needs. Additionally, they can play a vital role in enhancing community resilience and reducing socio-economic disparities in the region.",
         "action": {
             "ActionID": "ipcc_0092",
             "ActionName": "Redes de prote\u00e7\u00e3o social",
@@ -1124,7 +1124,7 @@
         "actionId": "icare_0164",
         "actionName": "Hydrological Monitoring System with Telemetry Stations",
         "actionPriority": 18,
-        "explanation": "Ranked #18 by tournament ranking algorithm",
+        "explanation": "Implementing a Hydrological Monitoring System with Telemetry Stations in Itapipoca is crucial due to the high risk of droughts affecting water resources, food security, and energy security. The city's socio-economic factors, such as very high low-income levels, exacerbate the vulnerability of its population to water scarcity. By establishing a monitoring system, the city can better manage its water resources, anticipate drought conditions, and implement timely interventions to mitigate impacts. This action is essential for enhancing the resilience of Itapipoca's infrastructure and public health against climate-related hazards.",
         "action": {
             "ActionID": "icare_0164",
             "ActionName": "Sistema de Monitoramento Hidrol\u00f3gico com Esta\u00e7\u00f5es de Telemetria",
@@ -1185,7 +1185,7 @@
         "actionId": "ipcc_0086",
         "actionName": "Ecosystem-based adaptation",
         "actionPriority": 19,
-        "explanation": "Ranked #19 by tournament ranking algorithm",
+        "explanation": "Ecosystem-based adaptation is crucial for Itapipoca due to its vulnerability to climate hazards such as droughts and heatwaves. These hazards pose significant risks to water resources, food security, and biodiversity, which are vital for the city's sustainability. Implementing ecosystem-based strategies can enhance the resilience of natural systems, providing essential services like water regulation and temperature moderation. Additionally, these strategies can support biodiversity, which is under threat from both droughts and heatwaves, thereby maintaining ecological balance and supporting local livelihoods. Given the high socio-economic challenges, such as very high low-income levels, ecosystem-based adaptation offers a cost-effective approach to building climate resilience.",
         "action": {
             "ActionID": "ipcc_0086",
             "ActionName": "Adapta\u00e7\u00e3o baseada em ecossistemas",
@@ -1262,7 +1262,7 @@
         "actionId": "icare_0175",
         "actionName": "Recovery and preservation of green areas",
         "actionPriority": 20,
-        "explanation": "Ranked #20 by tournament ranking algorithm",
+        "explanation": "The action of recovering and preserving green areas in Itapipoca is crucial due to the city's vulnerability to climate hazards such as droughts and heatwaves. Green areas can help mitigate the effects of these hazards by providing shade, reducing urban heat, and improving air quality. Additionally, preserving green spaces can enhance biodiversity, which is at risk due to the city's desert biome and high socio-economic challenges. This action also supports public health by offering recreational spaces and improving the overall quality of life for residents.",
         "action": {
             "ActionID": "icare_0175",
             "ActionName": "Recupera\u00e7\u00e3o e preserva\u00e7\u00e3o de \u00e1reas verdes",

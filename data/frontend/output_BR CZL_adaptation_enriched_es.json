@@ -7,7 +7,7 @@
         "actionId": "icare_0176",
         "actionName": "Development of Climate Action Plan",
         "actionPriority": 1,
-        "explanation": "Ranked #1 by tournament ranking algorithm",
+        "explanation": "The development of a Climate Action Plan is crucial for Cruzeiro do Sul due to its significant environmental challenges. The city faces high emissions, particularly from land use and transportation, which contribute to its total emissions of over 87,000 tons. Additionally, the city is at risk from various climate hazards, including floods and landslides, which pose a threat to public health and infrastructure. Implementing a comprehensive Climate Action Plan will help mitigate these risks and guide the city towards sustainable development.",
         "action": {
             "ActionID": "icare_0176",
             "ActionName": "Desarrollo del Plan de Acci\u00f3n Clim\u00e1tica",
@@ -78,7 +78,7 @@
         "actionId": "icare_0181",
         "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
         "actionPriority": 2,
-        "explanation": "Ranked #2 by tournament ranking algorithm",
+        "explanation": "The action of relocating and restoring vulnerable areas in Cruzeiro do Sul is crucial due to the high risk of landslides and floods, which pose significant threats to public health and infrastructure. The city's tropical rainforest biome and low elevation make it particularly susceptible to these hazards, necessitating proactive measures to protect its population. Additionally, addressing these vulnerabilities can help mitigate the impact of climate change on the local environment and improve the overall resilience of the community. By prioritizing this action, Cruzeiro do Sul can enhance its capacity to withstand and recover from environmental challenges.",
         "action": {
             "ActionID": "icare_0181",
             "ActionName": "Reubicaci\u00f3n y Restauraci\u00f3n Ambiental en \u00c1reas Vulnerables",
@@ -137,7 +137,7 @@
         "actionId": "icare_0162",
         "actionName": "Strengthen programs for control and conservation of protected areas",
         "actionPriority": 3,
-        "explanation": "Ranked #3 by tournament ranking algorithm",
+        "explanation": "Strengthening programs for control and conservation of protected areas is crucial for Cruzeiro do Sul due to its location in a tropical rainforest biome. This region is rich in biodiversity, and protecting these areas helps preserve the unique flora and fauna. Additionally, conservation efforts can mitigate the impacts of climate change, such as droughts and heatwaves, which pose significant risks to biodiversity and public health. By prioritizing this action, the city can ensure sustainable management of its natural resources, contributing to long-term ecological balance and resilience.",
         "action": {
             "ActionID": "icare_0162",
             "ActionName": "Fortalecer los programas de control y conservaci\u00f3n de \u00e1reas protegidas",
@@ -200,7 +200,7 @@
         "actionId": "ipcc_0088",
         "actionName": "Building codes",
         "actionPriority": 4,
-        "explanation": "Ranked #4 by tournament ranking algorithm",
+        "explanation": "Implementing building codes in Cruzeiro do Sul is crucial due to the city's vulnerability to natural hazards such as landslides and floods. These hazards pose significant risks to public health and infrastructure, as indicated by the high risk scores associated with these impacts. By enforcing stringent building codes, the city can enhance the resilience of its infrastructure, ensuring that buildings are better equipped to withstand such events. This action is particularly important given the city's tropical rainforest biome, which can exacerbate the impact of heavy rainfall and flooding.",
         "action": {
             "ActionID": "ipcc_0088",
             "ActionName": "C\u00f3digos de construcci\u00f3n",
@@ -259,7 +259,7 @@
         "actionId": "icare_0157",
         "actionName": "Maintenance and Revitalization of Riparian Forests",
         "actionPriority": 5,
-        "explanation": "Ranked #5 by tournament ranking algorithm",
+        "explanation": "The maintenance and revitalization of riparian forests in Cruzeiro do Sul is crucial due to the city's tropical rainforest biome, which plays a significant role in maintaining biodiversity and ecological balance. Riparian forests help in reducing the risk of floods, which is a significant hazard for public health in the area, as indicated by the high risk score. Additionally, these forests can aid in mitigating the effects of droughts by improving water retention and quality, which is vital for the city's water resources. Overall, this action supports the city's resilience against climate-related hazards and enhances the sustainability of its natural resources.",
         "action": {
             "ActionID": "icare_0157",
             "ActionName": "Mantenimiento y Revitalizaci\u00f3n de Bosques Ribere\u00f1os",
@@ -322,7 +322,7 @@
         "actionId": "icare_0180",
         "actionName": "Implement permeable pavements and increase green areas in roadways",
         "actionPriority": 6,
-        "explanation": "Ranked #6 by tournament ranking algorithm",
+        "explanation": "Implementing permeable pavements and increasing green areas in roadways is crucial for Cruzeiro do Sul due to its vulnerability to floods and landslides. The city faces significant risks from these hazards, which can severely impact public health and infrastructure. By enhancing the permeability of surfaces and expanding green spaces, the city can improve stormwater management, reduce surface runoff, and mitigate the effects of heavy rainfall. This action not only addresses immediate environmental challenges but also contributes to the long-term resilience of the urban infrastructure.",
         "action": {
             "ActionID": "icare_0180",
             "ActionName": "Implementar pavimentos permeables y aumentar las \u00e1reas verdes en las v\u00edas p\u00fablicas",
@@ -383,7 +383,7 @@
         "actionId": "icare_0149",
         "actionName": "Encourage sustainable land use practices",
         "actionPriority": 7,
-        "explanation": "Ranked #7 by tournament ranking algorithm",
+        "explanation": "Encouraging sustainable land use practices in Cruzeiro do Sul is crucial due to the significant land use emissions, which are the largest contributor to the city's total emissions. By adopting sustainable practices, the city can effectively reduce its carbon footprint and mitigate environmental impacts. Additionally, sustainable land use can help preserve the tropical rainforest biome, which is vital for maintaining biodiversity and ecological balance. This action also aligns with addressing the high risk of landslides and floods, which are exacerbated by poor land management.",
         "action": {
             "ActionID": "icare_0149",
             "ActionName": "Fomentar pr\u00e1cticas sostenibles de uso de la tierra",
@@ -448,7 +448,7 @@
         "actionId": "icare_0154",
         "actionName": "Cleaning and Unclogging of Channels with Installation of Eco-barriers",
         "actionPriority": 8,
-        "explanation": "Ranked #8 by tournament ranking algorithm",
+        "explanation": "The action of cleaning and unclogging channels with the installation of eco-barriers is crucial for Cruzeiro do Sul due to its vulnerability to floods, which pose a significant risk to public health and infrastructure. By ensuring that water channels are clear and eco-barriers are in place, the city can mitigate the impact of floods, which have a high normalized risk score. This action not only helps in managing flood risks but also contributes to maintaining the ecological balance in the tropical rainforest biome of the region. Additionally, it supports the city's efforts to improve public health and infrastructure resilience against climate-related hazards.",
         "action": {
             "ActionID": "icare_0154",
             "ActionName": "Limpieza y Desobstrucci\u00f3n de Canales con Instalaci\u00f3n de Eco-barreras",
@@ -504,7 +504,7 @@
         "actionId": "icare_0164",
         "actionName": "Hydrological Monitoring System with Telemetry Stations",
         "actionPriority": 9,
-        "explanation": "Ranked #9 by tournament ranking algorithm",
+        "explanation": "Implementing a Hydrological Monitoring System with Telemetry Stations in Cruzeiro do Sul is crucial due to the city's vulnerability to floods and landslides. The city faces significant risks from these hazards, which can severely impact public health and infrastructure. By establishing a monitoring system, the city can better predict and manage water-related disasters, thereby reducing potential damage and enhancing community resilience. This action is particularly important given the tropical rainforest biome, which can experience heavy rainfall and rapid changes in water levels.",
         "action": {
             "ActionID": "icare_0164",
             "ActionName": "Sistema de Monitoreo Hidrol\u00f3gico con Estaciones de Telemetr\u00eda",
@@ -565,7 +565,7 @@
         "actionId": "icare_0156",
         "actionName": "Implementation of urban gardens",
         "actionPriority": 10,
-        "explanation": "Ranked #10 by tournament ranking algorithm",
+        "explanation": "The implementation of urban gardens in Cruzeiro do Sul is a strategic action to enhance food security and promote sustainable urban development. Given the city's tropical rainforest biome, urban gardens can thrive and provide fresh produce, reducing dependency on external food sources. This initiative also supports biodiversity and can mitigate some of the impacts of climate change by increasing green spaces, which help in cooling urban areas and managing stormwater. Additionally, urban gardens can foster community engagement and provide educational opportunities about sustainable practices.",
         "action": {
             "ActionID": "icare_0156",
             "ActionName": "Implementaci\u00f3n de huertos urbanos",
@@ -626,7 +626,7 @@
         "actionId": "icare_0175",
         "actionName": "Recovery and preservation of green areas",
         "actionPriority": 11,
-        "explanation": "Ranked #11 by tournament ranking algorithm",
+        "explanation": "The action of recovering and preserving green areas in Cruzeiro do Sul is crucial due to the city's location in a tropical rainforest biome, which is vital for maintaining biodiversity and ecological balance. Given the high emissions from land use, enhancing green spaces can help sequester carbon and mitigate climate change impacts. Additionally, green areas can improve public health by providing cleaner air and reducing the urban heat island effect, which is particularly important in a region facing risks from heatwaves. This action also supports the city's resilience against natural hazards like floods and landslides by improving soil stability and water absorption.",
         "action": {
             "ActionID": "icare_0175",
             "ActionName": "Recuperaci\u00f3n y preservaci\u00f3n de \u00e1reas verdes",
@@ -686,7 +686,7 @@
         "actionId": "icare_0151",
         "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
         "actionPriority": 12,
-        "explanation": "Ranked #12 by tournament ranking algorithm",
+        "explanation": "Developing diagnostics and restoring areas of Special Social Interest Zones (ZEIS) in Cruzeiro do Sul is crucial due to the city's socio-economic challenges. With a very low-income population, improving these areas can significantly enhance living conditions and access to essential services. Additionally, addressing these zones can help mitigate the impacts of environmental hazards such as floods and landslides, which pose significant risks to public health and infrastructure. This action aligns with the need to build resilience in vulnerable communities, ensuring sustainable development and improved quality of life for residents.",
         "action": {
             "ActionID": "icare_0151",
             "ActionName": "Desarrollar diagn\u00f3sticos y restaurar \u00e1reas de Zonas de Inter\u00e9s Social Especial (ZEIS)",
@@ -751,7 +751,7 @@
         "actionId": "ipcc_0094",
         "actionName": "Access to health care",
         "actionPriority": 13,
-        "explanation": "Ranked #13 by tournament ranking algorithm",
+        "explanation": "Improving access to health care in Cruzeiro do Sul is crucial due to the high risk of public health impacts from natural hazards such as landslides and floods. The city faces significant challenges with public health risks, particularly from floods, which have a high normalized risk score. Enhancing health care access can help mitigate these risks by ensuring timely medical response and support for affected populations. Additionally, better health care infrastructure can improve overall community resilience against climate-related health threats.",
         "action": {
             "ActionID": "ipcc_0094",
             "ActionName": "Acceso a la atenci\u00f3n m\u00e9dica",
@@ -815,7 +815,7 @@
         "actionId": "icare_0152",
         "actionName": "Recovery of degraded areas",
         "actionPriority": 14,
-        "explanation": "Ranked #14 by tournament ranking algorithm",
+        "explanation": "The action 'Recovery of degraded areas' is crucial for Cruzeiro do Sul due to its significant land use emissions, which are the highest among all emission sources in the city. Restoring degraded areas can help sequester carbon, thereby reducing these emissions and contributing to climate change mitigation. Additionally, improving land conditions can enhance biodiversity and resilience against climate hazards such as landslides and floods, which pose a high risk to public health and infrastructure. This action aligns with the city's need to address environmental degradation and improve ecological stability.",
         "action": {
             "ActionID": "icare_0152",
             "ActionName": "Recuperaci\u00f3n de \u00e1reas degradadas",
@@ -878,7 +878,7 @@
         "actionId": "icare_0172",
         "actionName": "Develop and implement the Municipal Risk Reduction Plan (PMRR) and identify population groups vulnerable to climate risks.",
         "actionPriority": 15,
-        "explanation": "Ranked #15 by tournament ranking algorithm",
+        "explanation": "Developing and implementing the Municipal Risk Reduction Plan (PMRR) is crucial for Cruzeiro do Sul due to its vulnerability to climate-related hazards such as floods and landslides. The city faces significant risks to public health and infrastructure from these hazards, making it essential to identify and protect vulnerable population groups. By prioritizing this action, the city can enhance its resilience against climate impacts and safeguard its residents. Additionally, a well-structured risk reduction plan can help allocate resources effectively and improve emergency response strategies.",
         "action": {
             "ActionID": "icare_0172",
             "ActionName": "Desarrollar e implementar el Plan Municipal de Reducci\u00f3n de Riesgos (PMRR) e identificar grupos de poblaci\u00f3n vulnerables a los riesgos clim\u00e1ticos.",
@@ -939,7 +939,7 @@
         "actionId": "ipcc_0099",
         "actionName": "Water capture/storage",
         "actionPriority": 16,
-        "explanation": "Ranked #16 by tournament ranking algorithm",
+        "explanation": "The action of water capture and storage is crucial for Cruzeiro do Sul due to its vulnerability to droughts, which pose a significant risk to water resources. Implementing this action can help mitigate the impact of water scarcity, ensuring a more reliable water supply for the city's residents. Additionally, improving water management can enhance resilience against climate change impacts, supporting both public health and food security. Given the city's tropical rainforest biome, efficient water storage systems can also help manage excess rainfall, reducing the risk of floods.",
         "action": {
             "ActionID": "ipcc_0099",
             "ActionName": "Captura/almacenamiento de agua",
@@ -1004,7 +1004,7 @@
         "actionId": "icare_0169",
         "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
         "actionPriority": 17,
-        "explanation": "Ranked #17 by tournament ranking algorithm",
+        "explanation": "Establishing a plan for preparation and emergency response measures in the event of extreme weather events is crucial for Cruzeiro do Sul due to its vulnerability to hazards such as floods and landslides. The city faces significant risks to public health and infrastructure from these events, as indicated by the high risk scores. By implementing this action, the city can enhance its resilience and reduce the potential impact of these hazards on its population and infrastructure. This proactive approach is essential to safeguard the community and ensure a swift and effective response during emergencies.",
         "action": {
             "ActionID": "icare_0169",
             "ActionName": "Establecer un Plan de Preparaci\u00f3n y Medidas de Respuesta de Emergencia en caso de eventos clim\u00e1ticos extremos",
@@ -1075,7 +1075,7 @@
         "actionId": "ipcc_0097",
         "actionName": "Food storage/distribution improvements",
         "actionPriority": 18,
-        "explanation": "Ranked #18 by tournament ranking algorithm",
+        "explanation": "Improving food storage and distribution is crucial for Cruzeiro do Sul due to its vulnerability to floods, which pose a significant risk to food security. The city's tropical rainforest biome and low-income status make it essential to ensure that food supplies are resilient to climate impacts. Enhancing these systems can help mitigate the effects of natural hazards, ensuring that the population has reliable access to food even during adverse conditions. This action supports the city's overall resilience strategy by addressing a key area of vulnerability.",
         "action": {
             "ActionID": "ipcc_0097",
             "ActionName": "Mejoras en el almacenamiento/distribuci\u00f3n de alimentos",
@@ -1141,7 +1141,7 @@
         "actionId": "ipcc_0086",
         "actionName": "Ecosystem-based adaptation",
         "actionPriority": 19,
-        "explanation": "Ranked #19 by tournament ranking algorithm",
+        "explanation": "Ecosystem-based adaptation is crucial for Cruzeiro do Sul due to its location in a tropical rainforest biome, which is highly sensitive to climate change impacts. The city faces significant risks from droughts and floods, which can severely affect water resources, food security, and public health. Implementing ecosystem-based strategies can enhance the resilience of natural systems, providing essential services such as water regulation and flood control. Additionally, these strategies can help preserve biodiversity, which is vital for maintaining ecological balance and supporting local livelihoods.",
         "action": {
             "ActionID": "ipcc_0086",
             "ActionName": "Adaptaci\u00f3n basada en ecosistemas",
@@ -1218,7 +1218,7 @@
         "actionId": "icare_0142",
         "actionName": "Improvement of Water Supply and Sanitation Systems",
         "actionPriority": 20,
-        "explanation": "Ranked #20 by tournament ranking algorithm",
+        "explanation": "Improving water supply and sanitation systems in Cruzeiro do Sul is crucial due to the city's very low access to these public services. Despite the low income levels in the area, enhancing these systems can significantly improve public health and quality of life. Additionally, better water management can mitigate risks associated with droughts, which are a key impact in the region. Addressing these issues can also help reduce the vulnerability of the population to climate-related hazards, such as floods and landslides, which pose significant risks to public health.",
         "action": {
             "ActionID": "icare_0142",
             "ActionName": "Mejora de los Sistemas de Abastecimiento de Agua y Saneamiento",

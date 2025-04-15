@@ -7,7 +7,7 @@
         "actionId": "icare_0176",
         "actionName": "Development of Climate Action Plan",
         "actionPriority": 1,
-        "explanation": "Ranked #1 by tournament ranking algorithm",
+        "explanation": "The development of a Climate Action Plan is crucial for Campo Largo due to its significant total emissions and the various climate risks it faces. The city has a high risk of floods, which can severely impact infrastructure and public health. Additionally, the threat of droughts poses a risk to water resources and food security. By creating a comprehensive Climate Action Plan, Campo Largo can strategically address these vulnerabilities and work towards reducing its emissions, thereby enhancing its resilience to climate change.",
         "action": {
             "ActionID": "icare_0176",
             "ActionName": "Desenvolvimento do Plano de A\u00e7\u00e3o Clim\u00e1tica",
@@ -78,7 +78,7 @@
         "actionId": "icare_0162",
         "actionName": "Strengthen programs for control and conservation of protected areas",
         "actionPriority": 2,
-        "explanation": "Ranked #2 by tournament ranking algorithm",
+        "explanation": "Strengthening programs for control and conservation of protected areas in Campo Largo is crucial due to its tropical rainforest biome, which is vital for biodiversity and ecological balance. The city faces significant risks from climate hazards such as droughts and floods, which can severely impact these protected areas. By enhancing conservation efforts, the city can mitigate the adverse effects of these hazards, ensuring the preservation of its natural resources. Additionally, maintaining healthy ecosystems contributes to the overall resilience of the city against climate change impacts.",
         "action": {
             "ActionID": "icare_0162",
             "ActionName": "Fortalecer programas de controle e conserva\u00e7\u00e3o de \u00e1reas protegidas",
@@ -141,7 +141,7 @@
         "actionId": "ipcc_0093",
         "actionName": "Availability of health infrastructure",
         "actionPriority": 3,
-        "explanation": "Ranked #3 by tournament ranking algorithm",
+        "explanation": "Improving the availability of health infrastructure in Campo Largo is crucial due to the high risk of public health impacts from various hazards. The city faces significant threats from diseases, with a very high risk score, and floods, which also pose a considerable risk to public health. Enhancing health infrastructure will help mitigate these risks by ensuring better preparedness and response capabilities. Additionally, improved health facilities can support the community in managing the impacts of heatwaves and landslides, further safeguarding public health.",
         "action": {
             "ActionID": "ipcc_0093",
             "ActionName": "Disponibilidade de infraestrutura de sa\u00fade",
@@ -205,7 +205,7 @@
         "actionId": "icare_0169",
         "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
         "actionPriority": 4,
-        "explanation": "Ranked #4 by tournament ranking algorithm",
+        "explanation": "Establishing a plan for preparation and emergency response measures in Campo Largo is crucial due to the city's vulnerability to extreme weather events. The city faces significant risks from floods, which pose a high threat to infrastructure and public health. Additionally, the risk of landslides and diseases exacerbated by climate change further underscores the need for a robust emergency response plan. By prioritizing this action, Campo Largo can enhance its resilience and protect its population from the adverse impacts of these hazards.",
         "action": {
             "ActionID": "icare_0169",
             "ActionName": "Estabelecer um Plano de Prepara\u00e7\u00e3o e Medidas de Resposta a Emerg\u00eancias em caso de eventos clim\u00e1ticos extremos",
@@ -276,7 +276,7 @@
         "actionId": "icare_0164",
         "actionName": "Hydrological Monitoring System with Telemetry Stations",
         "actionPriority": 5,
-        "explanation": "Ranked #5 by tournament ranking algorithm",
+        "explanation": "Implementing a Hydrological Monitoring System with Telemetry Stations in Campo Largo is crucial due to the city's vulnerability to floods. The city faces significant risks from floods, which can severely impact infrastructure and public health. By establishing a monitoring system, the city can better predict and manage flood events, reducing potential damage and enhancing public safety. Additionally, this system can provide valuable data to improve water resource management, which is essential given the city's tropical rainforest biome and the associated challenges with water resources.",
         "action": {
             "ActionID": "icare_0164",
             "ActionName": "Sistema de Monitoramento Hidrol\u00f3gico com Esta\u00e7\u00f5es de Telemetria",
@@ -337,7 +337,7 @@
         "actionId": "icare_0151",
         "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
         "actionPriority": 6,
-        "explanation": "Ranked #6 by tournament ranking algorithm",
+        "explanation": "Developing diagnostics and restoring areas of Special Social Interest Zones (ZEIS) in Campo Largo is crucial due to the city's socio-economic context. With a very low-income population, enhancing these areas can significantly improve living conditions and access to essential services. Additionally, restoring ZEIS can help mitigate the impacts of environmental hazards such as floods and landslides, which pose significant risks to infrastructure and public health. This action aligns with the need to address vulnerabilities in the city's infrastructure and improve resilience against climate-related risks.",
         "action": {
             "ActionID": "icare_0151",
             "ActionName": "Desenvolver diagn\u00f3sticos e restaurar \u00e1reas de Zonas Especiais de Interesse Social (ZEIS)",
@@ -402,7 +402,7 @@
         "actionId": "ipcc_0094",
         "actionName": "Access to health care",
         "actionPriority": 7,
-        "explanation": "Ranked #7 by tournament ranking algorithm",
+        "explanation": "Improving access to health care in Campo Largo is crucial due to the high risk of public health impacts from various climate hazards. The city faces significant threats from diseases, with a very high risk score, indicating a pressing need for robust health care systems. Additionally, the risk of floods and landslides further exacerbates the potential for health emergencies, making it essential to enhance health care accessibility. By prioritizing this action, Campo Largo can better prepare for and mitigate the adverse health effects associated with these environmental challenges.",
         "action": {
             "ActionID": "ipcc_0094",
             "ActionName": "Acesso aos cuidados de sa\u00fade",
@@ -466,7 +466,7 @@
         "actionId": "icare_0181",
         "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
         "actionPriority": 8,
-        "explanation": "Ranked #8 by tournament ranking algorithm",
+        "explanation": "The action of relocating and restoring vulnerable areas in Campo Largo is crucial due to the city's exposure to various climate hazards. With significant risks from floods and landslides, addressing these vulnerabilities can help protect public health and infrastructure. Environmental restoration can also enhance biodiversity and improve resilience against future climate impacts. Given the city's low-income socio-economic status, such actions can provide long-term benefits by reducing potential economic losses and improving living conditions.",
         "action": {
             "ActionID": "icare_0181",
             "ActionName": "Reloca\u00e7\u00e3o e Restaura\u00e7\u00e3o Ambiental em \u00c1reas Vulner\u00e1veis",
@@ -525,7 +525,7 @@
         "actionId": "ipcc_0097",
         "actionName": "Food storage/distribution improvements",
         "actionPriority": 9,
-        "explanation": "Ranked #9 by tournament ranking algorithm",
+        "explanation": "Improving food storage and distribution is crucial for Campo Largo due to its vulnerability to floods, which pose a significant risk to food security. The city's tropical rainforest biome and the associated climate conditions can exacerbate these risks, making efficient food systems essential. Enhancing these systems can help mitigate the impact of floods on food availability and ensure a stable supply chain. Additionally, with a low-income population, ensuring food security is vital to support the community's resilience against climate-related disruptions.",
         "action": {
             "ActionID": "ipcc_0097",
             "ActionName": "Melhorias no armazenamento/distribui\u00e7\u00e3o de alimentos",
@@ -591,7 +591,7 @@
         "actionId": "icare_0152",
         "actionName": "Recovery of degraded areas",
         "actionPriority": 10,
-        "explanation": "Ranked #10 by tournament ranking algorithm",
+        "explanation": "The action 'Recovery of degraded areas' is crucial for Campo Largo due to its tropical rainforest biome, which is sensitive to environmental degradation. Restoring these areas can enhance biodiversity, which is currently at risk from droughts and heatwaves. Additionally, recovery efforts can help mitigate land use emissions, which are a significant part of the city's total emissions. This action also supports the city's resilience against climate change impacts, such as landslides and floods, by stabilizing the soil and improving water retention.",
         "action": {
             "ActionID": "icare_0152",
             "ActionName": "Recupera\u00e7\u00e3o de \u00e1reas degradadas",
@@ -654,7 +654,7 @@
         "actionId": "icare_0145",
         "actionName": "Strengthen the healthcare network to attend to climate victims",
         "actionPriority": 11,
-        "explanation": "Ranked #11 by tournament ranking algorithm",
+        "explanation": "Strengthening the healthcare network in Campo Largo is crucial due to the high risk of climate-related health impacts. The city faces significant threats from diseases, with a very high risk score, indicating a pressing need for robust healthcare services. Additionally, the risk of floods and landslides poses further challenges to public health, necessitating a well-prepared healthcare system. By enhancing the healthcare network, the city can better manage and mitigate the health impacts of these climate hazards, ensuring the well-being of its residents.",
         "action": {
             "ActionID": "icare_0145",
             "ActionName": "Fortalecer a rede de sa\u00fade para atender \u00e0s v\u00edtimas do clima",
@@ -722,7 +722,7 @@
         "actionId": "icare_0149",
         "actionName": "Encourage sustainable land use practices",
         "actionPriority": 12,
-        "explanation": "Ranked #12 by tournament ranking algorithm",
+        "explanation": "Encouraging sustainable land use practices in Campo Largo is crucial due to the significant land use emissions contributing to the city's total emissions. With a tropical rainforest biome, maintaining biodiversity and preventing deforestation are essential to mitigate climate change impacts. Additionally, sustainable land use can help reduce the risk of landslides and floods, which are significant hazards for the city's infrastructure and public health. By prioritizing this action, Campo Largo can enhance its resilience against environmental hazards and promote long-term ecological balance.",
         "action": {
             "ActionID": "icare_0149",
             "ActionName": "Incentivar pr\u00e1ticas sustent\u00e1veis de uso da terra",
@@ -787,7 +787,7 @@
         "actionId": "ipcc_0096",
         "actionName": "Farm/fishery improvements",
         "actionPriority": 13,
-        "explanation": "Ranked #13 by tournament ranking algorithm",
+        "explanation": "Farm and fishery improvements are crucial for Campo Largo due to the significant risk of droughts impacting water resources and food security. Enhancing agricultural practices can help mitigate these risks by increasing resilience to water scarcity and ensuring a stable food supply. Additionally, these improvements can contribute to reducing emissions from land use, which is a notable source of emissions in the city. By prioritizing this action, Campo Largo can address both environmental and socio-economic challenges, supporting sustainable development in the region.",
         "action": {
             "ActionID": "ipcc_0096",
             "ActionName": "Melhorias na fazenda/pesqueira",
@@ -855,7 +855,7 @@
         "actionId": "icare_0157",
         "actionName": "Maintenance and Revitalization of Riparian Forests",
         "actionPriority": 14,
-        "explanation": "Ranked #14 by tournament ranking algorithm",
+        "explanation": "The maintenance and revitalization of riparian forests in Campo Largo is crucial due to the city's tropical rainforest biome, which plays a significant role in maintaining biodiversity and water quality. Riparian forests act as natural buffers, reducing the impact of floods, which is a high-risk hazard for the city's infrastructure and public health. By enhancing these natural barriers, the city can mitigate the effects of climate change, such as droughts and floods, which are prevalent risks. Additionally, revitalizing these areas supports the local ecosystem, contributing to the overall environmental resilience of Campo Largo.",
         "action": {
             "ActionID": "icare_0157",
             "ActionName": "Manuten\u00e7\u00e3o e Revitaliza\u00e7\u00e3o de Florestas Rip\u00e1rias",
@@ -918,7 +918,7 @@
         "actionId": "icare_0156",
         "actionName": "Implementation of urban gardens",
         "actionPriority": 15,
-        "explanation": "Ranked #15 by tournament ranking algorithm",
+        "explanation": "The implementation of urban gardens in Campo Largo is a significant action due to its potential to enhance food security, which is at risk from both droughts and floods. Urban gardens can provide a sustainable source of fresh produce, reducing dependency on external food supplies and increasing resilience against climate-related disruptions. Additionally, these gardens can improve local biodiversity and contribute to community well-being by offering green spaces for recreation and education. Given the city's low-income status, urban gardens can also serve as a cost-effective way to improve nutrition and health outcomes for residents.",
         "action": {
             "ActionID": "icare_0156",
             "ActionName": "Implementa\u00e7\u00e3o de hortas urbanas",
@@ -979,7 +979,7 @@
         "actionId": "icare_0148",
         "actionName": "Create the Municipal Climate Change Forum",
         "actionPriority": 16,
-        "explanation": "Ranked #16 by tournament ranking algorithm",
+        "explanation": "Creating the Municipal Climate Change Forum in Campo Largo is a crucial step towards addressing the city's environmental challenges. The city faces significant risks from climate-related hazards such as floods, droughts, and landslides, which impact water resources, food security, and public health. Establishing a dedicated forum will facilitate collaboration among stakeholders, enabling the development of effective strategies to mitigate these risks. Additionally, the forum can serve as a platform for raising awareness and engaging the community in climate action, which is essential for building resilience and ensuring sustainable development.",
         "action": {
             "ActionID": "icare_0148",
             "ActionName": "Criar o F\u00f3rum Municipal de Mudan\u00e7as Clim\u00e1ticas",
@@ -1050,7 +1050,7 @@
         "actionId": "ipcc_0092",
         "actionName": "Social safety nets",
         "actionPriority": 17,
-        "explanation": "Ranked #17 by tournament ranking algorithm",
+        "explanation": "Implementing social safety nets in Campo Largo is crucial due to the city's vulnerability to various climate hazards, such as floods and landslides, which pose significant risks to public health and infrastructure. These safety nets can provide essential support to low-income populations, who are particularly vulnerable during climate-related disasters. By strengthening social safety nets, the city can enhance its resilience and ensure that its residents have access to necessary resources and support during emergencies. This action is vital for maintaining social stability and protecting the most vulnerable groups in the community.",
         "action": {
             "ActionID": "ipcc_0092",
             "ActionName": "Redes de prote\u00e7\u00e3o social",
@@ -1114,7 +1114,7 @@
         "actionId": "ipcc_0099",
         "actionName": "Water capture/storage",
         "actionPriority": 18,
-        "explanation": "Ranked #18 by tournament ranking algorithm",
+        "explanation": "The action of water capture and storage is crucial for Campo Largo due to its vulnerability to droughts, which significantly impact water resources and food security. With a high risk score for drought-related impacts, enhancing water capture and storage can help mitigate these risks by ensuring a more reliable water supply. Additionally, improving water infrastructure can support the city's resilience against climate change, particularly in maintaining public health and agricultural productivity. This action aligns with the city's need to address its environmental challenges effectively.",
         "action": {
             "ActionID": "ipcc_0099",
             "ActionName": "Captura/armazenamento de \u00e1gua",
@@ -1179,7 +1179,7 @@
         "actionId": "ipcc_0098",
         "actionName": "Behaviour change in diets and food waste",
         "actionPriority": 19,
-        "explanation": "Ranked #19 by tournament ranking algorithm",
+        "explanation": "The action of promoting behavior change in diets and reducing food waste is crucial for Campo Largo due to its potential impact on food security and environmental sustainability. Given the city's vulnerability to droughts and floods, improving food systems can enhance resilience against these climate hazards. Additionally, reducing food waste can significantly lower emissions associated with waste management, contributing to the city's overall emission reduction goals. This action aligns with the need to address socio-economic factors by promoting sustainable practices that can also support local communities.",
         "action": {
             "ActionID": "ipcc_0098",
             "ActionName": "Mudan\u00e7a de comportamento em dietas e desperd\u00edcio de alimentos",
@@ -1245,7 +1245,7 @@
         "actionId": "icare_0144",
         "actionName": "Creation of a Financial Support Program to Adress Extreme Weather Events",
         "actionPriority": 20,
-        "explanation": "Ranked #20 by tournament ranking algorithm",
+        "explanation": "The creation of a financial support program to address extreme weather events is crucial for Campo Largo due to its vulnerability to various climate hazards. The city faces significant risks from floods, droughts, and landslides, which can severely impact infrastructure, public health, and food security. Establishing a financial support program can help mitigate the economic burden on affected communities and ensure a quicker recovery process. This action is particularly important given the city's low-income status, which may limit the ability of residents to cope with and recover from such events. By prioritizing financial support, Campo Largo can enhance its resilience and protect its population from the adverse effects of climate change.",
         "action": {
             "ActionID": "icare_0144",
             "ActionName": "Cria\u00e7\u00e3o de um Programa de Apoio Financeiro para Abordar Eventos Clim\u00e1ticos Extremos",

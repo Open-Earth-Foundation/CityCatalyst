@@ -7,7 +7,7 @@
         "actionId": "icare_0176",
         "actionName": "Development of Climate Action Plan",
         "actionPriority": 1,
-        "explanation": "Ranked #1 by tournament ranking algorithm",
+        "explanation": "The development of a Climate Action Plan is a top priority for Porto Alegre due to its significant environmental challenges. The city faces high risks from natural hazards such as landslides, floods, and heatwaves, which threaten public health and infrastructure. By creating a comprehensive plan, the city can strategically address these risks and reduce its total emissions, which are currently substantial. Additionally, a Climate Action Plan will help coordinate efforts across sectors to improve resilience and sustainability in the face of climate change.",
         "action": {
             "ActionID": "icare_0176",
             "ActionName": "Development of Climate Action Plan",
@@ -78,7 +78,7 @@
         "actionId": "icare_0162",
         "actionName": "Strengthen programs for control and conservation of protected areas",
         "actionPriority": 2,
-        "explanation": "Ranked #2 by tournament ranking algorithm",
+        "explanation": "Strengthening programs for control and conservation of protected areas in Porto Alegre is crucial due to the city's vulnerability to environmental hazards such as droughts and heatwaves. These protected areas can serve as vital buffers against climate impacts, helping to preserve biodiversity and maintain ecological balance. Additionally, enhancing conservation efforts can mitigate the effects of urbanization and industrial activities, which contribute significantly to the city's emissions. By prioritizing this action, Porto Alegre can improve its resilience to climate change and protect its natural resources for future generations.",
         "action": {
             "ActionID": "icare_0162",
             "ActionName": "Strengthen programs for control and conservation of protected areas",
@@ -141,7 +141,7 @@
         "actionId": "icare_0169",
         "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
         "actionPriority": 3,
-        "explanation": "Ranked #3 by tournament ranking algorithm",
+        "explanation": "Establishing a plan for preparation and emergency response measures in the event of extreme weather events is crucial for Porto Alegre due to its high risk of landslides and floods. The city faces significant threats to infrastructure and public health from these hazards, as indicated by the high normalized risk scores. By implementing this action, the city can enhance its resilience and reduce the potential impact of these extreme weather events on its population and infrastructure. Additionally, having a robust emergency response plan can help mitigate the socio-economic disruptions caused by such events, ensuring a quicker recovery and safeguarding the well-being of its residents.",
         "action": {
             "ActionID": "icare_0169",
             "ActionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
@@ -212,7 +212,7 @@
         "actionId": "icare_0149",
         "actionName": "Encourage sustainable land use practices",
         "actionPriority": 4,
-        "explanation": "Ranked #4 by tournament ranking algorithm",
+        "explanation": "Encouraging sustainable land use practices in Porto Alegre is crucial due to the city's significant land use emissions, which contribute to its overall carbon footprint. By adopting sustainable practices, the city can mitigate these emissions and enhance its resilience against climate-related hazards such as landslides and floods, which pose high risks to infrastructure and public health. Additionally, sustainable land use can help preserve the grassland/savanna biome, supporting biodiversity and maintaining ecological balance. This action aligns with the city's need to address environmental challenges while promoting long-term sustainability.",
         "action": {
             "ActionID": "icare_0149",
             "ActionName": "Encourage sustainable land use practices",
@@ -277,7 +277,7 @@
         "actionId": "icare_0152",
         "actionName": "Recovery of degraded areas",
         "actionPriority": 5,
-        "explanation": "Ranked #5 by tournament ranking algorithm",
+        "explanation": "The action 'Recovery of degraded areas' is crucial for Porto Alegre due to its significant environmental challenges. The city faces high emissions from various sectors, contributing to environmental degradation. By focusing on recovering degraded areas, the city can enhance its resilience against climate impacts such as floods and landslides, which pose a high risk to infrastructure and public health. Additionally, restoring these areas can improve biodiversity and contribute to better air quality, aligning with the city's sustainability goals.",
         "action": {
             "ActionID": "icare_0152",
             "ActionName": "Recovery of degraded areas",
@@ -340,7 +340,7 @@
         "actionId": "icare_0181",
         "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
         "actionPriority": 6,
-        "explanation": "Ranked #6 by tournament ranking algorithm",
+        "explanation": "The action 'Relocation and Environmental Restoration in Vulnerable Areas' is crucial for Porto Alegre due to the high risk of landslides and floods, which pose significant threats to infrastructure and public health. Given the city's high population density and the presence of vulnerable areas, relocating residents and restoring the environment can mitigate these risks effectively. Additionally, addressing these hazards aligns with the city's need to enhance resilience against climate-related impacts, ensuring the safety and well-being of its inhabitants. This action also supports long-term sustainability by improving land use and reducing potential damage from natural disasters.",
         "action": {
             "ActionID": "icare_0181",
             "ActionName": "Relocation and Environmental Restoration in Vulnerable Areas",
@@ -399,7 +399,7 @@
         "actionId": "icare_0157",
         "actionName": "Maintenance and Revitalization of Riparian Forests",
         "actionPriority": 7,
-        "explanation": "Ranked #7 by tournament ranking algorithm",
+        "explanation": "The maintenance and revitalization of riparian forests in Porto Alegre is crucial due to the city's vulnerability to floods and landslides, which pose significant risks to infrastructure and public health. Riparian forests play a vital role in stabilizing soil and reducing the impact of these hazards by enhancing water absorption and preventing erosion. Additionally, these forests contribute to biodiversity conservation and improve water quality, which is essential for the city's resilience against climate change impacts. Given the high risk of floods and landslides, this action is a priority to protect the city's infrastructure and its residents' well-being.",
         "action": {
             "ActionID": "icare_0157",
             "ActionName": "Maintenance and Revitalization of Riparian Forests",
@@ -462,7 +462,7 @@
         "actionId": "icare_0156",
         "actionName": "Implementation of urban gardens",
         "actionPriority": 8,
-        "explanation": "Ranked #8 by tournament ranking algorithm",
+        "explanation": "The implementation of urban gardens in Porto Alegre is a significant action due to its potential to enhance food security and promote sustainable urban development. Given the city's vulnerability to droughts, urban gardens can help mitigate food supply disruptions by providing local, resilient food sources. Additionally, these gardens can improve biodiversity and green spaces in the city, contributing to better air quality and urban cooling, which is crucial in the face of heatwaves. Furthermore, urban gardens can foster community engagement and provide educational opportunities, enhancing social cohesion and environmental awareness among residents.",
         "action": {
             "ActionID": "icare_0156",
             "ActionName": "Implementation of urban gardens",
@@ -523,7 +523,7 @@
         "actionId": "icare_0180",
         "actionName": "Implement permeable pavements and increase green areas in roadways",
         "actionPriority": 9,
-        "explanation": "Ranked #9 by tournament ranking algorithm",
+        "explanation": "Implementing permeable pavements and increasing green areas in roadways is crucial for Porto Alegre due to its high risk of floods and landslides. The city faces significant infrastructure and public health risks from these hazards, making it essential to enhance water absorption and reduce surface runoff. By increasing green areas, the city can also improve urban biodiversity and mitigate the urban heat island effect, which is important given the risks associated with heatwaves. This action not only addresses immediate environmental challenges but also contributes to long-term urban resilience and sustainability.",
         "action": {
             "ActionID": "icare_0180",
             "ActionName": "Implement permeable pavements and increase green areas in roadways",
@@ -584,7 +584,7 @@
         "actionId": "icare_0164",
         "actionName": "Hydrological Monitoring System with Telemetry Stations",
         "actionPriority": 10,
-        "explanation": "Ranked #10 by tournament ranking algorithm",
+        "explanation": "Implementing a Hydrological Monitoring System with Telemetry Stations in Porto Alegre is crucial due to the city's vulnerability to floods and landslides. The city faces significant risks from these hazards, which can severely impact infrastructure and public health. By establishing a robust monitoring system, the city can better predict and manage water-related disasters, thereby reducing potential damage and enhancing community resilience. This proactive approach is essential for safeguarding the well-being of Porto Alegre's residents and maintaining the city's infrastructure.",
         "action": {
             "ActionID": "icare_0164",
             "ActionName": "Hydrological Monitoring System with Telemetry Stations",
@@ -645,7 +645,7 @@
         "actionId": "ipcc_0088",
         "actionName": "Building codes",
         "actionPriority": 11,
-        "explanation": "Ranked #11 by tournament ranking algorithm",
+        "explanation": "Implementing building codes in Porto Alegre is crucial due to the high risk of landslides and floods, which pose significant threats to infrastructure and public health. The city's vulnerability to these hazards necessitates robust construction standards to ensure the safety and resilience of buildings. By enforcing stringent building codes, Porto Alegre can mitigate the impact of these natural disasters, protecting its population and reducing potential economic losses. Additionally, improved building standards can enhance energy efficiency, contributing to the reduction of stationary energy emissions.",
         "action": {
             "ActionID": "ipcc_0088",
             "ActionName": "Building codes",
@@ -704,7 +704,7 @@
         "actionId": "icare_0151",
         "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
         "actionPriority": 12,
-        "explanation": "Ranked #12 by tournament ranking algorithm",
+        "explanation": "Developing diagnostics and restoring areas of Special Social Interest Zones (ZEIS) in Porto Alegre is crucial due to the city's socio-economic challenges. With a very low-income population, improving these areas can significantly enhance living conditions and reduce vulnerability to environmental hazards. Additionally, restoring ZEIS can help mitigate the impacts of climate-related risks such as floods and landslides, which pose a high threat to public health and infrastructure. This action aligns with the city's need to address both social and environmental issues, making it a strategic priority.",
         "action": {
             "ActionID": "icare_0151",
             "ActionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
@@ -769,7 +769,7 @@
         "actionId": "icare_0175",
         "actionName": "Recovery and preservation of green areas",
         "actionPriority": 13,
-        "explanation": "Ranked #13 by tournament ranking algorithm",
+        "explanation": "The recovery and preservation of green areas in Porto Alegre is crucial due to the city's biome, which is primarily grassland and savanna. These green areas play a significant role in maintaining biodiversity and providing natural buffers against climate hazards such as heatwaves and floods. Additionally, enhancing green spaces can improve public health by offering recreational areas and reducing urban heat island effects. Given the city's high population density, preserving green areas is essential for ensuring a sustainable and livable environment for its residents.",
         "action": {
             "ActionID": "icare_0175",
             "ActionName": "Recovery and preservation of green areas",
@@ -829,7 +829,7 @@
         "actionId": "ipcc_0097",
         "actionName": "Food storage/distribution improvements",
         "actionPriority": 14,
-        "explanation": "Ranked #14 by tournament ranking algorithm",
+        "explanation": "Improving food storage and distribution in Porto Alegre is crucial due to the city's vulnerability to climate-related hazards such as floods and droughts, which can disrupt food supply chains. Enhancing these systems can help ensure food security, especially given the city's large population. Additionally, better food distribution can mitigate the impact of potential food shortages and support the socio-economic stability of the region. This action aligns with the need to bolster resilience against environmental risks that threaten public health and infrastructure.",
         "action": {
             "ActionID": "ipcc_0097",
             "ActionName": "Food storage/distribution improvements",
@@ -895,7 +895,7 @@
         "actionId": "ipcc_0096",
         "actionName": "Farm/fishery improvements",
         "actionPriority": 15,
-        "explanation": "Ranked #15 by tournament ranking algorithm",
+        "explanation": "Farm and fishery improvements are crucial for Porto Alegre due to the city's vulnerability to droughts, which pose a significant risk to water resources and food security. Enhancing agricultural practices can help mitigate these risks by increasing resilience and ensuring a stable food supply. Additionally, sustainable fishery practices can contribute to biodiversity conservation, which is essential given the city's grassland/savanna biome. These improvements can also support the local economy by boosting productivity and providing more secure livelihoods for those dependent on agriculture and fisheries.",
         "action": {
             "ActionID": "ipcc_0096",
             "ActionName": "Farm/fishery improvements",
@@ -963,7 +963,7 @@
         "actionId": "ipcc_0094",
         "actionName": "Access to health care",
         "actionPriority": 16,
-        "explanation": "Ranked #16 by tournament ranking algorithm",
+        "explanation": "Improving access to health care in Porto Alegre is crucial due to the city's vulnerability to public health risks, such as heatwaves and landslides. These hazards pose significant threats to the well-being of the population, necessitating robust health care systems to manage potential health crises. Additionally, the city's large population size further underscores the need for accessible health services to ensure that all residents can receive timely medical attention. Enhancing health care access can also mitigate the impacts of diseases, which are a notable risk in the area.",
         "action": {
             "ActionID": "ipcc_0094",
             "ActionName": "Access to health care",
@@ -1027,7 +1027,7 @@
         "actionId": "icare_0145",
         "actionName": "Strengthen the healthcare network to attend to climate victims",
         "actionPriority": 17,
-        "explanation": "Ranked #17 by tournament ranking algorithm",
+        "explanation": "Strengthening the healthcare network in Porto Alegre is crucial due to the high risk of climate-related hazards such as heatwaves, landslides, and floods, which pose significant threats to public health. The city faces a high normalized risk score for public health impacts from these hazards, indicating a pressing need for improved healthcare infrastructure to manage potential increases in climate-related illnesses and injuries. By enhancing the healthcare network, the city can better prepare for and respond to these challenges, ensuring the well-being of its residents. Additionally, a robust healthcare system can mitigate the long-term impacts of climate change on the population, making it a vital component of the city's climate adaptation strategy.",
         "action": {
             "ActionID": "icare_0145",
             "ActionName": "Strengthen the healthcare network to attend to climate victims",
@@ -1095,7 +1095,7 @@
         "actionId": "ipcc_0092",
         "actionName": "Social safety nets",
         "actionPriority": 18,
-        "explanation": "Ranked #18 by tournament ranking algorithm",
+        "explanation": "Implementing social safety nets in Porto Alegre is crucial due to the city's vulnerability to various climate hazards, such as landslides and floods, which pose significant risks to public health and infrastructure. These safety nets can provide essential support to low-income populations, who are particularly vulnerable during such events. Additionally, with the city's very low socio-economic status, enhancing social safety nets can help mitigate the adverse effects of climate change on the most affected communities, ensuring a more resilient and equitable society.",
         "action": {
             "ActionID": "ipcc_0092",
             "ActionName": "Social safety nets",
@@ -1159,7 +1159,7 @@
         "actionId": "ipcc_0086",
         "actionName": "Ecosystem-based adaptation",
         "actionPriority": 19,
-        "explanation": "Ranked #19 by tournament ranking algorithm",
+        "explanation": "Ecosystem-based adaptation is a crucial action for Porto Alegre due to its potential to mitigate the impacts of climate change on biodiversity and public health. The city faces significant risks from hazards such as droughts and heatwaves, which can severely affect local ecosystems. By prioritizing ecosystem-based adaptation, Porto Alegre can enhance its resilience against these hazards, ensuring the protection of its natural resources and the well-being of its residents. Additionally, this approach can contribute to reducing emissions and improving the overall environmental quality of the city.",
         "action": {
             "ActionID": "ipcc_0086",
             "ActionName": "Ecosystem-based adaptation",
@@ -1236,7 +1236,7 @@
         "actionId": "ipcc_0093",
         "actionName": "Availability of health infrastructure",
         "actionPriority": 20,
-        "explanation": "Ranked #20 by tournament ranking algorithm",
+        "explanation": "The availability of health infrastructure is crucial for Porto Alegre, especially given the high risk of public health impacts from hazards such as heatwaves, diseases, and landslides. These hazards pose significant threats to the well-being of the population, necessitating robust health infrastructure to manage and mitigate their effects. Additionally, with a population of over 1.3 million, ensuring adequate health facilities is essential to provide timely and effective medical care. Strengthening health infrastructure can also enhance the city's resilience to climate-related health challenges, improving overall public health outcomes.",
         "action": {
             "ActionID": "ipcc_0093",
             "ActionName": "Availability of health infrastructure",

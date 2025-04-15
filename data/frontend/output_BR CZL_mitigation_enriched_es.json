@@ -7,6 +7,7 @@
         "actionId": "icare_0050",
         "actionName": "Implement Agroforestry Systems",
         "actionPriority": 1,
+        "explanation": "Implementing agroforestry systems in Cruzeiro do Sul is a high priority due to the city's tropical rainforest biome, which is well-suited for such practices. Agroforestry can enhance biodiversity, improve soil health, and increase carbon sequestration, which is crucial given the city's high land use emissions. Additionally, these systems can provide sustainable livelihoods for the local population, addressing socio-economic challenges in a region with very low income levels. By integrating trees with crops and livestock, agroforestry can also help mitigate the impacts of climate change, such as droughts and floods, which pose significant risks to the city's public health and infrastructure.",
         "action": {
             "ActionID": "icare_0050",
             "ActionName": "Implementar Sistemas Agroforestales",
@@ -69,6 +70,7 @@
         "actionId": "icare_0134",
         "actionName": "Strengthen Mechanisms for Deforestation Control",
         "actionPriority": 2,
+        "explanation": "Strengthening mechanisms for deforestation control in Cruzeiro do Sul is crucial due to the city's location within a tropical rainforest biome. This area is highly susceptible to deforestation, which can lead to significant biodiversity loss and increased carbon emissions. Given the city's high land use emissions, addressing deforestation is essential to mitigate climate change impacts and preserve the ecological balance. Furthermore, effective deforestation control can help maintain water resources and prevent soil degradation, which are vital for the community's sustainability.",
         "action": {
             "ActionID": "icare_0134",
             "ActionName": "Fortalecer los Mecanismos para el Control de la Deforestaci\u00f3n",
@@ -131,6 +133,7 @@
         "actionId": "icare_0133",
         "actionName": "Promote Urban Reforestation and Green Corridors",
         "actionPriority": 3,
+        "explanation": "Promoting urban reforestation and green corridors in Cruzeiro do Sul is crucial due to the city's tropical rainforest biome, which can benefit significantly from increased green spaces. This action can help mitigate the high emissions from land use, which are a major contributor to the city's total emissions. Additionally, enhancing green infrastructure can improve resilience against climate hazards such as heatwaves and floods, which pose significant risks to public health and infrastructure. By increasing urban greenery, the city can also enhance biodiversity and improve the overall quality of life for its residents.",
         "action": {
             "ActionID": "icare_0133",
             "ActionName": "Promover la Reforestaci\u00f3n Urbana y los Corredores Verdes",
@@ -193,6 +196,7 @@
         "actionId": "icare_0129",
         "actionName": "Facilitate Technology Transfer for Conservation Practices",
         "actionPriority": 4,
+        "explanation": "Facilitating technology transfer for conservation practices is crucial for Cruzeiro do Sul due to its location in a tropical rainforest biome, which is highly sensitive to environmental changes. The city faces significant risks from climate hazards such as droughts, heatwaves, and floods, which threaten its biodiversity and public health. By adopting advanced conservation technologies, the city can better manage its natural resources and mitigate the impacts of these hazards. Additionally, improving conservation practices can help reduce land use emissions, which are a major contributor to the city's total emissions profile.",
         "action": {
             "ActionID": "icare_0129",
             "ActionName": "Facilitar la Transferencia de Tecnolog\u00eda para Pr\u00e1cticas de Conservaci\u00f3n",
@@ -255,6 +259,7 @@
         "actionId": "icare_0130",
         "actionName": "Conduct Technical Assistance and Rural Extension (ATER) Actions",
         "actionPriority": 5,
+        "explanation": "Conducting Technical Assistance and Rural Extension (ATER) actions is crucial for Cruzeiro do Sul due to its low-income status and the challenges posed by its tropical rainforest biome. These actions can help improve agricultural practices, which is vital for food security, especially in a region susceptible to droughts and floods. By enhancing local agricultural knowledge and practices, ATER can also contribute to reducing land use emissions, which are a significant part of the city's total emissions. Furthermore, these initiatives can empower local communities, fostering economic resilience and sustainability in the face of climate-related risks.",
         "action": {
             "ActionID": "icare_0130",
             "ActionName": "Realizar Acciones de Asistencia T\u00e9cnica y Extensi\u00f3n Rural (ATER)",
@@ -317,6 +322,7 @@
         "actionId": "icare_0128",
         "actionName": "Establish Municipal Programs for Payment for Environmental Services (PES)",
         "actionPriority": 6,
+        "explanation": "Establishing Municipal Programs for Payment for Environmental Services (PES) in Cruzeiro do Sul is a strategic action to address the city's environmental challenges. Given the city's location in a tropical rainforest biome, PES can incentivize the preservation of natural resources, which is crucial for maintaining biodiversity and mitigating climate risks. Additionally, PES programs can help reduce land use emissions, which are a significant contributor to the city's total emissions. By promoting sustainable land management practices, these programs can also enhance the resilience of local ecosystems against hazards such as floods and landslides, which pose high risks to public health and infrastructure.",
         "action": {
             "ActionID": "icare_0128",
             "ActionName": "Establecer Programas Municipales de Pago por Servicios Ambientales (PES)",
@@ -379,6 +385,7 @@
         "actionId": "icare_0084",
         "actionName": "Create Incentives for Agroforestry Practices in Livestock Systems",
         "actionPriority": 7,
+        "explanation": "Creating incentives for agroforestry practices in livestock systems is crucial for Cruzeiro do Sul due to its tropical rainforest biome, which is highly sensitive to land use changes. Agroforestry can help mitigate land use emissions, which are a significant contributor to the city's total emissions. By integrating trees into livestock systems, the city can enhance biodiversity, improve soil health, and increase carbon sequestration. This action also aligns with the need to address the high risk of landslides and floods, as agroforestry can improve land stability and water management.",
         "action": {
             "ActionID": "icare_0084",
             "ActionName": "Crear incentivos para pr\u00e1cticas de agroforester\u00eda en sistemas ganaderos",
@@ -441,6 +448,7 @@
         "actionId": "icare_0102",
         "actionName": "Promote Sustainable Agricultural Practices",
         "actionPriority": 8,
+        "explanation": "Promoting sustainable agricultural practices in Cruzeiro do Sul is crucial due to the city's location in a tropical rainforest biome, which is sensitive to environmental changes. The city faces significant land use emissions, which can be mitigated by adopting more sustainable farming techniques. Additionally, sustainable agriculture can help improve food security, which is at risk from hazards like floods and droughts. By focusing on sustainable practices, the city can enhance its resilience to climate impacts while supporting the local economy.",
         "action": {
             "ActionID": "icare_0102",
             "ActionName": "Promover Pr\u00e1cticas Agr\u00edcolas Sostenibles",
@@ -503,6 +511,7 @@
         "actionId": "icare_0100",
         "actionName": "Support Regenerative Agriculture Practices",
         "actionPriority": 9,
+        "explanation": "Supporting regenerative agriculture practices in Cruzeiro do Sul is crucial due to the city's reliance on land use, which contributes significantly to its total emissions. By adopting these practices, the city can reduce its land use emissions, which are currently the highest among all emission sources. Additionally, regenerative agriculture can enhance food security, which is at risk from both droughts and floods, as indicated by the city's climate risk assessments. Implementing these practices will also help in preserving the tropical rainforest biome, which is vital for maintaining biodiversity and ecological balance in the region.",
         "action": {
             "ActionID": "icare_0100",
             "ActionName": "Apoyar las Pr\u00e1cticas de Agricultura Regenerativa",
@@ -565,6 +574,7 @@
         "actionId": "icare_0096",
         "actionName": "Promote Organic Farming",
         "actionPriority": 10,
+        "explanation": "Promoting organic farming in Cruzeiro do Sul is a priority due to its potential to enhance food security and biodiversity in the region. The city is located in a tropical rainforest biome, which is conducive to diverse agricultural practices that can benefit from organic methods. Additionally, organic farming can help reduce land use emissions, which are currently a significant contributor to the city's total emissions. By adopting organic farming practices, the city can also mitigate the impact of droughts on food security, as these methods often improve soil health and water retention.",
         "action": {
             "ActionID": "icare_0096",
             "ActionName": "Promover la Agricultura Org\u00e1nica",
@@ -627,6 +637,7 @@
         "actionId": "icare_0101",
         "actionName": "Encourage the Use of Low-Emission Agricultural Machinery",
         "actionPriority": 11,
+        "explanation": "Encouraging the use of low-emission agricultural machinery in Cruzeiro do Sul is a significant action due to the city's high land use emissions. With a total emission of 87,842.696 tons, land use contributes a substantial portion, making it crucial to address this sector. By promoting low-emission machinery, the city can reduce its carbon footprint and improve air quality, which is essential for public health. Additionally, this action aligns with the city's need to mitigate climate change impacts, such as droughts and floods, which threaten food security and infrastructure.",
         "action": {
             "ActionID": "icare_0101",
             "ActionName": "Fomentar el uso de maquinaria agr\u00edcola de bajas emisiones",
@@ -689,6 +700,7 @@
         "actionId": "icare_0127",
         "actionName": "Accelerate Environmental Regularization of Rural Properties",
         "actionPriority": 12,
+        "explanation": "Accelerating the environmental regularization of rural properties in Cruzeiro do Sul is crucial due to the significant land use emissions, which are the largest contributor to the city's total emissions. By ensuring that rural properties comply with environmental regulations, the city can effectively reduce these emissions and promote sustainable land management practices. Additionally, this action can help mitigate the impacts of climate-related hazards such as floods and landslides, which pose a high risk to public health and infrastructure. Implementing this action aligns with the city's need to address its environmental challenges and improve resilience against climate change.",
         "action": {
             "ActionID": "icare_0127",
             "ActionName": "Acelerar la Regularizaci\u00f3n Ambiental de Propiedades Rurales",
@@ -751,6 +763,7 @@
         "actionId": "ipcc_0061",
         "actionName": "Soil Carbon Management in Croplands and Grasslands",
         "actionPriority": 13,
+        "explanation": "Soil Carbon Management in Croplands and Grasslands is a crucial action for Cruzeiro do Sul due to its significant land use emissions, which are the largest contributor to the city's total emissions. By improving soil carbon management, the city can enhance carbon sequestration, thereby reducing its overall carbon footprint. Additionally, this action can improve soil health and productivity, which is vital for maintaining food security in the face of climate change impacts such as droughts and floods. Implementing this action aligns with the city's need to address environmental sustainability while supporting local agricultural practices.",
         "action": {
             "ActionID": "ipcc_0061",
             "ActionName": "Gesti\u00f3n del Carbono del Suelo en Tierras de Cultivo y Pastizales",
@@ -812,6 +825,7 @@
         "actionId": "icare_0131",
         "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
         "actionPriority": 14,
+        "explanation": "Prioritizing the procurement of locally produced agroecological products in public purchases is crucial for Cruzeiro do Sul due to its potential to enhance food security. The city faces risks related to food security from both droughts and floods, making it important to support local agriculture that can adapt to these conditions. Additionally, this action can help reduce transportation emissions by minimizing the need for long-distance food transport, aligning with the city's goal to lower its overall emissions. Supporting local agroecological products also promotes sustainable land use practices, which is vital given the city's significant land use emissions.",
         "action": {
             "ActionID": "icare_0131",
             "ActionName": "Priorizar la Adquisici\u00f3n de Productos Agroecol\u00f3gicos de Producci\u00f3n Local en Compras P\u00fablicas",
@@ -874,6 +888,7 @@
         "actionId": "icare_0085",
         "actionName": "Promote the Adoption of Agroecological Pest Control",
         "actionPriority": 15,
+        "explanation": "Promoting the adoption of agroecological pest control in Cruzeiro do Sul is crucial due to the city's location in a tropical rainforest biome, which supports a rich biodiversity. This approach can help maintain ecological balance and reduce the reliance on chemical pesticides, which can harm the environment and human health. Additionally, agroecological methods can enhance food security by improving crop resilience to pests and diseases, which is vital given the city's vulnerability to climate-related hazards like droughts and floods. Implementing this action aligns with sustainable agricultural practices, contributing to long-term environmental and economic benefits for the community.",
         "action": {
             "ActionID": "icare_0085",
             "ActionName": "Promover la Adopci\u00f3n del Control de Plagas Agroecol\u00f3gico",
@@ -936,6 +951,7 @@
         "actionId": "icare_0132",
         "actionName": "Encourage Local Agroecological Production and Short Supply Chains",
         "actionPriority": 16,
+        "explanation": "Encouraging local agroecological production and short supply chains in Cruzeiro do Sul is crucial due to the city's vulnerability to climate-related hazards such as droughts and floods, which impact food security. By promoting local agriculture, the city can enhance its resilience against these risks by reducing dependency on external food sources and ensuring a stable local food supply. Additionally, this action supports the local economy and can help mitigate transportation emissions, which are a significant contributor to the city's overall emissions. Implementing this strategy aligns with sustainable development goals and can improve the socio-economic conditions of the community.",
         "action": {
             "ActionID": "icare_0132",
             "ActionName": "Fomentar la Producci\u00f3n Agroecol\u00f3gica Local y las Cadenas de Suministro Cortas",
@@ -998,6 +1014,7 @@
         "actionId": "icare_0099",
         "actionName": "Support Agroecological Certification Programs",
         "actionPriority": 17,
+        "explanation": "Supporting agroecological certification programs in Cruzeiro do Sul is crucial due to the city's reliance on agriculture and its vulnerability to climate hazards like droughts and floods. These programs can promote sustainable farming practices that enhance food security and reduce environmental impact. By encouraging agroecological methods, the city can improve resilience against climate change, particularly in a region with very low income levels. Additionally, such initiatives can help preserve the tropical rainforest biome, which is vital for maintaining biodiversity and ecological balance.",
         "action": {
             "ActionID": "icare_0099",
             "ActionName": "Apoyar los Programas de Certificaci\u00f3n Agroecol\u00f3gica",
@@ -1060,6 +1077,7 @@
         "actionId": "icare_0136",
         "actionName": "Support the Implementation of Ecological Fiscal Incentives",
         "actionPriority": 18,
+        "explanation": "Supporting the implementation of ecological fiscal incentives in Cruzeiro do Sul is crucial due to the city's significant land use emissions, which are the largest contributor to its total emissions. By promoting sustainable land management practices through fiscal incentives, the city can effectively reduce these emissions. Additionally, the region's tropical rainforest biome is vital for biodiversity, and ecological incentives can help preserve this critical environment. This action aligns with the city's need to address environmental challenges while fostering economic growth through sustainable practices.",
         "action": {
             "ActionID": "icare_0136",
             "ActionName": "Apoyar la Implementaci\u00f3n de Incentivos Fiscales Ecol\u00f3gicos",
@@ -1122,6 +1140,7 @@
         "actionId": "ipcc_0052",
         "actionName": "Reduce Deforestation and Degradation",
         "actionPriority": 19,
+        "explanation": "Reducing deforestation and degradation is crucial for Cruzeiro do Sul due to its location in a tropical rainforest biome. The city faces significant land use emissions, which are a major contributor to its total emissions profile. By addressing deforestation, the city can significantly reduce its carbon footprint and help preserve biodiversity. Additionally, maintaining forest cover can mitigate the impacts of climate hazards such as floods and landslides, which pose a high risk to public health and infrastructure. This action is essential for promoting environmental sustainability and resilience in the region.",
         "action": {
             "ActionID": "ipcc_0052",
             "ActionName": "Reducir la deforestaci\u00f3n y la degradaci\u00f3n",
@@ -1183,6 +1202,7 @@
         "actionId": "c40_0042",
         "actionName": "Biodiversity Expansion",
         "actionPriority": 20,
+        "explanation": "The action 'Biodiversity Expansion' is crucial for Cruzeiro do Sul due to its location in a tropical rainforest biome, which is rich in biodiversity. Enhancing biodiversity can help mitigate the impacts of climate change, such as droughts and heatwaves, which pose risks to the city's public health and infrastructure. Additionally, expanding biodiversity can improve the resilience of local ecosystems, supporting food security and water resources. Given the city's low socio-economic status, investing in biodiversity can also provide sustainable development opportunities and improve the quality of life for its residents.",
         "action": {
             "ActionID": "c40_0042",
             "ActionName": "Expansi\u00f3n de la Biodiversidad",

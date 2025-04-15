@@ -7,6 +7,7 @@
         "actionId": "icare_0050",
         "actionName": "Implement Agroforestry Systems",
         "actionPriority": 1,
+        "explanation": "Implementing agroforestry systems in Altamira is a high priority due to the city's location in a tropical rainforest biome, which is highly susceptible to deforestation and land degradation. Agroforestry can help restore degraded lands, enhance biodiversity, and improve soil health, which is crucial given the city's significant land use emissions. Additionally, this action can contribute to food security by providing diverse crops and improving resilience against climate hazards such as droughts and floods. By integrating trees with crops and livestock, agroforestry systems can also help mitigate climate change impacts by sequestering carbon and reducing overall emissions.",
         "action": {
             "ActionID": "icare_0050",
             "ActionName": "Implementar Sistemas Agroforestales",
@@ -69,6 +70,7 @@
         "actionId": "icare_0134",
         "actionName": "Strengthen Mechanisms for Deforestation Control",
         "actionPriority": 2,
+        "explanation": "Strengthening mechanisms for deforestation control in Altamira is crucial due to the city's location within a tropical rainforest biome, which is highly susceptible to deforestation. The region's land use emissions are significantly high, indicating that deforestation is a major contributor to the city's overall carbon footprint. By enhancing deforestation control, Altamira can mitigate its environmental impact and preserve biodiversity, which is vital for maintaining ecological balance. Additionally, controlling deforestation can help reduce the risk of landslides and floods, which are significant hazards in the area, thereby protecting infrastructure and public health.",
         "action": {
             "ActionID": "icare_0134",
             "ActionName": "Fortalecer los Mecanismos para el Control de la Deforestaci\u00f3n",
@@ -131,6 +133,7 @@
         "actionId": "icare_0133",
         "actionName": "Promote Urban Reforestation and Green Corridors",
         "actionPriority": 3,
+        "explanation": "Promoting urban reforestation and green corridors in Altamira is crucial due to the city's location in a tropical rainforest biome, which is under threat from deforestation and urban expansion. This action can help mitigate the high emissions from land use changes, which are a significant contributor to the city's total emissions. Additionally, increasing green spaces can improve air quality and provide natural cooling, which is essential given the high risk of heatwaves impacting public health and infrastructure. Furthermore, reforestation efforts can enhance biodiversity and contribute to the resilience of the city's ecosystem against climate hazards such as floods and landslides.",
         "action": {
             "ActionID": "icare_0133",
             "ActionName": "Promover la Reforestaci\u00f3n Urbana y los Corredores Verdes",
@@ -193,6 +196,7 @@
         "actionId": "icare_0128",
         "actionName": "Establish Municipal Programs for Payment for Environmental Services (PES)",
         "actionPriority": 4,
+        "explanation": "Establishing Municipal Programs for Payment for Environmental Services (PES) in Altamira is crucial due to the city's significant land use emissions, which are a major contributor to its total emissions. The tropical rainforest biome of Altamira is a vital carbon sink, and incentivizing conservation through PES can help preserve this critical ecosystem. Additionally, PES programs can provide economic benefits to local communities, aligning with the moderate socio-economic challenges faced by the population. By prioritizing this action, Altamira can address both environmental and socio-economic issues, promoting sustainable development in the region.",
         "action": {
             "ActionID": "icare_0128",
             "ActionName": "Establecer Programas Municipales de Pago por Servicios Ambientales (PES)",
@@ -255,6 +259,7 @@
         "actionId": "icare_0129",
         "actionName": "Facilitate Technology Transfer for Conservation Practices",
         "actionPriority": 5,
+        "explanation": "Facilitating technology transfer for conservation practices in Altamira is crucial due to the city's location in a tropical rainforest biome, which is highly sensitive to environmental changes. The city faces significant risks from droughts, heatwaves, and floods, which threaten its biodiversity and public health. By adopting advanced conservation technologies, Altamira can better manage its natural resources and mitigate the impacts of these hazards. Additionally, improving conservation practices can help reduce land use emissions, which are a major contributor to the city's total emissions, thereby supporting sustainable development.",
         "action": {
             "ActionID": "icare_0129",
             "ActionName": "Facilitar la Transferencia de Tecnolog\u00eda para Pr\u00e1cticas de Conservaci\u00f3n",
@@ -317,6 +322,7 @@
         "actionId": "icare_0130",
         "actionName": "Conduct Technical Assistance and Rural Extension (ATER) Actions",
         "actionPriority": 6,
+        "explanation": "Conducting Technical Assistance and Rural Extension (ATER) actions in Altamira is crucial due to the city's significant challenges related to land use emissions and socio-economic factors. With a vast area and a low population density, effective land management and sustainable agricultural practices are essential to mitigate the high land use emissions. Additionally, providing technical support to rural communities can enhance food security, which is at risk due to frequent droughts and floods. These actions can also improve the livelihoods of moderate-income populations by increasing agricultural productivity and resilience to climate impacts.",
         "action": {
             "ActionID": "icare_0130",
             "ActionName": "Realizar Acciones de Asistencia T\u00e9cnica y Extensi\u00f3n Rural (ATER)",
@@ -379,6 +385,7 @@
         "actionId": "icare_0102",
         "actionName": "Promote Sustainable Agricultural Practices",
         "actionPriority": 7,
+        "explanation": "Promoting sustainable agricultural practices in Altamira is crucial due to the city's significant land use emissions, which are a major contributor to its total emissions. The region's tropical rainforest biome is highly sensitive to unsustainable agricultural methods, which can lead to deforestation and biodiversity loss. By adopting sustainable practices, Altamira can mitigate these environmental impacts and enhance food security, which is at high risk from droughts and floods. Additionally, sustainable agriculture can improve the socio-economic conditions by providing more stable and resilient livelihoods for the local population.",
         "action": {
             "ActionID": "icare_0102",
             "ActionName": "Promover Pr\u00e1cticas Agr\u00edcolas Sostenibles",
@@ -441,6 +448,7 @@
         "actionId": "icare_0100",
         "actionName": "Support Regenerative Agriculture Practices",
         "actionPriority": 8,
+        "explanation": "Supporting regenerative agriculture practices in Altamira is crucial due to the city's location in a tropical rainforest biome, which is highly sensitive to land use changes. The city faces significant land use emissions, and regenerative agriculture can help mitigate these by enhancing soil health and sequestering carbon. Additionally, with the high risk of droughts impacting food security, regenerative practices can improve resilience by increasing soil moisture retention and reducing dependency on external water sources. This action aligns with the need to address both environmental sustainability and food security challenges in the region.",
         "action": {
             "ActionID": "icare_0100",
             "ActionName": "Apoyar las Pr\u00e1cticas de Agricultura Regenerativa",
@@ -503,6 +511,7 @@
         "actionId": "icare_0084",
         "actionName": "Create Incentives for Agroforestry Practices in Livestock Systems",
         "actionPriority": 9,
+        "explanation": "Creating incentives for agroforestry practices in livestock systems is crucial for Altamira due to its significant land use emissions, which are a major contributor to the city's total emissions. Agroforestry can help sequester carbon, reduce emissions, and improve biodiversity, which is vital given the city's tropical rainforest biome. Additionally, these practices can enhance soil health and water retention, mitigating the impacts of droughts and improving food security. By integrating trees into livestock systems, the city can also address socio-economic challenges by providing additional income sources for local farmers.",
         "action": {
             "ActionID": "icare_0084",
             "ActionName": "Crear incentivos para pr\u00e1cticas de agroforester\u00eda en sistemas ganaderos",
@@ -565,6 +574,7 @@
         "actionId": "icare_0096",
         "actionName": "Promote Organic Farming",
         "actionPriority": 10,
+        "explanation": "Promoting organic farming in Altamira is a crucial action due to the city's location in a tropical rainforest biome, which is highly sensitive to environmental changes. Organic farming practices can help reduce land use emissions, which are currently a significant contributor to the city's total emissions. Additionally, this approach can enhance food security by providing sustainable agricultural practices that are less vulnerable to the impacts of climate change, such as droughts and floods. By reducing reliance on chemical fertilizers and pesticides, organic farming also supports biodiversity, which is vital for maintaining the ecological balance in the region.",
         "action": {
             "ActionID": "icare_0096",
             "ActionName": "Promover la Agricultura Org\u00e1nica",
@@ -627,6 +637,7 @@
         "actionId": "icare_0127",
         "actionName": "Accelerate Environmental Regularization of Rural Properties",
         "actionPriority": 11,
+        "explanation": "Accelerating the environmental regularization of rural properties in Altamira is crucial due to the city's significant land use emissions, which are a major contributor to its total emissions. The region's tropical rainforest biome is under threat from deforestation and land misuse, which can be mitigated through proper regularization. This action will help preserve biodiversity and improve the resilience of the ecosystem against climate hazards such as droughts and floods. Additionally, regularization can enhance sustainable land management practices, supporting both environmental and socio-economic stability in the region.",
         "action": {
             "ActionID": "icare_0127",
             "ActionName": "Acelerar la Regularizaci\u00f3n Ambiental de Propiedades Rurales",
@@ -689,6 +700,7 @@
         "actionId": "icare_0101",
         "actionName": "Encourage the Use of Low-Emission Agricultural Machinery",
         "actionPriority": 12,
+        "explanation": "Encouraging the use of low-emission agricultural machinery in Altamira is crucial due to the city's significant land use emissions, which are a major contributor to its total emissions profile. By adopting cleaner technologies in agriculture, the city can reduce its environmental impact and improve air quality, which is essential given the high risk of public health issues related to air pollution. Additionally, this action aligns with the need to address the socio-economic challenges faced by the community, as it can lead to more sustainable agricultural practices and potentially lower operational costs for farmers. Implementing this action can also help mitigate the effects of climate change, which is critical in a region vulnerable to droughts and other climate-related hazards.",
         "action": {
             "ActionID": "icare_0101",
             "ActionName": "Fomentar el uso de maquinaria agr\u00edcola de bajas emisiones",
@@ -751,6 +763,7 @@
         "actionId": "icare_0131",
         "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
         "actionPriority": 13,
+        "explanation": "Prioritizing the procurement of locally produced agroecological products in public purchases is crucial for Altamira due to its significant challenges in food security and environmental sustainability. The city faces high risks from droughts and floods, which can severely impact food availability and agricultural productivity. By supporting local agroecological practices, the city can enhance its resilience to these climate hazards while promoting sustainable land use. Additionally, this action can stimulate the local economy by supporting local farmers and reducing dependency on external food sources, thereby improving food security and socio-economic conditions.",
         "action": {
             "ActionID": "icare_0131",
             "ActionName": "Priorizar la Adquisici\u00f3n de Productos Agroecol\u00f3gicos de Producci\u00f3n Local en Compras P\u00fablicas",
@@ -813,6 +826,7 @@
         "actionId": "ipcc_0061",
         "actionName": "Soil Carbon Management in Croplands and Grasslands",
         "actionPriority": 14,
+        "explanation": "Soil Carbon Management in Croplands and Grasslands is a crucial action for Altamira due to its significant land use emissions, which are a major contributor to the city's total emissions. By improving soil carbon management, the city can enhance carbon sequestration, thereby reducing its overall carbon footprint. Additionally, this action can improve soil health and productivity, which is vital for food security, especially in a region facing high risks from droughts and floods. Implementing this action can also contribute to biodiversity conservation, as healthier soils support diverse ecosystems.",
         "action": {
             "ActionID": "ipcc_0061",
             "ActionName": "Gesti\u00f3n del Carbono del Suelo en Tierras de Cultivo y Pastizales",
@@ -874,6 +888,7 @@
         "actionId": "icare_0099",
         "actionName": "Support Agroecological Certification Programs",
         "actionPriority": 15,
+        "explanation": "Supporting agroecological certification programs in Altamira is crucial due to the city's location in a tropical rainforest biome, which is highly sensitive to environmental changes. Agroecological practices can help mitigate land use emissions, which are a significant contributor to the city's total emissions. By promoting sustainable agriculture, these programs can enhance food security, which is at high risk from droughts and floods. Additionally, such initiatives can improve the socio-economic conditions by providing better income opportunities for local farmers, aligning with the city's moderate low-income status.",
         "action": {
             "ActionID": "icare_0099",
             "ActionName": "Apoyar los Programas de Certificaci\u00f3n Agroecol\u00f3gica",
@@ -936,6 +951,7 @@
         "actionId": "icare_0136",
         "actionName": "Support the Implementation of Ecological Fiscal Incentives",
         "actionPriority": 16,
+        "explanation": "Supporting the implementation of ecological fiscal incentives in Altamira is crucial due to the city's significant land use emissions, which are a major contributor to its total emissions. By promoting sustainable land management practices through fiscal incentives, the city can address its high emissions and mitigate environmental impacts. Additionally, these incentives can encourage local stakeholders to engage in conservation efforts, which is vital given the city's location in a tropical rainforest biome. This action aligns with the need to enhance biodiversity protection and reduce the risk of environmental hazards such as droughts and floods.",
         "action": {
             "ActionID": "icare_0136",
             "ActionName": "Apoyar la Implementaci\u00f3n de Incentivos Fiscales Ecol\u00f3gicos",
@@ -998,6 +1014,7 @@
         "actionId": "icare_0132",
         "actionName": "Encourage Local Agroecological Production and Short Supply Chains",
         "actionPriority": 17,
+        "explanation": "Encouraging local agroecological production and short supply chains in Altamira is crucial due to the city's significant land use emissions and its location in a tropical rainforest biome. This action can help reduce emissions by promoting sustainable agricultural practices that are less reliant on deforestation and long-distance transportation. Additionally, it can enhance food security, which is at high risk from droughts and floods, by ensuring a more resilient local food system. By supporting local farmers and reducing dependency on external food sources, this initiative can also improve socio-economic conditions in the region.",
         "action": {
             "ActionID": "icare_0132",
             "ActionName": "Fomentar la Producci\u00f3n Agroecol\u00f3gica Local y las Cadenas de Suministro Cortas",
@@ -1060,6 +1077,7 @@
         "actionId": "icare_0085",
         "actionName": "Promote the Adoption of Agroecological Pest Control",
         "actionPriority": 18,
+        "explanation": "Promoting the adoption of agroecological pest control in Altamira is crucial due to the city's location in a tropical rainforest biome, which is highly sensitive to ecological imbalances. This approach can help maintain biodiversity, which is under threat from various hazards such as droughts and heatwaves. By reducing reliance on chemical pesticides, agroecological methods can also mitigate the risk of water contamination, which is a significant concern given the city's very high inadequate water access. Furthermore, this action supports sustainable agricultural practices, contributing to food security in a region vulnerable to climate impacts.",
         "action": {
             "ActionID": "icare_0085",
             "ActionName": "Promover la Adopci\u00f3n del Control de Plagas Agroecol\u00f3gico",
@@ -1122,6 +1140,7 @@
         "actionId": "ipcc_0052",
         "actionName": "Reduce Deforestation and Degradation",
         "actionPriority": 19,
+        "explanation": "Reducing deforestation and degradation is crucial for Altamira, given its location in a tropical rainforest biome. The city faces significant land use emissions, which are a major contributor to its total emissions profile. By addressing deforestation, Altamira can significantly reduce its carbon footprint and mitigate climate change impacts. Additionally, preserving the rainforest is vital for maintaining biodiversity and protecting water resources, which are at high risk due to droughts. This action is essential for ensuring long-term environmental sustainability and resilience against climate hazards.",
         "action": {
             "ActionID": "ipcc_0052",
             "ActionName": "Reducir la deforestaci\u00f3n y la degradaci\u00f3n",
@@ -1183,6 +1202,7 @@
         "actionId": "ipcc_0053",
         "actionName": "Afforestation, Reforestation and Forest Ecosystem Restoration",
         "actionPriority": 20,
+        "explanation": "Afforestation, reforestation, and forest ecosystem restoration are critical actions for Altamira due to its location in a tropical rainforest biome. The city faces significant land use emissions, which are a major contributor to its total emissions profile. By restoring and expanding forested areas, Altamira can effectively sequester carbon, thereby reducing its overall emissions. Additionally, these actions can help mitigate the impacts of climate change, such as droughts and floods, which pose high risks to the city's water resources, food security, and infrastructure. Restoring forest ecosystems also supports biodiversity, which is vital for maintaining ecological balance and resilience.",
         "action": {
             "ActionID": "ipcc_0053",
             "ActionName": "Aforestaci\u00f3n, Reforestaci\u00f3n y Restauraci\u00f3n de Ecosistemas Forestales",

@@ -7,6 +7,7 @@
         "actionId": "icare_0139",
         "actionName": "Implementation of urban toll.",
         "actionPriority": 1,
+        "explanation": "The implementation of an urban toll in Goi\u00e2nia is a priority due to the high transportation emissions, which are a significant contributor to the city's total emissions. By introducing a toll, the city can effectively manage traffic congestion, reduce vehicle emissions, and encourage the use of public transportation. This action is crucial in addressing the environmental impact of transportation and improving air quality, which is vital for public health. Additionally, reducing traffic congestion can enhance the overall quality of life for residents by decreasing travel times and promoting a more sustainable urban environment.",
         "action": {
             "ActionID": "icare_0139",
             "ActionName": "Implementa\u00e7\u00e3o de ped\u00e1gio urbano.",
@@ -68,6 +69,7 @@
         "actionId": "icare_0042",
         "actionName": "Encourage renewable energy policies at the municipal level",
         "actionPriority": 2,
+        "explanation": "Encouraging renewable energy policies at the municipal level in Goi\u00e2nia is crucial due to the city's high stationary energy emissions, which contribute significantly to its total emissions. By promoting renewable energy, the city can reduce its reliance on fossil fuels, thereby decreasing its carbon footprint and mitigating climate change impacts. Additionally, renewable energy initiatives can enhance energy security, which is vital given the city's vulnerability to droughts that can affect energy supply. Implementing these policies can also stimulate local economic growth by creating green jobs and fostering sustainable development.",
         "action": {
             "ActionID": "icare_0042",
             "ActionName": "Incentivar pol\u00edticas de energia renov\u00e1vel a n\u00edvel municipal",
@@ -130,6 +132,7 @@
         "actionId": "icare_0024",
         "actionName": "Integrate renewables into municipal water systems",
         "actionPriority": 3,
+        "explanation": "Integrating renewables into municipal water systems in Goi\u00e2nia is a strategic action due to the city's high risk of droughts impacting water resources. By utilizing renewable energy, the city can ensure a more sustainable and reliable water supply, reducing dependency on traditional energy sources that contribute to emissions. This action also aligns with the city's need to address its significant stationary energy emissions, promoting a cleaner and more resilient infrastructure. Additionally, the integration of renewables can help mitigate the effects of climate change, supporting the city's long-term environmental and economic sustainability.",
         "action": {
             "ActionID": "icare_0024",
             "ActionName": "Integrar energias renov\u00e1veis nos sistemas municipais de \u00e1gua",
@@ -192,6 +195,7 @@
         "actionId": "icare_0094",
         "actionName": "Adoption of biomethane in public fleets.",
         "actionPriority": 4,
+        "explanation": "The adoption of biomethane in public fleets in Goi\u00e2nia is a crucial step towards reducing transportation emissions, which are a significant contributor to the city's total emissions. Given the high population density and the associated transportation needs, transitioning to cleaner fuel sources can substantially lower the carbon footprint. Additionally, this action aligns with the city's need to address climate risks, such as heatwaves and public health concerns, by promoting sustainable energy solutions. Implementing biomethane can also enhance energy security by diversifying fuel sources and reducing dependency on traditional fossil fuels.",
         "action": {
             "ActionID": "icare_0094",
             "ActionName": "Ado\u00e7\u00e3o de biometano em frotas p\u00fablicas.",
@@ -254,6 +258,7 @@
         "actionId": "icare_0121",
         "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
         "actionPriority": 5,
+        "explanation": "The action to incentivize bike-sharing programs, particularly with electric bikes, is crucial for Goi\u00e2nia due to its high transportation emissions. By promoting alternative transportation methods, the city can significantly reduce its carbon footprint and improve air quality. Additionally, electric bikes offer a sustainable and efficient mode of transport that can help alleviate traffic congestion in urban areas. This initiative also aligns with the city's need to address public health risks associated with air pollution and heatwaves, providing a healthier and more resilient urban environment.",
         "action": {
             "ActionID": "icare_0121",
             "ActionName": "Incentivo \u00e0 cria\u00e7\u00e3o de programas de compartilhamento de bicicletas em \u00e1reas urbanas, com foco em bicicletas el\u00e9tricas.",
@@ -316,6 +321,7 @@
         "actionId": "c40_0035",
         "actionName": "Waste Efficiency",
         "actionPriority": 6,
+        "explanation": "The action 'Waste Efficiency' is a priority for Goi\u00e2nia due to the significant contribution of waste emissions to the city's total emissions profile. With waste emissions accounting for a substantial portion of the city's overall emissions, improving waste management practices can lead to a considerable reduction in greenhouse gas emissions. Additionally, enhancing waste efficiency can mitigate the environmental impact and improve public health by reducing pollution and associated health risks. Given the city's vulnerability to climate-related hazards, such as floods and heatwaves, efficient waste management can also contribute to greater resilience against these impacts.",
         "action": {
             "ActionID": "c40_0035",
             "ActionName": "Efici\u00eancia de Res\u00edduos",
@@ -383,6 +389,7 @@
         "actionId": "icare_0044",
         "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
         "actionPriority": 7,
+        "explanation": "Expanding the cycling infrastructure and building public walkways in Goi\u00e2nia is crucial due to the city's high population density and the need to reduce transportation emissions, which are significant contributors to the city's total emissions. By promoting cycling and walking, the city can decrease reliance on motor vehicles, thereby reducing air pollution and improving public health. Additionally, creating infrastructure that is resilient to climate threats addresses the city's vulnerability to hazards such as floods and heatwaves, ensuring long-term sustainability and safety for its residents. This action also aligns with the city's socio-economic context, providing affordable and accessible transportation options for all income levels.",
         "action": {
             "ActionID": "icare_0044",
             "ActionName": "Expandir a infraestrutura ciclovi\u00e1ria e construir passarelas p\u00fablicas e cal\u00e7adas acess\u00edveis, priorizando medidas resilientes \u00e0s amea\u00e7as clim\u00e1ticas",
@@ -445,6 +452,7 @@
         "actionId": "icare_0088",
         "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
         "actionPriority": 8,
+        "explanation": "The implementation of free public transportation programs during peak hours in Goi\u00e2nia is a crucial action to address the city's high transportation emissions, which are a significant contributor to its total emissions. By encouraging the use of public transport, this initiative can help reduce the reliance on individual vehicles, thereby decreasing traffic congestion and air pollution. Additionally, this action supports the city's socio-economic context by providing low-income residents with better access to transportation, potentially improving their quality of life. Given the city's vulnerability to climate-related hazards such as heatwaves and floods, reducing emissions is vital for enhancing public health and infrastructure resilience.",
         "action": {
             "ActionID": "icare_0088",
             "ActionName": "Implementa\u00e7\u00e3o de programas de transporte p\u00fablico gratuito durante os hor\u00e1rios de pico para reduzir o uso de ve\u00edculos individuais",
@@ -507,6 +515,7 @@
         "actionId": "icare_0068",
         "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
         "actionPriority": 9,
+        "explanation": "Deploying on-demand transport systems with 100% electric fleets in Goi\u00e2nia is a crucial step towards reducing transportation emissions, which are a significant contributor to the city's total emissions. Given the city's high population density and the associated demand for efficient transportation, this action can help alleviate congestion and improve air quality. Additionally, transitioning to electric fleets aligns with global sustainability goals and can enhance energy security by reducing reliance on fossil fuels. This initiative also supports public health by minimizing air pollution, which is particularly important in a city facing high risks from heatwaves and other climate-related hazards.",
         "action": {
             "ActionID": "icare_0068",
             "ActionName": "Implantar sistemas de transporte sob demanda com frotas 100% el\u00e9tricas.",
@@ -569,6 +578,7 @@
         "actionId": "icare_0052",
         "actionName": "Develop projects for renewable energy and waste reuse",
         "actionPriority": 10,
+        "explanation": "Developing projects for renewable energy and waste reuse in Goi\u00e2nia is crucial due to the city's high emissions from stationary energy and waste. With a total emissions figure of over 3.5 million, focusing on renewable energy can significantly reduce the carbon footprint. Additionally, waste reuse projects can help manage the substantial waste emissions, which are currently the highest among all emission sources. Implementing these projects aligns with the city's need to address environmental sustainability and improve public health by reducing pollution.",
         "action": {
             "ActionID": "icare_0052",
             "ActionName": "Desenvolver projetos para energia renov\u00e1vel e reutiliza\u00e7\u00e3o de res\u00edduos",
@@ -631,6 +641,7 @@
         "actionId": "icare_0090",
         "actionName": "Adoption of electric drones for last-mile deliveries.",
         "actionPriority": 11,
+        "explanation": "The adoption of electric drones for last-mile deliveries in Goi\u00e2nia is a strategic move to reduce transportation emissions, which are a significant contributor to the city's total emissions. Given the city's high population density, electric drones can efficiently navigate urban areas, reducing traffic congestion and lowering the carbon footprint associated with traditional delivery vehicles. Additionally, this action aligns with the city's need to address public health risks associated with air pollution, as cleaner delivery methods can improve air quality. Implementing this technology also positions Goi\u00e2nia as a forward-thinking city, embracing innovative solutions to enhance sustainability and urban living.",
         "action": {
             "ActionID": "icare_0090",
             "ActionName": "Ado\u00e7\u00e3o de drones el\u00e9tricos para entregas de \u00faltima milha.",
@@ -693,6 +704,7 @@
         "actionId": "icare_0057",
         "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
         "actionPriority": 12,
+        "explanation": "The expansion of mass transit systems on rails in Goi\u00e2nia is a critical action due to the city's high population density and significant transportation emissions. With a population of over 1.4 million, enhancing public transportation can alleviate traffic congestion and reduce the reliance on personal vehicles, thereby decreasing emissions. Additionally, improved mass transit can provide more equitable access to transportation for low-income residents, aligning with the city's socio-economic needs. This action also supports the city's resilience against climate risks by potentially reducing the impact of heatwaves on public health through decreased vehicular emissions.",
         "action": {
             "ActionID": "icare_0057",
             "ActionName": "Expans\u00e3o dos sistemas de transporte p\u00fablico em massa sobre trilhos (metr\u00f4s, VLTs e monotrilhos).",
@@ -755,6 +767,7 @@
         "actionId": "icare_0033",
         "actionName": "Install biodigesters in rural properties",
         "actionPriority": 13,
+        "explanation": "Installing biodigesters in rural properties in Goi\u00e2nia is a strategic action to address waste emissions, which are a significant component of the city's total emissions. Biodigesters can help convert organic waste into biogas, reducing methane emissions and providing a renewable energy source. This action also supports energy security by diversifying energy sources, which is crucial given the city's vulnerability to droughts affecting energy supply. Additionally, it can improve sanitation in rural areas, aligning with the city's need to enhance public service access.",
         "action": {
             "ActionID": "icare_0033",
             "ActionName": "Instalar biodigestores em propriedades rurais",
@@ -816,6 +829,7 @@
         "actionId": "icare_0053",
         "actionName": "Implement a project to support cooperatives of recyclabe material collectors",
         "actionPriority": 14,
+        "explanation": "Implementing a project to support cooperatives of recyclable material collectors in Goi\u00e2nia is crucial due to the city's significant waste emissions, which are a major component of its total emissions. By enhancing the efficiency and capacity of these cooperatives, the city can reduce waste emissions and promote sustainable waste management practices. Additionally, supporting these cooperatives can provide economic opportunities for low-income residents, aligning with the city's socio-economic needs. This action also contributes to reducing environmental impact and improving public health by minimizing waste-related pollution.",
         "action": {
             "ActionID": "icare_0053",
             "ActionName": "Implementar um projeto para apoiar cooperativas de coletores de materiais recicl\u00e1veis",
@@ -878,6 +892,7 @@
         "actionId": "c40_0026",
         "actionName": "Vehicle Emissions",
         "actionPriority": 15,
+        "explanation": "Addressing vehicle emissions in Goi\u00e2nia is crucial due to the high transportation emissions, which are a significant contributor to the city's total emissions. With a population density of 1970.9 people per square kilometer, the impact of vehicle emissions on air quality and public health is substantial. Reducing these emissions can help mitigate the risks associated with heatwaves and public health hazards, which are identified as high-risk areas for the city. Furthermore, improving air quality can enhance the overall quality of life for residents and contribute to the city's sustainability goals.",
         "action": {
             "ActionID": "c40_0026",
             "ActionName": "Emiss\u00f5es de Ve\u00edculos",
@@ -947,6 +962,7 @@
         "actionId": "c40_0036",
         "actionName": "Landfill Management",
         "actionPriority": 16,
+        "explanation": "Landfill management is a critical action for Goi\u00e2nia due to its significant waste emissions, which are a major contributor to the city's total emissions. Proper management of landfills can help reduce methane emissions, a potent greenhouse gas, thereby mitigating climate change impacts. Additionally, improved landfill practices can enhance public health by reducing the risk of disease transmission and environmental contamination. Given the city's high population density, effective waste management is essential to maintain a healthy urban environment.",
         "action": {
             "ActionID": "c40_0036",
             "ActionName": "Gest\u00e3o de Aterros Sanit\u00e1rios",
@@ -1014,6 +1030,7 @@
         "actionId": "icare_0092",
         "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
         "actionPriority": 17,
+        "explanation": "The development of micro-logistics hubs to encourage the use of electric cargo bikes in Goi\u00e2nia is a strategic action to address the city's high transportation emissions, which are a significant contributor to its total emissions. By promoting electric cargo bikes, the city can reduce its reliance on traditional fossil fuel-powered vehicles, thereby decreasing air pollution and greenhouse gas emissions. Additionally, this initiative can help alleviate traffic congestion in the city, improving overall urban mobility. Given Goi\u00e2nia's very low socio-economic status, this action also presents an opportunity to create new jobs and support local businesses, contributing to economic development.",
         "action": {
             "ActionID": "icare_0092",
             "ActionName": "Desenvolvimento de micro-hubs log\u00edsticos para incentivar o uso de bicicletas de carga el\u00e9tricas.",
@@ -1076,6 +1093,7 @@
         "actionId": "icare_0131",
         "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
         "actionPriority": 18,
+        "explanation": "Prioritizing the procurement of locally produced agroecological products in public purchases is crucial for Goi\u00e2nia due to its significant risk of droughts impacting water and food security. By supporting local agroecological practices, the city can enhance its resilience against these climate hazards, ensuring a more stable food supply. Additionally, this action can contribute to reducing transportation emissions, as locally sourced products require less transportation, aligning with the city's need to address its high transportation emissions. Furthermore, promoting local agriculture can stimulate the local economy, providing economic benefits to the community.",
         "action": {
             "ActionID": "icare_0131",
             "ActionName": "Priorizar a Aquisi\u00e7\u00e3o de Produtos Agroecol\u00f3gicos Produzidos Localmente em Compras P\u00fablicas",
@@ -1138,6 +1156,7 @@
         "actionId": "icare_0038",
         "actionName": "Promote community solar farms",
         "actionPriority": 19,
+        "explanation": "Promoting community solar farms in Goi\u00e2nia is a strategic action to address the city's high stationary energy emissions, which contribute significantly to its total emissions. By harnessing solar energy, the city can reduce its reliance on fossil fuels, thereby decreasing its carbon footprint and improving air quality. Additionally, solar farms can provide a sustainable energy source that is resilient to the frequent droughts impacting the region, ensuring energy security for the community. This initiative also aligns with the city's need to mitigate the effects of climate change, such as heatwaves and floods, by promoting renewable energy solutions.",
         "action": {
             "ActionID": "icare_0038",
             "ActionName": "Promover fazendas solares comunit\u00e1rias",
@@ -1199,6 +1218,7 @@
         "actionId": "icare_0118",
         "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
         "actionPriority": 20,
+        "explanation": "Promoting the use of bicycles in Goi\u00e2nia is a crucial step towards reducing transportation emissions, which are a significant contributor to the city's total emissions. With a high population density, expanding bicycle infrastructure can alleviate traffic congestion and improve air quality. Additionally, increasing awareness and communication strategies can encourage more residents to adopt cycling, leading to healthier lifestyles and reduced reliance on motor vehicles. This action aligns with the city's need to address environmental challenges while enhancing public health and urban mobility.",
         "action": {
             "ActionID": "icare_0118",
             "ActionName": "Promover o uso de bicicletas como um modo regular de transporte atrav\u00e9s da expans\u00e3o da infraestrutura e estrat\u00e9gias de conscientiza\u00e7\u00e3o e comunica\u00e7\u00e3o.",

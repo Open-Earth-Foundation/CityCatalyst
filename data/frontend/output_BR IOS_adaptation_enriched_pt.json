@@ -7,7 +7,7 @@
         "actionId": "icare_0169",
         "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
         "actionPriority": 1,
-        "explanation": "Ranked #1 by tournament ranking algorithm",
+        "explanation": "Establishing a plan for preparation and emergency response measures in Ilh\u00e9us is crucial due to the high risk of extreme weather events such as floods, heatwaves, and landslides. The city faces significant threats to public health and infrastructure from these hazards, as indicated by the high normalized risk scores. Implementing this action will enhance the city's resilience and ability to protect its population and infrastructure during such events. Additionally, a well-prepared emergency response plan can mitigate the impacts on food security and water resources, which are also at risk.",
         "action": {
             "ActionID": "icare_0169",
             "ActionName": "Estabelecer um Plano de Prepara\u00e7\u00e3o e Medidas de Resposta a Emerg\u00eancias em caso de eventos clim\u00e1ticos extremos",
@@ -78,7 +78,7 @@
         "actionId": "icare_0176",
         "actionName": "Development of Climate Action Plan",
         "actionPriority": 2,
-        "explanation": "Ranked #2 by tournament ranking algorithm",
+        "explanation": "The development of a Climate Action Plan is crucial for Ilh\u00e9us due to its high vulnerability to climate-related hazards such as droughts, heatwaves, and floods. These hazards pose significant risks to water resources, food security, public health, and infrastructure, as indicated by the high normalized risk scores. Implementing a comprehensive plan will help the city mitigate these risks by outlining strategies to reduce emissions and enhance resilience. Additionally, the plan can guide the allocation of resources and efforts to improve public services and socio-economic conditions, ultimately contributing to the sustainable development of the region.",
         "action": {
             "ActionID": "icare_0176",
             "ActionName": "Desenvolvimento do Plano de A\u00e7\u00e3o Clim\u00e1tica",
@@ -149,7 +149,7 @@
         "actionId": "icare_0162",
         "actionName": "Strengthen programs for control and conservation of protected areas",
         "actionPriority": 3,
-        "explanation": "Ranked #3 by tournament ranking algorithm",
+        "explanation": "Strengthening programs for control and conservation of protected areas in Ilh\u00e9us is crucial due to its tropical rainforest biome, which is rich in biodiversity and vital for ecological balance. The city faces significant risks from climate hazards such as droughts and heatwaves, which can severely impact biodiversity. By enhancing conservation efforts, Ilh\u00e9us can mitigate these risks and preserve its natural resources, which are essential for maintaining food security and public health. Additionally, protecting these areas can help reduce emissions from land use changes, contributing to overall climate resilience.",
         "action": {
             "ActionID": "icare_0162",
             "ActionName": "Fortalecer programas de controle e conserva\u00e7\u00e3o de \u00e1reas protegidas",
@@ -212,7 +212,7 @@
         "actionId": "icare_0152",
         "actionName": "Recovery of degraded areas",
         "actionPriority": 4,
-        "explanation": "Ranked #4 by tournament ranking algorithm",
+        "explanation": "The recovery of degraded areas in Ilh\u00e9us is crucial due to the city's vulnerability to environmental hazards such as droughts and floods. Restoring these areas can enhance the resilience of local ecosystems, which is vital for maintaining biodiversity and supporting food security. Additionally, rehabilitating degraded lands can help mitigate the impacts of climate change by improving carbon sequestration and reducing land use emissions. This action aligns with the city's need to address high-risk factors related to public health and infrastructure, which are threatened by environmental degradation.",
         "action": {
             "ActionID": "icare_0152",
             "ActionName": "Recupera\u00e7\u00e3o de \u00e1reas degradadas",
@@ -275,7 +275,7 @@
         "actionId": "icare_0151",
         "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
         "actionPriority": 5,
-        "explanation": "Ranked #5 by tournament ranking algorithm",
+        "explanation": "Developing diagnostics and restoring areas of Special Social Interest Zones (ZEIS) in Ilh\u00e9us is crucial due to the moderate socio-economic challenges faced by the city. These areas often house low-income populations who are more vulnerable to environmental hazards such as floods and landslides, which are significant risks in the region. By focusing on these zones, the city can improve living conditions, enhance resilience against climate impacts, and promote social equity. Additionally, restoring these areas can contribute to reducing emissions and improving public health outcomes, aligning with broader sustainability goals.",
         "action": {
             "ActionID": "icare_0151",
             "ActionName": "Desenvolver diagn\u00f3sticos e restaurar \u00e1reas de Zonas Especiais de Interesse Social (ZEIS)",
@@ -340,7 +340,7 @@
         "actionId": "ipcc_0097",
         "actionName": "Food storage/distribution improvements",
         "actionPriority": 6,
-        "explanation": "Ranked #6 by tournament ranking algorithm",
+        "explanation": "Improving food storage and distribution is crucial for Ilh\u00e9us due to its high risk of food insecurity caused by droughts and floods. These hazards can severely disrupt food supply chains, making efficient storage and distribution systems vital to ensure food availability. Additionally, enhancing these systems can help mitigate the impacts of climate-related events on the local population, ensuring that food remains accessible even during adverse conditions. This action supports the city's resilience against climate change impacts, particularly in maintaining food security.",
         "action": {
             "ActionID": "ipcc_0097",
             "ActionName": "Melhorias no armazenamento/distribui\u00e7\u00e3o de alimentos",
@@ -406,7 +406,7 @@
         "actionId": "ipcc_0094",
         "actionName": "Access to health care",
         "actionPriority": 7,
-        "explanation": "Ranked #7 by tournament ranking algorithm",
+        "explanation": "Improving access to health care in Ilh\u00e9us is crucial due to the high risk of public health impacts from hazards such as heatwaves, diseases, and floods. The city's vulnerability to these hazards, as indicated by the high normalized risk scores, underscores the need for robust health care systems to manage potential health crises. Additionally, enhancing health care access can mitigate the effects of these hazards on the population, particularly those in moderate low-income brackets who may be more vulnerable. Prioritizing health care access can also improve overall community resilience and well-being in the face of climate-related challenges.",
         "action": {
             "ActionID": "ipcc_0094",
             "ActionName": "Acesso aos cuidados de sa\u00fade",
@@ -470,7 +470,7 @@
         "actionId": "icare_0157",
         "actionName": "Maintenance and Revitalization of Riparian Forests",
         "actionPriority": 8,
-        "explanation": "Ranked #8 by tournament ranking algorithm",
+        "explanation": "The maintenance and revitalization of riparian forests in Ilh\u00e9us is crucial due to the city's tropical rainforest biome, which plays a significant role in maintaining biodiversity and ecological balance. Riparian forests help in reducing the risk of floods, which is a high-risk hazard for the city's infrastructure and public health. Additionally, these forests contribute to water resource management, which is vital given the moderate risk of droughts affecting water security. By prioritizing this action, Ilh\u00e9us can enhance its resilience against climate-related hazards and support sustainable environmental management.",
         "action": {
             "ActionID": "icare_0157",
             "ActionName": "Manuten\u00e7\u00e3o e Revitaliza\u00e7\u00e3o de Florestas Rip\u00e1rias",
@@ -533,7 +533,7 @@
         "actionId": "icare_0145",
         "actionName": "Strengthen the healthcare network to attend to climate victims",
         "actionPriority": 9,
-        "explanation": "Ranked #9 by tournament ranking algorithm",
+        "explanation": "Strengthening the healthcare network in Ilh\u00e9us is crucial due to the high risk of climate-related health impacts. The city faces significant threats from heatwaves, floods, and landslides, all of which can severely affect public health. By enhancing healthcare services, Ilh\u00e9us can better manage the increased demand for medical attention during such events, ensuring timely and effective care for its residents. This action is vital to mitigate the adverse health effects of climate change and improve the overall resilience of the community.",
         "action": {
             "ActionID": "icare_0145",
             "ActionName": "Fortalecer a rede de sa\u00fade para atender \u00e0s v\u00edtimas do clima",
@@ -601,7 +601,7 @@
         "actionId": "ipcc_0093",
         "actionName": "Availability of health infrastructure",
         "actionPriority": 10,
-        "explanation": "Ranked #10 by tournament ranking algorithm",
+        "explanation": "Improving the availability of health infrastructure in Ilh\u00e9us is crucial due to the high risk of public health impacts from hazards such as heatwaves, diseases, and floods. The city faces significant challenges with these hazards, which can strain existing health services and infrastructure. By prioritizing health infrastructure, Ilh\u00e9us can better prepare for and respond to these risks, ensuring the well-being of its population. Additionally, enhancing health infrastructure can improve overall public health outcomes and resilience against future climate-related events.",
         "action": {
             "ActionID": "ipcc_0093",
             "ActionName": "Disponibilidade de infraestrutura de sa\u00fade",
@@ -665,7 +665,7 @@
         "actionId": "icare_0149",
         "actionName": "Encourage sustainable land use practices",
         "actionPriority": 11,
-        "explanation": "Ranked #11 by tournament ranking algorithm",
+        "explanation": "Encouraging sustainable land use practices in Ilh\u00e9us is crucial due to the significant land use emissions, which are the highest among all emission sources in the city. Implementing sustainable practices can help mitigate these emissions, contributing to the overall reduction of the city's carbon footprint. Additionally, sustainable land use can enhance resilience against climate hazards such as floods and landslides, which pose high risks to infrastructure and public health. By prioritizing this action, Ilh\u00e9us can improve its environmental sustainability and protect its natural resources.",
         "action": {
             "ActionID": "icare_0149",
             "ActionName": "Incentivar pr\u00e1ticas sustent\u00e1veis de uso da terra",
@@ -730,7 +730,7 @@
         "actionId": "icare_0181",
         "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
         "actionPriority": 12,
-        "explanation": "Ranked #12 by tournament ranking algorithm",
+        "explanation": "The action of relocating and restoring vulnerable areas in Ilh\u00e9us is crucial due to the city's high risk of natural hazards such as floods and landslides. These hazards pose significant threats to public health and infrastructure, as indicated by the high risk scores. By focusing on environmental restoration, the city can enhance its resilience against these hazards, protecting both its population and its infrastructure. Additionally, this action supports the preservation of the tropical rainforest biome, which is vital for maintaining biodiversity and mitigating climate change impacts.",
         "action": {
             "ActionID": "icare_0181",
             "ActionName": "Reloca\u00e7\u00e3o e Restaura\u00e7\u00e3o Ambiental em \u00c1reas Vulner\u00e1veis",
@@ -789,7 +789,7 @@
         "actionId": "icare_0148",
         "actionName": "Create the Municipal Climate Change Forum",
         "actionPriority": 13,
-        "explanation": "Ranked #13 by tournament ranking algorithm",
+        "explanation": "Creating the Municipal Climate Change Forum in Ilh\u00e9us is a crucial step towards addressing the city's significant environmental challenges. The city faces high risks from climate-related hazards such as droughts, heatwaves, and floods, which threaten water resources, food security, and public health. Establishing a dedicated forum will facilitate coordinated efforts among stakeholders to develop and implement effective climate adaptation and mitigation strategies. This initiative will also enhance community engagement and awareness, empowering residents to contribute to sustainable solutions.",
         "action": {
             "ActionID": "icare_0148",
             "ActionName": "Criar o F\u00f3rum Municipal de Mudan\u00e7as Clim\u00e1ticas",
@@ -860,7 +860,7 @@
         "actionId": "ipcc_0092",
         "actionName": "Social safety nets",
         "actionPriority": 14,
-        "explanation": "Ranked #14 by tournament ranking algorithm",
+        "explanation": "Implementing social safety nets in Ilh\u00e9us is crucial due to the moderate level of low-income residents who may be vulnerable to economic shocks. The city faces significant risks from climate-related hazards such as droughts, heatwaves, and floods, which can exacerbate socio-economic challenges. By strengthening social safety nets, the city can enhance resilience and provide support to its most vulnerable populations during times of crisis. This action is particularly important given the high risk scores associated with public health and food security impacts from these hazards.",
         "action": {
             "ActionID": "ipcc_0092",
             "ActionName": "Redes de prote\u00e7\u00e3o social",
@@ -924,7 +924,7 @@
         "actionId": "icare_0164",
         "actionName": "Hydrological Monitoring System with Telemetry Stations",
         "actionPriority": 15,
-        "explanation": "Ranked #15 by tournament ranking algorithm",
+        "explanation": "Implementing a Hydrological Monitoring System with Telemetry Stations in Ilh\u00e9us is crucial due to the city's vulnerability to droughts and floods. The city faces significant risks to water resources and food security from these hazards, making real-time monitoring essential for effective management and response. Additionally, the system can help mitigate the impacts on public health and infrastructure by providing timely data to anticipate and address potential crises. This action supports sustainable water management, which is vital for the city's socio-economic stability and resilience against climate change.",
         "action": {
             "ActionID": "icare_0164",
             "ActionName": "Sistema de Monitoramento Hidrol\u00f3gico com Esta\u00e7\u00f5es de Telemetria",
@@ -985,7 +985,7 @@
         "actionId": "ipcc_0096",
         "actionName": "Farm/fishery improvements",
         "actionPriority": 16,
-        "explanation": "Ranked #16 by tournament ranking algorithm",
+        "explanation": "Farm and fishery improvements are crucial for Ilh\u00e9us due to the high risk of droughts impacting food security. Enhancing agricultural practices can help mitigate the effects of climate change, ensuring a stable food supply for the population. Additionally, these improvements can support the local economy by increasing productivity and resilience against environmental hazards. Given the moderate socio-economic status of the region, such actions can also contribute to poverty alleviation by providing more reliable income sources for local farmers and fishers.",
         "action": {
             "ActionID": "ipcc_0096",
             "ActionName": "Melhorias na fazenda/pesqueira",
@@ -1053,7 +1053,7 @@
         "actionId": "icare_0144",
         "actionName": "Creation of a Financial Support Program to Adress Extreme Weather Events",
         "actionPriority": 17,
-        "explanation": "Ranked #17 by tournament ranking algorithm",
+        "explanation": "The creation of a financial support program to address extreme weather events is crucial for Ilh\u00e9us due to its high vulnerability to climate-related hazards. The city faces significant risks from droughts, heatwaves, and floods, all of which have severe impacts on public health, infrastructure, and food security. Establishing a financial support program can help mitigate these impacts by providing resources for recovery and adaptation, thereby enhancing the city's resilience. Additionally, such a program can support low-income communities that are disproportionately affected by these events, ensuring a more equitable response to climate challenges.",
         "action": {
             "ActionID": "icare_0144",
             "ActionName": "Cria\u00e7\u00e3o de um Programa de Apoio Financeiro para Abordar Eventos Clim\u00e1ticos Extremos",
@@ -1124,7 +1124,7 @@
         "actionId": "icare_0156",
         "actionName": "Implementation of urban gardens",
         "actionPriority": 18,
-        "explanation": "Ranked #18 by tournament ranking algorithm",
+        "explanation": "The implementation of urban gardens in Ilh\u00e9us is a significant action due to its potential to enhance food security, which is a critical issue given the high risk of droughts and floods impacting the region. Urban gardens can provide a sustainable source of fresh produce, reducing dependency on external food supplies and increasing resilience against climate-related disruptions. Additionally, these gardens can improve community well-being by offering green spaces that contribute to biodiversity and provide educational opportunities for sustainable practices. This action also aligns with the city's need to address moderate socio-economic challenges by potentially creating jobs and fostering community engagement.",
         "action": {
             "ActionID": "icare_0156",
             "ActionName": "Implementa\u00e7\u00e3o de hortas urbanas",
@@ -1185,7 +1185,7 @@
         "actionId": "icare_0150",
         "actionName": "Implement Loss Reduction and Control Program promoting water security for the municipality",
         "actionPriority": 19,
-        "explanation": "Ranked #19 by tournament ranking algorithm",
+        "explanation": "Implementing a Loss Reduction and Control Program to promote water security is crucial for Ilh\u00e9us due to its moderate inadequate water access and the high risk of droughts impacting water resources. The city's tropical rainforest biome and moderate low-income population make it vulnerable to water scarcity, which can affect public health and food security. By prioritizing water security, the city can mitigate the risks associated with droughts and ensure a stable water supply for its residents, thereby enhancing overall resilience.",
         "action": {
             "ActionID": "icare_0150",
             "ActionName": "Implementar o Programa de Redu\u00e7\u00e3o e Controle de Perdas promovendo a seguran\u00e7a h\u00eddrica para o munic\u00edpio",
@@ -1246,7 +1246,7 @@
         "actionId": "icare_0180",
         "actionName": "Implement permeable pavements and increase green areas in roadways",
         "actionPriority": 20,
-        "explanation": "Ranked #20 by tournament ranking algorithm",
+        "explanation": "Implementing permeable pavements and increasing green areas in roadways is crucial for Ilh\u00e9us due to its high risk of floods and landslides. These measures can significantly enhance the city's resilience by improving water absorption and reducing surface runoff, which are vital in a region with a tropical rainforest biome. Additionally, increasing green areas can help mitigate the urban heat island effect, which is important given the high risk of heatwaves impacting public health and infrastructure. This action also contributes to biodiversity preservation and enhances the aesthetic and recreational value of urban spaces.",
         "action": {
             "ActionID": "icare_0180",
             "ActionName": "Implementar pavimentos perme\u00e1veis e aumentar as \u00e1reas verdes nas vias p\u00fablicas",

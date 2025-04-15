@@ -6,7 +6,8 @@
         "regionName": "Mato Grosso do Sul",
         "actionId": "icare_0139",
         "actionName": "Implementation of urban toll.",
-        "actionPriority": 1
+        "actionPriority": 1,
+        "explanation": "The implementation of an urban toll in Campo Grande is a priority due to the city's high transportation emissions, which are a significant contributor to its overall carbon footprint. By introducing a toll, the city can effectively manage traffic congestion, encouraging the use of public transportation and reducing vehicle emissions. This action is particularly important given the city's low population density, which can lead to increased reliance on personal vehicles. Additionally, reducing transportation emissions aligns with the city's broader environmental goals and can help mitigate the impacts of climate change-related hazards such as heatwaves and floods."
     },
     {
         "locode": "BR CGR",
@@ -15,7 +16,8 @@
         "regionName": "Mato Grosso do Sul",
         "actionId": "icare_0088",
         "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
-        "actionPriority": 2
+        "actionPriority": 2,
+        "explanation": "The implementation of free public transportation programs during peak hours in Campo Grande is a strategic action to address the city's high transportation emissions, which are a significant contributor to its total emissions. By encouraging the use of public transport, the city can reduce the reliance on individual vehicles, thereby decreasing emissions and improving air quality. Additionally, this initiative can alleviate traffic congestion during peak hours, enhancing the overall efficiency of the city's transportation network. Furthermore, providing free public transportation can also support low-income residents, aligning with the city's socio-economic needs."
     },
     {
         "locode": "BR CGR",
@@ -24,7 +26,8 @@
         "regionName": "Mato Grosso do Sul",
         "actionId": "icare_0094",
         "actionName": "Adoption of biomethane in public fleets.",
-        "actionPriority": 3
+        "actionPriority": 3,
+        "explanation": "The adoption of biomethane in public fleets in Campo Grande is a significant action due to the city's high transportation emissions, which are a major contributor to its overall carbon footprint. By transitioning to biomethane, the city can reduce its reliance on fossil fuels, thereby decreasing greenhouse gas emissions and improving air quality. Additionally, this action supports energy security by diversifying energy sources, which is crucial given the city's vulnerability to energy disruptions caused by climate hazards like droughts and heatwaves. Implementing biomethane in public fleets also aligns with sustainable development goals, promoting a cleaner and more resilient urban environment."
     },
     {
         "locode": "BR CGR",
@@ -33,7 +36,8 @@
         "regionName": "Mato Grosso do Sul",
         "actionId": "icare_0044",
         "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
-        "actionPriority": 4
+        "actionPriority": 4,
+        "explanation": "Expanding cycling infrastructure and building public walkways in Campo Grande is crucial due to the city's high transportation emissions, which contribute significantly to its total emissions. By promoting cycling and walking, the city can reduce reliance on motor vehicles, thereby decreasing emissions and improving air quality. Additionally, creating infrastructure that is resilient to climate threats addresses the city's vulnerability to hazards like floods and heatwaves, enhancing public safety and accessibility. This action also supports public health by encouraging physical activity and providing safer, more sustainable transportation options."
     },
     {
         "locode": "BR CGR",
@@ -42,7 +46,8 @@
         "regionName": "Mato Grosso do Sul",
         "actionId": "icare_0121",
         "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
-        "actionPriority": 5
+        "actionPriority": 5,
+        "explanation": "The action to incentivize bike-sharing programs, particularly with electric bikes, is crucial for Campo Grande due to its high transportation emissions. By promoting alternative transportation methods, the city can significantly reduce its carbon footprint and improve air quality. Additionally, electric bikes offer a sustainable and accessible mode of transport that can alleviate traffic congestion and provide a healthier lifestyle option for residents. This initiative aligns with the city's need to address environmental challenges while enhancing urban mobility."
     },
     {
         "locode": "BR CGR",
@@ -51,7 +56,8 @@
         "regionName": "Mato Grosso do Sul",
         "actionId": "icare_0068",
         "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
-        "actionPriority": 6
+        "actionPriority": 6,
+        "explanation": "Deploying on-demand transport systems with 100% electric fleets in Campo Grande is a strategic move to address the city's high transportation emissions, which are a significant contributor to its total emissions. This action can help reduce the carbon footprint and improve air quality, benefiting public health. Additionally, electric fleets can offer a sustainable alternative to traditional vehicles, aligning with global trends towards cleaner energy solutions. Implementing this system can also enhance mobility and accessibility for residents, particularly in areas with inadequate public transport options."
     },
     {
         "locode": "BR CGR",
@@ -60,7 +66,8 @@
         "regionName": "Mato Grosso do Sul",
         "actionId": "icare_0090",
         "actionName": "Adoption of electric drones for last-mile deliveries.",
-        "actionPriority": 7
+        "actionPriority": 7,
+        "explanation": "The adoption of electric drones for last-mile deliveries in Campo Grande is a strategic move to reduce transportation emissions, which are a significant contributor to the city's total emissions. By utilizing electric drones, the city can decrease reliance on traditional delivery vehicles, thereby cutting down on fossil fuel consumption and air pollution. This action also aligns with the city's need to address environmental concerns while improving delivery efficiency in a rapidly growing urban area. Furthermore, it supports innovation and technological advancement, positioning Campo Grande as a forward-thinking city in terms of sustainable urban logistics."
     },
     {
         "locode": "BR CGR",
@@ -69,7 +76,8 @@
         "regionName": "Mato Grosso do Sul",
         "actionId": "icare_0130",
         "actionName": "Conduct Technical Assistance and Rural Extension (ATER) Actions",
-        "actionPriority": 8
+        "actionPriority": 8,
+        "explanation": "Conducting Technical Assistance and Rural Extension (ATER) actions in Campo Grande is crucial due to the city's vulnerability to climate-related hazards such as droughts and floods, which significantly impact food security. By providing technical support and education to rural communities, these actions can enhance agricultural resilience and productivity, ensuring a stable food supply. Additionally, ATER initiatives can help mitigate the socio-economic challenges faced by low-income populations, promoting sustainable development and improving overall quality of life in the region. This action aligns with the need to address the high risk of droughts and floods, which are critical threats to the city's infrastructure and public health."
     },
     {
         "locode": "BR CGR",
@@ -78,7 +86,8 @@
         "regionName": "Mato Grosso do Sul",
         "actionId": "icare_0057",
         "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
-        "actionPriority": 9
+        "actionPriority": 9,
+        "explanation": "The expansion of mass transit systems on rails in Campo Grande is a crucial action due to the city's high transportation emissions, which contribute significantly to its total emissions. By enhancing public transportation infrastructure, the city can reduce reliance on private vehicles, thereby decreasing emissions and improving air quality. Additionally, improved mass transit can provide more equitable access to transportation for low-income residents, aligning with the city's socio-economic needs. This action also supports the city's resilience against climate risks by reducing the carbon footprint and promoting sustainable urban development."
     },
     {
         "locode": "BR CGR",
@@ -87,7 +96,8 @@
         "regionName": "Mato Grosso do Sul",
         "actionId": "icare_0050",
         "actionName": "Implement Agroforestry Systems",
-        "actionPriority": 10
+        "actionPriority": 10,
+        "explanation": "Implementing agroforestry systems in Campo Grande is a crucial action due to the city's vulnerability to droughts, which significantly impact water resources and food security. Agroforestry can enhance soil moisture retention and improve biodiversity, helping to mitigate the effects of droughts. Additionally, this approach can contribute to reducing land use emissions, which are a significant part of the city's total emissions. By integrating trees into agricultural landscapes, agroforestry systems can also support local livelihoods and improve resilience against climate-related hazards."
     },
     {
         "locode": "BR CGR",
@@ -96,7 +106,8 @@
         "regionName": "Mato Grosso do Sul",
         "actionId": "icare_0129",
         "actionName": "Facilitate Technology Transfer for Conservation Practices",
-        "actionPriority": 11
+        "actionPriority": 11,
+        "explanation": "Facilitating technology transfer for conservation practices in Campo Grande is crucial due to the city's vulnerability to environmental hazards such as droughts and floods. These hazards pose significant risks to water resources, food security, and public health, making it essential to adopt advanced conservation techniques. By transferring technology, the city can enhance its resilience against these climate impacts, ensuring sustainable management of natural resources. Additionally, improved conservation practices can help mitigate emissions from land use, contributing to the overall reduction of the city's carbon footprint."
     },
     {
         "locode": "BR CGR",
@@ -105,7 +116,8 @@
         "regionName": "Mato Grosso do Sul",
         "actionId": "icare_0128",
         "actionName": "Establish Municipal Programs for Payment for Environmental Services (PES)",
-        "actionPriority": 12
+        "actionPriority": 12,
+        "explanation": "Establishing Municipal Programs for Payment for Environmental Services (PES) in Campo Grande is crucial due to the city's significant environmental challenges. The region faces high risks from droughts and heatwaves, which impact water resources, food security, and public health. Implementing PES can incentivize landowners to maintain and restore ecosystems, thereby enhancing the city's resilience to these climate hazards. Additionally, PES programs can contribute to reducing emissions from land use, which is a significant source of the city's total emissions, thus supporting broader environmental and sustainability goals."
     },
     {
         "locode": "BR CGR",
@@ -114,7 +126,8 @@
         "regionName": "Mato Grosso do Sul",
         "actionId": "icare_0118",
         "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
-        "actionPriority": 13
+        "actionPriority": 13,
+        "explanation": "Promoting the use of bicycles in Campo Grande is crucial due to the city's high transportation emissions, which contribute significantly to its total emissions. By expanding bicycle infrastructure and raising awareness, the city can reduce its reliance on motor vehicles, thereby decreasing air pollution and improving public health. Additionally, this action supports sustainable urban mobility, which is essential in a city with a growing population and limited public transport options. Encouraging cycling can also enhance the quality of life by reducing traffic congestion and promoting a healthier lifestyle."
     },
     {
         "locode": "BR CGR",
@@ -123,7 +136,8 @@
         "regionName": "Mato Grosso do Sul",
         "actionId": "c40_0026",
         "actionName": "Vehicle Emissions",
-        "actionPriority": 14
+        "actionPriority": 14,
+        "explanation": "The action to address vehicle emissions in Campo Grande is crucial due to the significant contribution of transportation to the city's overall emissions. With transportation emissions accounting for a large portion of the total emissions, reducing vehicle emissions can substantially lower the city's carbon footprint. Additionally, improving air quality by reducing vehicle emissions can have positive impacts on public health, which is a key concern given the high risk of heatwaves and diseases. Prioritizing this action aligns with the city's need to mitigate climate change impacts and enhance the quality of life for its residents."
     },
     {
         "locode": "BR CGR",
@@ -132,7 +146,8 @@
         "regionName": "Mato Grosso do Sul",
         "actionId": "icare_0132",
         "actionName": "Encourage Local Agroecological Production and Short Supply Chains",
-        "actionPriority": 15
+        "actionPriority": 15,
+        "explanation": "Encouraging local agroecological production and short supply chains is crucial for Campo Grande due to its vulnerability to droughts and floods, which significantly impact food security. By promoting local production, the city can reduce its dependency on external food sources, enhancing resilience against climate-related disruptions. Additionally, this action supports the local economy and reduces transportation emissions, contributing to overall sustainability goals. Given the city's very low-income levels, this initiative can also provide economic opportunities and improve access to fresh, affordable produce for the community."
     },
     {
         "locode": "BR CGR",
@@ -141,7 +156,8 @@
         "regionName": "Mato Grosso do Sul",
         "actionId": "icare_0134",
         "actionName": "Strengthen Mechanisms for Deforestation Control",
-        "actionPriority": 16
+        "actionPriority": 16,
+        "explanation": "Strengthening mechanisms for deforestation control in Campo Grande is crucial due to the city's location in a grassland/savanna biome, which is susceptible to land use changes. Deforestation can exacerbate climate change impacts, such as droughts and biodiversity loss, which are significant risks for the region. By enhancing deforestation control, the city can help preserve its natural environment, mitigate emissions from land use changes, and protect its biodiversity. This action also supports sustainable development and resilience against climate-related hazards."
     },
     {
         "locode": "BR CGR",
@@ -150,7 +166,8 @@
         "regionName": "Mato Grosso do Sul",
         "actionId": "icare_0085",
         "actionName": "Promote the Adoption of Agroecological Pest Control",
-        "actionPriority": 17
+        "actionPriority": 17,
+        "explanation": "Promoting the adoption of agroecological pest control in Campo Grande is crucial due to the city's vulnerability to climate-related hazards such as droughts and floods, which can severely impact food security. By implementing sustainable pest control methods, the city can enhance its agricultural resilience, ensuring a stable food supply even in adverse conditions. Additionally, agroecological practices can help reduce the environmental impact of agriculture, contributing to lower emissions and improved biodiversity. This action aligns with the need to address the socio-economic challenges faced by the region, particularly in supporting low-income communities reliant on agriculture."
     },
     {
         "locode": "BR CGR",
@@ -159,7 +176,8 @@
         "regionName": "Mato Grosso do Sul",
         "actionId": "icare_0131",
         "actionName": "Prioritize Procurement of Locally Produced Agroecological Products in Public Purchases",
-        "actionPriority": 18
+        "actionPriority": 18,
+        "explanation": "Prioritizing the procurement of locally produced agroecological products in public purchases is crucial for Campo Grande due to its significant risk to food security from droughts and floods. By supporting local agroecological practices, the city can enhance its resilience to these climate hazards, ensuring a more stable and sustainable food supply. Additionally, this action can stimulate the local economy, providing economic benefits to local farmers and reducing dependency on external food sources. Furthermore, promoting agroecological products aligns with environmental sustainability goals, potentially reducing emissions associated with transportation and industrial agriculture."
     },
     {
         "locode": "BR CGR",
@@ -168,7 +186,8 @@
         "regionName": "Mato Grosso do Sul",
         "actionId": "icare_0136",
         "actionName": "Support the Implementation of Ecological Fiscal Incentives",
-        "actionPriority": 19
+        "actionPriority": 19,
+        "explanation": "Supporting the implementation of ecological fiscal incentives in Campo Grande is crucial due to the city's significant environmental challenges. With high emissions from transportation and land use, these incentives can encourage sustainable practices and reduce the overall carbon footprint. Additionally, the city faces severe risks from climate hazards like droughts and floods, which threaten water resources and food security. By promoting ecological fiscal policies, Campo Grande can enhance its resilience to these climate impacts and foster a more sustainable urban environment."
     },
     {
         "locode": "BR CGR",
@@ -177,6 +196,7 @@
         "regionName": "Mato Grosso do Sul",
         "actionId": "icare_0126",
         "actionName": "Implementation of green fuel supply infrastructure for aircraft, such as biofuels or green hydrogen.",
-        "actionPriority": 20
+        "actionPriority": 20,
+        "explanation": "The implementation of green fuel supply infrastructure for aircraft in Campo Grande is a significant step towards reducing transportation emissions, which are a major contributor to the city's total emissions. Given the city's high transportation emissions, transitioning to biofuels or green hydrogen can substantially lower the carbon footprint of air travel. Additionally, this action aligns with global trends towards sustainable aviation, potentially positioning Campo Grande as a leader in green aviation technology. By investing in this infrastructure, the city can also stimulate economic growth and create new job opportunities in the green energy sector."
     }
 ]

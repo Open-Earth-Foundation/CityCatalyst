@@ -7,7 +7,7 @@
         "actionId": "icare_0169",
         "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
         "actionPriority": 1,
-        "explanation": "Ranked #1 by tournament ranking algorithm",
+        "explanation": "Establishing a plan for preparation and emergency response measures in S\u00e3o Leopoldo is crucial due to the city's vulnerability to extreme weather events. The city faces significant risks from hazards such as floods, landslides, and heatwaves, which can severely impact public health and infrastructure. With a high population density and very low-income levels, the community may struggle to recover from such events without a robust emergency response plan. Implementing this action will help mitigate the impacts of these hazards, ensuring the safety and resilience of the city's residents.",
         "action": {
             "ActionID": "icare_0169",
             "ActionName": "Estabelecer um Plano de Prepara\u00e7\u00e3o e Medidas de Resposta a Emerg\u00eancias em caso de eventos clim\u00e1ticos extremos",
@@ -78,7 +78,7 @@
         "actionId": "icare_0176",
         "actionName": "Development of Climate Action Plan",
         "actionPriority": 2,
-        "explanation": "Ranked #2 by tournament ranking algorithm",
+        "explanation": "The development of a Climate Action Plan is crucial for S\u00e3o Leopoldo due to its significant environmental challenges. The city faces high risks from natural hazards such as floods and landslides, which pose threats to public health and infrastructure. By creating a comprehensive plan, the city can strategically address these risks and enhance its resilience. Additionally, the plan will help in reducing emissions and promoting sustainable development, aligning with the city's need to manage its substantial stationary energy and transportation emissions.",
         "action": {
             "ActionID": "icare_0176",
             "ActionName": "Desenvolvimento do Plano de A\u00e7\u00e3o Clim\u00e1tica",
@@ -149,7 +149,7 @@
         "actionId": "icare_0162",
         "actionName": "Strengthen programs for control and conservation of protected areas",
         "actionPriority": 3,
-        "explanation": "Ranked #3 by tournament ranking algorithm",
+        "explanation": "Strengthening programs for control and conservation of protected areas in S\u00e3o Leopoldo is crucial due to the city's tropical rainforest biome, which is rich in biodiversity. The city faces significant risks from climate hazards such as droughts and heatwaves, which can severely impact biodiversity. By enhancing conservation efforts, S\u00e3o Leopoldo can mitigate these risks and preserve its natural ecosystems. Additionally, protecting these areas can contribute to the city's resilience against climate change impacts, ensuring the sustainability of its natural resources.",
         "action": {
             "ActionID": "icare_0162",
             "ActionName": "Fortalecer programas de controle e conserva\u00e7\u00e3o de \u00e1reas protegidas",
@@ -212,7 +212,7 @@
         "actionId": "icare_0152",
         "actionName": "Recovery of degraded areas",
         "actionPriority": 4,
-        "explanation": "Ranked #4 by tournament ranking algorithm",
+        "explanation": "The action 'Recovery of degraded areas' is crucial for S\u00e3o Leopoldo due to its tropical rainforest biome, which is sensitive to environmental degradation. Restoring these areas can enhance biodiversity, which is currently at risk from droughts and heatwaves. Additionally, recovery efforts can mitigate the impact of landslides and floods, which pose significant risks to public health and infrastructure. By prioritizing this action, the city can improve its resilience against climate-related hazards and promote sustainable development.",
         "action": {
             "ActionID": "icare_0152",
             "ActionName": "Recupera\u00e7\u00e3o de \u00e1reas degradadas",
@@ -275,7 +275,7 @@
         "actionId": "icare_0181",
         "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
         "actionPriority": 5,
-        "explanation": "Ranked #5 by tournament ranking algorithm",
+        "explanation": "The action 'Relocation and Environmental Restoration in Vulnerable Areas' is crucial for S\u00e3o Leopoldo due to its high risk of landslides and floods, which pose significant threats to public health and infrastructure. The city's low elevation and tropical rainforest biome make it particularly susceptible to these hazards, necessitating proactive measures to protect vulnerable populations. By relocating residents from high-risk areas and restoring the environment, the city can mitigate the impacts of these natural disasters. This action not only enhances safety but also contributes to the long-term sustainability and resilience of the community.",
         "action": {
             "ActionID": "icare_0181",
             "ActionName": "Reloca\u00e7\u00e3o e Restaura\u00e7\u00e3o Ambiental em \u00c1reas Vulner\u00e1veis",
@@ -334,7 +334,7 @@
         "actionId": "icare_0149",
         "actionName": "Encourage sustainable land use practices",
         "actionPriority": 6,
-        "explanation": "Ranked #6 by tournament ranking algorithm",
+        "explanation": "Encouraging sustainable land use practices in S\u00e3o Leopoldo is crucial due to the city's vulnerability to environmental hazards such as landslides and floods. These hazards pose significant risks to public health and infrastructure, as indicated by the high risk scores. Implementing sustainable land use can help mitigate these risks by improving soil stability and reducing runoff, thereby enhancing the city's resilience to climate impacts. Additionally, sustainable practices can contribute to preserving the tropical rainforest biome, which is vital for maintaining biodiversity and ecological balance in the region.",
         "action": {
             "ActionID": "icare_0149",
             "ActionName": "Incentivar pr\u00e1ticas sustent\u00e1veis de uso da terra",
@@ -399,7 +399,7 @@
         "actionId": "icare_0157",
         "actionName": "Maintenance and Revitalization of Riparian Forests",
         "actionPriority": 7,
-        "explanation": "Ranked #7 by tournament ranking algorithm",
+        "explanation": "The maintenance and revitalization of riparian forests in S\u00e3o Leopoldo is crucial due to the city's vulnerability to floods and landslides. Riparian forests play a significant role in stabilizing soil and reducing the impact of heavy rains, which can lead to these hazards. Additionally, these forests contribute to biodiversity and help in maintaining water quality, which is essential for the city's water resources. Given the city's tropical rainforest biome, preserving these natural buffers is vital for ecological balance and mitigating climate risks.",
         "action": {
             "ActionID": "icare_0157",
             "ActionName": "Manuten\u00e7\u00e3o e Revitaliza\u00e7\u00e3o de Florestas Rip\u00e1rias",
@@ -462,7 +462,7 @@
         "actionId": "icare_0164",
         "actionName": "Hydrological Monitoring System with Telemetry Stations",
         "actionPriority": 8,
-        "explanation": "Ranked #8 by tournament ranking algorithm",
+        "explanation": "Implementing a Hydrological Monitoring System with Telemetry Stations in S\u00e3o Leopoldo is crucial due to the city's vulnerability to floods and landslides. The city faces significant risks from these hazards, which can severely impact public health and infrastructure. By establishing a robust monitoring system, the city can better predict and manage water-related disasters, thereby reducing potential damage and enhancing public safety. Additionally, this system can provide valuable data to support long-term planning and resilience-building efforts against climate change impacts.",
         "action": {
             "ActionID": "icare_0164",
             "ActionName": "Sistema de Monitoramento Hidrol\u00f3gico com Esta\u00e7\u00f5es de Telemetria",
@@ -523,7 +523,7 @@
         "actionId": "ipcc_0097",
         "actionName": "Food storage/distribution improvements",
         "actionPriority": 9,
-        "explanation": "Ranked #9 by tournament ranking algorithm",
+        "explanation": "Improving food storage and distribution is crucial for S\u00e3o Leopoldo due to its vulnerability to floods, which pose a significant risk to food security. The city's tropical rainforest biome and high population density increase the likelihood of food supply disruptions during extreme weather events. Enhancing these systems can help ensure a stable food supply, even in adverse conditions, thereby supporting the city's resilience. Additionally, better food distribution can mitigate the impact of potential droughts, which also threaten food security in the region.",
         "action": {
             "ActionID": "ipcc_0097",
             "ActionName": "Melhorias no armazenamento/distribui\u00e7\u00e3o de alimentos",
@@ -589,7 +589,7 @@
         "actionId": "icare_0151",
         "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
         "actionPriority": 10,
-        "explanation": "Ranked #10 by tournament ranking algorithm",
+        "explanation": "Developing diagnostics and restoring areas of Special Social Interest Zones (ZEIS) in S\u00e3o Leopoldo is crucial due to the city's socio-economic context. With a very low-income population, enhancing these areas can significantly improve living conditions and access to essential services. Additionally, addressing these zones can help mitigate risks associated with public health hazards, such as diseases and floods, which are prevalent in the city. By focusing on ZEIS, S\u00e3o Leopoldo can foster more resilient and sustainable communities, ultimately contributing to the overall well-being of its residents.",
         "action": {
             "ActionID": "icare_0151",
             "ActionName": "Desenvolver diagn\u00f3sticos e restaurar \u00e1reas de Zonas Especiais de Interesse Social (ZEIS)",
@@ -654,7 +654,7 @@
         "actionId": "ipcc_0088",
         "actionName": "Building codes",
         "actionPriority": 11,
-        "explanation": "Ranked #11 by tournament ranking algorithm",
+        "explanation": "Implementing stringent building codes in S\u00e3o Leopoldo is crucial due to the city's vulnerability to natural hazards such as landslides and floods. The high risk of landslides and floods poses significant threats to infrastructure and public health, making it essential to ensure that buildings are constructed to withstand these events. By enforcing robust building codes, the city can enhance the resilience of its infrastructure, protect its residents, and reduce potential economic losses. This action is particularly important given the city's low elevation and tropical rainforest biome, which can exacerbate the impacts of these hazards.",
         "action": {
             "ActionID": "ipcc_0088",
             "ActionName": "C\u00f3digos de constru\u00e7\u00e3o",
@@ -713,7 +713,7 @@
         "actionId": "ipcc_0094",
         "actionName": "Access to health care",
         "actionPriority": 12,
-        "explanation": "Ranked #12 by tournament ranking algorithm",
+        "explanation": "Access to health care is a critical priority for S\u00e3o Leopoldo due to the high risk of public health impacts from hazards such as landslides and floods. The city faces significant challenges with public health risks, as indicated by the high normalized risk scores for diseases and floods. Improving access to health care can help mitigate these risks by ensuring that the population has the necessary resources and support during health emergencies. Additionally, enhancing health care infrastructure can improve overall community resilience against climate-related health threats.",
         "action": {
             "ActionID": "ipcc_0094",
             "ActionName": "Acesso aos cuidados de sa\u00fade",
@@ -777,7 +777,7 @@
         "actionId": "ipcc_0093",
         "actionName": "Availability of health infrastructure",
         "actionPriority": 13,
-        "explanation": "Ranked #13 by tournament ranking algorithm",
+        "explanation": "Improving the availability of health infrastructure in S\u00e3o Leopoldo is crucial due to the high risk of public health impacts from hazards such as landslides and floods. The city faces significant challenges with these hazards, which can severely affect the health and safety of its residents. Enhancing health infrastructure will ensure better preparedness and response to these risks, ultimately safeguarding the community's well-being. Additionally, with a population density of over 2,000 people per square kilometer, efficient health services are essential to manage potential health crises effectively.",
         "action": {
             "ActionID": "ipcc_0093",
             "ActionName": "Disponibilidade de infraestrutura de sa\u00fade",
@@ -841,7 +841,7 @@
         "actionId": "icare_0148",
         "actionName": "Create the Municipal Climate Change Forum",
         "actionPriority": 14,
-        "explanation": "Ranked #14 by tournament ranking algorithm",
+        "explanation": "Creating the Municipal Climate Change Forum in S\u00e3o Leopoldo is a crucial step towards addressing the city's environmental challenges. The city faces significant risks from climate-related hazards such as floods, landslides, and heatwaves, which impact public health and infrastructure. Establishing a dedicated forum will facilitate collaboration among stakeholders, enabling the development of effective strategies to mitigate these risks. Additionally, the forum can serve as a platform for raising awareness and engaging the community in climate action initiatives, fostering a more resilient and sustainable urban environment.",
         "action": {
             "ActionID": "icare_0148",
             "ActionName": "Criar o F\u00f3rum Municipal de Mudan\u00e7as Clim\u00e1ticas",
@@ -912,7 +912,7 @@
         "actionId": "icare_0145",
         "actionName": "Strengthen the healthcare network to attend to climate victims",
         "actionPriority": 15,
-        "explanation": "Ranked #15 by tournament ranking algorithm",
+        "explanation": "Strengthening the healthcare network in S\u00e3o Leopoldo is crucial due to the high risk of public health impacts from climate-related hazards. The city faces significant threats from diseases, heatwaves, and floods, all of which can severely strain existing healthcare resources. By enhancing the healthcare infrastructure, the city can better manage and mitigate the health impacts on its population, ensuring timely and effective responses to climate-induced health emergencies. This action is vital for protecting the well-being of residents and maintaining public health resilience in the face of increasing climate risks.",
         "action": {
             "ActionID": "icare_0145",
             "ActionName": "Fortalecer a rede de sa\u00fade para atender \u00e0s v\u00edtimas do clima",
@@ -980,7 +980,7 @@
         "actionId": "icare_0180",
         "actionName": "Implement permeable pavements and increase green areas in roadways",
         "actionPriority": 16,
-        "explanation": "Ranked #16 by tournament ranking algorithm",
+        "explanation": "Implementing permeable pavements and increasing green areas in roadways is crucial for S\u00e3o Leopoldo due to its vulnerability to floods and landslides. The city faces significant risks from these hazards, which can severely impact public health and infrastructure. By enhancing the permeability of surfaces and expanding green spaces, the city can improve stormwater management, reduce surface runoff, and mitigate the effects of heavy rainfall. This action not only addresses immediate environmental challenges but also contributes to the long-term resilience of the urban infrastructure.",
         "action": {
             "ActionID": "icare_0180",
             "ActionName": "Implementar pavimentos perme\u00e1veis e aumentar as \u00e1reas verdes nas vias p\u00fablicas",
@@ -1041,7 +1041,7 @@
         "actionId": "icare_0156",
         "actionName": "Implementation of urban gardens",
         "actionPriority": 17,
-        "explanation": "Ranked #17 by tournament ranking algorithm",
+        "explanation": "The implementation of urban gardens in S\u00e3o Leopoldo is a strategic action to enhance food security and promote sustainable urban development. Given the city's tropical rainforest biome, urban gardens can thrive and provide fresh produce to local communities, reducing dependency on external food sources. This initiative also supports biodiversity and can mitigate some of the impacts of climate change by increasing green spaces, which help in cooling urban areas and managing stormwater. Additionally, urban gardens can serve as educational platforms for residents, fostering community engagement and awareness about sustainable practices.",
         "action": {
             "ActionID": "icare_0156",
             "ActionName": "Implementa\u00e7\u00e3o de hortas urbanas",
@@ -1102,7 +1102,7 @@
         "actionId": "icare_0144",
         "actionName": "Creation of a Financial Support Program to Adress Extreme Weather Events",
         "actionPriority": 18,
-        "explanation": "Ranked #18 by tournament ranking algorithm",
+        "explanation": "The creation of a financial support program to address extreme weather events is crucial for S\u00e3o Leopoldo due to its vulnerability to hazards such as floods and landslides. These events pose significant risks to public health and infrastructure, as indicated by the high risk scores. Implementing financial support can help mitigate the economic impact on affected communities, ensuring quicker recovery and resilience. Additionally, such a program can provide necessary resources for preventive measures, reducing future risks and enhancing the city's overall preparedness.",
         "action": {
             "ActionID": "icare_0144",
             "ActionName": "Cria\u00e7\u00e3o de um Programa de Apoio Financeiro para Abordar Eventos Clim\u00e1ticos Extremos",
@@ -1173,7 +1173,7 @@
         "actionId": "icare_0172",
         "actionName": "Develop and implement the Municipal Risk Reduction Plan (PMRR) and identify population groups vulnerable to climate risks.",
         "actionPriority": 19,
-        "explanation": "Ranked #19 by tournament ranking algorithm",
+        "explanation": "Developing and implementing the Municipal Risk Reduction Plan (PMRR) is crucial for S\u00e3o Leopoldo due to its high vulnerability to climate-related hazards such as floods, landslides, and heatwaves. The city faces significant risks to public health and infrastructure, with some hazards posing extreme threats. By identifying vulnerable population groups, the city can tailor its risk reduction strategies to protect those most at risk, enhancing community resilience. This action is essential to mitigate the impacts of climate change and safeguard the well-being of S\u00e3o Leopoldo's residents.",
         "action": {
             "ActionID": "icare_0172",
             "ActionName": "Desenvolver e implementar o Plano Municipal de Redu\u00e7\u00e3o de Riscos (PMRR) e identificar grupos populacionais vulner\u00e1veis aos riscos clim\u00e1ticos.",
@@ -1234,7 +1234,7 @@
         "actionId": "icare_0175",
         "actionName": "Recovery and preservation of green areas",
         "actionPriority": 20,
-        "explanation": "Ranked #20 by tournament ranking algorithm",
+        "explanation": "The recovery and preservation of green areas in S\u00e3o Leopoldo is crucial due to the city's high population density and its location within a tropical rainforest biome. Green areas can help mitigate the effects of urban heat islands, which is particularly important given the city's vulnerability to heatwaves. Additionally, preserving green spaces can enhance biodiversity and provide natural buffers against flooding, a significant risk for the city. This action also supports public health by improving air quality and offering recreational spaces for residents.",
         "action": {
             "ActionID": "icare_0175",
             "ActionName": "Recupera\u00e7\u00e3o e preserva\u00e7\u00e3o de \u00e1reas verdes",

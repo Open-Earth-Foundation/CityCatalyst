@@ -7,7 +7,7 @@
         "actionId": "icare_0169",
         "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
         "actionPriority": 1,
-        "explanation": "Ranked #1 by tournament ranking algorithm",
+        "explanation": "Establishing a plan for preparation and emergency response measures in the event of extreme weather events is crucial for Cuiab\u00e1 due to its high vulnerability to climate-related hazards. The city faces significant risks from droughts, heatwaves, and floods, all of which have been identified as having severe impacts on public health, infrastructure, and biodiversity. With a very low income level and inadequate access to public services, the population is particularly susceptible to the adverse effects of these events. Implementing a comprehensive emergency response plan will help mitigate these risks, protect the community, and enhance resilience against future climate challenges.",
         "action": {
             "ActionID": "icare_0169",
             "ActionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
@@ -78,7 +78,7 @@
         "actionId": "icare_0176",
         "actionName": "Development of Climate Action Plan",
         "actionPriority": 2,
-        "explanation": "Ranked #2 by tournament ranking algorithm",
+        "explanation": "The development of a Climate Action Plan is crucial for Cuiab\u00e1 due to its high vulnerability to climate-related hazards such as droughts, heatwaves, and floods. These hazards pose significant risks to water resources, public health, and infrastructure, which are critical areas for the city's sustainability and resilience. By creating a comprehensive plan, the city can strategically address these risks, prioritize actions, and allocate resources effectively to mitigate the impacts of climate change. Additionally, a well-structured Climate Action Plan can enhance the city's ability to attract funding and support from national and international bodies, further strengthening its climate resilience efforts.",
         "action": {
             "ActionID": "icare_0176",
             "ActionName": "Development of Climate Action Plan",
@@ -149,7 +149,7 @@
         "actionId": "ipcc_0094",
         "actionName": "Access to health care",
         "actionPriority": 3,
-        "explanation": "Ranked #3 by tournament ranking algorithm",
+        "explanation": "Improving access to health care in Cuiab\u00e1 is crucial due to the high risk of public health impacts from climate-related hazards such as heatwaves, diseases, and floods. The city's vulnerability to these hazards, as indicated by the high normalized risk scores, underscores the need for robust health care systems to manage potential health crises. Additionally, enhancing health care access can mitigate the effects of socio-economic challenges, particularly for low-income populations who may be disproportionately affected by these risks. Prioritizing health care access can also improve overall community resilience and well-being in the face of climate change.",
         "action": {
             "ActionID": "ipcc_0094",
             "ActionName": "Access to health care",
@@ -213,7 +213,7 @@
         "actionId": "icare_0151",
         "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
         "actionPriority": 4,
-        "explanation": "Ranked #4 by tournament ranking algorithm",
+        "explanation": "Developing diagnostics and restoring areas of Special Social Interest Zones (ZEIS) in Cuiab\u00e1 is crucial due to the city's socio-economic challenges. With a very low-income population, improving these areas can significantly enhance living conditions and access to essential services. Additionally, restoring ZEIS can help mitigate the impacts of environmental hazards such as floods and heatwaves, which pose high risks to public health and infrastructure. This action aligns with the need to address both social and environmental vulnerabilities, making it a priority for sustainable urban development.",
         "action": {
             "ActionID": "icare_0151",
             "ActionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
@@ -278,7 +278,7 @@
         "actionId": "icare_0152",
         "actionName": "Recovery of degraded areas",
         "actionPriority": 5,
-        "explanation": "Ranked #5 by tournament ranking algorithm",
+        "explanation": "The action 'Recovery of degraded areas' is crucial for Cuiab\u00e1 due to its location in a grassland/savanna biome, which is susceptible to degradation. Restoring these areas can enhance biodiversity, which is currently at high risk from droughts and heatwaves. Additionally, recovery efforts can help mitigate land use emissions, which are a significant contributor to the city's total emissions. This action also supports the city's resilience against climate impacts, such as floods and landslides, by stabilizing the soil and improving water retention.",
         "action": {
             "ActionID": "icare_0152",
             "ActionName": "Recovery of degraded areas",
@@ -341,7 +341,7 @@
         "actionId": "ipcc_0097",
         "actionName": "Food storage/distribution improvements",
         "actionPriority": 6,
-        "explanation": "Ranked #6 by tournament ranking algorithm",
+        "explanation": "Improving food storage and distribution is crucial for Cuiab\u00e1 due to its vulnerability to droughts and floods, which significantly impact food security. The city's location in a grassland/savanna biome makes it susceptible to these climate hazards, threatening the stability of food supplies. Enhancing food storage and distribution systems can mitigate the risks associated with these environmental challenges, ensuring a more reliable food supply chain. Additionally, better food management can help reduce waste emissions, contributing to overall emission reduction efforts in the city.",
         "action": {
             "ActionID": "ipcc_0097",
             "ActionName": "Food storage/distribution improvements",
@@ -407,7 +407,7 @@
         "actionId": "ipcc_0096",
         "actionName": "Farm/fishery improvements",
         "actionPriority": 7,
-        "explanation": "Ranked #7 by tournament ranking algorithm",
+        "explanation": "Farm and fishery improvements are crucial for Cuiab\u00e1 due to the high risk of droughts impacting water resources and food security. Enhancing agricultural practices can help mitigate these risks by increasing resilience to climate variability. Additionally, improving fisheries can support local food supply and economic stability, which is vital given the city's very low-income levels. This action also aligns with the need to address biodiversity concerns, as sustainable practices can help preserve local ecosystems.",
         "action": {
             "ActionID": "ipcc_0096",
             "ActionName": "Farm/fishery improvements",
@@ -475,7 +475,7 @@
         "actionId": "ipcc_0093",
         "actionName": "Availability of health infrastructure",
         "actionPriority": 8,
-        "explanation": "Ranked #8 by tournament ranking algorithm",
+        "explanation": "The availability of health infrastructure in Cuiab\u00e1 is crucial due to the high risk of public health impacts from hazards such as heatwaves, diseases, and floods. These hazards have been identified as having a significant impact on public health, with normalized risk scores of 0.99, indicating a very high level of risk. Improving health infrastructure can enhance the city's resilience to these climate-related challenges, ensuring better preparedness and response capabilities. Additionally, strengthening health infrastructure can help mitigate the effects of these hazards on the population, particularly in a city with very low-income levels, where access to healthcare is vital for community well-being.",
         "action": {
             "ActionID": "ipcc_0093",
             "ActionName": "Availability of health infrastructure",
@@ -539,7 +539,7 @@
         "actionId": "icare_0162",
         "actionName": "Strengthen programs for control and conservation of protected areas",
         "actionPriority": 9,
-        "explanation": "Ranked #9 by tournament ranking algorithm",
+        "explanation": "Strengthening programs for control and conservation of protected areas in Cuiab\u00e1 is crucial due to the city's vulnerability to environmental hazards such as droughts and heatwaves. These hazards pose significant risks to biodiversity, which is a key impact area identified in the city's climate risk assessment. By enhancing conservation efforts, the city can mitigate the adverse effects of these hazards on its natural ecosystems. Additionally, protecting these areas can contribute to maintaining the ecological balance and supporting the overall resilience of the region against climate change impacts.",
         "action": {
             "ActionID": "icare_0162",
             "ActionName": "Strengthen programs for control and conservation of protected areas",
@@ -602,7 +602,7 @@
         "actionId": "icare_0157",
         "actionName": "Maintenance and Revitalization of Riparian Forests",
         "actionPriority": 10,
-        "explanation": "Ranked #10 by tournament ranking algorithm",
+        "explanation": "The maintenance and revitalization of riparian forests in Cuiab\u00e1 is crucial due to the city's vulnerability to droughts and floods. Riparian forests play a significant role in stabilizing riverbanks, reducing erosion, and improving water quality, which is essential given the high risk of water resource impacts from droughts. Additionally, these forests can help mitigate flood risks by enhancing the natural absorption and flow regulation of water. Revitalizing these areas supports biodiversity, which is under threat from both droughts and heatwaves, and contributes to the overall ecological resilience of the region.",
         "action": {
             "ActionID": "icare_0157",
             "ActionName": "Maintenance and Revitalization of Riparian Forests",
@@ -665,7 +665,7 @@
         "actionId": "ipcc_0092",
         "actionName": "Social safety nets",
         "actionPriority": 11,
-        "explanation": "Ranked #11 by tournament ranking algorithm",
+        "explanation": "Implementing social safety nets in Cuiab\u00e1 is crucial due to the city's socio-economic challenges, particularly the very low-income levels. These safety nets can provide essential support to vulnerable populations, especially during climate-related events such as droughts and heatwaves, which pose significant risks to public health and food security. By strengthening social safety nets, the city can enhance resilience and reduce the adverse impacts of these hazards on its residents. Additionally, such measures can help mitigate the effects of inadequate access to public services, ensuring a more equitable distribution of resources and support.",
         "action": {
             "ActionID": "ipcc_0092",
             "ActionName": "Social safety nets",
@@ -729,7 +729,7 @@
         "actionId": "icare_0145",
         "actionName": "Strengthen the healthcare network to attend to climate victims",
         "actionPriority": 12,
-        "explanation": "Ranked #12 by tournament ranking algorithm",
+        "explanation": "Strengthening the healthcare network in Cuiab\u00e1 is crucial due to the high risk of climate-related health impacts. The city faces significant threats from heatwaves and diseases, both of which can severely affect public health. By enhancing healthcare services, the city can better manage and mitigate the health consequences of these climate hazards. Additionally, improved healthcare infrastructure will ensure that the population, particularly those in low-income areas, receives timely and effective medical attention during climate emergencies.",
         "action": {
             "ActionID": "icare_0145",
             "ActionName": "Strengthen the healthcare network to attend to climate victims",
@@ -797,7 +797,7 @@
         "actionId": "icare_0149",
         "actionName": "Encourage sustainable land use practices",
         "actionPriority": 13,
-        "explanation": "Ranked #13 by tournament ranking algorithm",
+        "explanation": "Encouraging sustainable land use practices in Cuiab\u00e1 is crucial due to the significant land use emissions contributing to the city's total emissions. The region's biome, primarily grassland and savanna, is sensitive to unsustainable practices, which can exacerbate environmental degradation and biodiversity loss. Additionally, sustainable land use can help mitigate the impacts of droughts and floods, which are high-risk hazards for the city. By prioritizing this action, Cuiab\u00e1 can improve its resilience to climate change and enhance the sustainability of its natural resources.",
         "action": {
             "ActionID": "icare_0149",
             "ActionName": "Encourage sustainable land use practices",
@@ -862,7 +862,7 @@
         "actionId": "icare_0148",
         "actionName": "Create the Municipal Climate Change Forum",
         "actionPriority": 14,
-        "explanation": "Ranked #14 by tournament ranking algorithm",
+        "explanation": "Creating the Municipal Climate Change Forum in Cuiab\u00e1 is a crucial step towards addressing the city's significant environmental challenges. The city faces high risks from climate-related hazards such as droughts, heatwaves, and floods, which impact water resources, public health, and infrastructure. Establishing a dedicated forum will facilitate coordinated efforts among stakeholders to develop and implement effective climate adaptation and mitigation strategies. This initiative will also enhance public awareness and engagement, fostering a community-driven approach to tackling climate change impacts.",
         "action": {
             "ActionID": "icare_0148",
             "ActionName": "Create the Municipal Climate Change Forum",
@@ -933,7 +933,7 @@
         "actionId": "icare_0164",
         "actionName": "Hydrological Monitoring System with Telemetry Stations",
         "actionPriority": 15,
-        "explanation": "Ranked #15 by tournament ranking algorithm",
+        "explanation": "Implementing a Hydrological Monitoring System with Telemetry Stations in Cuiab\u00e1 is crucial due to the city's high risk of droughts and floods. These hazards significantly impact water resources, food security, and public health, as indicated by the city's climate change risk assessment. By establishing a robust monitoring system, the city can better manage its water resources, anticipate extreme weather events, and mitigate their adverse effects. This proactive approach is essential for safeguarding the well-being of the population and ensuring sustainable development in the region.",
         "action": {
             "ActionID": "icare_0164",
             "ActionName": "Hydrological Monitoring System with Telemetry Stations",
@@ -994,7 +994,7 @@
         "actionId": "icare_0144",
         "actionName": "Creation of a Financial Support Program to Adress Extreme Weather Events",
         "actionPriority": 16,
-        "explanation": "Ranked #16 by tournament ranking algorithm",
+        "explanation": "The creation of a financial support program to address extreme weather events is crucial for Cuiab\u00e1 due to its high vulnerability to climate-related hazards such as droughts, heatwaves, and floods. These events pose significant risks to water resources, food security, public health, and infrastructure, as indicated by the city's climate change risk assessment. Establishing a financial support program can help mitigate the economic impact of these events on the city's low-income population, who are particularly vulnerable. Additionally, such a program can enhance the city's resilience by providing necessary resources for recovery and adaptation efforts.",
         "action": {
             "ActionID": "icare_0144",
             "ActionName": "Creation of a Financial Support Program to Adress Extreme Weather Events",
@@ -1065,7 +1065,7 @@
         "actionId": "icare_0156",
         "actionName": "Implementation of urban gardens",
         "actionPriority": 17,
-        "explanation": "Ranked #17 by tournament ranking algorithm",
+        "explanation": "The implementation of urban gardens in Cuiab\u00e1 is a significant action due to its potential to enhance food security, which is a key concern given the city's vulnerability to droughts and floods. Urban gardens can provide a sustainable source of fresh produce, reducing dependency on external food supplies and mitigating the impact of climate-related disruptions. Additionally, these gardens can improve local biodiversity and offer green spaces that help to cool urban areas, addressing the risks associated with heatwaves. By promoting community involvement, urban gardens also foster social cohesion and resilience, making them a valuable initiative for the city's sustainable development.",
         "action": {
             "ActionID": "icare_0156",
             "ActionName": "Implementation of urban gardens",
@@ -1126,7 +1126,7 @@
         "actionId": "icare_0175",
         "actionName": "Recovery and preservation of green areas",
         "actionPriority": 18,
-        "explanation": "Ranked #18 by tournament ranking algorithm",
+        "explanation": "The action of recovering and preserving green areas in Cuiab\u00e1 is crucial due to the city's vulnerability to climate-related hazards such as droughts and heatwaves. Green areas can help mitigate the urban heat island effect, improve air quality, and provide essential habitats for biodiversity, which is at risk from these hazards. Additionally, enhancing green spaces can contribute to better water management, reducing the impact of floods and improving the resilience of the city's infrastructure. Given the socio-economic context of Cuiab\u00e1, with very low-income levels, investing in green areas can also provide social and economic benefits, such as recreational spaces and potential job opportunities in maintenance and conservation.",
         "action": {
             "ActionID": "icare_0175",
             "ActionName": "Recovery and preservation of green areas",
@@ -1186,7 +1186,7 @@
         "actionId": "ipcc_0095",
         "actionName": "Disaster early warning",
         "actionPriority": 19,
-        "explanation": "Ranked #19 by tournament ranking algorithm",
+        "explanation": "Implementing a disaster early warning system in Cuiab\u00e1 is crucial due to the high risk of natural hazards such as droughts, heatwaves, and floods. These hazards pose significant threats to public health, infrastructure, and food security, as indicated by the city's climate change risk assessment. An effective early warning system can help mitigate the impacts of these events by providing timely information to residents and authorities, allowing for better preparedness and response. This action is particularly important given the city's low-income socio-economic status, which may limit the community's ability to recover from disasters without adequate warning and preparation.",
         "action": {
             "ActionID": "ipcc_0095",
             "ActionName": "Disaster early warning",
@@ -1251,7 +1251,7 @@
         "actionId": "ipcc_0098",
         "actionName": "Behaviour change in diets and food waste",
         "actionPriority": 20,
-        "explanation": "Ranked #20 by tournament ranking algorithm",
+        "explanation": "The action of promoting behavior change in diets and reducing food waste is crucial for Cuiab\u00e1 due to its significant impact on food security and environmental sustainability. Given the city's vulnerability to droughts, which severely affect water resources and food security, reducing food waste can help mitigate these risks by ensuring more efficient use of available resources. Additionally, changing dietary habits can lead to reduced emissions from agricultural processes, contributing to the overall reduction of the city's total emissions. This action aligns with the need to address both immediate and long-term challenges related to climate change and resource management in the region.",
         "action": {
             "ActionID": "ipcc_0098",
             "ActionName": "Behaviour change in diets and food waste",

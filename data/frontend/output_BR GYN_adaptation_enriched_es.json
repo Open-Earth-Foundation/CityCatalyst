@@ -7,7 +7,7 @@
         "actionId": "icare_0169",
         "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
         "actionPriority": 1,
-        "explanation": "Ranked #1 by tournament ranking algorithm",
+        "explanation": "Establishing a plan for preparation and emergency response measures in Goi\u00e2nia is crucial due to the high risk of extreme weather events such as droughts, heatwaves, and floods. The city faces significant threats to public health, infrastructure, and food security from these hazards, as indicated by the high normalized risk scores. By prioritizing this action, Goi\u00e2nia can enhance its resilience and reduce the potential impacts of these events on its population and economy. Additionally, a well-prepared emergency response plan can help mitigate the adverse effects on vulnerable communities, ensuring a more equitable and effective response.",
         "action": {
             "ActionID": "icare_0169",
             "ActionName": "Establecer un Plan de Preparaci\u00f3n y Medidas de Respuesta de Emergencia en caso de eventos clim\u00e1ticos extremos",
@@ -78,7 +78,7 @@
         "actionId": "icare_0152",
         "actionName": "Recovery of degraded areas",
         "actionPriority": 2,
-        "explanation": "Ranked #2 by tournament ranking algorithm",
+        "explanation": "The action 'Recovery of degraded areas' is crucial for Goi\u00e2nia due to its biome of grassland/savanna, which is susceptible to degradation. Restoring these areas can enhance biodiversity and improve the resilience of local ecosystems against climate hazards such as droughts and heatwaves, which are significant risks for the city. Additionally, recovering degraded land can help reduce emissions from land use, contributing to the city's overall climate goals. This action supports sustainable development and can improve the quality of life for residents by ensuring healthier and more stable natural environments.",
         "action": {
             "ActionID": "icare_0152",
             "ActionName": "Recuperaci\u00f3n de \u00e1reas degradadas",
@@ -141,7 +141,7 @@
         "actionId": "icare_0176",
         "actionName": "Development of Climate Action Plan",
         "actionPriority": 3,
-        "explanation": "Ranked #3 by tournament ranking algorithm",
+        "explanation": "The development of a Climate Action Plan is crucial for Goi\u00e2nia due to its high vulnerability to climate-related hazards such as droughts, heatwaves, and floods. These hazards pose significant risks to water resources, food security, public health, and infrastructure, as indicated by the city's climate change risk assessment. By creating a comprehensive plan, the city can strategically address these risks, improve resilience, and ensure sustainable development. Additionally, with the city's growing population and high emissions, a Climate Action Plan will help in reducing emissions and promoting environmental sustainability.",
         "action": {
             "ActionID": "icare_0176",
             "ActionName": "Desarrollo del Plan de Acci\u00f3n Clim\u00e1tica",
@@ -212,7 +212,7 @@
         "actionId": "icare_0151",
         "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
         "actionPriority": 4,
-        "explanation": "Ranked #4 by tournament ranking algorithm",
+        "explanation": "Developing diagnostics and restoring areas of Special Social Interest Zones (ZEIS) in Goi\u00e2nia is crucial due to the city's socio-economic challenges. With a very low-income population, enhancing these areas can significantly improve living conditions and access to essential services. Additionally, addressing these zones can help mitigate the impacts of environmental hazards such as floods and landslides, which pose high risks to infrastructure and public health. By focusing on ZEIS, the city can promote equitable development and resilience against climate-related threats.",
         "action": {
             "ActionID": "icare_0151",
             "ActionName": "Desarrollar diagn\u00f3sticos y restaurar \u00e1reas de Zonas de Inter\u00e9s Social Especial (ZEIS)",
@@ -277,7 +277,7 @@
         "actionId": "icare_0162",
         "actionName": "Strengthen programs for control and conservation of protected areas",
         "actionPriority": 5,
-        "explanation": "Ranked #5 by tournament ranking algorithm",
+        "explanation": "Strengthening programs for control and conservation of protected areas in Goi\u00e2nia is crucial due to the city's vulnerability to environmental hazards such as droughts and heatwaves. These hazards pose significant risks to water resources, food security, and biodiversity, which are vital for the city's sustainability. By enhancing conservation efforts, Goi\u00e2nia can better protect its natural ecosystems, which play a critical role in mitigating the impacts of climate change. Additionally, preserving these areas supports biodiversity, which is essential for maintaining ecological balance and resilience against environmental threats.",
         "action": {
             "ActionID": "icare_0162",
             "ActionName": "Fortalecer los programas de control y conservaci\u00f3n de \u00e1reas protegidas",
@@ -340,7 +340,7 @@
         "actionId": "icare_0145",
         "actionName": "Strengthen the healthcare network to attend to climate victims",
         "actionPriority": 6,
-        "explanation": "Ranked #6 by tournament ranking algorithm",
+        "explanation": "Strengthening the healthcare network in Goi\u00e2nia is crucial due to the high risk of climate-related health impacts. The city faces significant threats from heatwaves, floods, and landslides, all of which can severely affect public health. By enhancing healthcare services, the city can better manage the increased demand for medical attention during such events. This action will also help mitigate the long-term health consequences of climate change, ensuring the well-being of its residents.",
         "action": {
             "ActionID": "icare_0145",
             "ActionName": "Fortalecer la red de atenci\u00f3n m\u00e9dica para atender a las v\u00edctimas del clima",
@@ -407,7 +407,7 @@
         "actionId": "ipcc_0094",
         "actionName": "Access to health care",
         "actionPriority": 7,
-        "explanation": "Ranked #7 by tournament ranking algorithm",
+        "explanation": "Improving access to health care in Goi\u00e2nia is crucial due to the high risk of public health impacts from various climate hazards such as heatwaves, diseases, and floods. The city's vulnerability to these hazards, as indicated by the high normalized risk scores, underscores the need for robust health care systems to manage potential health crises. Additionally, enhancing health care access can mitigate the effects of these hazards on the population, particularly in a city with very low socio-economic factors. Prioritizing health care access will help build resilience against climate-related health challenges and improve overall community well-being.",
         "action": {
             "ActionID": "ipcc_0094",
             "ActionName": "Acceso a la atenci\u00f3n m\u00e9dica",
@@ -471,7 +471,7 @@
         "actionId": "ipcc_0097",
         "actionName": "Food storage/distribution improvements",
         "actionPriority": 8,
-        "explanation": "Ranked #8 by tournament ranking algorithm",
+        "explanation": "Improving food storage and distribution is crucial for Goi\u00e2nia due to its vulnerability to droughts, which pose a significant risk to food security. With a high population density and a very low-income level, ensuring efficient food distribution can help mitigate the impact of food shortages on the most vulnerable populations. Additionally, enhancing food storage capabilities can reduce waste emissions, which are a significant contributor to the city's total emissions. This action supports resilience against climate-related hazards, ensuring a stable food supply during extreme weather events.",
         "action": {
             "ActionID": "ipcc_0097",
             "ActionName": "Mejoras en el almacenamiento/distribuci\u00f3n de alimentos",
@@ -537,7 +537,7 @@
         "actionId": "icare_0149",
         "actionName": "Encourage sustainable land use practices",
         "actionPriority": 9,
-        "explanation": "Ranked #9 by tournament ranking algorithm",
+        "explanation": "Encouraging sustainable land use practices in Goi\u00e2nia is crucial due to the city's significant land use emissions, which contribute to its overall carbon footprint. The region's vulnerability to droughts and floods further emphasizes the need for sustainable land management to mitigate these risks. By adopting sustainable practices, Goi\u00e2nia can enhance its resilience against climate-related hazards, protect biodiversity, and improve food security. Additionally, sustainable land use can help maintain the ecological balance in the grassland/savanna biome, supporting long-term environmental health and sustainability.",
         "action": {
             "ActionID": "icare_0149",
             "ActionName": "Fomentar pr\u00e1cticas sostenibles de uso de la tierra",
@@ -602,7 +602,7 @@
         "actionId": "icare_0157",
         "actionName": "Maintenance and Revitalization of Riparian Forests",
         "actionPriority": 10,
-        "explanation": "Ranked #10 by tournament ranking algorithm",
+        "explanation": "The maintenance and revitalization of riparian forests in Goi\u00e2nia is crucial due to the city's vulnerability to droughts and floods. Riparian forests play a significant role in maintaining water quality and preventing soil erosion, which can mitigate the impacts of these hazards. Additionally, these forests contribute to biodiversity conservation, which is essential given the city's grassland/savanna biome. By enhancing these natural buffers, Goi\u00e2nia can improve its resilience against climate-related risks, particularly those affecting water resources and public health.",
         "action": {
             "ActionID": "icare_0157",
             "ActionName": "Mantenimiento y Revitalizaci\u00f3n de Bosques Ribere\u00f1os",
@@ -665,7 +665,7 @@
         "actionId": "ipcc_0092",
         "actionName": "Social safety nets",
         "actionPriority": 11,
-        "explanation": "Ranked #11 by tournament ranking algorithm",
+        "explanation": "Implementing social safety nets in Goi\u00e2nia is crucial due to the city's vulnerability to climate-related hazards such as droughts, heatwaves, and floods. These events pose significant risks to public health, food security, and infrastructure, which can disproportionately affect low-income populations. By establishing robust social safety nets, the city can enhance its resilience, ensuring that vulnerable communities receive the necessary support during and after such events. This action is particularly important given the very low income levels in the city, which can exacerbate the impacts of these hazards on affected populations.",
         "action": {
             "ActionID": "ipcc_0092",
             "ActionName": "Redes de seguridad social",
@@ -729,7 +729,7 @@
         "actionId": "ipcc_0096",
         "actionName": "Farm/fishery improvements",
         "actionPriority": 12,
-        "explanation": "Ranked #12 by tournament ranking algorithm",
+        "explanation": "Farm and fishery improvements are crucial for Goi\u00e2nia due to the high risk of droughts impacting water and food security. Enhancing agricultural practices can help mitigate these risks by increasing resilience to climate variability. Additionally, improving fisheries can support local food supply and economic stability, especially in a region with very low-income levels. These improvements can also contribute to reducing emissions from land use, aligning with the city's environmental goals.",
         "action": {
             "ActionID": "ipcc_0096",
             "ActionName": "Mejoras en granjas/pesquer\u00edas",
@@ -797,7 +797,7 @@
         "actionId": "icare_0181",
         "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
         "actionPriority": 13,
-        "explanation": "Ranked #13 by tournament ranking algorithm",
+        "explanation": "The action of relocating and restoring vulnerable areas in Goi\u00e2nia is crucial due to the city's high risk of natural hazards such as floods and landslides. These hazards pose significant threats to public health and infrastructure, as indicated by the high normalized risk scores. By focusing on environmental restoration, the city can enhance its resilience against these risks, protecting both its population and its infrastructure. Additionally, addressing these vulnerabilities can improve the overall quality of life for residents, particularly in areas with inadequate access to public services.",
         "action": {
             "ActionID": "icare_0181",
             "ActionName": "Reubicaci\u00f3n y Restauraci\u00f3n Ambiental en \u00c1reas Vulnerables",
@@ -856,7 +856,7 @@
         "actionId": "icare_0148",
         "actionName": "Create the Municipal Climate Change Forum",
         "actionPriority": 14,
-        "explanation": "Ranked #14 by tournament ranking algorithm",
+        "explanation": "Creating the Municipal Climate Change Forum in Goi\u00e2nia is a crucial step towards addressing the city's significant environmental challenges. With high risks from droughts, heatwaves, and floods impacting water resources, food security, and public health, a dedicated forum can facilitate coordinated responses and policy development. The forum would serve as a platform for stakeholders to collaborate on sustainable solutions, ensuring that the city's climate action plans are comprehensive and inclusive. Additionally, it can help raise awareness and engage the community in climate resilience efforts, which is essential given the city's vulnerability to climate hazards.",
         "action": {
             "ActionID": "icare_0148",
             "ActionName": "Crear el Foro Municipal de Cambio Clim\u00e1tico",
@@ -927,7 +927,7 @@
         "actionId": "ipcc_0093",
         "actionName": "Availability of health infrastructure",
         "actionPriority": 15,
-        "explanation": "Ranked #15 by tournament ranking algorithm",
+        "explanation": "The availability of health infrastructure in Goi\u00e2nia is crucial due to the high risk of public health impacts from heatwaves, diseases, and floods. These hazards have been identified as having a significant risk to the city's population, necessitating robust health infrastructure to manage potential health crises. Additionally, the city's large population size further underscores the need for adequate health facilities to ensure the well-being of its residents. Improving health infrastructure can also enhance the city's resilience against climate-related health challenges, making it a vital area for development.",
         "action": {
             "ActionID": "ipcc_0093",
             "ActionName": "Disponibilidad de infraestructura sanitaria",
@@ -991,7 +991,7 @@
         "actionId": "icare_0144",
         "actionName": "Creation of a Financial Support Program to Adress Extreme Weather Events",
         "actionPriority": 16,
-        "explanation": "Ranked #16 by tournament ranking algorithm",
+        "explanation": "The creation of a financial support program to address extreme weather events is crucial for Goi\u00e2nia due to its high vulnerability to climate-related hazards. The city faces significant risks from droughts, heatwaves, and floods, all of which have been identified as having a high impact on public health, infrastructure, and food security. Establishing a financial support program can help mitigate the economic and social impacts of these events, providing necessary resources for recovery and adaptation. This action is particularly important given the city's very low-income levels, which may limit the ability of residents to cope with and recover from extreme weather events.",
         "action": {
             "ActionID": "icare_0144",
             "ActionName": "Creaci\u00f3n de un Programa de Apoyo Financiero para Abordar Eventos Clim\u00e1ticos Extremos",
@@ -1062,7 +1062,7 @@
         "actionId": "icare_0156",
         "actionName": "Implementation of urban gardens",
         "actionPriority": 17,
-        "explanation": "Ranked #17 by tournament ranking algorithm",
+        "explanation": "The implementation of urban gardens in Goi\u00e2nia is a strategic action to enhance food security, especially given the high risk of droughts impacting this area. Urban gardens can provide a sustainable source of fresh produce, reducing dependency on external food supplies and mitigating the effects of food scarcity during extreme weather events. Additionally, these gardens can improve local biodiversity and contribute to the city's green spaces, which are crucial for maintaining ecological balance in a densely populated urban environment. Furthermore, urban gardens can serve as community hubs, fostering social cohesion and providing educational opportunities about sustainable practices.",
         "action": {
             "ActionID": "icare_0156",
             "ActionName": "Implementaci\u00f3n de huertos urbanos",
@@ -1123,7 +1123,7 @@
         "actionId": "icare_0164",
         "actionName": "Hydrological Monitoring System with Telemetry Stations",
         "actionPriority": 18,
-        "explanation": "Ranked #18 by tournament ranking algorithm",
+        "explanation": "Implementing a Hydrological Monitoring System with Telemetry Stations in Goi\u00e2nia is crucial due to the city's high risk of droughts and floods. These hazards pose significant threats to water resources, food security, and public health, as indicated by the city's climate change risk assessment. By establishing a robust monitoring system, the city can better predict and manage water-related hazards, ensuring timely responses to mitigate their impacts. This action is essential for enhancing the city's resilience against climate-induced water challenges.",
         "action": {
             "ActionID": "icare_0164",
             "ActionName": "Sistema de Monitoreo Hidrol\u00f3gico con Estaciones de Telemetr\u00eda",
@@ -1184,7 +1184,7 @@
         "actionId": "icare_0180",
         "actionName": "Implement permeable pavements and increase green areas in roadways",
         "actionPriority": 19,
-        "explanation": "Ranked #19 by tournament ranking algorithm",
+        "explanation": "Implementing permeable pavements and increasing green areas in roadways is crucial for Goi\u00e2nia due to its high risk of floods and landslides. The city's infrastructure is highly vulnerable to these hazards, as indicated by the high normalised risk scores. By enhancing the permeability of surfaces and expanding green spaces, the city can improve water absorption and reduce surface runoff, mitigating the impact of heavy rainfall. Additionally, these measures can contribute to urban cooling, which is important given the high risk of heatwaves affecting public health and infrastructure.",
         "action": {
             "ActionID": "icare_0180",
             "ActionName": "Implementar pavimentos permeables y aumentar las \u00e1reas verdes en las v\u00edas p\u00fablicas",
@@ -1245,7 +1245,7 @@
         "actionId": "icare_0160",
         "actionName": "Consolidate spaces for intersectoral coordination and public participation in climate policy",
         "actionPriority": 20,
-        "explanation": "Ranked #20 by tournament ranking algorithm",
+        "explanation": "Consolidating spaces for intersectoral coordination and public participation in climate policy is crucial for Goi\u00e2nia due to its high vulnerability to climate hazards such as droughts, heatwaves, and floods. These hazards pose significant risks to water resources, food security, public health, and infrastructure. By fostering collaboration and public engagement, the city can develop more comprehensive and effective climate strategies. This approach ensures that diverse perspectives are considered, leading to more resilient and adaptive policies that address the specific needs and challenges of the community.",
         "action": {
             "ActionID": "icare_0160",
             "ActionName": "Consolidar espacios para la coordinaci\u00f3n intersectorial y la participaci\u00f3n p\u00fablica en la pol\u00edtica clim\u00e1tica",

@@ -3,200 +3,200 @@
         "locode": "BR SOB",
         "cityName": "Sobral",
         "region": "CE",
-        "regionName": "Cear\u00e1",
+        "regionName": "Ceará",
         "actionId": "icare_0169",
         "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
         "actionPriority": 1,
-        "explanation": "Ranked #1 by tournament ranking algorithm"
+        "explanation": "Establishing a plan for preparation and emergency response measures in Sobral is crucial due to the high risk of extreme weather events such as droughts, heatwaves, and floods. The city faces significant threats to water resources, food security, and public health, with normalized risk scores close to 0.99 for many hazards. These risks necessitate a proactive approach to ensure the safety and resilience of the community. By prioritizing this action, Sobral can better protect its infrastructure and population from the adverse impacts of climate change."
     },
     {
         "locode": "BR SOB",
         "cityName": "Sobral",
         "region": "CE",
-        "regionName": "Cear\u00e1",
+        "regionName": "Ceará",
         "actionId": "icare_0176",
         "actionName": "Development of Climate Action Plan",
         "actionPriority": 2,
-        "explanation": "Ranked #2 by tournament ranking algorithm"
+        "explanation": "The development of a Climate Action Plan is crucial for Sobral due to its high vulnerability to climate-related hazards such as droughts and heatwaves. These hazards pose significant risks to water resources, food security, and public health, which are critical areas for the city's sustainability and well-being. By creating a comprehensive plan, Sobral can strategically address these risks, improve resilience, and ensure sustainable development. Additionally, the plan can help coordinate efforts across sectors, optimize resource allocation, and engage the community in climate adaptation and mitigation strategies."
     },
     {
         "locode": "BR SOB",
         "cityName": "Sobral",
         "region": "CE",
-        "regionName": "Cear\u00e1",
+        "regionName": "Ceará",
         "actionId": "icare_0152",
         "actionName": "Recovery of degraded areas",
         "actionPriority": 3,
-        "explanation": "Ranked #3 by tournament ranking algorithm"
+        "explanation": "The recovery of degraded areas in Sobral is crucial due to the city's vulnerability to environmental hazards such as droughts and heatwaves. These hazards significantly impact water resources, food security, and biodiversity, which are essential for the well-being of the population and the local ecosystem. By restoring degraded areas, Sobral can enhance its resilience against these climate risks, improve biodiversity, and support sustainable land use practices. This action also aligns with the need to mitigate emissions from land use, contributing to the overall reduction of the city's environmental footprint."
     },
     {
         "locode": "BR SOB",
         "cityName": "Sobral",
         "region": "CE",
-        "regionName": "Cear\u00e1",
+        "regionName": "Ceará",
         "actionId": "icare_0162",
         "actionName": "Strengthen programs for control and conservation of protected areas",
         "actionPriority": 4,
-        "explanation": "Ranked #4 by tournament ranking algorithm"
+        "explanation": "Strengthening programs for control and conservation of protected areas in Sobral is crucial due to the city's vulnerability to environmental hazards such as droughts and heatwaves. These hazards pose significant risks to biodiversity and energy security, which are vital for the city's sustainability. By enhancing conservation efforts, Sobral can mitigate the impacts of these hazards, preserve its natural resources, and ensure a more resilient ecosystem. Additionally, protecting these areas can contribute to maintaining biodiversity, which is essential for the overall health and balance of the local environment."
     },
     {
         "locode": "BR SOB",
         "cityName": "Sobral",
         "region": "CE",
-        "regionName": "Cear\u00e1",
+        "regionName": "Ceará",
         "actionId": "icare_0145",
         "actionName": "Strengthen the healthcare network to attend to climate victims",
         "actionPriority": 5,
-        "explanation": "Ranked #5 by tournament ranking algorithm"
+        "explanation": "Strengthening the healthcare network in Sobral is crucial due to the high risk of climate-related health impacts. The city faces significant threats from heatwaves, droughts, and diseases, all of which can severely affect public health. By enhancing healthcare services, Sobral can better manage and mitigate the health consequences of these climate hazards. This action is essential to ensure the community's resilience and well-being in the face of increasing climate risks."
     },
     {
         "locode": "BR SOB",
         "cityName": "Sobral",
         "region": "CE",
-        "regionName": "Cear\u00e1",
+        "regionName": "Ceará",
         "actionId": "icare_0151",
         "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
         "actionPriority": 6,
-        "explanation": "Ranked #6 by tournament ranking algorithm"
+        "explanation": "Developing diagnostics and restoring areas of Special Social Interest Zones (ZEIS) in Sobral is crucial due to the moderate low-income levels in the city. These areas often house vulnerable populations who are disproportionately affected by environmental hazards such as droughts and heatwaves, which are significant risks in Sobral. By focusing on ZEIS, the city can improve living conditions, enhance resilience against climate impacts, and promote social equity. This action aligns with the need to address socio-economic disparities and improve public health outcomes in the face of climate change."
     },
     {
         "locode": "BR SOB",
         "cityName": "Sobral",
         "region": "CE",
-        "regionName": "Cear\u00e1",
+        "regionName": "Ceará",
         "actionId": "ipcc_0094",
         "actionName": "Access to health care",
         "actionPriority": 7,
-        "explanation": "Ranked #7 by tournament ranking algorithm"
+        "explanation": "Improving access to health care in Sobral is crucial due to the high risk of public health impacts from various climate hazards. The city faces significant threats from heatwaves, diseases, and landslides, all of which can severely affect the health of its residents. Ensuring robust health care access can mitigate these risks by providing timely medical interventions and preventive care. Additionally, enhancing health care infrastructure can improve the city's resilience against future climate-related health challenges."
     },
     {
         "locode": "BR SOB",
         "cityName": "Sobral",
         "region": "CE",
-        "regionName": "Cear\u00e1",
+        "regionName": "Ceará",
         "actionId": "icare_0149",
         "actionName": "Encourage sustainable land use practices",
         "actionPriority": 8,
-        "explanation": "Ranked #8 by tournament ranking algorithm"
+        "explanation": "Encouraging sustainable land use practices in Sobral is crucial due to the city's vulnerability to droughts and its desert biome. These practices can help mitigate the impact of droughts on water resources and food security, which are identified as key risks. Additionally, sustainable land use can contribute to reducing land use emissions, which are a significant part of the city's total emissions. Implementing these practices can also enhance biodiversity and improve resilience against climate-related hazards."
     },
     {
         "locode": "BR SOB",
         "cityName": "Sobral",
         "region": "CE",
-        "regionName": "Cear\u00e1",
+        "regionName": "Ceará",
         "actionId": "ipcc_0097",
         "actionName": "Food storage/distribution improvements",
         "actionPriority": 9,
-        "explanation": "Ranked #9 by tournament ranking algorithm"
+        "explanation": "Improving food storage and distribution is crucial for Sobral due to its high risk of droughts, which severely threaten food security. By enhancing these systems, the city can better manage food supplies during periods of scarcity, ensuring that residents have access to essential resources. Additionally, efficient food distribution can help mitigate the impacts of other climate-related hazards, such as floods, by ensuring that food reaches affected areas promptly. This action supports the city's resilience against climate change impacts, particularly in maintaining food security."
     },
     {
         "locode": "BR SOB",
         "cityName": "Sobral",
         "region": "CE",
-        "regionName": "Cear\u00e1",
+        "regionName": "Ceará",
         "actionId": "icare_0157",
         "actionName": "Maintenance and Revitalization of Riparian Forests",
         "actionPriority": 10,
-        "explanation": "Ranked #10 by tournament ranking algorithm"
+        "explanation": "The maintenance and revitalization of riparian forests in Sobral is crucial due to the city's vulnerability to droughts and its desert biome. Riparian forests play a significant role in maintaining water quality and availability, which is essential given the high risk of drought impacting water resources. Additionally, these forests can help mitigate the effects of heatwaves by providing shade and cooling, which is vital for public health and energy security. Revitalizing these areas can also enhance biodiversity, offering a buffer against the environmental stresses identified in the city's climate risk assessment."
     },
     {
         "locode": "BR SOB",
         "cityName": "Sobral",
         "region": "CE",
-        "regionName": "Cear\u00e1",
+        "regionName": "Ceará",
         "actionId": "icare_0148",
         "actionName": "Create the Municipal Climate Change Forum",
         "actionPriority": 11,
-        "explanation": "Ranked #11 by tournament ranking algorithm"
+        "explanation": "Creating the Municipal Climate Change Forum in Sobral is a crucial step towards addressing the city's significant environmental challenges. With high risks from droughts, heatwaves, and other climate-related hazards, a dedicated forum can facilitate coordinated efforts and policy-making. This initiative will enable stakeholders to collaborate on sustainable solutions, enhancing resilience and adaptation strategies. Furthermore, it provides a platform for community engagement, ensuring that local voices are heard in the decision-making process."
     },
     {
         "locode": "BR SOB",
         "cityName": "Sobral",
         "region": "CE",
-        "regionName": "Cear\u00e1",
+        "regionName": "Ceará",
         "actionId": "icare_0181",
         "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
         "actionPriority": 12,
-        "explanation": "Ranked #12 by tournament ranking algorithm"
+        "explanation": "The action 'Relocation and Environmental Restoration in Vulnerable Areas' is crucial for Sobral due to its high vulnerability to climate hazards such as droughts and heatwaves. These hazards pose significant risks to water resources, food security, and public health, making it imperative to address areas that are most at risk. By relocating communities and restoring the environment in these vulnerable areas, the city can mitigate the impacts of these hazards and enhance resilience. Additionally, this action supports long-term sustainability by improving living conditions and reducing the potential for future environmental degradation."
     },
     {
         "locode": "BR SOB",
         "cityName": "Sobral",
         "region": "CE",
-        "regionName": "Cear\u00e1",
+        "regionName": "Ceará",
         "actionId": "ipcc_0098",
         "actionName": "Behaviour change in diets and food waste",
         "actionPriority": 13,
-        "explanation": "Ranked #13 by tournament ranking algorithm"
+        "explanation": "The action of promoting behavior change in diets and reducing food waste is crucial for Sobral due to its significant impact on food security, which is at risk from droughts and floods. By encouraging sustainable dietary practices and minimizing food waste, the city can enhance its resilience against these climate hazards. Additionally, this action can contribute to reducing emissions associated with food production and waste management, aligning with Sobral's need to address its high total emissions. Implementing this action can also improve public health by promoting healthier eating habits and reducing the environmental footprint of food consumption."
     },
     {
         "locode": "BR SOB",
         "cityName": "Sobral",
         "region": "CE",
-        "regionName": "Cear\u00e1",
+        "regionName": "Ceará",
         "actionId": "ipcc_0096",
         "actionName": "Farm/fishery improvements",
         "actionPriority": 14,
-        "explanation": "Ranked #14 by tournament ranking algorithm"
+        "explanation": "Farm and fishery improvements are crucial for Sobral due to the high risk of droughts impacting water resources and food security. Enhancing agricultural practices can help mitigate these risks by increasing resilience to climate hazards. Additionally, improving fisheries can support local food supply and economic stability, which is vital given the moderate low-income levels in the region. This action can also contribute to reducing emissions from land use, aligning with the city's environmental goals."
     },
     {
         "locode": "BR SOB",
         "cityName": "Sobral",
         "region": "CE",
-        "regionName": "Cear\u00e1",
+        "regionName": "Ceará",
         "actionId": "ipcc_0093",
         "actionName": "Availability of health infrastructure",
         "actionPriority": 15,
-        "explanation": "Ranked #15 by tournament ranking algorithm"
+        "explanation": "The availability of health infrastructure is crucial for Sobral, given the high risk of public health impacts from heatwaves, diseases, and landslides. These hazards pose significant threats to the well-being of the population, making robust health infrastructure essential to mitigate these risks. Improving health infrastructure can enhance the city's resilience to climate-related health challenges, ensuring better preparedness and response capabilities. Additionally, strengthening health services can support the socio-economic stability of the region by safeguarding the health of its residents."
     },
     {
         "locode": "BR SOB",
         "cityName": "Sobral",
         "region": "CE",
-        "regionName": "Cear\u00e1",
+        "regionName": "Ceará",
         "actionId": "icare_0144",
         "actionName": "Creation of a Financial Support Program to Adress Extreme Weather Events",
         "actionPriority": 16,
-        "explanation": "Ranked #16 by tournament ranking algorithm"
+        "explanation": "The creation of a financial support program to address extreme weather events is crucial for Sobral due to its high vulnerability to droughts and heatwaves. These hazards pose significant risks to water resources, food security, and public health, as indicated by the city's climate change risk assessment. By establishing a financial support program, the city can better prepare for and mitigate the impacts of these extreme weather events, ensuring the well-being of its residents. Additionally, such a program can help stabilize the local economy by providing necessary resources to recover from weather-related disruptions."
     },
     {
         "locode": "BR SOB",
         "cityName": "Sobral",
         "region": "CE",
-        "regionName": "Cear\u00e1",
+        "regionName": "Ceará",
         "actionId": "ipcc_0092",
         "actionName": "Social safety nets",
         "actionPriority": 17,
-        "explanation": "Ranked #17 by tournament ranking algorithm"
+        "explanation": "Implementing social safety nets in Sobral is crucial due to the city's moderate low-income population and the high risk of climate-related hazards such as droughts and heatwaves. These safety nets can provide essential support to vulnerable communities, ensuring they have access to necessary resources during times of crisis. Additionally, with the city's inadequate access to water and sanitation services, social safety nets can help mitigate the impacts of these deficiencies on public health. By prioritizing this action, Sobral can enhance its resilience against socio-economic and environmental challenges."
     },
     {
         "locode": "BR SOB",
         "cityName": "Sobral",
         "region": "CE",
-        "regionName": "Cear\u00e1",
+        "regionName": "Ceará",
         "actionId": "icare_0164",
         "actionName": "Hydrological Monitoring System with Telemetry Stations",
         "actionPriority": 18,
-        "explanation": "Ranked #18 by tournament ranking algorithm"
+        "explanation": "Implementing a Hydrological Monitoring System with Telemetry Stations in Sobral is crucial due to the city's high risk of droughts, which significantly impact water resources, food security, and energy security. The system will provide real-time data on water levels and flow, enabling better management and allocation of water resources. This action is essential to mitigate the effects of droughts and ensure sustainable water supply for the city's population and agricultural needs. Additionally, it will help in planning and responding to extreme weather events, thereby enhancing the city's resilience to climate change."
     },
     {
         "locode": "BR SOB",
         "cityName": "Sobral",
         "region": "CE",
-        "regionName": "Cear\u00e1",
+        "regionName": "Ceará",
         "actionId": "icare_0156",
         "actionName": "Implementation of urban gardens",
         "actionPriority": 19,
-        "explanation": "Ranked #19 by tournament ranking algorithm"
+        "explanation": "The implementation of urban gardens in Sobral is a strategic action to enhance food security, especially given the high risk of droughts impacting this area. Urban gardens can provide a sustainable source of fresh produce, reducing dependency on external food supplies and mitigating the effects of food scarcity. Additionally, these gardens can improve local biodiversity and contribute to community resilience against climate-related hazards. By promoting local food production, Sobral can also address socio-economic challenges, offering opportunities for community engagement and education."
     },
     {
         "locode": "BR SOB",
         "cityName": "Sobral",
         "region": "CE",
-        "regionName": "Cear\u00e1",
+        "regionName": "Ceará",
         "actionId": "icare_0175",
         "actionName": "Recovery and preservation of green areas",
         "actionPriority": 20,
-        "explanation": "Ranked #20 by tournament ranking algorithm"
+        "explanation": "The recovery and preservation of green areas in Sobral is crucial due to the city's desert biome, which is susceptible to droughts and heatwaves. Green areas can help mitigate the effects of these hazards by providing shade, reducing temperatures, and improving air quality. Additionally, enhancing green spaces can support biodiversity and contribute to the overall resilience of the city against climate change impacts. Given the high risk of droughts and heatwaves affecting water resources, food security, and public health, this action is a strategic priority for sustainable urban development."
     }
 ]

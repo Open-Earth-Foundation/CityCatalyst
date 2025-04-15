@@ -7,7 +7,7 @@
         "actionId": "icare_0176",
         "actionName": "Development of Climate Action Plan",
         "actionPriority": 1,
-        "explanation": "Ranked #1 by tournament ranking algorithm",
+        "explanation": "The development of a Climate Action Plan is crucial for C\u00e1ceres due to its high vulnerability to climate-related hazards such as droughts and heatwaves, which pose significant risks to water resources, food security, and public health. The city's total emissions are substantial, with land use emissions being particularly high, indicating a need for strategic planning to mitigate environmental impact. Additionally, the moderate access to water and sanitation services highlights the importance of a comprehensive plan to improve infrastructure resilience and public health outcomes. Implementing a Climate Action Plan will help C\u00e1ceres address these challenges systematically and sustainably.",
         "action": {
             "ActionID": "icare_0176",
             "ActionName": "Desenvolvimento do Plano de A\u00e7\u00e3o Clim\u00e1tica",
@@ -78,7 +78,7 @@
         "actionId": "ipcc_0097",
         "actionName": "Food storage/distribution improvements",
         "actionPriority": 2,
-        "explanation": "Ranked #2 by tournament ranking algorithm",
+        "explanation": "Improving food storage and distribution is crucial for C\u00e1ceres due to its vulnerability to droughts and floods, which significantly impact food security. The city faces a high risk of food insecurity, as indicated by the climate change risk assessment, making this action a priority. Enhancing food storage and distribution systems can help mitigate the effects of these hazards, ensuring a stable food supply for the population. Additionally, better food management can reduce waste emissions, contributing to overall emission reduction efforts in the city.",
         "action": {
             "ActionID": "ipcc_0097",
             "ActionName": "Melhorias no armazenamento/distribui\u00e7\u00e3o de alimentos",
@@ -144,7 +144,7 @@
         "actionId": "ipcc_0096",
         "actionName": "Farm/fishery improvements",
         "actionPriority": 3,
-        "explanation": "Ranked #3 by tournament ranking algorithm",
+        "explanation": "Farm and fishery improvements are crucial for C\u00e1ceres due to the high risk of droughts impacting water resources and food security. Enhancing agricultural practices can help mitigate these risks by increasing resilience to climate variability. Additionally, improving fisheries can support local economies and food supply, which are vital given the moderate access to public services. This action aligns with the need to address socio-economic vulnerabilities and ensure sustainable development in the region.",
         "action": {
             "ActionID": "ipcc_0096",
             "ActionName": "Melhorias na fazenda/pesqueira",
@@ -212,7 +212,7 @@
         "actionId": "ipcc_0094",
         "actionName": "Access to health care",
         "actionPriority": 4,
-        "explanation": "Ranked #4 by tournament ranking algorithm",
+        "explanation": "Improving access to health care in C\u00e1ceres is crucial due to the high risk of public health impacts from heatwaves and diseases. The city's vulnerability to these hazards, as indicated by the high normalized risk scores, underscores the need for robust health care systems to manage potential health crises. Additionally, enhancing health care access can mitigate the effects of inadequate sanitation and water access, which are moderate concerns in the area. Prioritizing health care access will help build resilience against climate-related health risks and improve overall community well-being.",
         "action": {
             "ActionID": "ipcc_0094",
             "ActionName": "Acesso aos cuidados de sa\u00fade",
@@ -276,7 +276,7 @@
         "actionId": "ipcc_0093",
         "actionName": "Availability of health infrastructure",
         "actionPriority": 5,
-        "explanation": "Ranked #5 by tournament ranking algorithm",
+        "explanation": "The availability of health infrastructure is crucial for C\u00e1ceres, given the high risk of public health impacts from droughts, heatwaves, and diseases. The city's moderate access to sanitation and water services further emphasizes the need for robust health infrastructure to manage potential health crises. Additionally, improving health infrastructure can help mitigate the effects of climate-related hazards, ensuring better preparedness and response capabilities. This action is a priority to safeguard the well-being of the population and enhance resilience against environmental and health challenges.",
         "action": {
             "ActionID": "ipcc_0093",
             "ActionName": "Disponibilidade de infraestrutura de sa\u00fade",
@@ -340,7 +340,7 @@
         "actionId": "icare_0169",
         "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
         "actionPriority": 6,
-        "explanation": "Ranked #6 by tournament ranking algorithm",
+        "explanation": "Establishing a plan for preparation and emergency response measures in the event of extreme weather events is crucial for C\u00e1ceres due to its high vulnerability to droughts and heatwaves. The city faces significant risks to water resources, food security, and public health, all of which are exacerbated by these hazards. By having a robust emergency response plan, C\u00e1ceres can better protect its population and infrastructure, ensuring a more resilient community. Additionally, such a plan can help mitigate the impacts of climate change, which are already affecting the region.",
         "action": {
             "ActionID": "icare_0169",
             "ActionName": "Estabelecer um Plano de Prepara\u00e7\u00e3o e Medidas de Resposta a Emerg\u00eancias em caso de eventos clim\u00e1ticos extremos",
@@ -411,7 +411,7 @@
         "actionId": "ipcc_0092",
         "actionName": "Social safety nets",
         "actionPriority": 7,
-        "explanation": "Ranked #7 by tournament ranking algorithm",
+        "explanation": "Implementing social safety nets in C\u00e1ceres is crucial due to the city's vulnerability to climate-related hazards such as droughts and heatwaves, which pose significant risks to public health and food security. The socio-economic context, characterized by low income levels, further exacerbates the community's ability to cope with these challenges. By establishing robust social safety nets, the city can enhance resilience and provide essential support to its most vulnerable populations during times of crisis. This action is a priority as it directly addresses the socio-economic disparities and helps mitigate the adverse impacts of climate change on the community.",
         "action": {
             "ActionID": "ipcc_0092",
             "ActionName": "Redes de prote\u00e7\u00e3o social",
@@ -475,7 +475,7 @@
         "actionId": "icare_0162",
         "actionName": "Strengthen programs for control and conservation of protected areas",
         "actionPriority": 8,
-        "explanation": "Ranked #8 by tournament ranking algorithm",
+        "explanation": "Strengthening programs for control and conservation of protected areas in C\u00e1ceres is crucial due to the city's location in a grassland/savanna biome, which is sensitive to environmental changes. The region faces significant risks from droughts and heatwaves, which can severely impact biodiversity and water resources. By enhancing conservation efforts, C\u00e1ceres can mitigate these risks and preserve its natural ecosystems. Additionally, protecting these areas can contribute to maintaining biodiversity, which is vital for the overall ecological balance and resilience against climate change impacts.",
         "action": {
             "ActionID": "icare_0162",
             "ActionName": "Fortalecer programas de controle e conserva\u00e7\u00e3o de \u00e1reas protegidas",
@@ -538,7 +538,7 @@
         "actionId": "icare_0152",
         "actionName": "Recovery of degraded areas",
         "actionPriority": 9,
-        "explanation": "Ranked #9 by tournament ranking algorithm",
+        "explanation": "The action 'Recovery of degraded areas' is crucial for C\u00e1ceres due to its significant land use emissions, which are the largest contributor to the city's total emissions. Restoring degraded areas can help sequester carbon, reduce emissions, and improve biodiversity, which is at risk from droughts and heatwaves. Additionally, this action can enhance the resilience of local ecosystems, supporting food security and water resources that are highly vulnerable to climate hazards. By prioritizing this action, C\u00e1ceres can address multiple environmental challenges and improve its overall sustainability.",
         "action": {
             "ActionID": "icare_0152",
             "ActionName": "Recupera\u00e7\u00e3o de \u00e1reas degradadas",
@@ -601,7 +601,7 @@
         "actionId": "icare_0151",
         "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
         "actionPriority": 10,
-        "explanation": "Ranked #10 by tournament ranking algorithm",
+        "explanation": "Developing diagnostics and restoring areas of Special Social Interest Zones (ZEIS) in C\u00e1ceres is crucial due to the city's socio-economic context. With a low-income population and moderate access to water and sanitation, improving these areas can significantly enhance living conditions. Additionally, addressing these zones can help mitigate the impacts of climate hazards such as droughts and heatwaves, which pose high risks to public health and food security. By focusing on ZEIS, the city can promote sustainable development and resilience against environmental challenges.",
         "action": {
             "ActionID": "icare_0151",
             "ActionName": "Desenvolver diagn\u00f3sticos e restaurar \u00e1reas de Zonas Especiais de Interesse Social (ZEIS)",
@@ -666,7 +666,7 @@
         "actionId": "icare_0144",
         "actionName": "Creation of a Financial Support Program to Adress Extreme Weather Events",
         "actionPriority": 11,
-        "explanation": "Ranked #11 by tournament ranking algorithm",
+        "explanation": "The creation of a financial support program to address extreme weather events is crucial for C\u00e1ceres due to its high vulnerability to droughts and heatwaves, which pose significant risks to water resources, food security, and public health. The city's low-income status further exacerbates the impact of these events, making financial support essential for recovery and resilience. Additionally, the program can help mitigate the socio-economic impacts of these hazards, ensuring that the community can better withstand and adapt to future climate challenges. By prioritizing this action, C\u00e1ceres can enhance its capacity to protect its citizens and infrastructure from the adverse effects of climate change.",
         "action": {
             "ActionID": "icare_0144",
             "ActionName": "Cria\u00e7\u00e3o de um Programa de Apoio Financeiro para Abordar Eventos Clim\u00e1ticos Extremos",
@@ -737,7 +737,7 @@
         "actionId": "icare_0145",
         "actionName": "Strengthen the healthcare network to attend to climate victims",
         "actionPriority": 12,
-        "explanation": "Ranked #12 by tournament ranking algorithm",
+        "explanation": "Strengthening the healthcare network in C\u00e1ceres is crucial due to the high risk of climate-related health impacts. The city faces significant threats from heatwaves and diseases, both of which have a high normalized risk score of 0.99. These hazards can severely impact public health, making it essential to enhance healthcare services to manage and mitigate these risks effectively. By improving the healthcare infrastructure, the city can better prepare for and respond to the health challenges posed by climate change, ensuring the well-being of its residents.",
         "action": {
             "ActionID": "icare_0145",
             "ActionName": "Fortalecer a rede de sa\u00fade para atender \u00e0s v\u00edtimas do clima",
@@ -805,7 +805,7 @@
         "actionId": "icare_0164",
         "actionName": "Hydrological Monitoring System with Telemetry Stations",
         "actionPriority": 13,
-        "explanation": "Ranked #13 by tournament ranking algorithm",
+        "explanation": "Implementing a Hydrological Monitoring System with Telemetry Stations in C\u00e1ceres is crucial due to the high risk of droughts impacting water resources and food security. The city's low population density and large area make it challenging to monitor water resources effectively without advanced technology. This system will provide real-time data, enabling better management of water resources and mitigating the effects of droughts. Additionally, improved water management can enhance public health and support sustainable agricultural practices, which are vital for the region's socio-economic stability.",
         "action": {
             "ActionID": "icare_0164",
             "ActionName": "Sistema de Monitoramento Hidrol\u00f3gico com Esta\u00e7\u00f5es de Telemetria",
@@ -866,7 +866,7 @@
         "actionId": "icare_0149",
         "actionName": "Encourage sustainable land use practices",
         "actionPriority": 14,
-        "explanation": "Ranked #14 by tournament ranking algorithm",
+        "explanation": "Encouraging sustainable land use practices in C\u00e1ceres is crucial due to the city's significant land use emissions, which are the largest contributor to its total emissions. The region's grassland and savanna biome is particularly vulnerable to unsustainable practices, which can exacerbate environmental degradation and biodiversity loss. Implementing sustainable land use practices can help mitigate these emissions and protect the local ecosystem, contributing to long-term environmental and economic stability. Additionally, sustainable practices can enhance resilience against climate-related risks such as droughts and floods, which are prevalent in the area.",
         "action": {
             "ActionID": "icare_0149",
             "ActionName": "Incentivar pr\u00e1ticas sustent\u00e1veis de uso da terra",
@@ -931,7 +931,7 @@
         "actionId": "icare_0148",
         "actionName": "Create the Municipal Climate Change Forum",
         "actionPriority": 15,
-        "explanation": "Ranked #15 by tournament ranking algorithm",
+        "explanation": "Creating the Municipal Climate Change Forum in C\u00e1ceres is a crucial step towards addressing the city's significant environmental challenges. With high risks from droughts affecting water resources and food security, as well as heatwaves impacting public health, a dedicated forum can facilitate coordinated responses and policy development. The forum would provide a platform for stakeholders to collaborate on sustainable solutions, enhancing resilience against climate hazards. Additionally, it can help raise awareness and engage the community in climate action, which is essential given the city's low-income socio-economic context.",
         "action": {
             "ActionID": "icare_0148",
             "ActionName": "Criar o F\u00f3rum Municipal de Mudan\u00e7as Clim\u00e1ticas",
@@ -1002,7 +1002,7 @@
         "actionId": "icare_0156",
         "actionName": "Implementation of urban gardens",
         "actionPriority": 16,
-        "explanation": "Ranked #16 by tournament ranking algorithm",
+        "explanation": "The implementation of urban gardens in C\u00e1ceres is a strategic action to enhance food security, which is a significant concern due to the high risk of droughts and floods. Urban gardens can provide a sustainable source of fresh produce, reducing dependency on external food supplies and mitigating the impact of climate-related disruptions. Additionally, these gardens can improve community resilience by promoting local food production and fostering community engagement. This action also aligns with the city's need to address socio-economic challenges, as it can create opportunities for local employment and skill development.",
         "action": {
             "ActionID": "icare_0156",
             "ActionName": "Implementa\u00e7\u00e3o de hortas urbanas",
@@ -1063,7 +1063,7 @@
         "actionId": "ipcc_0098",
         "actionName": "Behaviour change in diets and food waste",
         "actionPriority": 17,
-        "explanation": "Ranked #17 by tournament ranking algorithm",
+        "explanation": "The action of promoting behavior change in diets and reducing food waste is crucial for C\u00e1ceres due to its significant impact on food security. The city faces high risks from droughts and floods, which threaten food availability and stability. By encouraging sustainable dietary practices and minimizing food waste, C\u00e1ceres can enhance its resilience against these climate hazards. Additionally, reducing food waste can contribute to lowering emissions associated with waste management, aligning with the city's environmental goals.",
         "action": {
             "ActionID": "ipcc_0098",
             "ActionName": "Mudan\u00e7a de comportamento em dietas e desperd\u00edcio de alimentos",
@@ -1129,7 +1129,7 @@
         "actionId": "icare_0175",
         "actionName": "Recovery and preservation of green areas",
         "actionPriority": 18,
-        "explanation": "Ranked #18 by tournament ranking algorithm",
+        "explanation": "The recovery and preservation of green areas in C\u00e1ceres is crucial due to the city's location in a grassland/savanna biome, which is sensitive to environmental changes. Green areas can help mitigate the effects of heatwaves, which pose a significant risk to public health and infrastructure. Additionally, preserving these areas can enhance biodiversity, which is under threat from both droughts and heatwaves. By focusing on green spaces, C\u00e1ceres can improve its resilience against climate-related hazards and support the well-being of its residents.",
         "action": {
             "ActionID": "icare_0175",
             "ActionName": "Recupera\u00e7\u00e3o e preserva\u00e7\u00e3o de \u00e1reas verdes",
@@ -1189,7 +1189,7 @@
         "actionId": "icare_0150",
         "actionName": "Implement Loss Reduction and Control Program promoting water security for the municipality",
         "actionPriority": 19,
-        "explanation": "Ranked #19 by tournament ranking algorithm",
+        "explanation": "Implementing a Loss Reduction and Control Program to promote water security is crucial for C\u00e1ceres due to its high risk of droughts impacting water resources. The city faces a significant threat from droughts, which can severely affect both water availability and food security. By focusing on water security, this action addresses a critical vulnerability, ensuring sustainable water management and resilience against climate-related hazards. Additionally, improving water security can enhance public health and support the socio-economic stability of the region.",
         "action": {
             "ActionID": "icare_0150",
             "ActionName": "Implementar o Programa de Redu\u00e7\u00e3o e Controle de Perdas promovendo a seguran\u00e7a h\u00eddrica para o munic\u00edpio",
@@ -1250,7 +1250,7 @@
         "actionId": "ipcc_0095",
         "actionName": "Disaster early warning",
         "actionPriority": 20,
-        "explanation": "Ranked #20 by tournament ranking algorithm",
+        "explanation": "Implementing a disaster early warning system in C\u00e1ceres is crucial due to the high risk of droughts and heatwaves, which significantly impact water resources, food security, and public health. The city's low population density and moderate access to water and sanitation services make it vulnerable to these hazards. An early warning system can help mitigate the effects of these climate-related risks by providing timely information to residents and authorities, allowing for better preparedness and response. This action is essential to protect the community and enhance resilience against the increasing frequency and severity of climate events.",
         "action": {
             "ActionID": "ipcc_0095",
             "ActionName": "Alerta precoce de desastres",

@@ -7,6 +7,7 @@
         "actionId": "icare_0139",
         "actionName": "Implementation of urban toll.",
         "actionPriority": 1,
+        "explanation": "The implementation of an urban toll in Campo Largo is a priority due to the high transportation emissions, which are a significant contributor to the city's total emissions. By introducing a toll, the city can effectively manage traffic congestion, reduce vehicle emissions, and encourage the use of public transportation. This action aligns with the city's need to address environmental concerns and improve air quality, benefiting public health and contributing to a more sustainable urban environment. Additionally, the revenue generated from the toll can be reinvested into further sustainable infrastructure projects.",
         "action": {
             "ActionID": "icare_0139",
             "ActionName": "Implementa\u00e7\u00e3o de ped\u00e1gio urbano.",
@@ -68,6 +69,7 @@
         "actionId": "icare_0088",
         "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
         "actionPriority": 2,
+        "explanation": "Implementing free public transportation during peak hours in Campo Largo is a strategic move to reduce transportation emissions, which are currently the highest among all emission sources in the city. By encouraging the use of public transport, the city can significantly decrease the reliance on individual vehicles, thereby lowering the overall carbon footprint. Additionally, this initiative can improve air quality and contribute to better public health outcomes, addressing some of the risks associated with heatwaves and diseases. Furthermore, providing free transportation can enhance accessibility for low-income residents, aligning with the city's socio-economic goals.",
         "action": {
             "ActionID": "icare_0088",
             "ActionName": "Implementa\u00e7\u00e3o de programas de transporte p\u00fablico gratuito durante os hor\u00e1rios de pico para reduzir o uso de ve\u00edculos individuais",
@@ -130,6 +132,7 @@
         "actionId": "icare_0044",
         "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
         "actionPriority": 3,
+        "explanation": "Expanding cycling infrastructure and building public walkways in Campo Largo is crucial due to the city's current environmental and socio-economic context. The city faces significant transportation emissions, which can be mitigated by promoting non-motorized transport options like cycling and walking. Additionally, the development of resilient infrastructure is essential to address the risks posed by climate threats such as floods and landslides, which have high risk scores in the area. This action not only supports environmental sustainability but also enhances public health and safety by providing safer, more accessible routes for all residents.",
         "action": {
             "ActionID": "icare_0044",
             "ActionName": "Expandir a infraestrutura ciclovi\u00e1ria e construir passarelas p\u00fablicas e cal\u00e7adas acess\u00edveis, priorizando medidas resilientes \u00e0s amea\u00e7as clim\u00e1ticas",
@@ -192,6 +195,7 @@
         "actionId": "icare_0068",
         "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
         "actionPriority": 4,
+        "explanation": "Deploying on-demand transport systems with 100% electric fleets in Campo Largo is a strategic move to address the city's high transportation emissions, which are a significant contributor to its total emissions. This action aligns with the city's need to reduce its carbon footprint and improve air quality, benefiting public health. Additionally, the use of electric vehicles can help mitigate the impact of heatwaves on energy security by reducing reliance on fossil fuels. Implementing this system can also enhance mobility and accessibility for residents, particularly in areas with low public transport coverage.",
         "action": {
             "ActionID": "icare_0068",
             "ActionName": "Implantar sistemas de transporte sob demanda com frotas 100% el\u00e9tricas.",
@@ -254,6 +258,7 @@
         "actionId": "icare_0094",
         "actionName": "Adoption of biomethane in public fleets.",
         "actionPriority": 5,
+        "explanation": "The adoption of biomethane in public fleets in Campo Largo is a significant action due to its potential to reduce transportation emissions, which are currently the highest among the city's emission sources. By transitioning to biomethane, the city can significantly lower its carbon footprint, contributing to a cleaner environment and improved air quality. Additionally, this action aligns with the city's need to address climate change impacts, such as floods and public health risks, by reducing greenhouse gas emissions. Implementing biomethane in public fleets also supports energy security by diversifying energy sources and reducing dependency on fossil fuels.",
         "action": {
             "ActionID": "icare_0094",
             "ActionName": "Ado\u00e7\u00e3o de biometano em frotas p\u00fablicas.",
@@ -316,6 +321,7 @@
         "actionId": "icare_0121",
         "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
         "actionPriority": 6,
+        "explanation": "The action to incentivize bike-sharing programs, particularly with electric bikes, is crucial for Campo Largo due to its potential to reduce transportation emissions, which are currently the highest among all emission sources in the city. By promoting electric bike usage, the city can address the high transportation emissions, contributing to a cleaner environment and improved air quality. Additionally, this initiative can enhance mobility options for residents, especially in urban areas, while also promoting healthier lifestyles. Given the city's low population density, electric bikes can provide an efficient and sustainable mode of transport, reducing reliance on cars and mitigating traffic congestion.",
         "action": {
             "ActionID": "icare_0121",
             "ActionName": "Incentivo \u00e0 cria\u00e7\u00e3o de programas de compartilhamento de bicicletas em \u00e1reas urbanas, com foco em bicicletas el\u00e9tricas.",
@@ -378,6 +384,7 @@
         "actionId": "icare_0090",
         "actionName": "Adoption of electric drones for last-mile deliveries.",
         "actionPriority": 7,
+        "explanation": "The adoption of electric drones for last-mile deliveries in Campo Largo is a strategic move to reduce transportation emissions, which are currently a significant contributor to the city's total emissions. By transitioning to electric drones, the city can decrease its reliance on traditional delivery vehicles that contribute to air pollution and greenhouse gas emissions. This action aligns with the city's need to address environmental concerns while also potentially improving delivery efficiency and reducing traffic congestion. Furthermore, the use of electric drones can serve as a model for innovative solutions in urban logistics, promoting sustainable practices in the region.",
         "action": {
             "ActionID": "icare_0090",
             "ActionName": "Ado\u00e7\u00e3o de drones el\u00e9tricos para entregas de \u00faltima milha.",
@@ -440,6 +447,7 @@
         "actionId": "icare_0042",
         "actionName": "Encourage renewable energy policies at the municipal level",
         "actionPriority": 8,
+        "explanation": "Encouraging renewable energy policies at the municipal level in Campo Largo is crucial due to the city's significant stationary energy emissions. Transitioning to renewable energy sources can help reduce these emissions, contributing to a cleaner environment and aligning with global sustainability goals. Additionally, promoting renewable energy can enhance energy security, which is particularly important given the city's vulnerability to droughts that can impact energy resources. Implementing these policies can also stimulate local economic growth by creating green jobs and attracting investments in sustainable technologies.",
         "action": {
             "ActionID": "icare_0042",
             "ActionName": "Incentivar pol\u00edticas de energia renov\u00e1vel a n\u00edvel municipal",
@@ -502,6 +510,7 @@
         "actionId": "icare_0057",
         "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
         "actionPriority": 9,
+        "explanation": "The expansion of mass transit systems on rails, such as metros, LRTs, and monorails, is a crucial action for Campo Largo due to its potential to significantly reduce transportation emissions, which are currently the highest among all emission sources in the city. By providing a more efficient and sustainable mode of transportation, this action can help decrease reliance on personal vehicles, thereby reducing traffic congestion and air pollution. Additionally, improved public transit can enhance accessibility for residents, particularly benefiting those with very low income, by providing affordable and reliable transportation options. This action also aligns with the city's need to address climate risks, as it can contribute to reducing the overall carbon footprint and improving urban resilience.",
         "action": {
             "ActionID": "icare_0057",
             "ActionName": "Expans\u00e3o dos sistemas de transporte p\u00fablico em massa sobre trilhos (metr\u00f4s, VLTs e monotrilhos).",
@@ -564,6 +573,7 @@
         "actionId": "c40_0026",
         "actionName": "Vehicle Emissions",
         "actionPriority": 10,
+        "explanation": "The action to address vehicle emissions in Campo Largo is a priority due to the significant contribution of transportation to the city's overall emissions. With transportation emissions accounting for a large portion of the total emissions, reducing vehicle emissions can substantially lower the city's carbon footprint. Additionally, improving air quality by reducing vehicle emissions can have positive impacts on public health, which is crucial given the city's vulnerability to public health risks from climate-related hazards. Implementing this action aligns with the city's need to mitigate climate change impacts and enhance the quality of life for its residents.",
         "action": {
             "ActionID": "c40_0026",
             "ActionName": "Emiss\u00f5es de Ve\u00edculos",
@@ -633,6 +643,7 @@
         "actionId": "icare_0118",
         "actionName": "Promote the use of bicycles as a regular mode of transport through the expansion of infrastructure and strategies for awareness and communication.",
         "actionPriority": 11,
+        "explanation": "Promoting the use of bicycles in Campo Largo is a strategic action to reduce transportation emissions, which are currently the highest among all emission sources in the city. By expanding bicycle infrastructure and increasing public awareness, the city can encourage more residents to adopt cycling as a regular mode of transport, thereby decreasing reliance on motor vehicles. This shift not only helps in lowering emissions but also contributes to improved public health by promoting physical activity. Additionally, cycling infrastructure can enhance urban mobility and reduce traffic congestion, making the city more livable and sustainable.",
         "action": {
             "ActionID": "icare_0118",
             "ActionName": "Promover o uso de bicicletas como um modo regular de transporte atrav\u00e9s da expans\u00e3o da infraestrutura e estrat\u00e9gias de conscientiza\u00e7\u00e3o e comunica\u00e7\u00e3o.",
@@ -695,6 +706,7 @@
         "actionId": "icare_0059",
         "actionName": "Modernization of ports and airports with zero-emission technologies",
         "actionPriority": 12,
+        "explanation": "The modernization of ports and airports with zero-emission technologies is a significant action for Campo Largo, despite its inland location. This initiative is crucial as it aligns with global efforts to reduce carbon emissions and combat climate change. By implementing zero-emission technologies, the city can significantly lower its transportation emissions, which are currently a major contributor to its total emissions. Additionally, this action supports the city's long-term sustainability goals and enhances its infrastructure resilience against climate-related hazards.",
         "action": {
             "ActionID": "icare_0059",
             "ActionName": "Moderniza\u00e7\u00e3o de portos e aeroportos com tecnologias de emiss\u00e3o zero",
@@ -757,6 +769,7 @@
         "actionId": "icare_0024",
         "actionName": "Integrate renewables into municipal water systems",
         "actionPriority": 13,
+        "explanation": "Integrating renewables into municipal water systems in Campo Largo is a strategic action to enhance sustainability and reduce emissions. The city faces significant risks related to water resources, particularly from droughts, making it crucial to ensure a reliable and sustainable water supply. By incorporating renewable energy, the city can decrease its reliance on fossil fuels, thereby reducing stationary energy emissions, which are a notable contributor to the city's total emissions. This action not only supports environmental goals but also aligns with the city's low socio-economic challenges by potentially lowering operational costs and improving service reliability.",
         "action": {
             "ActionID": "icare_0024",
             "ActionName": "Integrar energias renov\u00e1veis nos sistemas municipais de \u00e1gua",
@@ -819,6 +832,7 @@
         "actionId": "icare_0092",
         "actionName": "Development of micro-logistics hubs to encourage the use of electric cargo bikes.",
         "actionPriority": 14,
+        "explanation": "The development of micro-logistics hubs to encourage the use of electric cargo bikes in Campo Largo is a strategic action to reduce transportation emissions, which are currently a significant contributor to the city's total emissions. By promoting electric cargo bikes, the city can decrease its reliance on traditional fossil fuel-powered vehicles, thus lowering its carbon footprint. Additionally, this initiative can enhance urban mobility and reduce traffic congestion, making the city more livable and sustainable. Given the city's low population density, such hubs can efficiently serve local businesses and residents, fostering a greener and more efficient logistics network.",
         "action": {
             "ActionID": "icare_0092",
             "ActionName": "Desenvolvimento de micro-hubs log\u00edsticos para incentivar o uso de bicicletas de carga el\u00e9tricas.",
@@ -881,6 +895,7 @@
         "actionId": "icare_0060",
         "actionName": "Introduction of modular and automated collective transport systems.",
         "actionPriority": 15,
+        "explanation": "The introduction of modular and automated collective transport systems in Campo Largo is a strategic action to address the city's high transportation emissions, which are a significant contributor to its total emissions. By implementing this system, the city can reduce its carbon footprint and improve air quality, benefiting public health. Additionally, enhancing public transport infrastructure can alleviate traffic congestion, making the city more accessible and efficient for its residents. This action aligns with the city's need to mitigate climate risks and promote sustainable urban development.",
         "action": {
             "ActionID": "icare_0060",
             "ActionName": "Introdu\u00e7\u00e3o de sistemas de transporte coletivo modulares e automatizados.",
@@ -943,6 +958,7 @@
         "actionId": "icare_0091",
         "actionName": "Implementation of prioritized routes for sustainable vehicles.",
         "actionPriority": 16,
+        "explanation": "The implementation of prioritized routes for sustainable vehicles in Campo Largo is crucial due to the city's significant transportation emissions, which are the highest among all emission sources. By creating dedicated routes for sustainable vehicles, the city can effectively reduce its carbon footprint and improve air quality. Additionally, this action supports the transition to cleaner transportation options, which is essential for mitigating the impacts of climate change and enhancing public health. Given the city's low population density, establishing these routes can also encourage more residents to adopt sustainable transportation methods, further contributing to environmental sustainability.",
         "action": {
             "ActionID": "icare_0091",
             "ActionName": "Implementa\u00e7\u00e3o de rotas priorit\u00e1rias para ve\u00edculos sustent\u00e1veis.",
@@ -1005,6 +1021,7 @@
         "actionId": "icare_0038",
         "actionName": "Promote community solar farms",
         "actionPriority": 17,
+        "explanation": "Promoting community solar farms in Campo Largo is a strategic action due to the city's high total emissions, particularly from stationary energy and transportation. By investing in solar energy, the city can significantly reduce its reliance on fossil fuels, thereby decreasing its carbon footprint. Additionally, solar farms can provide a sustainable energy source that is less vulnerable to the impacts of climate change, such as droughts and heatwaves, which are prevalent in the region. This initiative also aligns with the city's socio-economic context, as it can create local jobs and provide affordable energy solutions, benefiting the community economically.",
         "action": {
             "ActionID": "icare_0038",
             "ActionName": "Promover fazendas solares comunit\u00e1rias",
@@ -1066,6 +1083,7 @@
         "actionId": "icare_0050",
         "actionName": "Implement Agroforestry Systems",
         "actionPriority": 18,
+        "explanation": "Implementing agroforestry systems in Campo Largo is a strategic action due to the city's tropical rainforest biome, which is conducive to such practices. Agroforestry can enhance biodiversity and improve soil health, which are crucial for maintaining the ecological balance in the region. Additionally, this action can help mitigate the impacts of droughts and floods, which are significant risks for the city, by improving water retention and reducing soil erosion. Furthermore, agroforestry can contribute to reducing land use emissions, aligning with the city's need to lower its overall carbon footprint.",
         "action": {
             "ActionID": "icare_0050",
             "ActionName": "Implementar Sistemas Agroflorestais",
@@ -1128,6 +1146,7 @@
         "actionId": "icare_0117",
         "actionName": "Increase the attractiveness of the municipal bus system in order to promote this mode of transport.",
         "actionPriority": 19,
+        "explanation": "Increasing the attractiveness of the municipal bus system in Campo Largo is crucial due to the high transportation emissions, which are a significant contributor to the city's total emissions. By promoting public transport, the city can reduce its carbon footprint and improve air quality. Additionally, enhancing the bus system can provide a more reliable and efficient mode of transport for residents, potentially reducing the reliance on private vehicles. This action aligns with the city's need to address environmental concerns while also improving public services for its population.",
         "action": {
             "ActionID": "icare_0117",
             "ActionName": "Aumentar a atratividade do sistema de \u00f4nibus municipal para promover este modo de transporte.",
@@ -1190,6 +1209,7 @@
         "actionId": "icare_0128",
         "actionName": "Establish Municipal Programs for Payment for Environmental Services (PES)",
         "actionPriority": 20,
+        "explanation": "Establishing Municipal Programs for Payment for Environmental Services (PES) in Campo Largo is a strategic action to enhance environmental conservation and sustainability. Given the city's tropical rainforest biome, PES can incentivize landowners to preserve natural resources, which is crucial for maintaining biodiversity and mitigating climate change impacts. Additionally, PES programs can help address the city's significant land use emissions by promoting sustainable land management practices. This action aligns with the need to protect water resources and food security, which are at risk due to droughts and floods, as identified in the city's climate risk assessment.",
         "action": {
             "ActionID": "icare_0128",
             "ActionName": "Estabelecer Programas Municipais de Pagamento por Servi\u00e7os Ambientais (PSA)",

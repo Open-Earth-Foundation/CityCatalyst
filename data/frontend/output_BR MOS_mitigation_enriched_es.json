@@ -7,6 +7,7 @@
         "actionId": "icare_0042",
         "actionName": "Encourage renewable energy policies at the municipal level",
         "actionPriority": 1,
+        "explanation": "Encouraging renewable energy policies at the municipal level in Mossor\u00f3 is a high priority due to the city's significant stationary energy emissions. Transitioning to renewable energy sources can help reduce these emissions, contributing to a cleaner environment and mitigating climate change impacts. Additionally, renewable energy can enhance energy security, which is crucial given the high risk of energy-related hazards such as droughts and heatwaves. Implementing these policies can also stimulate local economic growth by creating green jobs and reducing dependency on external energy sources.",
         "action": {
             "ActionID": "icare_0042",
             "ActionName": "Fomentar pol\u00edticas de energ\u00eda renovable a nivel municipal",
@@ -69,6 +70,7 @@
         "actionId": "icare_0024",
         "actionName": "Integrate renewables into municipal water systems",
         "actionPriority": 2,
+        "explanation": "Integrating renewables into municipal water systems in Mossor\u00f3 is a crucial action due to the city's high risk of droughts, which significantly impacts water resources. By utilizing renewable energy, the city can ensure a more reliable and sustainable water supply, reducing dependency on traditional energy sources that may be less reliable during extreme weather conditions. This action also aligns with the city's need to address its substantial stationary energy emissions, contributing to overall emission reductions and enhancing energy security. Furthermore, the integration of renewables can help mitigate the socio-economic impacts of water scarcity, supporting the city's low-income population by potentially lowering water costs.",
         "action": {
             "ActionID": "icare_0024",
             "ActionName": "Integrar energ\u00edas renovables en los sistemas de agua municipales",
@@ -131,6 +133,7 @@
         "actionId": "icare_0038",
         "actionName": "Promote community solar farms",
         "actionPriority": 3,
+        "explanation": "Promoting community solar farms in Mossor\u00f3 is a strategic action due to the city's high solar potential, given its desert biome and high exposure to sunlight. This initiative can significantly reduce stationary energy emissions, which are currently a major contributor to the city's total emissions. Additionally, community solar farms can enhance energy security, a critical concern given the high risk of energy-related impacts from droughts and heatwaves. By investing in renewable energy, Mossor\u00f3 can also improve its socio-economic conditions by providing affordable energy solutions to low-income residents.",
         "action": {
             "ActionID": "icare_0038",
             "ActionName": "Promover granjas solares comunitarias",
@@ -192,6 +195,7 @@
         "actionId": "icare_0121",
         "actionName": "Incentive to create bike-sharing programs in urban areas, with a focus on electric bikes.",
         "actionPriority": 4,
+        "explanation": "The action to incentivize bike-sharing programs, particularly with electric bikes, is crucial for Mossor\u00f3 due to its high transportation emissions. By promoting alternative transportation methods, the city can significantly reduce its carbon footprint and improve air quality. Additionally, electric bikes offer a sustainable solution that can help mitigate the impact of heatwaves on public health by providing a cooler, less physically demanding mode of transport. This initiative also aligns with the city's need to enhance energy security and reduce reliance on traditional fuel sources.",
         "action": {
             "ActionID": "icare_0121",
             "ActionName": "Incentivo para crear programas de bicicletas compartidas en \u00e1reas urbanas, con un enfoque en bicicletas el\u00e9ctricas.",
@@ -254,6 +258,7 @@
         "actionId": "icare_0088",
         "actionName": "Implementation of free public transportation programs during peak hours to reduce the use of individual vehicles",
         "actionPriority": 5,
+        "explanation": "The implementation of free public transportation programs during peak hours in Mossor\u00f3 is a crucial action due to the city's high transportation emissions, which contribute significantly to its total emissions. By encouraging the use of public transport, this initiative aims to reduce the reliance on individual vehicles, thereby decreasing emissions and improving air quality. Additionally, this action can alleviate traffic congestion during peak hours, enhancing the overall efficiency of the city's transportation system. Furthermore, providing free transportation can improve accessibility for low-income residents, aligning with the city's socio-economic context and promoting social equity.",
         "action": {
             "ActionID": "icare_0088",
             "ActionName": "Implementaci\u00f3n de programas de transporte p\u00fablico gratuito durante las horas pico para reducir el uso de veh\u00edculos individuales",
@@ -316,6 +321,7 @@
         "actionId": "icare_0139",
         "actionName": "Implementation of urban toll.",
         "actionPriority": 6,
+        "explanation": "The implementation of an urban toll in Mossor\u00f3 is a strategic action aimed at reducing transportation emissions, which are a significant contributor to the city's total emissions. By introducing a toll, the city can encourage the use of public transportation and reduce the number of private vehicles on the road, thereby decreasing congestion and emissions. This action is particularly important given the city's high risk of heatwaves and public health impacts, as reducing emissions can help mitigate these risks. Additionally, the toll revenue can be reinvested into improving public transportation infrastructure, further supporting sustainable urban mobility.",
         "action": {
             "ActionID": "icare_0139",
             "ActionName": "Implementaci\u00f3n de peaje urbano.",
@@ -377,6 +383,7 @@
         "actionId": "icare_0033",
         "actionName": "Install biodigesters in rural properties",
         "actionPriority": 7,
+        "explanation": "Installing biodigesters in rural properties in Mossor\u00f3 is a strategic action due to the city's desert biome and the associated challenges with water and food security. Biodigesters can help manage organic waste effectively, reducing waste emissions and providing a renewable source of energy, which is crucial given the high risk of energy insecurity due to droughts. Additionally, this action supports sustainable agricultural practices, which can enhance food security and resilience against climate impacts such as droughts and heatwaves. By converting waste into biogas, biodigesters also contribute to reducing the overall emissions footprint of the city.",
         "action": {
             "ActionID": "icare_0033",
             "ActionName": "Instalar biodigestores en propiedades rurales",
@@ -438,6 +445,7 @@
         "actionId": "icare_0094",
         "actionName": "Adoption of biomethane in public fleets.",
         "actionPriority": 8,
+        "explanation": "The adoption of biomethane in public fleets in Mossor\u00f3 is a significant action due to the city's high transportation emissions, which contribute substantially to its total emissions. By transitioning to biomethane, a cleaner alternative, the city can reduce its carbon footprint and improve air quality. Additionally, this action aligns with the need to enhance energy security, as identified in the city's climate risk assessment, by diversifying energy sources and reducing reliance on traditional fossil fuels. This initiative also supports the city's socio-economic development by potentially creating new jobs in the renewable energy sector.",
         "action": {
             "ActionID": "icare_0094",
             "ActionName": "Adopci\u00f3n de biometano en flotas p\u00fablicas.",
@@ -500,6 +508,7 @@
         "actionId": "icare_0090",
         "actionName": "Adoption of electric drones for last-mile deliveries.",
         "actionPriority": 9,
+        "explanation": "The adoption of electric drones for last-mile deliveries in Mossor\u00f3 is a strategic action to reduce transportation emissions, which currently contribute significantly to the city's total emissions. Given the city's low population density and large area, drones can efficiently cover distances without contributing to road congestion or pollution. Additionally, this action aligns with the city's need to address energy security risks, as electric drones can be powered by renewable energy sources, reducing dependency on fossil fuels. Implementing this technology can also enhance the resilience of supply chains, particularly in a region prone to climate hazards like floods and heatwaves.",
         "action": {
             "ActionID": "icare_0090",
             "ActionName": "Adopci\u00f3n de drones el\u00e9ctricos para entregas de \u00faltima milla.",
@@ -562,6 +571,7 @@
         "actionId": "icare_0029",
         "actionName": "Adopt policies for fossil fuel-free buildings",
         "actionPriority": 10,
+        "explanation": "Adopting policies for fossil fuel-free buildings in Mossor\u00f3 is crucial due to the city's high stationary energy emissions, which contribute significantly to its total emissions. Transitioning to fossil fuel-free buildings can help reduce these emissions, aligning with global efforts to combat climate change. Additionally, given the city's vulnerability to heatwaves and droughts, reducing reliance on fossil fuels can enhance energy security and resilience against climate-related hazards. This action supports sustainable urban development and can improve public health by reducing air pollution associated with fossil fuel use.",
         "action": {
             "ActionID": "icare_0029",
             "ActionName": "Adoptar pol\u00edticas para edificios libres de combustibles f\u00f3siles",
@@ -624,6 +634,7 @@
         "actionId": "icare_0044",
         "actionName": "Expand the cycling infrastructure and build public walkways and accessible sidewalks, prioritizing measures resilient to climate threats",
         "actionPriority": 11,
+        "explanation": "Expanding cycling infrastructure and building public walkways in Mossor\u00f3 is crucial due to the city's high risk of climate-related hazards such as heatwaves and floods. These measures can provide safe and sustainable transportation options, reducing reliance on motor vehicles and thereby decreasing transportation emissions, which are a significant part of the city's total emissions. Additionally, enhancing walkability and cycling can improve public health by encouraging physical activity and reducing air pollution. Prioritizing climate-resilient infrastructure ensures that these benefits are sustained even in the face of extreme weather events.",
         "action": {
             "ActionID": "icare_0044",
             "ActionName": "Expandir la infraestructura para bicicletas y construir paseos p\u00fablicos y aceras accesibles, priorizando medidas resilientes a las amenazas clim\u00e1ticas.",
@@ -686,6 +697,7 @@
         "actionId": "icare_0040",
         "actionName": "Adopt solar-powered street lighting in rural areas",
         "actionPriority": 12,
+        "explanation": "Adopting solar-powered street lighting in rural areas of Mossor\u00f3 is a strategic action due to the city's high exposure to droughts and heatwaves, which are exacerbated by climate change. This initiative can significantly reduce the city's reliance on traditional energy sources, thereby lowering stationary energy emissions. Additionally, solar lighting can improve safety and accessibility in rural areas, which often lack adequate infrastructure. By harnessing renewable energy, Mossor\u00f3 can enhance its energy security and resilience against climate-related risks.",
         "action": {
             "ActionID": "icare_0040",
             "ActionName": "Adoptar iluminaci\u00f3n de calles con energ\u00eda solar en \u00e1reas rurales",
@@ -748,6 +760,7 @@
         "actionId": "icare_0097",
         "actionName": "Support Distributed Energy Generation in Residences and Businesses",
         "actionPriority": 13,
+        "explanation": "Supporting distributed energy generation in residences and businesses is crucial for Mossor\u00f3 due to its high stationary energy emissions. By promoting local energy production, the city can reduce its reliance on centralized power sources, which often contribute significantly to emissions. This action also aligns with the need to enhance energy security, especially in a region prone to droughts and heatwaves, which can disrupt traditional energy supply chains. Furthermore, distributed energy systems can provide resilience against infrastructure vulnerabilities, ensuring a more stable and sustainable energy supply for the community.",
         "action": {
             "ActionID": "icare_0097",
             "ActionName": "Apoyar la Generaci\u00f3n de Energ\u00eda Distribuida en Residencias y Negocios",
@@ -810,6 +823,7 @@
         "actionId": "icare_0105",
         "actionName": "Reduce technical losses in energy distribution networks",
         "actionPriority": 14,
+        "explanation": "Reducing technical losses in energy distribution networks is crucial for Mossor\u00f3 due to its high energy security risk from droughts and heatwaves. By improving the efficiency of energy distribution, the city can better manage its energy resources, which is vital given the region's vulnerability to climate-related hazards. Additionally, reducing energy losses can help lower emissions, contributing to the city's overall sustainability goals. This action supports the city's resilience against climate impacts and enhances the reliability of energy supply for its residents.",
         "action": {
             "ActionID": "icare_0105",
             "ActionName": "Reducir las p\u00e9rdidas t\u00e9cnicas en las redes de distribuci\u00f3n de energ\u00eda",
@@ -872,6 +886,7 @@
         "actionId": "icare_0020",
         "actionName": "Promote sustainable construction practices and encourage green technologies in public, residential, commercial, industrial, and service buildings.",
         "actionPriority": 15,
+        "explanation": "Promoting sustainable construction practices and encouraging green technologies in Mossor\u00f3 is crucial due to the city's vulnerability to climate hazards such as droughts and heatwaves. These practices can help reduce energy consumption and emissions, which are significant contributors to the city's total emissions. Additionally, sustainable construction can improve resilience against extreme weather events, enhancing public health and infrastructure stability. By adopting green technologies, Mossor\u00f3 can also address its low socio-economic status by potentially reducing energy costs and creating new job opportunities in the green sector.",
         "action": {
             "ActionID": "icare_0020",
             "ActionName": "Promover pr\u00e1cticas de construcci\u00f3n sostenible y fomentar tecnolog\u00edas verdes en edificios p\u00fablicos, residenciales, comerciales, industriales y de servicios.",
@@ -934,6 +949,7 @@
         "actionId": "icare_0068",
         "actionName": "Deploy on-demand transport systems with 100% electric fleets.",
         "actionPriority": 16,
+        "explanation": "Deploying on-demand transport systems with 100% electric fleets in Mossor\u00f3 is a strategic action to address the city's transportation emissions, which are a significant contributor to its total emissions. This initiative can help reduce the carbon footprint of the city, aligning with global sustainability goals. Additionally, electric fleets can improve air quality and public health by reducing pollutants associated with traditional fuel vehicles. Given the city's vulnerability to climate hazards like heatwaves and droughts, transitioning to electric transport can also enhance energy security by reducing dependency on fossil fuels.",
         "action": {
             "ActionID": "icare_0068",
             "ActionName": "Desplegar sistemas de transporte bajo demanda con flotas 100% el\u00e9ctricas.",
@@ -996,6 +1012,7 @@
         "actionId": "icare_0057",
         "actionName": "Expansion of mass transit systems on rails (metros, LRTs, and monorails).",
         "actionPriority": 17,
+        "explanation": "The expansion of mass transit systems on rails in Mossor\u00f3 is a crucial action due to the city's growing population and the need to reduce transportation emissions, which currently contribute significantly to the city's total emissions. By improving public transportation infrastructure, the city can offer a more sustainable and efficient alternative to private vehicle use, thereby reducing congestion and pollution. Additionally, enhancing mass transit systems can improve access to public services and economic opportunities for residents, particularly those in low-income areas. This action also aligns with the city's need to address climate risks, as it can help mitigate the impacts of heatwaves and improve energy security by reducing reliance on fossil fuels.",
         "action": {
             "ActionID": "icare_0057",
             "ActionName": "Expansi\u00f3n de los sistemas de transporte masivo sobre rieles (metros, LRTs y monorra\u00edles).",
@@ -1058,6 +1075,7 @@
         "actionId": "icare_0005",
         "actionName": "Create credit lines for residential and community wind energy projects",
         "actionPriority": 18,
+        "explanation": "Creating credit lines for residential and community wind energy projects in Mossor\u00f3 is a strategic action due to the city's high stationary energy emissions. By promoting wind energy, the city can significantly reduce its reliance on traditional energy sources, thereby lowering emissions. Additionally, this initiative can enhance energy security, which is crucial given the city's vulnerability to droughts and heatwaves. Furthermore, supporting community wind projects can stimulate local economic development and provide a sustainable energy solution for low-income residents.",
         "action": {
             "ActionID": "icare_0005",
             "ActionName": "Crear l\u00edneas de cr\u00e9dito para proyectos de energ\u00eda e\u00f3lica residencial y comunitaria",
@@ -1120,6 +1138,7 @@
         "actionId": "icare_0027",
         "actionName": "Create financing programs for local renewable energy projects",
         "actionPriority": 19,
+        "explanation": "Creating financing programs for local renewable energy projects in Mossor\u00f3 is crucial due to the city's high stationary energy emissions. By promoting renewable energy, the city can significantly reduce its carbon footprint and mitigate the impacts of climate change. Additionally, renewable energy projects can enhance energy security, which is vital given the city's vulnerability to droughts and heatwaves. This action also supports economic development by potentially creating jobs and reducing energy costs for residents.",
         "action": {
             "ActionID": "icare_0027",
             "ActionName": "Crear programas de financiamiento para proyectos locales de energ\u00eda renovable",
@@ -1182,6 +1201,7 @@
         "actionId": "icare_0011",
         "actionName": "Provide tax incentives for renewable energy in residential projects",
         "actionPriority": 20,
+        "explanation": "Providing tax incentives for renewable energy in residential projects is crucial for Mossor\u00f3 due to its high stationary energy emissions. Encouraging the use of renewable energy can significantly reduce these emissions, contributing to a cleaner environment. Additionally, given the city's vulnerability to climate hazards like droughts and heatwaves, promoting sustainable energy solutions can enhance energy security and resilience. This action aligns with the city's need to address its socio-economic challenges by potentially lowering energy costs for residents. Overall, it supports a transition towards a more sustainable and resilient urban environment.",
         "action": {
             "ActionID": "icare_0011",
             "ActionName": "Proporcionar incentivos fiscales para la energ\u00eda renovable en proyectos residenciales",

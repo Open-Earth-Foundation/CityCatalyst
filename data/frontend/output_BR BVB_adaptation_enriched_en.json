@@ -7,7 +7,7 @@
         "actionId": "icare_0169",
         "actionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
         "actionPriority": 1,
-        "explanation": "Ranked #1 by tournament ranking algorithm",
+        "explanation": "Boa Vista is highly vulnerable to extreme weather events such as droughts, heatwaves, and floods, which pose significant risks to water resources, food security, energy security, and public health. Establishing a plan for preparation and emergency response is crucial to mitigate these risks and protect the city's infrastructure and population. Given the high normalised risk scores for these hazards, proactive measures are essential to ensure the city's resilience and safety. This action is a priority to address the immediate and long-term impacts of climate change on the community.",
         "action": {
             "ActionID": "icare_0169",
             "ActionName": "Establish a Plan for Preparation and Emergency Response Measures in the event of extreme weather events",
@@ -78,7 +78,7 @@
         "actionId": "icare_0176",
         "actionName": "Development of Climate Action Plan",
         "actionPriority": 2,
-        "explanation": "Ranked #2 by tournament ranking algorithm",
+        "explanation": "The development of a Climate Action Plan is crucial for Boa Vista due to its high vulnerability to climate-related hazards such as droughts, heatwaves, and floods. These hazards pose significant risks to water resources, food security, energy security, and public health, as indicated by the city's climate change risk assessment. Implementing a comprehensive plan will help mitigate these risks by outlining strategies to reduce emissions and enhance resilience. Additionally, the plan can guide the city in prioritizing investments and actions that address the socio-economic challenges and improve access to public services.",
         "action": {
             "ActionID": "icare_0176",
             "ActionName": "Development of Climate Action Plan",
@@ -149,7 +149,7 @@
         "actionId": "icare_0152",
         "actionName": "Recovery of degraded areas",
         "actionPriority": 3,
-        "explanation": "Ranked #3 by tournament ranking algorithm",
+        "explanation": "The action 'Recovery of degraded areas' is crucial for Boa Vista due to its significant land use emissions, which are a major contributor to the city's total emissions. Restoring degraded areas can help sequester carbon, thereby reducing these emissions and improving the overall environmental health of the region. Additionally, recovery efforts can enhance biodiversity and resilience against climate hazards such as droughts and floods, which are high-risk factors for the city. This action supports sustainable land management and aligns with the city's need to address environmental and socio-economic challenges.",
         "action": {
             "ActionID": "icare_0152",
             "ActionName": "Recovery of degraded areas",
@@ -212,7 +212,7 @@
         "actionId": "ipcc_0094",
         "actionName": "Access to health care",
         "actionPriority": 4,
-        "explanation": "Ranked #4 by tournament ranking algorithm",
+        "explanation": "Improving access to health care in Boa Vista is crucial due to the high risk of public health impacts from heatwaves and diseases. The city faces significant challenges with inadequate water and sanitation services, which can exacerbate health issues. Additionally, the risk of floods poses a threat to public health infrastructure, making it essential to enhance healthcare access to ensure resilience. Addressing these health care needs is vital for protecting the population against climate-related health hazards.",
         "action": {
             "ActionID": "ipcc_0094",
             "ActionName": "Access to health care",
@@ -276,7 +276,7 @@
         "actionId": "icare_0162",
         "actionName": "Strengthen programs for control and conservation of protected areas",
         "actionPriority": 5,
-        "explanation": "Ranked #5 by tournament ranking algorithm",
+        "explanation": "Strengthening programs for control and conservation of protected areas in Boa Vista is crucial due to the city's location within a tropical rainforest biome. This region is rich in biodiversity, which is under threat from climate change impacts such as droughts and heatwaves. By enhancing conservation efforts, the city can protect its natural resources and biodiversity, which are vital for maintaining ecological balance and supporting local livelihoods. Additionally, these efforts can help mitigate the effects of climate change by preserving carbon sinks and reducing emissions from land use changes.",
         "action": {
             "ActionID": "icare_0162",
             "ActionName": "Strengthen programs for control and conservation of protected areas",
@@ -339,7 +339,7 @@
         "actionId": "ipcc_0096",
         "actionName": "Farm/fishery improvements",
         "actionPriority": 6,
-        "explanation": "Ranked #6 by tournament ranking algorithm",
+        "explanation": "Farm and fishery improvements are crucial for Boa Vista due to the high risk of droughts impacting water resources and food security. Enhancing agricultural practices can help mitigate these risks by increasing resilience to climate variability. Additionally, improving fisheries can support local food supply and economic stability, which is important given the low-income status of the region. These improvements can also contribute to reducing emissions from land use, which is a significant source of the city's total emissions.",
         "action": {
             "ActionID": "ipcc_0096",
             "ActionName": "Farm/fishery improvements",
@@ -407,7 +407,7 @@
         "actionId": "icare_0149",
         "actionName": "Encourage sustainable land use practices",
         "actionPriority": 7,
-        "explanation": "Ranked #7 by tournament ranking algorithm",
+        "explanation": "Encouraging sustainable land use practices in Boa Vista is crucial due to the high land use emissions, which are a significant contributor to the city's total emissions. Implementing sustainable practices can help mitigate these emissions and improve the overall environmental health of the region. Additionally, sustainable land use can enhance resilience against climate-related hazards such as droughts and floods, which pose high risks to the city's infrastructure and public health. By prioritizing this action, Boa Vista can work towards reducing its carbon footprint and safeguarding its natural resources.",
         "action": {
             "ActionID": "icare_0149",
             "ActionName": "Encourage sustainable land use practices",
@@ -472,7 +472,7 @@
         "actionId": "icare_0151",
         "actionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
         "actionPriority": 8,
-        "explanation": "Ranked #8 by tournament ranking algorithm",
+        "explanation": "Developing diagnostics and restoring areas of Special Social Interest Zones (ZEIS) in Boa Vista is crucial due to the city's socio-economic challenges. With a low-income population and inadequate access to water and sanitation, these areas are likely to be vulnerable to environmental and social issues. Restoring ZEIS can improve living conditions, enhance public health, and reduce the risk of diseases, which are significant concerns given the city's high risk of droughts and heatwaves. This action can also contribute to better urban planning and resilience against climate-related hazards.",
         "action": {
             "ActionID": "icare_0151",
             "ActionName": "Develop diagnostics and restore areas of Special Social Interest Zones (ZEIS)",
@@ -537,7 +537,7 @@
         "actionId": "ipcc_0097",
         "actionName": "Food storage/distribution improvements",
         "actionPriority": 9,
-        "explanation": "Ranked #9 by tournament ranking algorithm",
+        "explanation": "Improving food storage and distribution is crucial for Boa Vista due to its high risk of droughts impacting food security. The city's vulnerability to climate hazards like floods and droughts can disrupt food supply chains, making efficient storage and distribution systems essential. Enhancing these systems will help ensure a stable food supply, even during adverse weather conditions, thereby supporting the city's resilience. Additionally, better food distribution can mitigate the effects of low-income levels by reducing food waste and ensuring equitable access to food resources.",
         "action": {
             "ActionID": "ipcc_0097",
             "ActionName": "Food storage/distribution improvements",
@@ -603,7 +603,7 @@
         "actionId": "icare_0157",
         "actionName": "Maintenance and Revitalization of Riparian Forests",
         "actionPriority": 10,
-        "explanation": "Ranked #10 by tournament ranking algorithm",
+        "explanation": "The maintenance and revitalization of riparian forests in Boa Vista is crucial due to the city's tropical rainforest biome, which plays a significant role in maintaining biodiversity and ecological balance. Riparian forests help in reducing the risk of floods, which is a high-risk hazard for the city's infrastructure and food security. Additionally, these forests can improve water quality and availability, addressing the very low access to adequate water services in the region. By enhancing these natural buffers, the city can mitigate some of the impacts of climate change, such as droughts and heatwaves, which pose significant risks to water resources and public health.",
         "action": {
             "ActionID": "icare_0157",
             "ActionName": "Maintenance and Revitalization of Riparian Forests",
@@ -666,7 +666,7 @@
         "actionId": "ipcc_0093",
         "actionName": "Availability of health infrastructure",
         "actionPriority": 11,
-        "explanation": "Ranked #11 by tournament ranking algorithm",
+        "explanation": "Improving the availability of health infrastructure in Boa Vista is crucial due to the high risk of public health impacts from heatwaves and diseases. The city faces significant challenges with inadequate water access and sanitation, which can exacerbate health issues during extreme weather events. Enhancing health infrastructure will help mitigate these risks and improve the overall resilience of the community. Additionally, better health facilities can provide essential services during emergencies, ensuring the well-being of the population.",
         "action": {
             "ActionID": "ipcc_0093",
             "ActionName": "Availability of health infrastructure",
@@ -730,7 +730,7 @@
         "actionId": "icare_0145",
         "actionName": "Strengthen the healthcare network to attend to climate victims",
         "actionPriority": 12,
-        "explanation": "Ranked #12 by tournament ranking algorithm",
+        "explanation": "Strengthening the healthcare network in Boa Vista is crucial due to the high risk of climate-related health impacts. The city faces significant threats from heatwaves and diseases, both of which can severely affect public health. By enhancing healthcare services, Boa Vista can better manage and mitigate the health consequences of these climate hazards. Additionally, improved healthcare infrastructure will increase the city's resilience to future climate events, ensuring the well-being of its population.",
         "action": {
             "ActionID": "icare_0145",
             "ActionName": "Strengthen the healthcare network to attend to climate victims",
@@ -798,7 +798,7 @@
         "actionId": "icare_0148",
         "actionName": "Create the Municipal Climate Change Forum",
         "actionPriority": 13,
-        "explanation": "Ranked #13 by tournament ranking algorithm",
+        "explanation": "Creating the Municipal Climate Change Forum in Boa Vista is crucial due to the city's high vulnerability to climate-related hazards such as droughts, heatwaves, and floods. These hazards pose significant risks to water resources, food security, energy security, and public health, as indicated by the high normalised risk scores. Establishing a forum will facilitate coordinated efforts among stakeholders to address these challenges, enhance resilience, and implement effective climate adaptation strategies. Additionally, the forum can serve as a platform for raising awareness and engaging the community in sustainable practices to mitigate the impacts of climate change.",
         "action": {
             "ActionID": "icare_0148",
             "ActionName": "Create the Municipal Climate Change Forum",
@@ -869,7 +869,7 @@
         "actionId": "icare_0164",
         "actionName": "Hydrological Monitoring System with Telemetry Stations",
         "actionPriority": 14,
-        "explanation": "Ranked #14 by tournament ranking algorithm",
+        "explanation": "Implementing a Hydrological Monitoring System with Telemetry Stations in Boa Vista is crucial due to the high risk of droughts impacting water resources. The city faces significant challenges with water access, and this system can provide real-time data to manage and mitigate these risks effectively. Additionally, the system can help in planning and responding to potential floods, which also pose a considerable threat to infrastructure and public health. By prioritizing this action, Boa Vista can enhance its resilience against climate-related water hazards, ensuring better resource management and protection for its population.",
         "action": {
             "ActionID": "icare_0164",
             "ActionName": "Hydrological Monitoring System with Telemetry Stations",
@@ -930,7 +930,7 @@
         "actionId": "ipcc_0092",
         "actionName": "Social safety nets",
         "actionPriority": 15,
-        "explanation": "Ranked #15 by tournament ranking algorithm",
+        "explanation": "Implementing social safety nets in Boa Vista is crucial due to the city's socio-economic challenges, such as low income levels. These safety nets can provide essential support to vulnerable populations, especially in times of environmental stress like droughts and heatwaves, which are significant risks for the city. By enhancing social safety nets, Boa Vista can improve resilience against these climate hazards, ensuring that the most affected populations have access to necessary resources and support. This action is vital for maintaining social stability and reducing the impact of climate-related risks on public health and food security.",
         "action": {
             "ActionID": "ipcc_0092",
             "ActionName": "Social safety nets",
@@ -994,7 +994,7 @@
         "actionId": "icare_0144",
         "actionName": "Creation of a Financial Support Program to Adress Extreme Weather Events",
         "actionPriority": 16,
-        "explanation": "Ranked #16 by tournament ranking algorithm",
+        "explanation": "The creation of a financial support program to address extreme weather events is crucial for Boa Vista due to its high vulnerability to climate-related hazards. The city faces significant risks from droughts, heatwaves, and floods, which can severely impact water resources, food security, and public health. Establishing a financial support program would provide necessary resources to mitigate these impacts and enhance the city's resilience. Additionally, such a program would support the socio-economic stability of the region, which is characterized by low-income levels, by offering financial assistance to those most affected by extreme weather conditions.",
         "action": {
             "ActionID": "icare_0144",
             "ActionName": "Creation of a Financial Support Program to Adress Extreme Weather Events",
@@ -1065,7 +1065,7 @@
         "actionId": "icare_0156",
         "actionName": "Implementation of urban gardens",
         "actionPriority": 17,
-        "explanation": "Ranked #17 by tournament ranking algorithm",
+        "explanation": "The implementation of urban gardens in Boa Vista is a strategic action to enhance food security, especially given the high risk of droughts impacting this area. Urban gardens can provide a sustainable source of fresh produce, reducing dependency on external food supplies and mitigating the effects of food scarcity during extreme weather events. Additionally, these gardens can improve community resilience by promoting local food production and fostering community engagement. This action also supports biodiversity and can help in reducing urban heat, contributing to better public health outcomes.",
         "action": {
             "ActionID": "icare_0156",
             "ActionName": "Implementation of urban gardens",
@@ -1126,7 +1126,7 @@
         "actionId": "icare_0175",
         "actionName": "Recovery and preservation of green areas",
         "actionPriority": 18,
-        "explanation": "Ranked #18 by tournament ranking algorithm",
+        "explanation": "The action of recovering and preserving green areas in Boa Vista is crucial due to the city's tropical rainforest biome, which is vital for maintaining biodiversity and ecological balance. Given the high risk of droughts impacting water resources, food security, and energy security, enhancing green areas can help mitigate these risks by improving water retention and providing shade. Additionally, green spaces can contribute to reducing the urban heat island effect, which is particularly important in a city facing significant heatwave risks. Preserving green areas also supports public health by improving air quality and providing recreational spaces for residents.",
         "action": {
             "ActionID": "icare_0175",
             "ActionName": "Recovery and preservation of green areas",
@@ -1186,7 +1186,7 @@
         "actionId": "icare_0181",
         "actionName": "Relocation and Environmental Restoration in Vulnerable Areas",
         "actionPriority": 19,
-        "explanation": "Ranked #19 by tournament ranking algorithm",
+        "explanation": "The action 'Relocation and Environmental Restoration in Vulnerable Areas' is crucial for Boa Vista due to its high risk of natural hazards such as floods and landslides. These hazards pose significant threats to infrastructure and public health, making it imperative to address vulnerable areas. By relocating communities and restoring the environment, the city can mitigate the impacts of these hazards and enhance resilience. Additionally, this action supports long-term sustainability by preserving biodiversity and improving living conditions for residents.",
         "action": {
             "ActionID": "icare_0181",
             "ActionName": "Relocation and Environmental Restoration in Vulnerable Areas",
@@ -1245,7 +1245,7 @@
         "actionId": "ipcc_0095",
         "actionName": "Disaster early warning",
         "actionPriority": 20,
-        "explanation": "Ranked #20 by tournament ranking algorithm",
+        "explanation": "Implementing a disaster early warning system in Boa Vista is crucial due to the high risk of natural hazards such as droughts, heatwaves, and floods. These hazards pose significant threats to water resources, food security, energy security, and public health, as indicated by the city's climate change risk assessment. An effective early warning system can help mitigate the impacts of these hazards by providing timely information to residents and authorities, allowing for better preparedness and response. This action is particularly important given the city's low income levels and inadequate access to public services, which can exacerbate the vulnerability of its population to climate-related disasters.",
         "action": {
             "ActionID": "ipcc_0095",
             "ActionName": "Disaster early warning",

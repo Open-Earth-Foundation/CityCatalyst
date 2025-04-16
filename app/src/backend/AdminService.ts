@@ -312,14 +312,15 @@ export default class AdminService {
       sources,
     );
 
-    // group sources by subsector so we can prioritize for each choice individually
-    const sourcesByReferenceNumber = groupBy(
-      applicableSources,
-      (source) =>
+    // group sources by GPC reference number so we can prioritize for each choice individually
+    // TODO filter out sources that don't match the inventory's inventory type/ Subcategory's ReportingLevel
+    const sourcesByReferenceNumber = groupBy(applicableSources, (source) => {
+      return (
         source.subCategory?.referenceNumber ??
         source.subSector?.referenceNumber ??
-        "unknown",
-    );
+        "unknown"
+      );
+    });
     delete sourcesByReferenceNumber["unknown"];
 
     const populationScaleFactors =

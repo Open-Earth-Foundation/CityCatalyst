@@ -14,7 +14,7 @@ export const GET = apiHandler(async (req, { params, session }) => {
       {
         model: db.models.City,
         as: "cities",
-        attributes: ["locode", "cityId"],
+        attributes: ["locode", "cityId", "name"],
         include: [
           {
             model: db.models.Inventory,

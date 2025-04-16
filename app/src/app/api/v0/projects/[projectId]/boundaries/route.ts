@@ -26,7 +26,14 @@ export const GET = apiHandler(async (req, { params, session }) => {
         const boundary = await CityBoundaryService.getCityBoundary(
           city.locode!,
         );
-        return { ...boundary, cityId: city.cityId };
+        return {
+          ...boundary,
+          city: {
+            id: city.cityId,
+            name: city.name,
+            locode: city.locode,
+          },
+        };
       }),
   );
 

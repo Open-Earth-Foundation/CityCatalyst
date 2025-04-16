@@ -20,12 +20,14 @@ export interface BulkInventoryCreateProps {
   years: number[]; // List of years to create inventories for
   scope: "gpc_basic" | "gpc_basic_plus"; // Scope selection (gpc_basic or gpc_basic_plus)
   gwp: "AR5" | "AR6" | "ar5" | "ar6"; // global warming potential standard selection
+  projectId: string; // project ID to associate with the inventories
 }
 
 export interface BulkInventoryUpdateProps {
   userEmail: string; // Email of the user whose inventories are to be connected
   cityLocodes: string[]; // List of city locodes
   years: number[]; // List of years to create inventories for
+  projectId?: string;
 }
 
 export interface CreateBulkInventoriesResponse {
@@ -71,7 +73,7 @@ export default class AdminService {
         cityId: randomUUID(),
         locode: cityLocode,
         name: cityName,
-        projectId: DEFAULT_PROJECT_ID,
+        projectId: props.projectId ?? DEFAULT_PROJECT_ID,
       });
 
       // add users to the city
@@ -117,6 +119,7 @@ export default class AdminService {
           cityLocode,
           inventory.year,
           city.cityId,
+          props.projectId,
         );
         errors.push(...populationErrors);
       }
@@ -191,7 +194,7 @@ export default class AdminService {
   }
 
   public static async bulkUpdateInventories(
-    { cityLocodes, userEmail, years }: BulkInventoryUpdateProps,
+    { cityLocodes, userEmail, years, projectId }: BulkInventoryUpdateProps,
     session: AppSession | null,
   ) {
     this.ensureIsAdmin(session);
@@ -217,6 +220,7 @@ export default class AdminService {
           locode,
           year,
           city?.cityId,
+          projectId,
         );
         errors.push(...newErrors);
       }
@@ -229,6 +233,7 @@ export default class AdminService {
     cityLocode: string,
     inventoryYear: number,
     cityId: string,
+    projectId?: string,
   ) {
     const errors: { locode: string; error: string }[] = [];
 
@@ -284,7 +289,7 @@ export default class AdminService {
         country,
         countryLocode,
         area: area ? Math.round(area) : undefined,
-        projectId: DEFAULT_PROJECT_ID,
+        projectId: projectId ?? undefined,
       },
       { where: { cityId } },
     );

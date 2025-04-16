@@ -9,6 +9,7 @@ const createBulkInventoriesRequest = z.object({
   years: z.array(z.number().int().positive()), // List of years to create inventories for
   scope: z.enum(["gpc_basic", "gpc_basic_plus"]), // Scope selection (gpc_basic or gpc_basic_plus)
   gwp: z.enum(["AR5", "AR6"]), // GWP selection (AR5 or AR6)
+  projectId: z.string().uuid(), // project to which the inventories should be assigned
 });
 
 export const POST = apiHandler(async (req, { session }) => {

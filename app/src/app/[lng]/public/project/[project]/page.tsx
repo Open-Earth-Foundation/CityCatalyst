@@ -14,6 +14,7 @@ import PartnerLogos from "@/app/[lng]/public/project/[project]/components/Partne
 import Metrics from "@/app/[lng]/public/project/[project]/components/Metrics";
 import Navbar from "@/app/[lng]/public/project/[project]/components/Navbar";
 import Collaborators from "@/app/[lng]/public/project/[project]/components/Collaborators";
+import { formatEmissions } from "@/util/helpers";
 
 export interface PartnerLogo {
   id: string;
@@ -117,6 +118,11 @@ export default function ProjectPage({
   });
   const [selectedCity, setSelectedCity] = useState<any | null>(null);
 
+  const formattedEmissions = projectSummary?.totalEmissions
+    ? formatEmissions(projectSummary?.totalEmissions)
+    : { value: "N/A", unit: "" };
+  const totalEmissions = `${formattedEmissions.value} ${formattedEmissions.unit}CO2e`;
+
   // Metrics section content
   const metricsProps = {
     title: "Impact",
@@ -128,7 +134,7 @@ export default function ProjectPage({
         label: "Cities",
       },
       {
-        value: projectSummary?.totalEmissions ?? "N/A",
+        value: totalEmissions ?? "N/A",
         label: "Total Emissions",
       },
       {

@@ -31,10 +31,14 @@ const Collaborators = ({ lng, project }: { lng: string; project: string }) => {
               <Image
                 src="/assets/projects_dashboard/openearth.png"
                 alt="openearth"
+                width={123}
+                height={28}
               />
               <Image
                 src="/assets/projects_dashboard/icare_logo.png"
                 alt="C40 Cities"
+                width={80}
+                height={36}
               />
             </Flex>
           </Flex>

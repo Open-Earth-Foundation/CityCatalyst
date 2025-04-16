@@ -81,7 +81,8 @@ const Collaborators = ({
                 <Image
                   src="/assets/projects_dashboard/mma_big.png"
                   alt="Brazilian Government"
-                  height={80}
+                  width={363}
+                  height={132}
                 />
               </Flex>
               <Flex justifyContent="space-between">
@@ -98,7 +99,8 @@ const Collaborators = ({
                 <Image
                   src="/assets/projects_dashboard/moc.png"
                   alt="ministry of cities"
-                  height={80}
+                  width={369}
+                  height={137}
                 />
               </Flex>
             </Box>
@@ -134,11 +136,9 @@ const Collaborators = ({
                 </Text>
                 <Image
                   src="/assets/projects_dashboard/c40_cities_logo.png"
-                  alt="ministry of cities"
+                  alt="c40 cities"
                   width={100}
-                  style={{
-                    height: "80px",
-                  }}
+                  height={100}
                 />
               </Flex>
               <Flex justifyContent="space-between" mt={10}>
@@ -156,10 +156,9 @@ const Collaborators = ({
                 </Text>
                 <Image
                   src="/assets/projects_dashboard/gcom_big.png"
-                  alt="ministry of cities"
-                  style={{
-                    height: "80px",
-                  }}
+                  alt="gcom"
+                  width={215}
+                  height={120}
                 />
               </Flex>
               <Flex justifyContent="space-between" mt={10}>
@@ -172,7 +171,12 @@ const Collaborators = ({
                   ensure transparency and harmonization of emissions reporting
                   with international frameworks.
                 </Text>
-                <Image src="/assets/projects_dashboard/cdp_big.png" alt="cdp" />
+                <Image
+                  src="/assets/projects_dashboard/cdp_big.png"
+                  alt="cdp"
+                  width={198}
+                  height={91}
+                />
               </Flex>
               <Flex justifyContent="space-between" mt={10} alignItems="center">
                 <Text maxW="3xl">
@@ -188,9 +192,8 @@ const Collaborators = ({
                 <Image
                   src="/assets/projects_dashboard/bloomberg_big.png"
                   alt="bloomberg"
-                  style={{
-                    height: "80px",
-                  }}
+                  width={275}
+                  height={86}
                 />
               </Flex>
             </Box>
@@ -227,9 +230,8 @@ const Collaborators = ({
                 <Image
                   src="/assets/projects_dashboard/openearth_big.png"
                   alt="openearth"
-                  style={{
-                    height: "60px",
-                  }}
+                  width={221}
+                  height={50}
                 />
               </Flex>
             </Box>
@@ -266,9 +268,8 @@ const Collaborators = ({
                 <Image
                   src="/assets/projects_dashboard/icare_big.png"
                   alt="openearth"
-                  style={{
-                    height: "60px",
-                  }}
+                  width={131}
+                  height={60}
                 />
               </Flex>
               <Flex justifyContent="space-between" alignItems="center" mt={10}>
@@ -313,9 +314,8 @@ const Collaborators = ({
                 <Image
                   src="/assets/projects_dashboard/fnp.png"
                   alt="fnp"
-                  style={{
-                    height: "70px",
-                  }}
+                  width={133}
+                  height={58}
                 />
               </Flex>
               <Flex
@@ -335,11 +335,9 @@ const Collaborators = ({
                 </Text>
                 <Image
                   src="/assets/projects_dashboard/iclei.png"
-                  alt="fnp"
-                  height={150}
-                  style={{
-                    marginRight: "50px",
-                  }}
+                  alt="iclei"
+                  width={96}
+                  height={96}
                 />
               </Flex>
             </Box>
@@ -371,11 +369,9 @@ const Collaborators = ({
                 </Text>
                 <Image
                   src="/assets/projects_dashboard/seeg.png"
-                  alt="openearth"
-                  style={{
-                    height: "60px",
-                    marginRight: "50px",
-                  }}
+                  alt="seeg"
+                  width={106}
+                  height={47}
                 />
               </Flex>
               <Flex
@@ -395,11 +391,9 @@ const Collaborators = ({
                 </Text>
                 <Image
                   src="/assets/projects_dashboard/adapta-brazil.png"
-                  alt="fnp"
-                  height={150}
-                  style={{
-                    marginRight: "50px",
-                  }}
+                  alt="adapta brazil"
+                  width={98}
+                  height={41}
                 />
               </Flex>
               <Flex
@@ -420,10 +414,8 @@ const Collaborators = ({
                 <Image
                   src="/assets/projects_dashboard/climate-trace.png"
                   alt="fnp"
-                  height={150}
-                  style={{
-                    marginRight: "50px",
-                  }}
+                  width={116}
+                  height={50}
                 />
               </Flex>
             </Box>

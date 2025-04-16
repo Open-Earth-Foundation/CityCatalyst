@@ -13,6 +13,7 @@ import Hero from "@/app/[lng]/public/project/[project]/components/Hero";
 import PartnerLogos from "@/app/[lng]/public/project/[project]/components/PartnerLogo";
 import Metrics from "@/app/[lng]/public/project/[project]/components/Metrics";
 import Navbar from "@/app/[lng]/public/project/[project]/components/Navbar";
+import Collaborators from "@/app/[lng]/public/project/[project]/components/Collaborators";
 
 export interface PartnerLogo {
   id: string;
@@ -48,7 +49,17 @@ const partners: PartnerLogo[] = [
   {
     id: "4",
     name: "Global Covenant of Mayors for Climate & Energy",
-    logo: "/assets/projects_dashboard/global_covenant.png",
+    logo: "/assets/projects_dashboard/global_covenant_logo.png",
+  },
+  {
+    id: "5",
+    name: "Icare",
+    logo: "/assets/projects_dashboard/icare_logo.png",
+  },
+  {
+    id: "6",
+    name: "Openearth",
+    logo: "/assets/projects_dashboard/openearth.png",
   },
 ];
 
@@ -137,6 +148,8 @@ export default function ProjectPage({
       <Box flex={1} className="flex-grow" w="100%">
         <Hero />
         <PartnerLogos partners={partners} />
+      </Box>
+      <Box borderRadius={8} p={4} m={8}>
         <Metrics {...metricsProps} />
         <Center w="full">
           <ProjectMap
@@ -146,8 +159,6 @@ export default function ProjectPage({
             setSelectedCity={setSelectedCity}
           />
         </Center>
-      </Box>
-      <Box bgColor="#EEE" borderRadius={8} p={4} m={8}>
         <TitleLarge mb={4}>{selectedCity?.name}</TitleLarge>
         <HStack spaceX={4}>
           <LinkCard
@@ -170,6 +181,7 @@ export default function ProjectPage({
           />
         </HStack>
       </Box>
+      <Collaborators lng={lng} project={project} />
       <Footer {...footerProps} />
     </VStack>
   );

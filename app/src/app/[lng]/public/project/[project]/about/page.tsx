@@ -12,6 +12,7 @@ import {
 } from "@chakra-ui/react";
 import Footer from "../components/Footer";
 import NavigationBar from "../components/Navbar";
+import Collaborators from "@/app/[lng]/public/project/[project]/components/Collaborators";
 
 const About = ({
   params: { project, lng },
@@ -80,7 +81,9 @@ const About = ({
                     </Text>
                   </Box>
                 </Box>
-                <Box bg="gray.100" borderRadius="xl"></Box>
+                <Box ml="200px" borderRadius="xl">
+                  <img src="/assets/projects_dashboard/about_map_view.png" />
+                </Box>
               </Grid>
             </Box>
           </Container>
@@ -93,7 +96,7 @@ const About = ({
               <Box bg="gray.200" borderRadius="xl"></Box>
               <Box>
                 <Heading as="h2" fontSize="2xl" color="gray.800" mb={6}>
-                  PURPOSE & PRIORITIES
+                  Scale High Impact  Climate Actions
                 </Heading>
                 <Text mb={4} color="gray.600">
                   This national initiative aims to:
@@ -189,7 +192,9 @@ const About = ({
                     decisions, and transparency for international reporting.
                   </Text>
                 </Box>
-                <Box bg="gray.100" borderRadius="xl"></Box>
+                <Box ml="200px">
+                  <img src="/assets/projects_dashboard/about_insights.png" />
+                </Box>
               </Grid>
             </Box>
           </Container>
@@ -232,73 +237,7 @@ const About = ({
             </HStack>
           </Container>
         </Box>
-        <Box py={16} px={{ base: 6, md: 10, lg: 16 }} bg="gray.50">
-          <Container maxW="7xl">
-            <Grid
-              templateColumns={{ base: "1fr", md: "repeat(3, 1fr)" }}
-              gap={8}
-            >
-              <Box>
-                <Text
-                  fontSize="Headline.sm"
-                  textAlign="center"
-                  fontWeight="bold"
-                  mb={4}
-                >
-                  Developed by
-                </Text>
-                <Flex gap={6} align="center">
-                  <img
-                    src="/assets/projects_dashboard/cdp_logo.png"
-                    alt="CDP"
-                    height="150px"
-                    width="150px"
-                  />
-                  <img
-                    src="/assets/projects_dashboard/c40_cities_logo.png"
-                    alt="C40 Cities"
-                    height="150px"
-                    width="150px"
-                  />
-                </Flex>
-              </Box>
-
-              <Box>
-                <Text fontSize="Headline.sm" fontWeight="bold" mb={4}>
-                  A commitment from
-                </Text>
-                <Flex gap={6} align="center">
-                  <img
-                    src="/assets/projects_dashboard/brazil_ministry_logo.png"
-                    alt="Brazilian Government"
-                    height="150px"
-                    width="150px"
-                  />
-                </Flex>
-              </Box>
-
-              <Box>
-                <Text fontSize="Headline.sm" fontWeight="bold" mb={4}>
-                  Supported by
-                </Text>
-                <Flex gap={6} align="center">
-                  <img
-                    src="/assets/projects_dashboard/global_covenant_logo.png"
-                    alt="Global Covenant of Mayors"
-                    height="150px"
-                    width="150px"
-                  />
-                </Flex>
-              </Box>
-            </Grid>
-
-            <Box mt={12}>
-              <Text fontSize="sm" fontWeight="medium" color="gray.500" mb={4}>
-                With collaboration from
-              </Text>
-            </Box>
-          </Container>
-        </Box>
+        <Collaborators lng={lng} project={project} />
       </Box>
       <Footer {...footerProps} />
     </Box>

@@ -19,7 +19,7 @@ const Metrics = ({
   isLoading = false,
 }: MetricsProps) => {
   return (
-    <section className="py-16 px-6 bg-white">
+    <section className="py-16 px-6">
       <div className="max-w-7xl mx-auto">
         {/* Optional section title and description */}
         {title && (
@@ -33,7 +33,7 @@ const Metrics = ({
         {/* Metrics grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {metrics.map((metric, index) => (
-            <div key={index} className="bg-gray-50 p-6 rounded-md">
+            <div key={index} className="bg-white p-6 rounded-md">
               <div className="text-gray-500 uppercase text-xs tracking-wider font-medium mb-2">
                 {metric.label}
               </div>

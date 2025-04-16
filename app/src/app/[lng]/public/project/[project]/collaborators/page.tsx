@@ -55,8 +55,8 @@ const Collaborators = ({
               innovation, and local expertise. Together, these organizations
               have supported 50 Brazilian cities in developing foundational
               climate diagnostics and actionable pathways, aligning local action
-              with Brazil's national climate commitments and the global CHAMP
-              pledge.
+              with Brazil&apos;s national climate commitments and the global
+              CHAMP pledge.
             </Text>
           </Container>
           <Container maxW="7xl" py="10">

@@ -4,10 +4,12 @@ import createHttpError from "http-errors";
 import { NextResponse } from "next/server";
 import { db } from "@/models";
 import PopulationService from "@/backend/PopulationService";
+import { QueryTypes } from "sequelize";
 
 export const GET = apiHandler(async (req, { params, session }) => {
   const { projectId } = params;
 
+  // TODO perform access control/ only show public inventories
   const project = await Project.findByPk(projectId as string, {
     include: [
       {
@@ -35,9 +37,25 @@ export const GET = apiHandler(async (req, { params, session }) => {
   }
 
   const inventories = project.cities.flatMap((city) => city.inventories);
-  const totalEmissions = inventories.reduce((acc, inventory) => {
+
+  // TODO [ON-2429]: Save total emissions for inventory every time activity data is modified
+  const rawQuery = `
+    SELECT SUM(co2eq)
+    FROM "InventoryValue"
+    WHERE inventory_id IN (:inventoryIds)
+  `;
+
+  const inventoryIds = inventories.map((inventory) => inventory.inventoryId);
+  const [{ sum: totalEmissions }] = (await db.sequelize!.query(rawQuery, {
+    replacements: { inventoryIds },
+    type: QueryTypes.SELECT,
+    raw: true,
+  })) as unknown as { sum: number }[];
+
+  // TODO [ON-2429]: enable this over the raw query above
+  /* const totalEmissions = inventories.reduce((acc, inventory) => {
     return acc + (inventory.totalEmissions ?? 0);
-  }, 0);
+  }, 0); */
   const latestUsedCityPopulations = await Promise.all(
     project.cities.map(async (city) => {
       if (city.inventories.length === 0) {

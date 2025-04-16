@@ -159,19 +159,11 @@ export default class AdminService {
       ],
     });
 
-    const updateableCityIds: string[] = [];
     for (const inventory of inventories) {
       if (!inventory.city?.locode) {
         throw new createHttpError.NotFound(
           "City or locode not found for inventory " + inventory.inventoryId,
         );
-      }
-
-      if (
-        !updateableCityIds.includes(inventory.city.cityId) &&
-        inventory.city.projectId !== props.projectId
-      ) {
-        updateableCityIds.push(inventory.city.cityId);
       }
 
       // Connect all data sources, rank them by priority, check if they connect
@@ -181,11 +173,6 @@ export default class AdminService {
       );
       errors.push(...sourceErrors);
     }
-
-    await db.models.City.update(
-      { projectId: props.projectId },
-      { where: { cityId: { [Op.in]: updateableCityIds } } },
-    );
 
     return { errors };
   }

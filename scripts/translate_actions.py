@@ -40,11 +40,12 @@ FIELDS_TO_TRANSLATE = [
 ]
 
 
-def translate_text(text: str, target_language: str) -> str | None:
+def translate_text(text: str | None, target_language: str | None) -> str | None:
     """
     Translate text using OpenAI API
     """
-    if text is None:
+    if text is None or target_language is None:
+        print("Text or target language is None - skipping translation")
         return None
 
     system_prompt = """
@@ -79,7 +80,7 @@ This is the climate actions:
 
     try:
         response = client.chat.completions.create(
-            model="gpt-4o",
+            model="gpt-4.1",
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_prompt},

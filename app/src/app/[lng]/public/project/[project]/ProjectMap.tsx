@@ -124,11 +124,15 @@ export interface ProjectMapProps {
   selectedCity?: CityMetadata;
 }
 
+const defaultColor = "#648bff";
+const highlightColor = "#ffc363";
+
 export const ProjectMap: FC<ProjectMapProps> = ({
   projectId,
   width,
   height,
   setSelectedCity,
+  selectedCity,
 }) => {
   const {
     data: projectBoundaries,
@@ -196,7 +200,7 @@ export const ProjectMap: FC<ProjectMapProps> = ({
           svgAttributes={{
             fill: "#648bff99",
             strokeWidth: "3",
-            stroke: "#648bff",
+            stroke: defaultColor,
           }}
         >
           {projectBoundaries?.map(
@@ -219,6 +223,11 @@ export const ProjectMap: FC<ProjectMapProps> = ({
             boundary.boundingBox && (
               <Marker
                 key={boundary.city.id}
+                color={
+                  selectedCity?.id === boundary.city.id
+                    ? highlightColor
+                    : defaultColor
+                }
                 anchor={getBoundingBoxCenter(boundary.boundingBox)}
                 onClick={() => setSelectedCity(boundary.city)}
               />

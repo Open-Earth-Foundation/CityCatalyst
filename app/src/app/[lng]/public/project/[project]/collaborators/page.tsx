@@ -4,6 +4,7 @@
 import { Box, Container, Text, Heading, Flex, Strong } from "@chakra-ui/react";
 import Footer from "../components/Footer";
 import NavigationBar from "../components/Navbar";
+import Image from "next/image";
 
 const Collaborators = ({
   params: { project, lng },
@@ -77,13 +78,10 @@ const Collaborators = ({
                   alignment between city-level diagnostics and Brazil’s national
                   climate commitments.
                 </Text>
-                <img
+                <Image
                   src="/assets/projects_dashboard/mma_big.png"
                   alt="Brazilian Government"
-                  height="80px"
-                  style={{
-                    height: "80px",
-                  }}
+                  height={80}
                 />
               </Flex>
               <Flex justifyContent="space-between">
@@ -97,12 +95,10 @@ const Collaborators = ({
                   policy. Their involvement ensures climate planning is
                   integrated into the everyday governance of Brazilian cities.
                 </Text>
-                <img
+                <Image
                   src="/assets/projects_dashboard/moc.png"
                   alt="ministry of cities"
-                  style={{
-                    height: "80px",
-                  }}
+                  height={80}
                 />
               </Flex>
             </Box>
@@ -136,10 +132,10 @@ const Collaborators = ({
                   leadership and oversight, C40 ensures alignment with global
                   best practices and a direct connection to the CHAMP framework.
                 </Text>
-                <img
+                <Image
                   src="/assets/projects_dashboard/c40_cities_logo.png"
                   alt="ministry of cities"
-                  width="100px"
+                  width={100}
                   style={{
                     height: "80px",
                   }}
@@ -158,7 +154,7 @@ const Collaborators = ({
                   cities advance along a recognized global climate action
                   pathway.
                 </Text>
-                <img
+                <Image
                   src="/assets/projects_dashboard/gcom_big.png"
                   alt="ministry of cities"
                   style={{
@@ -176,7 +172,7 @@ const Collaborators = ({
                   ensure transparency and harmonization of emissions reporting
                   with international frameworks.
                 </Text>
-                <img src="/assets/projects_dashboard/cdp_big.png" alt="cdp" />
+                <Image src="/assets/projects_dashboard/cdp_big.png" alt="cdp" />
               </Flex>
               <Flex justifyContent="space-between" mt={10} alignItems="center">
                 <Text maxW="3xl">
@@ -189,7 +185,7 @@ const Collaborators = ({
                   strategic investment in accelerating climate action across
                   Global South cities.
                 </Text>
-                <img
+                <Image
                   src="/assets/projects_dashboard/bloomberg_big.png"
                   alt="bloomberg"
                   style={{
@@ -228,7 +224,7 @@ const Collaborators = ({
                   automated generation of GHG inventories and climate risk
                   assessments for each participating city.
                 </Text>
-                <img
+                <Image
                   src="/assets/projects_dashboard/openearth_big.png"
                   alt="openearth"
                   style={{
@@ -267,7 +263,7 @@ const Collaborators = ({
                   mitigation and adaptation measures with municipal
                   stakeholders.
                 </Text>
-                <img
+                <Image
                   src="/assets/projects_dashboard/icare_big.png"
                   alt="openearth"
                   style={{
@@ -300,7 +296,7 @@ const Collaborators = ({
             <Box fontSize="body.lg" color="gray.900" mt={2} mb={8}>
               <Text mb={10}>
                 <Strong>
-                  Organizations s﻿upporting municipal participation and peer
+                  Organizations supporting municipal participation and peer
                   learning.
                 </Strong>
               </Text>
@@ -314,7 +310,7 @@ const Collaborators = ({
                   helped ensure political buy-in across the 50 participating
                   cities.
                 </Text>
-                <img
+                <Image
                   src="/assets/projects_dashboard/fnp.png"
                   alt="fnp"
                   style={{
@@ -337,10 +333,10 @@ const Collaborators = ({
                   contributed to technical support, city capacity-building, and
                   dissemination of methodologies for long-term local adoption.
                 </Text>
-                <img
+                <Image
                   src="/assets/projects_dashboard/iclei.png"
                   alt="fnp"
-                  height="150px"
+                  height={150}
                   style={{
                     marginRight: "50px",
                   }}
@@ -373,7 +369,7 @@ const Collaborators = ({
                   data enabled rapid, transparent generation of baseline city
                   profiles
                 </Text>
-                <img
+                <Image
                   src="/assets/projects_dashboard/seeg.png"
                   alt="openearth"
                   style={{
@@ -397,10 +393,10 @@ const Collaborators = ({
                   which were essential for constructing the Climate Risk and
                   Vulnerability Assessments (CCRAs).
                 </Text>
-                <img
+                <Image
                   src="/assets/projects_dashboard/adapta-brazil.png"
                   alt="fnp"
-                  height="150px"
+                  height={150}
                   style={{
                     marginRight: "50px",
                   }}
@@ -421,10 +417,10 @@ const Collaborators = ({
                   and spatial validation, supporting emissions profiling with
                   independent verification
                 </Text>
-                <img
+                <Image
                   src="/assets/projects_dashboard/climate-trace.png"
                   alt="fnp"
-                  height="150px"
+                  height={150}
                   style={{
                     marginRight: "50px",
                   }}

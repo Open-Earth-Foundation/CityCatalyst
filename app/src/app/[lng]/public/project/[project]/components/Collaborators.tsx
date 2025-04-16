@@ -3,6 +3,7 @@
 import { Box, Container, Flex, Grid, Heading, Text } from "@chakra-ui/react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import Image from "next/image";
 
 const Collaborators = ({ lng, project }: { lng: string; project: string }) => {
   return (
@@ -27,11 +28,11 @@ const Collaborators = ({ lng, project }: { lng: string; project: string }) => {
               Developed by
             </Text>
             <Flex gap={6} align="center">
-              <img
+              <Image
                 src="/assets/projects_dashboard/openearth.png"
                 alt="openearth"
               />
-              <img
+              <Image
                 src="/assets/projects_dashboard/icare_logo.png"
                 alt="C40 Cities"
               />
@@ -43,11 +44,11 @@ const Collaborators = ({ lng, project }: { lng: string; project: string }) => {
               A commitment from
             </Text>
             <Flex gap={6} align="center">
-              <img
+              <Image
                 src="/assets/projects_dashboard/brazil_ministry_logo.png"
                 alt="Brazilian Government"
-                height="150px"
-                width="150px"
+                height={150}
+                width={150}
               />
             </Flex>
           </Flex>
@@ -57,23 +58,23 @@ const Collaborators = ({ lng, project }: { lng: string; project: string }) => {
               Supported by
             </Text>
             <Flex gap={6} align="center">
-              <img
+              <Image
                 src="/assets/projects_dashboard/global_covenant_logo.png"
                 alt="Global Covenant of Mayors"
-                height="80px"
-                width="80px"
+                height={80}
+                width={80}
               />
-              <img
+              <Image
                 src="/assets/projects_dashboard/c40_cities_logo.png"
                 alt="C40 Cities"
-                height="80px"
-                width="80px"
+                height={80}
+                width={80}
               />
-              <img
+              <Image
                 src="/assets/projects_dashboard/cdp_logo.png"
                 alt="CDP"
-                height="80px"
-                width="80px"
+                height={80}
+                width={80}
               />
             </Flex>
           </Flex>
@@ -84,35 +85,35 @@ const Collaborators = ({ lng, project }: { lng: string; project: string }) => {
             With collaboration from
           </Text>
           <Flex gap={6} align="center" justifyContent="space-between" w="full">
-            <img
+            <Image
               src="/assets/projects_dashboard/iclei.png"
               alt="ICLEI"
-              height="80px"
-              width="80px"
+              height={80}
+              width={80}
             />
-            <img
+            <Image
               src="/assets/projects_dashboard/seeg.png"
               alt="SEEG"
-              height="80px"
-              width="80px"
+              height={80}
+              width={80}
             />
-            <img
+            <Image
               src="/assets/projects_dashboard/fnp.png"
               alt="SEEG"
-              height="80px"
-              width="80px"
+              height={80}
+              width={80}
             />
-            <img
+            <Image
               src="/assets/projects_dashboard/adapta-brazil.png"
               alt="CC"
-              height="80px"
-              width="80px"
+              height={80}
+              width={80}
             />
-            <img
+            <Image
               src="/assets/projects_dashboard/climate-trace.png"
               alt="CC"
-              height="80px"
-              width="80px"
+              height={80}
+              width={80}
             />
           </Flex>
           <Link

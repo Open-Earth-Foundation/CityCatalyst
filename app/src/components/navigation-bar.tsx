@@ -55,12 +55,14 @@ export function NavigationBar({
   isPublic = false,
   showMenu = false,
   isAuth = false,
+  children,
 }: {
   lng: string;
   showNav?: boolean;
   isPublic?: boolean;
   showMenu?: boolean;
   isAuth?: boolean;
+  children?: React.ReactNode;
 }) {
   const { t } = useTranslation(lng, "navigation");
   const { inventory: inventoryParam } = useParams();
@@ -121,7 +123,7 @@ export function NavigationBar({
 
   return (
     <Box
-      className="flex flex-row px-8 py-4 align-middle space-x-12 items-center relative z-50"
+      className="flex flex-row px-8 py-4 align-middle space-x-12 items-center relative z-50 w-full"
       bgColor="content.alternative"
     >
       <Box className="flex" gap={6}>
@@ -174,6 +176,7 @@ export function NavigationBar({
           />
         </>
       )}
+      {children}
       <Box display="flex">
         <Box display="flex">
           <MenuRoot

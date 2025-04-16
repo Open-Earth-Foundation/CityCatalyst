@@ -3,6 +3,7 @@
 
 import { useState } from "react";
 import { api } from "@/services/api";
+import type { CityMetadata } from "./ProjectMap";
 import ProjectMap from "./ProjectMap";
 import { Box, Button, Card, Center, HStack, VStack } from "@chakra-ui/react";
 import Footer from "./components/Footer";
@@ -74,11 +75,13 @@ function LinkCard({
   description,
   link,
   methodologyLink,
+  disabled,
 }: {
   title: string;
   description: string;
   link: string;
   methodologyLink: string;
+  disabled?: boolean;
 }) {
   return (
     <Card.Root rounded={8}>
@@ -87,7 +90,9 @@ function LinkCard({
           <TitleLarge color="interactive.secondary">{title}</TitleLarge>
           <LabelLarge>{description}</LabelLarge>
           <Link href={link} target="_blank" rel="noopener noreferrer">
-            <Button w="full">SEE RESULTS</Button>
+            <Button w="full" disabled={disabled}>
+              SEE RESULTS
+            </Button>
           </Link>
           <Link
             href={methodologyLink}
@@ -116,7 +121,7 @@ export default function ProjectPage({
   } = api.useGetProjectSummaryQuery(project!, {
     skip: !project,
   });
-  const [selectedCity, setSelectedCity] = useState<any | null>(null);
+  const [selectedCity, setSelectedCity] = useState<CityMetadata | undefined>();
 
   const formattedEmissions = projectSummary?.totalEmissions
     ? formatEmissions(projectSummary?.totalEmissions)
@@ -163,6 +168,7 @@ export default function ProjectPage({
             width={1240}
             projectId={project}
             setSelectedCity={setSelectedCity}
+            selectedCity={selectedCity}
           />
         </Center>
         <TitleLarge mb={4}>{selectedCity?.name}</TitleLarge>
@@ -170,19 +176,22 @@ export default function ProjectPage({
           <LinkCard
             title="GHGI"
             description="Detailed emissions inventory, with focus on transportation and urban infrastructure."
-            link="https://citycatalyst.io/en/public/01170216-ab15-4fe0-a316-d09d84a80f8b"
+            disabled={!selectedCity}
+            link={`https://citycatalyst.io/en/public/${selectedCity?.latestInventoryId}`}
             methodologyLink=""
           />
           <LinkCard
             title="CAP"
             description="Climate risk assessment, focusing on vulnerabilities and adaptations strategies."
-            link="https://cap.openearth.dev/#/city/Caxias%20do%20Sul"
+            link={`https://cap.openearth.dev/#/city/${selectedCity?.name}`}
+            disabled={!selectedCity}
             methodologyLink=""
           />
           <LinkCard
             title="CCRA"
             description="Climate action plan focusing on urban resilience and nature-based solutions for a coastal city."
-            link="https://citycatalyst-ccra.replit.app/cities/BR%20CXL"
+            link={`https://citycatalyst-ccra.replit.app/cities/${selectedCity?.locode}`}
+            disabled={!selectedCity}
             methodologyLink=""
           />
         </HStack>

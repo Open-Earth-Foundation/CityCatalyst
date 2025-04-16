@@ -109,11 +109,19 @@ function getBoundingBoxCenter(
   );
 }*/
 
+export interface CityMetadata {
+  id: string;
+  name: string;
+  locode: string;
+  latestInventoryId: string;
+}
+
 export interface ProjectMapProps {
   projectId: string | null;
   width: number;
   height: number;
-  setSelectedCity: (cityId: string) => void;
+  setSelectedCity: (city: CityMetadata) => void;
+  selectedCity?: CityMetadata;
 }
 
 export const ProjectMap: FC<ProjectMapProps> = ({
@@ -195,12 +203,12 @@ export const ProjectMap: FC<ProjectMapProps> = ({
             (boundary: any) =>
               boundary.data && (
                 <GeoJsonFeature
-                  key={boundary.cityId}
+                  key={boundary.city.id}
                   feature={{
                     type: "Feature",
                     geometry: boundary.data,
                   }}
-                  onClick={() => setSelectedCity(boundary.cityId)}
+                  onClick={() => setSelectedCity(boundary.city)}
                 />
               ),
           )}
@@ -210,9 +218,9 @@ export const ProjectMap: FC<ProjectMapProps> = ({
           (boundary: any) =>
             boundary.boundingBox && (
               <Marker
-                key={boundary.cityId}
+                key={boundary.city.id}
                 anchor={getBoundingBoxCenter(boundary.boundingBox)}
-                onClick={() => setSelectedCity(boundary.cityId)}
+                onClick={() => setSelectedCity(boundary.city)}
               />
             ),
         )}

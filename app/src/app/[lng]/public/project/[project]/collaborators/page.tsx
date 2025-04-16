@@ -1,24 +1,9 @@
 /* eslint-disable i18next/no-literal-string */
 
 "use client";
-import {
-  Box,
-  Container,
-  Text,
-  Heading,
-  VStack,
-  Grid,
-  Flex,
-  Image,
-  Strong,
-} from "@chakra-ui/react";
+import { Box, Container, Text, Heading, Flex, Strong } from "@chakra-ui/react";
 import Footer from "../components/Footer";
 import NavigationBar from "../components/Navbar";
-
-import brazilMinistryLogo from "@/assets/brazil_ministry_logo.png";
-import cdpLogo from "@/assets/cdp_logo.png";
-import c40CitiesLogo from "@/assets/c40_cities_logo.png";
-import globalCovenantLogo from "@/assets/global_covenant_logo.png";
 
 const Collaborators = ({
   params: { project, lng },

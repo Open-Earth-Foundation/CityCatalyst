@@ -171,7 +171,7 @@ export default function ProjectPage({
             selectedCity={selectedCity}
           />
         </Center>
-        <TitleLarge mb={4}>{selectedCity?.name}</TitleLarge>
+        <TitleLarge my={4}>{selectedCity?.name}</TitleLarge>
         <HStack spaceX={4}>
           <LinkCard
             title="GHGI"

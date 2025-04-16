@@ -7,7 +7,6 @@ import {
   Heading,
   Text,
   List,
-  Flex,
   HStack,
 } from "@chakra-ui/react";
 import Footer from "../components/Footer";
@@ -61,7 +60,7 @@ const About = ({
                     <Text mb={4}>
                       This project supports 50 municipalities across Brazil to
                       develop foundational climate diagnostics and priority
-                      actions in line with the country's commitment to the{" "}
+                      actions in line with the country&apos;s commitment to the{" "}
                       <Text as="span" fontWeight="semibold">
                         Coalition for High Ambition Multilevel Partnerships
                         (CHAMP)
@@ -74,15 +73,19 @@ const About = ({
                       In this effort, local governments are building Greenhouse
                       Gas (GHG) emissions inventories and Climate Risk and
                       Vulnerability Assessments (CCRAs), while identifying key
-                      mitigation and adaptation measures aligned with Brazil's
-                      national climate goals. These outputs are integrated into
-                      a scalable digital platform to support decision-making and
-                      track progress toward COP30 and beyond.
+                      mitigation and adaptation measures aligned with
+                      Brazil&apos;s national climate goals. These outputs are
+                      integrated into a scalable digital platform to support
+                      decision-making and track progress toward COP30 and
+                      beyond.
                     </Text>
                   </Box>
                 </Box>
                 <Box ml="200px" borderRadius="xl">
-                  <img src="/assets/projects_dashboard/about_map_view.png" />
+                  <img
+                    src="/assets/projects_dashboard/about_map_view.png"
+                    alt="about map view"
+                  />
                 </Box>
               </Grid>
             </Box>
@@ -104,7 +107,7 @@ const About = ({
                 <List.Root color="gray.600">
                   <List.Item>
                     <Text as="span" fontWeight="semibold">
-                      Advance Brazil's CHAMP commitment
+                      Advance Brazil&apos;s CHAMP commitment
                     </Text>{" "}
                     by embedding city-level data and actions into national
                     strategies like NDCs, NAPs, and LT-LEDS.
@@ -156,7 +159,7 @@ const About = ({
                     This platform offers access to structured, city-level
                     climate information:
                   </Text>
-                  <List.Root spacing={3} color="gray.600">
+                  <List.Root spaceY={3} color="gray.600">
                     <List.Item>
                       <Text as="span" fontWeight="semibold">
                         Emissions Profiles
@@ -193,7 +196,10 @@ const About = ({
                   </Text>
                 </Box>
                 <Box ml="200px">
-                  <img src="/assets/projects_dashboard/about_insights.png" />
+                  <img
+                    src="/assets/projects_dashboard/about_insights.png"
+                    alt="about insights"
+                  />
                 </Box>
               </Grid>
             </Box>

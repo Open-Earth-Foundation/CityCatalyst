@@ -374,11 +374,13 @@ export default class AdminService {
             }
 
             if (!isSuccessful) {
-              const message = `Wasn't able to find a data source for GPC reference number ${gpcReferenceNumber}`;
-              logger.error(`${cityLocode} - ${message}`);
+              logger.error(
+                `${cityLocode} - Wasn't able to find a data source for GPC reference number ${gpcReferenceNumber}`,
+              );
               errors.push({
                 locode: cityLocode,
-                error: message,
+                error: "no-data-source-available-for-gpc-reference-number",
+                detail: gpcReferenceNumber,
               });
             }
           }

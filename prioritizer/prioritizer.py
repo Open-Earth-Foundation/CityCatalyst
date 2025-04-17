@@ -19,6 +19,7 @@ from prioritizer.utils.additional_scoring_functions import (
 )
 from prioritizer.utils.prompt import return_prompt
 from prioritizer.utils.ml_comparator import ml_compare
+from scripts.get_actions import get_actions
 
 load_dotenv()
 
@@ -513,7 +514,12 @@ def tournament_ranking(actions, city):
 def main(locode: str):
     try:
         city = read_city_inventory(locode)
-        actions = read_actions()
+
+        # Read the actions from the file
+        # actions = read_actions()
+
+        # Use the API to get the actions
+        actions = get_actions()
     except Exception as e:
         print("Error reading data:", e)
         sys.exit(1)
@@ -526,12 +532,16 @@ def main(locode: str):
     adaptation_actions = [
         action
         for action in filtered_actions
-        if action.get("ActionType") and "adaptation" in action.get("ActionType")
+        if action.get("ActionType") is not None
+        and isinstance(action["ActionType"], list)
+        and "adaptation" in action["ActionType"]
     ]
     mitigation_actions = [
         action
         for action in filtered_actions
-        if action.get("ActionType") and "mitigation" in action.get("ActionType")
+        if action.get("ActionType") is not None
+        and isinstance(action["ActionType"], list)
+        and "mitigation" in action["ActionType"]
     ]
 
     print(

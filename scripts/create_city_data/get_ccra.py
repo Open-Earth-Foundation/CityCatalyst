@@ -57,4 +57,4 @@ if __name__ == "__main__":
     data = get_ccra(args.locode, args.scenario_name)
     if data:
         print("Successfully fetched CCRA data")
-        print(json.dumps(data, indent=4))
+        print(json.dumps(data, indent=2))

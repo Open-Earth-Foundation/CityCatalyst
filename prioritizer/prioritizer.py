@@ -308,41 +308,39 @@ def qualitative_prioritizer(top_quantitative, actions, city):
         return []
 
 
-def filter_actions_by_biome(actions, city):
+def filter_actions_by_biome(actions: list[dict], city: dict) -> list[dict]:
     """
     Filter actions based on city's biome only if both city and action have biomes defined.
     Actions without a biome field are included in the output.
     If city has no biome, return all actions unfiltered.
     """
     city_biome = city.get("biome")
+
     actions_final = []
-    i = 0
+    skipped_actions = 0
     if not city_biome:
         return actions
     else:
-        print(f"City biome: {city_biome}")
+        logging.debug(f"City biome: {city_biome}")
 
         for action in actions:
-            if action["biome"] != "none":
-                print(f"Action biome: {action['biome']}")
-                if action["biome"] == city_biome:
+            action_biome = action.get("biome")
+            logging.debug(f"Action biome: {action_biome}")
+            if action_biome:
+                # If the action biome matches the city biome, add the action to the list
+                if action_biome == city_biome:
                     actions_final.append(action)
                 else:
-                    i += 1
-                    pass
+                    # If the action biome does not match the city biome, skip the action
+                    # and increment the counter
+                    skipped_actions += 1
+                    continue
             else:
+                # If there is no biome, add the action to the list
                 actions_final.append(action)
-    print(f"actions skipped: {i}")
-    return actions_final
 
-    # Keep actions that either:
-    # 1. Don't have a biome field, or
-    # 2. Have a biome that matches the city's biome
-    return [
-        action
-        for action in actions
-        if "Biome" not in action or action["Biome"] == city_biome
-    ]
+    logging.debug(f"actions skipped: {skipped_actions}")
+    return actions_final
 
 
 def ML_compare(actionA, actionB, city):

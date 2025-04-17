@@ -443,6 +443,10 @@ export type UserAccessResponse = {
   isProjectAdmin: boolean;
   isCollaborator: boolean;
 };
+export enum ACTION_TYPES {
+  Mitigation = "mitigation",
+  Adaptation = "adaptation"
+}
 
 export type CityWithProjectDataResponse = {
   cityId: string;
@@ -461,3 +465,11 @@ export type CityWithProjectDataResponse = {
     };
   };
 };
+
+export enum LANGUAGES {
+  "en" = "en",
+  "es" = "es",
+  "pt" = "pt",
+  "de" = "de"
+}
+

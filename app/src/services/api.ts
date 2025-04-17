@@ -44,6 +44,8 @@ import {
   YearOverYearResultsResponse,
   ProjectUserResponse,
   CityWithProjectDataResponse,
+  LANGUAGES,
+  ACTION_TYPES,
 } from "@/util/types";
 import type { GeoJSON } from "geojson";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
@@ -76,6 +78,7 @@ export const api = createApi({
     "ProjectUsers",
     "UserAccessStatus",
     "Cities",
+    "Cap",
   ],
   baseQuery: fetchBaseQuery({ baseUrl: "/api/v0/", credentials: "include" }),
   endpoints: (builder) => {
@@ -1088,6 +1091,14 @@ export const api = createApi({
         }),
         providesTags: ["Inventory"],
       }),
+      getCap: builder.query<string, { inventoryId: string; actionType: ACTION_TYPES; lng: LANGUAGES }>({
+        query: ({ inventoryId, actionType, lng }) => ({
+          url: `inventory/${inventoryId}/cap?actionType=${actionType}&lng=${lng}`,
+          method: "GET",
+        }),
+        transformResponse: (response: { data: string }) => response.data,
+        providesTags: ["Cap"],
+      }),
     };
   },
 });
@@ -1183,5 +1194,6 @@ export const {
   useGetAllCitiesInSystemQuery,
   useGetUserProjectsQuery,
   useTransferCitiesMutation,
+  useGetCapQuery,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

@@ -1,14 +1,3 @@
-export enum ACTION_TYPES {
-  Mitigation = "mitigation",
-  Adaptation = "adaptation",
-}
-
-export enum LANGUAGES {
-  "en" = "en",
-  "es" = "es",
-  "pt" = "pt",
-}
-
 export interface CoBenefits {
   air_quality: number;
   water_quality: number;

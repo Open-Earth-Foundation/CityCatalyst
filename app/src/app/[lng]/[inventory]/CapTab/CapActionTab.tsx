@@ -1,12 +1,10 @@
 import { InventoryResponse } from "@/util/types";
 import {
   Action,
-  ACTION_TYPES,
   AdaptationAction,
-  LANGUAGES,
   MitigationAction,
 } from "@/app/[lng]/[inventory]/CapTab/types";
-import { fetchFromS3 } from "@/app/[lng]/[inventory]/CapTab/s3";
+import { LANGUAGES, ACTION_TYPES } from "@/util/types";
 import { useEffect, useState } from "react";
 import { useTranslation } from "@/i18n/client";
 import i18next from "i18next";
@@ -20,8 +18,9 @@ import {
   ColumnDef,
   Row,
 } from "@tanstack/react-table";
-import { HiOutlineInformationCircle } from "react-icons/hi";
 import { ActionDrawer } from "./ActionDrawer";
+import { useGetCapQuery } from "@/services/api";
+
 export const BarVisualization = ({ value, total }: { value: number; total: number }) => {
   return (
     <HStack gap={1}>
@@ -47,16 +46,13 @@ export function CapActionTab({
 }) {
   const lng = i18next.language as LANGUAGES;
   const { t } = useTranslation(lng, "cap");
-  const [actions, setActions] = useState<Action[]>([]);
   const [selectedAction, setSelectedAction] = useState<Action | null>(null);
 
-  useEffect(() => {
-    const fetch = async () => {
-      const data = await fetchFromS3(inventory?.city, type, lng);
-      setActions(data);
-    };
-    fetch();
-  }, [inventory?.city, type, lng]);
+  const { data: actions, isLoading, error } = useGetCapQuery({
+    inventoryId: inventory.inventoryId,
+    lng: lng,
+    actionType: type
+  });
 
   const isAdaptation = type === ACTION_TYPES.Adaptation;
 
@@ -160,13 +156,25 @@ export function CapActionTab({
   ];
 
   const table = useReactTable({
-    data: actions,
+    data: Array.isArray(actions) ? actions : [],
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
 
-  if (!actions || actions.length === 0) {
+  if (isLoading) {
     return <Box p={4}>{t("loading")}</Box>;
+  }
+
+  if (error) {
+    return (
+      <Box p={4} color="red.500">
+        {t("error-loading-data")}
+      </Box>
+    );
+  }
+
+  if (!actions || actions.length === 0) {
+    return <Box p={4}>{t("no-actions-found")}</Box>;
   }
 
   return (

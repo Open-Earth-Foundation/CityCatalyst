@@ -148,6 +148,10 @@ jobs:
             "NEXT_PUBLIC_OPENCLIMATE_API_URL=https://openclimate.openearth.dev" \
             "OPENCLIMATE_API_URL=https://openclimate.openearth.dev" \
             "NEXT_PUBLIC_FEATURE_FLAGS=ENTERPRISE_MODE,CAP_TAB_ENABLED" \
+            "AWS_REGION"=${{secrets.AWS_REGION}} \
+            "AWS_ACCESS_KEY_ID"=${{secrets.AWS_ACCESS_KEY_ID}} \
+            "AWS_SECRET_ACCESS_KEY"=${{secrets.AWS_SECRET_ACCESS_KEY}} \
+            "AWS_S3_BUCKET_ID"=${{secrets.AWS_S3_BUCKET_ID}} \
             CDP_API_KEY=${{secrets.CDP_API_KEY_TEST}}
           kubectl create -f k8s/test/cc-test-create-admin.yml -n default
           kubectl rollout restart deployment cc-test-web-deploy -n default

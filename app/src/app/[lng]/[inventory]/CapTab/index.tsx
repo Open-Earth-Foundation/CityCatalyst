@@ -3,7 +3,7 @@ import { useTranslation } from "@/i18n/client";
 import { InventoryResponse } from "@/util/types";
 import { Box, Tabs } from "@chakra-ui/react";
 import React from "react";
-import { ACTION_TYPES } from "@/app/[lng]/[inventory]/CapTab/types";
+import { ACTION_TYPES } from "@/util/types";
 import { CapActionTab } from "@/app/[lng]/[inventory]/CapTab/CapActionTab";
 
 interface capTabProps {

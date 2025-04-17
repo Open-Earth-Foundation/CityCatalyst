@@ -13,10 +13,7 @@ import argparse
 import json
 import logging
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(filename)s:%(lineno)d - %(levelname)s - %(message)s",
-)
+logger = logging.getLogger(__name__)
 
 BASE_DIR = Path(__file__).parent.parent.parent
 
@@ -42,6 +39,10 @@ def get_actions() -> list[dict] | None:
 
 
 if __name__ == "__main__":
+    from logger_config import setup_logger
+
+    setup_logger(level=logging.DEBUG)
+
     parser = argparse.ArgumentParser(description="Fetch climate actions data.")
 
     args = parser.parse_args()

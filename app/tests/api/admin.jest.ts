@@ -20,6 +20,7 @@ import {
 } from "@/backend/AdminService";
 import { Op } from "sequelize";
 import _ from "lodash";
+import { DEFAULT_PROJECT_ID } from "@/util/constants";
 
 const mockSession: AppSession = {
   user: { id: testUserID, role: Roles.User },
@@ -35,11 +36,12 @@ const cityLocodeMap: Record<string, string> = {
   "BR AAX": "Araxá",
 };
 const mockBulkInventoriesRequest: BulkInventoryCreateProps = {
-  cityLocodes: ["US NYC", "DE BER", "BR AAX"],
+  cityLocodes: ["BR AAX"],
   emails: [testUserData.email],
-  years: [2022, 2023, 2024],
+  years: [2022],
   scope: "gpc_basic_plus",
   gwp: "AR6",
+  projectId: DEFAULT_PROJECT_ID,
 };
 
 const mockConnectSourcesRequest: BulkInventoryUpdateProps = {

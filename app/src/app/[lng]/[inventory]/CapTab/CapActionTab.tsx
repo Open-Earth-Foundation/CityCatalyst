@@ -53,7 +53,6 @@ export function CapActionTab({
   useEffect(() => {
     const fetch = async () => {
       const data = await fetchFromS3(inventory?.city, type, lng);
-      console.log("Fetched actions data:", data);
       setActions(data);
     };
     fetch();

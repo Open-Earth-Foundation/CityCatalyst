@@ -1,3 +1,23 @@
+"""
+This file is the main file for the prioritizer.
+It is used to prioritize climate actions for a given city.
+
+It uses the following files:
+- reading_writing_data.py: for reading and writing data to files
+- additional_scoring_functions.py: for additional scoring functions
+- prompt.py: for the prompt
+- ml_comparator.py: for the ML comparator
+- get_actions.py: for getting the actions from the API
+
+Usage:
+python prioritizer.py --locode <locode>
+
+Example:
+Run it from the root level of the project with the following command:
+
+python -m prioritizer.prioritizer --locode "BR CXL"
+"""
+
 import argparse
 import sys
 import os
@@ -20,6 +40,9 @@ from prioritizer.utils.additional_scoring_functions import (
 from prioritizer.utils.prompt import return_prompt
 from prioritizer.utils.ml_comparator import ml_compare
 from scripts.get_actions import get_actions
+import logging
+
+logger = logging.getLogger(__name__)
 
 load_dotenv()
 
@@ -182,7 +205,7 @@ def quantitative_score(city, action):
         time_score = timeline_mapping[timeline_str]
         score += time_score * time_score_weight
     else:
-        print("Invalid timeline:", timeline_str)
+        logging.debug("Invalid timeline:", timeline_str)
 
     # print("Score after time in years:", score)
 
@@ -302,10 +325,10 @@ def qualitative_prioritizer(top_quantitative, actions, city):
                     "explanation": action.explanation,
                 }
             )
-        print("Qualitative prioritization completed.")
+        logging.debug("Qualitative prioritization completed.")
         return qualitative_scores
     else:
-        print("No qualitative prioritization data.")
+        logging.debug("No qualitative prioritization data.")
         return []
 
 
@@ -452,15 +475,15 @@ def final_bracket_for_ranking(actions, city):
         # )
         winner, losers = single_elimination_bracket(participants, city)
         if not winner:
-            print("  No winner found, breaking")
+            logging.debug("  No winner found, breaking")
             break  # no more participants
 
-        print(f"  Rank #{rank}: {winner.get('ActionID', 'Unknown')}")
+        logging.debug(f"  Rank #{rank}: {winner.get('ActionID', 'Unknown')}")
         ranking.append(winner)
         participants = losers
         rank += 1
 
-    print(f"=== Final bracket complete. Ranked {len(ranking)} actions ===")
+    logging.debug(f"=== Final bracket complete. Ranked {len(ranking)} actions ===")
     return ranking
 
 
@@ -472,7 +495,7 @@ def tournament_ranking(actions, city):
     Returns:
       A list of (action, rank_index).
     """
-    print(
+    logging.debug(
         f"\n\n========== STARTING TOURNAMENT RANKING WITH {len(actions)} ACTIONS =========="
     )
     remaining = actions[:]
@@ -487,11 +510,11 @@ def tournament_ranking(actions, city):
 
         if not winner:
             # TODO is there a normal thing that this can happen ?or should this be error
-            print("No winner found, breaking")
+            logging.debug("No winner found, breaking")
             break
 
         # Add the winner with their rank
-        print(f"Rank #{current_rank}: {winner.get('ActionID', 'Unknown')}")
+        logging.debug(f"Rank #{current_rank}: {winner.get('ActionID', 'Unknown')}")
         full_ranking.append((winner, current_rank))
         current_rank += 1
 
@@ -499,14 +522,14 @@ def tournament_ranking(actions, city):
         remaining = losers
         # print(f"{len(remaining)} actions will compete for rank #{current_rank}")
 
-    print(
+    logging.debug(
         f"\n========== TOURNAMENT RANKING COMPLETE. RANKED {len(full_ranking)} ACTIONS =========="
     )
 
     # Print final ranking summary
-    print("\nFinal Ranking Summary:")
+    logging.debug("\nFinal Ranking Summary:")
     for action, rank in full_ranking:
-        print(f"  #{rank}: {action.get('ActionID', 'Unknown')}")
+        logging.debug(f"  #{rank}: {action.get('ActionID', 'Unknown')}")
 
     return full_ranking
 
@@ -520,13 +543,19 @@ def main(locode: str):
 
         # Use the API to get the actions
         actions = get_actions()
+        logging.debug(json.dumps(actions, indent=2))
+
     except Exception as e:
-        print("Error reading data:", e)
+        logging.error("Error reading data:", e)
+        sys.exit(1)
+
+    if not actions or not city:
+        logging.error("No actions data or city data found")
         sys.exit(1)
 
     # Filter actions by biome if applicable
     filtered_actions = filter_actions_by_biome(actions, city)
-    print(f"After biome filtering: {len(filtered_actions)} actions remain")
+    logging.debug(f"After biome filtering: {len(filtered_actions)} actions remain")
 
     # Separate adaptation and mitigation actions
     adaptation_actions = [
@@ -544,12 +573,12 @@ def main(locode: str):
         and "mitigation" in action["ActionType"]
     ]
 
-    print(
+    logging.debug(
         f"Found {len(adaptation_actions)} adaptation actions and {len(mitigation_actions)} mitigation actions"
     )
 
     # Apply tournament ranking for adaptation actions
-    print("Starting tournament ranking for adaptation actions...")
+    logging.debug("Starting tournament ranking for adaptation actions...")
     adaptation_ranking = tournament_ranking(adaptation_actions, city)
 
     # Format adaptation results
@@ -569,7 +598,7 @@ def main(locode: str):
         )
 
     # Apply tournament ranking for mitigation actions
-    print("Starting tournament ranking for mitigation actions...")
+    logging.debug("Starting tournament ranking for mitigation actions...")
     mitigation_ranking = tournament_ranking(mitigation_actions, city)
 
     # Format mitigation results
@@ -590,10 +619,14 @@ def main(locode: str):
     # Save outputs to separate files
     write_output(top_ml_adaptation, f"output_{locode}_adaptation.json")
     write_output(top_ml_mitigation, f"output_{locode}_mitigation.json")
-    print("Prioritization complete!")
+    logging.debug("Prioritization complete!")
 
 
 if __name__ == "__main__":
+    from logger_config import setup_logger
+
+    setup_logger(level=logging.DEBUG)
+
     parser = argparse.ArgumentParser(
         description="Prioritize climate actions for a given city."
     )

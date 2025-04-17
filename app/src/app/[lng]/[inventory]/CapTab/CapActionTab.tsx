@@ -156,7 +156,7 @@ export function CapActionTab({
   ];
 
   const table = useReactTable({
-    data: actions || [],
+    data: Array.isArray(actions) ? actions : [],
     columns,
     getCoreRowModel: getCoreRowModel(),
   });

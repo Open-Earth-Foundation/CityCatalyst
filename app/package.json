@@ -68,7 +68,7 @@
     "autoprefixer": "10.4.16",
     "bcrypt": "^5.1.1",
     "chakra-react-select": "^4.9.1",
-    "char-regex": "^2.0.1",
+    "char-regex": "^2.0.2",
     "csv-parse": "^5.6.0",
     "csv-stringify": "^6.5.2",
     "date-fns": "^4.1.0",

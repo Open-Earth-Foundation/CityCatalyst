@@ -6,25 +6,24 @@ Execute:
 python -m scripts.upload_to_frontend.enrich_for_frontend_schema --locode "BR CCI" --action_type "mitigation"
 """
 
-from pathlib import Path
 import json
 import argparse
-
+import requests
+from pathlib import Path
+from requests.exceptions import RequestException
 
 # Define the base directory relative to the script's location
 BASE_DIR = Path(__file__).parent.parent.parent
 
 # Load paths dynamically relative to the base directory
-PATH_ACTIONSLIST_EN = BASE_DIR / "data" / "climate_actions" / "output" / "merged.json"
-PATH_TRANSLATIONS = BASE_DIR / "data" / "climate_actions" / "output" / "translations"
 BASE_PATH_PRIORITIZED_ACTIONS = BASE_DIR / "data" / "prioritized"
 BASE_PATH_OUTPUT = BASE_DIR / "data" / "frontend"
 
-# Define supported languages and their corresponding files
-LANGUAGE_FILES = {
-    "en": PATH_ACTIONSLIST_EN,
-    "es": PATH_TRANSLATIONS / "merged_es.json",
-    "pt": PATH_TRANSLATIONS / "merged_pt.json",
+# Define the language endpoints
+LANGUAGE_ENDPOINTS = {
+    "en": "https://ccglobal.openearth.dev/api/v0/climate_actions?language=en",
+    "es": "https://ccglobal.openearth.dev/api/v0/climate_actions?language=es",
+    "pt": "https://ccglobal.openearth.dev/api/v0/climate_actions?language=pt",
 }
 
 
@@ -41,15 +40,23 @@ def process_city_multilingual(locode, action_type):
         priority_list = json.load(f)
 
     # Process each language
-    for lang, actions_file in LANGUAGE_FILES.items():
+    for lang, endpoint in LANGUAGE_ENDPOINTS.items():
         print(f"Processing language: {lang}")
 
-        # Read the actions list for this language
-        with open(actions_file, "r", encoding="utf-8") as f:
-            generic_action_list = json.load(f)
+        try:
+            # Read the actions list for this language
+            response = requests.get(endpoint)
+            response.raise_for_status()  # Raise an exception for bad status codes
+            actions_list = response.json()
+        except RequestException as e:
+            print(f"Error fetching actions for language {lang}: {str(e)}")
+            continue
+        except json.JSONDecodeError as e:
+            print(f"Error parsing JSON response for language {lang}: {str(e)}")
+            continue
 
         # Create a map of actions by ActionID for quick lookup
-        action_map = {action["ActionID"]: action for action in generic_action_list}
+        action_map = {action["ActionID"]: action for action in actions_list}
 
         # Add action properties to the respective entry in the priority list
         enriched_priority_list = []

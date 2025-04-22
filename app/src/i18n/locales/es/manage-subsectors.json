@@ -1213,5 +1213,6 @@
   "notation-keys-updated": "Claves de notación actualizadas",
   "quick-action-applied": "Acción rápida aplicada",
   "changes-can-be-lost": "Tus cambios pueden perderse",
-  "changes-can-be-lost-description": "¿Desea descartar todos los cambios realizados desde la última edición? Esto no se puede deshacer."
+  "changes-can-be-lost-description": "¿Desea descartar todos los cambios realizados desde la última edición? Esto no se puede deshacer.",
+  "transport": "Transporte"
 }

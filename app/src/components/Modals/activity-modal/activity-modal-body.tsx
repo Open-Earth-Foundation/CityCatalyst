@@ -506,7 +506,10 @@ const ActivityModalBody = ({
                 )}
               </Field>
               {!hideEmissionFactors && (
-                <Field label={t("emission-factor-type")}>
+                <Field
+                  label={t("emission-factor-type")}
+                  invalid={!!resolve(prefix + "emissionFactorType", errors)}
+                >
                   <Controller
                     name="activity.emissionFactorType"
                     control={control}
@@ -517,7 +520,7 @@ const ActivityModalBody = ({
                           errors?.activity?.emissionFactorType ? "1px" : 0
                         }
                         border="inputBox"
-                        h="full"
+                        h="42px"
                         shadow="1dp"
                         borderColor={
                           errors?.activity?.emissionFactorType
@@ -534,18 +537,21 @@ const ActivityModalBody = ({
                           shadow: "none",
                           borderColor: "content.link",
                         }}
-                        onChange={(e: any) => {
-                          field.onChange(e.target.value);
-                          setValue(
-                            "activity.emissionFactorType",
-                            e.target.value,
-                          );
-                        }}
                         bgColor="base.light"
+                        {...register("activity.emissionFactorType", {
+                          required: t("option-required"),
+                        })}
                       >
                         <NativeSelectField
                           value={field.value}
                           placeholder={t("emissions-factor-type-placeholder")}
+                          onChange={(e: any) => {
+                            field.onChange(e.target.value);
+                            setValue(
+                              "activity.emissionFactorType",
+                              e.target.value,
+                            );
+                          }}
                         >
                           {emissionsFactorTypes.map(({ id, name }) => (
                             <option key={id} value={id}>

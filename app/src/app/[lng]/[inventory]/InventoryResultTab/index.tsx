@@ -365,10 +365,10 @@ export function EmissionPerSectors({
 
 
             const totalInventoryPercentage = inventoryEmissions
-              ? new Decimal(sectorData.co2eq?.toString())
+              ? Number(new Decimal(sectorData.co2eq?.toString())
                   .mul(100)
                   .div(inventoryEmissions?.toString())
-                  .toFixed(3)
+                  .toFixed(3))
               : null;
 
             let percentageChange: number | null = null;

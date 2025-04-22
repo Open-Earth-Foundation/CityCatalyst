@@ -7,8 +7,20 @@ export default class UnitConversionService {
     {
       "units-cubic-meters": {
         "units-gallons": 0.00378541, // 1 gallon = 0.00378541 cubic meters
+        "units-gallons-us": 0.00378541, // 1 US gallon = 0.00378541 cubic meters
+        "units-gallons-uk": 0.00454609,
+        "units-barrel": 0.158987,
         "units-liters": 0.001, // 1 liter = 0.001 cubic meters
         "units-cubic-meters": 1, // 1 cubic meter = 1 cubic meter (identity)
+        "units-cubic-feet": 0.0283168,
+      },
+      "units-kilograms": {
+        // Conversions *to* kilograms
+        "units-kilograms": 1, // 1 kg = 1 kg
+        "units-tonnes": 1000, // 1 tonne = 1000 kg
+        "units-long-tons": 1016.047, // 1 long ton = 1016.047 kg (approx)
+        "units-short-tons": 907.184, // 1 short ton = 907.184 kg (approx)
+        "units-pounds": 0.453592, // 1 pound = 0.453592 kg (approx)
       },
       "units-kilowatt-hours": {
         "units-kilowatt-hours": 1, // 1 kWh = 1 kWh (identity)
@@ -58,12 +70,30 @@ export default class UnitConversionService {
       return value;
     }
 
+    const massUnits = [
+      "units-kilograms",
+      "units-milligrams",
+      "units-long-tons",
+      "units-short-tons",
+      "units-pounds",
+    ];
+
     if (
-      fromUnit === "units-kilograms" &&
+      massUnits.includes(fromUnit) &&
       toUnit === "units-cubic-meters" &&
       fuelType
     ) {
-      return value / this.fuelDensities[fuelType || "fuel-type-all"];
+      const density_kg_m3 = this.fuelDensities[fuelType];
+
+      // Check if density is available and valid for the given fuel type
+      if (density_kg_m3 === undefined || density_kg_m3 <= 0) {
+        throw new createHttpError.BadRequest(
+          `Density for fuel type "${fuelType}" is not available or is invalid for mass-to-volume conversion.`,
+        );
+      }
+
+      const valueInKg = this.convertUnits(value, fromUnit, "units-kilograms");
+      return valueInKg / this.fuelDensities[fuelType || "fuel-type-all"];
     }
 
     if (!this.conversionTable[toUnit]) {

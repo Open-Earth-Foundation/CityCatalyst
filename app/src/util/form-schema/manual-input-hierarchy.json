@@ -2080,6 +2080,7 @@
               "fugitive-emissions-coal-source"
             ],
             "activity-title": "activity-total-fugitive-emissions",
+            "default-units": "units-cubic-meters",
             "extra-fields": [
               {
                 "id": "fugitive-emissions-coal-type",
@@ -2189,6 +2190,7 @@
               "fugitive-emissions-oil-gas-fugitive-source"
             ],
             "activity-title": "activity-total-fugitive-activity",
+            "default-units": "units-cubic-meters",
             "extra-fields": [
               {
                 "id": "fugitive-emissions-oil-gas-type",

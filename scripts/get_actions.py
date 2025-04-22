@@ -3,8 +3,10 @@ This script is used to fetch the climate actions data.
 
 The climate actions data is fetched from the global data database API.
 
-Run it from the root of the project with the following command:
-python scripts/get_actions.py
+It is meant to be imported as a module in other scripts with the get_actions() function.
+
+Run it standalone from the root of the project with the following command:
+python -m scripts.get_actions
 """
 
 import requests
@@ -20,7 +22,11 @@ BASE_DIR = Path(__file__).parent.parent.parent
 
 def get_actions() -> list[dict] | None:
     # Base URL for the API
-    base_url = "https://ccglobal.openearth.dev/api/v0/climate_actions"
+    language = "en"
+
+    base_url = (
+        f"https://ccglobal.openearth.dev/api/v0/climate_actions?language={language}"
+    )
 
     try:
         logging.info(f"Fetching data from {base_url} ...")

@@ -119,8 +119,8 @@ describe("DataSourceService.applyGlobalAPISource", () => {
             "residential-building-type": "building-type-all",
           },
           activityData: {
-            "activity-units": "TEP",
-            "activity-value": "16956.54",
+            "activity-unit": "TEP",
+            "activity-value": 16956.54,
           },
         }),
       );

@@ -147,7 +147,7 @@ export default class CSVDownloadService {
         inventory_reference: inventoryValue.subCategoryId,
         gpc_reference_number: inventoryValue.gpcReferenceNumber,
         subsector_name: inventoryValue.subSector.subsectorName,
-        notation_key: inventoryValue.unavailableReason?.split("-")[1],
+        notation_key: inventoryValue.unavailableReason?.split("-")?.[1],
         activityValues: activityValues.map((activityValue) => {
           let activityTitleKey = activityValue.metadata?.activityTitle;
           let activityType = activityValue.metadata?.activityId;
@@ -180,12 +180,12 @@ export default class CSVDownloadService {
             emission_n2o = n2o_gas?.gasAmount;
           }
           // if there is an existing emission factor value
-          let usesEf =
+          let usesEmissionFactor =
             inventoryValue.gpcReferenceNumber?.split(".")?.includes("I") ||
             inventoryValue.gpcReferenceNumber?.split(".").includes("II");
           let efUnit = null;
 
-          if (usesEf) {
+          if (usesEmissionFactor) {
             let scope = inventoryValue.gpcReferenceNumber?.split(".")[2];
             efUnit = scope === "1" ? "kg/m3" : "kg/TJ";
           }

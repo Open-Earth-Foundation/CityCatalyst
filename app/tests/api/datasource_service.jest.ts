@@ -109,7 +109,6 @@ describe("DataSourceService.applyGlobalAPISource", () => {
       expect(activityValues.length).toBe(3);
       expect(activityValues).toContainEqual(
         expect.objectContaining({
-          activityData: null,
           co2eq: "670687678",
           co2eqYears: 100,
           datasourceId: null,
@@ -118,6 +117,10 @@ describe("DataSourceService.applyGlobalAPISource", () => {
             activityId: "fuel-consumption-activity",
             "residential-building-fuel-type": "fuel-type-charcoal",
             "residential-building-type": "building-type-all",
+          },
+          activityData: {
+            "activity-units": "TEP",
+            "activity-value": "16956.54",
           },
         }),
       );

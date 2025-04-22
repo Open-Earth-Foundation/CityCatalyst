@@ -47,6 +47,7 @@ import {
 } from "@/components/ui/progress-circle";
 import { TooltipProvider } from "@nivo/tooltip";
 import { UseErrorToast } from "@/hooks/Toasts";
+import Decimal from "decimal.js";
 
 enum TableView {
   BY_ACTIVITY = "by-activity",
@@ -362,8 +363,12 @@ export function EmissionPerSectors({
               );
             }
 
+
             const totalInventoryPercentage = inventoryEmissions
-              ? Number((BigInt(sectorData.co2eq) * 100n) / inventoryEmissions)
+              ? new Decimal(sectorData.co2eq?.toString())
+                  .mul(100)
+                  .div(inventoryEmissions?.toString())
+                  .toFixed(3)
               : null;
 
             let percentageChange: number | null = null;

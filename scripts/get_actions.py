@@ -10,14 +10,11 @@ python -m scripts.get_actions
 """
 
 import requests
-from pathlib import Path
 import argparse
 import json
 import logging
 
 logger = logging.getLogger(__name__)
-
-BASE_DIR = Path(__file__).parent.parent.parent
 
 
 def get_actions() -> list[dict] | None:

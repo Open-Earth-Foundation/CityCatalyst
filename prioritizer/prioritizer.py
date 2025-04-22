@@ -548,8 +548,12 @@ def main(locode: str):
         logging.error("Error reading data:", e)
         sys.exit(1)
 
-    if not actions or not city:
-        logging.error("No actions data or city data found")
+    if not actions:
+        logging.error("No actions data found from API.")
+        sys.exit(1)
+
+    if not city:
+        logging.error("No city data found")
         sys.exit(1)
 
     # Filter actions by biome if applicable

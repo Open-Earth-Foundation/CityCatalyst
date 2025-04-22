@@ -30,7 +30,6 @@ from typing import List
 from pathlib import Path
 from prioritizer.utils.reading_writing_data import (
     read_city_inventory,
-    read_actions,
     write_output,
 )
 from prioritizer.utils.additional_scoring_functions import (
@@ -422,7 +421,7 @@ def single_elimination_bracket(actions, city):
                     winners.append(actionB)
                     losers.append(actionA)
             except Exception as e:
-                print(f"Error comparing actions: {e}")
+                logging.error(f"Error comparing actions: {e}")
                 # If there's an error, continue to the next pair
                 # This way we ignore pairs with one or both actions containing missing values
                 # Since actions get shuffled, over time we will have enough pairings without missing values
@@ -538,8 +537,8 @@ def main(locode: str):
     try:
         city = read_city_inventory(locode)
 
-        # Read the actions from the file
-        # actions = read_actions()
+        # Create function here that gets all the city data from the APIs and stores it in 'city' object
+        # This will substitute the city_data.json file
 
         # Use the API to get the actions
         actions = get_actions()

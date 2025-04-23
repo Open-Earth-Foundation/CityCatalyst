@@ -100,6 +100,17 @@ export default class UserService {
               model: db.models.User,
               as: "users",
             },
+            {
+              model: db.models.Project,
+              as: "project",
+              include: [
+                {
+                  model: db.models.Organization,
+                  as: "organization",
+                  attributes: ["organizationId", "name"],
+                },
+              ],
+            },
           ],
         },
       ],
@@ -114,12 +125,17 @@ export default class UserService {
     }
 
     if (!session) throw new createHttpError.Unauthorized("Unauthorized");
+    const hasOrgLevelAccess = await hasOrgOwnerLevelAccess(
+      inventory.city?.project?.organizationId,
+      session.user?.id,
+    );
 
-    if (
+    const hasNoCityAccess =
       inventory.city.users.length === 0 ||
       !session?.user?.id ||
-      !inventory.city.users.map((u) => u.userId).includes(session?.user?.id)
-    ) {
+      !inventory.city.users.map((u) => u.userId).includes(session?.user?.id);
+
+    if (!hasOrgLevelAccess && hasNoCityAccess) {
       throw new createHttpError.Unauthorized(
         "User is not part of this inventory's city",
       );
@@ -203,6 +219,17 @@ export default class UserService {
           required: true,
           include: [
             {
+              model: db.models.Project,
+              as: "project",
+              include: [
+                {
+                  model: db.models.Organization,
+                  as: "organization",
+                  attributes: ["organizationId", "name"],
+                },
+              ],
+            },
+            {
               model: db.models.User,
               as: "users",
               where: { userId: isAdmin ? undefined : session?.user.id },
@@ -216,7 +243,13 @@ export default class UserService {
     if (!userFile) {
       throw new createHttpError.NotFound("User file not found");
     }
-    if (userFile.city.users.length === 0) {
+
+    const hasOrgLevelAccess = await hasOrgOwnerLevelAccess(
+      userFile.city?.project?.organizationId,
+      session.user.id,
+    );
+
+    if (userFile.city.users.length === 0 && !hasOrgLevelAccess) {
       throw new createHttpError.Unauthorized(
         "User is not part of this inventory's city",
       );

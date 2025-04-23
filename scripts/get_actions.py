@@ -10,35 +10,61 @@ python -m scripts.get_actions
 """
 
 import requests
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 import argparse
 import json
 import logging
+from typing import Optional
 
 logger = logging.getLogger(__name__)
 
+# Configure retry strategy
+retry_strategy = Retry(
+    total=3,  # number of retries
+    backoff_factor=1,  # wait 1, 2, 4 seconds between retries
+    status_forcelist=[500, 502, 503, 504],  # HTTP status codes to retry on
+    allowed_methods=["GET"],  # only retry on GET requests
+)
 
-def get_actions() -> list[dict] | None:
+
+def get_actions(language: str = "en") -> Optional[list[dict]]:
     # Base URL for the API
-    language = "en"
-
     base_url = (
         f"https://ccglobal.openearth.dev/api/v0/climate_actions?language={language}"
     )
 
+    # Create a session with retry strategy
+    session = requests.Session()
+    adapter = HTTPAdapter(max_retries=retry_strategy)
+    session.mount("https://", adapter)
+    session.mount("http://", adapter)
+
     try:
-        logging.info(f"Fetching data from {base_url} ...")
-        response = requests.get(base_url)
+        logger.info(f"Fetching data from {base_url} ...")
+        # Add timeout of 30 seconds for connection and read
+        response = session.get(base_url, timeout=(10, 30))
+
+        # Log response details
+        logger.info(f"Response status code: {response.status_code}")
+        logger.debug(f"Response headers: {response.headers}")
+
         response.raise_for_status()
-        logging.info("Data fetched successfully")
+        logger.info("Data fetched successfully")
 
         # Parse and return the JSON response
         return response.json()
+    except requests.exceptions.Timeout:
+        logger.error("Request timed out")
+        return None
     except requests.exceptions.RequestException as e:
-        logging.error(f"Error fetching data: {e}")
+        logger.error(f"Error fetching data: {e}")
         return None
     except Exception as e:
-        logging.error(f"An unexpected error occurred: {e}")
+        logger.error(f"An unexpected error occurred: {e}")
         return None
+    finally:
+        session.close()
 
 
 if __name__ == "__main__":

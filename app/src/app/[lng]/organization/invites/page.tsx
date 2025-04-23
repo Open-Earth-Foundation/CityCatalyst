@@ -7,9 +7,18 @@ import { api, useAcceptInviteMutation } from "@/services/api";
 import { logger } from "@/services/logger";
 import InviteErrorView from "./InviteErrorView";
 import { emailPattern, tokenRegex, uuidRegex } from "@/util/validation";
+import { UseSuccessToast } from "@/hooks/Toasts";
+import { useTranslation } from "@/i18n/client";
+import ProgressLoader from "@/components/ProgressLoader";
 
 const AcceptInvitePage = ({ params: { lng } }: { params: { lng: string } }) => {
   const searchParams = useSearchParams();
+  const { t } = useTranslation(lng, "auth");
+  const { showSuccessToast } = UseSuccessToast({
+    title: t("invite-accepted"),
+    description: t("invite-accepted-org-details"),
+    duration: 5000,
+  });
   const queryParams = Object.fromEntries(searchParams.entries());
   const [acceptInvite, { isLoading, isError }] =
     api.useAcceptOrganizationAdminInviteMutation();
@@ -69,6 +78,7 @@ const AcceptInvitePage = ({ params: { lng } }: { params: { lng: string } }) => {
             if (!!error) {
               setError(true);
             } else {
+              showSuccessToast();
               router.push(`/`);
             }
           } catch (error) {
@@ -84,17 +94,7 @@ const AcceptInvitePage = ({ params: { lng } }: { params: { lng: string } }) => {
     accept();
   }, [queryParams, acceptInvite, router]);
 
-  if (isLoading)
-    return (
-      <Center>
-        <ProgressCircle.Root value={null} size="sm">
-          <ProgressCircle.Circle>
-            <ProgressCircle.Track />
-            <ProgressCircle.Range />
-          </ProgressCircle.Circle>
-        </ProgressCircle.Root>
-      </Center>
-    );
+  if (isLoading) return <ProgressLoader />;
 
   if (isError || error) return <InviteErrorView lng={lng} />;
 

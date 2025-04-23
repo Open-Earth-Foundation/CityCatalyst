@@ -7,6 +7,7 @@ import { useAcceptInviteMutation } from "@/services/api";
 import { logger } from "@/services/logger";
 import InviteErrorView from "./InviteErrorView";
 import { emailPattern, tokenRegex, uuidRegex } from "@/util/validation";
+import ProgressLoader from "@/components/ProgressLoader";
 
 const AcceptInvitePage = ({ params: { lng } }: { params: { lng: string } }) => {
   const searchParams = useSearchParams();
@@ -17,10 +18,11 @@ const AcceptInvitePage = ({ params: { lng } }: { params: { lng: string } }) => {
   const [error, setError] = useState(false);
 
   const validateInput = (token: string, email: string, cityIds: string) => {
+    const cityIdsArray = cityIds.split(",");
     return (
       tokenRegex.test(token) &&
       emailPattern.test(email) &&
-      uuidRegex.test(cityIds)
+      cityIdsArray.every((id) => uuidRegex.test(id))
     );
   };
 
@@ -43,7 +45,6 @@ const AcceptInvitePage = ({ params: { lng } }: { params: { lng: string } }) => {
       if (!calledOnce.current) {
         calledOnce.current = true;
         const { token, email, cityIds } = queryParams;
-
         if (token && email && cityIds && validateInput(token, email, cityIds)) {
           try {
             const sanitizedToken = sanitizeInput(token);
@@ -74,17 +75,7 @@ const AcceptInvitePage = ({ params: { lng } }: { params: { lng: string } }) => {
     accept();
   }, [queryParams, acceptInvite, router]);
 
-  if (isLoading)
-    return (
-      <Center>
-        <ProgressCircle.Root value={null} size="sm">
-          <ProgressCircle.Circle>
-            <ProgressCircle.Track />
-            <ProgressCircle.Range />
-          </ProgressCircle.Circle>
-        </ProgressCircle.Root>
-      </Center>
-    );
+  if (isLoading) return <ProgressLoader />;
 
   if (isError || error) return <InviteErrorView lng={lng} />;
 

@@ -51,6 +51,10 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
     throw createHttpError.InternalServerError("Configuration error");
   }
 
+  if (session.user.email !== email) {
+    throw new createHttpError.Unauthorized("Unauthorized");
+  }
+
   const orgAdmin = await db.models.OrganizationAdmin.create({
     organizationAdminId: randomUUID(),
     organizationId: organization.organizationId,

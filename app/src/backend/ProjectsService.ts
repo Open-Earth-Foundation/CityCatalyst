@@ -2,6 +2,7 @@ import { db } from "@/models";
 import { logger } from "@/services/logger";
 import { uniqBy } from "lodash";
 import { ProjectWithCities } from "@/util/types";
+import { OK } from "zod";
 
 interface ProjectInfo {
   projectId: string;
@@ -41,6 +42,7 @@ export class ProjectService {
         },
       ],
     });
+
     const organizationAdminAssociations =
       await db.models.OrganizationAdmin.findAll({
         where: {
@@ -71,6 +73,8 @@ export class ProjectService {
           },
         ],
       });
+
+
     const cityUserAssociations = await db.models.CityUser.findAll({
       where: {
         userId: userId,
@@ -117,14 +121,6 @@ export class ProjectService {
         })),
       ...organizationAdminAssociations.flatMap((assoc) =>
         assoc.organization?.projects
-          .filter((project) => {
-            if (!project.organization) {
-              logger.warn(
-                `OrganizationAdmin's organization not found for project id: ${project.projectId}`,
-              );
-            }
-            return !!project.organization;
-          })
           .map((project) => ({
             projectId: project.projectId,
             name: project.name,
@@ -174,6 +170,7 @@ export class ProjectService {
           }
           return acc;
         }, {});
+
 
     const projectList = dataList.concat(Object.values(cityUserDataList));
 

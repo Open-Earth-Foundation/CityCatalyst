@@ -93,11 +93,13 @@ const SingleProjectView = ({
   project,
   backToProjects,
   t,
+  lng,
   currentInventoryId,
 }: {
   project: ProjectWithCities;
   backToProjects: () => void;
   t: Function;
+  lng: string;
   currentInventoryId: string;
 }) => {
   const router = useRouter();
@@ -113,8 +115,8 @@ const SingleProjectView = ({
     }
   };
 
-  const goToInventory = (inventoryId: string) => {
-    router.push(`/${inventoryId}`);
+  const goToInventory = (inventoryId: string, lng: string) => {
+    router.push(`/${lng}/${inventoryId}`);
   };
 
   const [searchTerm, setSearchTerm] = React.useState("");
@@ -172,7 +174,7 @@ const SingleProjectView = ({
             className="flex justify-start gap-2.5"
             w="full"
             key={city.cityId}
-            onClick={() => goToInventory(city.inventories[0].inventoryId)}
+            onClick={() => goToInventory(city.inventories[0].inventoryId, lng)}
           >
             {city.inventories.find(
               (inventory) => inventory.inventoryId === currentInventoryId,
@@ -280,6 +282,7 @@ const ProjectDrawer = ({
               t={t}
               currentInventoryId={currentInventoryId}
               project={selectedProjectData}
+              lng={lng}
               backToProjects={() => setSelectedProject(null)}
             />
           )}

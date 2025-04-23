@@ -84,6 +84,12 @@ export default function OnboardingSetup({
       skip: !EnterpriseMode,
     },
   );
+  
+  useEffect(() => {
+    if (projectsList && projectsList.length > 0) {
+      setSelectedProject([projectsList[0].projectId]);
+    }
+  }, [projectsList]);
 
   const steps = [
     { title: t("setup-step") },
@@ -162,7 +168,7 @@ export default function OnboardingSetup({
     const countryName = country?.name ?? "";
 
     const projectId =
-      selectedProject.length > 0 ? selectedProject[0] : undefined;
+      selectedProject?.length > 0 ? selectedProject[0] : undefined;
 
     try {
       city = await addCity({

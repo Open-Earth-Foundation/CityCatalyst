@@ -33,6 +33,17 @@ const CitiesPage = ({ params: { lng } }: { params: { lng: string } }) => {
   const { data: organizationData, isLoading: isLoadingOrganizationData } =
     useGetOrganizationsQuery({});
 
+  const transformedCitiesData = useMemo(() => {
+    if (!data) return [];
+    return data.map((city) => {
+      return {
+        ...city,
+        orgName: city.project?.organization?.name,
+        orgEmail: city.project?.organization?.contactEmail,
+      };
+    });
+  }, [data]);
+
   const [selectedRowKeys, setSelectedRowKeys] = useState<
     CityWithProjectDataResponse["cityId"][]
   >([]);
@@ -116,7 +127,7 @@ const CitiesPage = ({ params: { lng } }: { params: { lng: string } }) => {
         )}
         {data && data.length > 0 && (
           <DataTable
-            data={data}
+            data={transformedCitiesData}
             searchable
             pagination
             itemsPerPage={20}
@@ -146,12 +157,8 @@ const CitiesPage = ({ params: { lng } }: { params: { lng: string } }) => {
               <Table.Row key={idx}>
                 <Table.Cell>{item.name}</Table.Cell>
                 <Table.Cell>{item.country}</Table.Cell>
-                <Table.Cell>
-                  {item?.project?.organization?.name ?? t("n-a")}
-                </Table.Cell>
-                <Table.Cell>
-                  {item?.project?.organization?.contactEmail ?? t("n-a")}
-                </Table.Cell>
+                <Table.Cell>{item?.orgName ?? t("n-a")}</Table.Cell>
+                <Table.Cell>{item?.orgEmail ?? t("n-a")}</Table.Cell>
                 <Table.Cell>
                   <MenuRoot>
                     <MenuTrigger>

@@ -307,6 +307,7 @@ export default function SelectCityStep({
                 <Box w="full">
                   <SelectRoot
                     value={selectedProject}
+                    disabled={projectCollection.size === 1}
                     onValueChange={(e) => setSelectedProject(e.value)}
                     variant="outline"
                     collection={projectCollection}

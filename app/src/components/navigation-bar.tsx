@@ -56,6 +56,7 @@ export function NavigationBar({
   showMenu = false,
   isAuth = false,
   children,
+  restrictAccess,
 }: {
   lng: string;
   showNav?: boolean;
@@ -63,6 +64,7 @@ export function NavigationBar({
   showMenu?: boolean;
   isAuth?: boolean;
   children?: React.ReactNode;
+  restrictAccess?: boolean;
 }) {
   const { t } = useTranslation(lng, "navigation");
   const { inventory: inventoryParam } = useParams();
@@ -289,7 +291,7 @@ export function NavigationBar({
                 display="flex"
                 flexDirection="column"
                 justifyContent="space-around"
-                minH="128px"
+                minH="58px"
                 zIndex={2000}
               >
                 {userInfo?.role === Roles.Admin && (
@@ -341,32 +343,34 @@ export function NavigationBar({
                     </MenuItem>
                   </>
                 )}
-                <MenuItem
-                  value="settings"
-                  paddingTop="12px"
-                  paddingBottom="12px"
-                  px="16px"
-                  onClick={() =>
-                    router.push(
-                      `/${inventory ? inventory.inventoryId : currentInventoryId}/settings`,
-                    )
-                  }
-                >
-                  <Box display="flex" alignItems="center">
-                    {" "}
-                    <Icon
-                      as={FiSettings}
-                      boxSize={6}
-                      color={
-                        userMenuHighlight === "settings"
-                          ? "background.neutral"
-                          : "content.tertiary"
-                      }
-                      mr={4}
-                    />
-                    <Text fontSize="title.md">{t("settings")}</Text>
-                  </Box>
-                </MenuItem>
+                {!restrictAccess && (
+                  <MenuItem
+                    value="settings"
+                    paddingTop="12px"
+                    paddingBottom="12px"
+                    px="16px"
+                    onClick={() =>
+                      router.push(
+                        `/${inventory ? inventory.inventoryId : currentInventoryId}/settings`,
+                      )
+                    }
+                  >
+                    <Box display="flex" alignItems="center">
+                      {" "}
+                      <Icon
+                        as={FiSettings}
+                        boxSize={6}
+                        color={
+                          userMenuHighlight === "settings"
+                            ? "background.neutral"
+                            : "content.tertiary"
+                        }
+                        mr={4}
+                      />
+                      <Text fontSize="title.md">{t("settings")}</Text>
+                    </Box>
+                  </MenuItem>
+                )}
                 <MenuItem
                   paddingTop="12px"
                   paddingBottom="12px"

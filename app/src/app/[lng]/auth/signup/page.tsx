@@ -94,11 +94,12 @@ export default function Signup({
       // const callbackParam = callbackUrl ? "&" : "";
       // const nextCallbackUrl = `/auth/check-email?email_address=${data.email}${callbackParam}${queryParamsString}`;
       // router.push(nextCallbackUrl);
-
       // automatic login after signup for simplified user flow
+      const userData = (await res.json()) as any;
+
       const loginResponse = await signIn("credentials", {
         redirect: false,
-        email: data.email,
+        email: userData.user.email,
         password: data.password,
         callbackUrl,
       });

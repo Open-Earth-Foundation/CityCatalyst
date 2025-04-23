@@ -72,5 +72,6 @@
   "recent-searches-title": "Pesquisas Recentes",
   "recent-searches-no-results": "Você não tem pesquisas recentes",
   "failed-to-add-city": "Falha ao adicionar cidade",
-  "failed-to-create-inventory": "Falha ao criar inventário"
+  "failed-to-create-inventory": "Falha ao criar inventário",
+  "select-project": "Selecionar Projeto"
 }

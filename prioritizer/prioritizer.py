@@ -1,3 +1,23 @@
+"""
+This file is the main file for the prioritizer.
+It is used to prioritize climate actions for a given city.
+
+It uses the following files:
+- reading_writing_data.py: for reading and writing data to files
+- additional_scoring_functions.py: for additional scoring functions
+- prompt.py: for the prompt
+- ml_comparator.py: for the ML comparator
+- get_actions.py: for getting the actions from the API
+
+Usage:
+python prioritizer.py --locode <locode>
+
+Example:
+Run it from the root level of the project with the following command:
+
+python -m prioritizer.prioritizer --locode "BR CXL"
+"""
+
 import argparse
 import sys
 import os
@@ -10,7 +30,6 @@ from typing import List
 from pathlib import Path
 from prioritizer.utils.reading_writing_data import (
     read_city_inventory,
-    read_actions,
     write_output,
 )
 from prioritizer.utils.additional_scoring_functions import (
@@ -19,6 +38,10 @@ from prioritizer.utils.additional_scoring_functions import (
 )
 from prioritizer.utils.prompt import return_prompt
 from prioritizer.utils.ml_comparator import ml_compare
+from scripts.get_actions import get_actions
+import logging
+
+logger = logging.getLogger(__name__)
 
 load_dotenv()
 
@@ -181,7 +204,7 @@ def quantitative_score(city, action):
         time_score = timeline_mapping[timeline_str]
         score += time_score * time_score_weight
     else:
-        print("Invalid timeline:", timeline_str)
+        logging.debug("Invalid timeline:", timeline_str)
 
     # print("Score after time in years:", score)
 
@@ -301,48 +324,46 @@ def qualitative_prioritizer(top_quantitative, actions, city):
                     "explanation": action.explanation,
                 }
             )
-        print("Qualitative prioritization completed.")
+        logging.debug("Qualitative prioritization completed.")
         return qualitative_scores
     else:
-        print("No qualitative prioritization data.")
+        logging.debug("No qualitative prioritization data.")
         return []
 
 
-def filter_actions_by_biome(actions, city):
+def filter_actions_by_biome(actions: list[dict], city: dict) -> list[dict]:
     """
     Filter actions based on city's biome only if both city and action have biomes defined.
     Actions without a biome field are included in the output.
     If city has no biome, return all actions unfiltered.
     """
     city_biome = city.get("biome")
+
     actions_final = []
-    i = 0
+    skipped_actions = 0
     if not city_biome:
         return actions
     else:
-        print(f"City biome: {city_biome}")
+        logging.debug(f"City biome: {city_biome}")
 
         for action in actions:
-            if action["biome"] != "none":
-                print(f"Action biome: {action['biome']}")
-                if action["biome"] == city_biome:
+            action_biome = action.get("biome")
+            logging.debug(f"Action biome: {action_biome}")
+            if action_biome:
+                # If the action biome matches the city biome, add the action to the list
+                if action_biome == city_biome:
                     actions_final.append(action)
                 else:
-                    i += 1
-                    pass
+                    # If the action biome does not match the city biome, skip the action
+                    # and increment the counter
+                    skipped_actions += 1
+                    continue
             else:
+                # If there is no biome, add the action to the list
                 actions_final.append(action)
-    print(f"actions skipped: {i}")
-    return actions_final
 
-    # Keep actions that either:
-    # 1. Don't have a biome field, or
-    # 2. Have a biome that matches the city's biome
-    return [
-        action
-        for action in actions
-        if "Biome" not in action or action["Biome"] == city_biome
-    ]
+    logging.debug(f"actions skipped: {skipped_actions}")
+    return actions_final
 
 
 def ML_compare(actionA, actionB, city):
@@ -400,7 +421,7 @@ def single_elimination_bracket(actions, city):
                     winners.append(actionB)
                     losers.append(actionA)
             except Exception as e:
-                print(f"Error comparing actions: {e}")
+                logging.error(f"Error comparing actions: {e}")
                 # If there's an error, continue to the next pair
                 # This way we ignore pairs with one or both actions containing missing values
                 # Since actions get shuffled, over time we will have enough pairings without missing values
@@ -453,15 +474,15 @@ def final_bracket_for_ranking(actions, city):
         # )
         winner, losers = single_elimination_bracket(participants, city)
         if not winner:
-            print("  No winner found, breaking")
+            logging.debug("  No winner found, breaking")
             break  # no more participants
 
-        print(f"  Rank #{rank}: {winner.get('ActionID', 'Unknown')}")
+        logging.debug(f"  Rank #{rank}: {winner.get('ActionID', 'Unknown')}")
         ranking.append(winner)
         participants = losers
         rank += 1
 
-    print(f"=== Final bracket complete. Ranked {len(ranking)} actions ===")
+    logging.debug(f"=== Final bracket complete. Ranked {len(ranking)} actions ===")
     return ranking
 
 
@@ -473,7 +494,7 @@ def tournament_ranking(actions, city):
     Returns:
       A list of (action, rank_index).
     """
-    print(
+    logging.debug(
         f"\n\n========== STARTING TOURNAMENT RANKING WITH {len(actions)} ACTIONS =========="
     )
     remaining = actions[:]
@@ -488,11 +509,11 @@ def tournament_ranking(actions, city):
 
         if not winner:
             # TODO is there a normal thing that this can happen ?or should this be error
-            print("No winner found, breaking")
+            logging.debug("No winner found, breaking")
             break
 
         # Add the winner with their rank
-        print(f"Rank #{current_rank}: {winner.get('ActionID', 'Unknown')}")
+        logging.debug(f"Rank #{current_rank}: {winner.get('ActionID', 'Unknown')}")
         full_ranking.append((winner, current_rank))
         current_rank += 1
 
@@ -500,14 +521,14 @@ def tournament_ranking(actions, city):
         remaining = losers
         # print(f"{len(remaining)} actions will compete for rank #{current_rank}")
 
-    print(
+    logging.debug(
         f"\n========== TOURNAMENT RANKING COMPLETE. RANKED {len(full_ranking)} ACTIONS =========="
     )
 
     # Print final ranking summary
-    print("\nFinal Ranking Summary:")
+    logging.debug("\nFinal Ranking Summary:")
     for action, rank in full_ranking:
-        print(f"  #{rank}: {action.get('ActionID', 'Unknown')}")
+        logging.debug(f"  #{rank}: {action.get('ActionID', 'Unknown')}")
 
     return full_ranking
 
@@ -515,33 +536,52 @@ def tournament_ranking(actions, city):
 def main(locode: str):
     try:
         city = read_city_inventory(locode)
-        actions = read_actions()
+
+        # Create function here that gets all the city data from the APIs and stores it in 'city' object
+        # This will substitute the city_data.json file
+
+        # Use the API to get the actions
+        actions = get_actions()
+        logging.debug(json.dumps(actions, indent=2))
+
     except Exception as e:
-        print("Error reading data:", e)
+        logging.error("Error reading data:", e)
+        sys.exit(1)
+
+    if not actions:
+        logging.error("No actions data found from API.")
+        sys.exit(1)
+
+    if not city:
+        logging.error("No city data found")
         sys.exit(1)
 
     # Filter actions by biome if applicable
     filtered_actions = filter_actions_by_biome(actions, city)
-    print(f"After biome filtering: {len(filtered_actions)} actions remain")
+    logging.debug(f"After biome filtering: {len(filtered_actions)} actions remain")
 
     # Separate adaptation and mitigation actions
     adaptation_actions = [
         action
         for action in filtered_actions
-        if action.get("ActionType") and "adaptation" in action.get("ActionType")
+        if action.get("ActionType") is not None
+        and isinstance(action["ActionType"], list)
+        and "adaptation" in action["ActionType"]
     ]
     mitigation_actions = [
         action
         for action in filtered_actions
-        if action.get("ActionType") and "mitigation" in action.get("ActionType")
+        if action.get("ActionType") is not None
+        and isinstance(action["ActionType"], list)
+        and "mitigation" in action["ActionType"]
     ]
 
-    print(
+    logging.debug(
         f"Found {len(adaptation_actions)} adaptation actions and {len(mitigation_actions)} mitigation actions"
     )
 
     # Apply tournament ranking for adaptation actions
-    print("Starting tournament ranking for adaptation actions...")
+    logging.debug("Starting tournament ranking for adaptation actions...")
     adaptation_ranking = tournament_ranking(adaptation_actions, city)
 
     # Format adaptation results
@@ -561,7 +601,7 @@ def main(locode: str):
         )
 
     # Apply tournament ranking for mitigation actions
-    print("Starting tournament ranking for mitigation actions...")
+    logging.debug("Starting tournament ranking for mitigation actions...")
     mitigation_ranking = tournament_ranking(mitigation_actions, city)
 
     # Format mitigation results
@@ -582,10 +622,14 @@ def main(locode: str):
     # Save outputs to separate files
     write_output(top_ml_adaptation, f"output_{locode}_adaptation.json")
     write_output(top_ml_mitigation, f"output_{locode}_mitigation.json")
-    print("Prioritization complete!")
+    logging.debug("Prioritization complete!")
 
 
 if __name__ == "__main__":
+    from logger_config import setup_logger
+
+    setup_logger(level=logging.DEBUG)
+
     parser = argparse.ArgumentParser(
         description="Prioritize climate actions for a given city."
     )

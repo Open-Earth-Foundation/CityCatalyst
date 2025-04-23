@@ -57,7 +57,13 @@ const AcceptInvitePage = ({ params: { lng } }: { params: { lng: string } }) => {
       if (!calledOnce.current) {
         calledOnce.current = true;
         const { token, email, organizationId } = queryParams;
-
+        console.log(
+          token,
+          email,
+          organizationId,
+          "queryParams",
+          validateInput(token, email, organizationId),
+        );
         if (
           token &&
           email &&

@@ -13,6 +13,7 @@ import ProgressLoader from "@/components/ProgressLoader";
 
 const AcceptInvitePage = ({ params: { lng } }: { params: { lng: string } }) => {
   const searchParams = useSearchParams();
+  console.log(searchParams.get("email"));
   const { t } = useTranslation(lng, "auth");
   const { showSuccessToast } = UseSuccessToast({
     title: t("invite-accepted"),
@@ -31,6 +32,11 @@ const AcceptInvitePage = ({ params: { lng } }: { params: { lng: string } }) => {
     email: string,
     organizationId: string,
   ) => {
+    console.log(
+      tokenRegex.test(token),
+      emailPattern.test(email),
+      uuidRegex.test(organizationId),
+    );
     return (
       tokenRegex.test(token) &&
       emailPattern.test(email) &&
@@ -57,22 +63,23 @@ const AcceptInvitePage = ({ params: { lng } }: { params: { lng: string } }) => {
       if (!calledOnce.current) {
         calledOnce.current = true;
         const { token, email, organizationId } = queryParams;
+        const cleanedEmail = email.split(" ").join("+").replace(/%40/g, "@");
         console.log(
           token,
-          email,
+          cleanedEmail,
           organizationId,
           "queryParams",
-          validateInput(token, email, organizationId),
+          validateInput(token, cleanedEmail, organizationId),
         );
         if (
           token &&
           email &&
           organizationId &&
-          validateInput(token, email, organizationId)
+          validateInput(token, cleanedEmail, organizationId)
         ) {
           try {
             const sanitizedToken = sanitizeInput(token);
-            const sanitizedEmail = sanitizeInput(email);
+            const sanitizedEmail = sanitizeInput(cleanedEmail);
             const sanitizedCityIds = sanitizeInput(organizationId);
 
             const { error } = await acceptInvite({

@@ -34,6 +34,7 @@ export const GET = apiHandler(async (_req, { params, session }) => {
         attributes: ["projectId", "name", "cityCountLimit"],
       },
     ],
+    order: [["created", "ASC"]],
   });
 
   return NextResponse.json(organizations, { status: 200 });

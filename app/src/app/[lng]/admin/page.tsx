@@ -177,7 +177,6 @@ const AdminPage = ({ params: { lng } }: { params: { lng: string } }) => {
         <Tabs.Root defaultValue="organizations" variant="line">
           <Tabs.List bg="bg.muted" border="none" rounded="l3" p="1">
             <TabTrigger title="organizations" />
-            <TabTrigger title="projects" />
             <TabTrigger title="bulk-actions" />
             <Tabs.Indicator rounded="l2" />
           </Tabs.List>

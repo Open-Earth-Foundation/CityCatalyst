@@ -90,5 +90,9 @@
   "password-lower-case-check": "Mindestens ein Kleinbuchstabe",
   "password-number-check": "Mindestens eine Zahl",
   "password-updated": "Passwort aktualisiert",
-  "password-updated-success": "Passwort erfolgreich aktualisiert"
+  "password-updated-success": "Passwort erfolgreich aktualisiert",
+  "contributor": "Mitwirkender",
+  "remove-city-confirmation-message": "Sind Sie sicher, dass Sie diese Stadt <2>dauerhaft aus CityCatalyst entfernen</2> möchten?",
+  "no-date-available": "Kein Datum verfügbar",
+  "invalid-date": "Ungültiges Datum"
 }

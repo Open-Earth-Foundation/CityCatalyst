@@ -1214,5 +1214,9 @@
   "quick-action-applied": "Schnellaktion angewendet",
   "changes-can-be-lost": "Ihre Änderungen können verloren gehen",
   "changes-can-be-lost-description": "Möchten Sie alle Änderungen seit der letzten Bearbeitung verwerfen? Dies kann nicht rückgängig gemacht werden.",
-  "transport": "Transport"
+  "transport": "Transport",
+  "no-unfinished-subsectors": "Keine unfertigen Teilsektoren.",
+  "changes-undone": "Änderungen rückgängig gemacht",
+  "industrial-processes-and-product-uses": "Industrielle Prozesse und Produktverwendung (IPPU)",
+  "agriculture-forestry-and-other-land-use": "Landwirtschaft, Forstwirtschaft und andere Landnutzung (AFOLU)"
 }

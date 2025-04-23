@@ -1214,5 +1214,9 @@
   "quick-action-applied": "Acción rápida aplicada",
   "changes-can-be-lost": "Tus cambios pueden perderse",
   "changes-can-be-lost-description": "¿Desea descartar todos los cambios realizados desde la última edición? Esto no se puede deshacer.",
-  "transport": "Transporte"
+  "transport": "Transporte",
+  "no-unfinished-subsectors": "No hay subsectores sin terminar.",
+  "changes-undone": "Cambios deshechos",
+  "industrial-processes-and-product-uses": "Procesos industriales y usos de productos (IPPU)",
+  "agriculture-forestry-and-other-land-use": "Agricultura, Silvicultura y Otro Uso de la Tierra (ASOUT)"
 }

@@ -73,5 +73,6 @@
   "recent-searches-title": "Búsquedas recientes",
   "recent-searches-no-results": "No tienes búsquedas recientes",
   "failed-to-add-city": "Fallo al agregar la ciudad",
-  "failed-to-create-inventory": "Fallo al crear inventario"
+  "failed-to-create-inventory": "Fallo al crear inventario",
+  "select-project": "Seleccionar Proyecto"
 }

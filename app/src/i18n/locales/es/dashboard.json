@@ -181,5 +181,13 @@
   "an-error-occurred": "Ocurrió un error",
   "error-fetching-sector-breakdown": "Error al obtener el desglose por sector",
   "source-open-climate": "Fuente: OpenClimate",
-  "projects": "Proyectos"
+  "projects": "Proyectos",
+  "n-a": "N/D",
+  "project": "Proyecto",
+  "select-project": "Selecciona un Proyecto",
+  "select-project-to-invite-collaborators": "Selecciona el proyecto para invitar a colaboradores",
+  "project-to-share": "Selecciona qué proyecto quieres compartir",
+  "upgrade-plan-city-limit-heading": "¿Necesitas actualizar tu plan?",
+  "upgrade-plan-city-limit-text": "Parece que has alcanzado el límite de ciudades que se pueden agregar a este proyecto. Para actualizar tu plan, por favor contacta a <mail>info@openearth.com</mail>.",
+  "tab-cap-title": "Priorización de la acción climática"
 }

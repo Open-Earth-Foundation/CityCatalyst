@@ -32,11 +32,6 @@ const AcceptInvitePage = ({ params: { lng } }: { params: { lng: string } }) => {
     email: string,
     organizationId: string,
   ) => {
-    console.log(
-      tokenRegex.test(token),
-      emailPattern.test(email),
-      uuidRegex.test(organizationId),
-    );
     return (
       tokenRegex.test(token) &&
       emailPattern.test(email) &&
@@ -64,13 +59,6 @@ const AcceptInvitePage = ({ params: { lng } }: { params: { lng: string } }) => {
         calledOnce.current = true;
         const { token, email, organizationId } = queryParams;
         const cleanedEmail = email.split(" ").join("+").replace(/%40/g, "@");
-        console.log(
-          token,
-          cleanedEmail,
-          organizationId,
-          "queryParams",
-          validateInput(token, cleanedEmail, organizationId),
-        );
         if (
           token &&
           email &&
@@ -80,11 +68,11 @@ const AcceptInvitePage = ({ params: { lng } }: { params: { lng: string } }) => {
           try {
             const sanitizedToken = sanitizeInput(token);
             const sanitizedEmail = sanitizeInput(cleanedEmail);
-            const sanitizedCityIds = sanitizeInput(organizationId);
+            const sanitizedOrganizationId = sanitizeInput(organizationId);
 
             const { error } = await acceptInvite({
               token: sanitizedToken,
-              organizationId: organizationId,
+              organizationId: sanitizedOrganizationId,
               email: sanitizedEmail,
             });
 

@@ -45,10 +45,11 @@ const AcceptInvitePage = ({ params: { lng } }: { params: { lng: string } }) => {
       if (!calledOnce.current) {
         calledOnce.current = true;
         const { token, email, cityIds } = queryParams;
-        if (token && email && cityIds && validateInput(token, email, cityIds)) {
+        const cleanedEmail = email.split(" ").join("+")
+        if (token && cleanedEmail && cityIds && validateInput(token, cleanedEmail, cityIds)) {
           try {
             const sanitizedToken = sanitizeInput(token);
-            const sanitizedEmail = sanitizeInput(email);
+            const sanitizedEmail = sanitizeInput(cleanedEmail);
             const sanitizedCityIds = sanitizeInput(cityIds);
 
             const { error } = await acceptInvite({

@@ -115,7 +115,7 @@ const SingleProjectView = ({
     }
   };
 
-  const goToInventory = (inventoryId: string, lng) => {
+  const goToInventory = (inventoryId: string, lng: string) => {
     router.push(`/${lng}/${inventoryId}`);
   };
 

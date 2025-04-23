@@ -5,7 +5,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { Op } from "sequelize";
 import { fetchEmissionsFactorRequest } from "@/util/validation";
 import { logger } from "@/services/logger";
-import { Col } from "sequelize/lib/utils";
 const filterMappings: Record<string, any> = {
   "fuel-type-wood/wood-waste": "fuel-type-wood-wood-waste",
 };

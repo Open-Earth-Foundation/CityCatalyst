@@ -45,7 +45,7 @@ const AcceptInvitePage = ({ params: { lng } }: { params: { lng: string } }) => {
       if (!calledOnce.current) {
         calledOnce.current = true;
         const { token, email, cityIds } = queryParams;
-        const cleanedEmail = email.split(" ").join("+")
+        const cleanedEmail = email?.split(" ").join("+")
         if (token && cleanedEmail && cityIds && validateInput(token, cleanedEmail, cityIds)) {
           try {
             const sanitizedToken = sanitizeInput(token);

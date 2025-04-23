@@ -58,7 +58,7 @@ const AcceptInvitePage = ({ params: { lng } }: { params: { lng: string } }) => {
       if (!calledOnce.current) {
         calledOnce.current = true;
         const { token, email, organizationId } = queryParams;
-        const cleanedEmail = email.split(" ").join("+").replace(/%40/g, "@");
+        const cleanedEmail = email?.split(" ").join("+").replace(/%40/g, "@");
         if (
           token &&
           email &&
